@@ -97,26 +97,70 @@ const getOccupantCategory = (
     return getCategoryIdForKindLocation('player', 'room');
 };
 
-const getGroupIndex = (name: string, groupMembers?: GroupMember[], occupantId?: string | number) => {
-    if (!groupMembers) return -1;
-    // Prefer mapid match: GroupMember.mapid is the NPC's room instance ID,
-    // which equals the room occupant's numeric id from Room.Chars.
-    if (occupantId != null) {
-        const idStr = String(occupantId);
-        const byMapId = groupMembers.findIndex(m => m.mapid != null && String(m.mapid) === idStr);
-        if (byMapId !== -1) return byMapId;
-    }
-    // Name fallback for players and NPCs without unique room IDs
-    if (!name) return -1;
-    const lower = name.toLowerCase();
-    return groupMembers.findIndex(member => {
-        const memberName = member.name?.toLowerCase();
-        return !!memberName && (
-            memberName === lower ||
-            lower.startsWith(memberName + ' ') ||
-            lower.endsWith(' ' + memberName)
-        );
+const nameMatches = (occupantName: string, memberName: string) => (
+    memberName === occupantName ||
+    occupantName.startsWith(memberName + ' ') ||
+    occupantName.endsWith(' ' + memberName)
+);
+
+interface OccupantRef { id?: string | number; name?: string }
+
+/**
+ * Resolve which occupant (by id) belongs to which group member. Each member
+ * claims at most one occupant: mapid match wins; otherwise the lowest-id
+ * same-named occupant (matches MUME's `1.thing` ordering). Siblings sharing
+ * a name with the grouped one stay ungrouped.
+ */
+const resolveGroupAssignments = (
+    occupants: OccupantRef[],
+    groupMembers?: GroupMember[]
+): Map<string, number> => {
+    const assignment = new Map<string, number>();
+    if (!groupMembers || groupMembers.length === 0) return assignment;
+
+    const claimed = new Set<string>();
+    const keyOf = (o: OccupantRef) => o.id != null ? `id:${o.id}` : `name:${o.name?.toLowerCase()}`;
+
+    // Pass 1: exact mapid match.
+    groupMembers.forEach((m, idx) => {
+        if (m.mapid == null) return;
+        const mapStr = String(m.mapid);
+        const occ = occupants.find(o => o.id != null && String(o.id) === mapStr);
+        if (occ) {
+            const k = keyOf(occ);
+            if (!claimed.has(k)) {
+                assignment.set(k, idx);
+                claimed.add(k);
+            }
+        }
     });
+
+    // Pass 2: name fallback. Claim the lowest-id unclaimed occupant whose name
+    // matches. Applies to every group member that didn't already claim via mapid.
+    const memberClaimed = new Set<number>(assignment.values());
+    groupMembers.forEach((m, idx) => {
+        if (memberClaimed.has(idx)) return;
+        const memberName = m.name?.toLowerCase();
+        if (!memberName) return;
+        const candidates = occupants
+            .filter(o => {
+                const oName = o.name?.toLowerCase();
+                return !!oName && nameMatches(oName, memberName) && !claimed.has(keyOf(o));
+            })
+            .sort((a, b) => {
+                const an = Number(a.id);
+                const bn = Number(b.id);
+                if (!isNaN(an) && !isNaN(bn)) return an - bn;
+                return 0;
+            });
+        if (candidates.length > 0) {
+            const k = keyOf(candidates[0]);
+            assignment.set(k, idx);
+            claimed.add(k);
+        }
+    });
+
+    return assignment;
 };
 
 const addOccupantTarget = (
@@ -161,11 +205,24 @@ export const getMapOccupantTargets = (options: MapOccupantTargetOptions): MapOcc
         ? charList.filter(char => getOccupantDisplayKind(char, options.characterName || null) === 'npc')
         : (options.roomNpcs || []);
 
+    const allOccupantRefs: OccupantRef[] = [...players, ...enemies, ...neutrals, ...npcs].map(o => ({
+        id: typeof o === 'string' ? undefined : o.id,
+        name: getOccupantName(o)
+    }));
+    const groupAssignment = resolveGroupAssignments(allOccupantRefs, options.groupMembers);
+
+    const lookupGroup = (occupant: OccupantSource): number => {
+        const id = typeof occupant === 'string' ? undefined : occupant.id;
+        const name = getOccupantName(occupant);
+        const key = id != null ? `id:${id}` : `name:${name?.toLowerCase()}`;
+        const idx = groupAssignment.get(key);
+        return idx != null ? idx : -1;
+    };
+
     players.forEach(player => {
         const name = getOccupantName(player);
         if (!name) return;
-        const id = typeof player === 'string' ? undefined : player.id;
-        const groupIndex = getGroupIndex(name, options.groupMembers, id);
+        const groupIndex = lookupGroup(player);
         const isGrouped = groupIndex !== -1;
         addOccupantTarget(
             isGrouped ? groupOccupants : otherOccupants,
@@ -179,8 +236,7 @@ export const getMapOccupantTargets = (options: MapOccupantTargetOptions): MapOcc
     enemies.forEach(enemy => {
         const name = getOccupantName(enemy);
         if (!name) return;
-        const id = typeof enemy === 'string' ? undefined : enemy.id;
-        const groupIndex = getGroupIndex(name, options.groupMembers, id);
+        const groupIndex = lookupGroup(enemy);
         const isGrouped = groupIndex !== -1;
         addOccupantTarget(
             isGrouped ? groupOccupants : otherOccupants,
@@ -194,8 +250,7 @@ export const getMapOccupantTargets = (options: MapOccupantTargetOptions): MapOcc
     neutrals.forEach(neutral => {
         const name = getOccupantName(neutral);
         if (!name) return;
-        const id = typeof neutral === 'string' ? undefined : neutral.id;
-        const groupIndex = getGroupIndex(name, options.groupMembers, id);
+        const groupIndex = lookupGroup(neutral);
         const isGrouped = groupIndex !== -1;
         addOccupantTarget(
             isGrouped ? groupOccupants : otherOccupants,
@@ -209,8 +264,7 @@ export const getMapOccupantTargets = (options: MapOccupantTargetOptions): MapOcc
     npcs.forEach(npc => {
         const name = getOccupantName(npc);
         if (!name) return;
-        const id = typeof npc === 'string' ? undefined : npc.id;
-        const groupIndex = getGroupIndex(name, options.groupMembers, id);
+        const groupIndex = lookupGroup(npc);
         const isGrouped = groupIndex !== -1;
         addOccupantTarget(
             isGrouped ? groupOccupants : otherOccupants,

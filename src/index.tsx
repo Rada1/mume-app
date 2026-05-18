@@ -168,23 +168,6 @@ const MudClient = () => {
         document.documentElement.style.setProperty('--target-color', targetColor);
     }, [targetColor]);
 
-    useEffect(() => {
-        const terrainGlowMap: Record<string, string> = {
-            forest:      '20, 118, 56',
-            water:       '34, 113, 180',
-            field:       '152, 134, 43',
-            brush:       '79, 122, 13',
-            road:        '89, 98, 110',
-            mountain:    '136, 139, 144',
-            hills:       '149, 69, 13',
-            underground: '68, 68, 73',
-            city:        '94, 98, 105',
-            building:    '94, 98, 105',
-        };
-        const normalized = currentTerrain ? normalizeTerrain(currentTerrain) : null;
-        const rgb = (normalized && terrainGlowMap[normalized]) ?? '255, 255, 255';
-        document.documentElement.style.setProperty('--terrain-glow-rgb', rgb);
-    }, [currentTerrain]);
 
     useEffect(() => {
         if (btn.editingButtonId === null && returnToManager) {
@@ -218,10 +201,14 @@ const MudClient = () => {
         handleSend(e);
     }, [handleSend]);
 
+    const heldButtonActionType = typeof heldButton?.id === 'string'
+        ? btn.buttons.find((button: any) => button.id === heldButton.id)?.actionType
+        : undefined;
     const isTacticalTargetingActive = !!heldButton
         && !heldButton.didFire
         && typeof heldButton.id === 'string'
-        && heldButton.id.startsWith('tactical-');
+        && heldButton.id.startsWith('tactical-')
+        && heldButtonActionType !== 'modifier';
     const isDrawerTargetingActive = !!heldButton
         && !heldButton.didFire
         && typeof heldButton.id === 'string'
@@ -229,7 +216,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container state-${gameState} ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isTacticalTargetingActive ? 'tactical-targeting-active' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} ${env?.room_terrain ? `terrain-${normalizeTerrain(env.room_terrain)}` : 'terrain-none'}`}
+            className={`app-container state-${gameState} ${theme === 'immersion' ? 'dark-mode' : `${theme}-mode`} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isTacticalTargetingActive ? 'tactical-targeting-active' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(env?.room_terrain || currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();

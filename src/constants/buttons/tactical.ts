@@ -22,6 +22,20 @@ const withAssignLongActions = (button: CustomButton): CustomButton => ({
 });
 
 export const TACTICAL_BUTTONS: CustomButton[] = [
+    {
+        id: "tactical-charmie",
+        label: "Ch",
+        command: "order followers",
+        setId: "Tactical",
+        actionType: "modifier",
+        display: "floating",
+        hideIfUnknown: true,
+        requirement: { ability: "Charm", minProficiency: 1, characterClass: ["Mage"] },
+        style: { x: -95, y: 0, w: 34, h: 34, backgroundColor: "rgba(48, 45, 52, 0.94)", borderColor: "rgba(255, 255, 255, 0.18)", borderRadius: 999, fontSize: 10, shape: "circle", iconScale: 1 },
+        position: { x: -95, y: 0, w: 34, h: 34 },
+        isVisible: true,
+        trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
+    },
     withAssignLongActions({
         id: "tactical-ranger",
         label: "Ranger",

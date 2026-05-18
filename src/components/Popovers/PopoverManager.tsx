@@ -1,5 +1,5 @@
 import React, { useLayoutEffect } from 'react';
-import { CustomButton, CustomTraitConfig, PopoverState, TeleportTarget, DrawerLine } from '../../types';
+import { CharacterInfo, CustomButton, CustomTraitConfig, PopoverState, TeleportTarget, DrawerLine } from '../../types';
 
 interface PopoverManagerProps {
     popoverState: PopoverState | null;
@@ -52,6 +52,7 @@ interface PopoverManagerProps {
     npcColor?: string;
     objectColor?: string;
     roomColor?: string;
+    characterInfo?: CharacterInfo;
 }
 import { DialMenu } from './DialMenu';
 import { StandardMenuPopover } from './StandardMenuPopover';
@@ -62,6 +63,7 @@ import { ContainerSelectPopover } from './ContainerSelectPopover';
 import { HelpCard } from '../Utility/HelpCard';
 import { getButtonIdsForTraits, getInlineGlowColor, getResolvedTraitSections, toCategoryId } from '../../utils/inlineActionModel';
 import { getInlineCategoryLabel, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
+import { isButtonValidForEntity } from '../../utils/actionUtils';
 
 const formatDialCategoryLabel = (category?: string | null): string => {
     if (!category) return '';
@@ -72,7 +74,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, customTraits, setCustomTraits, favorites, setFavorites, parley, setParley, whoList,
     isMendingMode, setIsMendingMode, setMendingTarget, handleTabClick, setGearTab, setPlayersTab, setCharTab, refreshLogHighlights, practice, openKeywordEdit,
     entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides, accountCharacters, accountState, setAccountState,
-    playerColor, npcColor, objectColor, roomColor
+    playerColor, npcColor, objectColor, roomColor, characterInfo
 }) => {
     useLayoutEffect(() => {
         document.querySelectorAll('.inline-btn.menu-active').forEach(el => el.classList.remove('menu-active'));
@@ -276,6 +278,18 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             inlineCategories || []
         );
         const actionButtonIds = getButtonIdsForTraits(traitSections.map(section => section.trait));
+        const filterDeps = { buttons, inlineCategories: inlineCategories || [], roomNpcs, entities, characterInfo };
+        const filteredActionButtonIds = actionButtonIds.filter(id => {
+            const button = buttons.find(item => item.id === id);
+            return !!button && isButtonValidForEntity(
+                button,
+                popoverState.entityId || '',
+                categorySet || popoverState.setId,
+                filterDeps,
+                popoverState.setId,
+                popoverState.context
+            );
+        });
         const setIdsChain = Array.from(new Set([
             popoverState.setId,
             categorySet
@@ -284,7 +298,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         return (
             <DialMenu
                 setId={setIdsChain}
-                actionButtonIds={actionButtonIds}
+                actionButtonIds={filteredActionButtonIds}
                 initialX={popoverState.initialPointerX ?? popoverState.x}
                 initialY={popoverState.initialPointerY ?? popoverState.y}
                 buttons={buttons}
@@ -415,6 +429,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     accountCharacters={accountCharacters}
                     accountState={accountState}
                     setAccountState={setAccountState}
+                    characterInfo={characterInfo}
                     direction={popoverState.direction}
                 />            )}
         </div>

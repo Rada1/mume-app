@@ -1,4 +1,4 @@
-﻿import { createButton } from '../../../utils/buttonFactory';
+import { createButton } from '../../../utils/buttonFactory';
 
 /**
  * @file world.ts
@@ -16,7 +16,12 @@ export const WORLD_BUTTONS = [
     // --- CORPSES ---
     createButton({ id: 'btn-corpse-drag', label: 'Drag', command: 'drag %n', setId: 'inline-corpses', color: '#94a3b8' }),
     createButton({ id: 'btn-corpse-butcher', label: 'Butcher', command: 'butcher %n', setId: 'inline-corpses', color: '#dc2626' }),
+    createButton({ id: 'btn-corpse-burn', label: 'Burn', command: 'burn %n', setId: 'inline-corpses', color: '#ea580c' }),
+    createButton({ id: 'btn-corpse-bury', label: 'Bury', command: 'bury %n', setId: 'inline-corpses', color: '#78716c' }),
     createButton({ id: 'btn-corpse-scalp', label: 'Scalp', command: 'scalp %n', setId: 'inline-corpses', color: '#991b1b' }),
+    createButton({ id: 'btn-corpse-drain', label: 'Drain', command: 'drain %n', setId: 'inline-corpses', color: '#7f1d1d' }),
+    createButton({ id: 'btn-corpse-hang', label: 'Hang', command: 'hang %n', setId: 'inline-corpses', color: '#581c87' }),
+    createButton({ id: 'btn-corpse-decapitate', label: 'Decap', command: 'decapitate %n', setId: 'inline-corpses', color: '#450a0a' }),
 
     // --- CONTAINERS ---
     createButton({ id: 'btn-container-open', label: 'Open', command: 'open %n', setId: 'inline-containers', color: '#3b82f6' }),
@@ -30,7 +35,8 @@ export const WORLD_BUTTONS = [
 
     // --- ROOM NAMES ---
     createButton({ id: 'btn-watch', label: 'Watch', command: 'watch', setId: 'cat-room', color: '#38bdf8' }),
-    createButton({ id: 'btn-camp', label: 'Camp', command: 'camp', setId: 'cat-room', color: '#22c55e' })
+    createButton({ id: 'btn-camp', label: 'Camp', command: 'camp', setId: 'cat-room', color: '#22c55e' }),
+    createButton({ id: 'btn-camp-rent', label: 'Camp Rent', command: 'camp rent', setId: 'cat-room', color: '#10b981' })
 ];
 
 

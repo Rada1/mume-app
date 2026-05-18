@@ -12,6 +12,59 @@
     overflow: visible;
 }
 
+.tactical-line-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    pointer-events: auto;
+    overflow: visible;
+}
+
+.line-cluster-aux {
+    position: absolute;
+    right: calc(100% + 10px);
+    top: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    transform: translateY(-50%);
+    z-index: 3;
+}
+
+.line-cluster-aux .custom-btn {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+    min-height: 26px !important;
+    border-radius: 50% !important;
+    background: rgba(48, 45, 52, 0.94) !important;
+    border-color: rgba(255, 255, 255, 0.18) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.38), inset 0 0 9px rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.line-cluster-aux .custom-btn:active,
+.line-cluster-aux .custom-btn.is-swiping {
+    transform: scale(1.18) !important;
+    background: rgba(64, 60, 69, 0.98) !important;
+    box-shadow: 0 0 18px rgba(255, 255, 255, 0.18), inset 0 0 12px rgba(255, 255, 255, 0.12) !important;
+}
+
+.line-cluster-aux .custom-btn .button-label {
+    font-size: 0.48rem !important;
+    max-width: 22px;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.78) !important;
+    letter-spacing: 0;
+}
+
 /* Default vertical layout for Desktop and Landscape */
 .line-cluster-container {
     position: absolute;
@@ -136,6 +189,11 @@
     overflow: visible;
 }
 
+.mobile-tactical-buttons-persistent .tactical-line-wrapper {
+    width: fit-content;
+    margin: 0 auto;
+}
+
 .mobile-tactical-buttons-persistent .line-cluster {
     position: relative;
     flex-direction: row !important;
@@ -152,6 +210,18 @@
     backdrop-filter: none !important;
     overflow: visible !important;
     z-index: 1;
+}
+
+.mobile-tactical-buttons-persistent .line-cluster-aux .custom-btn {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+}
+
+.mobile-tactical-buttons-persistent .line-cluster-aux .custom-btn .button-label {
+    font-size: 0.38rem !important;
+    max-width: 18px;
 }
 
 .mobile-tactical-buttons-persistent .line-cluster .custom-btn {
@@ -217,6 +287,10 @@
     width: 100%;
     display: flex;
     justify-content: center;
+}
+
+.desktop-tactical-buttons-persistent .tactical-line-wrapper {
+    width: fit-content;
 }
 
 

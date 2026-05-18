@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { CustomButton, MessageType, PopoverState, InlineCategoryConfig, GameEntity, ParleyState, GmcpOccupant, CharacterEntry, CustomTraitConfig } from '../../types';
+import { CharacterInfo, CustomButton, MessageType, PopoverState, InlineCategoryConfig, GameEntity, ParleyState, GmcpOccupant, CharacterEntry, CustomTraitConfig } from '../../types';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
 import { getButtonIdsForTraits, getCategoryConfig, getResolvedTraitSections, getTraitsForName as getInlineActionTraits } from '../../utils/inlineActionModel';
 import { getInlineCategoryAxes, getInlineCategoryLabel, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
@@ -56,6 +56,7 @@ interface StandardMenuProps {
     accountState?: import('../../types').AccountState;
     setAccountState?: React.Dispatch<React.SetStateAction<import('../../types').AccountState>>;
     direction?: string;
+    characterInfo?: CharacterInfo;
 }
 
 const NPC_SUBCATEGORIES = ['npc-mount', 'npc-shopkeeper', 'npc-innkeeper', 'npc-guildmaster'];
@@ -72,7 +73,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         setFavorites, keywordOverrides, parley, setParley, whoList, executeCommand, inlineCategories, customTraits, setCustomTraits,
         handleTabClick, setGearTab, setPlayersTab, setCharTab,
         refreshLogHighlights, triggerHaptic, openKeywordEdit, roomNpcs,
-        entities, selectedObjectIds, clearObjectSelection, accountState, setAccountState, direction,
+        entities, selectedObjectIds, clearObjectSelection, accountState, setAccountState, direction, characterInfo,
         themeColor
     } = props;
 
@@ -126,7 +127,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     let seenCommandsSize = 0;
     const renderActionButtons = () => {
         const seenCommands = new Set<string>();
-        const filterDeps = { buttons, inlineCategories: inlineCategories || [], roomNpcs, entities };
+        const filterDeps = { buttons, inlineCategories: inlineCategories || [], roomNpcs, entities, characterInfo };
 
         const favoritedButtons = buttons.filter(b => {
             const isValid = isButtonValidForEntity(b, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);
@@ -213,7 +214,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
             </div>
 
             {isChoosingCategory && setCustomTraits && (
-                <TraitToggleSection popoverState={popoverState} customTraits={customTraits || []} setCustomTraits={setCustomTraits} activeTraits={resolvedTraitIds} keywordTraits={keywordTraitIds} triggerHaptic={triggerHaptic} addMessage={addMessage} refreshLogHighlights={refreshLogHighlights} />
+                <TraitToggleSection popoverState={popoverState} customTraits={customTraits || []} setCustomTraits={setCustomTraits} activeTraits={resolvedTraitIds} keywordTraits={keywordTraitIds} triggerHaptic={triggerHaptic} addMessage={addMessage} refreshLogHighlights={refreshLogHighlights} characterInfo={characterInfo} />
             )}
 
             {isTargetable && !isChoosingCategory && (

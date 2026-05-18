@@ -131,6 +131,10 @@ export interface GmcpOccupant {
     fighting?: string | number | null;
     labels?: string[];
     flags?: string[];
+    // Client-side tag: the room number this occupant was last reported in.
+    // Used to evict stale occupants on room change without wiping every entry,
+    // which would race with Room.Chars.Add for followers entering the new room.
+    _roomNum?: number | string | null;
 }
 
 export interface GmcpRoomPlayers extends Array<string | GmcpOccupant> {}

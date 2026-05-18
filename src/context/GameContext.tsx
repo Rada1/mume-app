@@ -209,7 +209,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const captureOwnerDrawer = useRef<any>('none');
     const nextCommandIsSilent = useRef(false);
 
-    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.isImmersionMode, s.fontFamily, s.isTimestampEnabled, s.isNewbieMode);
+    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.theme === 'immersion', s.fontFamily, s.isTimestampEnabled, s.isNewbieMode);
     const mode = useModeStore();
     const session = useSessionStore();
     const { sessionMode, setSessionMode, replayHUDState, setReplayHUDState, isSilentReplay } = session;
@@ -588,6 +588,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         abilities: s.abilities,
         characterClass: s.characterClass,
         characterName: s.characterName,
+        characterInfo: v.characterInfo,
         target: v.target,
         inlineCategories: s.inlineCategories,
         practiceData: practice.practiceData
@@ -915,7 +916,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         sessionMode, replayer, isSpectateMode: s.isSpectateMode, setIsSpectateMode: mode.setIsSpectating,
         showSpectatePromptInLog: settingsStore.showSpectatePromptInLog,
         setShowSpectatePromptInLog: settingsStore.setShowSpectatePromptInLog,
-        isImmersionMode: settingsStore.isImmersionMode, setIsImmersionMode: settingsStore.setIsImmersionMode,
+        isImmersionMode: settingsStore.theme === 'immersion',
         isBloomEnabled: settingsStore.isBloomEnabled, setIsBloomEnabled: settingsStore.setIsBloomEnabled,
         isHighlighterEnabled: true, setIsHighlighterEnabled: (v) => {}, // Placeholder
         isTimestampEnabled: settingsStore.isTimestampEnabled, setIsTimestampEnabled: settingsStore.setIsTimestampEnabled,

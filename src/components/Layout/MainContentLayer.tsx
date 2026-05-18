@@ -160,14 +160,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const { getLightingIcon, getWeatherIcon } = env;
     const { isMobile, isLandscape } = viewport;
 
-    const onResetMap = () => {
-        triggerHaptic(20);
-        btn.setUiPositions((prev: any) => ({
-            ...prev,
-            mapper: { x: undefined, y: 75, w: 320, h: 320, scale: 1 }
-        }));
-    };
-
     const { activeView } = useModeStore();
 
     return (
@@ -176,7 +168,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 isLandscape={isLandscape}
                 getLightingIcon={getLightingIcon}
                 getWeatherIcon={getWeatherIcon}
-                onResetMap={onResetMap}
             />
             <div className="shop-panel-wrap">
                 <ShopPanel />

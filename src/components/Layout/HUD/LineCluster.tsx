@@ -45,7 +45,8 @@ export const LineCluster: React.FC<LineClusterProps> = ({
 
     // Sort them to ensure consistent layout if needed, but for now we'll just use the order they come in
     // or we can sort by ID if we want a specific order (e.g. tactical-ranger, tactical-cleric, etc.)
-    const sortedButtons = [...tacticalButtons].sort((a, b) => {
+    const charmieButton = tacticalButtons.find(button => button.id === 'tactical-charmie');
+    const sortedButtons = tacticalButtons.filter(button => button.id !== 'tactical-charmie').sort((a, b) => {
         const order = ['tactical-ranger', 'tactical-cleric', 'tactical-thief', 'tactical-warrior', 'tactical-mage', 'tactical-action', 'tactical-doors'];
         return order.indexOf(a.id) - order.indexOf(b.id);
     });
@@ -53,43 +54,47 @@ export const LineCluster: React.FC<LineClusterProps> = ({
     // Check if we should be hidden (redundant with Layer but safe)
     if (isMobile && !isLandscape && viewport.isKeyboardOpen && !isEditMode) return null;
 
-    return (
-        <div className="line-cluster">
-            {sortedButtons.map((button) => {
-                const id = button.id;
-                // NO STAT BARS IN LINE CLUSTER
+    const renderButton = (button: any, variant: 'default' | 'diamond', className: string) => (
+        <GameButton
+            key={button.id}
+            button={button}
+            className={className}
+            variant={variant}
+            useDefaultPositioning={false}
+            isEditMode={isEditMode}
+            isGridEnabled={isGridEnabled}
+            gridSize={gridSize}
+            isSelected={selectedButtonIds.has(button.id)}
+            dragState={dragState}
+            handleDragStart={handleDragStart}
+            handleButtonClick={handleButtonClick}
+            wasDraggingRef={wasDraggingRef}
+            triggerHaptic={triggerHaptic}
+            setPopoverState={setPopoverState}
+            setEditButton={(b) => { setEditingButtonId(b.id); if (!selectedButtonIds.has(b.id)) setSelectedIds(new Set([b.id])); }}
+            activePrompt={activePrompt}
+            executeCommand={executeCommand}
+            setCommandPreview={setCommandPreview}
+            setHeldButton={setHeldButton}
+            heldButton={heldButton}
+            joystick={joystick}
+            target={target}
+            setActiveSet={setActiveSet}
+            setButtons={setButtons}
+            isMobile={isMobile}
+        />
+    );
 
-                return (
-                    <GameButton
-                        key={id}
-                        button={button}
-                        className={`line-btn ${id}`}
-                        variant="diamond"
-                        useDefaultPositioning={false}
-                        isEditMode={isEditMode}
-                        isGridEnabled={isGridEnabled}
-                        gridSize={gridSize}
-                        isSelected={selectedButtonIds.has(button.id)}
-                        dragState={dragState}
-                        handleDragStart={handleDragStart}
-                        handleButtonClick={handleButtonClick}
-                        wasDraggingRef={wasDraggingRef}
-                        triggerHaptic={triggerHaptic}
-                        setPopoverState={setPopoverState}
-                        setEditButton={(b) => { setEditingButtonId(b.id); if (!selectedButtonIds.has(b.id)) setSelectedIds(new Set([b.id])); }}
-                        activePrompt={activePrompt}
-                        executeCommand={executeCommand}
-                        setCommandPreview={setCommandPreview}
-                        setHeldButton={setHeldButton}
-                        heldButton={heldButton}
-                        joystick={joystick}
-                        target={target}
-                        setActiveSet={setActiveSet}
-                        setButtons={setButtons}
-                        isMobile={isMobile}
-                    />
-                );
-            })}
+    return (
+        <div className="tactical-line-wrapper">
+            {charmieButton && (
+                <div className="line-cluster-aux">
+                    {renderButton(charmieButton, 'default', 'line-btn tactical-charmie auxiliary-charmie')}
+                </div>
+            )}
+            <div className="line-cluster">
+                {sortedButtons.map((button) => renderButton(button, 'diamond', `line-btn ${button.id}`))}
+            </div>
         </div>
     );
 };

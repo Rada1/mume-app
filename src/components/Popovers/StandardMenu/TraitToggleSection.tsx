@@ -1,7 +1,8 @@
 import React from 'react';
-import { CustomTraitConfig, PopoverState, MessageType } from '../../../types';
+import { CharacterInfo, CustomTraitConfig, PopoverState, MessageType } from '../../../types';
 import { useButtonStore } from '../../../stores/useButtonStore';
 import { DEFAULT_TRAIT_CONFIGS, TraitConfig, inlineConfigToTrait, isTraitConfigRecord, toTraitId } from '../../../utils/inlineActionModel';
+import { isButtonEligibleForCharacter } from '../../../utils/characterEligibility';
 
 interface TraitToggleSectionProps {
     popoverState: PopoverState;
@@ -12,6 +13,7 @@ interface TraitToggleSectionProps {
     triggerHaptic?: (ms: number) => void;
     addMessage?: (type: MessageType, content: string) => void;
     refreshLogHighlights?: () => void;
+    characterInfo?: CharacterInfo;
 }
 
 export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
@@ -22,7 +24,8 @@ export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
     keywordTraits,
     triggerHaptic,
     addMessage,
-    refreshLogHighlights
+    refreshLogHighlights,
+    characterInfo
 }) => {
     const [newTraitName, setNewTraitName] = React.useState('');
     const { rawButtons } = useButtonStore();
@@ -36,9 +39,11 @@ export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
             .filter(isTraitConfigRecord)
             .map(inlineConfigToTrait);
         const byId = new Map<string, TraitConfig>();
-        [...DEFAULT_TRAIT_CONFIGS, ...userTraits].forEach(trait => byId.set(trait.id, trait));
+        [...DEFAULT_TRAIT_CONFIGS, ...userTraits]
+            .filter(trait => isButtonEligibleForCharacter(trait.requirement, characterInfo))
+            .forEach(trait => byId.set(trait.id, trait));
         return Array.from(byId.values()).sort((a, b) => a.label.localeCompare(b.label));
-    }, [customTraits]);
+    }, [customTraits, characterInfo]);
 
     // --- Logic Section ---
     const handleToggle = (trait: TraitConfig) => {

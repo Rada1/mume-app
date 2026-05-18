@@ -19,6 +19,8 @@ export const fireHeldCommandAtMapOccupant = (
 
     const context = occupantHit.commandTarget || occupantHit.name;
     const sourceButton = deps.btn?.buttons?.find((button: any) => button.id === activeHeldButton.id);
+    if (sourceButton?.actionType === 'modifier') return false;
+
     if (sourceButton) {
         const resolved = getButtonCommand(
             sourceButton,
@@ -29,7 +31,8 @@ export const fireHeldCommandAtMapOccupant = (
             activeHeldButton.modifiers || [],
             deps.joystick,
             deps.target,
-            !!deps.joystick?.isTargetModifierActive
+            !!deps.joystick?.isTargetModifierActive,
+            activeHeldButton.commandPrefixes || []
         );
 
         if (resolved?.cmd) {
@@ -45,6 +48,7 @@ export const fireHeldCommandAtMapOccupant = (
     if (!finalCmd) return false;
 
     finalCmd = finalCmd.includes('%n') ? finalCmd.replace(/%n/g, context) : `${finalCmd} ${context}`;
+    finalCmd = [...(activeHeldButton.commandPrefixes || []), finalCmd].filter(Boolean).join(' ');
     deps.executeCommand(finalCmd, false, false, false, false, { fromUi: true });
     deps.setHeldButton?.((prev: any) => prev ? { ...prev, lastTargetFireAt: Date.now() } : null);
     deps.triggerHaptic?.(60);

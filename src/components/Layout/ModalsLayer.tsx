@@ -117,6 +117,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         viewport,
         fontFamily,
         setFontFamily,
+        characterInfo,
     } = useGame() as any;
 
     const { setTarget } = useVitals();
@@ -339,6 +340,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 keywordOverrides={keywordOverrides}
                 accountState={accountState}
                 setAccountState={setAccountState}
+                characterInfo={characterInfo}
                 handleTabClick={handleTabClick}
                 setGearTab={setGearTab}
                 setPlayersTab={setPlayersTab}

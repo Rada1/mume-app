@@ -6,7 +6,7 @@ import { formatNpcKeywordTarget, sanitizeGameTarget } from '../../utils/gameUtil
 import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
 import { useUIStore } from '../../stores/useUIStore';
 
-export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>) => {
+export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>, heldBtnFiredRef?: React.MutableRefObject<boolean>) => {
     const {
         executeCommand, setInput, setTarget, triggerHaptic, btn, joystick, target,
         setPopoverState, popoverState, viewport, ui, heldButton, heldButtonRef, setHeldButton,
@@ -221,20 +221,24 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         const activeHeldButton = heldButtonRef?.current || heldButton;
         const isTargetableInline = targetEl.getAttribute('data-targetable') !== 'false';
 
-        if (isTargetableInline && activeHeldButton && !activeHeldButton.didFire && !activeHeldButton.id.startsWith('log-inline-')) {
+        const sourceButton = activeHeldButton
+            ? btn.buttons.find(b => b.id === activeHeldButton.id)
+            : null;
+
+        if (isTargetableInline && activeHeldButton && sourceButton?.actionType !== 'modifier' && !activeHeldButton.didFire && !activeHeldButton.id.startsWith('log-inline-')) {
             const flashTargetEl = () => {
                 targetEl.classList.add('pressed');
                 setTimeout(() => targetEl.classList.remove('pressed'), 350);
             };
 
-            const sourceButton = btn.buttons.find(b => b.id === activeHeldButton.id);
             if (sourceButton) {
-                const resolved = getButtonCommand(sourceButton, activeHeldButton.dx || 0, activeHeldButton.dy || 0, contextStr, undefined, activeHeldButton.modifiers || [], joystick, target, isLong);
+                const resolved = getButtonCommand(sourceButton, activeHeldButton.dx || 0, activeHeldButton.dy || 0, contextStr, undefined, activeHeldButton.modifiers || [], joystick, target, isLong, activeHeldButton.commandPrefixes || []);
                 if (resolved?.cmd) {
                     lastCommandContextRef.current = { context: rawContextStr, displayText: targetEl.innerText.trim() };
                     flashTargetEl();
                     executeCommand(resolved.cmd);
-                    setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                    setHeldButton((prev: any) => prev ? { ...prev, lastTargetFireAt: Date.now() } : null);
+                    if (heldBtnFiredRef) heldBtnFiredRef.current = true;
                     triggerHaptic(60);
                     return;
                 }
@@ -247,11 +251,13 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                     if (finalCmd.includes('%n')) finalCmd = finalCmd.replace(/%n/g, contextStr);
                     else finalCmd = `${finalCmd} ${contextStr}`;
                 }
+                finalCmd = [...(activeHeldButton.commandPrefixes || []), finalCmd].filter(Boolean).join(' ');
 
                 lastCommandContextRef.current = { context: rawContextStr, displayText: targetEl.innerText.trim() };
                 flashTargetEl();
                 executeCommand(finalCmd);
-                setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                setHeldButton((prev: any) => prev ? { ...prev, lastTargetFireAt: Date.now() } : null);
+                if (heldBtnFiredRef) heldBtnFiredRef.current = true;
                 triggerHaptic(60);
                 return;
             }
@@ -266,6 +272,11 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 triggerHaptic(60);
                 return;
             }
+        }
+
+        if (heldBtnFiredRef?.current) {
+            heldBtnFiredRef.current = false;
+            return;
         }
 
         if (action === 'menu') {

@@ -31,8 +31,8 @@
 .log-background-mask.top {
     top: 0;
     height: 100dvh;
-    mask-image: linear-gradient(to bottom, black 0%, black 35%, transparent 55%);
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 35%, transparent 55%);
+    mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 75%);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 75%);
     transition: opacity 0.5s ease-in-out;
 }
 
@@ -52,8 +52,10 @@
     z-index: 0;
     mix-blend-mode: luminosity;
     opacity: 0.3;
-    filter: blur(5px) brightness(0.85) contrast(1.1);
-    
+    filter: blur(3px) brightness(0.85) contrast(1.1);
+    mask-image: linear-gradient(to top, black 0%, black 35%, transparent 65%);
+    -webkit-mask-image: linear-gradient(to top, black 0%, black 35%, transparent 65%);
+
     /* Breathing Animation */
     transform-origin: bottom;
     animation: breathing-stretch 5s ease-in-out infinite;
@@ -83,8 +85,8 @@
         right: 0;
         background-position: center bottom;
         /* Fade in from its own top edge (the midpoint of the log) */
-        mask-image: linear-gradient(to top, black 70%, transparent 100%);
-        -webkit-mask-image: linear-gradient(to top, black 70%, transparent 100%);
+        mask-image: linear-gradient(to top, black 50%, transparent 90%);
+        -webkit-mask-image: linear-gradient(to top, black 50%, transparent 90%);
         opacity: 0.35;
         filter: blur(2px) brightness(0.8) contrast(1.1);
         z-index: 0;
@@ -292,8 +294,8 @@
 .lighting-moon::after {
     background: radial-gradient(
         circle at 50% 15%,
-        rgba(130, 170, 255, 0.18) 0%,
-        rgba(90, 130, 255, 0.06) 38%,
+        rgba(130, 170, 255, 0.32) 0%,
+        rgba(90, 130, 255, 0.12) 38%,
         transparent 75%
     );
 }
@@ -316,7 +318,7 @@
 }
 
 .lighting-moon {
-    filter: saturate(1.4) contrast(1.1) brightness(0.75);
+    filter: saturate(1.5) contrast(1.1) brightness(0.85);
 }
 
 .lighting-inner {
@@ -347,16 +349,16 @@
 }
 
 .lighting-moon .lighting-inner {
-    background: radial-gradient(circle at 50% 15%, rgba(100, 150, 255, 0.07), rgba(70, 100, 255, 0.02) 35%, transparent 80%),
-        radial-gradient(circle at 50% 55%, rgba(60, 90, 255, 0.04), transparent 62%),
-        linear-gradient(to bottom, rgba(50, 80, 255, 0.02), transparent);
+    background: radial-gradient(circle at 50% 15%, rgba(100, 150, 255, 0.14), rgba(70, 100, 255, 0.05) 35%, transparent 80%),
+        radial-gradient(circle at 50% 55%, rgba(60, 90, 255, 0.08), transparent 62%),
+        linear-gradient(to bottom, rgba(50, 80, 255, 0.05), transparent);
     animation: light-drift-moon 50s linear infinite alternate;
 }
 
 .lighting-artificial .lighting-inner {
     /* Positioned at the bottom center to glow from behind the input bar - intensified */
     background: radial-gradient(circle at 50% 95%, rgba(255, 140, 40, 0.14) 0%, rgba(255, 80, 0, 0.06) 50%, transparent 90%);
-    animation: torch-flicker 3s infinite alternate cubic-bezier(0.4, 0, 0.2, 1), light-drift-torch 8s ease-in-out infinite alternate;
+    animation: light-drift-torch 8s ease-in-out infinite alternate;
 }
 
 .is-mobile .lighting-artificial .lighting-inner {
@@ -675,7 +677,7 @@
     box-shadow: 0 0 20px 5px rgba(255, 140, 0, 0.1);
     z-index: 4;
     pointer-events: none;
-    animation: lantern-flicker 3s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+    animation: none;
     mix-blend-mode: screen;
 }
 

@@ -13,8 +13,8 @@ export interface UseButtonGesturesProps {
     handleDragStart: (e: React.PointerEvent, id: string, type: 'move' | 'resize' | 'cluster' | 'cluster-resize') => void;
     wasDraggingRef: React.RefObject<boolean>;
     triggerHaptic: (ms: number) => void;
-    setHeldButton: React.Dispatch<React.SetStateAction<{ id: string, baseCommand: string, longCommand?: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null>>;
-    heldButton: { id: string, baseCommand: string, longCommand?: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null;
+    setHeldButton: React.Dispatch<React.SetStateAction<{ id: string, baseCommand: string, longCommand?: string, modifiers: string[], commandPrefixes?: string[], dx?: number, dy?: number, didFire?: boolean, lastTargetFireAt?: number, initialX?: number, initialY?: number } | null>>;
+    heldButton: { id: string, baseCommand: string, longCommand?: string, modifiers: string[], commandPrefixes?: string[], dx?: number, dy?: number, didFire?: boolean, lastTargetFireAt?: number, initialX?: number, initialY?: number } | null;
     joystick: { isActive: boolean, currentDir: string | null, isTargetModifierActive: boolean, setIsJoystickConsumed: (val: boolean) => void, setIsSwipeWheelHidden?: (val: boolean) => void };
     target: string | null;
     setCommandPreview: (cmd: string | null) => void;
@@ -64,6 +64,12 @@ export const useButtonGestures = ({
     setRayParams,
     isMobile
 }: UseButtonGesturesProps) => {
+
+    const getNextCommandPrefixes = useCallback((prev?: { commandPrefixes?: string[] } | null) => {
+        const prefixes = prev?.commandPrefixes || [];
+        if (button.actionType !== 'modifier') return prefixes;
+        return prefixes.includes(button.command) ? prefixes : [...prefixes, button.command];
+    }, [button.actionType, button.command]);
 
     // Helper to update ray params easily
     const updateRay = useCallback((angle: number, length: number, opacity: number, color?: string) => {
@@ -127,6 +133,7 @@ export const useButtonGestures = ({
                     baseCommand: button.command,
                     longCommand: button.longCommand,
                     modifiers: [],
+                    commandPrefixes: getNextCommandPrefixes(prev),
                     dx: 0,
                     dy: 0,
                     didFire: false,
@@ -138,7 +145,7 @@ export const useButtonGestures = ({
             el.style.setProperty('--cancel-opacity', '0');
             el.style.setProperty('--cancel-scale', '0');
         }
-    }, [isEditMode, handleDragStart, button, setWheelPos, wasDraggingRef, triggerHaptic, setHeldButton, initAudio, updateRay]);
+    }, [isEditMode, handleDragStart, button, setWheelPos, wasDraggingRef, triggerHaptic, setHeldButton, initAudio, updateRay, getNextCommandPrefixes]);
 
     // --- Gesture Recording & Feedback ---
     const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -181,6 +188,7 @@ export const useButtonGestures = ({
                     baseCommand: button.command, 
                     longCommand: button.longCommand, 
                     modifiers: prev?.modifiers || [], 
+                    commandPrefixes: getNextCommandPrefixes(prev),
                     dx, 
                     dy,
                     didFire: false
@@ -197,7 +205,7 @@ export const useButtonGestures = ({
         const distVal = Math.sqrt(dxVal * dxVal + dyVal * dyVal);
 
         const isLong = joystick.isTargetModifierActive;
-        const preview = getButtonCommand(button, dxVal, dyVal, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
+        const preview = getButtonCommand(button, dxVal, dyVal, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
         setCommandPreview(preview?.cmd || null);
         if (preview?.cmd) {
             document.documentElement.style.setProperty(
@@ -288,7 +296,7 @@ export const useButtonGestures = ({
         const rayLength = isDial ? 140 : distVal + 55;
         updateRay(snappedAngle, rayLength, shouldShowRay ? 1 : 0, rayColor);
 
-    }, [isEditMode, heldButton, button, activeDir, setActiveDir, setCommandPreview, wasDraggingRef, setHeldButton, joystick, target, setIsCancelling, triggerHaptic, setPopoverState, isSoundEnabled, playClickSound, updateRay, isMobile]);
+    }, [isEditMode, heldButton, button, activeDir, setActiveDir, setCommandPreview, wasDraggingRef, setHeldButton, joystick, target, setIsCancelling, triggerHaptic, setPopoverState, isSoundEnabled, playClickSound, updateRay, isMobile, getNextCommandPrefixes]);
 
     // --- Execution & Termination ---
     const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -302,6 +310,28 @@ export const useButtonGestures = ({
         if (heldButton?.id === button.id && heldButton.didFire) {
             setHeldButton(null);
             el._startX = null; el._startY = null; el._startTime = null; el._maxDist = 0;
+            return;
+        }
+
+        if (heldButton?.id === button.id && heldButton.lastTargetFireAt && Date.now() - heldButton.lastTargetFireAt < 1200) {
+            setHeldButton(null);
+            setCommandPreview(null);
+            document.documentElement.style.removeProperty('--preview-glow-color');
+            setActiveDir(null);
+            setIsCancelling(false);
+            updateRay(0, 0, 0);
+            el._startX = null; el._startY = null; el._startTime = null; el._maxDist = 0;
+            return;
+        }
+
+        if (heldButton && heldButton.id !== button.id) {
+            el._startX = null;
+            el._startY = null;
+            el._startTime = null;
+            el._maxDist = 0;
+            el._didFire = false;
+            el.style.setProperty('--cancel-opacity', '0');
+            el.style.setProperty('--cancel-scale', '0');
             return;
         }
 
@@ -319,7 +349,7 @@ export const useButtonGestures = ({
         const finalDx = isReturnToCenter ? 0 : dx;
         const finalDy = isReturnToCenter ? 0 : dy;
 
-        const previewCmd = getButtonCommand(button, finalDx, finalDy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
+        const previewCmd = getButtonCommand(button, finalDx, finalDy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
 
         setHeldButton(null);
         setCommandPreview(null);
@@ -343,6 +373,8 @@ export const useButtonGestures = ({
         const distToCancelBubble = Math.sqrt(Math.pow(currentX - cancelX, 2) + Math.pow(currentY - cancelY, 2));
 
         if (finalIsCancelling || distToCancelBubble < 45) return;
+
+        if (button.actionType === 'modifier') return;
 
         if (previewCmd && previewCmd.cmd && previewCmd.cmd.trim() !== '') {
             if (previewCmd.actionType === 'nav') {
@@ -423,6 +455,18 @@ export const useButtonGestures = ({
             && !heldButton.didFire
             && (Math.abs(heldButton.dx || 0) > 15 || Math.abs(heldButton.dy || 0) > 15);
         
+        if (heldButton && heldButton.id !== button.id) {
+            el._wasInCancelZone = false;
+            el.style.setProperty('--ray-opacity', '0');
+            el.style.setProperty('--cancel-opacity', '0');
+            el.style.setProperty('--cancel-scale', '0');
+            el._startX = null;
+            el._startY = null;
+            el._startTime = null;
+            el._maxDist = 0;
+            return;
+        }
+
         if (!isActiveSwipeHold) {
             setHeldButton(null);
         }

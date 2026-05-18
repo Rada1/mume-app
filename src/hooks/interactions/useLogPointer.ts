@@ -3,7 +3,7 @@ import { InteractionDeps } from '../useInteractionHandlers';
 import { useLogPointerDown } from './useLogPointerDown';
 import { useLogPointerUp } from './useLogPointerUp';
 
-export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>) => {
+export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>, heldBtnFiredRef?: React.MutableRefObject<boolean>) => {
     const {
         setHeldButton, setCommandPreview, setUI,
         viewport, heldButton, initAudio
@@ -15,7 +15,7 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
     const isShopItemRef = useRef(false);
 
     const { handleLogPointerDown: internalDown } = useLogPointerDown(
-        deps, lookModFiredRef, logLongPressTimerRef, longPressJustFiredRef
+        deps, lookModFiredRef, logLongPressTimerRef, longPressJustFiredRef, heldBtnFiredRef
     );
     const { handleLogPointerUp: internalUp } = useLogPointerUp(logLongPressTimerRef);
 
@@ -58,6 +58,9 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
         window.addEventListener('pointercancel', handleGlobalUp);
 
         if (viewport.isMobile && targetEl && targetEl.getAttribute('data-targetable') !== 'false') {
+            if (heldButton && !heldButton.id.startsWith('log-inline-')) {
+                return;
+            }
             if (heldButton && heldButton.id !== ('log-inline-' + (targetEl.getAttribute('data-id') || '')) && (Math.abs(heldButton.dx || 0) > 15 || Math.abs(heldButton.dy || 0) > 15)) {
                 return;
             }

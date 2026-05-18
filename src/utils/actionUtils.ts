@@ -1,12 +1,19 @@
-import { CustomButton, InlineCategoryConfig, GameEntity, EntityCapability, GmcpOccupant, EntityLocation } from '../types';
+/**
+ * @file actionUtils.ts
+ * @description Filters inline action buttons by entity context and character eligibility.
+ */
+
+import { CustomButton, InlineCategoryConfig, GameEntity, EntityCapability, GmcpOccupant, EntityLocation, CharacterInfo } from '../types';
 import { getButtonIdsForTraits, getResolvedTraitSections } from './inlineActionModel';
 import { getInlineCategoryAxes, normalizeInlineCategoryId } from './inlineCategoryAxes';
+import { isButtonEligibleForCharacter } from './characterEligibility';
 
 export interface ActionFilterDeps {
     buttons: CustomButton[];
     inlineCategories?: InlineCategoryConfig[];
     roomNpcs?: (string | GmcpOccupant)[];
     entities: Record<string, GameEntity>;
+    characterInfo?: CharacterInfo;
 }
 
 /**
@@ -32,11 +39,15 @@ export function isButtonValidForEntity(
         entity?.name || context || null,
         inlineCategories || []
     );
-    const traitButtons = new Set(getButtonIdsForTraits(resolvedTraitSections.map(section => section.trait)));
+    const eligibleTraitSections = resolvedTraitSections.filter(section =>
+        isButtonEligibleForCharacter(section.trait.requirement, deps.characterInfo)
+    );
+    const traitButtons = new Set(getButtonIdsForTraits(eligibleTraitSections.map(section => section.trait)));
 
     // --- STEP 2: Main Set Validation ---
     // Resolved traits are authoritative for inline actions.
     if (!traitButtons.has(button.id)) return false;
+    if (!isButtonEligibleForCharacter(button.requirement, deps.characterInfo)) return false;
 
     // --- STEP 3: MUME Specific Rule Overrides ---
     // These rules prune buttons that are physically impossible in the current context

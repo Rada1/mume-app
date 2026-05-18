@@ -354,7 +354,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                         <button
                             type="button"
                             className="login-btn"
-                            onClick={() => onSend()}
+                            onClick={() => { triggerHaptic(40); onSend(); }}
                             onPointerDown={(e) => e.stopPropagation()}
                         >
                             Login

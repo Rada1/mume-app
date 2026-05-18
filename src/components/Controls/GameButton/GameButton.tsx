@@ -24,8 +24,8 @@ interface GameButtonProps {
     activePrompt: string | null;
     executeCommand: ExecuteCommand;
     setCommandPreview: (cmd: string | null) => void;
-    setHeldButton: React.Dispatch<React.SetStateAction<{ id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null>>;
-    heldButton: { id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null;
+    setHeldButton: React.Dispatch<React.SetStateAction<{ id: string, baseCommand: string, modifiers: string[], commandPrefixes?: string[], dx?: number, dy?: number, didFire?: boolean, lastTargetFireAt?: number, initialX?: number, initialY?: number } | null>>;
+    heldButton: { id: string, baseCommand: string, modifiers: string[], commandPrefixes?: string[], dx?: number, dy?: number, didFire?: boolean, lastTargetFireAt?: number, initialX?: number, initialY?: number } | null;
     joystick: { isActive: boolean, currentDir: string | null, isTargetModifierActive: boolean, setIsJoystickConsumed: (val: boolean) => void };
     target: string | null;
     setActiveSet: (setId: string) => void;
@@ -95,7 +95,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
     useEffect(() => {
         if (heldButton?.id === button.id && heldButton.dx !== undefined && heldButton.dy !== undefined) {
-            const preview = getButtonCommand(button, heldButton.dx, heldButton.dy, undefined, undefined, heldButton.modifiers, joystick, target, joystick.isActive);
+            const preview = getButtonCommand(button, heldButton.dx, heldButton.dy, undefined, undefined, heldButton.modifiers, joystick, target, joystick.isActive, heldButton.commandPrefixes);
             setCommandPreview(preview?.cmd || null);
         }
     }, [joystick.isActive, heldButton?.id, button.id, joystick.currentDir, joystick.isTargetModifierActive, target, setCommandPreview]);
@@ -109,7 +109,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
         const [dx, dy] = dirVectors[activeDir as string] || [0, 0];
         const result = getButtonCommand(button, dx, dy, undefined, 100,
             heldButton?.id === button.id ? (heldButton?.modifiers || []) : [],
-            joystick, target, true);
+            joystick, target, true,
+            heldButton?.id === button.id ? heldButton?.commandPrefixes : []);
         if (!result?.cmd?.trim()) return;
 
         triggerHaptic(40);

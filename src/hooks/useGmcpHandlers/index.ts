@@ -127,7 +127,8 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
 
     const { onRoomChars, onAddChar, onUpdateChar, onRemoveChar } = useGmcpOccupants({
         ...props,
-        lastRoomChangeTimeRef
+        lastRoomChangeTimeRef,
+        lastRoomNumRef
     });
 
     const { onGroupAdd, onGroupUpdate, onGroupRemove, onGroupSet } = useGmcpGroup({

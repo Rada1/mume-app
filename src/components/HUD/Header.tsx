@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, RefreshCw, X, FileText, User, Map as MapIcon } from 'lucide-react';
+import { Layers, Edit3, Settings, MoreVertical, FolderOpen, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, RefreshCw, X, FileText, User, Map as MapIcon } from 'lucide-react';
 import { LightingType, WeatherType } from '../../types';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { formatCompactNumber } from '../../utils/gameUtils';
@@ -11,12 +11,9 @@ interface HeaderProps {
     isLandscape?: boolean;
     getLightingIcon: () => React.ReactNode;
     getWeatherIcon: () => React.ReactNode;
-    onResetMap?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({
-    onResetMap
-}) => {
+const Header: React.FC<HeaderProps> = () => {
     const {
         lighting,
         weather,
@@ -38,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({
     const { spectateTarget, activeView, setActiveView } = mode;
     const { stats, setStats, target, setTarget, characterInfo } = useVitals();
     const {
-        ui, setUI, setIsSettingsOpen, setIsSetManagerOpen, setIsLibraryOpen, setPopoverState,
+        ui, setUI, setIsSettingsOpen, setIsLibraryOpen, setPopoverState,
         setSettingsTab, replayer
     } = useUI();
 
@@ -69,10 +66,9 @@ const Header: React.FC<HeaderProps> = ({
     };
 
     const effectiveShowControls = showControls;
-    const { activeSet, isEditMode, setIsEditMode, availableSets, setActiveSet } = btn;
+    const { activeSet, isEditMode, availableSets, setActiveSet } = btn;
     const teleportTargetsCount = teleportTargets.length;
     const onClearTarget = () => setTarget(null);
-    const onOpenSetManager = () => setIsSetManagerOpen(true);
     const onTeleportClick = () => {
         setPopoverState({
             type: 'teleport-manage',
@@ -461,22 +457,6 @@ const Header: React.FC<HeaderProps> = ({
                             {menuView === 'main' ? (
                                 <>
                                     <div
-                                        className={`dropdown-item ${isEditMode ? 'active' : ''}`}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setIsEditMode(!isEditMode);
-                                            setIsMenuOpen(false);
-                                        }}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
-                                                {isEditMode ? <Check size={16} color="var(--accent)" /> : <div style={{ width: '16px' }} />}
-                                            </div>
-                                            <span>{isEditMode ? 'Exit Design Mode' : 'Enter Design Mode'}</span>
-                                        </div>
-                                    </div>
-
-                                    <div
                                         className="dropdown-item"
                                         onClick={(e) => {
                                             e.stopPropagation();
@@ -489,30 +469,6 @@ const Header: React.FC<HeaderProps> = ({
                                                 <FileText size={16} />
                                             </div>
                                             <span>Session Library</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="menu-divider" />
-
-                                    <div className="menu-group" style={{ padding: '4px 0' }}>
-                                        <label style={{ marginLeft: '10px' }}>Active Button Set</label>
-                                        <div
-                                            className="dropdown-item"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setMenuView('availableSets');
-                                            }}
-                                            style={{ 
-                                                border: '1px solid var(--border-color, rgba(255,255,255,0.1))', 
-                                                background: 'var(--bg-panel, rgba(255,255,255,0.03))',
-                                                margin: '4px 10px',
-                                                borderRadius: '4px',
-                                                padding: '8px 10px'
-                                            }}
-                                        >
-                                            <Layers size={14} style={{ opacity: 0.7 }} />
-                                            <span style={{ flex: 1, fontWeight: 500 }}>{activeSet}</span>
-                                            <ChevronDown size={14} opacity={0.5} style={{ transform: 'rotate(-90deg)' }} />
                                         </div>
                                     </div>
 
@@ -601,41 +557,6 @@ const Header: React.FC<HeaderProps> = ({
                                             <span>Map Settings</span>
                                         </div>
                                     </div>
-
-                                    {isEditMode && (
-                                        <>
-                                            <div
-                                                className="dropdown-item"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    onOpenSetManager();
-                                                    setIsMenuOpen(false);
-                                                }}
-                                            >
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                    <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
-                                                        <Settings size={16} />
-                                                    </div>
-                                                    <span>Manage Button Sets</span>
-                                                </div>
-                                            </div>
-                                            <div
-                                                className="dropdown-item"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    if (onResetMap) onResetMap();
-                                                    setIsMenuOpen(false);
-                                                }}
-                                            >
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                    <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
-                                                        <RotateCcw size={16} />
-                                                    </div>
-                                                    <span>Reset Map Position</span>
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
 
                                     <div
                                         className="dropdown-item"

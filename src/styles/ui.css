@@ -38,7 +38,7 @@
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
     overflow: visible !important;
-    box-shadow: 0 0 15px rgba(var(--terrain-glow-rgb, 255, 255, 255), 0.35) !important;
+    box-shadow: 0 0 15px rgba(var(--terrain-glow-rgb, 255, 255, 255), 0.18) !important;
 }
 
 .mobile-header::after {

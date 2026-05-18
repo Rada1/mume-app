@@ -150,6 +150,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             console.log(`[useButtonClicks] Target combo fired: hiding swipe wheel`);
             joystick.setIsSwipeWheelHidden(true);
         }
+        const commandPrefixes = deps.heldButton?.commandPrefixes || [];
 
         if (button.actionType === 'nav' || button.actionType === 'menu') {
             const rect = targetEl?.getBoundingClientRect();
@@ -260,6 +261,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                 // For nested items, finalContext (e.g. '2.boots') is the exact target
                 executeCommand(`get ${finalContext} ${detectedParent}`, true, true, false, false, { fromUi: true });
             }
+            finalCmd = [...commandPrefixes, finalCmd].filter(Boolean).join(' ');
 
             // --- Optimistic Updates for Common Actions ---
             const firstWord = finalCmd.split(' ')[0].toLowerCase();

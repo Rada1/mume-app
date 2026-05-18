@@ -1,5 +1,5 @@
-import React from 'react';
-import { Settings2, Plus, Grid, Layout, Tag } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Settings2, Plus, Grid, Layout, Tag, Layers, Check, ChevronDown } from 'lucide-react';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { CategoryOverride, EntityKind } from '../../types';
 import CategoryTraitCards from './CategoryTraitCards';
@@ -13,6 +13,9 @@ interface ButtonSettingsProps {
     setIsGridEnabled: (val: boolean) => void;
     createButton: () => void;
     setIsSetManagerOpen: (val: boolean) => void;
+    activeSet: string;
+    availableSets: string[];
+    setActiveSet: (set: string) => void;
 }
 
 const getCategoryColor = (id: string, configs: CategoryOverride[], fallback: string): string =>
@@ -45,7 +48,10 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
     isGridEnabled,
     setIsGridEnabled,
     createButton,
-    setIsSetManagerOpen
+    setIsSetManagerOpen,
+    activeSet,
+    availableSets,
+    setActiveSet,
 }) => {
     const {
         playerColor, setPlayerColor,
@@ -59,6 +65,19 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
         customTraits, setCustomTraits,
     } = useSettingsStore();
 
+    const [isSetDropdownOpen, setIsSetDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+                setIsSetDropdownOpen(false);
+            }
+        };
+        if (isSetDropdownOpen) document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isSetDropdownOpen]);
+
     return (
         <div className="settings-section">
             {/* --- Button & UI Layout --- */}
@@ -66,6 +85,68 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                 <Layout size={18} /> Button &amp; UI Layout
             </h3>
 
+            {/* Active Button Set */}
+            <div className="setting-group" style={{ border: '1px solid var(--border-modal)', padding: '15px', borderRadius: '8px', marginBottom: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Active Button Set</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
+                            Select which button set is active on your HUD.
+                        </div>
+                    </div>
+                    <button
+                        className="btn-secondary"
+                        onClick={() => setIsSetManagerOpen(true)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', whiteSpace: 'nowrap' }}
+                    >
+                        <Settings2 size={16} /> Manage Sets
+                    </button>
+                </div>
+                <div ref={dropdownRef} style={{ position: 'relative', marginTop: '12px' }}>
+                    <div
+                        onClick={() => setIsSetDropdownOpen(o => !o)}
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '10px',
+                            padding: '8px 12px', borderRadius: '6px', cursor: 'pointer',
+                            border: '1px solid var(--accent)',
+                            background: 'rgba(var(--accent-rgb, 244,143,60), 0.08)',
+                            userSelect: 'none'
+                        }}
+                    >
+                        <Layers size={14} color="var(--accent)" />
+                        <span style={{ flex: 1, fontSize: '0.85rem', fontWeight: 600 }}>{activeSet}</span>
+                        <ChevronDown size={14} style={{ opacity: 0.6, transition: 'transform 0.2s', transform: isSetDropdownOpen ? 'rotate(180deg)' : 'none' }} />
+                    </div>
+                    {isSetDropdownOpen && (
+                        <div style={{
+                            position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, zIndex: 100,
+                            background: 'var(--bg-panel)', border: '1px solid var(--border-modal)',
+                            borderRadius: '6px', overflow: 'hidden',
+                            boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+                            maxHeight: '220px', overflowY: 'auto'
+                        }}>
+                            {availableSets.map(set => (
+                                <div
+                                    key={set}
+                                    onClick={() => { setActiveSet(set); setIsSetDropdownOpen(false); }}
+                                    style={{
+                                        display: 'flex', alignItems: 'center', gap: '10px',
+                                        padding: '9px 12px', cursor: 'pointer',
+                                        background: activeSet === set ? 'rgba(var(--accent-rgb, 244,143,60), 0.1)' : 'transparent',
+                                        borderBottom: '1px solid var(--border-modal)'
+                                    }}
+                                >
+                                    <Layers size={13} style={{ opacity: activeSet === set ? 1 : 0.35, color: activeSet === set ? 'var(--accent)' : undefined }} />
+                                    <span style={{ flex: 1, fontSize: '0.85rem', fontWeight: activeSet === set ? 600 : 400 }}>{set}</span>
+                                    {activeSet === set && <Check size={13} color="var(--accent)" />}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Design Mode */}
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isEditMode ? '15px' : 0 }}>
                     <div>
@@ -99,22 +180,13 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                            <button
-                                className="btn-secondary"
-                                onClick={createButton}
-                                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '8px' }}
-                            >
-                                <Plus size={16} /> New Button
-                            </button>
-                            <button
-                                className="btn-secondary"
-                                onClick={() => setIsSetManagerOpen(true)}
-                                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '8px' }}
-                            >
-                                <Settings2 size={16} /> Manage Sets
-                            </button>
-                        </div>
+                        <button
+                            className="btn-secondary"
+                            onClick={createButton}
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '8px', marginTop: '4px' }}
+                        >
+                            <Plus size={16} /> New Button
+                        </button>
                     </div>
                 )}
 
@@ -132,85 +204,85 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
 
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={playerColor} onChange={(e) => setPlayerColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                            <input type="color" value={playerColor} onChange={(e) => setPlayerColor(e.target.value)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Ally (Room)</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>GMCP room players</div>
-                            <CategoryTraitCards categoryId="cat-ally" kind="player" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                         </div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>GMCP room players</div>
+                        <CategoryTraitCards categoryId="cat-ally" kind="player" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={getCategoryColor('cat-ally-remote', categoryOverrides, playerColor)} onChange={(e) => setCategoryColor('cat-ally-remote', 'player', e.target.value, setCategoryOverrides)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                            <input type="color" value={getCategoryColor('cat-ally-remote', categoryOverrides, playerColor)} onChange={(e) => setCategoryColor('cat-ally-remote', 'player', e.target.value, setCategoryOverrides)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Ally (Who)</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Who-list players</div>
-                            <CategoryTraitCards categoryId="cat-ally-remote" kind="player" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                         </div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Who-list players</div>
+                        <CategoryTraitCards categoryId="cat-ally-remote" kind="player" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={enemyColor} onChange={(e) => setEnemyColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                            <input type="color" value={enemyColor} onChange={(e) => setEnemyColor(e.target.value)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Enemy</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus &amp; logs</div>
-                            <CategoryTraitCards categoryId="cat-enemy" kind="player" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                         </div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Inline menus &amp; logs</div>
+                        <CategoryTraitCards categoryId="cat-enemy" kind="player" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={neutralColor} onChange={(e) => setNeutralColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                            <input type="color" value={neutralColor} onChange={(e) => setNeutralColor(e.target.value)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Neutral</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus &amp; logs</div>
-                            <CategoryTraitCards categoryId="cat-neutral" kind="player" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                         </div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Inline menus &amp; logs</div>
+                        <CategoryTraitCards categoryId="cat-neutral" kind="player" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={targetColor} onChange={(e) => setTargetColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                            <input type="color" value={targetColor} onChange={(e) => setTargetColor(e.target.value)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Target</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Double-click menu</div>
-                            <CategoryTraitCards categoryId="cat-target" kind="none" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                         </div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Double-click menu</div>
+                        <CategoryTraitCards categoryId="cat-target" kind="none" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={npcColor} onChange={(e) => setNpcColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                            <input type="color" value={npcColor} onChange={(e) => setNpcColor(e.target.value)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>NPCs</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus &amp; logs</div>
-                            <CategoryTraitCards categoryId="cat-npc" kind="npc" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                         </div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Inline menus &amp; logs</div>
+                        <CategoryTraitCards categoryId="cat-npc" kind="npc" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={getCategoryColor('cat-room-object', categoryOverrides, objectColor.startsWith('rgba') ? '#fb923c' : objectColor)} onChange={(e) => setCategoryColor('cat-room-object', 'object', e.target.value, setCategoryOverrides)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                            <input type="color" value={getCategoryColor('cat-room-object', categoryOverrides, objectColor.startsWith('rgba') ? '#fb923c' : objectColor)} onChange={(e) => setCategoryColor('cat-room-object', 'object', e.target.value, setCategoryOverrides)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Object (Room)</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Items on the ground</div>
-                            <CategoryTraitCards categoryId="cat-room-object" kind="object" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                         </div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Items on the ground</div>
+                        <CategoryTraitCards categoryId="cat-room-object" kind="object" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={getCategoryColor('cat-inventory-object', categoryOverrides, objectColor.startsWith('rgba') ? '#fb923c' : objectColor)} onChange={(e) => setCategoryColor('cat-inventory-object', 'object', e.target.value, setCategoryOverrides)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                            <input type="color" value={getCategoryColor('cat-inventory-object', categoryOverrides, objectColor.startsWith('rgba') ? '#fb923c' : objectColor)} onChange={(e) => setCategoryColor('cat-inventory-object', 'object', e.target.value, setCategoryOverrides)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Object (Carried)</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inventory items</div>
-                            <CategoryTraitCards categoryId="cat-inventory-object" kind="object" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                         </div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Inventory items</div>
+                        <CategoryTraitCards categoryId="cat-inventory-object" kind="object" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={getCategoryColor('cat-worn-object', categoryOverrides, objectColor.startsWith('rgba') ? '#fb923c' : objectColor)} onChange={(e) => setCategoryColor('cat-worn-object', 'object', e.target.value, setCategoryOverrides)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                            <input type="color" value={getCategoryColor('cat-worn-object', categoryOverrides, objectColor.startsWith('rgba') ? '#fb923c' : objectColor)} onChange={(e) => setCategoryColor('cat-worn-object', 'object', e.target.value, setCategoryOverrides)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Object (Worn)</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Equipped items</div>
-                            <CategoryTraitCards categoryId="cat-worn-object" kind="object" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                         </div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Equipped items</div>
+                        <CategoryTraitCards categoryId="cat-worn-object" kind="object" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={roomColor} onChange={(e) => setRoomColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                            <input type="color" value={roomColor} onChange={(e) => setRoomColor(e.target.value)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Room Names</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Watch/camp actions, never tactical targets</div>
-                            <CategoryTraitCards categoryId="cat-room" kind="room" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                         </div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Watch/camp actions, never tactical targets</div>
+                        <CategoryTraitCards categoryId="cat-room" kind="room" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                     </div>
                 </div>
             </div>

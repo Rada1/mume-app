@@ -13,13 +13,16 @@ export const getButtonCommand = (
     modifiers: string[] = [],
     joystickState?: { currentDir: string | null, isTargetModifierActive: boolean },
     target?: string | null,
-    isLong?: boolean
+    isLong?: boolean,
+    commandPrefixes: string[] = []
 ) => {
     const dist = Math.sqrt(dx * dx + dy * dy);
     const isSwiped = dist > 15;
     const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
     // Cancellation is now handled via screen-absolute position in GameButton.tsx
+
+    if (button.actionType === 'modifier' && !isSwiped) return null;
 
     let cmd = (isLong && !isSwiped && (!joystickState || !joystickState.currentDir)) ? (button.longCommand || button.command || '') : (isSwiped ? '' : (button.command || ''));
     let actionType = (isLong && !isSwiped && button.longCommand && (!joystickState || !joystickState.currentDir)) ? (button.longActionType || 'command') : (button.actionType || 'command');
@@ -70,7 +73,7 @@ export const getButtonCommand = (
         }
     }
 
-    const finalCmd = (actionType === 'command') ? [cmd, ...finalMods, ...modifiers].filter(Boolean).join(' ') : cmd;
+    const finalCmd = (actionType === 'command') ? [...commandPrefixes, cmd, ...finalMods, ...modifiers].filter(Boolean).join(' ') : cmd;
     const modifierStr = finalMods.join(' ');
 
     if (!dir && joystickState?.currentDir) {

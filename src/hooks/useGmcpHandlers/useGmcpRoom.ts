@@ -138,9 +138,21 @@ export const useGmcpRoom = ({
             lastRoomChangeTimeRef.current = Date.now();
             
             // Clear occupants and items for the new room so that text processing
-            // doesn't use stale data from the previous room.
+            // doesn't use stale data from the previous room. Keep any occupants
+            // that have already been tagged with the new room number — these are
+            // followers whose Room.Chars.Add raced ahead of this Room.Info.
             setRoomItems?.(parseRoomItemsFromDescription(data.desc));
-            setRoomChars?.({});
+            const newRoomKey = roomNum != null ? String(roomNum) : null;
+            setRoomChars?.(prev => {
+                if (!newRoomKey) return {};
+                const next: Record<number, import('../../types').GmcpOccupant> = {};
+                Object.entries(prev).forEach(([key, occ]) => {
+                    if (occ._roomNum != null && String(occ._roomNum) === newRoomKey) {
+                        next[Number(key)] = occ;
+                    }
+                });
+                return next;
+            });
             
             // if (playMovementSound) {
             //     // Determine riding status: if spectating, we can check Room.Chars or fallback.

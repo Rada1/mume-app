@@ -1,7 +1,13 @@
+/**
+ * @file useButtonLogic.ts
+ * @description Filters and generates available buttons from character state.
+ */
+
 import { useMemo } from 'react';
-import { CustomButton, PracticeData } from '../types';
+import { CharacterInfo, CustomButton, PracticeData } from '../types';
 import { MAGE_SPELLS, CLERIC_SPELLS, WARRIOR_SKILLS, RANGER_SKILLS, THIEF_SKILLS, CLASS_MAPPINGS } from '../utils/spellLists';
 import { applyPracticeSwipeDefaults } from '../utils/swipeAutoPopulate';
+import { isButtonEligibleForCharacter } from '../utils/characterEligibility';
 const SPELL_CLASS_KEYS = new Set(['mage', 'cleric']);
 
 const normalizeAbilityKey = (value: string): string => value.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -80,6 +86,7 @@ export const useButtonLogic = (deps: {
     abilities: Record<string, number>,
     characterClass: string,
     characterName: string | null,
+    characterInfo?: CharacterInfo,
     isEditMode: boolean,
     isSmartPopulateEnabled?: boolean,
     target: string | null,
@@ -87,24 +94,27 @@ export const useButtonLogic = (deps: {
     practiceData?: PracticeData | null
 }) => {
     const { 
-        rawButtons, activeSet, abilities, characterClass, characterName, 
+        rawButtons, activeSet, abilities, characterClass, characterName, characterInfo,
         isEditMode, isSmartPopulateEnabled = true, target = null, inlineCategories = [],
         practiceData = null
     } = deps;
 
     return useMemo(() => {
         const classNames = ['ranger', 'warrior', 'mage', 'cleric', 'thief'];
-        const activeSetLower = (activeSet || 'main').toLowerCase();
         const safeAbilities = abilities || {};
-
-        // 1. Static filtering & Modification
+        const meetsRequirement = (button: CustomButton): boolean => {
+            if (!button.requirement) return true;
+            const { characterClass: requiredClasses, ability, minProficiency } = button.requirement;
+            if (!isButtonEligibleForCharacter(button.requirement, characterInfo, characterClass)) return false;
+            if (!ability) return true;
+            const requirementClass = requiredClasses?.length === 1 ? requiredClasses[0].toLowerCase() : undefined;
+            return getAbilityProficiency(ability, safeAbilities, practiceData, requirementClass) >= (minProficiency || 1);
+        };
         const filtered = rawButtons.filter(b => {
             if (isEditMode) return true;
+            if (!meetsRequirement(b)) return false;
 
-            // Tactical/Legacy cluster special handling
             if (b.id.startsWith('xbox-') || b.id.startsWith('tactical-')) {
-                // Warrior, Ranger, and Door are always available per request.
-                // Cleric, Mage, and Thief are hidden if no class skills are known.
                 const buttonToClass: Record<string, string> = {
                     'xbox-x': 'cleric', 'tactical-cleric': 'cleric',
                     'xbox-b': 'mage', 'tactical-mage': 'mage', 'tactical-action': 'mage',
@@ -115,7 +125,9 @@ export const useButtonLogic = (deps: {
                     if (!characterName) return false;
 
                     const practicedClassSkill = practiceData?.skills.some(skill =>
-                        skill.skillClass?.toLowerCase() === classKey && skill.proficiency > 0
+                        skill.skillClass?.toLowerCase() === classKey &&
+                        skill.proficiency > 0 &&
+                        isAbilityInClass(skill.name, classKey)
                     );
 
                     if (practiceData) return practicedClassSkill === true;
@@ -133,7 +145,6 @@ export const useButtonLogic = (deps: {
             }
 
             if (isSmartPopulateEnabled && b.hideIfUnknown && b.setId !== 'Xbox') {
-                // If on connect screen, hide all spell/skill buttons that depend on being known
                 if (!characterName) return false;
 
                 const cmdLower = (b.command || '').toLowerCase();
@@ -166,20 +177,9 @@ export const useButtonLogic = (deps: {
                 }
             }
 
-            if (!b.requirement) return true;
-            if (b.requirement.characterClass && b.requirement.characterClass.length > 0) {
-                if (characterClass !== 'none' && !b.requirement.characterClass.includes(characterClass)) return false;
-            }
-            if (b.requirement.ability) {
-                const prof = getAbilityProficiency(b.requirement.ability, safeAbilities, practiceData);
-                if (prof < (b.requirement.minProficiency || 1)) return false;
-            }
-
             return true;
         }).map(b => {
             let modified = { ...b };
-
-            // Dim buttons that are unknown but visible because smart populate is off
             if (!isSmartPopulateEnabled && b.hideIfUnknown && !isEditMode) {
                 const cmdLower = (b.command || '').toLowerCase();
                 const labelLower = (b.label || '').toLowerCase();
@@ -215,8 +215,6 @@ export const useButtonLogic = (deps: {
                 ? applyPracticeSwipeDefaults(modified, safeAbilities, practiceData)
                 : modified;
         });
-
-        // 2. Dynamic generation for Smart Sets
         const dynamicSetsToGenerate = ['spellbook', ...classNames, 'rangerskilllist', 'warriorskilllist', 'magespelllist', 'clericspelllist', 'thiefskilllist'];
         const allGenerated: CustomButton[] = [];
 
@@ -224,7 +222,13 @@ export const useButtonLogic = (deps: {
             const setNameLower = setName.toLowerCase();
             const mapKey = setNameLower.replace('skilllist', '').replace('spelllist', '');
             const learnedClassAbilities = practiceData?.skills
-                .filter(skill => skill.proficiency > 0 && (!CLASS_MAPPINGS[mapKey] || skill.skillClass?.toLowerCase() === mapKey))
+                .filter(skill =>
+                    skill.proficiency > 0 &&
+                    (!CLASS_MAPPINGS[mapKey] || (
+                        skill.skillClass?.toLowerCase() === mapKey &&
+                        isAbilityInClass(skill.name, mapKey)
+                    ))
+                )
                 .map(skill => skill.name) || [];
             let baseList: string[] = setNameLower === 'spellbook'
                 ? [...learnedClassAbilities.filter(name => {
@@ -291,10 +295,6 @@ export const useButtonLogic = (deps: {
                 });
             });
         });
-
-        // 3. Dynamic target-based buttons logic moved away because buttons now have correct prefix by default
-        // We just return what we have.
-
         return [...filtered, ...allGenerated];
-    }, [rawButtons, activeSet, abilities, characterClass, characterName, isEditMode, isSmartPopulateEnabled, target, practiceData]);
+    }, [rawButtons, activeSet, abilities, characterClass, characterName, characterInfo, isEditMode, isSmartPopulateEnabled, target, practiceData]);
 };

@@ -1,9 +1,10 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { GmcpOccupant } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { occupantAnims, getOccupantKey } from '../../components/Mapper/occupantAnimStore';
 import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
+import { initFollowerSync, cancelArrival, cancelDeparture } from '../../utils/followerSync';
 
 const getRoomCharKey = (id: string | number): number => {
     const numericId = Number(id);
@@ -81,6 +82,7 @@ interface UseGmcpOccupantsProps {
     registerEntity?: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     setIsRiding?: (val: boolean) => void;
     lastRoomChangeTimeRef: React.MutableRefObject<number>;
+    lastRoomNumRef?: React.MutableRefObject<number | string | null>;
 }
 
 export const useGmcpOccupants = ({
@@ -90,7 +92,63 @@ export const useGmcpOccupants = ({
     registerEntity,
     setIsRiding,
     lastRoomChangeTimeRef,
+    lastRoomNumRef,
 }: UseGmcpOccupantsProps) => {
+    const tagRoom = (occ: GmcpOccupant): GmcpOccupant => {
+        const room = lastRoomNumRef?.current;
+        if (room == null) return occ;
+        return { ...occ, _roomNum: room };
+    };
+
+    // Wire followerSync: synthesize Add/Remove from text lines when GMCP is silent.
+    useEffect(() => {
+        const synthAdd = (name: string, dir: string | null) => {
+            const synId = `syn:${name.toLowerCase()}`;
+            const isNpc = /^(a|an|some)\s/i.test(name);
+            const occ: GmcpOccupant = tagRoom({
+                id: synId,
+                name,
+                type: isNpc ? 'npc' : 'player',
+                keyword: getOccupantCommandKeyword({ name } as any, synId)
+            });
+            const key = getRoomCharKey(synId);
+            if (dir) {
+                occupantAnims.set(getOccupantKey(synId, name), {
+                    dir: dir.toLowerCase(),
+                    type: 'enter',
+                    startTime: Date.now(),
+                    name,
+                    id: synId,
+                    isPlayer: !isNpc
+                });
+            }
+            setRoomChars?.(prev => {
+                if (Object.values(prev).some(o => (o.name || '').toLowerCase() === name.toLowerCase())) return prev;
+                return { ...prev, [key]: occ };
+            });
+            if (registerEntity) registerEntity(`roomchars:${synId}`, name, 'room', occ.type);
+            mapperRef.current?.triggerRender?.();
+        };
+
+        const synthRemove = (name: string) => {
+            setRoomChars?.(prev => {
+                const next = { ...prev };
+                let removed = false;
+                Object.entries(next).forEach(([key, occ]) => {
+                    if (!removed
+                        && typeof occ.id === 'string' && occ.id.startsWith('syn:')
+                        && (occ.name || '').toLowerCase() === name.toLowerCase()) {
+                        delete next[Number(key)];
+                        removed = true;
+                    }
+                });
+                return removed ? next : prev;
+            });
+            mapperRef.current?.triggerRender?.();
+        };
+
+        initFollowerSync(synthAdd, synthRemove);
+    }, [setRoomChars, registerEntity, mapperRef, lastRoomNumRef]);
 
     const onRoomChars = useCallback((data: any) => {
         console.groupCollapsed('[GMCP Room.Chars] full-set payload');
@@ -125,7 +183,7 @@ export const useGmcpOccupants = ({
 
             Object.entries(parsedChars).forEach(([key, obj]) => {
                 const id = Number(key);
-                const merged = { ...(prev[id] || {}), ...obj };
+                const merged = tagRoom({ ...(prev[id] || {}), ...obj });
                 newChars[id] = merged;
                 rememberOccupant(merged);
 
@@ -164,6 +222,7 @@ export const useGmcpOccupants = ({
         if (occupants.length === 0) return;
 
         occupants.forEach(obj => {
+            if (obj.name) cancelArrival(obj.name);
             const isNpc = obj.type === 'npc' || obj.type === 'mount';
             const dir = (obj as { dir?: string }).dir;
             if (dir && (Date.now() - lastRoomChangeTimeRef.current) > 300) {
@@ -179,7 +238,7 @@ export const useGmcpOccupants = ({
             const next = { ...prev };
             occupants.forEach(obj => {
                 const id = getRoomCharKey(obj.id!);
-                const merged = { ...(next[id] || {}), ...obj };
+                const merged = tagRoom({ ...(next[id] || {}), ...obj });
                 rememberOccupant(merged);
                 next[id] = merged;
             });
@@ -204,7 +263,7 @@ export const useGmcpOccupants = ({
             const next = { ...prev };
             occupants.forEach(obj => {
                 const id = getRoomCharKey(obj.id!);
-                const merged = { ...(next[id] || {}), ...obj };
+                const merged = tagRoom({ ...(next[id] || {}), ...obj });
                 rememberOccupant(merged);
                 next[id] = merged;
             });
@@ -226,6 +285,7 @@ export const useGmcpOccupants = ({
         if (id === undefined || id === null) return;
 
         const name = (data && typeof data === 'object') ? (data.name || data.keyword || data.short) : undefined;
+        if (name) cancelDeparture(name);
         const idStr = String(id);
 
         if (data?.dir) {

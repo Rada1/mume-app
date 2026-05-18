@@ -17,8 +17,8 @@ interface GeneralSettingsProps {
     setLoginPassword: (val: string) => void;
     isMmapperMode: boolean;
     setIsMmapperMode: (val: boolean) => void;
-    theme: 'light' | 'dark';
-    setTheme: (val: 'light' | 'dark') => void;
+    theme: 'light' | 'dark' | 'immersion';
+    setTheme: (val: 'light' | 'dark' | 'immersion') => void;
     bgImage: string | null;
     bgImageBottom?: string | null;
     setBgImage: (val: string | null) => void;
@@ -31,8 +31,6 @@ interface GeneralSettingsProps {
     setUiMode: (val: import('../../types').UiMode) => void;
     disableSmoothScroll: boolean;
     setDisableSmoothScroll: (val: boolean) => void;
-    isImmersionMode: boolean;
-    setIsImmersionMode: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isTimestampEnabled: boolean;
@@ -76,8 +74,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setUiMode,
     disableSmoothScroll,
     setDisableSmoothScroll,
-    isImmersionMode,
-    setIsImmersionMode,
     isBloomEnabled,
     setIsBloomEnabled,
     isTimestampEnabled,
@@ -487,38 +483,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </div>
             </div>
 
-            <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                    <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Immersion Mode</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                            Enables atmospheric weather, dynamic lighting, 3D scrolling effects, and smooth animations.
-                        </div>
-                    </div>
-                    <button
-                        className={`setting-toggle ${isImmersionMode ? 'active' : ''}`}
-                        onClick={() => setIsImmersionMode(!isImmersionMode)}
-                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isImmersionMode ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                    >
-                        <div style={{
-                            width: '20px',
-                            height: '20px',
-                            background: '#fff',
-                            borderRadius: '50%',
-                            position: 'absolute',
-                            top: '2px',
-                            left: isImmersionMode ? '22px' : '2px',
-                            transition: 'all 0.3s'
-                        }} />
-                    </button>
-                </div>
-                {!isImmersionMode && (
-                    <div style={{ marginTop: '10px', fontSize: '0.7rem', color: 'var(--text-dim)', fontStyle: 'italic', opacity: 0.8 }}>
-                        Note: Disabling immersion mode improves performance and provides a flatter, faster interface.
-                    </div>
-                )}
-            </div>
-
             <div className="setting-group" style={{ border: '1px solid rgba(236, 72, 153, 0.3)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                     <div style={{ flex: '1 1 200px' }}>
@@ -555,27 +519,22 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
                         <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Client Theme</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Switch between Light and Dark visual modes.</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Switch between Dark, Light, and Immersion visual modes.</div>
                     </div>
                     <div style={{ display: 'flex', backgroundColor: 'var(--input-bg)', borderRadius: '20px', padding: '2px', border: '1px solid var(--border-modal)' }}>
-                        <button
-                            onClick={() => setTheme('dark')}
-                            style={{
-                                padding: '4px 12px', borderRadius: '18px', border: 'none', cursor: 'pointer',
-                                backgroundColor: theme === 'dark' ? '#ec4899' : 'transparent',
-                                color: theme === 'dark' ? '#fff' : 'var(--text-primary)',
-                                fontSize: '0.8rem', fontWeight: 'bold'
-                            }}
-                        >Dark</button>
-                        <button
-                            onClick={() => setTheme('light')}
-                            style={{
-                                padding: '4px 12px', borderRadius: '18px', border: 'none', cursor: 'pointer',
-                                backgroundColor: theme === 'light' ? '#ec4899' : 'transparent',
-                                color: theme === 'light' ? '#fff' : 'var(--text-primary)',
-                                fontSize: '0.8rem', fontWeight: 'bold'
-                            }}
-                        >Light</button>
+                        {(['dark', 'light', 'immersion'] as const).map(t => (
+                            <button
+                                key={t}
+                                onClick={() => setTheme(t)}
+                                style={{
+                                    padding: '4px 12px', borderRadius: '18px', border: 'none', cursor: 'pointer',
+                                    backgroundColor: theme === t ? '#ec4899' : 'transparent',
+                                    color: theme === t ? '#fff' : 'var(--text-primary)',
+                                    fontSize: '0.8rem', fontWeight: 'bold',
+                                    textTransform: 'capitalize'
+                                }}
+                            >{t}</button>
+                        ))}
                     </div>
                 </div>
 

@@ -91,7 +91,6 @@ export interface CommandControllerDeps {
     showLegacyButtons: boolean;
     setShowLegacyButtons: (val: boolean) => void;
     isImmersionMode: boolean;
-    setIsImmersionMode: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isTimestampEnabled: boolean;

@@ -62,7 +62,8 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                     const cmdVal = (button.swipeCommands?.[d as SwipeDirection] || '').trim();
                     const longCmdVal = (button.longSwipeCommands?.[d as SwipeDirection] || '').trim();
                     const angle = i * 45;
-                    const isActive = activeDir === d;
+                    const hasCommand = !!(cmdVal || longCmdVal);
+                    const isActive = activeDir === d && hasCommand;
                     const shouldFlip = angle > 90 && angle < 270;
                     return (
                         <div
@@ -97,8 +98,19 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
             {longCmd && onSwap && (
                 <div
                     className="swap-button"
-                    onPointerDown={(e) => e.stopPropagation()}
-                    onPointerUp={(e) => { e.stopPropagation(); onSwap(); }}
+                    onPointerDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }}
+                    onPointerUp={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        window.requestAnimationFrame(onSwap);
+                    }}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }}
                     style={{ pointerEvents: 'auto' }}
                 >
                     SWAP

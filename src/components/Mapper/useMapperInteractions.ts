@@ -547,7 +547,8 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                     activeHeldButton.modifiers,
                                     { currentDir: comboDir, isTargetModifierActive: false },
                                     depsRef.current.target,
-                                    isJoyTap
+                                    isJoyTap,
+                                    activeHeldButton.commandPrefixes || []
                                 );
                                 
                                 if (result) {
@@ -585,7 +586,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                         depsRef.current.executeCommand(result.cmd, false, false, false, false, { fromUi: true });
                                         depsRef.current.playClickSound?.();
                                     }
-                                    depsRef.current.setHeldButton?.((prev: any) => prev ? { ...prev, didFire: true } : null);
+                                    depsRef.current.setHeldButton?.((prev: any) => prev ? { ...prev, lastTargetFireAt: Date.now() } : null);
                                     comboFiredRef.current = true;
                                     depsRef.current.triggerHaptic(60);
                                 }

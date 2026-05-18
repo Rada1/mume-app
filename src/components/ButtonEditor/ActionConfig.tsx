@@ -56,6 +56,7 @@ const ActionConfig: React.FC<ActionConfigProps> = ({
                     <option value="teleport-manage">Teleport List</option>
                     <option value="select-recipient">Select Recipient</option>
                     <option value="preload">Preload Input</option>
+                    <option value="modifier">Held Modifier</option>
                 </select>
             </div>
         </div>

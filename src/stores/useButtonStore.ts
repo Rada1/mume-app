@@ -24,6 +24,19 @@ const isClassPickerButton = (button: Pick<CustomButton, 'setId'>): boolean => (
 const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
     if (!button.id.startsWith('tactical-')) return button;
 
+    const normalizedSetId = 'Tactical';
+    const normalizedCharmieStyle: CustomButton['style'] = {
+        ...(button.style || {}),
+        w: 34,
+        h: 34,
+        backgroundColor: 'rgba(48, 45, 52, 0.94)',
+        borderColor: 'rgba(255, 255, 255, 0.18)',
+        borderRadius: 999,
+        color: 'rgba(255, 255, 255, 0.78)',
+        fontSize: 10,
+        shape: 'circle',
+        iconScale: 1
+    };
     const swipeCommands = button.swipeCommands ? { ...button.swipeCommands } : button.swipeCommands;
     const swipeActionTypes = button.swipeActionTypes ? { ...button.swipeActionTypes } : button.swipeActionTypes;
 
@@ -58,6 +71,12 @@ const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
 
     return {
         ...button,
+        setId: normalizedSetId,
+        label: button.id === 'tactical-charmie' ? 'Ch' : button.label,
+        command: button.id === 'tactical-charmie' ? 'order followers' : button.command,
+        actionType: button.id === 'tactical-charmie' ? 'modifier' : button.actionType,
+        style: button.id === 'tactical-charmie' ? normalizedCharmieStyle : button.style,
+        position: button.id === 'tactical-charmie' ? { ...button.position, w: 34, h: 34 } : button.position,
         swipeCommands,
         swipeActionTypes,
         longActionType: button.longActionType === 'select-assign' ? 'assign' : button.longActionType,

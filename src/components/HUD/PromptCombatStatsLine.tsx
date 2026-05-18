@@ -4,13 +4,13 @@
  */
 
 import React from 'react';
-import { Sword, Shield, Wind } from 'lucide-react';
+import { Sword, Shield } from 'lucide-react';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useUI } from '../../context/GameContext';
 
 // --- Logic Section ---
 
-const Helmet: React.FC<{ size?: number }> = ({ size = 12 }) => (
+const ArmourIcon: React.FC<{ size?: number }> = ({ size = 12 }) => (
     <svg 
         width={size} 
         height={size} 
@@ -20,14 +20,18 @@ const Helmet: React.FC<{ size?: number }> = ({ size = 12 }) => (
         strokeWidth="2.5" 
         strokeLinecap="round" 
         strokeLinejoin="round"
-        className="lucide-helmet"
+        className="lucide-armour"
     >
-        <path d="M12 2C6.5 2 2 6.5 2 12v9h5v-8c0-1.5 2-2.5 5-2.5s5 1 5 2.5v8h5v-9C22 6.5 17.5 2 12 2z" />
-        <path d="M12 2v9" />
+        <path d="M8 3h8l3 2 3 4-4 3-2-2v11H8V10l-2 2-4-3 3-4 3-2z" />
+        <path d="M8 3l4 5 4-5" />
+        <path d="M5 5l5 4" />
+        <path d="M19 5l-5 4" />
+        <path d="M8 13h8" />
+        <path d="M8 17h8" />
     </svg>
 );
 
-const Cloak: React.FC<{ size?: number }> = ({ size = 12 }) => (
+const DodgeBonusIcon: React.FC<{ size?: number }> = ({ size = 12 }) => (
     <svg 
         width={size} 
         height={size} 
@@ -37,10 +41,16 @@ const Cloak: React.FC<{ size?: number }> = ({ size = 12 }) => (
         strokeWidth="2.5" 
         strokeLinecap="round" 
         strokeLinejoin="round"
-        className="lucide-cloak"
+        className="lucide-dodge-bonus"
     >
-        <path d="M12 4c-1.5 0-3 1-3 3l-6 14h18l-6-14c0-2-1.5-3-3-3z" />
-        <path d="M12 4v17" />
+        <path d="M2 7h6" />
+        <path d="M1 12h7" />
+        <path d="M2 17h5" />
+        <circle cx="16.5" cy="5" r="2.5" />
+        <path d="M15 8l-5 2v3l5-1.5 3 3.5" />
+        <path d="M18.5 9.5l3 2.5" />
+        <path d="M13.5 14l-5 6" />
+        <path d="M17.5 15l-1.5 5" />
     </svg>
 );
 
@@ -51,9 +61,9 @@ const PromptCombatStatsLine: React.FC = () => {
     
     const statPairs = [
         { id: 'ob', label: 'OB', value: stats.ob, icon: <Sword size={12} strokeWidth={2.5} /> },
-        { id: 'db', label: 'DB', value: stats.db, icon: <Cloak size={12} /> },
+        { id: 'db', label: 'DB', value: stats.db, icon: <DodgeBonusIcon size={12} /> },
         { id: 'pb', label: 'PB', value: stats.pb, icon: <Shield size={12} strokeWidth={2.5} /> },
-        { id: 'armour', label: 'Armour', value: stats.armour, icon: <Helmet size={12} /> }
+        { id: 'armour', label: 'Armour', value: stats.armour, icon: <ArmourIcon size={12} /> }
     ];
 
     return (

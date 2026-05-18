@@ -276,12 +276,6 @@ export const SpatButtons: React.FC<SpatButtonsProps> = React.memo(({
         const isTap = state.maxDist < 40;
 
         if (isTap || (dir && state.maxDist >= 40)) {
-            const rect = el.getBoundingClientRect();
-            const cx = rect.left + rect.width / 2;
-            const cy = rect.top + rect.height / 2;
-            const color = getPressedColor(el);
-            triggerRingAnimation(cx, cy, color);
-
             if (e.cancelable) e.preventDefault();
             e.stopPropagation();
 
@@ -299,6 +293,12 @@ export const SpatButtons: React.FC<SpatButtonsProps> = React.memo(({
                     return;
                 }
             }
+
+            const rect = el.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const color = getPressedColor(el);
+            triggerRingAnimation(cx, cy, color);
 
             if (action === 'nav') {
                 setActiveSet(cmd);

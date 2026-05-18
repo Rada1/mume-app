@@ -16,7 +16,7 @@ interface SettingsState {
     loginName: string;
     loginPassword?: string;
     rememberLogin: boolean;
-    theme: 'dark' | 'light';
+    theme: 'dark' | 'light' | 'immersion';
     accentColor: string;
     bgImage: string | null;
     bgImageBottom: string | null;
@@ -32,7 +32,6 @@ interface SettingsState {
     targetColor: string;
     roomColor: string;
     disableSmoothScroll: boolean;
-    isImmersionMode: boolean;
     isTimestampEnabled: boolean;
     showDebugEchoes: boolean;
     showLegacyButtons: boolean;
@@ -62,7 +61,7 @@ interface SettingsState {
     setLoginPassword: (val: string) => void;
     setRememberLogin: (val: boolean) => void;
     setAutoConnect: (val: boolean) => void;
-    setTheme: (val: 'dark' | 'light') => void;
+    setTheme: (val: 'dark' | 'light' | 'immersion') => void;
     setAccentColor: (val: string) => void;
     setBgImage: (val: string | null) => void;
     setBgImageBottom: (val: string | null) => void;
@@ -71,7 +70,6 @@ interface SettingsState {
     setIsBloomEnabled: (val: boolean) => void;
     setIsHighlighterEnabled: (val: boolean) => void;
     setDisableSmoothScroll: (val: boolean) => void;
-    setIsImmersionMode: (val: boolean) => void;
     setObjectColor: (val: string) => void;
     setPlayerColor: (val: string) => void;
     setNpcColor: (val: string) => void;
@@ -181,7 +179,7 @@ export const useSettingsStore = create<SettingsState>()(
             loginPassword: '',
             rememberLogin: true,
             
-            theme: 'dark',
+            theme: 'immersion',
             accentColor: '#f48f3c',
             bgImage: null,
             bgImageBottom: null,
@@ -198,7 +196,6 @@ export const useSettingsStore = create<SettingsState>()(
             roomColor: '#22c55e',
             
             disableSmoothScroll: false,
-            isImmersionMode: true,
             isTimestampEnabled: false,
             showDebugEchoes: false,
             showLegacyButtons: false,
@@ -248,7 +245,6 @@ export const useSettingsStore = create<SettingsState>()(
             setTargetColor: (targetColor) => set({ targetColor }),
             setRoomColor: (roomColor) => set({ roomColor }),
             setDisableSmoothScroll: (disableSmoothScroll) => set({ disableSmoothScroll }),
-            setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
             setIsTimestampEnabled: (isTimestampEnabled) => set({ isTimestampEnabled }),
             setShowDebugEchoes: (showDebugEchoes) => set({ showDebugEchoes }),
             setShowLegacyButtons: (showLegacyButtons) => set({ showLegacyButtons }),
@@ -300,7 +296,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 4,
+            version: 5,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -341,6 +337,13 @@ export const useSettingsStore = create<SettingsState>()(
                             };
                         });
                     }
+                }
+
+                if (version < 5) {
+                    if (persistedState.isImmersionMode !== false && (!persistedState.theme || persistedState.theme === 'dark')) {
+                        persistedState.theme = 'immersion';
+                    }
+                    delete persistedState.isImmersionMode;
                 }
 
                 if (version < 4 || !persistedState.categoryOverrides || !persistedState.customTraits) {

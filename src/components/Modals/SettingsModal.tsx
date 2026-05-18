@@ -43,8 +43,6 @@ interface SettingsModalProps {
     setUiMode: (val: UiMode) => void;
     disableSmoothScroll: boolean;
     setDisableSmoothScroll: (val: boolean) => void;
-    isImmersionMode: boolean;
-    setIsImmersionMode: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isTimestampEnabled: boolean;
@@ -73,7 +71,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     newSoundPattern, setNewSoundPattern, newSoundRegex, setNewSoundRegex, handleSoundUpload, soundTriggers, setSoundTriggers,
     resetButtons, connect, loginName, setLoginName, loginPassword, setLoginPassword,
     autoConnect, setAutoConnect, showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode,
-    disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode,
+    disableSmoothScroll, setDisableSmoothScroll,
     isBloomEnabled, setIsBloomEnabled,
     isTimestampEnabled, setIsTimestampEnabled, fontFamily, setFontFamily,
     autoSaveSessions, setAutoSaveSessions, showSpectatePromptInLog, setShowSpectatePromptInLog,
@@ -87,7 +85,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         theme, setTheme,
         actions, setActions,
         status,
-        viewport
+        viewport,
+        btn
     } = useGame();
 
     const { setIsSettingsOpen, settingsTab, setSettingsTab } = useUI();
@@ -160,8 +159,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setUiMode={setUiMode}
                                 disableSmoothScroll={disableSmoothScroll}
                                 setDisableSmoothScroll={setDisableSmoothScroll}
-                                isImmersionMode={isImmersionMode}
-                                setIsImmersionMode={setIsImmersionMode}
                                 isBloomEnabled={isBloomEnabled}
                                 setIsBloomEnabled={setIsBloomEnabled}
                                 isTimestampEnabled={isTimestampEnabled}
@@ -215,6 +212,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                             setIsGridEnabled={setIsGridEnabled}
                             createButton={createButton}
                             setIsSetManagerOpen={setIsSetManagerOpen}
+                            activeSet={btn.activeSet}
+                            availableSets={btn.availableSets}
+                            setActiveSet={btn.setActiveSet}
                         />
                     )}
 

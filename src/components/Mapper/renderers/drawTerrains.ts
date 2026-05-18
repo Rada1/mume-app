@@ -1,10 +1,55 @@
 import { RenderContext } from './rendererUtils';
 import { GRID_SIZE, getTerrainColor, WALL_COLOR, getTerrainName } from '../mapperUtils';
 
+const TERRAIN_TILE_INSET = 0;
+
+const getTerrainTileInset = (s: number) => Math.min(TERRAIN_TILE_INSET, Math.max(1, s * 0.06));
+
+const fillTerrainTile = (ctx: CanvasRenderingContext2D, x: number, y: number, s: number) => {
+    const inset = getTerrainTileInset(s);
+    ctx.fillRect(x + inset, y + inset, s - inset * 2, s - inset * 2);
+};
+
+const fillAnimatedTerrainTile = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    s: number,
+    sourceDir: string,
+    alphaMul: number
+) => {
+    const inset = getTerrainTileInset(s);
+    const ix = x + inset;
+    const iy = y + inset;
+    const is = s - inset * 2;
+
+    if (sourceDir === 'n') ctx.fillRect(ix, iy, is, is * alphaMul);
+    else if (sourceDir === 's') ctx.fillRect(ix, iy + is * (1 - alphaMul), is, is * alphaMul);
+    else if (sourceDir === 'w') ctx.fillRect(ix, iy, is * alphaMul, is);
+    else if (sourceDir === 'e') ctx.fillRect(ix + is * (1 - alphaMul), iy, is * alphaMul, is);
+    else fillTerrainTile(ctx, x, y, s);
+};
+
+const drawTerrainTileIcon = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    s: number,
+    terrain: any,
+    isDarkMode: boolean,
+    processedIconsRef: React.MutableRefObject<Record<string, HTMLCanvasElement>>,
+    imagesRef: React.MutableRefObject<Record<string, HTMLImageElement>>,
+    variant: number
+) => {
+    const inset = getTerrainTileInset(s);
+    drawTerrainIcon(ctx, x + inset, y + inset, s - inset * 2, terrain, isDarkMode, processedIconsRef, imagesRef, variant);
+};
+
 export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: number, s: number, terrain: any, isDarkMode: boolean, processedIconsRef: React.MutableRefObject<Record<string, HTMLCanvasElement>>, imagesRef: React.MutableRefObject<Record<string, HTMLImageElement>>, variant: number = 0) => {
     const tName = getTerrainName(terrain);
     const variantSpecificTerrains = ['Hills', 'Forest', 'Brush', 'Mountains', 'Field', 'Cavern', 'Tunnel', 'Water', 'Shallows', 'Rapids', 'City', 'Underwater', 'Building'];
-    const key = variantSpecificTerrains.includes(tName) ? `${tName}_v${variant}_${isDarkMode}_v10` : `${tName}_${isDarkMode}_v10`;
+    const iconSize = Math.round(s);
+    const key = variantSpecificTerrains.includes(tName) ? `${tName}_v${variant}_${isDarkMode}_s${iconSize}_v11` : `${tName}_${isDarkMode}_s${iconSize}_v11`;
     
     if (!processedIconsRef.current[key]) {
         const iconCanvas = document.createElement('canvas');
@@ -255,7 +300,7 @@ export const applyRoomShading = (ctx: CanvasRenderingContext2D, r: any, s: numbe
         ctx.save();
         ctx.fillStyle = '#000000';
         ctx.globalAlpha = overlayAlpha * alphaMul;
-        ctx.fillRect(r.x, r.y, s, s);
+        fillTerrainTile(ctx, r.x, r.y, s);
         ctx.restore();
     }
 };
@@ -342,11 +387,12 @@ export const drawTerrains = (
                     if (sourceDir) {
                         ctx.save();
                         ctx.globalAlpha = 0.5;
-                        if (sourceDir === 'n') ctx.fillRect(r.x, r.y, s, s * alphaMul);
-                        else if (sourceDir === 's') ctx.fillRect(r.x, r.y + s * (1 - alphaMul), s, s * alphaMul);
-                        else if (sourceDir === 'w') ctx.fillRect(r.x, r.y, s * alphaMul, s);
-                        else if (sourceDir === 'e') ctx.fillRect(r.x + s * (1 - alphaMul), r.y, s * alphaMul, s);
-                        else { ctx.globalAlpha = 0.5 * alphaMul; ctx.fillRect(r.x, r.y, s, s); }
+                        if (sourceDir === 'n' || sourceDir === 's' || sourceDir === 'w' || sourceDir === 'e') {
+                            fillAnimatedTerrainTile(ctx, r.x, r.y, s, sourceDir, alphaMul);
+                        } else {
+                            ctx.globalAlpha = 0.5 * alphaMul;
+                            fillTerrainTile(ctx, r.x, r.y, s);
+                        }
                         ctx.restore();
                         applyRoomShading(ctx, r, s, alphaMul, rCtx);
                         continue;
@@ -356,7 +402,7 @@ export const drawTerrains = (
             
             // Draw base terrain
             ctx.globalAlpha = 0.5 * alphaMul;
-            ctx.fillRect(r.x, r.y, s, s);
+            fillTerrainTile(ctx, r.x, r.y, s);
             applyRoomShading(ctx, r, s, alphaMul, rCtx);
         }
     }
@@ -403,7 +449,7 @@ export const drawTerrains = (
                     grad.addColorStop(1, 'rgba(0,0,0,0)');
                     ctx.fillStyle = grad;
                     ctx.globalAlpha = 0.45 * peekAlphaMul; // Start just below explored (0.5)
-                    ctx.fillRect(r.x, r.y, s, s);
+                    fillTerrainTile(ctx, r.x, r.y, s);
                     ctx.restore();
                     applyRoomShading(ctx, r, s, peekAlphaMul, rCtx);
                 }
@@ -441,7 +487,7 @@ export const drawTerrains = (
                     }
                 }
             }
-            drawTerrainIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant);
+            drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant);
             ctx.restore();
         }
     }
@@ -455,7 +501,7 @@ export const drawTerrains = (
             ctx.fillStyle = color;
             for (let i = 0; i < rooms.length; i++) {
                 const r = rooms[i];
-                ctx.fillRect(r.x, r.y, s, s);
+                fillTerrainTile(ctx, r.x, r.y, s);
                 applyRoomShading(ctx, r, s, 1.0, rCtx);
             }
         }
@@ -467,7 +513,7 @@ export const drawTerrains = (
                 const r = rooms[i];
                 const gridX = Math.round(r.x / s), gridY = Math.round(r.y / s);
                 const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
-                drawTerrainIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant);
+                drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant);
             }
         }
     }
@@ -486,8 +532,8 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
         
         const rx = Math.round(room.x) * s, ry = Math.round(room.y) * s;
         ctx.fillStyle = getTerrainColor(room.terrain, isDarkMode);
-        ctx.fillRect(rx, ry, s, s);
-        applyRoomShading(ctx, { ...room, vnum: String(room.id).startsWith('m_') ? room.id.substring(2) : room.id }, s, 1.0, rCtx);
+        fillTerrainTile(ctx, rx, ry, s);
+        applyRoomShading(ctx, { ...room, x: rx, y: ry, vnum: String(room.id).startsWith('m_') ? room.id.substring(2) : room.id }, s, 1.0, rCtx);
     }
     // Correctly restore once AFTER the loop
     ctx.restore();
@@ -501,6 +547,6 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
         const rx = Math.round(room.x) * s, ry = Math.round(room.y) * s;
         const gridX = Math.round(room.x), gridY = Math.round(room.y);
         const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
-        drawTerrainIcon(ctx, rx, ry, s, room.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant);
+        drawTerrainTileIcon(ctx, rx, ry, s, room.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant);
     }
 };

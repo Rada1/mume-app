@@ -528,7 +528,10 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                         key={opt.id}
                                                         className="account-menu-btn"
                                                         style={{ flex: 1, textAlign: 'center', padding: '12px', fontWeight: 'bold' }}
-                                                        onClick={() => executeCommand(opt.id)}
+                                                        onClick={() => {
+                                                            triggerHaptic(15);
+                                                            executeCommand(opt.id);
+                                                        }}
                                                     >
                                                         {opt.label}
                                                     </button>
@@ -613,6 +616,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                                         <button
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
+                                                                                triggerHaptic(10);
                                                                                 executeCommand(`${opt.id} ${currentValue! - 1}`);
                                                                             }}
                                                                             style={{
@@ -639,6 +643,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                                         <button
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
+                                                                                triggerHaptic(10);
                                                                                 executeCommand(`${opt.id} ${currentValue! + 1}`);
                                                                             }}
                                                                             style={{
@@ -666,26 +671,29 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                     </div>
                                                     <div style={{ width: '85px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                                         {actionOptions.map(opt => (
-                                                            <button
-                                                                key={opt.id}
-                                                                className="account-menu-btn creation-option-btn no-arrow"
-                                                                style={{
-                                                                    width: '100%',
-                                                                    textAlign: 'center',
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    justifyContent: 'center',
-                                                                    padding: '0 8px',
-                                                                    flex: 1,
-                                                                    minHeight: '40px',
-                                                                    fontSize: '11px',
-                                                                    fontWeight: 'bold'
-                                                                }}
-                                                                onClick={() => executeCommand(opt.id)}
-                                                            >
-                                                                {opt.label.split(' ')[0]}
-                                                            </button>
-                                                        ))}
+                                                                                            <button
+                                                                                                key={opt.id}
+                                                                                                className="account-menu-btn creation-option-btn no-arrow"
+                                                                                                style={{
+                                                                                                    width: '100%',
+                                                                                                    textAlign: 'center',
+                                                                                                    display: 'flex',
+                                                                                                    alignItems: 'center',
+                                                                                                    justifyContent: 'center',
+                                                                                                    padding: '0 8px',
+                                                                                                    flex: 1,
+                                                                                                    minHeight: '40px',
+                                                                                                    fontSize: '11px',
+                                                                                                    fontWeight: 'bold'
+                                                                                                }}
+                                                                                                onClick={() => {
+                                                                                                    triggerHaptic(20);
+                                                                                                    executeCommand(opt.id);
+                                                                                                }}
+                                                                                            >
+                                                                                                {opt.label.split(' ')[0]}
+                                                                                            </button>
+                                                                                        ))}
                                                     </div>
                                                 </div>
                                             );
@@ -704,6 +712,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                     margin: '1px 0'
                                                 }}
                                                 onClick={() => {
+                                                    triggerHaptic(15);
                                                     setAccountState?.(prev => ({
                                                         ...prev,
                                                         lastSelectedId: opt.id
@@ -812,7 +821,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                             letterSpacing: '1.5px',
                                             justifyContent: 'center'
                                         }}
-                                        onClick={() => executeCommand('new')}
+                                        onClick={() => { triggerHaptic(30); executeCommand('new'); }}
                                     >
                                         New Account
                                     </button>
@@ -841,14 +850,15 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                 <button 
                                     className="account-menu-btn"
                                     style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
-                                    onClick={() => executeCommand('back')}
+                                    onClick={() => { triggerHaptic(20); executeCommand('back'); }}
                                 >
                                     Back
                                 </button>
-                                <button 
+                                <button
                                     className="account-menu-btn"
                                     style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
                                     onClick={() => {
+                                        triggerHaptic(20);
                                         executeCommand('');
                                         executeCommand('');
                                         executeCommand('menu');
@@ -856,10 +866,10 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                 >
                                     Main Menu
                                 </button>
-                                <button 
+                                <button
                                     className="account-menu-btn"
                                     style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
-                                    onClick={() => executeCommand('?')}
+                                    onClick={() => { triggerHaptic(20); executeCommand('?'); }}
                                 >
                                     ?
                                 </button>

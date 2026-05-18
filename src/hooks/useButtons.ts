@@ -1,5 +1,10 @@
+/**
+ * @file useButtons.ts
+ * @description Owns button state, persistence, and filtered button output.
+ */
+
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { CustomButton, ButtonSetSettings, PracticeData } from '../types';
+import { CharacterInfo, CustomButton, ButtonSetSettings, PracticeData } from '../types';
 import { DEFAULT_BUTTONS, DEFAULT_UI_POSITIONS, DEFAULT_SET_SETTINGS } from '../constants/buttons';
 import MASTER_SETTINGS from '../constants/mastersettings.json';
 import { useButtonPersistence } from './useButtonPersistence';
@@ -10,11 +15,12 @@ export const useButtons = (deps: {
     abilities: Record<string, number>,
     characterClass: string,
     characterName: string | null,
+    characterInfo?: CharacterInfo,
     target: string | null,
     inlineCategories: import('../types').InlineCategoryConfig[],
     practiceData?: PracticeData | null
 }) => {
-    const { abilities, characterClass, characterName, target, inlineCategories, practiceData = null } = deps;
+    const { abilities, characterClass, characterName, characterInfo, target, inlineCategories, practiceData = null } = deps;
     const [activeSet, setActiveSet] = useState('main');
     const [isEditMode, setIsEditMode] = useState(false);
     const [editingButtonId, setEditingButtonId] = useState<string | null>(null);
@@ -50,6 +56,7 @@ export const useButtons = (deps: {
         abilities,
         characterClass,
         characterName,
+        characterInfo,
         isEditMode,
         isSmartPopulateEnabled,
         target,

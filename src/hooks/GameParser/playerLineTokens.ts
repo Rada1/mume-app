@@ -42,6 +42,7 @@ const extractPlayerName = (text: string) => {
     const match = text.match(new RegExp(String.raw`^\s*(?:(?:${markerPrefix}|${symbolPrefix}|${wordFlagPrefix}))*(${nameChar}{2,21})${nameBoundary}`, 'u'));
     const name = match?.[1];
     if (!name || HEADER_WORDS.has(name.toLowerCase())) return null;
+    if (!/\p{L}/u.test(name)) return null;
 
     return name;
 };

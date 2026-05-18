@@ -12,7 +12,8 @@ export const useLogPointerDown = (
     deps: InteractionDeps,
     lookModFiredRef: React.MutableRefObject<boolean>,
     logLongPressTimerRef: React.MutableRefObject<NodeJS.Timeout | null>,
-    longPressJustFiredRef?: React.MutableRefObject<boolean>
+    longPressJustFiredRef?: React.MutableRefObject<boolean>,
+    heldBtnFiredRef?: React.MutableRefObject<boolean>
 ) => {
     const {
         executeCommand, triggerHaptic, btn, joystick, target,
@@ -23,9 +24,10 @@ export const useLogPointerDown = (
 
     const markHeldTargetFired = useCallback(() => {
         const firedAt = Date.now();
-        setHeldButton((prev: any) => prev ? { ...prev, didFire: true, lastTargetFireAt: firedAt } : null);
+        setHeldButton((prev: any) => prev ? { ...prev, lastTargetFireAt: firedAt } : null);
         setCommandPreview(null);
-    }, [setHeldButton, setCommandPreview]);
+        if (heldBtnFiredRef) heldBtnFiredRef.current = true;
+    }, [setHeldButton, setCommandPreview, heldBtnFiredRef]);
 
     const handleLogPointerDown = useCallback((e: React.PointerEvent) => {
         const targetEl = (e.target instanceof HTMLElement) ? e.target.closest('.inline-btn') as HTMLElement : (e.target as any)?.parentElement?.closest('.inline-btn') as HTMLElement;
@@ -40,10 +42,13 @@ export const useLogPointerDown = (
         const activeHeldButton = heldButtonRef?.current || heldButton;
         const isTargetableInline = targetEl?.getAttribute('data-targetable') !== 'false';
 
-        if (targetEl && isTargetableInline && activeHeldButton && !activeHeldButton.didFire && !activeHeldButton.id.startsWith('log-inline-')) {
-            const sourceButton = btn.buttons.find(b => b.id === activeHeldButton.id);
+        const sourceButton = activeHeldButton
+            ? btn.buttons.find(b => b.id === activeHeldButton.id)
+            : null;
+
+        if (targetEl && isTargetableInline && activeHeldButton && sourceButton?.actionType !== 'modifier' && !activeHeldButton.didFire && !activeHeldButton.id.startsWith('log-inline-')) {
             if (sourceButton) {
-                const resolved = getButtonCommand(sourceButton, activeHeldButton.dx || 0, activeHeldButton.dy || 0, contextStr, undefined, activeHeldButton.modifiers || [], joystick, target, isLong);
+                const resolved = getButtonCommand(sourceButton, activeHeldButton.dx || 0, activeHeldButton.dy || 0, contextStr, undefined, activeHeldButton.modifiers || [], joystick, target, isLong, activeHeldButton.commandPrefixes || []);
                 if (resolved?.cmd) {
                     lastCommandContextRef.current = { context: rawContextStrDown, displayText: label };
                     executeCommand(resolved.cmd);
@@ -76,6 +81,7 @@ export const useLogPointerDown = (
                 if (contextStr) {
                     finalCmd = finalCmd.includes('%n') ? finalCmd.replace(/%n/g, contextStr) : `${finalCmd} ${contextStr}`;
                 }
+                finalCmd = [...(activeHeldButton.commandPrefixes || []), finalCmd].filter(Boolean).join(' ');
                 lastCommandContextRef.current = { context: rawContextStrDown, displayText: label };
                 executeCommand(finalCmd);
                 markHeldTargetFired();

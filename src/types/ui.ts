@@ -8,7 +8,7 @@ import { EntityKind, EntityLocation } from './entities';
 
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
 export type TriggerAction = 'spit' | 'hide' | 'show' | 'command';
-export type ActionType = 'command' | 'menu' | 'nav' | 'select-assign' | 'select-recipient' | 'select-container' | 'assign' | 'teleport-manage' | 'historical' | 'preload' | 'show';
+export type ActionType = 'command' | 'menu' | 'nav' | 'select-assign' | 'select-recipient' | 'select-container' | 'assign' | 'teleport-manage' | 'historical' | 'preload' | 'show' | 'modifier';
 
 export interface UiPosition {
     x?: number;
@@ -90,6 +90,8 @@ export interface CustomButton {
         ability?: string;
         minProficiency?: number;
         characterClass?: string[];
+        race?: string[];
+        subrace?: string[];
     };
     
     style: {
