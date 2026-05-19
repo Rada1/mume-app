@@ -67,7 +67,7 @@
 /* --- Artificial --- */
 .mapper-artificial-overlay {
     z-index: 7; /* Move ABOVE the dark overlay */
-    background: radial-gradient(circle at center, rgba(255, 190, 80, 0.45) 0%, rgba(120, 60, 0, 0.15) 35%, transparent 70%);
+    background: radial-gradient(circle at center, rgba(255, 205, 95, 0.45) 0%, rgba(120, 85, 15, 0.15) 35%, transparent 70%);
     mix-blend-mode: color-dodge;
 }
 .lighting-state-artificial .mapper-artificial-overlay {

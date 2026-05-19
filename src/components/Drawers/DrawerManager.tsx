@@ -11,7 +11,7 @@ import { Mapper } from '../Mapper/Mapper';
 import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
 import { useMumeTime } from '../../hooks/useMumeTime';
 import { LineCluster } from '../Layout/HUD/LineCluster';
-import { User, Shield, Users, Map as MapIcon, Activity, UtensilsCrossed, Droplets, CloudFog, Clock } from 'lucide-react';
+import { User, Shield, Users, Map as MapIcon, Activity, UtensilsCrossed, Droplets, CloudFog, Clock, X } from 'lucide-react';
 import { StatusDrawer } from './StatusDrawer';
 
 const SIDEBAR_TABS = [
@@ -37,6 +37,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     const {
         characterName, viewport, triggerHaptic, gameState, executeCommand,
         btn, joystick, handleButtonClick, editor, env, isFoggy, gameTime, roomItems,
+        toggleMap
     } = useGame();
     const currentTime = useMumeTime(gameTime);
     const {
@@ -72,6 +73,18 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             {!viewport.isMobile && (
                 <div className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}>
+                    <div className="drawer-header">
+                        <span className="drawer-title">
+                            Map
+                        </span>
+                        <button
+                            className="drawer-close-btn"
+                            onClick={() => { triggerHaptic(15); toggleMap(); }}
+                            title="Collapse Map"
+                        >
+                            <X size={14} />
+                        </button>
+                    </div>
                     <div className="drawer-content" style={{ flex: 1, padding: 0, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                         <div className="mapper-header-desktop">
                             <div>

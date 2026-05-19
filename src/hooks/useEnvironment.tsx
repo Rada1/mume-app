@@ -85,7 +85,7 @@ export function useEnvironment(deps: EnvironmentDeps) {
         switch (lighting) {
             case 'sun': return <Sun size={16} style={{ color: '#fbbf24' }} />; // Yellow
             case 'moon': return <Moon size={16} style={{ color: '#a5b1c2' }} />; // Silvery Blue
-            case 'artificial': return <Flame size={16} style={{ color: '#ef4444' }} />; // Red
+            case 'artificial': return <Flame size={16} style={{ color: '#f97316' }} />; // Orange
             case 'dark': return <EyeOff size={16} className="text-gray-500" />;
             default: return null;
         }

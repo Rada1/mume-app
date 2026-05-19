@@ -219,3 +219,34 @@
     }
 }
 
+/* Light Drift Animations */
+@keyframes light-drift-torch {
+    0% {
+        transform: translate(-1%, -1%) scale(1);
+    }
+    50% {
+        transform: translate(1.5%, 2%) scale(1.08);
+    }
+    100% {
+        transform: translate(-0.5%, 0.5%) scale(0.96);
+    }
+}
+
+@keyframes light-drift-sun {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        transform: translate(-2.5%, 2.5%) scale(1.04);
+    }
+}
+
+@keyframes light-drift-moon {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(1.5%, -2%);
+    }
+}
+

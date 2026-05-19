@@ -28,36 +28,17 @@ export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, child
 
     return (
         <div className={`log-card-drawer drawer-shell ${id}-drawer ${side}-drawer open`}>
-            <div className="drawer-header" style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '6px 10px',
-                pointerEvents: 'auto'
-            }}>
-                <span className="drawer-title" style={{ opacity: 0.4, fontSize: '0.7em', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            <div className="drawer-header">
+                <span className="drawer-title">
                     {title || id}
                 </span>
-                {window.innerWidth > 1024 && (
-                    <button
-                        className="drawer-close-btn"
-                        onClick={handleClose}
-                        style={{
-                            background: 'rgba(255,255,255,0.08)',
-                            border: 'none',
-                            color: '#fff',
-                            width: '28px',
-                            height: '28px',
-                            borderRadius: '14px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        <X size={14} />
-                    </button>
-                )}
+                <button
+                    className="drawer-close-btn"
+                    onClick={handleClose}
+                    title="Close Drawer"
+                >
+                    <X size={14} />
+                </button>
             </div>
             <div
                 className="drawer-content"

@@ -3,6 +3,7 @@ import { MessageCircle, Reply, Repeat, XCircle } from 'lucide-react';
 import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../../types';
 import { useUI, useBaseGame, useVitals, useGame } from '../../context/GameContext';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 
 
 
@@ -36,6 +37,10 @@ const InputArea: React.FC<InputAreaProps> = ({
     const { viewport } = useBaseGame();
     const { stats } = useVitals();
     const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode, accountState } = useGame() as any;
+    const rememberLogin = useSettingsStore(s => s.rememberLogin);
+    const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
+    const setLoginName = useSettingsStore(s => s.setLoginName);
+    const setLoginPassword = useSettingsStore(s => s.setLoginPassword);
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -225,11 +230,106 @@ const InputArea: React.FC<InputAreaProps> = ({
 
     // Hide spat buttons in portrait mode when map is expanded
     const shouldShowSpat = viewport.isLandscape || !ui.mapExpanded;
+    const isLoginStage = gameState === 'account' && accountState?.stage === 'login';
+    const isPasswordPrompt = isLoginStage && (
+        isPasswordMode ||
+        accountState?.currentPrompt?.toLowerCase().includes('password') ||
+        accountState?.currentPrompt?.toLowerCase().includes('verify')
+    );
+
+    const handleSubmit = useCallback((e?: React.FormEvent) => {
+        if (isLoginStage && rememberLogin && input.trim()) {
+            if (isPasswordPrompt) {
+                setLoginPassword(input.trim());
+            } else {
+                setLoginName(input.trim());
+            }
+        }
+        onSend(e);
+    }, [input, isLoginStage, isPasswordPrompt, onSend, rememberLogin, setLoginName, setLoginPassword]);
+
+    if (isLoginStage) {
+        return (
+            <div className="login-card-container">
+                <div className="login-card">
+                    <h2 className="login-card-title">MUME</h2>
+                    <div className="login-prompt-text">
+                        {accountState?.currentPrompt || "By what name do you wish to be known?"}
+                    </div>
+                    <form onSubmit={handleSubmit}>
+                        <div className="login-input-wrapper">
+                            <textarea
+                                ref={inputRef}
+                                id="mud-input"
+                                name="mud-input"
+                                className="login-input-field"
+                                value={input}
+                                rows={1}
+                                style={{ WebkitTextSecurity: isPasswordMode ? 'disc' : 'none' } as any}
+                                onChange={(e) => {
+                                    setInput(e.target.value);
+                                    const target = e.target as HTMLTextAreaElement;
+                                    target.style.height = 'auto';
+                                    target.style.height = `${target.scrollHeight}px`;
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleSubmit();
+                                    }
+                                }}
+                                placeholder={isPasswordMode ? "Enter password..." : "Enter username..."}
+                                autoFocus
+                            />
+                        </div>
+                        <div className="login-card-actions">
+                            <label className="remember-login-toggle">
+                                <input
+                                    type="checkbox"
+                                    checked={rememberLogin}
+                                    onChange={e => setRememberLogin(e.target.checked)}
+                                />
+                                <span>Remember login</span>
+                            </label>
+                            <button
+                                type="submit"
+                                className="login-btn"
+                                onClick={() => { triggerHaptic?.(40); }}
+                            >
+                                Login
+                            </button>
+                        </div>
+                        {accountState?.currentPrompt?.toLowerCase().includes('by what name') && (
+                            <div className="login-card-new-account">
+                                <button
+                                    type="button"
+                                    className="login-new-acc-btn"
+                                    onClick={() => { triggerHaptic?.(30); executeCommand('new'); }}
+                                >
+                                    New Account
+                                </button>
+                            </div>
+                        )}
+                    </form>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={`input-area ${terrainClass} input-container`}>
+            {isLoginStage && (
+                <label className="remember-login-toggle">
+                    <input
+                        type="checkbox"
+                        checked={rememberLogin}
+                        onChange={e => setRememberLogin(e.target.checked)}
+                    />
+                    <span>Remember login</span>
+                </label>
+            )}
             <div className="input-main-container" ref={containerRef}>
-                <form className="input-form" onSubmit={onSend}>
+                <form className="input-form" onSubmit={handleSubmit}>
                     {(() => {
                         const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
                         const PARLEY_COLORS: Record<string, string> = {
@@ -315,21 +415,11 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 const target = e.target as HTMLTextAreaElement;
                                 target.style.height = 'auto';
                                 target.style.height = `${target.scrollHeight}px`;
-                                // Keystroke glow: cancel pending frame, remove class, reflow, re-add
-                                const el = containerRef.current;
-                                if (el) {
-                                    if (glowRafRef.current !== null) cancelAnimationFrame(glowRafRef.current);
-                                    el.classList.remove('keystroke-glow');
-                                    glowRafRef.current = requestAnimationFrame(() => {
-                                        el.classList.add('keystroke-glow');
-                                        glowRafRef.current = null;
-                                    });
-                                }
                             }}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();
-                                    onSend();
+                                    handleSubmit();
                                 }
                             }}
                             onFocus={(e) => {
@@ -350,18 +440,18 @@ const InputArea: React.FC<InputAreaProps> = ({
                     <button type="submit" style={{ display: 'none' }}>Send</button>
                 </form>
 
-                    {gameState === 'account' && accountState?.stage === 'login' && (
+                    {isLoginStage && (
                         <button
                             type="button"
                             className="login-btn"
-                            onClick={() => { triggerHaptic(40); onSend(); }}
+                            onClick={() => { triggerHaptic(40); handleSubmit(); }}
                             onPointerDown={(e) => e.stopPropagation()}
                         >
                             Login
                         </button>
                     )}
 
-                    {(gameState === 'playing' || gameState === 'account') && (
+                    {gameState === 'playing' && (
                         <div className="input-actions-container">
                             {shouldShowSpat && (
                                 <SpatButtons
@@ -404,8 +494,8 @@ const InputArea: React.FC<InputAreaProps> = ({
                 )}
                 </div>
 
-            </div>
-        );
+        </div>
+    );
 };
 
 export default React.memo(InputArea);

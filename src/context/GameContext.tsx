@@ -44,6 +44,7 @@ import { useVitalsStore } from '../stores/useVitalsStore';
 import { useNetworkStore } from '../stores/useNetworkStore';
 import { useModeStore } from '../stores/useModeStore';
 import { useSessionStore } from '../stores/useSessionStore';
+import { useEffectTimerStore } from '../stores/useEffectTimerStore';
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
 export const VitalsContext = createContext<VitalsContextType | undefined>(undefined);
@@ -426,6 +427,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     useEffect(() => {
         telnetRef.current = telnet;
     }, [telnet]);
+
+    // Scope per-character stores (magic keys, effect timers) to the active character.
+    useEffect(() => {
+        const name = s.characterName;
+        useSettingsStore.getState().setCurrentCharacter(name);
+        useEffectTimerStore.getState().setCurrentCharacter(name);
+    }, [s.characterName]);
 
     // --- Always-on recording: auto-start on connect, auto-save on disconnect ---
     const previousStatusRef = useRef(s.status);
@@ -1003,6 +1011,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         bgImageBottom: settingsStore.bgImageBottom,
         setBgImage: settingsStore.setBgImage,
         setBgImageBottom: settingsStore.setBgImageBottom,
+        teleportTargets: settingsStore.teleportTargets,
+        setTeleportTargets: settingsStore.setTeleportTargets,
         practice,
         help,
         quests,

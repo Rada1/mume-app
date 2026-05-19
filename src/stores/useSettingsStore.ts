@@ -45,6 +45,8 @@ interface SettingsState {
     autoSaveSessions: boolean;
     soundTriggers: import('../types').SoundTrigger[];
     teleportTargets: TeleportTarget[];
+    teleportTargetsByCharacter: Record<string, TeleportTarget[]>;
+    currentCharacter: string | null;
     categoryOverrides: CategoryOverride[];
     customTraits: CustomTraitConfig[];
     inlineCategories: InlineCategoryConfig[];
@@ -91,6 +93,7 @@ interface SettingsState {
     setAutoSaveSessions: (val: boolean) => void;
     setSoundTriggers: (val: import('../types').SoundTrigger[]) => void;
     setTeleportTargets: (val: TeleportTarget[] | ((prev: TeleportTarget[]) => TeleportTarget[])) => void;
+    setCurrentCharacter: (name: string | null) => void;
     setCategoryOverrides: (val: CategoryOverride[] | ((prev: CategoryOverride[]) => CategoryOverride[])) => void;
     setCustomTraits: (val: CustomTraitConfig[] | ((prev: CustomTraitConfig[]) => CustomTraitConfig[])) => void;
     setInlineCategories: (val: InlineCategoryConfig[] | ((prev: InlineCategoryConfig[]) => InlineCategoryConfig[])) => void;
@@ -212,6 +215,8 @@ export const useSettingsStore = create<SettingsState>()(
             autoSaveSessions: true,
             soundTriggers: [],
             teleportTargets: [],
+            teleportTargetsByCharacter: {},
+            currentCharacter: null,
             categoryOverrides: [],
             customTraits: [],
             inlineCategories: [],
@@ -260,8 +265,19 @@ export const useSettingsStore = create<SettingsState>()(
             setIsMmapperMode: (isMmapperMode) => set({ isMmapperMode }),
             setAutoSaveSessions: (autoSaveSessions) => set({ autoSaveSessions }),
             setSoundTriggers: (soundTriggers) => set({ soundTriggers }),
-            setTeleportTargets: (val) => set((state) => ({
-                teleportTargets: typeof val === 'function' ? val(state.teleportTargets) : val
+            setTeleportTargets: (val) => set((state) => {
+                const next = typeof val === 'function' ? val(state.teleportTargets) : val;
+                const char = state.currentCharacter;
+                return {
+                    teleportTargets: next,
+                    teleportTargetsByCharacter: char
+                        ? { ...state.teleportTargetsByCharacter, [char]: next }
+                        : state.teleportTargetsByCharacter,
+                };
+            }),
+            setCurrentCharacter: (name) => set((state) => ({
+                currentCharacter: name,
+                teleportTargets: name ? (state.teleportTargetsByCharacter[name] || []) : [],
             })),
             setCategoryOverrides: (val) => set((state) => {
                 const categoryOverrides = typeof val === 'function' ? val(state.categoryOverrides) : val;
@@ -300,7 +316,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 6,
+            version: 7,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -358,6 +374,13 @@ export const useSettingsStore = create<SettingsState>()(
                     persistedState.theme = legacyTheme === 'light' ? 'light' : 'dark';
                 }
 
+                if (version < 7) {
+                    // Magic keys are now scoped per character. Drop the legacy global list
+                    // (keys expire after 24h anyway, so losses are bounded) and start fresh.
+                    persistedState.teleportTargetsByCharacter = {};
+                    delete persistedState.teleportTargets;
+                }
+
                 if (version < 4 || !persistedState.categoryOverrides || !persistedState.customTraits) {
                     const split = splitInlineActionConfigs(persistedState.inlineCategories || []);
                     persistedState.categoryOverrides = persistedState.categoryOverrides || split.categoryOverrides;
@@ -379,7 +402,12 @@ export const useSettingsStore = create<SettingsState>()(
                 return merged;
             },
             partialize: (state) => {
-                const { inlineCategories: _inlineCategories, ...persisted } = state;
+                const {
+                    inlineCategories: _inlineCategories,
+                    teleportTargets: _teleportTargets,
+                    currentCharacter: _currentCharacter,
+                    ...persisted
+                } = state;
                 return persisted;
             }
         }

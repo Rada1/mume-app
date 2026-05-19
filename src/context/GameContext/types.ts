@@ -267,8 +267,6 @@ export interface SessionContextType {
         characterName: string | null;
         setCharacterName: (val: string | null) => void;
         registry: ReturnType<typeof import('../../hooks/useEntityRegistry').useEntityRegistry>;
-        teleportTargets: import('../../types').TeleportTarget[];
-        setTeleportTargets: Dispatch<SetStateAction<import('../../types').TeleportTarget[]>>;
         quests: import('../../types').QuestData;
         setQuests: Dispatch<SetStateAction<import('../../types').QuestData>>;
         roomNameRef: React.MutableRefObject<string | null>;

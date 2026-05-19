@@ -6,25 +6,27 @@
     --map-accent: #fcd34d;
     --font-main: 'Iosevka', monospace;
     --font-mono: 'Iosevka', monospace;
+    --font-title: 'Kelt', 'Cinzel', 'Aniron', 'Times New Roman', serif;
+    --font-serif: 'Merriweather', 'Times New Roman', serif;
     --radius-card: 12px;
 
     /* Dark Mode (Default) */
     --bg-app-rgb: 0, 0, 0;
     --bg-app: rgb(var(--bg-app-rgb));
-    --bg-panel: rgba(var(--bg-app-rgb), 0.65);
+    --bg-panel: #101010;
     --bg-overlay: rgba(0, 0, 0, 0.70);
     --text-primary: #d1d5db;   /* Cool Gray 300 - Softer than pure white */
     --text-dim: #9ca3af;       /* Gray 400 */
     --text-faded: #6b7280;     /* Gray 500 */
-    --border-color: rgba(255, 255, 255, 0.1);
+    --border-color: rgba(184, 134, 11, 0.4);
     --input-bg: rgb(35, 35, 40);
     --command-surface-bg: rgb(45, 39, 43);
     --header-bg: rgba(0, 0, 0, 0.75);
-    --bg-modal: rgb(var(--bg-app-rgb));
-    --border-modal: rgba(255, 255, 255, 0.15);
+    --bg-modal: #101010;
+    --border-modal: rgba(184, 134, 11, 0.2);
     --color-exit: rgba(255, 255, 255, 0.9);
-    --mapper-bg: rgba(var(--bg-app-rgb), 0.4);
-    --mapper-border: rgba(255, 255, 255, 0.1);
+    --mapper-bg: #0a0d15;
+    --mapper-border: rgba(184, 134, 11, 0.3);
     
     /* Inline Button Colors */
     --color-npc: rgba(253, 224, 71, 0.95);    /* Bright Pastel Yellow */
@@ -113,4 +115,23 @@ textarea,
 [role="button"] {
     outline: none;
     -webkit-tap-highlight-color: transparent;
+}
+
+/* Medieval Theme Typography Mappings */
+h1, h2, h3, h4, h5, h6, 
+.drawer-title, 
+.modal-title, 
+.popover-header, 
+.cmd-action-header, 
+.char-detail-header {
+    font-family: var(--font-title) !important;
+    letter-spacing: 0.5px;
+}
+
+.help-content, 
+.markdown-body, 
+.help-nav-item, 
+.popover-item, 
+.popover-empty {
+    font-family: var(--font-serif) !important;
 }

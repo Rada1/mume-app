@@ -109,10 +109,24 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
         };
     }, [bgImageBottom]);
 
+    const isWater = React.useMemo(() => {
+        if (!bgImage) return false;
+        const lowerBg = bgImage.toLowerCase();
+        return lowerBg.includes('water.png') || 
+               lowerBg.includes('shallows.png') || 
+               lowerBg.includes('rapids.png') || 
+               lowerBg.includes('underwater.webp');
+    }, [bgImage]);
+
+    const isForest = React.useMemo(() => {
+        if (!bgImage) return false;
+        return bgImage.toLowerCase().includes('forest.png');
+    }, [bgImage]);
+
     return (
         <div style={{ '--lightning-x': `${lightningX}%` } as React.CSSProperties}>
             {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
-            <div className={`environment-root back lighting-state-${isImmersionMode ? lighting : 'none'} terrain-${(terrain || 'default').toLowerCase().replace(/\s+/g, '-')}`}>
+            <div className={`environment-root back lighting-state-${isImmersionMode ? lighting : 'none'} terrain-${(terrain || 'default').toLowerCase().replace(/\s+/g, '-')} ${isWater ? 'water-motion-active' : ''} ${isForest ? 'forest-motion-active' : ''}`}>
                 {isImmersionMode && (
                     <>
                         {/* Layer A */}

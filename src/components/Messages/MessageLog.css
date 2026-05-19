@@ -42,7 +42,7 @@
     display: block;
     overflow-y: auto;
     overflow-x: clip;
-    color: var(--text-primary);
+    color: #d4cdb8; /* mume.org parchment */
     word-wrap: break-word;
     overflow-wrap: break-word;
     overscroll-behavior-y: contain;
@@ -1756,6 +1756,11 @@ span.inline-btn {
     width: 100%;
 }
 
+
+/* Light mode: log uses primary text color, not the dark-mode parchment */
+.light-mode .message-log {
+    color: var(--text-primary);
+}
 
 /* Light mode: command bubbles */
 .light-mode .user-command-bubble {

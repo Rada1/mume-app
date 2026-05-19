@@ -204,7 +204,6 @@ export const useSessionState = (
     const [alertness, setAlertness] = useState('normal');
     const [level, setLevel] = useState(1);
     const [currentName, setCurrentName] = useState<string | null>(characterName);
-    const [teleportTargets, setTeleportTargets] = useState<import('../../types').TeleportTarget[]>([]);
     const [quests, setQuests] = useState<import('../../types').QuestData>({ activeQuests: [], lastUpdated: 0 });
     const registry = useEntityRegistry();
 
@@ -324,7 +323,7 @@ export const useSessionState = (
             alertness, setAlertness,
             level, setLevel,
             characterName: currentName, setCharacterName: setCurrentName,
-            registry, teleportTargets, setTeleportTargets,
+            registry,
             quests, setQuests,
             roomNameRef, roomDescRef: roomDescRefInternal,
             lastCommMsgIdRef, lastCommTimeRef,
@@ -357,7 +356,7 @@ export const useSessionState = (
         roomNpcs, roomItems, setRoomItems, inventoryLines, statsLines,
         infoLines, scoreLines, questLines, achievementLines, practiceLines, whoLines, whereLines,
         eqLines, abilities, characterClass, actions, mood, spellSpeed, alertness,
-        level, currentName, setCurrentName, registry, teleportTargets, quests,
+        level, currentName, setCurrentName, registry, quests,
         lightningEnabled, rStore.whoList, setWhoList, whereList, setWhereList, log, ui.selectedObjectIds,
         ui.toggleObjectSelection, ui.clearObjectSelection, recorder, discoveredItems,
         gameTime, setGameTime, rStore.roomNum, rStore.chars, captureSession

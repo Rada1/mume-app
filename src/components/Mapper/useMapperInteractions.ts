@@ -497,12 +497,17 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             e.stopPropagation();
             const { mode, joystick, executeCommand, triggerHaptic, stopWalking, setInfoRoomId, setSelectedRoomIds, setIsDragging, setRooms } = depsRef.current;
 
-            if (!activePointersRef.current.has(e.pointerId) && ignoredPointerUpsRef.current.has(e.pointerId)) {
-                ignoredPointerUpsRef.current.delete(e.pointerId);
-                try { cvs.releasePointerCapture(e.pointerId); } catch(err) {}
+            if (!activePointersRef.current.has(e.pointerId)) {
+                if (ignoredPointerUpsRef.current.has(e.pointerId)) {
+                    ignoredPointerUpsRef.current.delete(e.pointerId);
+                    try { cvs.releasePointerCapture(e.pointerId); } catch(err) {}
+                }
+                // Pointer never started on the canvas — leave it to whatever owns it
+                // (popover buttons, action buttons, etc). Otherwise stale dragTypeRef
+                // state from a prior canvas tap can spuriously close popovers.
                 return;
             }
-            
+
             if (longPressTimerRef.current) { clearTimeout(longPressTimerRef.current); longPressTimerRef.current = null; }
             
             // Capture the fired state before resetting it

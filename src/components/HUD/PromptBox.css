@@ -18,7 +18,7 @@
 }
 
 .prompt-box-content {
-    background: #000000 !important;
+    background: #0a0d15 !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border-top: 1px solid rgba(var(--terrain-glow-rgb, 94, 98, 105), 0.18) !important;
@@ -204,7 +204,7 @@
 }
 
 .prompt-combat-stat strong {
-    color: #4ade80;
+    color: var(--ansi-green, #55ff55);
     font-weight: 900;
 }
 
@@ -480,13 +480,19 @@
 }
 
 .pos-combat-square-btn.active {
-    background: var(--accent, #3b82f6);
-    color: #fff;
-    border-color: var(--accent, #3b82f6);
+    background: linear-gradient(135deg, #ffd700 0%, #c99738 100%);
+    color: #000;
+    border-color: #ffd700;
+    box-shadow: 0 0 10px rgba(201, 151, 56, 0.4);
 }
 
 .disposition-square-btn {
-    color: #4ade80;
+    color: #c99738;
+}
+
+.disposition-square-btn:hover {
+    color: #ffd700;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
 }
 
 .disposition-popout-backdrop {
@@ -505,12 +511,12 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
     padding: 24px 12px 12px;
-    background: rgba(0, 0, 0, 0.82);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(10, 10, 12, 0.95);
+    border: 1px solid rgba(201, 151, 56, 0.35);
     border-radius: 18px;
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 15px rgba(201, 151, 56, 0.15);
     z-index: 3501;
     pointer-events: auto;
 }
@@ -520,7 +526,7 @@
     top: -12px;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--accent, #3b82f6);
+    background: linear-gradient(135deg, #ffd700 0%, #c99738 100%);
     color: #000;
     font-size: 11px;
     line-height: 1;
@@ -529,7 +535,7 @@
     border-radius: 18px;
     text-transform: uppercase;
     letter-spacing: 1.2px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 12px rgba(201, 151, 56, 0.4);
     white-space: nowrap;
 }
 
@@ -547,13 +553,14 @@
 
 .disposition-slider-label {
     grid-column: 1 / -1;
-    color: rgba(255, 255, 255, 0.82);
-    font-family: var(--font-mono, monospace);
+    color: #ffd700;
+    font-family: var(--font-title), serif;
     font-size: 10px;
     font-weight: 900;
     line-height: 1;
     text-align: center;
     text-transform: uppercase;
+    text-shadow: 0 0 4px rgba(255, 215, 0, 0.2);
 }
 
 .disposition-slider {
@@ -563,7 +570,7 @@
     height: 100%;
     margin: 0;
     cursor: grab;
-    accent-color: var(--accent, #3b82f6);
+    accent-color: #c99738;
 }
 
 .disposition-slider-options {
@@ -585,11 +592,22 @@
     text-align: left;
     cursor: pointer;
     white-space: nowrap;
+    transition: color 0.15s ease, text-shadow 0.15s ease;
+}
+
+.disposition-option:hover {
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 .disposition-option.active {
-    color: #4ade80;
-    text-shadow: 0 0 8px rgba(74, 222, 128, 0.35);
+    color: #ffd700;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.disposition-option.active:hover {
+    color: #fffbcf;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 }
 
 .pos-combat-square-btn.is-fighting {

@@ -29,15 +29,15 @@
     /* Flanking Logic: Aligns left edge of drawer to (center + logRadius + gap) */
     right: max(var(--drawer-margin), calc(50% - var(--log-max-width)/2 - var(--drawer-width) - var(--drawer-gap)));
     width: var(--drawer-width);
-    background: rgba(15, 15, 15, 0.45);
-    backdrop-filter: blur(28px) saturate(1.2);
-    -webkit-backdrop-filter: blur(28px) saturate(1.2);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: #0a0d15;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid rgba(184, 134, 11, 0.2);
     border-radius: var(--radius-card);
     z-index: var(--z-drawer);
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 0 20px rgba(184, 134, 11, 0.35), 0 4px 14px rgba(0, 0, 0, 0.45);
     overflow: hidden;
 
     /* Animation */
@@ -92,20 +92,53 @@
 }
 
 .drawer-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(184, 134, 11, 0.3);
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(184, 134, 11, 0.05);
+    position: relative;
+    min-height: 44px;
 }
 
 .drawer-title {
-    font-weight: 700;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.5);
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
+    opacity: 0.95;
+}
+
+.drawer-close-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.drawer-close-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.drawer-close-btn:active {
+    transform: translateY(-50%) scale(0.92);
 }
 
 .drawer-content {
@@ -114,6 +147,11 @@
     display: flex;
     flex-direction: column;
     font-size: var(--dynamic-log-size, 16px);
+    /* Mume.org gold — overrides the global --accent inside drawer-scoped tab bars
+       (DrawerTabBar uses var(--accent) and var(--text-faded) inline). */
+    --accent: #e8b020;
+    --accent-rgb: 232, 176, 32;
+    --border-color: rgba(232, 176, 32, 0.22);
 }
 
 .drawer-content .inline-btn,
@@ -135,6 +173,15 @@
     background: rgba(255, 255, 255, 0.1) !important;
 }
 
+/* Mume.org theme palette — scoped to drawer tabs */
+.desktop-drawer-tabs,
+.portrait-tab-bar {
+    --tab-accent: #e8b020;
+    --tab-accent-rgb: 232, 176, 32;
+    --tab-bg: rgba(12, 12, 18, 0.78);
+    --tab-border: rgba(232, 176, 32, 0.22);
+}
+
 /* Desktop Side Tabs */
 .desktop-drawer-tabs {
     position: fixed;
@@ -145,20 +192,21 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 12px 0;
-    background: rgba(10, 10, 10, 0.4);
+    padding: 0;
+    background: var(--tab-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--tab-border);
     border-right: none;
     border-radius: 12px 0 0 12px;
     z-index: var(--z-drawer-tabs);
-    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
 }
 
 /* Right-side (Utility) Tabs: Accent line on the INNER (left) edge */
 .desktop-drawer-tabs.right .desktop-edge-tab.active {
-    box-shadow: inset 3px 0 0 var(--accent);
+    box-shadow: inset 3px 0 0 var(--tab-accent);
 }
 
 .desktop-drawer-tabs.left {
@@ -166,13 +214,14 @@
     right: auto;
     border-radius: 0 12px 12px 0;
     border-left: none;
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
+    border-right: 1px solid var(--tab-border);
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
 }
 
 /* Left-side (Map) Tabs: Accent line on the INNER (right) edge */
 .desktop-drawer-tabs.left .desktop-edge-tab.active {
-    box-shadow: inset -3px 0 0 var(--accent);
+    box-shadow: inset -3px 0 0 var(--tab-accent);
 }
 
 .desktop-edge-tab {
@@ -184,18 +233,19 @@
     justify-content: center;
     gap: 4px;
     cursor: pointer;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(220, 200, 160, 0.5);
     transition: all 0.2s ease;
 }
 
 .desktop-edge-tab:hover {
-    color: rgba(255, 255, 255, 0.9);
-    background: rgba(255, 255, 255, 0.05);
+    color: rgba(232, 176, 32, 0.95);
+    background: rgba(var(--tab-accent-rgb), 0.08);
 }
 
 .desktop-edge-tab.active {
-    color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.1);
+    color: var(--tab-accent);
+    background: rgba(var(--tab-accent-rgb), 0.12);
+    text-shadow: 0 0 12px rgba(var(--tab-accent-rgb), 0.45);
 }
 
 /* Accent line logic moved to main tabs block */
@@ -220,17 +270,17 @@
     /* Flanking Logic: Aligns right edge of drawer to (center - logRadius - gap) */
     left: max(var(--drawer-margin), calc(50% - var(--log-max-width)/2 - var(--drawer-width) - var(--drawer-gap)));
     width: var(--drawer-width);
-    background: rgba(15, 15, 15, 0.45);
-    backdrop-filter: blur(28px) saturate(1.2);
-    -webkit-backdrop-filter: blur(28px) saturate(1.2);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: #0a0d15;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid rgba(184, 134, 11, 0.2);
     border-radius: var(--radius-card);
     z-index: var(--z-drawer);
     transform: translateX(-20px);
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 0 20px rgba(184, 134, 11, 0.35), 0 4px 14px rgba(0, 0, 0, 0.45);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -267,11 +317,11 @@
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    background: rgba(15, 15, 15, 0.35);
+    background: var(--tab-bg);
     backdrop-filter: blur(24px) saturate(1.2);
     -webkit-backdrop-filter: blur(24px) saturate(1.2);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
+    border-top: 1px solid var(--tab-border);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.35);
     height: calc(52px + var(--mobile-bottom-reserved-space, 0px));
     min-height: calc(52px + var(--mobile-bottom-reserved-space, 0px));
     flex-shrink: 0;
@@ -296,16 +346,12 @@
     font-size: 0.6rem;
 }
 
-/* Solid black backgrounds for desktop drawers */
+/* Mume.org-themed solid backgrounds for desktop drawers */
 @media (min-width: 1025px) {
-    .log-card-drawer {
-        background: #000 !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-    }
-
+    .log-card-drawer,
     .map-drawer-desktop {
-        background: #000 !important;
+        background: #0a0d15 !important;
+        border: none !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
     }
@@ -314,17 +360,44 @@
 /* Light mode overrides */
 
 .light-mode .drawer-header {
-    background: rgba(0, 0, 0, 0.03);
-    border-bottom-color: rgba(0, 0, 0, 0.1);
+    background: rgba(168, 122, 42, 0.06);
+    border-bottom-color: rgba(168, 122, 42, 0.28);
 }
 
 .light-mode .drawer-title {
-    color: rgba(0, 0, 0, 0.45);
+    color: #8a6620;
+    text-shadow: 0 0 6px rgba(168, 122, 42, 0.2);
+}
+
+.light-mode .drawer-close-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.light-mode .drawer-close-btn:hover {
+    background: rgba(0, 0, 0, 0.12);
+    border-color: rgba(0, 0, 0, 0.16);
+    color: rgba(0, 0, 0, 0.9);
+}
+
+.light-mode .drawer-content {
+    --accent: #a87a2a;
+    --accent-rgb: 168, 122, 42;
+    --border-color: rgba(168, 122, 42, 0.3);
+}
+
+.light-mode .desktop-drawer-tabs,
+.light-mode .portrait-tab-bar {
+    --tab-accent: #a87a2a;
+    --tab-accent-rgb: 168, 122, 42;
+    --tab-bg: #f5efe2;
+    --tab-border: rgba(168, 122, 42, 0.28);
 }
 
 .light-mode .desktop-drawer-tabs {
-    background: #e8e8ed;
-    border-color: rgba(0, 0, 0, 0.1);
+    background: var(--tab-bg);
+    border-color: var(--tab-border);
     box-shadow: -5px 0 20px rgba(0, 0, 0, 0.12);
 }
 
@@ -333,12 +406,12 @@
 }
 
 .light-mode .desktop-edge-tab {
-    color: rgba(0, 0, 0, 0.4);
+    color: rgba(80, 60, 20, 0.55);
 }
 
 .light-mode .desktop-edge-tab:hover {
-    color: rgba(0, 0, 0, 0.8);
-    background: rgba(0, 0, 0, 0.05);
+    color: #8a6620;
+    background: rgba(var(--tab-accent-rgb), 0.1);
 }
 
 .light-mode .log-card-drawer {
@@ -359,9 +432,9 @@
 }
 
 .light-mode .portrait-tab-bar {
-    background: #f2f2f7;
-    border-top-color: rgba(0, 0, 0, 0.08);
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+    background: var(--tab-bg);
+    border-top-color: var(--tab-border);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
 }
 
 /* Immersion mode: restore depth shadows */

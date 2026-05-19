@@ -26,7 +26,8 @@ const Header: React.FC<HeaderProps> = () => {
         status,
         telnet,
         executeCommand,
-        triggerHaptic
+        triggerHaptic,
+        gameState
     } = useGame();
 
     // Get mode state
@@ -42,6 +43,7 @@ const Header: React.FC<HeaderProps> = () => {
     const [isEnteringTarget, setIsEnteringTarget] = useState(false);
     const [manualTargetInput, setManualTargetInput] = useState('');
     const targetInputRef = useRef<HTMLInputElement>(null);
+    const isAccountScreen = gameState === 'account';
     const displayedSpectateName = isSpectating
         ? (activeView === 'target' ? (characterInfo.name || spectateTarget) : spectateTarget)
         : null;
@@ -156,32 +158,36 @@ const Header: React.FC<HeaderProps> = () => {
         <header className={`header ${viewport.isMobile ? 'mobile-header' : ''}`}>
             {/* Left: Player Status HUD */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'visible', position: 'relative' }}>
-                <div className="player-status-hud" onClick={() => setUI(prev => ({ ...prev, drawer: 'character' }))}>
-                    <div className="player-identity">
-                        <span className="player-name">{characterInfo.name || (status === 'connected' ? '...' : 'MUME')}</span>
-                        <span className="player-level">{characterInfo.level > 0 ? `Lv.${characterInfo.level}` : ''}</span>
-                    </div>
-                    <div className="player-stats-mini">
-                        <div className="stat-pill xp">
-                            <span className="pill-label">TNL</span>
-                            <span className="pill-value">{formatCompactNumber(characterInfo.tnl)}</span>
+                {!isAccountScreen && (
+                    <div className="player-status-hud" onClick={() => setUI(prev => ({ ...prev, drawer: 'character' }))}>
+                        <div className="player-identity">
+                            <span className="player-name">{characterInfo.name || (status === 'connected' ? '...' : 'MUME')}</span>
+                            <span className="player-level">{characterInfo.level > 0 ? `Lv.${characterInfo.level}` : ''}</span>
                         </div>
-                        <div className="stat-pill tp">
-                            <span className="pill-label">TPNL</span>
-                            <span className="pill-value">{formatCompactNumber(characterInfo.tpnl)}</span>
+                        <div className="player-stats-mini">
+                            <div className="stat-pill xp">
+                                <span className="pill-label">TNL</span>
+                                <span className="pill-value">{formatCompactNumber(characterInfo.tnl)}</span>
+                            </div>
+                            <div className="stat-pill tp">
+                                <span className="pill-label">TPNL</span>
+                                <span className="pill-value">{formatCompactNumber(characterInfo.tpnl)}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div style={{ 
-                    position: viewport.isMobile && !viewport.isLandscape ? 'absolute' : 'relative',
-                    left: viewport.isMobile && !viewport.isLandscape ? 'calc(100% + 8px)' : 'auto',
-                    top: viewport.isMobile && !viewport.isLandscape ? '50%' : 'auto',
-                    transform: viewport.isMobile && !viewport.isLandscape ? 'translateY(-50%)' : 'none',
-                    zIndex: 9999,
-                    pointerEvents: 'none'
-                }}>
-                    <XpTicker variant="header" isLandscape={viewport.isLandscape} />
-                </div>
+                )}
+                {!isAccountScreen && (
+                    <div style={{ 
+                        position: viewport.isMobile && !viewport.isLandscape ? 'absolute' : 'relative',
+                        left: viewport.isMobile && !viewport.isLandscape ? 'calc(100% + 8px)' : 'auto',
+                        top: viewport.isMobile && !viewport.isLandscape ? '50%' : 'auto',
+                        transform: viewport.isMobile && !viewport.isLandscape ? 'translateY(-50%)' : 'none',
+                        zIndex: 9999,
+                        pointerEvents: 'none'
+                    }}>
+                        <XpTicker variant="header" isLandscape={viewport.isLandscape} />
+                    </div>
+                )}
             </div>
 
             {/* Middle: Flexible spacer */}
@@ -274,6 +280,7 @@ const Header: React.FC<HeaderProps> = () => {
                     </button>
                 )}
 
+                {!isAccountScreen && (
                 <div
                     className={`status-indicator ${!target ? 'clickable-target' : ''}`}
                     style={{
@@ -355,8 +362,9 @@ const Header: React.FC<HeaderProps> = () => {
                         )}
                     </div>
                 </div>
+                )}
 
-                {teleportTargetsCount > 0 && (
+                {!isAccountScreen && teleportTargetsCount > 0 && (
                     <div
                         className="status-indicator"
                         style={{

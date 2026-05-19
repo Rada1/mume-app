@@ -42,7 +42,7 @@ export const AtmosphericLayer: React.FC = () => {
         : lighting;
 
     const resolvedBgImage = isAccountMode 
-        ? '/assets/Pictures/account.png' 
+        ? (accountState.stage === 'login' ? null : '/assets/Pictures/account.png')
         : (bgImage ?? resolveTerrainBackground(activeTerrain));
     const race = userSession.vitals.characterInfo.race;
     const resolvedBottomBgImage = bgImageBottom

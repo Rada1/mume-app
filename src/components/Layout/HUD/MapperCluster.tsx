@@ -16,6 +16,11 @@ import { GutterDrawerPanel } from './GutterDrawerPanel';
 type CreationOption = { id: string; label: string };
 const EMPTY_CREATION_OPTIONS: CreationOption[] = [];
 
+const capitalize = (str: string): string => {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 interface MapperClusterProps {
     uiPositions: UiPositions;
     isEditMode: boolean;
@@ -312,7 +317,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                     disabled={!playNameInput.trim()}
                                                     onClick={() => { if (!playNameInput.trim()) return; triggerHaptic(30); executeCommand('play ' + playNameInput.trim()); setPlayNameInput(''); }}
                                                 >
-                                                    Play {playNameInput.trim() || '…'}
+                                                    Play {playNameInput.trim() ? capitalize(playNameInput.trim()) : '…'}
                                                 </button>
                                             </div>
                                         </div>
@@ -485,7 +490,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                     executeCommand('play ' + accountState.selectedCharacter!.name);
                                                 }}
                                             >
-                                                Play {accountState.selectedCharacter.name}
+                                                Play {capitalize(accountState.selectedCharacter.name)}
                                             </button>
                                         </div>
                                     </div>
@@ -501,7 +506,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                 width: '100%', 
                                 minHeight: 0, 
                                 overflow: 'hidden',
-                                justifyContent: 'center'
+                                justifyContent: 'flex-start'
                             }}>
                                 <div style={{ 
                                     color: 'rgba(255,255,255,0.4)', 
@@ -574,10 +579,10 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     flexWrap: 'nowrap',
                                     gap: '0px', 
                                     alignItems: 'center',
-                                    justifyContent: 'center',
+                                    justifyContent: 'flex-start',
                                     flex: '1 1 auto',
                                     width: '100%',
-                                    padding: '0px',
+                                    padding: '10px 4px',
                                     overflowY: 'auto',
                                     overflowX: 'hidden',
                                     WebkitOverflowScrolling: 'touch',
@@ -611,7 +616,15 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                                     height: '24px',
                                                                     boxSizing: 'border-box'
                                                                 }}>
-                                                                    <span style={{ color: 'var(--text-faded)', fontSize: '10px', fontWeight: 800, width: '28px', letterSpacing: '0.04em' }}>{opt.id.toUpperCase()}</span>
+                                                                    <span style={{ color: 'var(--text-faded)', fontSize: '10px', fontWeight: 800, letterSpacing: '0.04em' }}>
+                                                                        {opt.id === 'str' ? 'Strength (str)' :
+                                                                         opt.id === 'int' ? 'Intelligence (int)' :
+                                                                         opt.id === 'wis' ? 'Wisdom (wis)' :
+                                                                         opt.id === 'dex' ? 'Dexterity (dex)' :
+                                                                         opt.id === 'con' ? 'Constitution (con)' :
+                                                                         opt.id === 'wil' ? 'Willpower (wil)' :
+                                                                         opt.id === 'per' ? 'Perception (per)' : opt.id}
+                                                                    </span>
                                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                         <button
                                                                             onClick={(e) => {
@@ -785,48 +798,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                 gameState={gameState}
                                 terrain={currentTerrain}
                             />
-                            {isLoginStage && (
-                                <label className="remember-login-toggle" style={{ display: 'flex', alignItems: 'center', gap: '7px', marginTop: '10px', cursor: 'pointer', userSelect: 'none' }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={rememberLogin}
-                                        onChange={e => setRememberLogin(e.target.checked)}
-                                        style={{ width: '15px', height: '15px', accentColor: 'var(--accent)', cursor: 'pointer', flexShrink: 0 }}
-                                    />
-                                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', fontWeight: 500 }}>Remember login</span>
-                                </label>
-                            )}
-                            {isLoginStage && (
-                                <div style={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    marginTop: '12px',
-                                    width: '100%',
-                                    padding: '0 20px',
-                                    visibility: accountState.currentPrompt?.toLowerCase().includes('by what name') ? 'visible' : 'hidden'
-                                }}>
-                                    <button
-                                        className="account-menu-btn no-arrow"
-                                        style={{
-                                            width: 'auto',
-                                            minWidth: '160px',
-                                            padding: '10px 24px',
-                                            fontSize: '11px',
-                                            fontWeight: 900,
-                                            background: 'rgba(255,255,255,0.03)',
-                                            border: '1px solid rgba(255,255,255,0.1)',
-                                            borderRadius: '20px',
-                                            color: 'rgba(255,255,255,0.5)',
-                                            textTransform: 'uppercase',
-                                            letterSpacing: '1.5px',
-                                            justifyContent: 'center'
-                                        }}
-                                        onClick={() => { triggerHaptic(30); executeCommand('new'); }}
-                                    >
-                                        New Account
-                                    </button>
-                                </div>
-                            )}
                             </div>
                         )}
 

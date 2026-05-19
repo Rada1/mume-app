@@ -46,7 +46,7 @@ export const Embers: React.FC<EmbersProps> = ({ count }) => {
             duration: 6 + Math.random() * 8, // Base duration
             delay: Math.random() * 10,
             opacity: 0.7 + Math.random() * 0.3,
-            hue: 20 + Math.random() * 20, // Warm orange (20-40 range)
+            hue: 30 + Math.random() * 18, // Warm amber/gold (30-48 range)
             scale: 0.7 + Math.random() * 1.3,
             destX: `${(Math.random() - 0.5) * 20}vw`,
             destY: `${(Math.random() - 0.5) * 30}vh`,
