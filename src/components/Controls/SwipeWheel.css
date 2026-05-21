@@ -287,6 +287,30 @@
     transform: translate(-50%, 0) scale(0.94);
 }
 
+.class-indicator {
+    position: fixed;
+    left: var(--wheel-center-x, 50%);
+    top: calc(var(--wheel-center-y, 33%) - 158px);
+    transform: translate(-50%, 0);
+    padding: 6px 18px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid color-mix(in srgb, var(--class-color, #fff), transparent 45%);
+    border-radius: 20px;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    z-index: 50005;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    pointer-events: none;
+    user-select: none;
+    animation: swipe-wheel-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--class-color, #fff), transparent 65%);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--class-color, #fff), transparent 40%);
+}
+
 .button-label {
     position: absolute;
     top: 50%;

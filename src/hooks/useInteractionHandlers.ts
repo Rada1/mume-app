@@ -61,6 +61,7 @@ export interface InteractionDeps {
     toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
     clearObjectSelection: () => void;
     playClickSound: () => void;
+    playEffect: (name: string, options?: { pitch?: number; volume?: number }) => void;
     isSoundEnabled: boolean;
     initAudio: () => void;
     setAccountState: React.Dispatch<React.SetStateAction<AccountState>>;

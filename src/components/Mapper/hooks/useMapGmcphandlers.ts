@@ -2,6 +2,7 @@ import { MapperPrediction, MapperRoom } from '../mapperTypes';
 import { useRoomInfoHandler } from './useRoomInfoHandler';
 import { useUpdateExitsHandler } from './useUpdateExitsHandler';
 import { useTerrainHandler } from './useTerrainHandler';
+import { getExitTargetId } from '../mapperUtils';
 
 interface UseMapGmcphandlersProps {
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
@@ -38,6 +39,44 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
     };
 
     const handleMoveConfirmed = (e?: any) => {
+        const isDark = e?.detail?.isDark;
+        const pending = props.pendingMovesRef.current;
+        if (isDark && pending.length > 0) {
+            const nextMove = pending[0];
+            const currentId = props.currentRoomIdRef.current;
+            if (currentId) {
+                const currentRoom = props.roomsRef.current[currentId];
+                let targetId: string | null = null;
+                
+                // 1. Try to find in memory exits
+                if (currentRoom?.exits?.[nextMove.dir]) {
+                    const targetVnum = currentRoom.exits[nextMove.dir].gmcpDestId;
+                    if (targetVnum) {
+                        targetId = `m_${targetVnum}`;
+                    }
+                }
+                
+                // 2. Fallback to ArdaMap preloaded exits
+                if (!targetId && currentId.startsWith('m_')) {
+                    const prevVnum = currentId.substring(2);
+                    const ardaData = props.preloadedCoordsRef.current[prevVnum];
+                    if (ardaData && ardaData[4]) {
+                        const targetVnum = getExitTargetId(ardaData[4][nextMove.dir]);
+                        if (targetVnum) {
+                            targetId = `m_${targetVnum}`;
+                        }
+                    }
+                }
+
+                if (targetId) {
+                    if (props.showDebugEchoes) {
+                        props.addMessage?.('system', `[Mapper] Blind dead-reckoned move ${nextMove.dir} to ${targetId}`);
+                    }
+                    props.setCurrentRoomId(targetId);
+                }
+            }
+        }
+
         props.pendingMovesRef.current.shift();
         if (props.onRoomInfoProcessed) props.onRoomInfoProcessed();
         else {
@@ -85,4 +124,4 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
     });
 
     return { handleRoomInfo, handleUpdateExits, handleTerrain, pushPendingMove, handleMoveConfirmed };
-    };
+};

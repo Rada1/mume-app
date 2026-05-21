@@ -222,7 +222,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Stable message routing: ensure snoop lines always land in the spectate bucket 
     // regardless of which view is currently active. This prevents "leaking" snoop 
     // data into the main log or losing our own tells while viewing the target.
-    const routedAddMessage = React.useCallback((type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: any, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: any, commTextTokens?: any, providedCombatSide?: any, providedIsHitImpact?: boolean, providedIsDamageImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => {
+    const routedAddMessage = React.useCallback((type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: any, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: any, commTextTokens?: any, providedCombatSide?: any, providedIsHitImpact?: boolean, providedIsDamageImpact?: boolean, providedIsAvoidDamageImpact?: boolean, providedIsMissImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => {
         const textOnly = (precalculated?.textOnly || text || '').replace(/\x1b\[[0-9;]*m/g, '').trim();
         const looksLikePrompt = textOnly.length <= 80 && (
             type === 'prompt' ||
@@ -242,7 +242,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Bump activity for atmospheric effects
         s.bumpActivity();
 
-        const args = [type, text, extra, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, isSystem, replyTarget, replyCommand, commSender, commAction, commText, commColor, commSenderTokens, commTextTokens, providedCombatSide, providedIsHitImpact, providedIsDamageImpact, providedIsHitterImpact, providedIsSnoop, providedIsSnoopInput] as const;
+        const args = [type, text, extra, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, isSystem, replyTarget, replyCommand, commSender, commAction, commText, commColor, commSenderTokens, commTextTokens, providedCombatSide, providedIsHitImpact, providedIsDamageImpact, providedIsAvoidDamageImpact, providedIsMissImpact, providedIsHitterImpact, providedIsSnoop, providedIsSnoopInput] as const;
         if (type === 'snoop' || type === 'snoop-command' || type === 'snoop-vitals' || providedIsSnoop) {
             (s.spectateSession.log.addMessage as any)(...args);
         } else {
@@ -291,7 +291,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         registerEntity: s.registry.registerEntity,
         sendGMCP: sendGMCPProxy,
         sendCommand: sendCommandProxy,
-        pendingGmcpCommRef
+        pendingGmcpCommRef,
+        gameTime: s.gameTime,
+        setGameTime: s.setGameTime
     });
 
     // Stable ref to gmcpHandlers so replay onData can dispatch without stale closures.
@@ -379,7 +381,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     payload.commSender, payload.commAction, payload.commText, payload.commColor,
                     undefined, undefined,
                     payload.providedCombatSide, payload.providedIsHitImpact,
-                    payload.providedIsDamageImpact, payload.providedIsHitterImpact,
+                    payload.providedIsDamageImpact, payload.isAvoidDamageImpact,
+                    payload.isMissImpact, payload.providedIsHitterImpact,
                     payload.providedIsSnoop, payload.providedIsSnoopInput
                 );
             } else {
@@ -862,6 +865,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
             ui.setDrawer(drawer);
             requestDrawerRefresh(drawer);
+            playEffect('drawertab');
             if (viewport.isMobile) {
                 ui.setMapExpanded(false);
             }
@@ -919,7 +923,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         keywordOverrides: keywordOverrides.overrides, openKeywordEdit, lastCommandContextRef: { current: null },
         entities: s.entities, applyOptimisticChange: s.applyOptimisticChange,
         selectedObjectIds: s.selectedObjectIds, toggleObjectSelection: s.toggleObjectSelection,
-        clearObjectSelection: s.clearObjectSelection, playClickSound, isSoundEnabled: s.isSoundEnabled,
+        clearObjectSelection: s.clearObjectSelection, playClickSound, playEffect, isSoundEnabled: s.isSoundEnabled,
         waiting: !!v.stats?.conditions?.waiting, recordEntry: s.userSession.recorder.recordEntry, gameState: s.gameState, isPasswordMode: s.isPasswordMode,
         sessionMode, replayer, isSpectateMode: s.isSpectateMode, setIsSpectateMode: mode.setIsSpectating,
         showSpectatePromptInLog: settingsStore.showSpectatePromptInLog,

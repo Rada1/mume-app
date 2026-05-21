@@ -1,10 +1,11 @@
 import { useCallback, useRef, MutableRefObject } from 'react';
-import { GRID_SIZE, normalizeTerrain } from './mapperUtils';
+import { GRID_SIZE, normalizeTerrain, checkRoomFilter, findClosestMatchingRoomPath } from './mapperUtils';
 import { RenderContext } from './renderers/rendererUtils';
+import type { CombatPulse } from './renderers/rendererUtils';
 import { MapperPrediction } from './mapperTypes';
 import { drawTerrains, drawLocalTerrains } from './renderers/drawTerrains';
 import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
-import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee, drawDoorHighlights } from './renderers/drawEntities';
+import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee, drawDoorHighlights, drawFilterHighlights } from './renderers/drawEntities';
 
 interface RendererProps {
     rooms: Record<string, any>;
@@ -50,12 +51,16 @@ interface RendererProps {
     enemyColor?: string;
     neutralColor?: string;
     objectColor?: string;
+    targetColor?: string;
     opponentName?: string | null;
     opponentId?: string | null;
     activeInlineEntityId?: string | null;
     selectedObjectIds?: Set<string>;
     deathRoomId?: string | null;
     heldButton?: any | null;
+    activeMapFilter?: string | null;
+    mapSearchQuery?: string;
+    combatPulsesRef?: MutableRefObject<CombatPulse[]>;
 }
 
 export const useMapperRenderer = ({
@@ -65,8 +70,9 @@ export const useMapperRenderer = ({
     preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, exploredRef, exploredMarkers,
     unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
     triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-    roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor,
+    roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
     opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
+    activeMapFilter, mapSearchQuery, combatPulsesRef,
     showOrganicTerrain = true
 }: RendererProps) => {
 
@@ -77,6 +83,19 @@ export const useMapperRenderer = ({
     const roomsVersionRef = useRef(0);
     const fullExploredRef = useRef<{ count: number, set: Set<string> }>({ count: 0, set: new Set() });
     const emptyExploredAtRef = useRef<Record<string, number>>({});
+    const filterCacheRef = useRef<{
+        key: string;
+        matchedRoomIds: Set<string>;
+        closestRoomId: string | null;
+        filterPathIds: string[];
+        filterPathDistance: number;
+    }>({
+        key: '',
+        matchedRoomIds: new Set(),
+        closestRoomId: null,
+        filterPathIds: [],
+        filterPathDistance: 0
+    });
 
     const drawMap = useCallback((ctx: CanvasRenderingContext2D, dpr: number, canvasWidth: number, canvasHeight: number, marquee: { start: { x: number, y: number }, end: { x: number, y: number } } | null) => {
         const now = Date.now();
@@ -99,6 +118,7 @@ export const useMapperRenderer = ({
         
         const allRooms = stableRoomsRef.current;
         const preloaded = preloadedCoordsRef.current;
+
         const explored = (() => {
             if (!treatMapAsExplored) return exploredRef.current;
             const keys = Object.keys(preloaded);
@@ -127,6 +147,65 @@ export const useMapperRenderer = ({
                 newIndex[rz][key].push(room.id);
             });
             localSpatialIndexRef.current = newIndex;
+        }
+
+        // Filter scans and BFS are expensive on the full Arda map, so cache them
+        // between animation frames. Pulses can keep animating without re-running BFS.
+        let matchedRoomIds = filterCacheRef.current.matchedRoomIds;
+        let closestRoomId = filterCacheRef.current.closestRoomId;
+        let filterPathIds = filterCacheRef.current.filterPathIds;
+        let filterPathDistance = filterCacheRef.current.filterPathDistance;
+        const filterKey = [
+            activeMapFilter || '',
+            (mapSearchQuery || '').trim().toLowerCase(),
+            currentRoomId || '',
+            roomsVersionRef.current,
+            Object.keys(preloaded).length
+        ].join('|');
+
+        if (!activeMapFilter) {
+            if (filterCacheRef.current.key !== '') {
+                filterCacheRef.current = {
+                    key: '',
+                    matchedRoomIds: new Set(),
+                    closestRoomId: null,
+                    filterPathIds: [],
+                    filterPathDistance: 0
+                };
+            }
+            matchedRoomIds = filterCacheRef.current.matchedRoomIds;
+            closestRoomId = null;
+            filterPathIds = [];
+            filterPathDistance = 0;
+        } else if (filterCacheRef.current.key !== filterKey) {
+            const nextMatchedRoomIds = new Set<string>();
+            Object.keys(allRooms).forEach(rid => {
+                const rawId = rid.startsWith('m_') ? rid.substring(2) : rid;
+                if (checkRoomFilter(rid, allRooms[rid], preloaded[rawId], activeMapFilter, mapSearchQuery || '')) {
+                    nextMatchedRoomIds.add(rid);
+                }
+            });
+            Object.keys(preloaded).forEach(vnum => {
+                const rid = `m_${vnum}`;
+                if (!nextMatchedRoomIds.has(rid) && checkRoomFilter(rid, allRooms[rid], preloaded[vnum], activeMapFilter, mapSearchQuery || '')) {
+                    nextMatchedRoomIds.add(rid);
+                }
+            });
+
+            const closestPath = currentRoomId
+                ? findClosestMatchingRoomPath(currentRoomId, allRooms, preloaded, activeMapFilter, mapSearchQuery || '')
+                : null;
+            filterCacheRef.current = {
+                key: filterKey,
+                matchedRoomIds: nextMatchedRoomIds,
+                closestRoomId: closestPath?.targetId || null,
+                filterPathIds: closestPath?.pathIds || [],
+                filterPathDistance: closestPath?.distance || 0
+            };
+            matchedRoomIds = filterCacheRef.current.matchedRoomIds;
+            closestRoomId = filterCacheRef.current.closestRoomId;
+            filterPathIds = filterCacheRef.current.filterPathIds;
+            filterPathDistance = filterCacheRef.current.filterPathDistance;
         }
 
         const curZInt = Math.round(currentZ);
@@ -246,8 +325,9 @@ export const useMapperRenderer = ({
                 ctx: offCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
                 imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
                 allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
-                triggerRender, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId,
-                activeInlineEntityId, selectedObjectIds
+                triggerRender, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, opponentName, opponentId,
+                activeInlineEntityId, selectedObjectIds,
+                activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef
             };
 
             if (floorIndex) drawTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
@@ -299,12 +379,14 @@ export const useMapperRenderer = ({
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
             allRooms, roomAtCoord: (cache as any).roomAtCoord, visitedAtCoord: (cache as any).visitedAtCoord,
             preloaded: preloadedCoordsRef.current, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef,
-            groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName,
-            opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton
+            groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, opponentName,
+            opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
+            activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef
         };
 
         drawGroupMembers(rCtx);
         drawDeathIndicator(rCtx);
+        drawFilterHighlights(rCtx, playerPosRef);
         drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);
         drawDoorHighlights(rCtx, playerPosRef);
         drawMarkers(rCtx, stableMarkersRef, selectedMarkerId, camera.x, camera.y, camera.x + baseW/camera.zoom, camera.y + baseH/camera.zoom);
@@ -312,7 +394,7 @@ export const useMapperRenderer = ({
         ctx.restore();
         drawMarquee(rCtx, marquee);
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, activeMapFilter, mapSearchQuery, combatPulsesRef, currentRoomId]);
 
     return { drawMap };
 };

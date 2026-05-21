@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
-import { useGame, useLog, useUI, useVitals } from '../../context/GameContext';
-import { TokenRenderer } from '../Messages/TokenRenderer';
-import { UtensilsCrossed, Droplets } from 'lucide-react';
-import './MapperRoomInfo.css';
-
 /**
  * @file MapperRoomInfo.tsx
- * @description Renders current room name and description as an overlay on the map.
+ * @description Renders current room name, description, and clock as an overlay on the map.
  */
 
+import React, { useState } from 'react';
+import { useGame, useLog, useUI } from '../../context/GameContext';
+import { TokenRenderer } from '../Messages/TokenRenderer';
+import './MapperRoomInfo.css';
+
 export const MapperRoomInfo: React.FC = () => {
-    const { roomName, roomDesc, currentTerrain, triggerHaptic, env, isFoggy, viewport } = useGame();
-    const { stats } = useVitals();
+    const { roomName, roomDesc, currentTerrain, triggerHaptic, env, viewport } = useGame();
     const { setPopoverState, popoverState } = useUI();
     const [isExpanded, setIsExpanded] = useState(false);
     const log = useLog();

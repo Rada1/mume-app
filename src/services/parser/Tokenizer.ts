@@ -25,6 +25,7 @@ export interface TokenizerContext {
     playerColor?: string;
     objectColor?: string;
     roomColor?: string;
+    parent?: string | null;
 }
 
 export class Tokenizer {
@@ -213,7 +214,7 @@ export class Tokenizer {
         else if (lower.includes('you wear') || lower.includes('you wield') || lower.includes('you start using')) this.currentLocation = 'worn';
         else if (lower.includes('carrying')) this.currentLocation = 'carried';
         else if (lower.includes('using') || lower.includes('equipped')) this.currentLocation = 'worn';
-        else if (lower.includes('in the') || lower.includes('contents')) this.currentLocation = 'container';
+        else if (lower.includes('contents')) this.currentLocation = 'container';
         else if (lower.includes('obvious exits')) this.currentLocation = 'room';
 
         if (activeEntity) {
@@ -462,6 +463,7 @@ export class Tokenizer {
         else if (kind === 'object') {
             if (this.currentLocation === 'carried') category = 'cat-inventory-object';
             else if (this.currentLocation === 'worn') category = 'cat-worn-object';
+            else if (this.currentLocation === 'container') category = 'cat-container-item';
             else category = 'cat-room-object';
         }
         else if (kind === 'room') category = 'cat-room';
@@ -528,7 +530,7 @@ export class Tokenizer {
                 category,
                 context: resolvedContext,
                 location: this.currentLocation,
-                parent: this.currentParent,
+                parent: context.parent || this.currentParent,
                 action: 'menu',
                 style: activeEntity.style,
                 glowColor,

@@ -280,33 +280,36 @@ export const drawFeatures = (
                             drawInkyLine(ctx, x1, y1, x2, y2, WALL_COLOR, 3.0, dpr, invZoom);
                         } else if (hasDoor) {
                             const ddx = x2 - x1, ddy = y2 - y1;
+                            // Clip to this room's tile so the door doesn't bleed into the neighbor
+                            ctx.save();
+                            ctx.beginPath(); ctx.rect(wx, wy, s, s); ctx.clip();
+                            // Brown post segments (no glow)
                             ctx.strokeStyle = WALL_COLOR;
                             ctx.lineWidth = 3.5;
                             ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
                             ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
-                            
-                            // Add bloom/glow for doors
+
+                            // Yellow door elements with glow
                             ctx.save();
+                            ctx.fillStyle = "#ffcc00";
                             ctx.shadowBlur = 8;
                             ctx.shadowColor = "#ffcc00";
-                            
                             if (isClosed) {
                                 ctx.strokeStyle = "#ffcc00";
                                 ctx.lineWidth = 4.0;
                                 ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                             } else {
-                                // Open door indicator: little yellow squares touching the posts
-                                ctx.fillStyle = "#ffcc00";
                                 const sqSize = 4.0;
-                                if (ddx === 0) { // Vertical wall
+                                if (ddx === 0) {
                                     ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.25, sqSize, sqSize);
                                     ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.75 - sqSize, sqSize, sqSize);
-                                } else { // Horizontal wall
+                                } else {
                                     ctx.fillRect(x1 + ddx * 0.25, y1 - sqSize/2, sqSize, sqSize);
                                     ctx.fillRect(x1 + ddx * 0.75 - sqSize, y1 - sqSize/2, sqSize, sqSize);
                                 }
                             }
                             ctx.restore();
+                            ctx.restore(); // restore clip
                         }
                     }
                     ctx.restore();
@@ -542,23 +545,33 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 if (!hasExit) {
                     drawInkyLine(ctx, x1, y1, x2, y2, WALL_COLOR, 3.0, dpr, invZoom);
                 } else if (hasDoor && camera.zoom >= 0.1) {
-                    const ddx = x2 - x1, ddy = y2 - y1; ctx.strokeStyle = WALL_COLOR; ctx.lineWidth = 3.5;
+                    const ddx = x2 - x1, ddy = y2 - y1;
+                    // Clip to this room's tile so the door doesn't bleed into the neighbor
+                    ctx.save();
+                    ctx.beginPath(); ctx.rect(wx, wy, s, s); ctx.clip();
+                    // Brown post segments (no glow)
+                    ctx.strokeStyle = WALL_COLOR; ctx.lineWidth = 3.5;
                     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
                     ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
-                    if (isClosed) { 
-                        ctx.strokeStyle = "#ffcc00"; ctx.lineWidth = 4.0; ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke(); 
+                    // Yellow door elements with glow
+                    ctx.save();
+                    ctx.fillStyle = "#ffcc00";
+                    ctx.shadowBlur = 8; ctx.shadowColor = "#ffcc00";
+                    if (isClosed) {
+                        ctx.strokeStyle = "#ffcc00"; ctx.lineWidth = 4.0;
+                        ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                     } else {
-                        // Open door indicator: little yellow squares touching the posts
-                        ctx.fillStyle = "#ffcc00";
                         const sqSize = 4.0;
-                        if (ddx === 0) { // Vertical wall
+                        if (ddx === 0) {
                             ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.25, sqSize, sqSize);
                             ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.75 - sqSize, sqSize, sqSize);
-                        } else { // Horizontal wall
+                        } else {
                             ctx.fillRect(x1 + ddx * 0.25, y1 - sqSize/2, sqSize, sqSize);
                             ctx.fillRect(x1 + ddx * 0.75 - sqSize, y1 - sqSize/2, sqSize, sqSize);
                         }
                     }
+                    ctx.restore();
+                    ctx.restore(); // restore clip
                 }
             }
         }

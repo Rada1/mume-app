@@ -11,6 +11,14 @@ interface ButtonSwipeOverlayProps {
     onSwap?: () => void;
 }
 
+const CLASS_COLORS: Record<string, string> = {
+    warrior: '#ef4444',
+    ranger:  '#22c55e',
+    mage:    '#3b82f6',
+    cleric:  '#fbbf24',
+    thief:   '#cbd5e1',
+};
+
 const colorToRgb = (colorVal: string | undefined, defaultVal: string) => {
     if (!colorVal || colorVal.startsWith('var(')) return defaultVal;
     const rgbMatch = colorVal.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
@@ -95,6 +103,17 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                     </svg>
                 </div>
             </div>
+            {(() => {
+                const label = button.label || button.command || '';
+                if (!label) return null;
+                const knownClass = CLASS_COLORS[label.toLowerCase()];
+                const color = knownClass || wheelAccent;
+                return (
+                    <div className="class-indicator" style={{ '--class-color': color } as React.CSSProperties}>
+                        {label}
+                    </div>
+                );
+            })()}
             {longCmd && onSwap && (
                 <div
                     className="swap-button"

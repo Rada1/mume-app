@@ -1,63 +1,32 @@
 /**
  * @file useMumeTime.ts
- * @description Hook that provides the current MUME game time by advancing it based on real-time elapsed.
+ * @description Hook that provides the current MUME game time on-the-fly from the starting epoch, ticking smoothly.
  */
 
-import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { MumeTime } from '../types';
+import { getMumeTimeFromEpoch } from '../utils/mumeTimeUtils';
 
-export function useMumeTime(gameTime: MumeTime | null) {
-    const currentTime = useMemo(() => {
-        if (!gameTime) return null;
+export function useMumeTime(gameTime: MumeTime | null): MumeTime {
+    const epoch = gameTime?.mumeStartEpoch ?? 1517443173;
 
-        const realTimeElapsedMs = Date.now() - gameTime.lastSyncRealTime;
-        const mumeMinutesElapsed = Math.floor(realTimeElapsedMs / 1000); // 1 MUME minute = 1 real second
+    // State to trigger re-renders
+    const [, setTick] = useState(0);
 
-        if (mumeMinutesElapsed === 0) return gameTime;
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTick(t => t + 1);
+        }, 1000); // Tick every second
+        return () => clearInterval(interval);
+    }, []);
 
-        // Clone and advance
-        let { hour, minute, day, month, year, weekday } = gameTime;
-        
-        const weekdays = ['Sterday', 'Sunday', 'Monday', 'Trewsday', 'Hevenly Day', 'Mersday', 'Highday'];
-        const months = ['Afteryule', 'Solmath', 'Rethe', 'Astron', 'Thrimidge', 'Forelithe', 'Afterlithe', 'Wedmath', 'Halimath', 'Winterfilth', 'Blotmath', 'Foreyule'];
+    // Calculate current time dynamically based on the current real-world timestamp
+    const currentMumeTime = getMumeTimeFromEpoch(epoch, Date.now());
 
-        let weekdayIndex = weekdays.indexOf(weekday);
-        let monthIndex = months.indexOf(month);
+    // Preserve era from gameTime if available
+    if (gameTime?.era) {
+        currentMumeTime.era = gameTime.era;
+    }
 
-        minute += mumeMinutesElapsed;
-        while (minute >= 60) {
-            minute -= 60;
-            hour++;
-            if (hour >= 24) {
-                hour = 0;
-                day++;
-                if (weekdayIndex !== -1) {
-                    weekdayIndex = (weekdayIndex + 1) % 7;
-                    weekday = weekdays[weekdayIndex];
-                }
-                if (day > 30) {
-                    day = 1;
-                    if (monthIndex !== -1) {
-                        monthIndex = (monthIndex + 1) % 12;
-                        month = months[monthIndex];
-                        if (monthIndex === 0) {
-                            year++;
-                        }
-                    }
-                }
-            }
-        }
-
-        return {
-            ...gameTime,
-            hour,
-            minute,
-            day,
-            month,
-            year,
-            weekday
-        };
-    }, [gameTime]);
-
-    return currentTime;
+    return currentMumeTime;
 }

@@ -36,6 +36,8 @@ export interface UseGameParserDeps {
         providedCombatSide?: 'player' | 'opponent' | 'groupmate',
         providedIsHitImpact?: boolean,
         providedIsDamageImpact?: boolean,
+        providedIsAvoidDamageImpact?: boolean,
+        providedIsMissImpact?: boolean,
         providedIsHitterImpact?: boolean,
         providedIsSnoop?: boolean,
         providedIsSnoopInput?: boolean

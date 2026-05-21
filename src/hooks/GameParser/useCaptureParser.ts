@@ -3,7 +3,7 @@
  * @description Header-driven parser for the Reactive Capture Machine.
  */
 
-import { useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef } from 'react';
 import { CaptureType, CaptureSession } from '../../types/capture';
 import { DrawerLine } from '../../types';
 import { Tokenizer } from '../../services/parser/Tokenizer';
@@ -23,6 +23,7 @@ export interface CaptureParserDeps {
     setInfoLines: (lines: DrawerLine[]) => void;
     setQuestLines: (lines: DrawerLine[]) => void;
     setAchievementLines: (lines: DrawerLine[]) => void;
+    setContainerContents?: React.Dispatch<React.SetStateAction<Record<string, DrawerLine[]>>>;
     practiceHandler?: {
         parsePracticeLine: (text: string) => unknown;
         finalizePractice: () => void;
@@ -38,14 +39,19 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         setInventoryLines, setEqLines, setStatsLines, setPracticeLines,
         setWhoLines, setWhoList, setScoreLines, setInfoLines, setQuestLines, setAchievementLines, registerEntity,
         practiceHandler,
-        ansiConvert, captureStage
+        ansiConvert, captureStage, setContainerContents
     } = deps;
     
     // We use a local ref to ensure synchronous updates while useGameParser 
     // is looping through lines. This avoids stale closures and state timing issues.
     const sessionRef = useRef<CaptureSession | null>(null);
-    const pendingFlagsRef = useRef<{ isSilent: boolean, fromDrawer: boolean }>({ isSilent: false, fromDrawer: false });
+    const pendingFlagsRef = useRef<{ isSilent: boolean, fromDrawer: boolean, command?: string }>({ isSilent: false, fromDrawer: false });
     const pendingSilentCommandsRef = useRef<string[]>([]);
+    const lastRequestedContainerIdRef = useRef<string | null>(null);
+
+    const setLastRequestedContainerId = useCallback((id: string | null) => {
+        lastRequestedContainerIdRef.current = id;
+    }, []);
 
     const checkTriggers = useCallback((line: string, attachedText?: string): CaptureType | null => {
         const clean = (attachedText || line).trim();
@@ -67,6 +73,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         else if (lower.includes(', a level ') || lower.startsWith('you are a ') || lower.includes('real time')) type = 'info';
         else if (/\d+\/\d+ hits, \d+\/\d+ mana, and \d+\/\d+ moves/i.test(lower)) type = 'score';
         else if (clean.match(/^.{0,5}Score for /)) type = 'score';
+        else if (lower.startsWith('when you look inside') || lower.startsWith('when you look in ')) type = 'container';
 
         if (type) {
             // console.log(`[Capture] Trigger matched: ${type} for line: "${clean.substring(0, 40)}"`);
@@ -85,13 +92,20 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             lines: [],
             startTime: Date.now(),
             isSilent: pendingFlagsRef.current.isSilent,
-            fromDrawer: pendingFlagsRef.current.fromDrawer
+            fromDrawer: pendingFlagsRef.current.fromDrawer,
+            metadata: type === 'container' ? { 
+                containerId: lastRequestedContainerIdRef.current,
+                command: pendingFlagsRef.current.command
+            } : undefined
         };
+        if (type === 'container') {
+            lastRequestedContainerIdRef.current = null;
+        }
         sessionRef.current = newSession;
         setCaptureSession(newSession);
 
         // Reset pending flags once session starts
-        pendingFlagsRef.current = { isSilent: false, fromDrawer: false };
+        pendingFlagsRef.current = { isSilent: false, fromDrawer: false, command: undefined };
 
         const stageMap: Record<string, string> = {
             'inventory': 'inv',
@@ -141,7 +155,9 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             lower.includes('inventory contains') || lower.includes('equipped with') || 
             lower.includes('players online') || lower.includes('players in the world') ||
             lower.includes('player distance') || lower.startsWith('players') ||
-            lower.includes('visible players in your area') || lower.startsWith('distance')) {
+            lower.includes('visible players in your area') || lower.startsWith('distance') ||
+            lower.startsWith('when you look inside') || lower.includes('it is empty.') ||
+            lower.startsWith('in your') || cleanLine.toLowerCase().includes('<header>')) {
             isHeader = true;
         }
 
@@ -165,12 +181,12 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         }
 
         // Entity extraction for Where names (deferred — batched at finalization)
-        const objectText = (session.type === 'inventory' || session.type === 'equipment') && !isHeader
+        const objectText = (session.type === 'inventory' || session.type === 'equipment' || session.type === 'container') && !isHeader
             ? getObjectText(line)
             : null;
 
         // Entity registration for Items
-        if ((session.type === 'inventory' || session.type === 'equipment') && !isHeader) {
+        if ((session.type === 'inventory' || session.type === 'equipment' || session.type === 'container') && !isHeader) {
             if (objectText) {
                 const itemName = objectText;
                 const loc = session.type === 'equipment' ? 'worn' : 'carried';
@@ -193,7 +209,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             prefix,
             tokens: finalTokens,
             isHeader,
-            isItem: !isHeader && (session.type === 'inventory' || session.type === 'equipment'),
+            isItem: !isHeader && (session.type === 'inventory' || session.type === 'equipment' || session.type === 'container'),
         };
 
         // Synchronous update of the ref so it's available for the next line
@@ -247,6 +263,16 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 case 'achievement':
                     setAchievementLines(lines);
                     break;
+                case 'container': {
+                    const containerId = session.metadata?.containerId;
+                    if (containerId && setContainerContents) {
+                        setContainerContents(prev => ({
+                            ...prev,
+                            [containerId]: lines
+                        }));
+                    }
+                    break;
+                }
             }
         } catch (err) {
             console.error(`[Capture] Error updating ${session.type} lines:`, err);
@@ -255,7 +281,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         sessionRef.current = null;
         setCaptureSession(null);
         captureStage.current = 'none';
-    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setWhoList, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setAchievementLines, setCaptureSession, captureStage, practiceHandler]);
+    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setWhoList, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setAchievementLines, setCaptureSession, captureStage, practiceHandler, setContainerContents]);
 
     const hasSession = useCallback(() => sessionRef.current !== null, [sessionRef]);
     const isSilent = useCallback(() => sessionRef.current?.isSilent || false, [sessionRef]);
@@ -274,7 +300,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         .replace(/\s+/g, ' '), []);
 
     const setPendingFlags = useCallback((isSilent: boolean, fromDrawer: boolean, command?: string) => {
-        pendingFlagsRef.current = { isSilent, fromDrawer };
+        pendingFlagsRef.current = { isSilent, fromDrawer, command };
         if (!isSilent || !command?.trim()) return;
 
         pendingSilentCommandsRef.current.push(normalizeCommandEcho(command));
@@ -298,6 +324,8 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         return true;
     }, [normalizeCommandEcho]);
 
+    const getSession = useCallback(() => sessionRef.current, [sessionRef]);
+
     return {
         checkTriggers,
         startSession,
@@ -309,6 +337,8 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         getActiveType,
         setPendingFlags,
         isPendingSilent,
-        shouldSuppressCommandEcho
+        shouldSuppressCommandEcho,
+        setLastRequestedContainerId,
+        getSession
     };
 }

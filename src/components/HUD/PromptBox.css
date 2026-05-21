@@ -18,24 +18,23 @@
 }
 
 .prompt-box-content {
-    background: #0a0d15 !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    border-top: 1px solid rgba(var(--terrain-glow-rgb, 94, 98, 105), 0.18) !important;
-    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    background: rgba(13, 16, 23, 0.62) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: none !important;
+    border-radius: var(--radius-card);
 
     padding: 6px 12px 2px 12px;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    box-shadow: 0 -6px 20px rgba(var(--terrain-glow-rgb, 94, 98, 105), 0.08) !important;
+    box-shadow: none !important;
     transition: border-color 0.8s ease, box-shadow 0.8s ease;
     position: relative;
 
     overflow: visible;
     min-height: 44px;
 }
-
 
 /* --- Row 2: Unified Vitals (Horizontal) --- */
 .prompt-vitals-row-ascii {
@@ -487,12 +486,12 @@
 }
 
 .disposition-square-btn {
-    color: #c99738;
+    color: #fff;
 }
 
 .disposition-square-btn:hover {
-    color: #ffd700;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
 .disposition-popout-backdrop {

@@ -12,6 +12,7 @@ import { useGmcpVitals } from './useGmcpVitals';
 import { useGmcpOccupants } from './useGmcpOccupants';
 import { useGmcpGroup } from './useGmcpGroup';
 import { normalizeCombatantName } from '../../utils/combatUtils';
+import { getMumeTimeFromEpoch, MUME_MONTHS } from '../../utils/mumeTimeUtils';
 
 interface GmcpHandlersProps {
     mapperRef: React.RefObject<MapperRef>;
@@ -65,6 +66,8 @@ interface GmcpHandlersProps {
     sendGMCP?: (pkg: string, data?: any) => void;
     sendCommand?: (cmd: string) => void;
     pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string; msg?: string } | null>;
+    gameTime: import('../../types').MumeTime | null;
+    setGameTime: (time: import('../../types').MumeTime | null) => void;
 }
 
 export const useGmcpHandlers = (props: GmcpHandlersProps) => {
@@ -154,6 +157,33 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         // the visible line and cause the wrong log entry to become a bubble.
     }, []);
 
+    const onEvent = useCallback((pkg: string, data: any) => {
+        const pkgLower = pkg.toLowerCase();
+        if (pkgLower === 'event.sun') {
+            const secondsOfDay = typeof data === 'number' ? data : parseInt(data);
+            if (!isNaN(secondsOfDay)) {
+                const dayMinutes = secondsOfDay / 60;
+                
+                let daysElapsed = 0;
+                if (props.gameTime) {
+                    const monthIndex = MUME_MONTHS.indexOf(props.gameTime.month);
+                    daysElapsed = (props.gameTime.year - 2850) * 360 + (monthIndex >= 0 ? monthIndex : 0) * 30 + (props.gameTime.day - 1);
+                } else {
+                    const defaultEpoch = 1517443173;
+                    const elapsedMinutes = Math.floor(Date.now() / 1000 - defaultEpoch);
+                    daysElapsed = Math.floor(elapsedMinutes / 1440);
+                }
+
+                const totalMinutes = daysElapsed * 1440 + dayMinutes;
+                const calibratedEpoch = Math.floor(Date.now() / 1000) - totalMinutes;
+
+                console.log(`[useGmcpHandlers] Calibrated starting epoch via Event.Sun: ${calibratedEpoch} (secondsOfDay: ${secondsOfDay})`);
+                const newMumeTime = getMumeTimeFromEpoch(calibratedEpoch, Date.now());
+                props.setGameTime(newMumeTime);
+            }
+        }
+    }, [props.gameTime, props.setGameTime]);
+
     const onCharRide = useCallback((data: any) => {
         // console.log('[GMCP] Char.Ride:', data);
         const riding = data && (data.mount || data.mount_name || data.riding);
@@ -190,6 +220,7 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         onBufferChange: (name: string | null) => props.setBufferName(name),
         onCharVitals,
         onComm,
+        onEvent,
         onRoomCharsCombat,
         onPositionChange: (pos: string) => props.setPlayerPosition(pos),
         onGroupAdd,

@@ -20,7 +20,7 @@ const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, c
         gap: 7,
     }}>
         <div style={{
-            fontSize: '0.55em', fontWeight: 700, textTransform: 'uppercase',
+            fontSize: '0.68em', fontWeight: 700, textTransform: 'uppercase',
             letterSpacing: '1.5px', color: 'rgba(255,255,255,0.22)', marginBottom: 2,
         }}>
             {title}
@@ -35,7 +35,7 @@ const GREEN_GLOW = 'rgba(74,222,128,0.3)';
 
 const Row: React.FC<{ label: string; value: React.ReactNode; dim?: boolean }> = ({ label, value, dim }) => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
-        <span style={{ fontSize: '0.62em', color: 'rgba(255,255,255,0.32)', flexShrink: 0 }}>{label}</span>
+        <span style={{ fontSize: '0.78em', color: 'rgba(255,255,255,0.36)', flexShrink: 0 }}>{label}</span>
         <span style={{
             fontSize: '1em',
             color: dim ? 'rgba(255,255,255,0.2)' : GREEN,
@@ -71,12 +71,12 @@ const BarRow: React.FC<{
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             {/* numbers row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <span style={{ fontSize: '0.62em', color: 'rgba(255,255,255,0.32)', minWidth: 36 }}>{label}</span>
+                <span style={{ fontSize: '0.78em', color: 'rgba(255,255,255,0.36)', minWidth: 36 }}>{label}</span>
                 <span style={{ fontSize: '1em', fontFamily: 'monospace', color: fill, textShadow: `0 0 6px ${fill}` }}>
                     {value}
                     <span style={{ opacity: 0.45 }}> / {max}</span>
                     {statusStr && (
-                        <span style={{ marginLeft: 7, opacity: 0.55, fontSize: '0.75em', color: 'rgba(255,255,255,0.5)', textShadow: 'none' }}>
+                        <span style={{ marginLeft: 7, opacity: 0.55, fontSize: '0.85em', color: 'rgba(255,255,255,0.5)', textShadow: 'none' }}>
                             ({statusStr})
                         </span>
                     )}
@@ -120,7 +120,7 @@ const Pill: React.FC<{ label: string; active: boolean; color?: string }> = ({ la
     <span style={{
         padding: '2px 7px',
         borderRadius: 10,
-        fontSize: '0.7em',
+        fontSize: '0.82em',
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.5px',
@@ -183,7 +183,7 @@ export const StatusDrawer: React.FC = () => {
         {statusTab === 'keys' ? <MagicKeysTab /> : statusTab === 'timers' ? <TimerDrawerTab /> : <div style={{
             flex: 1, overflowY: 'auto', padding: '10px 10px 16px', display: 'flex',
             flexDirection: 'column', gap: 8, scrollbarWidth: 'thin',
-            fontSize: 'var(--dynamic-log-size, 16px)'
+            fontSize: 'calc(var(--dynamic-log-size, 16px) + 1px)'
         }}>
             {/* ── Identity ── */}
             <Card title="Character">

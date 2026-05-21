@@ -64,6 +64,14 @@
     pointer-events: auto;
 }
 
+/* Keep drawer chrome above the EnvironmentGlow canvas/overlay (z-index: 0-1) */
+.log-card-drawer .drawer-header,
+.log-card-drawer .drawer-content,
+.log-card-drawer .desktop-drawer-tabs-in-shell {
+    position: relative;
+    z-index: 2;
+}
+
 /* Mobile Landscape / Tablet */
 @media (max-width: 1024px) {
     .log-card-drawer {
@@ -103,13 +111,12 @@
 }
 
 .drawer-title {
-    font-weight: 800;
-    font-size: 1.1rem;
-    color: #ffd700;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: rgba(220, 200, 160, 0.4);
+    text-shadow: none;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    opacity: 0.95;
+    letter-spacing: 1.5px;
 }
 
 .drawer-close-btn {
@@ -245,7 +252,7 @@
 .desktop-edge-tab.active {
     color: var(--tab-accent);
     background: rgba(var(--tab-accent-rgb), 0.12);
-    text-shadow: 0 0 12px rgba(var(--tab-accent-rgb), 0.45);
+    text-shadow: 0 0 10px rgba(var(--tab-accent-rgb), 0.65), 0 0 20px rgba(var(--tab-accent-rgb), 0.25);
 }
 
 /* Accent line logic moved to main tabs block */
@@ -259,6 +266,110 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+
+/* Horizontal bottom tabs for desktop drawers when closed */
+.desktop-drawer-tabs.right.horizontal-bottom-tabs {
+    position: absolute;
+    bottom: 20px;
+    top: auto;
+    right: var(--drawer-margin);
+    right: max(var(--drawer-margin), calc(50% - var(--log-max-width)/2 - var(--drawer-width) - var(--drawer-gap)));
+    width: var(--drawer-width);
+    height: 48px;
+    transform: none;
+    flex-direction: row;
+    gap: 0;
+    border: 1px solid var(--tab-border);
+    border-radius: var(--radius-card);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+.desktop-drawer-tabs.left.horizontal-bottom-tabs {
+    position: absolute;
+    bottom: 20px;
+    top: auto;
+    left: var(--drawer-margin);
+    left: max(var(--drawer-margin), calc(50% - var(--log-max-width)/2 - var(--drawer-width) - var(--drawer-gap)));
+    width: var(--drawer-width);
+    height: 48px;
+    transform: none;
+    flex-direction: row;
+    gap: 0;
+    border: 1px solid var(--tab-border);
+    border-radius: var(--radius-card);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+@media (min-width: 1025px) {
+    .desktop-drawer-tabs.right.horizontal-bottom-tabs {
+        right: var(--drawer-margin);
+        width: max(
+            300px,
+            calc((100vw - var(--log-max-width)) / 2 - var(--drawer-margin) - var(--drawer-gap))
+        );
+    }
+    .desktop-drawer-tabs.left.horizontal-bottom-tabs {
+        left: var(--drawer-margin);
+        width: max(
+            300px,
+            calc((100vw - var(--log-max-width)) / 2 - var(--drawer-margin) - var(--drawer-gap))
+        );
+    }
+}
+
+@media (max-width: 1024px) {
+    .desktop-drawer-tabs.right.horizontal-bottom-tabs {
+        width: 360px;
+        right: 10px;
+        bottom: 10px;
+    }
+    .desktop-drawer-tabs.left.horizontal-bottom-tabs {
+        width: 360px;
+        left: 10px;
+        bottom: 10px;
+    }
+}
+
+/* Horizontal tabs inside open drawer shell on desktop */
+.desktop-drawer-tabs-in-shell {
+    display: flex;
+    flex-direction: row;
+    height: 48px;
+    border-top: 1px solid rgba(232, 176, 32, 0.22);
+    background: #0a0d15;
+    flex-shrink: 0;
+    --tab-accent: #e8b020;
+    --tab-accent-rgb: 232, 176, 32;
+    --tab-border: rgba(232, 176, 32, 0.22);
+}
+
+/* Share horizontal styling for tabs inside shell and standalone */
+.desktop-drawer-tabs.horizontal-bottom-tabs .desktop-edge-tab,
+.desktop-drawer-tabs-in-shell .desktop-edge-tab {
+    flex: 1;
+    height: 100%;
+    width: auto;
+    flex-direction: row;
+    gap: 6px;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.desktop-drawer-tabs.horizontal-bottom-tabs .desktop-edge-tab.active,
+.desktop-drawer-tabs-in-shell .desktop-edge-tab.active {
+    box-shadow: inset 0 -3px 0 var(--tab-accent);
+}
+
+.light-mode .desktop-drawer-tabs-in-shell {
+    border-top-color: var(--tab-border);
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.light-mode .desktop-drawer-tabs.horizontal-bottom-tabs {
+    background: var(--tab-bg);
+    border-color: var(--tab-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Map Drawer Desktop (Left Side) */
@@ -286,6 +397,21 @@
     overflow: hidden;
 }
 
+.map-drawer-desktop > .drawer-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 3400;
+    background: linear-gradient(180deg, rgba(10, 13, 21, 0.88), rgba(10, 13, 21, 0));
+    border-bottom: none;
+    pointer-events: none;
+}
+
+.map-drawer-desktop > .drawer-header .drawer-close-btn {
+    pointer-events: auto;
+}
+
 @media (min-width: 1025px) {
     .map-drawer-desktop {
         left: var(--drawer-margin);
@@ -297,10 +423,30 @@
 }
 
 .map-drawer-desktop .drawer-content {
+    position: absolute !important;
+    inset: 0;
+    bottom: 48px;
     flex: 1;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: calc(100% - 48px);
+}
+
+.map-drawer-desktop .left-shell-tabs {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3300;
+    pointer-events: auto;
+    justify-content: center;
+}
+
+.map-drawer-desktop .left-shell-tabs .desktop-edge-tab {
+    flex: 0 0 auto;
+    width: 25%;
+    min-width: 80px;
+    max-width: 140px;
 }
 
 .map-drawer-desktop.open {
@@ -355,6 +501,11 @@
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
     }
+
+    /* Match utility drawer data text size to room card description */
+    .log-card-drawer {
+        --dynamic-log-size: 0.72rem;
+    }
 }
 
 /* Light mode overrides */
@@ -365,8 +516,8 @@
 }
 
 .light-mode .drawer-title {
-    color: #8a6620;
-    text-shadow: 0 0 6px rgba(168, 122, 42, 0.2);
+    color: rgba(138, 102, 32, 0.45);
+    text-shadow: none;
 }
 
 .light-mode .drawer-close-btn {

@@ -4,6 +4,7 @@
  */
 
 import { useCallback, useRef } from 'react';
+import { MOVE_FAILURE_REGEX } from '../useMessageLog';
 
 export interface RoomParserDeps {
     roomNameRef: React.RefObject<string | null>;
@@ -107,6 +108,13 @@ export function useRoomParser(deps: RoomParserDeps) {
         if (isRoomDescription) return 'room-description';
         
         if (textOnly.includes('It is pitch black...') || textOnly.includes('You cannot see a thing!')) {
+            return 'game';
+        }
+
+        if (!isSnoop && MOVE_FAILURE_REGEX.test(textOnly)) {
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('mume-mapper-move-failed'));
+            }
             return 'game';
         }
 

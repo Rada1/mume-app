@@ -32,6 +32,7 @@ export interface GmcpHandlers {
     onCoreGoodbye?: () => void;
     onDisconnect?: () => void;
     onExternalEdit?: (data: string) => void;
+    onEvent?: (pkg: string, data: any) => void;
 }
 
 export class GmcpDecoder {
@@ -98,8 +99,21 @@ export class GmcpDecoder {
             this.handlers.onCorePing?.();
         } else if (pkgLower === 'core.goodbye') {
             this.handlers.onCoreGoodbye?.();
+        } else if (pkgLower.startsWith('event.') || pkgLower === 'event') {
+            this.handleEvent(pkg, json);
         } else {
             console.warn('[GMCP] Unknown package:', pkg, json);
+        }
+    }
+
+    private handleEvent(pkg: string, json: string) {
+        try {
+            const data = JSON.parse(json);
+            if (this.handlers.onEvent) {
+                this.handlers.onEvent(pkg, data);
+            }
+        } catch (e) {
+            console.error('[GMCP] Parse error in handleEvent:', e, json);
         }
     }
 

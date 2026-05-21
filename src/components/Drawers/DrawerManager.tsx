@@ -178,6 +178,15 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                             </div>
                         )}
                     </div>
+                    <div className="desktop-drawer-tabs-in-shell left-shell-tabs">
+                        <div
+                            className={`desktop-edge-tab left ${ui.mapExpanded ? 'active' : ''}`}
+                            onClick={(e) => { e.stopPropagation(); triggerHaptic(15); setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded })); }}
+                        >
+                            <MapIcon className="tab-icon" />
+                            <span className="tab-text">Map</span>
+                        </div>
+                    </div>
                 </div>
             )}
 
@@ -268,13 +277,13 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             </DrawerShell>
 
             {/* Desktop Side Tabs */}
-            {!viewport.isMobile && gameState !== 'disconnected' && (
-                <div className="desktop-drawer-tabs right">
+            {!viewport.isMobile && gameState !== 'disconnected' && ui.drawer === 'none' && (
+                <div className="desktop-drawer-tabs right horizontal-bottom-tabs">
                     {SIDEBAR_TABS.map(({ id, label, Icon }) => (
                         <div
                             key={id}
                             className={`desktop-edge-tab right ${ui.drawer === id ? 'active' : ''}`}
-                            onClick={(e) => { e.stopPropagation(); triggerHaptic(15); handleTabClick(id as 'character' | 'players' | 'equipment'); }}
+                            onClick={(e) => { e.stopPropagation(); triggerHaptic(15); handleTabClick(id as any); }}
                         >
                             <Icon className="tab-icon" />
                             <span className="tab-text">{label}</span>
@@ -283,8 +292,8 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 </div>
             )}
 
-            {!viewport.isMobile && (
-                <div className="desktop-drawer-tabs left">
+            {!viewport.isMobile && !ui.mapExpanded && (
+                <div className="desktop-drawer-tabs left horizontal-bottom-tabs">
                     <div
                         className={`desktop-edge-tab left ${ui.mapExpanded ? 'active' : ''}`}
                         onClick={(e) => { e.stopPropagation(); triggerHaptic(15); setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded })); }}

@@ -1,3 +1,9 @@
+/**
+ * @file MessageLog.tsx
+ * @description Renders the MUME game client message log, supporting virtual scrolling, theme styles, text reveal animations, and block headers.
+ */
+
+// --- Logic Section ---
 import React, { useCallback, useMemo, useEffect, useRef } from 'react';
 import { Message } from '../../types';
 import { ansiConvert } from '../../utils/ansi';
@@ -60,6 +66,10 @@ const MessageItem = React.memo(({
     setInput,
     viewport,
     batchOffset = 0,
+    targetName,
+    inlineCategories,
+    colors,
+    maxBatchId = -1,
 }: {
     msg: Message,
     executeCommand: (cmd: string, silent?: boolean) => void,
@@ -88,9 +98,12 @@ const MessageItem = React.memo(({
         objectColor?: string;
         roomColor?: string;
     };
+    maxBatchId?: number;
 }) => {
+    const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
     const content = msg.html;
     const isRecent = Date.now() - msg.timestamp < 2000;
+    const isLatestBatch = msg.batchId === undefined || msg.batchId === maxBatchId;
     const isOldBatchDim = brightBatchFloor !== undefined && (msg.batchId === undefined || msg.batchId < brightBatchFloor);
     
     // local state to handle the cleanup of the hit sheen animation
@@ -107,6 +120,9 @@ const MessageItem = React.memo(({
 
     const triggerParley = useCallback((e: React.MouseEvent) => {
         if (!setParley || !triggerHaptic || !playClickSound) return;
+        // If an inner inline-btn was clicked, let handleLogClick handle it instead
+        const clickedBtn = (e.target as HTMLElement).closest('.inline-btn');
+        if (clickedBtn && clickedBtn !== e.currentTarget) return;
         e.stopPropagation();
         const directed = msg.replyCommand === 'tell' || msg.replyCommand === 'whisper';
         setParley({ active: true, command: msg.replyCommand!, target: directed ? (msg.replyTarget ?? null) : null });
@@ -143,14 +159,29 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isTextRevealEnabled && isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
-            style={{ '--reveal-delay': `${batchOffset * 30}ms` } as React.CSSProperties}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isTextRevealEnabled && isRecent && isLatestBatch && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
+            style={{ '--reveal-delay': `${batchOffset * 20}ms` } as React.CSSProperties}
         >
+            {showBlockHeaders && msg.isRoomBlock && (
+                <div className="room-block-header">
+                    {formatTimestamp(msg.timestamp)} LOCATION
+                </div>
+            )}
+            {showBlockHeaders && msg.isCombatBlockStart && (
+                <div className="combat-block-header">
+                    {formatTimestamp(msg.timestamp)} COMBAT
+                </div>
+            )}
+            {showBlockHeaders && msg.isCommBlockStart && (
+                <div className="comm-block-header">
+                    {formatTimestamp(msg.timestamp)} COMMUNICATION
+                </div>
+            )}
             {msg.type === 'user' || msg.type === 'snoop-command' ? (
                 <div 
                     className={msg.type === 'user' ? "user-command-bubble" : "snoop-command-bubble"}
                 >
-                    <TokenRenderer tokens={msg.tokens} fallbackHtml={ansiConvert.toHtml(msg.textRaw || '')} />
+                    <TokenRenderer tokens={msg.tokens} fallbackHtml={ansiConvert.toHtml(msg.textRaw || '')} splitFirstWord={true} />
                 </div>
             ) : msg.type === 'prompt' ? (
                 <span><TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''))} /></span>
@@ -167,7 +198,7 @@ const MessageItem = React.memo(({
 
                     <div className="comm-content-row">
                         <div
-                            className="comm-bubble inline-btn"
+                            className="comm-bubble"
                             style={{ color: msg.commColor, cursor: 'pointer', '--bubble-color': msg.commColor, '--glow-color': msg.commColor } as React.CSSProperties}
                             onClick={triggerParley}
                         >
@@ -178,7 +209,7 @@ const MessageItem = React.memo(({
                                     <span className="comm-action" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
                                 </>
                             )}
-                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} /></span>
+                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} splitFirstWord={true} /></span>
                         </div>
                         <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                     </div>
@@ -189,15 +220,15 @@ const MessageItem = React.memo(({
                     {msg.isCombat && inCombat ? (
                         <div className="combat-bubble">
                             <div className="message-content hit-sheen-container">
-                                <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                                <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
                                 {msg.isHitImpact && sheenActive && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
                                     </div>
                                 )}
                                 {msg.isDamageImpact && sheenActive && (
                                     <div className="damage-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
                                     </div>
                                 )}
                             </div>
@@ -208,6 +239,7 @@ const MessageItem = React.memo(({
                                 <TokenRenderer
                                     tokens={msg.tokens}
                                     fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
+                                    splitFirstWord={true}
                                     metadata={msg.isRoomName ? {
                                         id: `room:${(currentRoomName || msg.textRaw || '').toLowerCase()}`,
                                         context: currentRoomName || msg.textRaw || '',
@@ -221,6 +253,7 @@ const MessageItem = React.memo(({
                                         <TokenRenderer
                                             tokens={msg.tokens}
                                             fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
+                                            splitFirstWord={true}
                                             metadata={msg.isRoomName ? {
                                                 id: `room:${(currentRoomName || msg.textRaw || '').toLowerCase()}`,
                                                 context: currentRoomName || msg.textRaw || '',
@@ -233,7 +266,7 @@ const MessageItem = React.memo(({
                                 )}
                                 {msg.isDamageImpact && sheenActive && (
                                     <div className="damage-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={true} />
                                     </div>
                                 )}
                                 {msg.isRoomName && msg.tokens && msg.html?.includes('room-desc-line') && (
@@ -276,7 +309,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
     // Extracted colors and inlineCategories to pass down directly
     const inlineCategories = useBaseGame().inlineCategories;
     const {
-        targetColor, playerColor, enemyColor, neutralColor, npcColor, objectColor, roomColor
+        targetColor, playerColor, enemyColor, neutralColor, npcColor, objectColor, roomColor,
+        hidePrompt, showBlockHeaders
     } = useSettingsStore();
 
     const colors = useMemo(() => ({
@@ -347,6 +381,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
 
     const displayMessages = useMemo(() => {
+        let list: Message[] = [];
         if (sessionMode === 'replay') {
             // Filter replay messages to only show what has been "played" according to currentTime.
             const now = replayer.state.currentTime;
@@ -357,19 +392,25 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 if (replayMessages[mid].timestamp <= now) low = mid + 1;
                 else high = mid;
             }
-            return replayMessages.slice(0, low);
+            list = replayMessages.slice(0, low);
+        } else {
+            const base = messages.filter(m => m.type !== 'prompt' || !m.isSnoop || showSpectatePromptInLog);
+
+            // Spectate DVR buffer: hide messages newer than displayCutoff so the user
+            // can watch from an earlier point in the session and advance in real-time.
+            if (isSpectateMode && activeView === 'target' && !spectateBuffer.isLive) {
+                list = base.filter(m => m.timestamp <= spectateBuffer.displayCutoff);
+            } else {
+                list = base;
+            }
         }
 
-        const base = messages.filter(m => m.type !== 'prompt' || !m.isSnoop || showSpectatePromptInLog);
-
-        // Spectate DVR buffer: hide messages newer than displayCutoff so the user
-        // can watch from an earlier point in the session and advance in real-time.
-        if (isSpectateMode && activeView === 'target' && !spectateBuffer.isLive) {
-            return base.filter(m => m.timestamp <= spectateBuffer.displayCutoff);
+        if (hidePrompt) {
+            list = list.filter(m => m.type !== 'prompt');
         }
 
-        return base;
-    }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime, isSpectateMode, activeView, spectateBuffer.isLive, spectateBuffer.displayCutoff]);
+        return list;
+    }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime, isSpectateMode, activeView, spectateBuffer.isLive, spectateBuffer.displayCutoff, hidePrompt]);
 
     const lastUserMsgIndex = useMemo(() => {
         for (let i = displayMessages.length - 1; i >= 0; i--) {
@@ -387,6 +428,18 @@ const MessageLog: React.FC<MessageLogProps> = ({
             if (seenBatchIds.size === 2) return batchId;
         }
         return undefined;
+    }, [displayMessages]);
+
+    const maxBatchId = useMemo(() => {
+        let max = -1;
+        for (let i = displayMessages.length - 1; i >= 0; i--) {
+            const bId = displayMessages[i].batchId;
+            if (bId !== undefined) {
+                max = bId;
+                break;
+            }
+        }
+        return max;
     }, [displayMessages]);
 
     const handlePointerDownInternal = useCallback((e: React.PointerEvent) => {
@@ -497,8 +550,11 @@ const MessageLog: React.FC<MessageLogProps> = ({
             let h = lineCount * (viewport.logFontSizePx * 1.1) + (isComm ? 48 : 4);
             if (msg.type === 'user') h += 24;
             if (msg.isCombat) h += 10;
+            if (showBlockHeaders && msg.isRoomBlock) h += 24;
+            if (showBlockHeaders && msg.isCombatBlockStart) h += 24;
+            if (showBlockHeaders && msg.isCommBlockStart) h += 24;
             return h;
-        }, [viewport.columns, viewport.logFontSize]),
+        }, [viewport.columns, viewport.logFontSize, viewport.logFontSizePx, showBlockHeaders]),
         overscan: 12,
     });
 
@@ -622,6 +678,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     targetName={target}
                                     inlineCategories={inlineCategories}
                                     colors={colors}
+                                    maxBatchId={maxBatchId}
                                 />
                             </div>
                         );

@@ -55,8 +55,8 @@ export function isButtonValidForEntity(
     const location = axes.location;
     const isPosessed = location === 'carried' || location === 'worn';
 
-    // 1. Block 'Get' for items already in possession
-    if (button.command.startsWith('get ') && !button.command.includes('all') && isPosessed) {
+    // 1. Block 'Get' for items already in possession (unless getting a container item)
+    if (button.command.startsWith('get ') && !button.command.includes('all') && isPosessed && resolvedCategoryId !== 'cat-container-item') {
         return false;
     }
 

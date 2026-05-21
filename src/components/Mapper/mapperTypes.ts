@@ -15,15 +15,10 @@ export interface MapperRoom {
     roomQuestFlags?: string[];
     light?: string | number | null;
     sundeath?: number;
+    align?: string;
+    portable?: string;
+    ridable?: string;
     createdAt: number;
-}
-
-export interface GmcpExitInfo {
-    name: string;
-    flags?: string[];
-    id?: number;
-    door?: number;
-    to_vnum?: number;
 }
 
 export interface MapperExit {
@@ -33,6 +28,14 @@ export interface MapperExit {
     gmcpDestId?: number;
     name?: string;
     flags?: string[];
+}
+
+export interface GmcpExitInfo {
+    name: string;
+    flags?: string[];
+    id?: number;
+    door?: number;
+    to_vnum?: number;
 }
 
 export interface MapperMarker {
@@ -82,7 +85,6 @@ export interface MapperProps {
     isMobile?: boolean;
     isMmapperMode?: boolean;
 }
-
 
 export interface GmcpRoomInfo {
     num?: number;

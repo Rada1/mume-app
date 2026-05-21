@@ -24,13 +24,15 @@ interface AnimationProps {
     preMoveRef?: React.MutableRefObject<{ dir: string, targetId: string, time: number } | null>;
     walkTargetId?: string | null;
     walkPath?: string[];
+    activeMapFilter?: string | null;
+    combatAnimationActive?: boolean;
 }
 
 export const useMapAnimation = ({
     drawMap, rooms, markers, currentRoomId, isDragging, renderVersion,
     canvasRef, camera, playerPosRef, playerTrailRef, getDPR, marquee, autoCenter, 
     stableRoomsRef, stableRoomIdRef, stableMarkersRef, firstExploredAtRef, preloadedCoordsRef,
-    preMoveRef, walkTargetId, walkPath, isDraggingRef
+    preMoveRef, walkTargetId, walkPath, isDraggingRef, activeMapFilter, combatAnimationActive
 }: AnimationProps) => {
     const requestRef = useRef<number | null>(null);
     const tickRef = useRef<(() => boolean) | null>(null);
@@ -66,9 +68,10 @@ export const useMapAnimation = ({
         const now = performance.now();
         const deltaTime = now - lastFrameTimeRef.current;
         
-        // Increase throttle to ~60fps (16ms) instead of 30fps (32ms)
-        // Since we've optimized the rendering, we can afford more frames.
-        if (deltaTime < 16) return true;
+        // Filter/path pulses are cosmetic, so 30fps is plenty and much lighter
+        // when a broad filter matches many rooms.
+        const frameBudget = activeMapFilter || combatAnimationActive ? 33 : 16;
+        if (deltaTime < frameBudget) return true;
         
         // Calculate a normalized factor for lerping based on time (aiming for 60fps base)
         const frameScale = Math.min(2, deltaTime / 16.67);
@@ -131,9 +134,6 @@ export const useMapAnimation = ({
             if (playerTrailRef.current.length > 0) needsNextFrame = true;
         }
 
-        // Keep the animation loop alive whenever the player is on the map (for the pulsing orb)
-        if (playerPosRef.current) needsNextFrame = true;
-
         const wallTime = Date.now();
         const latestExplored = firstExploredAtRef.current['_latest'] || 0;
         if (wallTime - latestExplored < 500) needsNextFrame = true;
@@ -145,6 +145,7 @@ export const useMapAnimation = ({
 
         trackerRef.current.endTimes = trackerRef.current.endTimes.filter((time: number) => time > wallTime);
         if (trackerRef.current.endTimes.length > 0) needsNextFrame = true;
+        if (activeMapFilter || combatAnimationActive) needsNextFrame = true;
 
         drawMap(ctx, dpr, w, h, marquee);
         return needsNextFrame;
@@ -175,7 +176,7 @@ export const useMapAnimation = ({
                 requestRef.current = null;
             }
         };
-    }, [renderVersion, isDragging, drawMap, currentRoomId, rooms, preMoveRef, walkTargetId]);
+    }, [renderVersion, isDragging, drawMap, currentRoomId, rooms, preMoveRef, walkTargetId, activeMapFilter, combatAnimationActive]);
 
     return { tick: tickRef.current };
 };

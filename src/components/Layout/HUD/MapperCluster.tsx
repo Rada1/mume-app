@@ -974,7 +974,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     <div className="mobile-portrait-env-indicator" style={{
                         position: 'absolute',
                         bottom: 'calc(100% + 4px)',
-                        left: '12px',
+                        right: '12px',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '4px',
@@ -987,7 +987,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         pointerEvents: 'none',
                         color: 'var(--text-faded)',
                         transform: 'scale(0.9)',
-                        transformOrigin: 'bottom left'
+                        transformOrigin: 'bottom right'
                     }}>
                         {currentTime && (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginRight: '2px', borderRight: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.12)', paddingRight: '4px' }}>

@@ -47,6 +47,10 @@ interface GeneralSettingsProps {
     setShowSpectatePromptInLog: (val: boolean) => void;
     isTextRevealEnabled: boolean;
     setIsTextRevealEnabled: (val: boolean) => void;
+    hidePrompt: boolean;
+    setHidePrompt: (val: boolean) => void;
+    showBlockHeaders: boolean;
+    setShowBlockHeaders: (val: boolean) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -92,6 +96,10 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setShowSpectatePromptInLog,
     isTextRevealEnabled,
     setIsTextRevealEnabled,
+    hidePrompt,
+    setHidePrompt,
+    showBlockHeaders,
+    setShowBlockHeaders,
 }) => {
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const setIsSpectateMode = useModeStore(s => s.setIsSpectating);
@@ -617,6 +625,40 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             transition: 'all 0.3s'
                         }} />
                     </button>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>Hide Vitals/Prompt</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Hide the prompt bar above the input area.</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '0.8rem', color: hidePrompt ? '#ec4899' : '#64748b' }}>{hidePrompt ? 'ON' : 'OFF'}</span>
+                        <button
+                            className={`setting-toggle ${hidePrompt ? 'active' : ''}`}
+                            onClick={() => setHidePrompt(!hidePrompt)}
+                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: hidePrompt ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                        >
+                            <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: hidePrompt ? '22px' : '2px', transition: 'all 0.3s' }} />
+                        </button>
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>Show Combat/Location Headers</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Show block header indicators for combat messages and location changes.</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '0.8rem', color: showBlockHeaders ? '#ec4899' : '#64748b' }}>{showBlockHeaders ? 'ON' : 'OFF'}</span>
+                        <button
+                            className={`setting-toggle ${showBlockHeaders ? 'active' : ''}`}
+                            onClick={() => setShowBlockHeaders(!showBlockHeaders)}
+                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showBlockHeaders ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                        >
+                            <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: showBlockHeaders ? '22px' : '2px', transition: 'all 0.3s' }} />
+                        </button>
+                    </div>
                 </div>
             </div>
 

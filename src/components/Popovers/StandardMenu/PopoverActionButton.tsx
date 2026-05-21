@@ -9,6 +9,7 @@ interface PopoverActionButtonProps {
     depth?: number;
     isSubButton?: boolean;
     compact?: boolean;
+    glowDelay?: string;
     favorites: string[];
     toggleFavorite: (e: React.MouseEvent, command: string) => void;
     popoverState: PopoverState;
@@ -27,7 +28,7 @@ interface PopoverActionButtonProps {
 }
 
 export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
-    button, depth = 0, isSubButton = false, compact = false, favorites, toggleFavorite, popoverState, setPopoverState, setButtons, handleButtonClick, executeCommand, addMessage, handleTabClick, setGearTab, selectedObjectIds, clearObjectSelection, entities, keywordOverrides, direction
+    button, depth = 0, isSubButton = false, compact = false, glowDelay, favorites, toggleFavorite, popoverState, setPopoverState, setButtons, handleButtonClick, executeCommand, addMessage, handleTabClick, setGearTab, selectedObjectIds, clearObjectSelection, entities, keywordOverrides, direction
 }) => {
     const isFav = favorites.includes(button.command);
     
@@ -99,12 +100,13 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
                     padding: '4px 8px',
                     fontSize: '0.78rem',
                     borderRadius: '4px',
-                    border: isFav ? '1px solid rgba(255,215,0,0.35)' : '1px solid rgba(255,255,255,0.08)',
-                    background: isFav ? 'rgba(255,215,0,0.07)' : 'rgb(35, 35, 40)',
+                    border: isFav ? '1px solid rgba(255,215,0,0.45)' : '1px solid rgba(184,134,11,0.22)',
+                    background: isFav ? 'rgba(255,215,0,0.09)' : 'rgba(184,134,11,0.06)',
                     cursor: 'pointer',
                     userSelect: 'none',
                     WebkitTapHighlightColor: 'transparent',
                     whiteSpace: 'nowrap',
+                    animationDelay: glowDelay || '0s',
                     '--set-accent': 'var(--accent)'
                 } as any}
             >

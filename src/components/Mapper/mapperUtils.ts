@@ -84,8 +84,8 @@ export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): 
     // Use the same rich, vivid colors in both dark and light modes to maintain
     // absolute parity, readability, and high contrast against both backgrounds.
     switch (t) {
-        case 'City': return '#3b4252'; // Dark tactical grey for city
-        case 'Building': return '#3b4252'; // Dark tactical grey for building
+        case 'City': return '#3d2a18';
+        case 'Building': return '#3d2b1a';
         case 'Forest': return '#224b1a'; // More vivid deep green
         case 'Field':
         case 'Grasslands': return '#4c6e3d'; // Richer grass
@@ -205,5 +205,170 @@ export const getTerrainDepth = (vnum: string, allRooms: Record<string, any>, pre
     if (neighborCount <= 2) return 1;
     if (neighborCount <= 5) return 2;
     return 3;
+};
+
+/**
+ * Checks if a room matches the selected filter category and optional search query.
+ */
+export const checkRoomFilter = (
+    roomId: string,
+    localRoom: any,
+    preloadedData: any,
+    filter: string,
+    query: string
+): boolean => {
+    const mobFlags = (localRoom?.mobFlags || preloadedData?.[7] || []) as string[];
+    const loadFlags = (localRoom?.loadFlags || preloadedData?.[8] || []) as string[];
+    const questFlags = (localRoom?.roomQuestFlags || preloadedData?.[9] || []) as string[];
+    const notes = (localRoom?.notes || preloadedData?.[15] || '') as string;
+    const terrain = (localRoom?.terrain || preloadedData?.[3] || '') as string;
+
+    const allText = [
+        ...mobFlags,
+        ...loadFlags,
+        ...questFlags,
+        notes,
+        terrain
+    ].join(' ').toLowerCase();
+
+    if (filter === 'herb') {
+        if (!query) {
+            return allText.includes('herb');
+        }
+        return allText.includes(query.toLowerCase());
+    }
+
+    if (filter === 'stable') {
+        return /stable|horse|mule|pack_horse|trained_horse|warg/i.test(allText);
+    }
+
+    if (filter === 'quest') {
+        return questFlags.length > 0 || /quest|mission/i.test(allText);
+    }
+
+    if (filter === 'shop') {
+        return /shop|store/i.test(allText);
+    }
+
+    if (filter === 'guild') {
+        return /guild|office/i.test(allText);
+    }
+
+    if (filter === 'inn') {
+        return /rent|inn/i.test(allText);
+    }
+
+    if (filter === 'danger') {
+        return /aggressive|death|danger/i.test(allText);
+    }
+
+    if (filter === 'water') {
+        return /water|pond|well|fountain|river|stream/i.test(allText);
+    }
+
+    return false;
+};
+
+/**
+ * Performs a BFS search starting from startId to find the closest room matching the filter and query.
+ */
+export const findClosestMatchingRoom = (
+    startId: string | null,
+    rooms: Record<string, any>,
+    preloadedCoords: Record<string, any>,
+    filter: string,
+    query: string
+): string | null => {
+    return findClosestMatchingRoomPath(startId, rooms, preloadedCoords, filter, query)?.targetId || null;
+};
+
+/**
+ * Performs a BFS search and returns the closest matching room plus the route to it.
+ */
+export const findClosestMatchingRoomPath = (
+    startId: string | null,
+    rooms: Record<string, any>,
+    preloadedCoords: Record<string, any>,
+    filter: string,
+    query: string
+): { targetId: string, pathIds: string[], distance: number } | null => {
+    if (!startId) return null;
+
+    const normalizeId = (id: string | null) => {
+        if (!id) return '';
+        if (id.startsWith('m_')) return id.substring(2);
+        if (id.startsWith('r_')) return id.substring(2);
+        return id;
+    };
+
+    const normStart = normalizeId(startId);
+
+    const getExits = (id: string) => {
+        const normId = normalizeId(id);
+        const local = rooms[id] || rooms[`m_${normId}`] || rooms[normId];
+        if (local && local.exits && Object.keys(local.exits).length > 0) {
+            return local.exits;
+        }
+        const ghost = preloadedCoords[normId];
+        if (ghost && ghost[4]) {
+            const ghostExits = ghost[4] as Record<string, { target: string }>;
+            const formatted: Record<string, any> = {};
+            for (const [dir, ex] of Object.entries(ghostExits)) {
+                const targetVnum = String(ex.target);
+                formatted[dir] = { 
+                    target: targetVnum.startsWith('m_') ? targetVnum : `m_${targetVnum}`, 
+                    closed: false 
+                };
+            }
+            return formatted;
+        }
+        return null;
+    };
+
+    const startLocal = rooms[startId] || rooms[`m_${normStart}`] || rooms[normStart];
+    const startPre = preloadedCoords[normStart];
+    if (checkRoomFilter(startId, startLocal, startPre, filter, query)) {
+        return { targetId: startId, pathIds: [startId], distance: 0 };
+    }
+
+    const queue: { id: string, pathIds: string[] }[] = [{ id: startId, pathIds: [startId] }];
+    const visited = new Set<string>([normStart]);
+    let iterations = 0;
+    const MAX_ITERATIONS = 8000;
+
+    while (queue.length > 0 && iterations < MAX_ITERATIONS) {
+        iterations++;
+        const { id: curr, pathIds } = queue.shift()!;
+        const exits = getExits(curr);
+        if (!exits) continue;
+
+        for (const exit of Object.values(exits) as any[]) {
+            if (!exit.target || exit.closed) continue;
+
+            const targetId = String(exit.target);
+            const normNext = normalizeId(targetId);
+
+            if (!visited.has(normNext)) {
+                visited.add(normNext);
+
+                const nextLocal = rooms[targetId] || rooms[`m_${normNext}`] || rooms[normNext];
+                const nextPre = preloadedCoords[normNext];
+                if (checkRoomFilter(targetId, nextLocal, nextPre, filter, query)) {
+                    const standardTargetId = targetId.startsWith('m_') ? targetId : (preloadedCoords[normNext] ? `m_${normNext}` : targetId);
+                    const nextPath = [...pathIds, standardTargetId];
+                    return {
+                        targetId: standardTargetId,
+                        pathIds: nextPath,
+                        distance: Math.max(0, nextPath.length - 1)
+                    };
+                }
+
+                const standardId = targetId.startsWith('m_') ? targetId : (preloadedCoords[normNext] ? `m_${normNext}` : targetId);
+                queue.push({ id: standardId, pathIds: [...pathIds, standardId] });
+            }
+        }
+    }
+
+    return null;
 };
 

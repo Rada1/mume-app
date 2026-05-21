@@ -175,12 +175,12 @@
 }
 
 .lighting-state-artificial .overlay-layer {
-    /* Mirror of dark's overlay, in warm red instead of cool blue, with diagonal gradient to emphasize bottom-left darkness */
-    background: linear-gradient(225deg,
-        rgba(255, 100, 40, 0.02) 0%,
-        rgba(35, 15, 10, 0.08) 25%,
-        rgba(10, 4, 2, 0.65) 55%,
-        rgba(0, 0, 0, 0.95) 100%
+    /* Grey ambient wash — top-heavy darkness fading out toward the warm bottom */
+    background: linear-gradient(to bottom,
+        rgba(10, 15, 25, 0.45) 0%,
+        rgba(12, 12, 18, 0.5) 45%,
+        rgba(18, 12, 10, 0.1) 80%,
+        transparent 100%
     );
 }
 
@@ -243,13 +243,6 @@
     /* SUBTLE color saturation boost */
 }
 
-/* Command pulse: flash from the light source when the player sends a command */
-@keyframes command-light-pulse {
-    0%   { opacity: 0; }
-    25%  { opacity: 1; }
-    100% { opacity: 0; }
-}
-
 .lighting-container::after {
     content: '';
     position: absolute;
@@ -257,10 +250,6 @@
     opacity: 0;
     pointer-events: none;
     will-change: opacity;
-}
-
-.lighting-container.command-pulse::after {
-    animation: command-light-pulse 6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .lighting-sun::after {
@@ -282,10 +271,11 @@
 }
 
 .lighting-artificial::after {
+    /* Anchor the command pulse to the bottom-center flame glow source */
     background: radial-gradient(
-        circle at 50% 50%,
-        rgba(255, 60, 30, 0.1) 0%,
-        transparent 85%
+        ellipse 80% 65% at 50% 100%,
+        rgba(255, 140, 40, 0.14) 0%,
+        transparent 80%
     );
 }
 
@@ -303,7 +293,18 @@
 
 /* Artificial uses default screen blend (like sun/moon) — overlay/soft-light vanish on dark scenes. */
 .lighting-container.lighting-artificial {
-    filter: saturate(1.2) contrast(1.05) brightness(1.08);
+    top: -5%;
+    bottom: -5%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: var(--log-max-width);
+    filter: saturate(1.25) contrast(1.06) brightness(1.08);
+}
+
+.is-desktop .lighting-container.lighting-artificial {
+    bottom: calc(var(--drawer-margin) + env(safe-area-inset-bottom, 0px));
 }
 
 .lighting-inner {
@@ -341,10 +342,15 @@
 }
 
 .lighting-artificial .lighting-inner {
-    /* Bottom-right anchor — mirror of the sun's top-right, in fire-red. */
-    /* Direct copy of darkness's ambient wash, but warm red instead of neutral gray. */
-    background: radial-gradient(circle at 50% 50%, rgba(255, 60, 30, 0.18) 0%, transparent 90%);
-    animation: light-drift-torch 8s ease-in-out infinite alternate;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200vw;
+    height: 100%;
+    /* Dual-tone: bottom-half flame glow (amber core fading to orange/red), top-half greyish ambient light like darkness */
+    background: 
+        radial-gradient(ellipse min(680px, 75vw) 60vh at 50% 112%, rgba(255, 175, 45, 0.38) 0%, rgba(255, 95, 25, 0.18) 45%, rgba(220, 40, 15, 0.08) 80%, transparent 100%),
+        radial-gradient(ellipse 100vw 45vh at 50% 15%, rgba(200, 200, 200, 0.12) 0%, transparent 80%);
 }
 
 .lighting-dark .lighting-inner {

@@ -6,7 +6,7 @@
 import React from 'react';
 import { DrawerLine, MessageType } from '../../types';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
-import { extractMumeKeyword } from '../../utils/gameUtils';
+import { extractMumeKeyword, isItemContainer } from '../../utils/gameUtils';
 import { ansiConvert } from '../../utils/ansi';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { COLOR_OBJ } from '../../utils/categorizationUtils';
@@ -19,6 +19,10 @@ interface LineItemProps {
     fontSize?: string;
     style?: React.CSSProperties;
     category?: string;
+    isExpanded?: boolean;
+    isLoading?: boolean;
+    onToggleExpand?: () => void;
+    parentNoun?: string;
 }
 
 interface TokenMetadata {
@@ -48,7 +52,11 @@ export const LineItem: React.FC<LineItemProps> = ({
     line, 
     fontSize, 
     style,
-    category
+    category,
+    isExpanded,
+    isLoading,
+    onToggleExpand,
+    parentNoun
 }) => {
     const objectColor = useSettingsStore(s => s.objectColor) || COLOR_OBJ;
     const depth = line.depth || 0;
@@ -110,11 +118,12 @@ export const LineItem: React.FC<LineItemProps> = ({
                     key={`obj-${match.index}`}
                     className="inline-btn"
                     data-id={line.entityId || line.stableId || line.id}
-                    data-cmd={line.cmd || category || 'inline-inventory'}
+                    data-cmd={parentNoun ? 'inline-container-item' : (line.cmd || category || 'inline-inventory')}
                     data-context={objectContext}
-                    data-category={category}
+                    data-category={parentNoun ? 'inline-container-item' : category}
                     data-action={isCommandLine ? 'command' : 'menu'}
                     data-from-drawer={isCommandLine ? 'true' : undefined}
+                    data-parent-noun={parentNoun}
                     style={{
                         '--glow-color': objectColor,
                         color: 'var(--glow-color)',
@@ -140,6 +149,44 @@ export const LineItem: React.FC<LineItemProps> = ({
     };
 
     const hasObjectXml = line.isItem && /<object[^>]*>.*?<\/object>/i.test(line.rawText || line.html || line.text);
+    const showChevron = line.isItem && isItemContainer(line.text);
+
+    const renderChevron = () => (
+        <button
+            onClick={(e) => {
+                e.stopPropagation();
+                onToggleExpand?.();
+            }}
+            style={{
+                background: 'none',
+                border: 'none',
+                color: 'rgba(255, 255, 255, 0.4)',
+                cursor: 'pointer',
+                padding: '2px 6px',
+                marginLeft: '6px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'transform 0.2s, color 0.2s',
+                transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+            }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.color = '#ffffff';
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)';
+            }}
+            title={isExpanded ? "Collapse container" : "Expand container"}
+        >
+            {isLoading ? (
+                <span style={{ fontSize: '10px', display: 'inline-block', transformOrigin: 'center' }}>⌛</span>
+            ) : (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            )}
+        </button>
+    );
 
     if (isCommandLine) {
         const match = line.text.match(/^(.+?)(\s{2,}.*)$/);
@@ -181,10 +228,11 @@ export const LineItem: React.FC<LineItemProps> = ({
             <div style={baseStyle}>
                 <div
                     className="message-content"
-                    style={{ display: 'block', whiteSpace: 'pre', lineHeight: 'inherit' }}
+                    style={{ display: 'flex', alignItems: 'center', whiteSpace: 'pre', lineHeight: 'inherit' }}
                 >
                     {line.prefix && <span style={{ opacity: 0.6 }}>{line.prefix}</span>}
                     {renderObjectXmlLine()}
+                    {showChevron && renderChevron()}
                 </div>
             </div>
         );
@@ -195,7 +243,7 @@ export const LineItem: React.FC<LineItemProps> = ({
             <div style={baseStyle}>
                 <div 
                     className="message-content"
-                    style={{ display: 'block', whiteSpace: 'pre', lineHeight: 'inherit' }}
+                    style={{ display: 'flex', alignItems: 'center', whiteSpace: 'pre', lineHeight: 'inherit' }}
                 >
                     {line.prefix && <span style={{ opacity: 0.6 }}>{line.prefix}</span>}
                     <TokenRenderer 
@@ -204,6 +252,7 @@ export const LineItem: React.FC<LineItemProps> = ({
                         metadata={tokenMetadata}
                         forceBoldEntities
                     />
+                    {showChevron && renderChevron()}
                 </div>
             </div>
         );
@@ -213,18 +262,19 @@ export const LineItem: React.FC<LineItemProps> = ({
             <div style={baseStyle}>
                 <div 
                     className="message-content"
-                    style={{ display: 'block', whiteSpace: 'pre', lineHeight: 'inherit' }}
+                    style={{ display: 'flex', alignItems: 'center', whiteSpace: 'pre', lineHeight: 'inherit' }}
                 >
                     {line.prefix && <span style={{ opacity: 0.6 }}>{line.prefix}</span>}
                     {line.isItem ? (
                         <span
                             className="inline-btn"
                             data-id={line.entityId || line.stableId || line.id}
-                            data-cmd={line.cmd || category || 'inline-inventory'}
+                            data-cmd={parentNoun ? 'inline-container-item' : (line.cmd || category || 'inline-inventory')}
                             data-context={lineContext}
-                            data-category={category}
+                            data-category={parentNoun ? 'inline-container-item' : category}
                             data-action={isCommandLine ? 'command' : 'menu'}
                             data-from-drawer={isCommandLine ? 'true' : undefined}
+                            data-parent-noun={parentNoun}
                             style={{
                                 '--glow-color': objectColor,
                                 color: 'var(--glow-color)',
@@ -236,6 +286,7 @@ export const LineItem: React.FC<LineItemProps> = ({
                     ) : (
                         <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html || line.text) }} />
                     )}
+                    {showChevron && renderChevron()}
                 </div>
             </div>
         );

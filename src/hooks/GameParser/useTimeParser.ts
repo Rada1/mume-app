@@ -5,6 +5,7 @@
 
 import { useCallback } from 'react';
 import { MumeTime } from '../../types';
+import { dateToMumeMinutes, getMumeTimeFromEpoch, MUME_MONTHS } from '../../utils/mumeTimeUtils';
 
 interface TimeParserDeps {
     setGameTime: (time: MumeTime | null) => void;
@@ -36,16 +37,12 @@ export function useTimeParser({ setGameTime, gameTime }: TimeParserDeps) {
                 if (ampm?.toLowerCase() === 'am' && hour === 12) hour = 0;
             }
 
-            const mumeTime: MumeTime = {
-                hour,
-                minute: 0,
-                day: parseInt(day),
-                month,
-                year: parseInt(year),
-                weekday,
-                era,
-                lastSyncRealTime: Date.now()
-            };
+            const monthIndex = MUME_MONTHS.indexOf(month);
+            const mumeMinutes = dateToMumeMinutes(parseInt(year), monthIndex >= 0 ? monthIndex : 0, parseInt(day), hour, 0);
+            const mumeStartEpoch = Math.floor(Date.now() / 1000) - mumeMinutes;
+
+            const mumeTime: MumeTime = getMumeTimeFromEpoch(mumeStartEpoch, Date.now());
+            mumeTime.era = era;
 
             console.log('[TimeParser] Parsed Mume Time:', mumeTime);
             setGameTime(mumeTime);
@@ -62,27 +59,29 @@ export function useTimeParser({ setGameTime, gameTime }: TimeParserDeps) {
             if (ampm.toLowerCase() === 'am' && hour === 12) hour = 0;
             
             if (gameTime) {
-                const updatedTime: MumeTime = {
-                    ...gameTime,
-                    hour,
-                    minute,
-                    lastSyncRealTime: Date.now()
-                };
-                console.log('[TimeParser] Updated Mume Time from clock:', updatedTime);
+                const monthIndex = MUME_MONTHS.indexOf(gameTime.month);
+                const mumeMinutes = dateToMumeMinutes(gameTime.year, monthIndex >= 0 ? monthIndex : 0, gameTime.day, hour, minute);
+                const mumeStartEpoch = Math.floor(Date.now() / 1000) - mumeMinutes;
+                
+                const updatedTime: MumeTime = getMumeTimeFromEpoch(mumeStartEpoch, Date.now());
+                if (gameTime.era) updatedTime.era = gameTime.era;
+
+                console.log('[TimeParser] Calibrated Mume Time from clock:', updatedTime);
                 setGameTime(updatedTime);
             } else {
                 // Initial sync if we only have the clock
-                const initialTime: MumeTime = {
-                    hour,
-                    minute,
-                    day: 1,
-                    month: 'Unknown',
-                    year: 0,
-                    weekday: 'Unknown',
-                    era: 'Third Age',
-                    lastSyncRealTime: Date.now()
-                };
-                setGameTime(initialTime);
+                // We default to starting epoch 1517443173 to get the day/month/year
+                const defaultEpoch = 1517443173;
+                const baseTime = getMumeTimeFromEpoch(defaultEpoch, Date.now());
+                
+                // Now perform a calibration using the newly derived day/month/year and the parsed hour/minute
+                const monthIndex = MUME_MONTHS.indexOf(baseTime.month);
+                const mumeMinutes = dateToMumeMinutes(baseTime.year, monthIndex >= 0 ? monthIndex : 0, baseTime.day, hour, minute);
+                const mumeStartEpoch = Math.floor(Date.now() / 1000) - mumeMinutes;
+                
+                const updatedTime: MumeTime = getMumeTimeFromEpoch(mumeStartEpoch, Date.now());
+                console.log('[TimeParser] Initial Mume Time from clock (calibrated):', updatedTime);
+                setGameTime(updatedTime);
             }
             return true;
         }

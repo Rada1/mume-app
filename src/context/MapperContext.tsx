@@ -66,6 +66,12 @@ interface MapperContextType {
     exploredVnums: Set<string>;
     exploredMarkers: Set<string>;
     setExploredMarkers: React.Dispatch<React.SetStateAction<Set<string>>>;
+    
+    // Filtering & Navigation State
+    activeMapFilter: string | null;
+    setActiveMapFilter: React.Dispatch<React.SetStateAction<string | null>>;
+    mapSearchQuery: string;
+    setMapSearchQuery: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const MapperContext = createContext<MapperContextType | undefined>(undefined);
@@ -116,6 +122,14 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [viewZ, setViewZ] = useState<number | null>(null);
     const [infoRoomId, setInfoRoomId] = useState<string | null>(null);
 
+    // Filtering & Navigation State
+    const [activeMapFilter, setActiveMapFilter] = useState<string | null>(null);
+    const [mapSearchQuery, setMapSearchQuery] = useState<string>('');
+
+    useEffect(() => {
+        triggerRender();
+    }, [activeMapFilter, mapSearchQuery, triggerRender]);
+
     // Settings from Zustand
     const allowPersistence = useSettingsStore(s => s.allowMapPersistence);
     const setAllowPersistence = useSettingsStore(s => s.setAllowMapPersistence);
@@ -153,6 +167,8 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const index: Record<number, Record<string, string[]>> = {};
             const nIndex: Record<string, string[]> = {};
             const sIndex: Record<string, string> = {};
+            const baseMapExits: Record<string, any> = {};
+
             for (const vnum in data) {
                 const rData = data[vnum], [x, y, z] = rData;
                 const rName = rData[5];
@@ -167,6 +183,12 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     nIndex[rName].push(vnum); 
                 }
                 sIndex[String(vnum)] = vnum;
+                baseMapExits[String(vnum)] = rData;
+                
+                const rServerId = rData[6];
+                if (rServerId) {
+                    baseMapExits[String(rServerId)] = rData;
+                }
             }
             for (const vnum in data) {
                 const rServerId = data[vnum][6];
@@ -174,7 +196,11 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     sIndex[String(rServerId)] = vnum;
                 }
             }
-            spatialIndexRef.current = index; nameIndexRef.current = nIndex; serverIdIndexRef.current = sIndex;
+            spatialIndexRef.current = index; 
+            nameIndexRef.current = nIndex; 
+            serverIdIndexRef.current = sIndex;
+            baseMapExitsRef.current = baseMapExits;
+
             if (showDebugEchoesRef.current) {
                 addMessageRef.current?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
             }
@@ -183,7 +209,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             console.warn("[Mapper] Could not load master map data:", err);
             hasStartedLoadingRef.current = false; // Allow retry if failed
         }
-    }, [preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef]);
+    }, [preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef, baseMapExitsRef]);
 
     useEffect(() => { loadMasterMap(); }, [loadMasterMap]);
 
@@ -446,7 +472,8 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
         markersRef, exploredRef, exploredVnums, exploredMarkers, setExploredMarkers, spatialIndexRef, firstExploredAtRef,
-        serverIdIndexRef
+        serverIdIndexRef,
+        activeMapFilter, setActiveMapFilter, mapSearchQuery, setMapSearchQuery
     }), [
         rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId,
         currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef,
@@ -457,7 +484,8 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
         markersRef, exploredRef, exploredVnums, exploredMarkers, setExploredMarkers, spatialIndexRef, firstExploredAtRef,
-        serverIdIndexRef
+        serverIdIndexRef,
+        activeMapFilter, setActiveMapFilter, mapSearchQuery, setMapSearchQuery
     ]);
 
     // --- Sync with Active Session ---

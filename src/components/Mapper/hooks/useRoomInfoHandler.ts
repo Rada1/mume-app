@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { GmcpRoomInfo, MapperRoom } from '../mapperTypes';
-import { generateId, normalizeTerrain, DIRS } from '../mapperUtils';
+import { generateId, normalizeTerrain, DIRS, getExitTargetId } from '../mapperUtils';
 
 interface RoomInfoProps {
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
@@ -49,7 +49,44 @@ export const useRoomInfoHandler = ({
         const activeRoomId = currentRoomIdRef.current;
         // If we have a ghost/preMove, we should use the room we actually WERE in for distance checks
         // to avoid "teleporting" if the ghost was placed at a wrong coordinate.
-        const currentActiveRoom = activeRoomId ? roomsRef.current[activeRoomId] : null;
+        let currentActiveRoom = activeRoomId ? roomsRef.current[activeRoomId] : null;
+        if (!currentActiveRoom && activeRoomId && activeRoomId.startsWith('m_')) {
+            const vnum = activeRoomId.substring(2);
+            const pData = preloadedCoordsRef.current[vnum];
+            if (pData) {
+                currentActiveRoom = {
+                    id: activeRoomId,
+                    gmcpId: Number(vnum),
+                    name: pData[5] || 'Unknown Room',
+                    desc: '',
+                    x: pData[0],
+                    y: pData[1],
+                    z: pData[2] || 0,
+                    zone: pData[9] || 'Unknown Zone',
+                    terrain: pData[3] || 'Unknown Terrain',
+                    exits: {},
+                    light: pData[10] !== undefined ? pData[10] : 0,
+                    sundeath: pData[11] !== undefined ? pData[11] : 1,
+                    createdAt: Date.now()
+                } as any;
+                
+                if (pData[4]) {
+                    const exits: Record<string, any> = {};
+                    for (const dir in pData[4]) {
+                        const exitObj = pData[4][dir];
+                        const destVnum = getExitTargetId(exitObj);
+                        exits[dir] = {
+                            target: `m_${destVnum}`,
+                            gmcpDestId: Number(destVnum),
+                            closed: false,
+                            hasDoor: exitObj?.hasDoor || false,
+                            flags: exitObj?.flags || []
+                        };
+                    }
+                    currentActiveRoom.exits = exits;
+                }
+            }
+        }
 
         const now = Date.now();
         if (!isSpectateUpdate) {
@@ -101,10 +138,10 @@ export const useRoomInfoHandler = ({
                 if (ardaData && ardaData[4]) {
                     // In lit rooms, we match by gmcpId. In dark rooms, we trust the queue's direction.
                     if (!isVnumZero) {
-                        authorityDir = Object.keys(ardaData[4]).find(d => String(ardaData[4][d]) === gmcpIdStr) || null;
+                        authorityDir = Object.keys(ardaData[4]).find(d => getExitTargetId(ardaData[4][d]) === gmcpIdStr) || null;
                     } else if (intentDir) {
                         // We are in the dark, but ArdaMap knows what VNUM is in the direction we moved.
-                        const targetVnum = String(ardaData[4][intentDir]);
+                        const targetVnum = getExitTargetId(ardaData[4][intentDir]);
                         if (targetVnum) {
                             matchedInternalId = targetVnum;
                             ghostData = preloadedCoordsRef.current[targetVnum];
@@ -136,7 +173,7 @@ export const useRoomInfoHandler = ({
                     if (ardaData && ardaData[4]) {
                         // Match any pending move that has a valid Arda exit to this gmcpId
                         const matchIdx = pendingMovesRef.current.findIndex(m => {
-                            const targetVnum = String(ardaData[4][m.dir]);
+                            const targetVnum = getExitTargetId(ardaData[4][m.dir]);
                             return targetVnum === gmcpIdStr;
                         });
                         
@@ -189,7 +226,7 @@ export const useRoomInfoHandler = ({
                     const prevVnum = currentActiveRoom.id.substring(2);
                     const ardaMapping = preloadedCoordsRef.current[prevVnum];
                     if (ardaMapping && ardaMapping[4] && ardaMapping[4][dirUsed]) {
-                        const nextVnumStr = String(ardaMapping[4][dirUsed]);
+                        const nextVnumStr = getExitTargetId(ardaMapping[4][dirUsed]);
                         const ardaData = preloadedCoordsRef.current[nextVnumStr];
                         if (ardaData && ardaData[5] === gmcpName) {
                             matchedInternalId = nextVnumStr;
@@ -303,8 +340,20 @@ export const useRoomInfoHandler = ({
                 const r = roomsRef.current[key];
                 return Math.round(r.x) === predX && Math.round(r.y) === predY && Math.abs(Math.round(r.z || 0) - predZ) < 0.5 && r.zone === currentActiveRoom.zone;
             }) || null;
-        }
 
+            if (!targetId) {
+                const preloadedMatchVnum = Object.keys(preloadedCoordsRef.current).find(vnum => {
+                    const p = preloadedCoordsRef.current[vnum];
+                    return Math.round(p[0]) === predX && Math.round(p[1]) === predY && Math.abs(Math.round(p[2] || 0) - predZ) < 0.5 && p[9] === currentActiveRoom.zone;
+                });
+                if (preloadedMatchVnum) {
+                    targetId = `m_${preloadedMatchVnum}`;
+                    matchedInternalId = preloadedMatchVnum;
+                    ghostData = preloadedCoordsRef.current[preloadedMatchVnum];
+                    discoverySource = 'DARK_PRELOADED_MATCH';
+                }
+            }
+        }
 
         if (matchedInternalId) {
             targetId = `m_${matchedInternalId}`;
@@ -569,7 +618,7 @@ export const useRoomInfoHandler = ({
                     const vnum = arrivedRoom.id.substring(2);
                     const ardaData = preloadedCoordsRef.current[vnum];
                     if (ardaData?.[4]?.[nextDir]) {
-                        nextTargetId = `m_${ardaData[4][nextDir]}`;
+                        nextTargetId = `m_${getExitTargetId(ardaData[4][nextDir])}`;
                     }
                 }
 

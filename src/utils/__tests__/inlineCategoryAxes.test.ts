@@ -39,4 +39,17 @@ describe('inlineCategoryAxes', () => {
     it('normalizes legacy player drawer ids to remote ally category', () => {
         expect(normalizeInlineCategoryId('inline-player')).toBe('cat-ally-remote');
     });
+
+    it('normalizes and resolves container item category and facts', () => {
+        expect(normalizeInlineCategoryId('inline-container-item')).toBe('cat-container-item');
+        expect(getInlineCategoryAxes('inline-container-item')).toMatchObject({
+            categoryId: 'cat-container-item',
+            family: 'object',
+            location: 'carried',
+            isCharacter: false,
+            isObject: true,
+            isInlineAction: true,
+            isTargetable: false,
+        });
+    });
 });

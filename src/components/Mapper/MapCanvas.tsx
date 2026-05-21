@@ -1,7 +1,9 @@
-import React, { useRef, useCallback, useEffect, forwardRef } from 'react';
+import React, { useRef, useCallback, useEffect, useMemo, forwardRef } from 'react';
 import { useMapperRenderer } from './useMapperRenderer';
 import { useMapAnimation } from './useMapAnimation';
 import { MapperPrediction } from './mapperTypes';
+import { gmcpBus } from '../../events/gmcpBus';
+import type { CombatPulse } from './renderers/rendererUtils';
 
 interface MapCanvasProps {
     rooms: Record<string, any>;
@@ -56,17 +58,21 @@ interface MapCanvasProps {
     npcColor?: string;
     enemyColor?: string;
     objectColor?: string;
+    targetColor?: string;
     opponentName?: string | null;
     opponentId?: string | null;
     activeInlineEntityId?: string | null;
     selectedObjectIds?: Set<string>;
     deathRoomId?: string | null;
     heldButton?: any | null;
+    activeMapFilter?: string | null;
+    mapSearchQuery?: string;
 }
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
     const internalRef = useRef<HTMLCanvasElement>(null);
     const canvasRef = (ref as React.RefObject<HTMLCanvasElement>) || internalRef;
+    const combatPulsesRef = useRef<CombatPulse[]>([]);
 
     const getDPR = useCallback(() => Math.min(props.isMobile ? 2.0 : 2.5, window.devicePixelRatio || 1), [props.isMobile]);
 
@@ -77,8 +83,9 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor,
-        opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton
+        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
+        opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
+        activeMapFilter, mapSearchQuery
     } = props;
 
     const { drawMap } = useMapperRenderer({
@@ -88,9 +95,27 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor,
-        opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton
+        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
+        opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
+        activeMapFilter, mapSearchQuery, combatPulsesRef
     });
+
+    useEffect(() => gmcpBus.on('Game.CombatPulse', pulse => {
+        const cutoff = pulse.time - 1200;
+        combatPulsesRef.current = [
+            ...combatPulsesRef.current.filter(entry => entry.time >= cutoff),
+            pulse
+        ].slice(-6);
+        triggerRender?.();
+    }), [triggerRender]);
+
+    const combatAnimationActive = useMemo(() => {
+        if (opponentId || opponentName) return true;
+        return Object.values(roomChars || {}).some(char => {
+            const fighting = char.fighting == null ? '' : String(char.fighting);
+            return fighting !== '' && fighting.toLowerCase() !== 'you' && fighting !== 'Someone';
+        });
+    }, [opponentId, opponentName, roomChars]);
 
     useMapAnimation({
         drawMap,
@@ -114,7 +139,9 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef: props.preloadedCoordsRef,
         preMoveRef,
         walkTargetId: props.walkTargetId,
-        walkPath: props.walkPath
+        walkPath: props.walkPath,
+        activeMapFilter: props.activeMapFilter,
+        combatAnimationActive
     });
 
     useEffect(() => {

@@ -67,6 +67,8 @@ export interface Message {
     isRoomBlock?: boolean; // True if this line is a room name (with embedded description)
     isRoomBlockStart?: boolean;
     isRoomBlockEnd?: boolean;
+    isCombatBlockStart?: boolean;
+    isCommBlockStart?: boolean;
     isEmpty?: boolean;
     isNarrate?: boolean;
     isUrgent?: boolean; // True if this is a critical non-combat message (arrive/leave/spell)
@@ -81,6 +83,8 @@ export interface Message {
     inRoomBatch?: boolean;
     isHitImpact?: boolean;
     isDamageImpact?: boolean;
+    isAvoidDamageImpact?: boolean;
+    isMissImpact?: boolean;
     isHitterImpact?: boolean;
     isSnoop?: boolean;
     isSnoopInput?: boolean;
@@ -99,6 +103,16 @@ export interface MumeTime {
     weekday: string;
     era: string;
     lastSyncRealTime: number; // Date.now() when last synced
+    mumeStartEpoch?: number;
+    moon?: {
+        zenithMinutes: number;
+        level: number;
+        phaseIndex: number;
+        phaseName: string;
+        waxing: boolean;
+        position: string;
+        isAboveHorizon: boolean;
+    };
 }
 
 export interface CharacterInfo {

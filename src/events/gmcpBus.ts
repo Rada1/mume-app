@@ -39,6 +39,7 @@ export interface GmcpEventMap {
     'Core.Goodbye': void;
     'Connection.Disconnect': void;
     'Game.Text': { type: MessageType; text: string; tokens?: any; isReplay?: boolean };
+    'Game.CombatPulse': { direction: 'outgoing' | 'incoming'; time: number };
     'Session.Reset': void;
     'Session.Start': { characterName: string };
 }

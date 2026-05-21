@@ -99,6 +99,10 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setIsTimestampEnabled,
         isTextRevealEnabled,
         setIsTextRevealEnabled,
+        hidePrompt,
+        setHidePrompt,
+        showBlockHeaders,
+        setShowBlockHeaders,
         autoSaveSessions,
         setAutoSaveSessions,
         parley,
@@ -175,6 +179,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
     }, [popoverState, setPopoverState]);
 
 
+
     return (
         <>
             {isSettingsOpen && (
@@ -221,6 +226,10 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setIsTimestampEnabled={setIsTimestampEnabled}
                     isTextRevealEnabled={isTextRevealEnabled}
                     setIsTextRevealEnabled={setIsTextRevealEnabled}
+                    hidePrompt={hidePrompt}
+                    setHidePrompt={setHidePrompt}
+                    showBlockHeaders={showBlockHeaders}
+                    setShowBlockHeaders={setShowBlockHeaders}
                     autoSaveSessions={autoSaveSessions}
                     setAutoSaveSessions={setAutoSaveSessions}
                     fontFamily={fontFamily}

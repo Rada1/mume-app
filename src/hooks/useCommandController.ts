@@ -71,6 +71,7 @@ export interface CommandControllerDeps {
     toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
     clearObjectSelection: () => void;
     playClickSound: () => void;
+    playEffect: (name: string, options?: { pitch?: number; volume?: number }) => void;
     isSoundEnabled: boolean;
     waiting?: boolean;
     recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any, options?: { mask?: boolean }) => void;
@@ -257,6 +258,7 @@ export function useCommandController(deps: CommandControllerDeps) {
         toggleObjectSelection: deps.toggleObjectSelection,
         clearObjectSelection: deps.clearObjectSelection,
         playClickSound: deps.playClickSound,
+        playEffect: deps.playEffect,
         isSoundEnabled: deps.isSoundEnabled,
         initAudio: deps.initAudio,
         accountState: deps.accountState,

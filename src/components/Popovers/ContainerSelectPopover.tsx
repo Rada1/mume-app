@@ -32,14 +32,18 @@ export const ContainerSelectPopover: React.FC<ContainerSelectProps> = ({
         
         // Fallback for non-scanned items
         return isItemContainer(name);
-    }).map(item => ({
-        id: item.id ? String(item.id) : `roomitems:${item.name || item.short || item.keyword}`,
-        name: item.name || item.shortdesc || item.short || item.keyword || 'a container',
-        source: 'ground'
-    }));
+    }).map(item => {
+        const rawName = item.name || item.shortdesc || item.short || item.keyword || 'a container';
+        return {
+            id: item.id ? String(item.id) : `roomitems:${item.name || item.short || item.keyword}`,
+            name: rawName.replace(/<[^>]*>/g, ''),
+            source: 'ground'
+        };
+    });
 
     // From Inventory
     const invContainers = (inventoryLines || []).filter(line => {
+        if (line.isHeader) return false;
         const name = (line.text || '').toLowerCase();
         if (!name || name === itemBeingPut) return false;
         
@@ -49,12 +53,13 @@ export const ContainerSelectPopover: React.FC<ContainerSelectProps> = ({
         return line.isContainer || isItemContainer(name);
     }).map(line => ({
         id: line.id,
-        name: line.text,
+        name: (line.text || '').replace(/<[^>]*>/g, ''),
         source: 'inventory'
     }));
 
     // From Equipment (e.g. worn backpack, beltpouch)
     const eqContainers = (eqLines || []).filter(line => {
+        if (line.isHeader) return false;
         const name = (line.text || '').toLowerCase();
         if (!name || name === itemBeingPut) return false;
         
@@ -64,7 +69,7 @@ export const ContainerSelectPopover: React.FC<ContainerSelectProps> = ({
         return line.isContainer || isItemContainer(name);
     }).map(line => ({
         id: line.id,
-        name: line.text,
+        name: (line.text || '').replace(/<[^>]*>/g, ''),
         source: 'worn'
     }));
 

@@ -12,7 +12,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         setPopoverState, popoverState, viewport, ui, heldButton, heldButtonRef, setHeldButton,
         isTrackpadModifierActive, keywordOverrides, lastCommandContextRef,
         entities, selectedObjectIds, toggleObjectSelection, clearObjectSelection,
-        playClickSound, isSoundEnabled, initAudio, setAccountState, accountStageRef
+        playClickSound, playEffect, isSoundEnabled, initAudio, setAccountState, accountStageRef
     } = deps;
 
     const lastLogClickRef = useRef<number>(0);
@@ -209,6 +209,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         const fromDrawerStr = targetEl.getAttribute('data-from-drawer');
         const fromDrawer = fromDrawerStr === 'true';
         const category = targetEl.getAttribute('data-category');
+        const parentNoun = targetEl.getAttribute('data-parent-noun') || undefined;
         const categoryAxes = getInlineCategoryAxes(category || cmd);
         const menuDisplay = targetEl.getAttribute('data-menu-display') as 'dial' | 'list' || undefined;
         const rawContextStr = context || targetEl.innerText.trim();
@@ -301,8 +302,10 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 entityId: entityId || undefined,
                 menuDisplay,
                 accentColor,
-                preferSide: 'right'
+                preferSide: 'right',
+                parentNoun
             });
+            playEffect('actionmenu');
             targetEl.classList.add('menu-active');
             triggerHaptic(20);
 
@@ -354,7 +357,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             accountStageRef.current = stage;
             setAccountState(prev => ({ ...prev, stage }));
         }
-    }, [handleLogDoubleClick, viewport.isMobile, heldButton, executeCommand, setHeldButton, triggerHaptic, setPopoverState, setInput, setTarget, ui.mapExpanded, entities, btn, joystick, target, lastCommandContextRef, selectedObjectIds, toggleObjectSelection, clearObjectSelection, isSoundEnabled, playClickSound, lookModFiredRef, initAudio, setAccountState, accountStageRef]);
+    }, [handleLogDoubleClick, viewport.isMobile, heldButton, executeCommand, setHeldButton, triggerHaptic, setPopoverState, setInput, setTarget, ui.mapExpanded, entities, btn, joystick, target, lastCommandContextRef, selectedObjectIds, toggleObjectSelection, clearObjectSelection, isSoundEnabled, playClickSound, playEffect, lookModFiredRef, initAudio, setAccountState, accountStageRef]);
 
     return { handleLogClick, handleLogDoubleClick };
 };

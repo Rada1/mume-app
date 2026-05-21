@@ -71,6 +71,81 @@ export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: num
     ctx.stroke();
 };
 
+// --- Shared Occupant Dot Renderer ---
+const GROUP_DOT_BORDER = '#22c55e';
+
+const drawOccupantDot = (
+    rCtx: RenderContext,
+    orbX: number, orbY: number,
+    color: string, alpha: number,
+    name?: string,
+    radius = GRID_SIZE * 0.09,
+    anim?: import('../occupantAnimStore').OccupantAnimEntry,
+    isTarget = false, isActive = false, isCombatant = false, isGroupMember = false,
+    isHeldActive = false,
+) => {
+    const { ctx, now, camera, triggerRender } = rCtx;
+    const targetColor = rCtx.targetColor || '#facc15';
+    const initial = getOccupantInitial(name);
+    let extraGlow = 0;
+    const combatPulse = (Math.sin(now / 240) + 1) / 2;
+
+    if (anim && anim.type === 'tap') {
+        const t = Math.min((now - anim.startTime) / 250, 1.0);
+        const pop = Math.sin(t * Math.PI);
+        extraGlow = pop * radius * 1.2;
+        if (t < 1.0) triggerRender?.();
+    }
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    // 1. Soft-cornered square body
+    const size = radius * 2;
+    const corner = Math.max(1.5, radius * 0.35);
+    ctx.fillStyle = 'rgba(15, 15, 15, 0.95)';
+    ctx.shadowColor = color;
+    ctx.shadowBlur = Math.max(4, 10 / camera.zoom) + extraGlow;
+    ctx.beginPath();
+    if (typeof (ctx as any).roundRect === 'function') {
+        (ctx as any).roundRect(orbX - radius, orbY - radius, size, size, corner);
+    } else {
+        ctx.rect(orbX - radius, orbY - radius, size, size);
+    }
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // 2. Border
+    const borderColor = isCombatant ? '#ef4444' : isTarget ? targetColor : isGroupMember ? GROUP_DOT_BORDER : (isHeldActive || isActive) ? color : 'rgba(255, 255, 255, 0.2)';
+    ctx.globalAlpha = isCombatant ? alpha : isTarget ? alpha : isHeldActive ? alpha * 0.7 : isActive ? alpha * 0.55 : alpha;
+    ctx.strokeStyle = borderColor;
+    ctx.lineWidth = isCombatant ? Math.max(1.1, 1.7 / camera.zoom) : isTarget ? Math.max(0.8, 1.2 / camera.zoom) : isGroupMember ? Math.max(0.55, 0.9 / camera.zoom) : (isHeldActive || isActive) ? Math.max(0.55, 0.9 / camera.zoom) : 0.5;
+    ctx.shadowBlur = isCombatant ? (radius * (1.05 + combatPulse * 0.7)) + extraGlow : isTarget ? (radius * 0.8) + extraGlow : isGroupMember ? 3 : isHeldActive ? (radius * 0.6) + extraGlow : isActive ? (radius * 0.45) + extraGlow : 0;
+    ctx.shadowColor = borderColor;
+    ctx.stroke();
+    ctx.restore();
+
+    // 3. Layered bloom initial
+    if (initial) {
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.font = `700 ${radius * 1.4}px monospace`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = Math.max(2.5, 6 / camera.zoom);
+        ctx.fillText(initial, orbX, orbY);
+        ctx.shadowBlur = Math.max(5, 14 / camera.zoom);
+        ctx.globalAlpha = alpha * 0.55;
+        ctx.fillText(initial, orbX, orbY);
+        ctx.globalAlpha = alpha;
+        ctx.shadowBlur = 0;
+        ctx.fillText(initial, orbX, orbY);
+        ctx.restore();
+    }
+};
+
 // --- Room Occupants (NPCs / Non-group Players) ---
 // Global tracker for "last known positioning" to ensure smooth exit animations
 const lastPetalPositions = new Map<string, { dx: number, dy: number, isPlayer: boolean }>();
@@ -147,54 +222,75 @@ export const drawRoomOccupants = (
 
     const isHeldActive = !!(rCtx.heldButton && !rCtx.heldButton.didFire && !rCtx.heldButton.id?.startsWith('log-inline-'));
 
-    const drawDot = (orbX: number, orbY: number, color: string, alpha: number, name?: string, radius = GRID_SIZE * 0.09, anim?: import('../occupantAnimStore').OccupantAnimEntry, isTarget = false, isActive = false) => {
-        const initial = getOccupantInitial(name);
-        let finalRadius = radius;
-        let extraGlow = 0;
+    const combatantIds = new Set<string>();
+    allOccupants.forEach(occ => {
+        if (occ.id == null || occ.fighting == null || occ.fighting === 'Someone') return;
+        combatantIds.add(String(occ.id));
+        if (occ.fighting !== 'you') combatantIds.add(String(occ.fighting));
+    });
 
-        if (anim && anim.type === 'tap') {
-            const t = Math.min((now - anim.startTime) / 250, 1.0);
-            const pop = Math.sin(t * Math.PI);
-            extraGlow = pop * radius * 1.2;
-            if (t < 1.0) triggerRender?.();
-        }
+    const drawCombatTether = (fromX: number, fromY: number, toX: number, toY: number, alpha = 1, includePulses = false) => {
+        const zoom = camera.zoom || 1;
+        const dx = toX - fromX;
+        const dy = toY - fromY;
+        const len = Math.hypot(dx, dy);
+        if (len < 1) return;
+        const ux = dx / len;
+        const uy = dy / len;
 
         ctx.save();
         ctx.globalAlpha = alpha;
-        
-        // 1. Soft-cornered square matching inline buttons
-        const size = finalRadius * 2;
-        const corner = Math.max(1.5, finalRadius * 0.35);
-        ctx.fillStyle = 'rgba(15, 15, 15, 0.95)';
+        ctx.lineCap = 'round';
+
+        ctx.shadowBlur = 10 / zoom;
+        ctx.shadowColor = '#ef4444';
         ctx.beginPath();
-        if (typeof (ctx as any).roundRect === 'function') {
-            (ctx as any).roundRect(orbX - finalRadius, orbY - finalRadius, size, size, corner);
-        } else {
-            ctx.rect(orbX - finalRadius, orbY - finalRadius, size, size);
-        }
-        ctx.fill();
-
-        const borderColor = isTarget ? '#eab308' : (isHeldActive || isActive) ? color : 'rgba(255, 255, 255, 0.2)';
-        ctx.globalAlpha = isTarget ? alpha : isHeldActive ? alpha * 0.7 : isActive ? alpha * 0.55 : alpha;
-        ctx.strokeStyle = borderColor;
-        ctx.lineWidth = isTarget ? Math.max(0.8, 1.2 / camera.zoom) : (isHeldActive || isActive) ? Math.max(0.55, 0.9 / camera.zoom) : 0.5;
-        ctx.shadowBlur = isTarget ? (finalRadius * 0.8) + extraGlow : isHeldActive ? (finalRadius * 0.6) + extraGlow : isActive ? (finalRadius * 0.45) + extraGlow : 0;
-        ctx.shadowColor = borderColor;
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(toX, toY);
+        ctx.strokeStyle = 'rgba(127, 29, 29, 0.92)';
+        ctx.lineWidth = Math.max(1.1, 2.1 / zoomFactor);
+        ctx.setLineDash([Math.max(2, 4 / zoom), Math.max(2, 5 / zoom)]);
+        ctx.lineDashOffset = -now / 70;
         ctx.stroke();
-
         ctx.restore();
 
-        if (initial) {
-            ctx.save();
-            ctx.globalAlpha = alpha;
-            ctx.font = `700 ${finalRadius * 1.4}px monospace`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            // 3. Initials in category color
-            ctx.fillStyle = color;
-            ctx.fillText(initial, orbX, orbY);
-            ctx.restore();
+        if (!includePulses || !rCtx.combatPulsesRef?.current.length) return;
+
+        const pulseDuration = 340;
+        const pulses = rCtx.combatPulsesRef.current.filter(pulse => now - pulse.time < pulseDuration);
+        if (pulses.length !== rCtx.combatPulsesRef.current.length) {
+            rCtx.combatPulsesRef.current = pulses;
         }
+
+        pulses.forEach(pulse => {
+            const progress = Math.max(0, Math.min(1, (now - pulse.time) / pulseDuration));
+            const directedProgress = pulse.direction === 'outgoing' ? progress : 1 - progress;
+            const pulseLen = Math.min(len * 0.45, Math.max(8 / zoom, 14));
+            const centerX = fromX + dx * directedProgress;
+            const centerY = fromY + dy * directedProgress;
+            const tailX = centerX - ux * pulseLen * 0.5;
+            const tailY = centerY - uy * pulseLen * 0.5;
+            const headX = centerX + ux * pulseLen * 0.5;
+            const headY = centerY + uy * pulseLen * 0.5;
+            const color = pulse.direction === 'outgoing' ? 'rgba(34, 211, 238, 0.95)' : 'rgba(248, 113, 113, 0.95)';
+
+            ctx.save();
+            ctx.globalAlpha = alpha * Math.sin(progress * Math.PI);
+            ctx.lineCap = 'round';
+            ctx.shadowBlur = 12 / zoom;
+            ctx.shadowColor = pulse.direction === 'outgoing' ? '#22d3ee' : '#ef4444';
+            ctx.strokeStyle = color;
+            ctx.lineWidth = Math.max(1.6, 3.2 / zoomFactor);
+            ctx.beginPath();
+            ctx.moveTo(tailX, tailY);
+            ctx.lineTo(headX, headY);
+            ctx.stroke();
+            ctx.restore();
+        });
+    };
+
+    const drawDot = (orbX: number, orbY: number, color: string, alpha: number, name?: string, radius = GRID_SIZE * 0.09, anim?: import('../occupantAnimStore').OccupantAnimEntry, isTarget = false, isActive = false, isCombatant = false, isGroupMember = false) => {
+        drawOccupantDot(rCtx, orbX, orbY, color, alpha, name, radius, anim, isTarget, isActive, isCombatant, isGroupMember, isHeldActive);
     };
 
     const drawRing = (occupants: typeof occupantTargets) => {
@@ -222,20 +318,14 @@ export const drawRoomOccupants = (
             }
 
             const isOpponent = isOpponentOccupant(occ, allOccupants, opponentId, opponentName);
-            drawDot(orbX, orbY, occ.color, alpha, occ.name, occ.radius, anim, isOpponent, isOccupantActive(occ));
+            const isCombatant = isOpponent || (occ.id != null && combatantIds.has(String(occ.id)));
+            const isGroupOcc = occ.ring === 'inner';
+            drawDot(orbX, orbY, occ.color, alpha, occ.name, occ.radius, anim, isOpponent, isOccupantActive(occ), isCombatant, isGroupOcc);
 
             // Opponent tether. Name fallback is allowed only when it resolves to
             // exactly one visible occupant; duplicate names require GMCP ID.
             if (isOpponent) {
-                ctx.save();
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
-                ctx.lineWidth = 2.0 / zoomFactor;
-                ctx.setLineDash([4, 4]);
-                ctx.moveTo(px, py);
-                ctx.lineTo(orbX, orbY);
-                ctx.stroke();
-                ctx.restore();
+                drawCombatTether(px, py, orbX, orbY, alpha, true);
             }
         });
     };
@@ -254,15 +344,7 @@ export const drawRoomOccupants = (
         const pairKey = [String(occ.id), String(target.id)].sort().join('-');
         if (drawnPairs.has(pairKey)) return;
         drawnPairs.add(pairKey);
-        ctx.save();
-        ctx.beginPath();
-        ctx.strokeStyle = 'rgba(239, 68, 68, 0.6)';
-        ctx.lineWidth = 1.5 / (camera.zoom || 1);
-        ctx.setLineDash([3, 3]);
-        ctx.moveTo(occ.x, occ.y);
-        ctx.lineTo(target.x, target.y);
-        ctx.stroke();
-        ctx.restore();
+        drawCombatTether(occ.x, occ.y, target.x, target.y, 0.78);
     });
 
     // 4.5 Draw room items as squares in a line at the bottom
@@ -430,6 +512,8 @@ export const drawEntities = (
         // Soft-cornered square player icon
         ctx.save();
         ctx.globalAlpha = alpha;
+        const isPlayerInCombat = !!(rCtx.opponentId || rCtx.opponentName);
+        const combatPulse = (Math.sin(now / 240) + 1) / 2;
         
         // 1. Solid command-bar grey body
         const size = orbRadius * 2;
@@ -443,10 +527,27 @@ export const drawEntities = (
         }
         ctx.fill();
 
-        // 2. Subtle light border to pop against the white room glow
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.lineWidth = 0.5;
+        // 2. Subtle light border, turning red while locked in combat.
+        ctx.strokeStyle = isPlayerInCombat ? 'rgba(248, 113, 113, 0.95)' : 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = isPlayerInCombat ? Math.max(0.9, 1.5 / rCtx.camera.zoom) : 0.5;
+        ctx.shadowBlur = isPlayerInCombat ? 5 + combatPulse * 5 : 0;
+        ctx.shadowColor = '#ef4444';
         ctx.stroke();
+
+        if (isPlayerInCombat) {
+            const ringPad = Math.max(1.2, (2 + combatPulse) / rCtx.camera.zoom);
+            ctx.globalAlpha = alpha * (0.55 + combatPulse * 0.25);
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)';
+            ctx.lineWidth = Math.max(0.55, 0.85 / rCtx.camera.zoom);
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            if (typeof (ctx as any).roundRect === 'function') {
+                (ctx as any).roundRect(px - orbRadius - ringPad, py - orbRadius - ringPad, size + ringPad * 2, size + ringPad * 2, corner + ringPad);
+            } else {
+                ctx.rect(px - orbRadius - ringPad, py - orbRadius - ringPad, size + ringPad * 2, size + ringPad * 2);
+            }
+            ctx.stroke();
+        }
         
         ctx.restore();
         
@@ -556,7 +657,8 @@ export const drawEntities = (
  * Includes teardrop trail animation identical to the player orb (but green).
  */
 export const drawGroupMembers = (rCtx: RenderContext) => {
-    const { ctx, currentZ, allRooms, preloaded, now, groupMembers, camera, serverIdIndexRef, triggerRender } = rCtx;
+    const { ctx, currentZ, allRooms, preloaded, now, groupMembers, camera, serverIdIndexRef, playerColor } = rCtx;
+    const MEMBER_COLOR = playerColor || '#89CFF0';
     if (!groupMembers || groupMembers.length === 0) return;
 
     // --- Persistent trail state per group member (same 450ms as player trail) ---
@@ -769,64 +871,24 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
             ctx.restore();
         });
 
-        let orbRadius = ORB_RADIUS * 0.75;
-        let extraGlow = 0;
         const anim = occupantAnims.get(memberKey);
-        if (anim && anim.type === 'tap') {
-            const t = Math.min((now - anim.startTime) / 250, 1.0);
-            const pop = Math.sin(t * Math.PI);
-            orbRadius *= (1 + pop * 0.4);
-            extraGlow = pop * orbRadius * 1.2;
-            if (t < 1.0) triggerRender?.();
-        }
-
         const isTarget = isOpponentOccupant(member, groupMembers, rCtx.opponentId, rCtx.opponentName);
+        const isHeldActive = !!(rCtx.heldButton && !rCtx.heldButton.didFire && !rCtx.heldButton.id?.startsWith('log-inline-'));
 
-        ctx.save();
-        ctx.globalAlpha = alpha * 0.92;
-        
-        // 1. Soft-cornered square body
-        const size = orbRadius * 2;
-        const corner = Math.max(1.5, orbRadius * 0.35);
-        ctx.fillStyle = 'rgba(15, 15, 15, 0.95)';
-        ctx.beginPath();
-        if (typeof (ctx as any).roundRect === 'function') {
-            (ctx as any).roundRect(px - orbRadius, py - orbRadius, size, size, corner);
-        } else {
-            ctx.rect(px - orbRadius, py - orbRadius, size, size);
-        }
-        ctx.fill();
-
-        // 2. Transparent border by default, yellow if target, colored glow if held-button active
-        const isGroupHeldActive = !!(rCtx.heldButton && !rCtx.heldButton.didFire && !rCtx.heldButton.id?.startsWith('log-inline-'));
-        ctx.strokeStyle = isTarget ? '#eab308' : isGroupHeldActive ? color.core : 'transparent';
-        ctx.lineWidth = (isTarget || isGroupHeldActive) ? Math.max(0.55, 0.9 / camera.zoom) : 0.5;
-        ctx.shadowBlur = isTarget ? (orbRadius * 0.8) + extraGlow : isGroupHeldActive ? (orbRadius * 0.6) + extraGlow : 0;
-        ctx.shadowColor = isTarget ? '#eab308' : isGroupHeldActive ? color.core : 'transparent';
-        ctx.stroke();
-
-        // 3. Initials in member color
-        const initial = member.name ? member.name.charAt(0).toUpperCase() : '';
-        if (initial) {
-            ctx.font = `700 ${orbRadius * 1.4}px monospace`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = color.core;
-            ctx.fillText(initial, px, py);
-        }
+        drawOccupantDot(rCtx, px, py, MEMBER_COLOR, alpha * 0.92, member.name, ORB_RADIUS, anim, isTarget, false, false, true, isHeldActive);
 
         const isSameRoom = prx !== undefined && prx === rx && pry === ry && prz === rz;
         if (!isSameRoom) {
+            ctx.save();
             ctx.font = `bold ${8 / camera.zoom}px Inter`;
-            ctx.fillStyle = color.core;
+            ctx.fillStyle = MEMBER_COLOR;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
             ctx.shadowBlur = 4;
             ctx.shadowColor = 'black';
-            ctx.fillText(member.name, px, py - (orbRadius + 2) / camera.zoom);
+            ctx.fillText(member.name, px, py - (ORB_RADIUS + 2) / camera.zoom);
+            ctx.restore();
         }
-
-        ctx.restore();
 
     });
 };
@@ -1102,3 +1164,225 @@ export const drawMarquee = (rCtx: RenderContext, marquee: { start: { x: number, 
         ctx.strokeRect(x1, y1, x2 - x1, y2 - y1); ctx.fillStyle = 'rgba(137, 180, 250, 0.2)'; ctx.fillRect(x1, y1, x2 - x1, y2 - y1); ctx.restore();
     }
 };
+
+export const drawFilterHighlights = (
+    rCtx: RenderContext,
+    playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>
+) => {
+    const { ctx, activeMapFilter, matchedRoomIds, closestRoomId, allRooms, preloaded, currentZ, now, filterPathIds, filterPathDistance } = rCtx;
+    if (!activeMapFilter || !matchedRoomIds || matchedRoomIds.size === 0) return;
+
+    const getFilterColors = (filter: string): { stroke: string, shadow: string } => {
+        switch (filter) {
+            case 'herb': return { stroke: 'rgba(46, 204, 113, 0.85)', shadow: '#2ecc71' };
+            case 'stable': return { stroke: 'rgba(230, 126, 34, 0.85)', shadow: '#e67e22' };
+            case 'quest': return { stroke: 'rgba(52, 152, 219, 0.85)', shadow: '#3498db' };
+            case 'shop': return { stroke: 'rgba(241, 196, 15, 0.85)', shadow: '#f1c40f' };
+            case 'guild': return { stroke: 'rgba(155, 89, 182, 0.85)', shadow: '#9b59b6' };
+            case 'inn': return { stroke: 'rgba(255, 105, 180, 0.85)', shadow: '#ff69b4' };
+            case 'danger': return { stroke: 'rgba(231, 76, 60, 0.85)', shadow: '#e74c3c' };
+            case 'water': return { stroke: 'rgba(41, 128, 185, 0.85)', shadow: '#2980b9' };
+            default: return { stroke: 'rgba(255, 255, 255, 0.85)', shadow: '#ffffff' };
+        }
+    };
+
+    const getRoomCoords = (rid: string): { x: number, y: number, z: number } | null => {
+        const local = allRooms[rid];
+        if (local) {
+            return { x: local.x, y: local.y, z: local.z || 0 };
+        }
+        const rawId = rid.startsWith('m_') ? rid.substring(2) : rid;
+        const pData = preloaded[rawId];
+        if (pData) {
+            return { x: pData[0], y: pData[1], z: pData[2] || 0 };
+        }
+        return null;
+    };
+
+    const colors = getFilterColors(activeMapFilter);
+
+    const getRoomCenter = (rid: string) => {
+        const coords = getRoomCoords(rid);
+        if (!coords || Math.abs(coords.z - currentZ) >= 0.5) return null;
+        return {
+            x: coords.x * GRID_SIZE + GRID_SIZE / 2,
+            y: coords.y * GRID_SIZE + GRID_SIZE / 2
+        };
+    };
+
+    const visiblePadding = GRID_SIZE * 2;
+    const visibleWorldWidth = rCtx.canvasWidth / (rCtx.dpr * rCtx.camera.zoom);
+    const visibleWorldHeight = rCtx.canvasHeight / (rCtx.dpr * rCtx.camera.zoom);
+    const visibleBounds = {
+        left: rCtx.camera.x - visiblePadding,
+        top: rCtx.camera.y - visiblePadding,
+        right: rCtx.camera.x + visibleWorldWidth + visiblePadding,
+        bottom: rCtx.camera.y + visibleWorldHeight + visiblePadding
+    };
+    const isVisiblePoint = (x: number, y: number) =>
+        x >= visibleBounds.left && x <= visibleBounds.right && y >= visibleBounds.top && y <= visibleBounds.bottom;
+
+    // 0. Draw the active filter route from current room to nearest matching flag.
+    if (filterPathIds && filterPathIds.length > 1) {
+        const pathPoints = filterPathIds
+            .map(getRoomCenter)
+            .filter((point): point is { x: number, y: number } => point !== null);
+
+        if (pathPoints.length > 1) {
+            const flow = (now % 900) / 900;
+            const dashLength = 8;
+            const gapLength = 7;
+
+            ctx.save();
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.shadowBlur = 16;
+            ctx.shadowColor = colors.shadow;
+            ctx.strokeStyle = 'rgba(5, 8, 12, 0.76)';
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            ctx.moveTo(pathPoints[0].x, pathPoints[0].y);
+            pathPoints.slice(1).forEach(point => ctx.lineTo(point.x, point.y));
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.save();
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = colors.shadow;
+            ctx.strokeStyle = colors.stroke;
+            ctx.lineWidth = 4;
+            ctx.setLineDash([dashLength, gapLength]);
+            ctx.lineDashOffset = -flow * (dashLength + gapLength);
+            ctx.beginPath();
+            ctx.moveTo(pathPoints[0].x, pathPoints[0].y);
+            pathPoints.slice(1).forEach(point => ctx.lineTo(point.x, point.y));
+            ctx.stroke();
+            ctx.restore();
+
+            pathPoints.forEach((point, index) => {
+                if (index === 0) return;
+                const isDestination = index === pathPoints.length - 1;
+                ctx.save();
+                ctx.fillStyle = isDestination ? '#ffffff' : colors.shadow;
+                ctx.strokeStyle = isDestination ? colors.stroke : 'rgba(5, 8, 12, 0.72)';
+                ctx.lineWidth = isDestination ? 2.4 : 1.6;
+                ctx.shadowBlur = isDestination ? 14 : 7;
+                ctx.shadowColor = colors.shadow;
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, isDestination ? 6 : 3.6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+            });
+
+            const labelPoint = pathPoints[Math.max(0, Math.floor(pathPoints.length / 2) - 1)];
+            const roomsAway = filterPathDistance || Math.max(0, filterPathIds.length - 1);
+            const label = `${roomsAway} ${roomsAway === 1 ? 'room' : 'rooms'}`;
+
+            ctx.save();
+            ctx.font = `bold ${Math.max(11, 13 / rCtx.camera.zoom)}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const metrics = ctx.measureText(label);
+            const padX = 7 / rCtx.camera.zoom;
+            const padY = 4 / rCtx.camera.zoom;
+            const labelWidth = metrics.width + padX * 2;
+            const labelHeight = 18 / rCtx.camera.zoom;
+            const labelX = labelPoint.x;
+            const labelY = labelPoint.y - GRID_SIZE * 0.42;
+
+            ctx.fillStyle = 'rgba(9, 12, 18, 0.78)';
+            ctx.strokeStyle = colors.stroke;
+            ctx.lineWidth = 1.2 / rCtx.camera.zoom;
+            ctx.beginPath();
+            ctx.roundRect(labelX - labelWidth / 2, labelY - labelHeight / 2, labelWidth, labelHeight, 5 / rCtx.camera.zoom);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(label, labelX, labelY + padY * 0.1);
+            ctx.restore();
+        }
+    }
+
+    // 1. Draw pulsing glowing circles around all matched rooms on current floor
+    matchedRoomIds.forEach(rid => {
+        const coords = getRoomCoords(rid);
+        if (!coords || Math.abs(coords.z - currentZ) >= 0.5) return;
+
+        const cx = coords.x * GRID_SIZE + GRID_SIZE / 2;
+        const cy = coords.y * GRID_SIZE + GRID_SIZE / 2;
+        if (!isVisiblePoint(cx, cy)) return;
+
+        const phaseSeed = rid.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+        const pulse = (Math.sin((now + phaseSeed * 23) / 360) + 1) / 2;
+        const radius = GRID_SIZE * (0.42 + pulse * 0.1);
+        const alpha = 0.55 + pulse * 0.35;
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.shadowBlur = 7 + pulse * 12;
+        ctx.shadowColor = colors.shadow;
+        ctx.strokeStyle = colors.stroke;
+        ctx.lineWidth = 2 + pulse * 1.4;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    });
+
+    // 2. Draw pulsing sonar beacon for the closest room
+    if (closestRoomId) {
+        const closestCoords = getRoomCoords(closestRoomId);
+        if (closestCoords && Math.abs(closestCoords.z - currentZ) < 0.5) {
+            const cx = closestCoords.x * GRID_SIZE + GRID_SIZE / 2;
+            const cy = closestCoords.y * GRID_SIZE + GRID_SIZE / 2;
+
+            const pulsePeriod = 1200;
+            const progress1 = (now % pulsePeriod) / pulsePeriod;
+            const progress2 = ((now + pulsePeriod / 2) % pulsePeriod) / pulsePeriod;
+
+            const minRadius = GRID_SIZE * 0.45;
+            const maxRadius = GRID_SIZE * 1.5;
+
+            const drawWave = (progress: number) => {
+                const radius = minRadius + (maxRadius - minRadius) * progress;
+                const alpha = 1.0 - progress;
+
+                ctx.save();
+                ctx.strokeStyle = colors.stroke.replace('0.85', String(alpha * 0.9));
+                ctx.lineWidth = 3;
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = colors.shadow;
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            };
+
+            drawWave(progress1);
+            drawWave(progress2);
+
+            // 3. Draw a dotted connector path from player's room to the closest room (only if on same floor)
+            const playerCoords = playerPosRef.current || resolveActiveRoomAnchor(rCtx, playerPosRef);
+            if (playerCoords && Math.abs(playerCoords.z - currentZ) < 0.5) {
+                const px = playerCoords.x * GRID_SIZE + GRID_SIZE / 2;
+                const py = playerCoords.y * GRID_SIZE + GRID_SIZE / 2;
+
+                ctx.save();
+                ctx.strokeStyle = colors.stroke;
+                ctx.lineWidth = 1.8;
+                ctx.setLineDash([4, 4]);
+                ctx.shadowBlur = 4;
+                ctx.shadowColor = colors.shadow;
+                ctx.beginPath();
+                ctx.moveTo(px, py);
+                ctx.lineTo(cx, cy);
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+    }
+};
+

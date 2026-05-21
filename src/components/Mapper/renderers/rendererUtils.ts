@@ -1,5 +1,10 @@
 import { MapperPrediction } from '../mapperTypes';
 
+export interface CombatPulse {
+    direction: 'outgoing' | 'incoming';
+    time: number;
+}
+
 export interface RenderContext {
     ctx: CanvasRenderingContext2D;
     dpr: number;
@@ -32,6 +37,7 @@ export interface RenderContext {
     enemyColor?: string;
     neutralColor?: string;
     objectColor?: string;
+    targetColor?: string;
     opponentName?: string | null;
     opponentId?: string | null;
     activeInlineEntityId?: string | null;
@@ -51,6 +57,13 @@ export interface RenderContext {
     groupMembers?: import('../../../types').GroupMember[];
     deathRoomId?: string | null;
     heldButton?: any | null;
+    activeMapFilter?: string | null;
+    mapSearchQuery?: string;
+    matchedRoomIds?: Set<string>;
+    closestRoomId?: string | null;
+    filterPathIds?: string[];
+    filterPathDistance?: number;
+    combatPulsesRef?: React.MutableRefObject<CombatPulse[]>;
 }
 
 export const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);

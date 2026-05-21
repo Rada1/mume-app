@@ -43,7 +43,10 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
 
     if (captureStage) {
         const baseCommand = lowerCmd.split(/\s+/)[0];
-        const captureType = COMMAND_CAPTURE_TYPES[baseCommand];
+        let captureType = COMMAND_CAPTURE_TYPES[baseCommand];
+        if (!captureType && (lowerCmd.startsWith('look in ') || lowerCmd.startsWith('look inside '))) {
+            captureType = 'container';
+        }
         if (captureType) captureStage.current = captureType;
     }
 

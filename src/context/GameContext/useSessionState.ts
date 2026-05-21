@@ -252,6 +252,9 @@ export const useSessionState = (
     const [whereLines, setWhereLines] = useState<DrawerLine[]>([]);
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
 
+    const [expandedContainers, setExpandedContainers] = useState<Set<string>>(new Set());
+    const [containerContents, setContainerContents] = useState<Record<string, DrawerLine[]>>({});
+
     const setActivePromptCompat = useCallback((prompt: string | import('../../types').ActivePrompt | null) => {
         if (typeof prompt === 'string') {
             setActivePrompt({ text: prompt });
@@ -336,7 +339,11 @@ export const useSessionState = (
             setRoomNum: (num: number) => rStore.setRoomInfo({ roomNum: num }),
             captureSession,
             captureSessionRef,
-            setCaptureSession
+            setCaptureSession,
+            expandedContainers,
+            setExpandedContainers,
+            containerContents,
+            setContainerContents
         },
         log: {
             ...log,
@@ -359,6 +366,7 @@ export const useSessionState = (
         level, currentName, setCurrentName, registry, quests,
         lightningEnabled, rStore.whoList, setWhoList, whereList, setWhereList, log, ui.selectedObjectIds,
         ui.toggleObjectSelection, ui.clearObjectSelection, recorder, discoveredItems,
-        gameTime, setGameTime, rStore.roomNum, rStore.chars, captureSession
+        gameTime, setGameTime, rStore.roomNum, rStore.chars, captureSession,
+        expandedContainers, containerContents
     ]);
 };

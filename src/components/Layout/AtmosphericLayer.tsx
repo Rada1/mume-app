@@ -7,8 +7,6 @@
 import React from 'react';
 import { useGame } from '../../context/GameContext';
 import { EnvironmentEffects } from '../Atmosphere/EnvironmentEffects';
-import { resolveTerrainBackground } from '../../utils/terrainBackgrounds';
-import { resolveRaceBackground, resolveRaceBackgroundScale } from '../../utils/raceBackgrounds';
 import { useModeStore } from '../../stores/useModeStore';
 
 export const AtmosphericLayer: React.FC = () => {
@@ -19,10 +17,7 @@ export const AtmosphericLayer: React.FC = () => {
         lightningEnabled,
         isImmersionMode,
         viewport,
-        bgImage,
-        bgImageBottom,
         activeSession,
-        userSession,
         currentTerrain,
         spectateTerrain,
         accountState,
@@ -41,17 +36,12 @@ export const AtmosphericLayer: React.FC = () => {
         ? (isCreationSequence ? 'dark' : 'moon') 
         : lighting;
 
+    // Turned off top and bottom gameplay images for visual theming
     const resolvedBgImage = isAccountMode 
         ? (accountState.stage === 'login' ? null : '/assets/Pictures/account.png')
-        : (bgImage ?? resolveTerrainBackground(activeTerrain));
-    const race = userSession.vitals.characterInfo.race;
-    const resolvedBottomBgImage = bgImageBottom
-        ?? (!isAccountMode && !isSpectating
-            ? resolveRaceBackground(race)
-            : null);
-    const resolvedBottomBgScale = bgImageBottom || isAccountMode || isSpectating
-        ? 1
-        : resolveRaceBackgroundScale(race);
+        : null;
+    const resolvedBottomBgImage = null;
+    const resolvedBottomBgScale = 1;
 
     return (
         <EnvironmentEffects

@@ -406,10 +406,10 @@
 .control-card-wrapper {
     display: flex;
     flex-direction: column;
-    background: #000000;
-    backdrop-filter: blur(24px) saturate(1.2);
-    -webkit-backdrop-filter: blur(24px) saturate(1.2);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(13, 16, 23, 0.62);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: var(--radius-card);
     padding: 0;
     margin-top: 12px;
@@ -427,7 +427,7 @@
 }
 
 .control-card-wrapper .prompt-box-content {
-    background: #000000 !important;
+    background: transparent !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border: none !important;
@@ -454,20 +454,19 @@
     }
 }
 
+
 /* On mobile portrait, we apply a refined, balanced floating card styling */
 @media (max-width: 1024px) and (orientation: portrait) {
     .control-card-wrapper {
-        background: #000000 !important;
-        backdrop-filter: blur(24px) saturate(1.2) !important;
-        -webkit-backdrop-filter: blur(24px) saturate(1.2) !important;
-        border: 1px solid rgba(255, 255, 255, 0.12) !important;
-        border-radius: 28px !important;
+        background: rgba(13, 16, 23, 0.62) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border: none !important;
+        border-radius: var(--radius-card) !important;
         padding: 0 !important;
         width: 97% !important; /* Maximized width while keeping a tiny floating gap */
         margin: 6px auto 6px auto !important;
-        box-shadow: 
-            0 0 32px rgba(0, 0, 0, 0.5),
-            0 0 20px rgba(255, 255, 255, 0.15) !important;
+        box-shadow: none !important;
         overflow: hidden;
     }
     
@@ -478,16 +477,16 @@
 }
 
 .in-combat .control-card-wrapper {
-    background: #000000;
-    border-color: rgba(239, 68, 68, 0.3) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(239, 68, 68, 0.1) !important;
+    background: rgba(13, 16, 23, 0.62);
+    border-color: transparent !important;
+    box-shadow: none !important;
 }
 
 @media (max-width: 1024px) and (orientation: portrait) {
     .in-combat .control-card-wrapper {
-        background: #000000 !important;
-        border-color: rgba(239, 68, 68, 0.45) !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 0 15px rgba(239, 68, 68, 0.15) !important;
+        background: rgba(13, 16, 23, 0.62) !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
     }
 
     /* Account Mode Mobile Centering */
@@ -1085,24 +1084,24 @@
 
 /* Light mode: control card (prompt box wrapper) */
 .light-mode .control-card-wrapper {
-    background: rgba(220, 220, 220, 0.75);
-    backdrop-filter: blur(24px) saturate(1.8);
-    -webkit-backdrop-filter: blur(24px) saturate(1.8);
-    border-color: rgba(0, 0, 0, 0.12);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: none;
+    box-shadow: none;
 }
 
 @media (max-width: 1024px) and (orientation: portrait) {
     .light-mode .control-card-wrapper {
-        background: #ffffff !important;
-        border-color: rgba(0, 0, 0, 0.1) !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.14), 0 1px 6px rgba(0, 0, 0, 0.08) !important;
+        background: rgba(255, 255, 255, 0.6) !important;
+        border: none !important;
+        box-shadow: none !important;
     }
 }
 
-/* Immersion mode: restore depth shadow on prompt box */
+/* Keep the prompt pod on the same lightweight glass as room/tactical pods. */
 .immersion-mode .control-card-wrapper {
-    box-shadow: 0 0 32px rgba(0, 0, 0, 0.5);
+    box-shadow: none;
 }
 
 /* Medieval Theme Login Layout */

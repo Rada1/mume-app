@@ -52,7 +52,9 @@ export const ITEM_BUTTONS = [
     createButton({ id: 'btn-worn-examine', label: 'Examine', command: 'examine %n', setId: 'cat-worn-object', color: '#3b82f6', width: 100 }),
     createButton({ id: 'btn-whet', label: 'Whet', command: 'whet %n', setId: 'inline-whetstone', color: '#64748b' }),
     createButton({ id: 'btn-recite', label: 'Recite', command: 'recite %n', setId: 'inline-scroll', color: '#8b5cf6' }),
-    createButton({ id: 'btn-draw', label: 'Draw', command: 'draw %n', setId: 'inline-drawable', color: '#6366f1' })
+    createButton({ id: 'btn-draw', label: 'Draw', command: 'draw %n', setId: 'inline-drawable', color: '#6366f1' }),
+    // --- CONTAINER ITEMS ---
+    createButton({ id: 'btn-container-get-item', label: 'Get', command: 'get %n %p', setId: 'inline-container-item', color: '#f59e0b' })
 ];
 
 

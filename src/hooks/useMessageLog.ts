@@ -74,7 +74,20 @@ export function useMessageLog(
         let pending = messageBufferRef.current.map((m, idx) => {
             const prev = idx > 0 ? messageBufferRef.current[idx - 1] : lastMessageRef.current;
             const isRoomBlockStart = m.isRoomBlock && (!prev || !prev.isRoomBlock);
-            return { ...m, batchId: currentBatchId, inRoomBatch: hasRoomInBatch, isRoomBlockStart };
+            const isCombatMsg = !!(m.isHitImpact || m.isDamageImpact || m.isAvoidDamageImpact || m.isMissImpact);
+            const prevIsCombatMsg = prev ? !!(prev.isHitImpact || prev.isDamageImpact || prev.isAvoidDamageImpact || prev.isMissImpact) : false;
+            const isCombatBlockStart = isCombatMsg && !prevIsCombatMsg;
+            const isCommMsg = !!m.isComm;
+            const prevIsCommMsg = prev ? !!prev.isComm : false;
+            const isCommBlockStart = isCommMsg && !prevIsCommMsg;
+            return {
+                ...m,
+                batchId: currentBatchId,
+                inRoomBatch: hasRoomInBatch,
+                isRoomBlockStart,
+                isCombatBlockStart,
+                isCommBlockStart
+            };
         });
 
         if (containsPrompt) {
@@ -134,6 +147,8 @@ export function useMessageLog(
         providedCombatSide?: 'player' | 'opponent' | 'groupmate',
         providedIsHitImpact?: boolean,
         providedIsDamageImpact?: boolean,
+        providedIsAvoidDamageImpact?: boolean,
+        providedIsMissImpact?: boolean,
         providedIsHitterImpact?: boolean,
         providedIsSnoop?: boolean,
         providedIsSnoopInput?: boolean
@@ -368,6 +383,8 @@ export function useMessageLog(
             commTextTokens,
             isHitImpact: providedIsHitImpact,
             isDamageImpact: providedIsDamageImpact,
+            isAvoidDamageImpact: providedIsAvoidDamageImpact,
+            isMissImpact: providedIsMissImpact,
             isHitterImpact: providedIsHitterImpact,
             isSnoop: providedIsSnoop,
             isSnoopInput: providedIsSnoopInput

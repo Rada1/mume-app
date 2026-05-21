@@ -118,12 +118,13 @@ textarea,
 }
 
 /* Medieval Theme Typography Mappings */
-h1, h2, h3, h4, h5, h6, 
-.drawer-title, 
-.modal-title, 
-.popover-header, 
-.cmd-action-header, 
-.char-detail-header {
+h1, h2, h3, h4, h5, h6,
+.drawer-title,
+.modal-title,
+.popover-header,
+.cmd-action-header,
+.char-detail-header,
+.player-name {
     font-family: var(--font-title) !important;
     letter-spacing: 0.5px;
 }

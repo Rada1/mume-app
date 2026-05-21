@@ -1,0 +1,62 @@
+/**
+ * @file EnvironmentGlow.css
+ * @description Styles for the ambient environmental keyboard glow backdrop.
+ */
+
+.environment-glow-container {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+    transition: opacity 0.5s ease;
+}
+
+.environment-glow-canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+/* Semi-transparent frosted-glass overlay to protect text legibility */
+.environment-glow-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(13, 13, 13, 0.45); /* Dark tint */
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    pointer-events: none;
+    border-radius: inherit;
+    z-index: 1;
+    transition: background-color 0.5s ease;
+}
+
+/* Light mode adjustments */
+.light-mode .environment-glow-overlay {
+    background: rgba(255, 255, 255, 0.55); /* White tint */
+    backdrop-filter: blur(12px) saturate(130%);
+    -webkit-backdrop-filter: blur(12px) saturate(130%);
+}
+
+/* Static fallback gradient style when immersion mode is off */
+.environment-glow-fallback {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    z-index: 0;
+    transition: background 0.8s ease;
+}
+
+/* Ensure login card content sits above background canvas if visible */
+.login-card-container {
+    position: relative;
+    z-index: 2;
+}
+

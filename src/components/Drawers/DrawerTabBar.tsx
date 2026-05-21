@@ -21,33 +21,37 @@ interface DrawerTabBarProps {
 export const DrawerTabBar: React.FC<DrawerTabBarProps> = ({ tabs, active, onChange }) => (
     <div style={{
         display: 'flex',
-        borderBottom: '1px solid var(--border-color)',
-        background: 'transparent',
-        padding: '0 8px',
+        borderBottom: '1px solid rgba(232, 176, 32, 0.18)',
+        background: 'rgba(0, 0, 0, 0.15)',
+        padding: '0',
         flexShrink: 0
     }}>
-        {tabs.map(tab => (
-            <button
-                key={tab.id}
-                onClick={() => onChange(tab.id)}
-                style={{
-                    flex: 1,
-                    padding: '8px 4px',
-                    background: 'none',
-                    border: 'none',
-                    borderBottom: `2px solid ${active === tab.id ? '#d4af37' : 'transparent'}`,
-                    color: active === tab.id ? '#d4af37' : 'var(--text-faded)',
-                    fontSize: '0.65em',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s',
-                    marginBottom: '-1px'
-                }}
-            >
-                {tab.label}
-            </button>
-        ))}
+        {tabs.map(tab => {
+            const isActive = active === tab.id;
+            return (
+                <button
+                    key={tab.id}
+                    onClick={() => onChange(tab.id)}
+                    style={{
+                        flex: 1,
+                        padding: '9px 4px',
+                        background: isActive ? 'rgba(232, 176, 32, 0.08)' : 'none',
+                        border: 'none',
+                        borderBottom: `2px solid ${isActive ? '#e8b020' : 'transparent'}`,
+                        color: isActive ? '#e8b020' : 'rgba(220, 200, 160, 0.45)',
+                        fontSize: '0.65rem',
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        letterSpacing: '1.2px',
+                        cursor: 'pointer',
+                        transition: 'color 0.15s, background 0.15s, border-color 0.15s',
+                        marginBottom: '-1px',
+                        textShadow: isActive ? '0 0 10px rgba(232, 176, 32, 0.55)' : 'none',
+                    }}
+                >
+                    {tab.label}
+                </button>
+            );
+        })}
     </div>
 );

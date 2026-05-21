@@ -24,6 +24,7 @@ export interface EntityToken extends BaseToken {
         kind?: string;
         location?: string;
         category?: string;
+        cmd?: string;
         context?: string;
         color?: string;
         action?: string;
@@ -33,6 +34,7 @@ export interface EntityToken extends BaseToken {
         glowColor?: string;
         occupantId?: string | number;
         targetIndex?: number;
+        parent?: string;
     };
 }
 

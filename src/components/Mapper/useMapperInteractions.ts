@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { ExecuteCommand } from '../../types';
 
 import { MapperRoom, MapperMarker } from './mapperTypes';
-import { GRID_SIZE, DRAG_SENSITIVITY, ZOOM_SENSITIVITY } from './mapperUtils';
+import { GRID_SIZE, DRAG_SENSITIVITY, ZOOM_SENSITIVITY, checkRoomFilter } from './mapperUtils';
 import { useMapHitTest } from './hooks/useMapHitTest';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import { fireHeldCommandAtMapOccupant } from './mapperHeldCommandTarget';
@@ -61,6 +61,8 @@ export interface InteractionDeps {
     inlineCategories?: InlineCategoryConfig[];
     playerColor?: string;
     npcColor?: string;
+    activeMapFilter?: string | null;
+    mapSearchQuery?: string;
 }
 
 export const useMapperInteractions = (deps: InteractionDeps) => {
@@ -692,6 +694,41 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                     entityId,
                                     menuDisplay: 'list',
                                     accentColor: occupantHit.color
+                                });
+                                depsRef.current.playClickSound?.();
+                                depsRef.current.triggerHaptic(40);
+                                return;
+                            }
+                        }
+
+                        const clickedRoomId = isTap ? getRoomAt(world.x, world.y) : null;
+                        if (clickedRoomId && depsRef.current.activeMapFilter) {
+                            const rawRoomId = clickedRoomId.replace(/^m_/, '');
+                            const localRoom = roomsRef.current[clickedRoomId] || roomsRef.current[`m_${rawRoomId}`] || roomsRef.current[rawRoomId];
+                            const preloadedRoom = depsRef.current.preloadedCoordsRef.current?.[rawRoomId];
+                            const isFilteredRoom = checkRoomFilter(
+                                clickedRoomId,
+                                localRoom,
+                                preloadedRoom,
+                                depsRef.current.activeMapFilter,
+                                depsRef.current.mapSearchQuery || ''
+                            );
+
+                            if (isFilteredRoom) {
+                                const containerRect = depsRef.current.canvasRef.current?.parentElement?.getBoundingClientRect();
+                                const localX = containerRect ? e.clientX - containerRect.left : e.clientX;
+                                const localY = containerRect ? e.clientY - containerRect.top : e.clientY;
+                                const menuWidth = 176;
+                                const menuHeight = depsRef.current.mode === 'edit' ? 194 : 108;
+                                const maxX = Math.max(8, (containerRect?.width || window.innerWidth) - menuWidth - 8);
+                                const maxY = Math.max(8, (containerRect?.height || window.innerHeight) - menuHeight - 8);
+
+                                depsRef.current.setContextMenu({
+                                    x: Math.min(Math.max(localX, 8), maxX),
+                                    y: Math.min(Math.max(localY, 8), maxY),
+                                    wx: Math.round(world.x / GRID_SIZE),
+                                    wy: Math.round(world.y / GRID_SIZE),
+                                    roomId: clickedRoomId
                                 });
                                 depsRef.current.playClickSound?.();
                                 depsRef.current.triggerHaptic(40);

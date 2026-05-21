@@ -113,6 +113,8 @@ export const AUDIO_MANIFEST = {
         'bash': { path: '/assets/Sounds/SoundEffects/bash.mp3' },
         'cleave': { path: '/assets/Sounds/SoundEffects/cleave.mp3' },
         'click': { path: '/assets/Sounds/SoundEffects/click.mp3' },
+        'drawertab': { path: '/assets/Sounds/UI/drawertab.mp3', defaultVolume: 0.1 },
+        'actionmenu': { path: '/assets/Sounds/UI/actionmenu.mp3', defaultVolume: 0.1 },
         'commbubble': { path: '/assets/Sounds/SoundEffects/commbubble.mp3' },
         'door1': { path: '/assets/Sounds/SoundEffects/door1.wav' },
         'hit-impact': { path: '/assets/Sounds/SoundEffects/hit-impact.mp3' },

@@ -500,17 +500,29 @@
     padding: 0 20px;
     display: flex;
     align-items: center;
-    background: var(--command-surface-bg, var(--input-bg));
+    background: rgba(13, 16, 23, 0.62);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 28px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     box-sizing: border-box;
-    min-width: 0; 
+    min-width: 0;
+}
+
+@media not ((max-width: 1024px) and (orientation: portrait)) {
+    .input-main-container {
+        border: none;
+        border-radius: var(--radius-card);
+    }
 }
 
 /* Standalone Command Bar pod (Pocket) */
 .mobile-gutter-input-wrapper .input-main-container {
-    background: var(--input-bg) !important;
+    background: rgba(13, 16, 23, 0.62) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
     border: none !important;
     box-shadow: none !important;
     border-radius: var(--radius-card);
@@ -520,7 +532,9 @@
 }
 
 .light-mode .mobile-gutter-input-wrapper .input-main-container {
-    background: #ffffff !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.14), 0 1px 6px rgba(0, 0, 0, 0.08) !important;
 }
 
@@ -708,6 +722,18 @@
     box-shadow: 0 0 25px rgba(0, 0, 0, 0.4), inset 0 0 40px rgba(var(--terrain-glow-rgb), 0.08), 0 0 10px rgba(255, 255, 255, 0.03) !important;
 }
 
+@media (max-width: 1024px) and (orientation: portrait) {
+    .app-container:not(.terrain-none):not(.terrain-underground) .prompt-box-content {
+        border: none !important;
+        box-shadow: 0 0 25px rgba(var(--terrain-glow-rgb), 0.08), inset 0 0 40px rgba(var(--terrain-glow-rgb), 0.08), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .app-container.terrain-underground .prompt-box-content {
+        border: none !important;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.4), inset 0 0 40px rgba(var(--terrain-glow-rgb), 0.08), 0 0 10px rgba(255, 255, 255, 0.03) !important;
+    }
+}
+
 /* Prompt and field styling */
 .cmd-prompt {
     font-family: inherit;
@@ -816,7 +842,7 @@
 
 /* --- Light Mode Prompt Box Enhancements --- */
 .light-mode .input-main-container {
-    background: rgba(255, 255, 255, 0.92) !important;
+    background: rgba(255, 255, 255, 0.6) !important;
     backdrop-filter: blur(16px) saturate(1.8) !important;
     -webkit-backdrop-filter: blur(16px) saturate(1.8) !important;
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
@@ -826,7 +852,7 @@
 
 /* Light mode focused state */
 .light-mode .input-main-container.focused {
-    background: #ffffff !important;
+    background: rgba(255, 255, 255, 0.75) !important;
     border-color: rgba(var(--accent-rgb, 0, 122, 255), 0.45) !important;
     box-shadow: 0 0 0 1px rgba(var(--accent-rgb, 0, 122, 255), 0.15), 0 0 15px rgba(var(--accent-rgb, 0, 122, 255), 0.2), 0 6px 20px rgba(0, 0, 0, 0.08) !important;
 }

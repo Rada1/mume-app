@@ -227,7 +227,7 @@ export const getMapOccupantTargets = (options: MapOccupantTargetOptions): MapOcc
         addOccupantTarget(
             isGrouped ? groupOccupants : otherOccupants,
             player,
-            isGrouped ? getMemberColor(groupIndex).core : options.playerColor,
+            options.playerColor,
             isGrouped ? 'inner' : 'outer',
             options
         );
@@ -241,7 +241,7 @@ export const getMapOccupantTargets = (options: MapOccupantTargetOptions): MapOcc
         addOccupantTarget(
             isGrouped ? groupOccupants : otherOccupants,
             enemy,
-            isGrouped ? getMemberColor(groupIndex).core : (options.enemyColor || '#ef4444'),
+            options.enemyColor || '#ef4444',
             isGrouped ? 'inner' : 'outer',
             options
         );
@@ -255,7 +255,7 @@ export const getMapOccupantTargets = (options: MapOccupantTargetOptions): MapOcc
         addOccupantTarget(
             isGrouped ? groupOccupants : otherOccupants,
             neutral,
-            isGrouped ? getMemberColor(groupIndex).core : (options.neutralColor || '#eab308'),
+            options.neutralColor || '#eab308',
             isGrouped ? 'inner' : 'outer',
             options
         );
@@ -269,7 +269,7 @@ export const getMapOccupantTargets = (options: MapOccupantTargetOptions): MapOcc
         addOccupantTarget(
             isGrouped ? groupOccupants : otherOccupants,
             npc,
-            isGrouped ? getMemberColor(groupIndex).core : options.npcColor,
+            options.npcColor,
             isGrouped ? 'inner' : 'outer',
             options
         );

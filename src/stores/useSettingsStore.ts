@@ -6,7 +6,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { UiMode, TeleportTarget, InlineCategoryConfig, ZoneMusicMapping, CategoryOverride, CustomTraitConfig } from '../types';
-import { canonicalizeCategoryId } from '../utils/categorizationUtils';
+import { COLOR_ALLY, COLOR_NPC, canonicalizeCategoryId } from '../utils/categorizationUtils';
 import { getKindForCategory, getTraitConfig, toCategoryId, toTraitId } from '../utils/inlineActionModel';
 import { DEFAULT_URL } from '../constants';
 
@@ -39,6 +39,8 @@ interface SettingsState {
     showSpectatePromptInLog: boolean;
     showControls: boolean;
     showOrganicTerrain: boolean;
+    hidePrompt: boolean;
+    showBlockHeaders: boolean;
     isSoundEnabled: boolean;
     isNewbieMode: boolean;
     isMmapperMode: boolean;
@@ -87,6 +89,8 @@ interface SettingsState {
     setShowSpectatePromptInLog: (val: boolean) => void;
     setShowControls: (val: boolean) => void;
     setShowOrganicTerrain: (val: boolean) => void;
+    setHidePrompt: (val: boolean) => void;
+    setShowBlockHeaders: (val: boolean) => void;
     setIsSoundEnabled: (val: boolean) => void;
     setIsNewbieMode: (val: boolean) => void;
     setIsMmapperMode: (val: boolean) => void;
@@ -194,8 +198,8 @@ export const useSettingsStore = create<SettingsState>()(
             isBloomEnabled: true,
             isHighlighterEnabled: true,
             objectColor: 'rgba(251, 146, 60, 0.95)',
-            playerColor: '#89CFF0',
-            npcColor: 'rgba(253, 224, 71, 0.95)',
+            playerColor: COLOR_ALLY,
+            npcColor: COLOR_NPC,
             enemyColor: '#ef4444',
             neutralColor: '#eab308',
             targetColor: '#facc15',
@@ -208,6 +212,8 @@ export const useSettingsStore = create<SettingsState>()(
             showSpectatePromptInLog: true,
             showControls: true,
             showOrganicTerrain: true,
+            hidePrompt: false,
+            showBlockHeaders: true,
             
             isSoundEnabled: true,
             isNewbieMode: false,
@@ -260,6 +266,8 @@ export const useSettingsStore = create<SettingsState>()(
             setShowSpectatePromptInLog: (showSpectatePromptInLog) => set({ showSpectatePromptInLog }),
             setShowControls: (showControls) => set({ showControls }),
             setShowOrganicTerrain: (showOrganicTerrain) => set({ showOrganicTerrain }),
+            setHidePrompt: (hidePrompt) => set({ hidePrompt }),
+            setShowBlockHeaders: (showBlockHeaders) => set({ showBlockHeaders }),
             setIsSoundEnabled: (isSoundEnabled) => set({ isSoundEnabled }),
             setIsNewbieMode: (isNewbieMode) => set({ isNewbieMode }),
             setIsMmapperMode: (isMmapperMode) => set({ isMmapperMode }),
@@ -316,7 +324,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 7,
+            version: 12,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -389,6 +397,54 @@ export const useSettingsStore = create<SettingsState>()(
                         persistedState.categoryOverrides,
                         persistedState.customTraits
                     );
+                }
+                
+                if (version < 8) {
+                    if (persistedState.hidePrompt === undefined) {
+                        persistedState.hidePrompt = false;
+                    }
+                }
+                
+                if (version < 9) {
+                    if (persistedState.showBlockHeaders === undefined) {
+                        persistedState.showBlockHeaders = true;
+                    }
+                }
+
+                if (version < 10) {
+                    const oldDefaultNpcColors = new Set([
+                        'rgba(253, 224, 71, 0.95)',
+                        '#fde047',
+                        'rgb(253, 224, 71)'
+                    ]);
+                    if (!persistedState.npcColor || oldDefaultNpcColors.has(String(persistedState.npcColor).toLowerCase())) {
+                        persistedState.npcColor = COLOR_NPC;
+                    }
+                }
+
+                if (version < 12) {
+                    const oldDefaultAllyColors = new Set([
+                        '#89cff0',
+                        'rgb(137, 207, 240)',
+                        '#22c55e',
+                        'rgb(34, 197, 94)',
+                        '#4173e6',
+                    ]);
+                    const playerColor = String(persistedState.playerColor || '').toLowerCase();
+                    if (!playerColor || oldDefaultAllyColors.has(playerColor)) {
+                        persistedState.playerColor = COLOR_ALLY;
+                    }
+
+                    if (Array.isArray(persistedState.categoryOverrides)) {
+                        persistedState.categoryOverrides = persistedState.categoryOverrides.map((override: CategoryOverride) => {
+                            const id = toCategoryId(override.id) || override.id;
+                            const color = String(override.color || '').toLowerCase();
+                            if ((id === 'cat-ally' || id === 'cat-ally-remote') && oldDefaultAllyColors.has(color)) {
+                                return { ...override, color: COLOR_ALLY };
+                            }
+                            return override;
+                        });
+                    }
                 }
                 
                 return persistedState;

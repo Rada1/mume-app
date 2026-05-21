@@ -22,10 +22,10 @@ import { LinkedColorTheme } from './themeLinkedColors';
 
 // --- Color Fallbacks ---
 
-export const COLOR_NPC = 'rgba(253, 224, 71, 0.95)';
-export const COLOR_PLAYER = '#89CFF0';
+export const COLOR_NPC = 'rgba(150, 253, 48, 0.95)';
+export const COLOR_PLAYER = '#4173e6';
 export const COLOR_OBJ = 'rgba(251, 146, 60, 0.95)';
-export const COLOR_ALLY = '#22c55e';
+export const COLOR_ALLY = '#55a5e2';
 export const COLOR_ENEMY = '#ef4444';
 export const COLOR_NEUTRAL = '#eab308';
 export const COLOR_ROOM = '#22c55e';

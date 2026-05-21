@@ -8,6 +8,7 @@ import React, { useCallback, useRef, useMemo, useEffect } from 'react';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { gmcpBus } from '../../events/gmcpBus';
 import { DrawerLine, EntityCapability, MessageType } from '../../types';
+import { Token, EntityToken, TextToken } from '../../types/tokens';
 import { useQuestsHandler } from '../useQuestsHandler';
 import { useEntityRegistry } from '../useEntityRegistry';
 import { useCaptureParser } from './useCaptureParser';
@@ -73,7 +74,7 @@ const extractXmlRoomInfo = (line: string): { num: number; area?: string; terrain
 
 const stripAnsiCodes = (text: string) => text.replace(/\x1b\[[0-9;]*m/g, '');
 const SNOOP_PREFIX_REGEX = /^((?:\x1b\[[0-9;]*m|\s)*)(?:&amp;|&|mp;)[A-Za-z](?:\s|$)/;
-const COMM_XML_OPEN_REGEX = /<(tell|say|narrate|shout|yell|song|sing|pray|whisper)(?:\s+[^>]*)?>/i;
+const COMM_XML_OPEN_REGEX = /<(tell|say|narrate|shout|yell|song|sing|pray|whisper|social|emote)(?:\s+[^>]*)?>/i;
 
 const getUnclosedCommXmlTag = (text: string): string | null => {
     const match = text.match(COMM_XML_OPEN_REGEX);
@@ -187,6 +188,26 @@ const addSnoopedPlainLine = (
     gmcpBus.emit('Game.Text', { type: 'game', text: textOnly });
 };
 
+const buildHelpTermTokens = (prefix: string, termsStr: string, splitOnComma: boolean): Token[] => {
+    const tokens: Token[] = [];
+    if (prefix) tokens.push({ type: 'text', content: prefix } as TextToken);
+    const terms = splitOnComma
+        ? termsStr.split(/\s*,\s*/).map(t => t.trim()).filter(Boolean)
+        : termsStr.split(/\s+/).filter(Boolean);
+    terms.forEach((term, i) => {
+        tokens.push({
+            type: 'entity',
+            content: term,
+            entityId: `help-term-${term.toLowerCase()}`,
+            metadata: { cmd: 'help', category: 'cat-help-term', context: term, action: 'command' },
+        } as EntityToken);
+        if (i < terms.length - 1) {
+            tokens.push({ type: 'text', content: splitOnComma ? ', ' : ' ' } as TextToken);
+        }
+    });
+    return tokens;
+};
+
 export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const loginName = useSettingsStore(s => s.loginName);
@@ -222,6 +243,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const { registerEntity, extractNoun } = useEntityRegistry();
     const nearbyCaptureRef = useRef<{ active: boolean; lines: DrawerLine[] }>({ active: false, lines: [] });
     const shopCaptureRef = useRef<{ active: boolean; items: import('../../types').ShopItem[] }>({ active: false, items: [] });
+    const pendingHelpInterestRef = useRef(false);
     const pendingCommXmlRef = useRef<{ tag: string; line: string; isSnoop: boolean } | null>(null);
     const finalizeNearbyCapture = useCallback(() => {
         if (!nearbyCaptureRef.current.active) return;
@@ -244,6 +266,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setInfoLines,
         setQuestLines,
         setAchievementLines,
+        setContainerContents: session.game.setContainerContents,
         practiceHandler: deps.practiceHandler,
         registerEntity,
         ansiConvert: deps.ansiConvert,
@@ -554,6 +577,17 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             const tokenizer = Tokenizer.getInstance();
             tokenizer.reset('room');
             
+            const containerCmd = (activeCapture === 'container' && capture.getSession) 
+                ? (capture.getSession()?.metadata?.command || '') 
+                : '';
+            const lowerCmd = containerCmd.toLowerCase().trim();
+            let parent: string | undefined = undefined;
+            if (lowerCmd.startsWith('look in ')) {
+                parent = containerCmd.slice('look in '.length).trim();
+            } else if (lowerCmd.startsWith('look inside ')) {
+                parent = containerCmd.slice('look inside '.length).trim();
+            }
+
             tokenizerContext = {
                 target: session.vitals.target,
                 buttons: deps.btn?.buttonsRef?.current || [],
@@ -564,14 +598,26 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 npcColor: deps.npcColor,
                 playerColor: deps.playerColor,
                 objectColor: deps.objectColor,
-                roomColor: deps.roomColor
+                roomColor: deps.roomColor,
+                parent
             };
+
+            const lowerLine = lineToParse.toLowerCase();
+            const isHeaderLine = lowerLine.includes('in your') || 
+                                 lowerLine.includes('in the') ||
+                                 lowerLine.includes('in a ') ||
+                                 lowerLine.includes('when you look inside') ||
+                                 lowerLine.includes('when you look in') ||
+                                 lowerLine.includes('it is empty.') ||
+                                 lowerLine.includes('<header>');
 
             const locationHint = activeCapture === 'inventory'
                 ? 'carried'
                 : activeCapture === 'equipment'
                     ? 'worn'
-                    : undefined;
+                    : (activeCapture === 'container' && !isHeaderLine)
+                        ? 'container'
+                        : undefined;
             const effectiveTokens = isSnoop || locationHint ? null : tokens;
             derivedTokens = effectiveTokens || tokenizer.tokenize(lineToParse, tokenizerContext, locationHint);
             textOnly = derivedTokens.map((t: any) => t.content).join('');
@@ -748,7 +794,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (
             !isSnoop &&
             capture.hasSession() &&
-            ['who', 'equipment', 'inventory'].includes(expectedCaptureType) &&
+            ['who', 'equipment', 'inventory', 'container'].includes(expectedCaptureType) &&
             expectedCaptureType !== capture.getActiveType()
         ) {
             capture.finalizeSession();
@@ -771,7 +817,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 'score',
                 'info',
                 'practice',
-                'quests'
+                'quests',
+                'container'
             ].includes(expectedCaptureType)
         );
         if (canStartExpectedCapture) {
@@ -779,6 +826,21 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         let finalTokens = derivedTokens;
+
+        if (!isSnoop) {
+            const seeAlsoMatch = textOnly.match(/^See also:\s*(.+?)\.?\s*$/i);
+            if (seeAlsoMatch) {
+                finalTokens = buildHelpTermTokens('See also: ', seeAlsoMatch[1], true);
+            } else if (pendingHelpInterestRef.current && !promptInfo.isMatch && textOnly.trim().length > 0) {
+                pendingHelpInterestRef.current = false;
+                finalTokens = buildHelpTermTokens('', textOnly.trim(), false);
+            } else if (/^Perhaps you were interested in one of the following:/i.test(textOnly)) {
+                pendingHelpInterestRef.current = true;
+            } else if (pendingHelpInterestRef.current && (promptInfo.isMatch || textOnly.trim().length === 0)) {
+                pendingHelpInterestRef.current = false;
+            }
+        }
+
         // Only build player tokens for 'who' in the main parser. Nearby/where
         // uses the dedicated plain-table capture above.
         if (!isSnoop && activeCapture === 'who') {
@@ -878,6 +940,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
             const hasHitTag = lineToParse.includes('<hit>');
             const hasDamageTag = lineToParse.includes('<damage>');
+            const hasAvoidDamageTag = lineToParse.includes('<avoid_damage>');
+            const hasMissTag = lineToParse.includes('<miss>');
+            if (!isSnoop && finalType === 'combat') {
+                const eventTime = Date.now();
+                if (hasHitTag) gmcpBus.emit('Game.CombatPulse', { direction: 'outgoing', time: eventTime });
+                if (hasDamageTag) gmcpBus.emit('Game.CombatPulse', { direction: 'incoming', time: eventTime });
+            }
             deps.addMessage(
                 finalType, textOnly, undefined, mid, false,
                 { textOnly, lower, html: messageHtml, tokens: messageTokens },
@@ -885,7 +954,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 commResult.replyTarget, commResult.replyCommand, commResult.commSender, commResult.commAction, commResult.commText, commResult.commColor,
                 commResult.commSender ? tokenizeFresh(commResult.commSender) : undefined,
                 commResult.commText ? tokenizeFresh(commResult.commText) : undefined,
-                undefined, hasHitTag, hasDamageTag, undefined, isSnoop
+                undefined, hasHitTag, hasDamageTag, hasAvoidDamageTag, hasMissTag, undefined, isSnoop
             );
         }
 
@@ -901,8 +970,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         processLine,
         finalizeCapture: capture.finalizeSession,
         setPendingFlags: capture.setPendingFlags,
+        setLastRequestedContainerId: capture.setLastRequestedContainerId,
         addToQueue: automator.addToQueue,
         rotateQueue: automator.rotateQueue,
         removeFromQueue: automator.removeFromQueue
-    }), [processLine, capture.finalizeSession, capture.setPendingFlags, automator.addToQueue, automator.rotateQueue, automator.removeFromQueue]);
+    }), [processLine, capture.finalizeSession, capture.setPendingFlags, capture.setLastRequestedContainerId, automator.addToQueue, automator.rotateQueue, automator.removeFromQueue]);
 }

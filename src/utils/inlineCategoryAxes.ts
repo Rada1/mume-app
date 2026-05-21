@@ -38,6 +38,7 @@ const LEGACY_CATEGORY_IDS: Record<string, string> = {
     object: 'cat-object',
     target: 'cat-target',
     room: 'cat-room',
+    'inline-container-item': 'cat-container-item',
     exits: 'cat-exit',
 };
 
@@ -51,9 +52,11 @@ const CATEGORY_AXES: Record<string, Omit<InlineCategoryAxes, 'categoryId'>> = {
     'cat-room-object': { family: 'object', location: 'room', isCharacter: false, isObject: true, isInlineAction: true, isTargetable: true },
     'cat-inventory-object': { family: 'object', location: 'carried', isCharacter: false, isObject: true, isInlineAction: true, isTargetable: false },
     'cat-worn-object': { family: 'object', location: 'worn', isCharacter: false, isObject: true, isInlineAction: true, isTargetable: false },
+    'cat-container-item': { family: 'object', location: 'carried', isCharacter: false, isObject: true, isInlineAction: true, isTargetable: false },
     'cat-object': { family: 'object', location: 'room', isCharacter: false, isObject: true, isInlineAction: true, isTargetable: false },
     'cat-room': { family: 'room', location: 'room', isCharacter: false, isObject: false, isInlineAction: true, isTargetable: false },
     'cat-exit': { family: 'exit', location: 'room', isCharacter: false, isObject: false, isInlineAction: true, isTargetable: false },
+    'cat-help-term': { family: 'unknown', location: 'none', isCharacter: false, isObject: false, isInlineAction: true, isTargetable: false },
 };
 
 export const normalizeInlineCategoryId = (id: string | null | undefined): string => {

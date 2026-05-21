@@ -94,10 +94,12 @@ const defaultMumeEditState: MumeEditState = {
     key: ''
 };
 
+const isDesktopViewport = () => typeof window !== 'undefined' && window.innerWidth >= 1024;
+
 export const useUIStore = create<UIState>((set) => ({
-    drawer: 'none',
+    drawer: isDesktopViewport() ? 'status' : 'none',
     isDrawerPeeking: false,
-    mapExpanded: typeof window !== 'undefined' ? window.innerWidth >= 1024 : true,
+    mapExpanded: typeof window !== 'undefined' ? isDesktopViewport() : true,
     popoverState: null,
     mumeEditState: defaultMumeEditState,
     isNewbieMode: false,

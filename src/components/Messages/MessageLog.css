@@ -206,6 +206,29 @@
     container-type: inline-size;
 }
 
+.room-block-header,
+.combat-block-header,
+.comm-block-header {
+    font-size: 0.8em;
+    opacity: 0.6;
+    color: var(--text-primary, #d4cdb8);
+    font-family: var(--font-mono, monospace);
+    margin-bottom: 4px;
+    margin-top: 10px;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    text-transform: uppercase;
+    width: 100%;
+    text-align: left;
+}
+
+.message.combat-block-start,
+.message.room-block-start,
+.message.comm-block-start {
+    flex-direction: column !important;
+    align-items: stretch !important;
+}
+
 .message.room-description {
     font-weight: 400;
     font-style: italic;
@@ -289,11 +312,18 @@
 .inline-btn,
 .pc-highlighter,
 .npc-highlighter,
-.message-content span[style*="color"] {
+.message-content span[style*="color"],
+.message-content .keyword-highlight,
+.message-content .inline-btn,
+.message-content .pc-highlighter,
+.message-content .npc-highlighter,
+.message-content .room-name-inline span {
     font-weight: bold !important;
     pointer-events: auto !important;
-    /* Light casting effect: Minimal glow that matches the element's color */
-    text-shadow: 0 0 2px var(--glow-color, rgba(255, 255, 255, 0.05)), 1px 1px 4px rgba(0, 0, 0, 0.5);
+    text-shadow:
+        0 0 6px var(--glow-color, rgba(255, 255, 255, 0.3)),
+        0 0 14px color-mix(in srgb, var(--glow-color, rgba(255, 255, 255, 0.2)), transparent 55%),
+        1px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Category-based color mappings */
@@ -306,22 +336,19 @@
 
 /* Dynamic Target Highlighting (Reactive) */
 .target-highlighter.is-target {
-    background: rgba(250, 204, 21, 0.25) !important;
-    border-bottom: 2px solid var(--color-target) !important;
+    border: 1.5px solid var(--color-target) !important;
     border-radius: 3px;
-    padding: 0;
-    margin: 0 -1px;
+    padding: 0 1px;
+    margin: 0 -2px;
     font-weight: bold !important;
-    color: #fff !important;
-    box-shadow: 0 0 4px rgba(250, 204, 21, 0.12);
     animation: target-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1;
 }
 
 @keyframes target-pulse {
-    0% { background: rgba(250, 204, 21, 0.2); box-shadow: 0 0 5px rgba(250, 204, 21, 0.1); }
-    50% { background: rgba(250, 204, 21, 0.4); box-shadow: 0 0 20px rgba(250, 204, 21, 0.4); }
-    100% { background: rgba(250, 204, 21, 0.2); box-shadow: 0 0 5px rgba(250, 204, 21, 0.1); }
+    0%   { box-shadow: 0 0 4px color-mix(in srgb, var(--color-target), transparent 70%); }
+    50%  { box-shadow: 0 0 10px color-mix(in srgb, var(--color-target), transparent 30%), 0 0 20px color-mix(in srgb, var(--color-target), transparent 60%); }
+    100% { box-shadow: 0 0 4px color-mix(in srgb, var(--color-target), transparent 70%); }
 }
 
 /* Force standard color application */
@@ -351,7 +378,7 @@
 }
 
 .pc-highlighter {
-    color: var(--glow-color, #89CFF0); /* Baby Blue */
+    color: var(--glow-color, #4173e6);
 }
 
 .npc-highlighter {
@@ -507,7 +534,7 @@
 }
 
 .comm-bubble {
-    background: color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.1)), transparent 75%);
+    background: transparent;
     border: 1px solid color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.3)), transparent 30%);
     border-radius: 20px 20px 20px 6px;
     padding: 2px 8px;
@@ -516,8 +543,8 @@
     width: fit-content;
     max-width: 100%;
     align-self: flex-start;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 10px color-mix(in srgb, var(--bubble-color, transparent), transparent 70%);
-    backdrop-filter: blur(6px);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--bubble-color, transparent), transparent 60%);
+    backdrop-filter: none;
     position: relative;
     line-height: 1.5;
     word-break: break-word;
@@ -557,42 +584,24 @@
 
 
 .message.recent-entry {
-    animation: none !important;
-    opacity: 1 !important;
+    opacity: 0;
+    animation: line-reveal 50ms ease forwards;
+    animation-delay: var(--reveal-delay, 0ms);
+    animation-fill-mode: both;
     transform: none !important;
 }
 
-.message.recent-entry .message-content,
-.message.recent-entry .user-command-bubble,
-.message.recent-entry .snoop-command-bubble {
-    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 67%, rgba(0, 0, 0, 0) 75%);
-    mask-image: linear-gradient(90deg, #000 0%, #000 67%, rgba(0, 0, 0, 0) 75%);
-    -webkit-mask-size: 400% 100%;
-    mask-size: 400% 100%;
-    -webkit-mask-position: 100% 0;
-    mask-position: 100% 0;
-    animation: log-text-reveal 2000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: var(--reveal-delay, 0ms);
+.first-word-static {
+    display: inline;
 }
 
-@keyframes log-text-reveal {
-    from {
-        -webkit-mask-position: 100% 0;
-        mask-position: 100% 0;
-    }
-
-    to {
-        -webkit-mask-position: 0 0;
-        mask-position: 0 0;
-    }
+@keyframes line-reveal {
+    to { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .message.recent-entry .message-content,
-    .message.recent-entry .user-command-bubble,
-    .message.recent-entry .snoop-command-bubble {
-        -webkit-mask-image: none;
-        mask-image: none;
+    .message.recent-entry {
+        opacity: 1 !important;
         animation: none !important;
     }
 }
@@ -721,10 +730,7 @@
     font-size: 0.95em;
     font-family: var(--font-mono, var(--font-main));
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
+    display: inline-block;
     line-height: 1.5;
     margin-right: 8px;
     max-width: 85%;
@@ -741,10 +747,7 @@
     font-size: 0.95em;
     font-family: var(--font-mono, var(--font-main));
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 2px;
+    display: inline-block;
     line-height: 1.5;
     margin-right: 8px;
     max-width: 85%;
@@ -948,7 +951,7 @@
     background: transparent;
     border: none;
     border-radius: 999px;
-    color: var(--accent);
+    color: #e8b020;
     font-weight: bold;
     font-size: 1.1rem;
     cursor: pointer;
@@ -1050,6 +1053,10 @@
 .inline-btn:not(.comm-bubble):not(.reply-btn) {
     border-radius: 4px;
     padding: 0;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: rgba(160, 160, 160, 0.22);
+    text-underline-offset: 3px;
 }
 /* Objects/Items and Beings (NPCs/Players) */
 .auto-obj, .auto-item, .npc-highlighter, .pc-highlighter, .auto-npc, .auto-occupant {
@@ -1064,7 +1071,7 @@
 }
 
 .pc-highlighter {
-    --glow-color: #89CFF0; /* Baby Blue */
+    --glow-color: #4173e6;
 }
 
 .npc-highlighter {
@@ -1264,6 +1271,14 @@ span.inline-btn {
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22),
         0 0 14px color-mix(in srgb, var(--glow-color, #ffffff), transparent 45%) !important;
     color: var(--glow-color, #ffffff) !important;
+}
+
+.room-name-inline {
+    --glow-color: currentColor;
+    text-shadow:
+        0 0 6px var(--glow-color),
+        0 0 14px color-mix(in srgb, var(--glow-color), transparent 55%),
+        1px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .room-name-inline[data-targetable="false"] {
@@ -1790,7 +1805,12 @@ span.inline-btn {
 .light-mode .inline-btn,
 .light-mode .pc-highlighter,
 .light-mode .npc-highlighter,
-.light-mode .message-content span[style*="color"] {
+.light-mode .message-content span[style*="color"],
+.light-mode .message-content .keyword-highlight,
+.light-mode .message-content .inline-btn,
+.light-mode .message-content .pc-highlighter,
+.light-mode .message-content .npc-highlighter,
+.light-mode .message-content .room-name-inline span {
     text-shadow: none !important;
 }
 

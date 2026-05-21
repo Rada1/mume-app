@@ -104,26 +104,37 @@ export function useCommParser(deps: CommParserDeps) {
             const leadingOffset = innerPlain.search(/\S/);
             const innerText = leadingOffset === -1 ? '' : innerPlain.substring(leadingOffset).trim();
             const actionMatch = innerText.match(/^(.+?)\s+(tells? you|tells?|whispers?|says?|asks?(?:\s+you)?|exclaims?|narrates?|shouts?|yells?|sings?|prays?)(?:\s+.*?|:\s*|,\s*)(.*)$/i);
-            if (!actionMatch || actionMatch.index === undefined) return false;
-
-            const actionStart = leadingOffset + innerText.indexOf(actionMatch[2], actionMatch[1].length);
-            const textStart = leadingOffset + actionMatch[0].length - actionMatch[3].length;
-            const rawActionStart = textIndexToRawIndex(innerRaw, actionStart);
-            const rawTextStart = textIndexToRawIndex(innerRaw, textStart);
+            
             const chanMap: Record<string, string> = { song: 'sing' };
-            const rawActionIndex = tagMatch.index + tagMatch[0].indexOf(actionMatch[2]);
-
             replyCommand = chanMap[tag] ?? tag;
-            replyTarget = actionMatch[1].trim();
-            commSender = sanitizeExtractedText(innerRaw.substring(0, rawActionStart)).trim();
-            commAction = actionMatch[2];
-            commText = sanitizeExtractedText(innerRaw.substring(rawTextStart)).trim();
-            commColor = extractColorAtRawIndex(rawActionIndex >= tagMatch.index ? rawActionIndex : line.length);
+
+            if (actionMatch && actionMatch.index !== undefined) {
+                const actionStart = leadingOffset + innerText.indexOf(actionMatch[2], actionMatch[1].length);
+                const textStart = leadingOffset + actionMatch[0].length - actionMatch[3].length;
+                const rawActionStart = textIndexToRawIndex(innerRaw, actionStart);
+                const rawTextStart = textIndexToRawIndex(innerRaw, textStart);
+                const rawActionIndex = tagMatch.index + tagMatch[0].indexOf(actionMatch[2]);
+
+                replyTarget = actionMatch[1].trim();
+                commSender = sanitizeExtractedText(innerRaw.substring(0, rawActionStart)).trim();
+                commAction = actionMatch[2];
+                commText = sanitizeExtractedText(innerRaw.substring(rawTextStart)).trim();
+                commColor = extractColorAtRawIndex(rawActionIndex >= tagMatch.index ? rawActionIndex : line.length);
+            } else {
+                replyTarget = undefined;
+                commSender = undefined;
+                commAction = undefined;
+                commText = innerText;
+                commColor = extractColorAtRawIndex(tagMatch.index);
+            }
             return true;
         };
 
         const parseTaggedPlainComm = () => {
             if (!/<[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?>/.test(line)) return false;
+            // Skip lines containing formatting/structural tags — these are UI output, not comm messages.
+            // Matching on comm verb words inside <code>, <highlight>, <em> etc. is always a false positive.
+            if (/<(?:code|highlight|em|prompt|status|xml|object|room|exits|move|weather|magic|hp|mana|move|exp|align|prac|gold|bank|affect|group|help|item|info|object|rune|score|stats|zone|quiet|noquest|notell|noshout|narrate)\b/i.test(line)) return false;
 
             const plain = stripMarkup(line).trim();
             const actionMatch = plain.match(/^(.+?)\s+(tells? you|tells?|whispers?|says?|asks?(?:\s+you)?|exclaims?|narrates?|shouts?|yells?|sings?|prays?)(?:\s+.*?|:\s*|,\s*)(.*)$/i);

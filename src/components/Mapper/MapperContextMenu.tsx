@@ -27,14 +27,16 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
             />
             <div style={{
                 position: 'absolute',
-                top: y,
-                left: x,
+                top: `clamp(8px, ${y}px, calc(100% - 194px))`,
+                left: `clamp(8px, ${x}px, calc(100% - 176px))`,
                 zIndex: 1001,
                 backgroundColor: isDarkMode ? 'rgba(30, 30, 46, 0.95)' : 'rgba(255, 255, 255, 0.95)',
                 border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.11)',
                 borderRadius: '12px',
                 padding: '6px',
                 minWidth: '160px',
+                maxHeight: 'calc(100% - 16px)',
+                overflowY: 'auto',
                 boxShadow: '0 10px 40px rgba(0, 0, 0, 0.4)',
                 display: 'flex',
                 flexDirection: 'column',
@@ -63,6 +65,17 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                             Room Info
                         </button>
+                        {onWalkStart && (
+                            <button
+                                style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#a6e3a1', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                onClick={(e) => { e.stopPropagation(); onWalkStart(roomId); onClose(); }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(166, 227, 161, 0.1)'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 4v6h6"></path><path d="M19 10a7 7 0 1 1-2.05-4.95"></path></svg>
+                                Walk Here
+                            </button>
+                        )}
                         {mode === 'edit' && (
                             <button
                                 style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#f38ba8', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}

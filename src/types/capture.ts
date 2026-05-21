@@ -47,4 +47,6 @@ export interface CaptureController {
     setPendingFlags: (isSilent: boolean, fromDrawer: boolean, command?: string) => void;
     isPendingSilent: () => boolean;
     shouldSuppressCommandEcho: (line: string, attachedText?: string) => boolean;
+    setLastRequestedContainerId?: (id: string | null) => void;
+    getSession?: () => CaptureSession | null;
 }

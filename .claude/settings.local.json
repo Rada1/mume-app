@@ -30,7 +30,9 @@
       "Bash(cat)",
       "Read(//tmp/**)",
       "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
-      "WebFetch(domain:fonts.cdnfonts.com)"
+      "WebFetch(domain:fonts.cdnfonts.com)",
+      "Bash(dir /s \"c:\\\\Users\\\\pwetz\\\\Downloads\\\\mume app\\\\public\\\\assets\")",
+      "Bash(findstr uipic *)"
     ]
   }
 }

@@ -30,8 +30,8 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
     const masterData = preloadedCoordsRef?.current?.[vnum];
     
     if (masterData) {
-        // Arda Map format: [x, y, z, terrainVal, exits, name, masterId, mobFlags, loadFlags, area, light, sundeath]
-        const [mx, my, mz, mTVal, mExits, mName, mMasterId, mMobF, mLoadF, mArea, mLight, mSundeath] = masterData;
+        // Arda Map format: [x, y, z, terrainVal, exits, name, masterId, mobFlags, loadFlags, area, light, sundeath, align, portable, ridable, note]
+        const [mx, my, mz, mTVal, mExits, mName, mMasterId, mMobF, mLoadF, mArea, mLight, mSundeath, mAlign, mPortable, mRidable, mNote] = masterData;
 
         if (!room) {
             // Derive a "Virtual Master Room" for rooms in the Arda map that aren't in live state
@@ -89,11 +89,14 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 exits: mappedExits,
                 desc: (mMasterId && mMasterId !== vnum) ? `Alias of room ${mMasterId}` : '',
                 zone: resolvedZone,
-                notes: '',
+                notes: mNote || '',
                 mobFlags: mMobF || [],
                 loadFlags: mLoadF || [],
                 light: mLight,
                 sundeath: mSundeath,
+                align: mAlign,
+                portable: mPortable,
+                ridable: mRidable,
                 createdAt: Date.now()
             };
         } else {
@@ -138,6 +141,12 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 else if (!clonedRoom.mobFlags.includes('NO_SUNDEATH')) { clonedRoom.mobFlags = [...clonedRoom.mobFlags, 'NO_SUNDEATH']; hasChanged = true; }
             }
 
+            // Sync new geographic flags
+            if (!clonedRoom.align && mAlign) { clonedRoom.align = mAlign; hasChanged = true; }
+            if (clonedRoom.portable === undefined && mPortable !== undefined) { clonedRoom.portable = mPortable; hasChanged = true; }
+            if (clonedRoom.ridable === undefined && mRidable !== undefined) { clonedRoom.ridable = mRidable; hasChanged = true; }
+            if ((!clonedRoom.notes || clonedRoom.notes === '') && mNote) { clonedRoom.notes = mNote; hasChanged = true; }
+
             if (hasChanged) room = clonedRoom;
         }
     }
@@ -150,6 +159,96 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
             [roomId]: { ...(prev[roomId] || room), ...patch }
         }));
     };
+
+    const getNoteBadges = () => {
+        if (!room.notes) return [];
+        const badges: { text: string; color: string; bg: string }[] = [];
+        const noteLower = room.notes.toLowerCase();
+        
+        // Herb matching
+        const genericHerbs = ['herb', 'plant', 'flower', 'root', 'berry', 'berries'];
+        const specificHerbKeywords = ['sage', 'thyme', 'clover', 'tarragon', 'cardamom', 'rosemary', 'mandrake', 'ginseng', 'garlic', 'wolfsbane', 'hemlock', 'belladonna', 'foxglove', 'lavender', 'comfrey'];
+        const foundSpecificHerbs = specificHerbKeywords.filter(k => noteLower.includes(k));
+        const foundGenericHerbs = genericHerbs.filter(k => noteLower.includes(k));
+        
+        if (foundSpecificHerbs.length > 0 || foundGenericHerbs.length > 0) {
+            const displayNames = foundSpecificHerbs.length > 0 ? foundSpecificHerbs : foundGenericHerbs;
+            badges.push({
+                text: `🌿 Herb: ${displayNames.join(', ')}`,
+                color: '#a6e3a1',
+                bg: 'rgba(166, 227, 161, 0.15)'
+            });
+        }
+        
+        // Gear matching
+        const genericGear = ['gear', 'equipment', 'weapon'];
+        const specificGearKeywords = ['sword', 'shield', 'ring', 'cloak', 'boots', 'helmet', 'armour', 'armor', 'mail', 'blade', 'dagger', 'bow', 'arrow', 'axe', 'spear', 'staff', 'robe', 'greaves', 'vambraces', 'gauntlets', 'circlet', 'belt'];
+        const foundSpecificGear = specificGearKeywords.filter(k => noteLower.includes(k));
+        const foundGenericGear = genericGear.filter(k => noteLower.includes(k));
+        
+        if (foundSpecificGear.length > 0 || foundGenericGear.length > 0) {
+            const displayNames = foundSpecificGear.length > 0 ? foundSpecificGear : foundGenericGear;
+            badges.push({
+                text: `🛡️ Gear: ${displayNames.join(', ')}`,
+                color: '#89b4fa',
+                bg: 'rgba(137, 180, 250, 0.15)'
+            });
+        }
+
+        if (noteLower.includes('chest') || noteLower.includes('coffer') || noteLower.includes('key') || noteLower.includes('lock')) {
+            badges.push({
+                text: `🔑 Contains: Key/Chest`,
+                color: '#f9e2af',
+                bg: 'rgba(249, 226, 175, 0.15)'
+            });
+        }
+
+        return badges;
+    };
+
+    const getAdditionalFlags = () => {
+        const flags: JSX.Element[] = [];
+        
+        if (room.align) {
+            let color = '#cad3f5';
+            let bg = 'rgba(202, 211, 245, 0.1)';
+            if (room.align.toLowerCase() === 'good') { color = '#89b4fa'; bg = 'rgba(137, 180, 250, 0.15)'; }
+            else if (room.align.toLowerCase() === 'evil') { color = '#f38ba8'; bg = 'rgba(243, 139, 168, 0.15)'; }
+            
+            flags.push(
+                <span key="align" style={{ color, backgroundColor: bg, padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', border: `1px solid ${color}33`, textTransform: 'uppercase' }}>
+                    Align: {room.align}
+                </span>
+            );
+        }
+
+        if (room.portable !== undefined) {
+            const isPort = String(room.portable) === 'true';
+            const color = isPort ? '#a6e3a1' : '#f38ba8';
+            const bg = isPort ? 'rgba(166, 227, 161, 0.1)' : 'rgba(243, 139, 168, 0.1)';
+            flags.push(
+                <span key="portable" style={{ color, backgroundColor: bg, padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', border: `1px solid ${color}33`, textTransform: 'uppercase' }}>
+                    {isPort ? 'PORTABLE' : 'NO_PORT'}
+                </span>
+            );
+        }
+
+        if (room.ridable !== undefined) {
+            const isRide = String(room.ridable) === 'true';
+            const color = isRide ? '#a6e3a1' : '#ee99a0';
+            const bg = isRide ? 'rgba(166, 227, 161, 0.1)' : 'rgba(238, 153, 160, 0.1)';
+            flags.push(
+                <span key="ridable" style={{ color, backgroundColor: bg, padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', border: `1px solid ${color}33`, textTransform: 'uppercase' }}>
+                    {isRide ? 'RIDABLE' : 'NO_RIDE'}
+                </span>
+            );
+        }
+
+        return flags;
+    };
+
+    const noteBadges = getNoteBadges();
+    const hasNoteHerb = noteBadges.some(b => b.text.includes('Herb'));
 
     return (
         <div
@@ -227,7 +326,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 </div>
             )}
 
-            {(room.mobFlags?.length || room.loadFlags?.length || room.roomQuestFlags?.length) ? (
+            {(room.mobFlags?.length || room.loadFlags?.length || room.roomQuestFlags?.length || room.align || room.portable !== undefined || room.ridable !== undefined || room.notes) ? (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                     {room.mobFlags?.map(f => {
                         const isAgg = f.includes('AGGRESSIVE');
@@ -253,6 +352,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                     {room.loadFlags?.map(f => {
                         const flag = f.toUpperCase();
                         const isHerb = flag.includes('HERB');
+                        if (isHerb && hasNoteHerb) return null;
                         const isWater = flag.includes('WATER') || flag.includes('POND') || flag.includes('WELL') || flag.includes('FOUNTAIN');
                         const isFood = /FOOD|BERRY|VEGETABLE/i.test(flag);
                         const isHorse = /HORSE|STALLION|DONKEY/i.test(flag);
@@ -285,8 +385,33 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                             {f}
                         </span>
                     ))}
+                    {getAdditionalFlags()}
+                    {noteBadges.map((badge, idx) => (
+                        <span key={`note-badge-${idx}`} style={{ color: badge.color, backgroundColor: badge.bg, padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', border: `1px solid ${badge.color}33`, textTransform: 'uppercase' }}>
+                            {badge.text}
+                        </span>
+                    ))}
                 </div>
             ) : null}
+
+            {room.notes && (
+                <div style={{
+                    fontSize: '12px',
+                    color: isDarkMode ? '#e4e4e7' : '#27272a',
+                    backgroundColor: isDarkMode ? 'rgba(249, 226, 175, 0.05)' : 'rgba(217, 119, 6, 0.05)',
+                    padding: '10px 12px',
+                    borderRadius: '8px',
+                    border: isDarkMode ? '1px solid rgba(249, 226, 175, 0.2)' : '1px solid rgba(217, 119, 6, 0.2)',
+                    lineHeight: '1.4',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                    marginTop: '4px'
+                }}>
+                    <span style={{ fontWeight: '800', textTransform: 'uppercase', fontSize: '9px', color: '#f9e2af', letterSpacing: '0.05em' }}>Notes / Contents</span>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{room.notes}</div>
+                </div>
+            )}
 
             <div style={{ height: '1px', backgroundColor: '#27272a', margin: '4px 0' }} />
 

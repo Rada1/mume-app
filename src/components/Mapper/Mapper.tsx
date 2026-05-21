@@ -11,6 +11,7 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { useMapper } from '../../context/useMapper';
 import { MapCanvas } from './MapCanvas';
+import { MapFilterBar } from './MapFilterBar';
 import { MapperContextMenu } from './MapperContextMenu';
 import { RoomInfoCard } from './RoomInfoCard';
 import { useMapperInteractions } from './useMapperInteractions';
@@ -20,6 +21,7 @@ import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
 import { DpadCluster } from './DpadCluster';
 import { GRID_SIZE } from './mapperUtils';
 import { toThemeLinkedColor } from '../../utils/themeLinkedColors';
+import { EnvironmentGlow } from '../Atmosphere/EnvironmentGlow';
 import './Mapper.css';
 
 interface MapperProps {
@@ -65,17 +67,18 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const {
         triggerHaptic, executeCommand, theme, btn, joystick, playClickSound,
         setIsTrackpadModifierActive, lighting, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode,
-        selectedObjectIds
+        selectedObjectIds, input
     } = useGame();
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
     const { setPopoverState, popoverState, ui } = useUI();
-    const { playerColor, npcColor, enemyColor, objectColor } = useSettingsStore();
+    const { playerColor, npcColor, enemyColor, objectColor, targetColor } = useSettingsStore();
     const isDarkMode = theme === 'dark';
     const displayPlayerColor = toThemeLinkedColor(playerColor, theme) || playerColor;
     const displayNpcColor = toThemeLinkedColor(npcColor, theme) || npcColor;
     const displayEnemyColor = toThemeLinkedColor(enemyColor, theme) || enemyColor;
     const displayObjectColor = toThemeLinkedColor(objectColor, theme) || objectColor;
+    const displayTargetColor = toThemeLinkedColor(targetColor, theme) || targetColor;
     const treatMapAsExplored = useModeStore(state => state.isSpectating && state.activeView === 'target');
     const isMapLookHeld = heldButton?.id === 'map-long-press' && !heldButton.didFire;
 
@@ -88,7 +91,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         unveilMap, handleSyncLocation,
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
-        renderVersion, triggerRender
+        renderVersion, triggerRender, activeMapFilter, setActiveMapFilter,
+        mapSearchQuery, setMapSearchQuery
     } = context;
 
     const { handleCenterOnPlayer } = useMapperPlayerTracking(currentRoomId, rooms, autoCenter, setAutoCenter, cameraRef, canvasRef, playerPosRef, playerTrailRef, lastRoomIdRef, triggerRender, setViewZ, preloadedCoordsRef);
@@ -170,6 +174,10 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         }
     }, [heldButton, isMobile, cameraRef, triggerRender, snapCameraToPlayer]);
 
+    // We still keep the context menu local to the instance for better UX (each window has its own context menu)
+    const [localContextMenu, setLocalContextMenu] = useState<{ x: number, y: number, wx: number, wy: number, roomId: string | null } | null>(null);
+    const setContextMenu = setLocalContextMenu;
+
     const { marquee } = useMapperInteractions({
         rooms, setRooms, markers, setMarkers,
         selectedRoomIds, setSelectedRoomIds,
@@ -177,7 +185,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         cameraRef, mode, currentRoomId,
         isDesignMode: props.isDesignMode || false,
         isMinimized: effectiveIsMinimized,
-        setAutoCenter, setContextMenu: (menu: any) => { },
+        setAutoCenter, setContextMenu,
         setInfoRoomId,
         triggerHaptic: triggerHaptic ?? (() => { }),
         canvasRef, cardRef, setIsDragging: setIsDraggingWithRef, handleAddRoom,
@@ -198,14 +206,10 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         groupMembers,
         inlineCategories,
         playerColor: displayPlayerColor,
-        npcColor: displayNpcColor
+        npcColor: displayNpcColor,
+        activeMapFilter,
+        mapSearchQuery
     });
-
-    // We still keep the context menu local to the instance for better UX (each window has its own context menu)
-    const [localContextMenu, setLocalContextMenu] = useState<{ x: number, y: number, wx: number, wy: number, roomId: string | null } | null>(null);
-
-    // Re-bind setContextMenu to local for interactions
-    const setContextMenu = setLocalContextMenu;
 
     const handleAddMarker = useCallback((wx: number, wy: number, z: number) => {
         const id = Math.random().toString(36).substr(2, 9);
@@ -214,6 +218,9 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             [id]: { id, x: wx, y: wy, z, text: 'New Marker', dotSize: 5, fontSize: 12, createdAt: Date.now() }
         }));
     }, [setMarkers]);
+
+    const currentRoom = currentRoomId ? (rooms[currentRoomId] || rooms[`m_${currentRoomId}`]) : null;
+    const terrain = currentRoom?.terrain || undefined;
 
     return (
         <div className={`mapper-container lighting-state-none ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ 
@@ -224,6 +231,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             backgroundColor: 'transparent', 
             touchAction: 'none' 
         }}>
+            <EnvironmentGlow terrain={terrain} lighting={lighting} input={input} />
             <div className="mapper-overlay mapper-fog-overlay" />
             <MapCanvas
                 ref={canvasRef}
@@ -273,13 +281,25 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 npcColor={displayNpcColor}
                 enemyColor={displayEnemyColor}
                 objectColor={displayObjectColor}
+                targetColor={displayTargetColor}
                 opponentName={opponentName}
                 opponentId={opponentId}
                 activeInlineEntityId={popoverState?.entityId || null}
                 selectedObjectIds={selectedObjectIds}
                 deathRoomId={deathRoomId}
                 heldButton={heldButton}
+                activeMapFilter={activeMapFilter}
+                mapSearchQuery={mapSearchQuery}
             />
+
+            {!effectiveIsMinimized && (
+                <MapFilterBar
+                    activeMapFilter={activeMapFilter}
+                    mapSearchQuery={mapSearchQuery}
+                    setActiveMapFilter={setActiveMapFilter}
+                    setMapSearchQuery={setMapSearchQuery}
+                />
+            )}
 
             {isMapLookHeld && (
                 <div className="map-look-hold-indicator" aria-hidden="true">
@@ -324,7 +344,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             )}
 
             {!effectiveIsMinimized && (
-                <div style={{
+                <div className="map-z-indicator" style={{
                     position: 'absolute',
                     bottom: '10px',
                     left: '10px',

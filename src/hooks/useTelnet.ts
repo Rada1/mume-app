@@ -77,6 +77,7 @@ export function useTelnet(config: TelnetConfig) {
             onCharInfo: (val) => configRef.current.handlers.onCharInfo?.(val),
             onCharRide: (val) => configRef.current.handlers.onCharRide?.(val),
             onComm: (s, c, m) => configRef.current.handlers.onComm?.(s, c, m),
+            onEvent: (pkg, val) => configRef.current.handlers.onEvent?.(pkg, val),
         } as any);
     }
     const protocolHandler = React.useRef<ProtocolHandler | null>(null);

@@ -66,7 +66,7 @@ export const DrawerHoldCommandButton: React.FC<DrawerHoldCommandButtonProps> = (
                 border: `1px solid ${isHeld ? 'var(--accent)' : 'rgba(255,255,255,0.14)'}`,
                 background: isHeld ? 'rgba(var(--accent-rgb), 0.18)' : 'rgba(255,255,255,0.06)',
                 color: isHeld ? 'var(--accent)' : 'rgba(255,255,255,0.82)',
-                fontSize: '0.72em',
+                fontSize: '0.72rem',
                 fontWeight: 800,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
