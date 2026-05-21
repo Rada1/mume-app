@@ -1,5 +1,6 @@
 import { CustomButton, SwipeDirection } from '../types';
 import { sanitizeGameTarget } from './gameUtils';
+import { decodeCommandEntities } from './commandTextUtils';
 
 const DOOR_ACTION_COMMANDS = new Set(['open', 'close', 'lock', 'unlock', 'knock']);
 
@@ -98,7 +99,9 @@ export const getButtonCommand = (
         cmd = `${cmd} ${target || 'exit'}`;
     }
 
-    const finalCmd = (actionType === 'command') ? [...commandPrefixes, cmd, ...finalMods, ...modifiers].filter(Boolean).join(' ') : cmd;
+    const finalCmd = decodeCommandEntities(
+        (actionType === 'command') ? [...commandPrefixes, cmd, ...finalMods, ...modifiers].filter(Boolean).join(' ') : cmd
+    );
     const modifierStr = finalMods.join(' ');
 
     if (!dir && joystickState?.currentDir) {

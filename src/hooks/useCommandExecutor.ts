@@ -14,6 +14,8 @@ import { TeleportMiddleware } from '../services/command/middlewares/TeleportMidd
 import { ActionMiddleware } from '../services/command/middlewares/ActionMiddleware';
 import { CaptureMiddleware } from '../services/command/middlewares/CaptureMiddleware';
 import { SystemCommandMiddleware } from '../services/command/middlewares/SystemCommandMiddleware';
+import { recordEffectTimerCommand } from '../services/timers/effectTimerParser';
+import { decodeCommandEntities } from '../utils/commandTextUtils';
 
 export interface ExecutorDeps {
     telnet: { sendCommand: (cmd: string) => void };
@@ -92,6 +94,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
 
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, _isHistorical = false, fromDrawer = false) => {
         const d = depsRef.current;
+        const decodedCmd = decodeCommandEntities(cmd);
         const { telnet, addMessage, initAudio, navIntervalRef, status } = d;
         const debugMapperPrediction = (message: string) => {
             if (useSettingsStore.getState().showDebugEchoes) {
@@ -109,7 +112,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         };
 
         // --- 2. Run Pipeline ---
-        const result = registry.execute(cmd, context, { silent, isSystem, fromDrawer });
+        const result = registry.execute(decodedCmd, context, { silent, isSystem, fromDrawer });
 
         // --- 3. Process Result ---
         if (result === null) return; // Command cancelled/intercepted by middleware
@@ -119,9 +122,10 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             return;
         }
 
-        const finalCmd = result;
+        const finalCmd = decodeCommandEntities(result);
         const normalizedFinalCmd = finalCmd.trim().toLowerCase();
         const shouldRefreshPractice = !silent && !isSystem && normalizedFinalCmd.startsWith('practice ');
+        if (!silent && !isSystem) recordEffectTimerCommand(finalCmd);
 
         if (normalizedFinalCmd.startsWith('practice ')) {
             d.practice?.setLastPracticedSkill(finalCmd.trim().slice(9).trim());

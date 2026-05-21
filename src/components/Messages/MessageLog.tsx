@@ -17,6 +17,7 @@ import PracticeColumnHeaderCard from '../Practice/PracticeColumnHeaderCard';
 import { useBaseGame, useVitals, useLog, useUI } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { decodeCommandEntities } from '../../utils/commandTextUtils';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -181,7 +182,7 @@ const MessageItem = React.memo(({
                 <div 
                     className={msg.type === 'user' ? "user-command-bubble" : "snoop-command-bubble"}
                 >
-                    <TokenRenderer tokens={msg.tokens} fallbackHtml={ansiConvert.toHtml(msg.textRaw || '')} splitFirstWord={true} />
+                    <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />
                 </div>
             ) : msg.type === 'prompt' ? (
                 <span><TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''))} /></span>

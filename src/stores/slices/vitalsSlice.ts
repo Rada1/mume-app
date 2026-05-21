@@ -86,6 +86,7 @@ export interface VitalsState {
     setTarget: (t: string | null | ((prev: string | null) => string | null)) => void;
     setActivePrompt: (p: any) => void;
     setCharacterName: (name: string | null) => void;
+    setCharacterInfo: (info: Partial<CharacterInfo>) => void;
 }
 
 export const initialVitalsState = {

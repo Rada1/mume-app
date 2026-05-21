@@ -24,7 +24,7 @@ const SIDEBAR_TABS = [
 
 export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, children }) => {
     const { ui, setUI, handleTabClick } = useUI();
-    const { triggerHaptic, handleLogClick, handleLogPointerDown, handleLogPointerUp, viewport, currentTerrain, lighting, input } = useGame() as any;
+    const { triggerHaptic, handleLogClick, handleLogPointerDown, handleLogPointerUp, viewport, currentTerrain, lighting, input, accountState } = useGame() as any;
     const isOpen = ui.drawer === id;
 
     if (!isOpen) return null;
@@ -36,7 +36,7 @@ export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, child
 
     return (
         <div className={`log-card-drawer drawer-shell ${id}-drawer ${side}-drawer open`}>
-            <EnvironmentGlow terrain={currentTerrain || undefined} lighting={lighting} input={input} />
+            <EnvironmentGlow terrain={accountState?.stage !== 'none' ? undefined : (currentTerrain || undefined)} lighting={lighting} input={input} />
             <div className="drawer-header">
                 <span className="drawer-title">
                     {title || id}

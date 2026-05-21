@@ -4,13 +4,12 @@
  */
 
 import React from 'react';
-import { Timer } from 'lucide-react';
 import { useEffectTimerStore } from '../../stores/useEffectTimerStore';
 import { EffectTimer } from '../../types';
 import './TimerExpiryToast.css';
 
 const WARNING_WINDOW_MS = 60_000;
-const RADIUS = 14;
+const RADIUS = 15;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 const START_VISIBLE_MS = 3_000;
 const EXIT_MS = 220;
@@ -128,7 +127,6 @@ export const TimerExpiryToast: React.FC = () => {
                         strokeDashoffset={dashOffset}
                     />
                 </svg>
-                <Timer size={13} className="timer-expiry-icon" />
             </div>
             <div className="timer-expiry-copy">
                 <span className="timer-expiry-name">{activeTimer.name}</span>

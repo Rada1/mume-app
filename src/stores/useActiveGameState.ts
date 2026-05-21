@@ -50,11 +50,11 @@ export const getActiveVitals = (): VitalsStore => {
  */
 export const useActiveCharacter = () => {
     const mode = useModeStore(state => state.mode);
-    const modeName = useModeStore(state => state.activeCharacter);
+    const activeVitals = useActiveVitals();
     const replayName = useReplayVitalsStore(state => state.characterInfo.name);
     
-    if (mode === 'replay' || mode === 'scrubbing') return replayName || modeName;
-    return modeName;
+    if (mode === 'replay' || mode === 'scrubbing') return replayName;
+    return activeVitals.characterInfo.name;
 };
 
 /**
@@ -63,9 +63,9 @@ export const useActiveCharacter = () => {
 export const getActiveCharacter = () => {
     const modeState = useModeStore.getState();
     if (modeState.mode === 'replay' || modeState.mode === 'scrubbing') {
-        return useReplayVitalsStore.getState().characterInfo.name || modeState.activeCharacter;
+        return useReplayVitalsStore.getState().characterInfo.name;
     }
-    return modeState.activeCharacter;
+    return getActiveVitals().characterInfo.name;
 };
 
 /**

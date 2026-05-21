@@ -35,6 +35,14 @@ import { toThemeLinkedColor } from './utils/themeLinkedColors';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
+import { useEffectTimerStore } from './stores/useEffectTimerStore';
+import { useVitalsStore } from './stores/useVitalsStore';
+
+if (typeof window !== 'undefined') {
+    (window as any).useEffectTimerStore = useEffectTimerStore;
+    (window as any).useVitalsStore = useVitalsStore;
+}
+
 
 const MudClient = () => {
     const {

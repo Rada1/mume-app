@@ -11,7 +11,7 @@
     --radius-card: 12px;
 
     /* Dark Mode (Default) */
-    --bg-app-rgb: 0, 0, 0;
+    --bg-app-rgb: 10, 13, 21;
     --bg-app: rgb(var(--bg-app-rgb));
     --bg-panel: #101010;
     --bg-overlay: rgba(0, 0, 0, 0.70);

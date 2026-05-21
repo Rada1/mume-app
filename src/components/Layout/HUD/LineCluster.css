@@ -122,21 +122,39 @@
 }
 
 .tactical-line-wrapper .line-btn {
-    border-color: rgba(184, 134, 11, 0.36) !important;
+    border-color: rgba(232, 176, 32, 0.48) !important;
     border-width: 0.75px !important;
     box-shadow:
-        0 0 5px rgba(184, 134, 11, 0.18),
-        0 0 14px rgba(184, 134, 11, 0.16),
-        0 0 26px rgba(184, 134, 11, 0.08) !important;
+        0 0 5px rgba(232, 176, 32, 0.22),
+        0 0 14px rgba(232, 176, 32, 0.18),
+        0 0 26px rgba(232, 176, 32, 0.1) !important;
+}
+
+.tactical-line-wrapper .line-btn:not(.triggered):not(:active):not(.is-swiping) .button-icon,
+.tactical-line-wrapper .line-btn:not(.triggered):not(:active):not(.is-swiping) .button-label {
+    filter: saturate(0.82) brightness(1.04);
+    opacity: 0.88;
+}
+
+.tactical-line-wrapper .line-btn:hover .button-icon,
+.tactical-line-wrapper .line-btn:hover .button-label,
+.tactical-line-wrapper .line-btn.triggered .button-icon,
+.tactical-line-wrapper .line-btn.triggered .button-label,
+.tactical-line-wrapper .line-btn:active .button-icon,
+.tactical-line-wrapper .line-btn:active .button-label,
+.tactical-line-wrapper .line-btn.is-swiping .button-icon,
+.tactical-line-wrapper .line-btn.is-swiping .button-label {
+    filter: saturate(1.2) brightness(1.08);
+    opacity: 1;
 }
 
 .tactical-line-wrapper .line-btn:active,
 .tactical-line-wrapper .line-btn.is-swiping {
-    border-color: rgba(184, 134, 11, 0.5) !important;
+    border-color: rgba(232, 176, 32, 0.68) !important;
     box-shadow:
-        0 0 7px rgba(184, 134, 11, 0.28),
-        0 0 18px rgba(184, 134, 11, 0.22),
-        0 0 34px rgba(184, 134, 11, 0.12) !important;
+        0 0 7px rgba(232, 176, 32, 0.34),
+        0 0 18px rgba(232, 176, 32, 0.26),
+        0 0 34px rgba(232, 176, 32, 0.14) !important;
 }
 
 /* Adjust labels and icons for smaller buttons */
@@ -372,4 +390,9 @@
 .desktop-tactical-buttons-persistent .line-cluster .custom-btn .button-label {
     font-size: 0.46rem !important;
     max-width: 22px;
+}
+
+/* Make persistent tactical line buttons inside the map drawer have the same dark gold background as selected tabs */
+.desktop-tactical-buttons-persistent .tactical-line-wrapper .line-btn {
+    background-color: rgba(232, 176, 32, 0.12) !important;
 }

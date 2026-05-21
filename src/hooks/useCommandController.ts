@@ -4,7 +4,6 @@ import { useCommandExecutor } from './useCommandExecutor';
 import { useInteractionHandlers } from './useInteractionHandlers';
 import { useNumpadControls } from './useNumpadControls';
 import { CaptureStage } from '../types';
-import { recordEffectTimerCommand } from '../services/timers/effectTimerParser';
 // import { useAtmosphereStore } from '../stores/useAtmosphereStore';
 
 export interface CommandControllerDeps {
@@ -231,7 +230,6 @@ export function useCommandController(deps: CommandControllerDeps) {
             return;
         }
 
-        if (!effectiveSilent && !isSystem) recordEffectTimerCommand(cmd);
         executor.executeCommand(cmd, effectiveSilent, isSystem, isHistorical, fromDrawer);
 
         // if (!effectiveSilent && !isSystem) {

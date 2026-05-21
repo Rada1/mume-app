@@ -120,4 +120,14 @@ describe('getButtonCommand', () => {
 
         expect(result?.cmd).toBe('pick exit west');
     });
+
+    it('decodes escaped apostrophes in spell commands', () => {
+        const result = getButtonCommand(
+            makeButton('cast &apos;magic missile&apos;'),
+            0,
+            0
+        );
+
+        expect(result?.cmd).toBe("cast 'magic missile'");
+    });
 });

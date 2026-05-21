@@ -87,12 +87,21 @@ export const useEffectTimerStore = create<EffectTimerState>()(
             setCurrentCharacter: (name) => set((state) => {
                 const now = Date.now();
                 const slice = name ? (state.timersByCharacter[name] || []) : [];
-                const active = slice.filter(timer => !timer.expiresAt || timer.expiresAt > now);
+                const activePersisted = slice.filter(timer => !timer.expiresAt || timer.expiresAt > now);
+                let nextTimers = activePersisted;
+
+                if (name && !state.currentCharacter && state.timers.length > 0) {
+                    const activeAnonymous = state.timers.filter(timer => !timer.expiresAt || timer.expiresAt > now);
+                    const existingIds = new Set(activePersisted.map(t => t.id));
+                    const toMerge = activeAnonymous.filter(t => !existingIds.has(t.id));
+                    nextTimers = [...activePersisted, ...toMerge];
+                }
+
                 return {
                     currentCharacter: name,
-                    timers: active,
-                    timersByCharacter: name && active.length !== slice.length
-                        ? { ...state.timersByCharacter, [name]: active }
+                    timers: nextTimers,
+                    timersByCharacter: name
+                        ? { ...state.timersByCharacter, [name]: nextTimers }
                         : state.timersByCharacter,
                 };
             }),

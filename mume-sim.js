@@ -105,6 +105,16 @@ wss.on('connection', (ws) => {
             } else if (input.toLowerCase() === 'return') {
                 ws.send('\x1b[33mYou return to your human form.\x1b[0m\n> ');
                 ws.send(createGmcpBuffer('Char.Vitals', { hp: 450, maxhp: 450, mana: 120, maxmana: 120, move: 100, maxmove: 100, race: 'Beorning' }));
+            } else if (/^(?:cast|c)\s+['"]?bless['"]?$/i.test(input)) {
+                ws.send('You feel righteous.\n\n> ');
+            } else if (/^(?:cast|c)\s+['"]?armou?r['"]?$/i.test(input)) {
+                ws.send('A blue transparent wall slowly appears.\n\n> ');
+            } else if (/^(?:cast|c)\s+['"]?shield['"]?$/i.test(input)) {
+                ws.send('You feel protected.\n\n> ');
+            } else if (input.toLowerCase() === 'fail bless') {
+                ws.send('You lost your concentration!\n\n> ');
+            } else if (input.toLowerCase() === 'wear bless') {
+                ws.send('Your blessing wears off.\n\n> ');
             } else {
                 ws.send(`Unknown command: ${input}\n> `);
             }

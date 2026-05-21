@@ -36,15 +36,19 @@
 
 .timer-expiry-ring {
     position: relative;
-    width: 32px;
-    height: 32px;
-    flex: 0 0 32px;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    display: grid;
+    place-items: center;
 }
 
 .timer-expiry-ring svg {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     transform: rotate(-90deg);
+    grid-area: 1 / 1;
+    display: block;
 }
 
 .timer-expiry-ring-bg,
@@ -69,14 +73,6 @@
     filter: drop-shadow(0 0 4px rgba(74, 222, 128, 0.55));
 }
 
-.timer-expiry-icon {
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    color: #ffb86b;
-}
-
-.timer-expiry-toast.is-started .timer-expiry-icon,
 .timer-expiry-toast.is-started .timer-expiry-seconds {
     color: #4ade80;
 }

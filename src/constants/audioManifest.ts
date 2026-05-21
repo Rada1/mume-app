@@ -1,3 +1,9 @@
+/**
+ * @file audioManifest.ts
+ * @description Audio configuration manifest mapping zones, terrains, weather, and sound effects to assets and BPMs.
+ */
+
+// --- Types Section ---
 export interface AmbientConfig {
     url: string;
     volume: number;
@@ -13,6 +19,7 @@ export interface SoundConfig {
     defaultPitch?: number;
 }
 
+// --- Manifest Section ---
 export const AUDIO_MANIFEST = {
     ambient: {
         terrains: {
@@ -83,7 +90,7 @@ export const AUDIO_MANIFEST = {
             'rohan': { url: '/assets/Sounds/ZoneSounds/Rohan.mp3' },
             'central anduin': { url: '/assets/Sounds/ZoneSounds/Central Anduin2.mp3' },
             'central anduin vale': { url: '/assets/Sounds/ZoneSounds/Central Anduin2.mp3' },
-            'dol guldur': { url: '/assets/Sounds/ZoneSounds/SouthernMirkwood.mp3' },
+            'dol guldur': { url: '/assets/Sounds/ZoneSounds/Dolguldur.mp3' },
             'swanfleet': { url: '/assets/Sounds/ZoneSounds/MidgeWater.mp3' },
             'isengard': { url: '/assets/Sounds/ZoneSounds/Isengard.mp3' },
             'southern mirkwood': { url: '/assets/Sounds/ZoneSounds/SouthernMirkwood.mp3' },
@@ -141,6 +148,7 @@ export const AUDIO_MANIFEST = {
         'BreeSound.wav': 96,
         'CentralAnduin.mp3': 60,
         'Central Anduin2.mp3': 60,
+        'Dolguldur.mp3': 64,
         'Dunland.mp3': 112,
         'Emyn.mp3': 104,
         'Eregion.mp3': 76,

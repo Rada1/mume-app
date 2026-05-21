@@ -130,7 +130,7 @@ const MapSettings: React.FC = () => {
                         <Upload size={16} /> Import MM2
                         <input type="file" onChange={handleImportMMapper} style={{ display: 'none' }} accept=".mm2" />
                     </label>
-                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto', color: '#f87171', borderColor: 'rgba(248, 113, 113, 0.45)' }} onClick={handleClearMap}>
+                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto', color: '#f87171', borderColor: 'rgba(248, 113, 113, 0.45)' }} onClick={() => handleClearMap()}>
                         <Trash2 size={16} /> Clear
                     </button>
                 </div>

@@ -49,7 +49,7 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
     const tName = getTerrainName(terrain);
     const variantSpecificTerrains = ['Hills', 'Forest', 'Brush', 'Mountains', 'Field', 'Cavern', 'Tunnel', 'Water', 'Shallows', 'Rapids', 'City', 'Underwater', 'Building'];
     const iconSize = Math.round(s);
-    const key = variantSpecificTerrains.includes(tName) ? `${tName}_v${variant}_${isDarkMode}_s${iconSize}_v11` : `${tName}_${isDarkMode}_s${iconSize}_v11`;
+    const key = variantSpecificTerrains.includes(tName) ? `${tName}_v${variant}_${isDarkMode}_s${iconSize}_v15` : `${tName}_${isDarkMode}_s${iconSize}_v15`;
     
     if (!processedIconsRef.current[key]) {
         const iconCanvas = document.createElement('canvas');
@@ -67,11 +67,11 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         if (tName === 'Mountains') {
             ictx.font = `bold ${Math.round(s * 0.3)}px monospace`;
             const mountainColors = isDarkMode ? [
-                "rgba(220, 220, 220, 0.95)", // Bright Silver
-                "rgba(180, 180, 180, 0.95)"  // Bright Grey
+                "rgba(150, 154, 158, 0.62)",
+                "rgba(120, 124, 128, 0.58)"
             ] : [
-                "rgba(40, 40, 40, 1.0)",     // Opaque Charcoal
-                "rgba(20, 20, 20, 1.0)"      // Opaque Black
+                "rgba(52, 54, 56, 0.72)",
+                "rgba(34, 36, 38, 0.68)"
             ];
             ictx.fillStyle = mountainColors[variant % 2];
             ictx.textAlign = 'center';
@@ -81,8 +81,8 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         } else if (tName === 'Hills') {
             ictx.font = `bold ${Math.round(s * 0.5)}px monospace`;
             const hillColor = (variant % 2) === 0 
-                ? (isDarkMode ? "rgba(210, 180, 140, 0.95)" : "rgba(101, 67, 33, 1.0)") // bolder tan/brown
-                : (isDarkMode ? "rgba(166, 227, 161, 0.95)" : "rgba(40, 120, 30, 1.0)"); // bolder green
+                ? (isDarkMode ? "rgba(150, 126, 98, 0.62)" : "rgba(86, 62, 42, 0.7)")
+                : (isDarkMode ? "rgba(96, 139, 92, 0.6)" : "rgba(42, 94, 38, 0.68)");
             ictx.fillStyle = hillColor;
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
@@ -94,11 +94,11 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         } else if (tName === 'Forest') {
             ictx.font = `bold ${Math.round(s * 0.45)}px monospace`;
             const forestColors = isDarkMode ? [
-                "rgba(180, 255, 100, 1.0)",  // Bright Lime
-                "rgba(100, 255, 100, 1.0)"   // Bright Pure Green
+                "rgba(104, 150, 78, 0.62)",
+                "rgba(68, 134, 76, 0.6)"
             ] : [
-                "rgba(20, 100, 20, 1.0)",    // Bold Deep Green
-                "rgba(40, 140, 40, 1.0)"     // Bold Olive Green
+                "rgba(28, 86, 36, 0.74)",
+                "rgba(42, 104, 48, 0.72)"
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
@@ -113,9 +113,9 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         } else if (tName === 'Field') {
             ictx.font = `${Math.round(s * 0.3)}px monospace`;
             const fieldColors = isDarkMode ? [
-                "rgba(180, 255, 120, 0.95)", "rgba(220, 240, 150, 0.95)"
+                "rgba(110, 148, 88, 0.58)", "rgba(140, 152, 94, 0.54)"
             ] : [
-                "rgba(60, 160, 60, 1.0)", "rgba(120, 140, 40, 1.0)"
+                "rgba(54, 112, 58, 0.66)", "rgba(88, 106, 48, 0.62)"
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
@@ -128,9 +128,9 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         } else if (tName === 'Brush') {
             ictx.font = `${Math.round(s * 0.35)}px monospace`;
             const brushColors = isDarkMode ? [
-                "rgba(255, 140, 0, 1.0)", "rgba(255, 215, 0, 1.0)" // Bright Orange and Gold
+                "rgba(150, 92, 48, 0.58)", "rgba(148, 124, 54, 0.54)"
             ] : [
-                "rgba(139, 69, 19, 1.0)", "rgba(160, 82, 45, 1.0)" // Bold Brown/Sienna
+                "rgba(104, 62, 34, 0.66)", "rgba(112, 72, 44, 0.62)"
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
@@ -185,7 +185,9 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
             ictx.font = `${Math.round(s * 0.45)}px monospace`;
             
             let waterColors: string[];
-            if (tName === 'Shallows' || tName === 'Rapids') {
+            if (tName === 'Shallows') {
+                waterColors = isDarkMode ? ["rgba(74, 178, 188, 0.72)", "rgba(112, 178, 190, 0.68)"] : ["rgba(34, 124, 154, 0.78)", "rgba(28, 104, 136, 0.74)"];
+            } else if (tName === 'Rapids') {
                 waterColors = isDarkMode ? ["rgba(0, 255, 255, 1.0)", "rgba(137, 220, 235, 1.0)"] : ["rgba(0, 150, 200, 1.0)", "rgba(0, 120, 180, 1.0)"];
             } else if (tName === 'Underwater') {
                 waterColors = isDarkMode ? ["rgba(100, 149, 237, 1.0)", "rgba(30, 144, 255, 1.0)"] : ["rgba(0, 70, 150, 1.0)", "rgba(0, 50, 120, 1.0)"];
@@ -226,9 +228,9 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         } else if (tName === 'Tunnel') {
             ictx.font = `${Math.round(s * 0.4)}px monospace`;
             const tunnelColors = isDarkMode ? [
-                "rgba(255, 200, 150, 1.0)", "rgba(255, 180, 120, 1.0)"
+                "rgba(154, 124, 94, 0.58)", "rgba(136, 104, 78, 0.54)"
             ] : [
-                "rgba(101, 84, 62, 1.0)", "rgba(80, 60, 40, 1.0)"
+                "rgba(92, 76, 58, 0.66)", "rgba(72, 58, 44, 0.62)"
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';

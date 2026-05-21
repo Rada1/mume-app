@@ -4,6 +4,7 @@ import { CustomButton } from '../../types';
 import { formatMumeTarget, sanitizeGameTarget } from '../../utils/gameUtils';
 import { triggerRingAnimation, getPressedColor } from './pointerUtils';
 import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
+import { decodeCommandEntities } from '../../utils/commandTextUtils';
 
 export const useButtonClicks = (deps: InteractionDeps) => {
     const {
@@ -105,7 +106,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         // We want to keep '2.boots' as is. If it's 'food.2', sanitizeGameTarget might have 
         // messed with it, but here we prioritize the keyword if available.
 
-        let cmd = button.command;
+        let cmd = decodeCommandEntities(button.command);
         let consumedTarget = false;
         if (finalContext) {
             if (cmd.match(/%n\|/)) cmd = cmd.replace(/%n\|[^\s]+/g, finalContext);
@@ -142,7 +143,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         if (deps.isTrackpadModifierActive && !(button as any)._skipJoystick) {
             // Requirement 2: Trackpad Long-Press (Modifier) + Button Tap = Look <button>
             // We use the button's base noun/command as the target for the look command
-            const lookTarget = button.command.trim();
+            const lookTarget = decodeCommandEntities(button.command).trim();
             if (lookTarget && lookTarget !== '__clear_target__') {
                 finalCmd = `look ${lookTarget}`;
             }
@@ -219,7 +220,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             setPopoverState({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150, type: 'teleport-manage', setId: 'teleport' });
         } else if (button.actionType === 'preload' || finalCmd.startsWith('input:')) {
             const isInputPrefix = finalCmd.startsWith('input:');
-            const prefill = isInputPrefix ? finalCmd.slice(6) : (button.command + (button.command.endsWith(' ') ? '' : ' '));
+            const prefill = isInputPrefix ? finalCmd.slice(6) : (cmd + (cmd.endsWith(' ') ? '' : ' '));
             setInput(prefill);
 
             // Only trigger keyboard on mobile if it's explicitly an 'input:' command
@@ -269,7 +270,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                 // For nested items, finalContext (e.g. '2.boots') is the exact target
                 executeCommand(`get ${finalContext} ${detectedParent}`, true, true, false, false, { fromUi: true });
             }
-            finalCmd = [...commandPrefixes, finalCmd].filter(Boolean).join(' ');
+            finalCmd = decodeCommandEntities([...commandPrefixes, finalCmd].filter(Boolean).join(' '));
 
             // --- Optimistic Updates for Common Actions ---
             const firstWord = finalCmd.split(' ')[0].toLowerCase();

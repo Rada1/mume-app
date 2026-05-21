@@ -41,6 +41,10 @@ const decodeTextEntities = (text: string) => text
     .replace(/&quot;/gi, '"')
     .replace(/&apos;/gi, "'");
 
+const decodeAccountDisplayEntities = (html: string) => html
+    .replace(/&amp;(lt|gt|quot|apos);/gi, '&$1;')
+    .replace(/&amp;(#(?:39|34|x27|x22));/gi, '&$1;');
+
 const extractXmlRoomTitle = (line: string): string | null => {
     if (!/<\/?name\b/i.test(line)) return null;
 
@@ -549,7 +553,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             // Account text is raw terminal output. We trim leading/trailing whitespace
             // to ensure consistent alignment in the mobile log container.
             const ansiStripped = lineToParse.replace(/\x1b\[[0-9;]*m/g, '');
-            let normalized = ansiStripped.trim();
+            let normalized = decodeTextEntities(ansiStripped.trim());
 
             // --- Privacy: Strip the "Host" column from `list` output ---
             // Matches the column header "Host" at the end of the header line.
@@ -924,7 +928,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             let messageHtml: string;
             let messageTokens: any[] | undefined;
             if (isAccountPhase) {
-                messageHtml = ansiHtml;
+                messageHtml = decodeAccountDisplayEntities(ansiHtml);
                 messageTokens = undefined;
             } else {
                 const messageObj = PipelineOrchestrator.processTextLine(lineToParse, ansiHtml, finalType, tokenizerContext, finalTokens);
@@ -942,7 +946,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             const hasDamageTag = lineToParse.includes('<damage>');
             const hasAvoidDamageTag = lineToParse.includes('<avoid_damage>');
             const hasMissTag = lineToParse.includes('<miss>');
-            if (!isSnoop && finalType === 'combat') {
+            if (!isSnoop && (hasHitTag || hasDamageTag)) {
                 const eventTime = Date.now();
                 if (hasHitTag) gmcpBus.emit('Game.CombatPulse', { direction: 'outgoing', time: eventTime });
                 if (hasDamageTag) gmcpBus.emit('Game.CombatPulse', { direction: 'incoming', time: eventTime });

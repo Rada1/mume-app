@@ -15,6 +15,7 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         kind: 'spell',
         aliases: ['armour', 'armor'],
         durationMs: min(30),
+        startPatterns: [/A blue transparent wall slowly appears/i, /encase .* in a blue transparent wall/i, /magic armou?r is revitalised/i],
         endPatterns: [/less protected/i, /armou?r spell .*wears off/i]
     },
     {
@@ -23,6 +24,7 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         kind: 'spell',
         aliases: ['bless'],
         durationMs: min(30),
+        startPatterns: [/You feel righteous/i, /You bless/i, /renewed light shine upon you/i],
         endPatterns: [/blessing .*wears off/i, /feel less blessed/i]
     },
     {
@@ -31,6 +33,7 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         kind: 'spell',
         aliases: ['shield'],
         durationMs: min(30),
+        startPatterns: [/You feel protected/i],
         endPatterns: [/shield .*wears off/i]
     },
     {
@@ -39,6 +42,7 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         kind: 'spell',
         aliases: ['sense life'],
         durationMs: min(30),
+        startPatterns: [/You feel your awareness improve/i],
         endPatterns: [/sense life .*wears off/i]
     },
     {
@@ -47,6 +51,7 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         kind: 'spell',
         aliases: ['detect invisibility', 'detect invis'],
         durationMs: min(30),
+        startPatterns: [/Your eyes tingle/i],
         endPatterns: [/detect invisibility .*wears off/i]
     },
     {
@@ -55,6 +60,7 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         kind: 'spell',
         aliases: ['strength'],
         durationMs: min(30),
+        startPatterns: [/You feel stronger/i],
         endPatterns: [/feel weaker/i, /strength .*wears off/i]
     },
     {
@@ -63,6 +69,7 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         kind: 'sanctuary',
         aliases: ['sanctuary', 'sanc'],
         durationMs: min(8),
+        startPatterns: [/white aura surrounds/i],
         endPatterns: [/white aura .*fades/i, /sanctuary .*wears off/i]
     },
     {
@@ -71,6 +78,7 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         kind: 'blind',
         aliases: ['blindness', 'blind'],
         durationMs: min(8),
+        startPatterns: [/You are blinded/i, /You block out the light/i],
         endPatterns: [/is no longer blind/i, /blindness .*wears off/i]
     },
     {

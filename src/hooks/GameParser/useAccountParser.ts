@@ -505,9 +505,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             setGameState('account');
 
             if (!shouldSuppress) {
-                const lineHtml = isMobileRef.current
-                    ? `<span class="inline-btn account-char-name" data-context="${name}">${cleanLine}</span>`
-                    : undefined;
+                const lineHtml = `<span class="inline-btn account-char-name" data-context="${name}">${escapeHtml(cleanLine)}</span>`;
                 addMessage?.('account-character-list', cleanLine, false, undefined, false, { textOnly: cleanLine, lower: cleanLine.toLowerCase(), html: lineHtml });
             }
             return true;
@@ -538,9 +536,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 setGameState('account');
 
                 if (!shouldSuppress) {
-                    const lineHtml = isMobileRef.current
-                        ? `<span class="inline-btn account-char-name" data-context="${name}">${cleanLine}</span>`
-                        : undefined;
+                    const lineHtml = `<span class="inline-btn account-char-name" data-context="${name}">${escapeHtml(cleanLine)}</span>`;
                     addMessage?.('account-character-list', cleanLine, false, undefined, false, { textOnly: cleanLine, lower: cleanLine.toLowerCase(), html: lineHtml });
                 }
                 return true;
@@ -588,9 +584,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         if (isMenuStage && matchedKeyword) {
             const mobileHidden = ['move', 'add', 'info', 'practice'];
             if (isMobileRef.current && mobileHidden.includes(matchedKeyword)) return true;
-            const lineHtml = isMobileRef.current
-                ? `<span class="inline-btn account-menu-cmd" data-context="${matchedKeyword}">${escapeHtml(trimmedLine)}</span>`
-                : undefined;
+            const lineHtml = `<span class="inline-btn account-menu-cmd" data-context="${matchedKeyword}">${escapeHtml(trimmedLine)}</span>`;
             addMessage?.('account-menu-item', trimmedLine, false, undefined, false, { textOnly: trimmedLine, lower: lowerClean, html: lineHtml });
             return true;
         }

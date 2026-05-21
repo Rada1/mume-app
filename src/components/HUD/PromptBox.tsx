@@ -290,7 +290,7 @@ const PromptBox: FC<PromptBoxProps> = ({
     const moveStatus = activeVitals.gmcpVitals.moveStatus;
     const wimpy = activeVitals.wimpy;
     const position = activeVitals.position;
-    const inCombat = activeVitals.inCombat;
+    const inCombat = position === 'fighting';
 
     const isRiding = position === 'riding' || position === 'mounted';
     const playerPosition = position;
@@ -527,14 +527,6 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     </div>
                                 )}
                                 <PromptCombatStatsLine />
-                                <button
-                                    className={`pos-combat-square-btn disposition-square-btn ${activeSlider === 'disposition' ? 'active' : ''}`}
-                                    onClick={!isSpectateMode ? handleDispositionClick : undefined}
-                                    style={{ cursor: isSpectateMode ? 'default' : 'pointer' }}
-                                    title={`Disposition: ${mood || 'normal'} / ${spellSpeed || 'normal'} / ${alertness || 'normal'}`}
-                                >
-                                    <Sliders size={13} strokeWidth={2.6} />
-                                </button>
                             </div>
                             <div className="player-stats-group">
                                 <Heart size={11} className="vitals-icon hp-icon" strokeWidth={3} />
@@ -588,6 +580,14 @@ const PromptBox: FC<PromptBoxProps> = ({
 
                     {/* Center Anchor */}
                     <div className="vitals-center-anchor" style={{ position: 'relative' }}>
+                        <button
+                            className={`pos-combat-square-btn disposition-square-btn ${activeSlider === 'disposition' ? 'active' : ''}`}
+                            onClick={!isSpectateMode ? handleDispositionClick : undefined}
+                            style={{ cursor: isSpectateMode ? 'default' : 'pointer' }}
+                            title={`Disposition: ${mood || 'normal'} / ${spellSpeed || 'normal'} / ${alertness || 'normal'}`}
+                        >
+                            <Sliders size={13} strokeWidth={2.6} />
+                        </button>
                         <button 
                             className={`pos-combat-square-btn ${inCombat ? 'is-fighting' : ''} ${activeSlider === 'pos' ? 'active' : ''}`}
                             onClick={!isSpectateMode ? handlePosClick : undefined}
@@ -600,7 +600,7 @@ const PromptBox: FC<PromptBoxProps> = ({
 
                     {/* Opponent Side */}
                     <div className="vitals-side-container side-right">
-                        {opponentName && (
+                        {inCombat && opponentName && (
                             <div className="opponent-vitals-stack animate-combat-mini">
                                 <div className="prompt-top-stats-row opponent-top-stats-row">
                                     <div className="name-label opponent-name prompt-inline-name">

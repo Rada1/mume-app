@@ -207,7 +207,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
     };
 
     const getAdditionalFlags = () => {
-        const flags: JSX.Element[] = [];
+        const flags: React.JSX.Element[] = [];
         
         if (room.align) {
             let color = '#cad3f5';

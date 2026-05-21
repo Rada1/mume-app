@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { audioManager } from '../services/audio/AudioManager';
 import { useSettingsStore } from '../stores/useSettingsStore';
-import { useActiveRoom, useActiveCombat, useActiveVitals } from '../stores/useActiveGameState';
+import { useActiveRoom, useActiveVitals } from '../stores/useActiveGameState';
 import { useHaptics } from './interactions/useHaptics';
 import { useModeStore } from '../stores/useModeStore';
 
@@ -14,7 +14,6 @@ export const useAmbientController = (accountStage: string = 'none') => {
 
     // We use the active stores so spectate mode automatically gets correct audio
     const activeRoom = useActiveRoom();
-    const activeCombat = useActiveCombat();
     const activeVitals = useActiveVitals();
 
     const roomZone = activeRoom.roomZone;
@@ -23,7 +22,7 @@ export const useAmbientController = (accountStage: string = 'none') => {
     const weather = activeVitals.weather;
     const lighting = activeVitals.lighting;
 
-    const inCombat = activeVitals.inCombat || activeCombat.opponentId !== null || activeCombat.opponentName !== null;
+    const inCombat = activeVitals.position === 'fighting';
 
     useEffect(() => {
         if (!isSoundEnabled) return;

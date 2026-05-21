@@ -36,8 +36,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 }) => {
     const {
         characterName, viewport, triggerHaptic, gameState, executeCommand,
-        btn, joystick, handleButtonClick, editor, env, isFoggy, gameTime, roomItems,
-        toggleMap
+        btn, joystick, handleButtonClick, editor, env, isFoggy, gameTime, roomItems
     } = useGame();
     const currentTime = useMumeTime(gameTime);
     const {
@@ -48,7 +47,8 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         infoLines, questLines, achievementLines, practiceLines,
         whoLines, whereLines,
         setWhoLines, setWhereLines,
-        gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab
+        gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab,
+        toggleMap
     } = useUI();
     const { groupMembers, target, activePrompt, stats } = useVitals();
     // Body classes for desktop layout

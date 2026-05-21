@@ -15,7 +15,7 @@ const extractTarget = (command: string, effectName: string) => {
     const parts = clean.split(/\s+/);
     const last = parts[parts.length - 1];
     if (!last || last.toLowerCase() === effectName.toLowerCase()) return undefined;
-    if (['cast', 'c', 'quaff', 'drink', 'eat', 'use'].includes(last.toLowerCase())) return undefined;
+    if (['cast', 'c', 'commune', 'pray', 'quaff', 'drink', 'eat', 'use'].includes(last.toLowerCase())) return undefined;
     return last;
 };
 
@@ -23,7 +23,7 @@ let lastEffectCommand: { entryId: string; target?: string; at: number } | null =
 
 export const recordEffectTimerCommand = (command: string) => {
     const lower = command.trim().toLowerCase();
-    if (!/^(?:cast|c|quaff|drink|eat|use)\b/.test(lower)) return;
+    if (!/^(?:cast|c|commune|pray|quaff|drink|eat|use)\b/.test(lower)) return;
 
     const spellName = extractQuoted(command);
     const searchText = spellName || command;

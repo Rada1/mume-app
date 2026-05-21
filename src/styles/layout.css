@@ -477,18 +477,22 @@
 }
 
 .in-combat .control-card-wrapper {
-    background: rgba(13, 16, 23, 0.62);
-    border-color: transparent !important;
-    box-shadow: none !important;
+    position: relative;
+    overflow: visible !important;
+}
+
+.in-combat .control-card-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 10;
+    border: 1.5px solid #ef4444;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.65), inset 0 0 8px rgba(239, 68, 68, 0.35);
 }
 
 @media (max-width: 1024px) and (orientation: portrait) {
-    .in-combat .control-card-wrapper {
-        background: rgba(13, 16, 23, 0.62) !important;
-        border-color: transparent !important;
-        box-shadow: none !important;
-    }
-
     /* Account Mode Mobile Centering */
     .account-gutter {
         background: transparent !important;

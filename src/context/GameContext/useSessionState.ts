@@ -203,7 +203,11 @@ export const useSessionState = (
     const [spellSpeed, setSpellSpeed] = useState('normal');
     const [alertness, setAlertness] = useState('normal');
     const [level, setLevel] = useState(1);
-    const [currentName, setCurrentName] = useState<string | null>(characterName);
+    const [currentName, setCurrentNameState] = useState<string | null>(characterName);
+    const setCurrentName = useCallback((name: string | null) => {
+        setCurrentNameState(name);
+        vStore.setCharacterName(name);
+    }, [vStore]);
     const [quests, setQuests] = useState<import('../../types').QuestData>({ activeQuests: [], lastUpdated: 0 });
     const registry = useEntityRegistry();
 
@@ -282,11 +286,11 @@ export const useSessionState = (
         setSpectateHealthStatus: () => {}, setSpectateOpponentStatus: () => {},
         setSpectateOpponentName: () => {}, setSpectateOpponentId: () => {},
         spectateOpponentName: null, spectateOpponentId: null,
-        roomName, characterName
+        roomName, characterName: currentName
     } as VitalsContextType), [
         stats, target, activePrompt, rumble, deathRoomId, heldButton, setHeldButton, bufferName, playerHealthStatus,
         opponentName, opponentId, opponentHealthStatus, bufferHealthStatus, groupMembers,
-        xpHistory, xpEvent, gameTime, roomName, characterName, vStore.characterInfo, setCharacterInfo
+        xpHistory, xpEvent, gameTime, roomName, currentName, vStore.characterInfo, setCharacterInfo
     ]);
 
     return useMemo(() => ({
@@ -352,7 +356,9 @@ export const useSessionState = (
             clearObjectSelection: ui.clearObjectSelection,
             processMessageHtml: (html: string) => html, // Placeholder, elevated in GameContext
             processMessageTokens: () => [], // Placeholder, elevated in GameContext
-            lastCommIdBySenderRef
+            lastCommIdBySenderRef,
+            messageActivity: 0,
+            bumpActivity: () => {}
         },
         recorder
     }), [

@@ -15,6 +15,7 @@ export interface GmcpEventMap {
     'Char.Position': string;
     'Char.Ride': any;
     'Room.Info': GmcpRoomInfo;
+    'Room.Items': any;
     'Room.UpdateExits': GmcpUpdateExits;
     'Room.Chars': any;
     'Room.AddChar': any;
