@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -16,6 +17,33 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       react(),
+      {
+        name: 'save-vectors-api',
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            if (req.url && req.url.startsWith('/api/save-vectors')) {
+              console.log(`[Plugin Middleware] Matches /api/save-vectors: method=${req.method}, url=${req.url}`);
+              if (req.method === 'POST') {
+                let body = '';
+                req.on('data', chunk => { body += chunk; });
+                req.on('end', () => {
+                  try {
+                    const filePath = path.resolve(__dirname, 'src/components/Mapper/data/middle_earth_vectors.json');
+                    fs.writeFileSync(filePath, body);
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true }));
+                  } catch (e: any) {
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: e.message }));
+                  }
+                });
+                return;
+              }
+            }
+            next();
+          });
+        }
+      },
       VitePWA({
         registerType: 'autoUpdate',
         injectRegister: 'auto',
@@ -52,6 +80,7 @@ export default defineConfig(({ mode }) => {
           globIgnores: [
             '**/assets/map/m_peaks/**',
             '**/assets/map/hills/**',
+            '**/assets/Pictures/middle_earth.png',
           ],
           maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB limit for background JPEG
           // Don't cache API/WebSocket calls

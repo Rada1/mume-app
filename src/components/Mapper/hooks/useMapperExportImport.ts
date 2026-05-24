@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { parseMM2 } from '../mm2Parser';
 
 export const useMapperExportImport = (
@@ -8,7 +8,8 @@ export const useMapperExportImport = (
     setMarkers: (markers: Record<string, any>) => void,
     characterName: string | null | undefined,
     addMessage: ((type: string, msg: string) => void) | undefined,
-    controller: any
+    controller: any,
+    setExploredMarkers?: React.Dispatch<React.SetStateAction<Set<string>>>
 ) => {
     const handleExportMap = useCallback(() => {
         const data = {
@@ -34,14 +35,18 @@ export const useMapperExportImport = (
             try {
                 const data = JSON.parse(event.target?.result as string);
                 if (data.rooms) setRooms(data.rooms);
-                if (data.markers) setMarkers(data.markers);
+                if (data.markers) {
+                    setMarkers(data.markers);
+                    const ids = Object.keys(data.markers);
+                    if (ids.length > 0) setExploredMarkers?.(prev => new Set([...prev, ...ids]));
+                }
                 addMessage?.('system', '[Mapper] Map data imported successfully.');
             } catch (err) {
                 addMessage?.('system', '[Mapper] Error importing map data.');
             }
         };
         reader.readAsText(file);
-    }, [addMessage, setRooms, setMarkers]);
+    }, [addMessage, setRooms, setMarkers, setExploredMarkers]);
 
     const handleImportMMapper = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -49,16 +54,27 @@ export const useMapperExportImport = (
         try {
             addMessage?.('system', '[Mapper] Reading MMapper file...');
             const data = await parseMM2(file, 1.0);
+            const markerCount = data.markers ? Object.keys(data.markers).length : 0;
+            console.log('[mm2 import] parser returned:', {
+                rooms: Object.keys(data.rooms || {}).length,
+                markers: markerCount,
+                firstMarkers: data.markers ? Object.values(data.markers).slice(0, 5) : []
+            });
             controller.loadImportedMapData(data.rooms);
-            if (data.markers && Object.keys(data.markers).length > 0) {
+            if (data.markers && markerCount > 0) {
                 setMarkers(data.markers);
-                addMessage?.('system', `[Mapper] Imported ${Object.keys(data.markers).length} markers.`);
+                const ids = Object.keys(data.markers);
+                setExploredMarkers?.(prev => new Set([...prev, ...ids]));
+                const sampleTexts = Object.values(data.markers).slice(0, 5).map((m: any) => `"${m.text}" @(${m.x},${m.y})`).join(', ');
+                addMessage?.('system', `[Mapper] Imported ${ids.length} markers (saved). First few: ${sampleTexts}`);
+            } else {
+                addMessage?.('system', '[Mapper] No markers found in .mm2 (parser may not have decoded them).');
             }
         } catch (err) {
-            console.error(err);
+            console.error('[mm2 import] error:', err);
             addMessage?.('system', '[Mapper] Error parsing .mm2 file.');
         }
-    }, [addMessage, controller, setMarkers]);
+    }, [addMessage, controller, setMarkers, setExploredMarkers]);
 
     return { handleExportMap, handleImportMap, handleImportMMapper };
 };

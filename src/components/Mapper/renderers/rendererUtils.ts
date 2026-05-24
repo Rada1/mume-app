@@ -1,4 +1,5 @@
-import { MapperPrediction } from '../mapperTypes';
+import { MapperPrediction, MapTileVisualAdjustments } from '../mapperTypes';
+import { ZoneFilterConfig } from '../zoneFilters';
 
 export interface CombatPulse {
     direction: 'outgoing' | 'incoming';
@@ -64,11 +65,17 @@ export interface RenderContext {
     filterPathIds?: string[];
     filterPathDistance?: number;
     combatPulsesRef?: React.MutableRefObject<CombatPulse[]>;
+    isTracingMode?: boolean;
+    showBackgroundMap?: boolean;
+    mapTileVisuals?: MapTileVisualAdjustments;
+    mapTileOpacity?: number;
+    zoneFilters?: Record<string, ZoneFilterConfig>;
 }
 
 export const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);
 
 export const drawLine = (ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, color: string, thickness: number, dpr: number, invZoom: number, dashed = false) => {
+    ctx.save();
     ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.lineWidth = thickness;
@@ -76,7 +83,7 @@ export const drawLine = (ctx: CanvasRenderingContext2D, x1: number, y1: number, 
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.stroke();
-    ctx.setLineDash([]);
+    ctx.restore();
 };
 
 import { GRID_SIZE } from '../mapperUtils';
@@ -91,5 +98,11 @@ export const drawCurvedPath = (ctx: CanvasRenderingContext2D, x1: number, y1: nu
 };
 
 export const drawInkyLine = (ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, color: string, thickness: number, dpr: number, invZoom: number) => {
+    ctx.save();
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
+    ctx.shadowBlur = 6 * invZoom;
+    ctx.shadowOffsetX = 1.5 * invZoom;
+    ctx.shadowOffsetY = 2.0 * invZoom;
     drawLine(ctx, x1, y1, x2, y2, color, thickness, dpr, 1.0);
+    ctx.restore();
 };

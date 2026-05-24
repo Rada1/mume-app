@@ -7,6 +7,7 @@ export interface PlayOptions {
     reverse?: boolean;
     filterFrequency?: number;
     label?: string;
+    skipJitter?: boolean;
 }
 
 export interface AmbientOptions {
@@ -246,7 +247,7 @@ export class AudioManager {
         source.buffer = actualBuffer;
 
         const basePitch = options?.pitch ?? config.defaultPitch ?? 1.0;
-        const jitterRange = 0.24;
+        const jitterRange = options?.skipJitter ? 0 : 0.24;
         const jitter = (Math.random() * jitterRange - (jitterRange / 2));
         source.playbackRate.value = basePitch + jitter;
 

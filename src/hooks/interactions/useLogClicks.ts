@@ -3,7 +3,7 @@ import { InteractionDeps } from '../useInteractionHandlers';
 import { EntityCapability } from '../../types';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import { formatNpcKeywordTarget, sanitizeGameTarget } from '../../utils/gameUtils';
-import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
+import { getInlineCategoryAxes, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 import { useUIStore } from '../../stores/useUIStore';
 
 export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>, heldBtnFiredRef?: React.MutableRefObject<boolean>) => {
@@ -120,13 +120,6 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             if (isSoundEnabled) playClickSound();
             lastBtnClickRef.current = now;
         } else {
-            if (selectedObjectIds.size > 0) {
-                clearObjectSelection();
-                triggerHaptic(20);
-                e.stopPropagation();
-                return;
-            }
-
             if (now - lastLogClickRef.current < doubleTapThreshold) {
                 lastLogClickRef.current = 0;
                 handleLogDoubleClick(e);
@@ -138,25 +131,6 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         
         const isLong = isJoystickTargetActiveRef.current;
         const isMod = isTrackpadModifierActiveRef.current;
- 
-        if (selectedObjectIds.size > 0 && targetEl && !isLong && !isMod) {
-            // Absorb the click that always fires after a long-press selection to
-            // prevent it from immediately un-toggling the item that was just added.
-            if (longPressJustFiredRef?.current) {
-                longPressJustFiredRef.current = false;
-                e.stopPropagation();
-                return;
-            }
-            const id = targetEl.getAttribute('data-id') || '';
-            const setId = targetEl.getAttribute('data-cmd') || '';
-            const context = targetEl.getAttribute('data-context') || '';
-            if (id) {
-                toggleObjectSelection(id, setId, context);
-                triggerHaptic(40);
-            }
-            e.stopPropagation();
-            return;
-        }
 
         e.stopPropagation();
         e.preventDefault();
@@ -277,6 +251,73 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
 
         if (heldBtnFiredRef?.current) {
             heldBtnFiredRef.current = false;
+            return;
+        }
+
+        // --- Second tap on a target-highlighted entity ---
+        // After the first tap, TokenRenderer overrides data-cmd='target' and strips data-id/data-category
+        // on the matched button. Detect this and open the action menu using the stored selectedTarget.
+        const storedTarget = useUIStore.getState().selectedTarget;
+        const isSecondTapOnTarget =
+            cmd === 'target' &&
+            action === 'menu' &&
+            !isLong && !isMod &&
+            !!storedTarget &&
+            storedTarget.context === contextStr;
+        if (isSecondTapOnTarget) {
+            const effectiveSetId = storedTarget.setId || storedTarget.category || 'selection';
+            const glowColor = targetEl.style.getPropertyValue('--glow-color').trim();
+            const accentColor = glowColor || targetEl.style.color || storedTarget.accentColor || undefined;
+            if (popoverState?.entityId === storedTarget.id && popoverState.setId === effectiveSetId) {
+                setPopoverState(null);
+                triggerHaptic(10);
+                return;
+            }
+            const rect = targetEl.getBoundingClientRect();
+            setPopoverState({
+                x: rect.right,
+                y: rect.top + rect.height / 2,
+                setId: effectiveSetId,
+                category: storedTarget.category,
+                context: storedTarget.context,
+                entityId: storedTarget.id,
+                menuDisplay: storedTarget.menuDisplay,
+                accentColor,
+                preferSide: 'right',
+                parentNoun: storedTarget.parentNoun
+            });
+            playEffect('actionmenu');
+            targetEl.classList.add('menu-active');
+            triggerHaptic(20);
+            return;
+        }
+
+        // --- First tap: select a targetable entity ---
+        const tapAxes = getInlineCategoryAxes(category);
+        const isEntityTap =
+            isTargetableInline &&
+            entityId &&
+            action === 'menu' &&
+            tapAxes.isTargetable &&
+            !isLong &&
+            !isMod;
+        if (isEntityTap) {
+            const glowColor = targetEl.style.getPropertyValue('--glow-color').trim();
+            const accentColor = glowColor || targetEl.style.color || undefined;
+            toggleObjectSelection({
+                id: entityId,
+                setId: cmd || undefined,
+                category: category || undefined,
+                context: contextStr || undefined,
+                accentColor,
+                menuDisplay,
+                parentNoun,
+            });
+            setTarget(contextStr || null);
+            if (popoverState && popoverState.entityId !== entityId) {
+                setPopoverState(null);
+            }
+            triggerHaptic(40);
             return;
         }
 

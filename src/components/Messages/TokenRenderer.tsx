@@ -188,10 +188,17 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             }
 
             const selectedId = props['data-id'];
-            const activeSet = new Set(selectedObjectIds || []);
-            if (popoverState?.entityId) activeSet.add(popoverState.entityId);
-            if (selectedId && isObjectSelected(activeSet, selectedId, props['data-category'])) {
-                props.className = `${props.className} menu-active`.trim();
+            if (selectedId) {
+                const isSel = isObjectSelected(selectedObjectIds || new Set(), selectedId, props['data-category']);
+                if (isSel) {
+                    props.className = `${props.className} selected`.trim();
+                }
+                if (popoverState?.entityId) {
+                    const popoverSet = new Set<string>([popoverState.entityId]);
+                    if (isObjectSelected(popoverSet, selectedId, props['data-category'])) {
+                        props.className = `${props.className} menu-active`.trim();
+                    }
+                }
             }
 
             // Resolve display color: explicit glowColor (e.g. who-list) > getInlineGlowColor (override → user setting → category default) > token ANSI color

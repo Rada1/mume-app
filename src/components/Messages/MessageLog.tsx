@@ -61,7 +61,6 @@ const MessageItem = React.memo(({
     brightBatchFloor,
     isTimestampEnabled,
     isNewbieMode,
-    isTextRevealEnabled,
     currentRoomName,
     input,
     setInput,
@@ -82,7 +81,6 @@ const MessageItem = React.memo(({
     brightBatchFloor?: number;
     isTimestampEnabled?: boolean;
     isNewbieMode?: boolean;
-    isTextRevealEnabled?: boolean;
     currentRoomName?: string | null,
     input?: string,
     setInput?: (val: string) => void;
@@ -108,16 +106,16 @@ const MessageItem = React.memo(({
     const isOldBatchDim = brightBatchFloor !== undefined && (msg.batchId === undefined || msg.batchId < brightBatchFloor);
     
     // local state to handle the cleanup of the hit sheen animation
-    const [sheenActive, setSheenActive] = React.useState(!!(msg.isHitImpact || msg.isDamageImpact));
+    const [sheenActive, setSheenActive] = React.useState(!!(msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage));
 
     React.useEffect(() => {
-        if (msg.isHitImpact || msg.isDamageImpact) {
+        if (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage) {
             const timer = setTimeout(() => {
                 setSheenActive(false);
             }, 2000);
             return () => clearTimeout(timer);
         }
-    }, [msg.isHitImpact, msg.isDamageImpact]);
+    }, [msg.isHitImpact, msg.isDamageImpact, msg.isRipMessage]);
 
     const triggerParley = useCallback((e: React.MouseEvent) => {
         if (!setParley || !triggerHaptic || !playClickSound) return;
@@ -160,7 +158,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isTextRevealEnabled && isRecent && isLatestBatch && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
             style={{ '--reveal-delay': `${batchOffset * 20}ms` } as React.CSSProperties}
         >
             {showBlockHeaders && msg.isRoomBlock && (
@@ -232,6 +230,11 @@ const MessageItem = React.memo(({
                                         <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
                                     </div>
                                 )}
+                                {msg.isRipMessage && sheenActive && (
+                                    <div className="rip-sheen-overlay" aria-hidden="true">
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ) : (
@@ -270,6 +273,11 @@ const MessageItem = React.memo(({
                                         <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={true} />
                                     </div>
                                 )}
+                                {msg.isRipMessage && sheenActive && (
+                                    <div className="rip-sheen-overlay" aria-hidden="true">
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={true} />
+                                    </div>
+                                )}
                                 {msg.isRoomName && msg.tokens && msg.html?.includes('room-desc-line') && (
                                     <div 
                                         className="room-description-merged" 
@@ -298,7 +306,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { 
         inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, 
         triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled, 
-        isNewbieMode, isTextRevealEnabled, showSpectatePromptInLog, input, setInput, sessionMode
+        isNewbieMode, showSpectatePromptInLog, input, setInput, sessionMode
     } = useBaseGame() as any;
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const activeView = useModeStore(s => s.activeView);
@@ -670,7 +678,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     brightBatchFloor={brightBatchFloor}
                                     isTimestampEnabled={isTimestampEnabled}
                                     isNewbieMode={isNewbieMode}
-                                    isTextRevealEnabled={isTextRevealEnabled}
                                     currentRoomName={roomName}
                                     input={input}
                                     setInput={setInput}

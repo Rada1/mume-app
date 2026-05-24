@@ -1,0 +1,138 @@
+/**
+ * @file RoomChipRows.css
+ * @description Compact mapper header rows for in-room characters and objects.
+ */
+
+.room-chip-rows {
+    width: calc(100% - 20px);
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 5px 8px;
+    margin-top: 4px;
+    box-sizing: border-box;
+    background: rgba(13, 16, 23, 0.62);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--radius-card);
+    pointer-events: auto;
+}
+
+.room-chip-row {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    align-items: center;
+    gap: 6px;
+    min-height: 18px;
+}
+
+.room-chip-row-label {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.5rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    color: var(--text-faded);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.room-chip-list {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+}
+
+.room-chip-list::-webkit-scrollbar {
+    display: none;
+}
+
+.room-chip {
+    flex: 0 0 auto;
+    max-width: 94px;
+    width: max-content;
+    min-height: 17px;
+    padding: 2px 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.82);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.58rem;
+    font-weight: 750;
+    line-height: 1.1;
+    letter-spacing: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.room-chip:hover,
+.room-chip.is-active {
+    border-color: currentColor;
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.room-chip-enemy {
+    color: var(--enemy-color, #ef4444);
+}
+
+.room-chip-npc {
+    color: var(--npc-color, #facc15);
+}
+
+.room-chip-ally {
+    color: var(--player-color, #22c55e);
+}
+
+.room-chip-neutral {
+    color: var(--neutral-color, #eab308);
+}
+
+.room-chip-object {
+    color: var(--object-color, #38bdf8);
+}
+
+.light-mode .room-chip-rows {
+    background: rgba(255, 255, 255, 0.68);
+}
+
+.light-mode .room-chip {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 600px) {
+    .room-chip-rows {
+        width: calc(100% - 20px);
+        padding: 4px 6px;
+        margin-top: 3px;
+    }
+
+    .room-chip-row {
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 5px;
+        min-height: 16px;
+    }
+
+    .room-chip-row-label {
+        font-size: 0.45rem;
+    }
+
+    .room-chip {
+        max-width: 92px;
+        min-height: 15px;
+        padding: 1px 5px;
+        font-size: 0.5rem;
+        border-radius: 4px;
+    }
+}

@@ -102,7 +102,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
     return (
         <div
-            className="modal-overlay"
+            className={`modal-overlay ${settingsTab === 'map' ? 'no-darken' : ''}`}
             onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     setIsSettingsOpen(false);

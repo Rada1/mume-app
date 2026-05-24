@@ -26,7 +26,6 @@ import { MapperProvider } from './context/MapperContext';
 import { SpatButtons } from './components/Controls/SpatButtons';
 import { useSpatButtons } from './hooks/useSpatButtons';
 import SwipeFeedbackOverlay from './components/Overlay/SwipeFeedbackOverlay';
-import { MultiSelectToolbar } from './components/Popovers/MultiSelectToolbar';
 import { AgentHUD } from './components/Utility/AgentHUD';
 import { useSettingsStore } from './stores/useSettingsStore';
 import { useDisplayMode } from './hooks/useDisplayMode';
@@ -351,7 +350,6 @@ const MudClient = () => {
                             setManagerSelectedSet={setManagerSelectedSet}
                             connect={() => telnet.connect()}
                         />
-                        <MultiSelectToolbar />
                         <SwipeFeedbackOverlay />
                     </div>
                 </ErrorBoundary>,

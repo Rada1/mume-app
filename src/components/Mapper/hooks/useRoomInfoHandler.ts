@@ -18,6 +18,7 @@ interface RoomInfoProps {
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     triggerRender?: () => void;
     onRoomInfoProcessed?: (confirmedRoomId?: string | null) => void;
+    onFirstVisitLoadFlag?: (roomId: string) => void;
     addMessage?: (type: string, msg: string) => void;
     showDebugEchoes?: boolean;
     preMoveRef?: React.MutableRefObject<{ dir: string; targetId: string; time: number } | null>;
@@ -30,7 +31,7 @@ interface RoomInfoProps {
 export const useRoomInfoHandler = ({
     roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
     nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef,
-    firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes, preMoveRef,
+    firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, addMessage, showDebugEchoes, preMoveRef,
     deathRoomId, setDeathRoomId, baseMapExitsRef, activeView
 }: RoomInfoProps) => {
 
@@ -375,6 +376,10 @@ export const useRoomInfoHandler = ({
                     return next;
                 });
                 triggerRender?.();
+                const roomLoadFlags = preloadedCoordsRef.current[vnum]?.[8] as string[] | undefined;
+                if (roomLoadFlags && roomLoadFlags.length > 0) {
+                    onFirstVisitLoadFlag?.(targetId!);
+                }
             }
         }
         if (!targetId && isVnumZero) {
@@ -629,7 +634,7 @@ export const useRoomInfoHandler = ({
                 }
             }
         }
-    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes, preMoveRef, activeView]);
+    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, addMessage, showDebugEchoes, preMoveRef, activeView]);
 
     return { handleRoomInfo };
 };

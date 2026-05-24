@@ -14,6 +14,8 @@ export interface ActionTrackerDeps {
     setCharacterInfo: (val: CharacterInfo | ((prev: CharacterInfo) => CharacterInfo)) => void;
     extractNoun: (text: string) => string;
     ansiConvert: { toHtml: (ansi: string) => string };
+    onWear?: () => void;
+    onRemove?: () => void;
 }
 
 const inferWearSlot = (itemText: string): string => {
@@ -85,7 +87,9 @@ export function useActionTracker(deps: ActionTrackerDeps) {
         setEqLines,
         setCharacterInfo,
         extractNoun,
-        ansiConvert
+        ansiConvert,
+        onWear,
+        onRemove
     } = deps;
 
     const trackAction = useCallback((cleanLine: string, textOnly: string, lower: string) => {
@@ -113,13 +117,14 @@ export function useActionTracker(deps: ActionTrackerDeps) {
             });
         };
 
-        const wearMatch = textOnly.match(/^You (?:wear|put on) (.*?)\.$/i);
+        const wearMatch = textOnly.match(/^You (?:wear|put on|fasten|sling|slip|tie|buckle|don|drape|loop|attach|wrap) (.*?)\.$/i);
         if (wearMatch) {
             const itemText = stripResultTail(wearMatch[1]);
             moveToEquipment(itemText, inferWearSlot(itemText));
+            onWear?.();
             return;
         }
-        
+
         const removeMatch = cleanLine.match(/You (remove|stop using) (.*?)\./i);
         if (removeMatch) {
             const itemNoun = extractNoun(removeMatch[2]);
@@ -128,7 +133,9 @@ export function useActionTracker(deps: ActionTrackerDeps) {
                 if (idx === -1) return prev;
                 const item = prev[idx]; setInventoryLines(inv => [...inv, { ...item, cmd: 'inventorylist' }]);
                 return prev.filter((_, i) => i !== idx);
-            }); return;
+            });
+            onRemove?.();
+            return;
         }
         
         const putMatch = cleanLine.match(/You put (.*?) in (.*?)\./i);
@@ -180,6 +187,7 @@ export function useActionTracker(deps: ActionTrackerDeps) {
         const wieldMatch = textOnly.match(/^You (?:\w+\s+)*(?:wield|hold) (.*?)(?:, .*)?\.$/i);
         if (wieldMatch) {
             moveToEquipment(wieldMatch[1], '<wielded>');
+            onWear?.();
             return;
         }
         
@@ -204,7 +212,7 @@ export function useActionTracker(deps: ActionTrackerDeps) {
                 setCharacterInfo(prev => ({ ...prev, gold: Math.max(0, (prev.gold || 0) - amount) }));
             }
         }
-    }, [capture, setInventoryLines, setEqLines, setCharacterInfo, extractNoun, ansiConvert]);
+    }, [capture, setInventoryLines, setEqLines, setCharacterInfo, extractNoun, ansiConvert, onWear, onRemove]);
 
     return { trackAction };
 }

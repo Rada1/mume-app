@@ -29,6 +29,7 @@ interface LineClusterProps {
 }
 
 import { GameButton } from '../../Controls/GameButton/GameButton';
+import { ActionMenuButton } from '../../Controls/ActionMenuButton';
 
 export const LineCluster: React.FC<LineClusterProps> = ({
     isEditMode, handleDragStart, buttons, selectedButtonIds, dragState,
@@ -94,6 +95,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
             )}
             <div className="line-cluster">
                 {sortedButtons.map((button) => renderButton(button, 'diamond', `line-btn ${button.id}`))}
+                <ActionMenuButton triggerHaptic={triggerHaptic} className="line-cluster-action-menu" />
             </div>
         </div>
     );

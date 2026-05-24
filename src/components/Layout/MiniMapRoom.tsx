@@ -11,10 +11,12 @@ import { drawTerrainIcon, applyRoomShading } from '../Mapper/renderers/drawTerra
 import { drawRoomFlagsOptimized } from '../Mapper/renderers/drawFeatures';
 import { drawEntities, drawGroupMembers } from '../Mapper/renderers/drawEntities';
 import { RenderContext } from '../Mapper/renderers/rendererUtils';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import './MiniMapRoom.css';
 
 export const MiniMapRoom: React.FC = () => {
     const { roomPlayers, roomNpcs, roomItems, theme } = useBaseGame();
+    const { mapTileVisuals } = useSettingsStore();
     const { triggerHaptic } = useGame();
     const { groupMembers, characterName, opponentId, opponentName } = useVitals();
     const { setPopoverState } = useUI();
@@ -202,7 +204,7 @@ export const MiniMapRoom: React.FC = () => {
             ctx.save();
             ctx.translate(rx, ry);
 
-            const color = getTerrainColor(room.terrain, isDarkMode);
+            const color = getTerrainColor(room.terrain, isDarkMode, 0.62, mapTileVisuals?.terrainColors);
             ctx.fillStyle = color;
             ctx.globalAlpha = 0.5;
             ctx.fillRect(0, 0, gridS, gridS);

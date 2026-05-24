@@ -14,6 +14,8 @@ export interface AtmosphereParserDeps {
     setSpectateLightningEnabled?: (l: boolean) => void;
     triggerHaptic?: (ms: number) => void;
     playDoorSound?: (isOpen: boolean) => void;
+    playRideSound?: () => void;
+    playStopRidingSound?: () => void;
     setPlayerPosition: (pos: string) => void;
     setSpectatePosition?: (pos: string) => void;
     isSpectateMode?: boolean;
@@ -21,9 +23,9 @@ export interface AtmosphereParserDeps {
 
 export function useAtmosphereParser(deps: AtmosphereParserDeps) {
     const {
-        setIsFoggy, setLightningEnabled, 
+        setIsFoggy, setLightningEnabled,
         setSpectateIsFoggy, setSpectateLightningEnabled,
-        triggerHaptic, playDoorSound, setPlayerPosition, setSpectatePosition, isSpectateMode
+        triggerHaptic, playDoorSound, playRideSound, playStopRidingSound, setPlayerPosition, setSpectatePosition, isSpectateMode
     } = deps;
 
     const parseAtmosphere = useCallback((lower: string, isSnoop: boolean = false) => {
@@ -56,6 +58,12 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
             playDoorSound?.(false);
         }
 
+        if (lower.includes("'s reins and start riding")) {
+            playRideSound?.();
+        } else if (lower.includes('you stop riding')) {
+            playStopRidingSound?.();
+        }
+
         // --- Posture / Position ---
         const posSetter = (isSnoop && setSpectatePosition) ? setSpectatePosition : setPlayerPosition;
         
@@ -68,7 +76,7 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
         } else if (lower.includes('you go to sleep') || lower.includes('is now sleeping')) {
             posSetter('sleeping');
         }
-    }, [setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, setPlayerPosition, setSpectatePosition, isSpectateMode]);
+    }, [setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, playRideSound, playStopRidingSound, setPlayerPosition, setSpectatePosition, isSpectateMode]);
 
     return { parseAtmosphere };
 }

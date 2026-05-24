@@ -9,6 +9,30 @@ import { UiMode, TeleportTarget, InlineCategoryConfig, ZoneMusicMapping, Categor
 import { COLOR_ALLY, COLOR_NPC, canonicalizeCategoryId } from '../utils/categorizationUtils';
 import { getKindForCategory, getTraitConfig, toCategoryId, toTraitId } from '../utils/inlineActionModel';
 import { DEFAULT_URL } from '../constants';
+import type { MapBackgroundVisualAdjustments, MapTileVisualAdjustments } from '../components/Mapper/mapperTypes';
+import { ZONE_FILTERS } from '../components/Mapper/zoneFilters';
+import type { ZoneFilterConfig, ZoneVisualConfig } from '../components/Mapper/zoneFilters';
+import { DEFAULT_TERRAIN_COLORS, WALL_COLOR } from '../components/Mapper/mapperUtils';
+
+export const DEFAULT_MAP_TILE_VISUALS: MapTileVisualAdjustments = {
+    terrainColors: {},
+    wallColor: WALL_COLOR,
+    doorColor: '#ffcc00',
+};
+
+export const DEFAULT_MAP_BACKGROUND_VISUALS: MapBackgroundVisualAdjustments = {
+    opacity: 1,
+    brightness: 0.18,
+    saturation: 1,
+    grayscale: 0.7,
+    contrast: 1,
+    hue: 0,
+    blurMin: 2,
+    blurMax: 30,
+    blurScale: 16,
+    tintColor: '#1091a5',
+    tintOpacity: 0.46,
+};
 
 interface SettingsState {
     connectionUrl: string;
@@ -61,6 +85,11 @@ interface SettingsState {
     unveilMap: boolean;
     showMapperToolbar: boolean;
     isTextRevealEnabled: boolean;
+    showBackgroundMap: boolean;
+    showBackgroundImage: boolean;
+    mapTileVisuals: MapTileVisualAdjustments;
+    mapBackgroundVisuals: MapBackgroundVisualAdjustments;
+    zoneFilters: Record<string, ZoneFilterConfig>;
     setConnectionUrl: (val: string) => void;
     setLoginName: (val: string) => void;
     setLoginPassword: (val: string) => void;
@@ -110,6 +139,13 @@ interface SettingsState {
     setUnveilMap: (val: boolean) => void;
     setShowMapperToolbar: (val: boolean) => void;
     setIsTextRevealEnabled: (val: boolean) => void;
+    setShowBackgroundMap: (val: boolean) => void;
+    setShowBackgroundImage: (val: boolean) => void;
+    setMapTileVisuals: (val: Partial<MapTileVisualAdjustments>) => void;
+    setMapBackgroundVisuals: (val: Partial<MapBackgroundVisualAdjustments>) => void;
+    resetMapVisuals: () => void;
+    setZoneFilter: (zone: string, isDarkMode: boolean, theme: Partial<ZoneVisualConfig>) => void;
+    resetZoneFilters: () => void;
 }
 
 interface InlineActionBuckets {
@@ -236,6 +272,11 @@ export const useSettingsStore = create<SettingsState>()(
             unveilMap: false,
             showMapperToolbar: false,
             isTextRevealEnabled: true,
+            showBackgroundMap: true,
+            showBackgroundImage: true,
+            mapTileVisuals: DEFAULT_MAP_TILE_VISUALS,
+            mapBackgroundVisuals: DEFAULT_MAP_BACKGROUND_VISUALS,
+            zoneFilters: ZONE_FILTERS,
 
             // Setters
             setConnectionUrl: (connectionUrl) => set({ connectionUrl }),
@@ -321,10 +362,51 @@ export const useSettingsStore = create<SettingsState>()(
             setUnveilMap: (unveilMap) => set({ unveilMap }),
             setShowMapperToolbar: (showMapperToolbar) => set({ showMapperToolbar }),
             setIsTextRevealEnabled: (isTextRevealEnabled) => set({ isTextRevealEnabled }),
+            setShowBackgroundMap: (showBackgroundMap) => set({ showBackgroundMap }),
+            setShowBackgroundImage: (showBackgroundImage) => set({ showBackgroundImage }),
+            setMapTileVisuals: (mapTileVisuals) => set((state) => ({
+                mapTileVisuals: {
+                    ...state.mapTileVisuals,
+                    ...mapTileVisuals,
+                    terrainColors: {
+                        ...(state.mapTileVisuals.terrainColors || {}),
+                        ...mapTileVisuals.terrainColors
+                    }
+                }
+            })),
+            setMapBackgroundVisuals: (mapBackgroundVisuals) => set((state) => ({
+                mapBackgroundVisuals: { ...state.mapBackgroundVisuals, ...mapBackgroundVisuals }
+            })),
+            resetMapVisuals: () => set({
+                mapTileVisuals: DEFAULT_MAP_TILE_VISUALS,
+                mapBackgroundVisuals: DEFAULT_MAP_BACKGROUND_VISUALS
+            }),
+            setZoneFilter: (zone, isDarkMode, theme) => set((state) => {
+                const nextFilters = { ...state.zoneFilters };
+                if (!nextFilters[zone]) {
+                    nextFilters[zone] = {
+                        dark: {},
+                        light: {}
+                    };
+                }
+                const modeKey = isDarkMode ? 'dark' : 'light';
+                nextFilters[zone] = {
+                    ...nextFilters[zone],
+                    [modeKey]: {
+                        ...nextFilters[zone][modeKey],
+                        ...theme,
+                        terrainColors: theme.terrainColors !== undefined
+                            ? theme.terrainColors
+                            : nextFilters[zone][modeKey]?.terrainColors
+                    }
+                };
+                return { zoneFilters: nextFilters };
+            }),
+            resetZoneFilters: () => set({ zoneFilters: ZONE_FILTERS }),
         }),
         {
             name: 'mume-settings-storage',
-            version: 12,
+            version: 17,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -446,6 +528,41 @@ export const useSettingsStore = create<SettingsState>()(
                         });
                     }
                 }
+
+                if (version < 13) {
+                    persistedState.mapTileVisuals = {
+                        ...DEFAULT_MAP_TILE_VISUALS,
+                        ...(persistedState.mapTileVisuals || {}),
+                        terrainColors: {
+                            ...DEFAULT_TERRAIN_COLORS,
+                            ...(persistedState.mapTileVisuals?.terrainColors || {})
+                        }
+                    };
+                    persistedState.mapBackgroundVisuals = {
+                        ...DEFAULT_MAP_BACKGROUND_VISUALS,
+                        ...(persistedState.mapBackgroundVisuals || {})
+                    };
+                }
+
+                if (version < 14) {
+                    persistedState.showBackgroundImage = true;
+                }
+
+                if (version < 16) {
+                    delete persistedState.showBackgroundGrid;
+                }
+
+                if (version < 17) {
+                    if (persistedState.mapTileVisuals?.terrainColors) {
+                        const cleanColors = { ...persistedState.mapTileVisuals.terrainColors };
+                        Object.keys(cleanColors).forEach(k => {
+                            if (cleanColors[k] === DEFAULT_TERRAIN_COLORS[k]) {
+                                delete cleanColors[k];
+                            }
+                        });
+                        persistedState.mapTileVisuals.terrainColors = cleanColors;
+                    }
+                }
                 
                 return persistedState;
             },
@@ -455,6 +572,39 @@ export const useSettingsStore = create<SettingsState>()(
                     merged.categoryOverrides || [],
                     merged.customTraits || []
                 );
+
+                const persistedColors = merged.mapTileVisuals?.terrainColors || {};
+                const cleanedColors: Record<string, string> = {};
+                Object.keys(persistedColors).forEach(k => {
+                    if (persistedColors[k] && persistedColors[k] !== DEFAULT_TERRAIN_COLORS[k]) {
+                        cleanedColors[k] = persistedColors[k];
+                    }
+                });
+
+                merged.mapTileVisuals = {
+                    ...DEFAULT_MAP_TILE_VISUALS,
+                    ...(merged.mapTileVisuals || {}),
+                    terrainColors: cleanedColors
+                };
+                merged.mapBackgroundVisuals = {
+                    ...DEFAULT_MAP_BACKGROUND_VISUALS,
+                    ...(merged.mapBackgroundVisuals || {})
+                };
+                merged.showBackgroundImage = merged.showBackgroundImage ?? true;
+                let validFilters = merged.zoneFilters;
+                if (validFilters) {
+                    const firstKey = Object.keys(validFilters)[0];
+                    if (firstKey && (
+                        typeof (validFilters[firstKey]?.dark as any)?.filter === 'string' ||
+                        typeof (validFilters[firstKey]?.dark as any)?.brightness === 'number'
+                    )) {
+                        validFilters = currentState.zoneFilters;
+                    }
+                }
+                merged.zoneFilters = {
+                    ...currentState.zoneFilters,
+                    ...(validFilters || {})
+                };
                 return merged;
             },
             partialize: (state) => {

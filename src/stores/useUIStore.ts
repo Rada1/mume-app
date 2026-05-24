@@ -1,6 +1,16 @@
 import { create } from 'zustand';
 import { PopoverState, DrawerType } from '../types';
 
+export interface SelectedTargetInfo {
+    id: string;
+    setId?: string;
+    category?: string;
+    context?: string;
+    accentColor?: string;
+    menuDisplay?: 'list' | 'dial';
+    parentNoun?: string;
+}
+
 interface MumeEditState {
     isOpen: boolean;
     title: string;
@@ -35,6 +45,7 @@ export interface UIState {
     keywordEditState: { context: string; displayText: string } | null;
     keywordFailureBanner: { context: string; displayText: string } | null;
     selectedObjectIds: Set<string>;
+    selectedTarget: SelectedTargetInfo | null;
     managerSelectedSet: string | null;
     
     // Tab States for Drawers
@@ -77,7 +88,7 @@ export interface UIState {
     setKeywordEditState: (state: { context: string; displayText: string } | null) => void;
     setKeywordFailureBanner: (state: { context: string; displayText: string } | null) => void;
     setSelectedObjectIds: (ids: Set<string> | ((prev: Set<string>) => Set<string>)) => void;
-    toggleObjectSelection: (id: string, setId?: string) => void;
+    toggleObjectSelection: (info: SelectedTargetInfo) => void;
     clearObjectSelection: () => void;
     setManagerSelectedSet: (setId: string | null) => void;
     setIsSetManagerOpen: (open: boolean) => void;
@@ -118,6 +129,7 @@ export const useUIStore = create<UIState>((set) => ({
     keywordEditState: null,
     keywordFailureBanner: null,
     selectedObjectIds: new Set<string>(),
+    selectedTarget: null,
     managerSelectedSet: null,
     
     isShopOpen: false,
@@ -163,13 +175,17 @@ export const useUIStore = create<UIState>((set) => ({
     setSelectedObjectIds: (updater) => set((state) => ({ 
         selectedObjectIds: typeof updater === 'function' ? updater(state.selectedObjectIds) : updater 
     })),
-    toggleObjectSelection: (id, setId) => set((state) => {
-        const next = setId ? new Set<string>(state.selectedObjectIds) : new Set<string>();
-        if (next.has(id)) next.delete(id);
-        else next.add(id);
-        return { selectedObjectIds: next };
+    toggleObjectSelection: (info) => set((state) => {
+        const isSame = state.selectedTarget?.id === info.id;
+        if (isSame) {
+            return { selectedObjectIds: new Set(), selectedTarget: null };
+        }
+        return {
+            selectedObjectIds: new Set<string>([info.id]),
+            selectedTarget: info,
+        };
     }),
-    clearObjectSelection: () => set({ selectedObjectIds: new Set() }),
+    clearObjectSelection: () => set({ selectedObjectIds: new Set(), selectedTarget: null }),
     setManagerSelectedSet: (setId) => set({ managerSelectedSet: setId }),
     setIsSetManagerOpen: (open) => set({ setManagerOpen: open }),
 

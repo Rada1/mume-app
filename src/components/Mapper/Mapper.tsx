@@ -21,7 +21,8 @@ import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
 import { DpadCluster } from './DpadCluster';
 import { GRID_SIZE } from './mapperUtils';
 import { toThemeLinkedColor } from '../../utils/themeLinkedColors';
-import { EnvironmentGlow } from '../Atmosphere/EnvironmentGlow';
+import { useMapperTracing } from './hooks/useMapperTracing';
+import { TracingHUD } from './TracingHUD';
 import './Mapper.css';
 
 interface MapperProps {
@@ -66,8 +67,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
     const {
         triggerHaptic, executeCommand, theme, btn, joystick, playClickSound,
-        setIsTrackpadModifierActive, lighting, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode,
-        selectedObjectIds, input
+        setIsTrackpadModifierActive, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode,
+        selectedObjectIds, lighting
     } = useGame();
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
@@ -81,6 +82,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const displayTargetColor = toThemeLinkedColor(targetColor, theme) || targetColor;
     const treatMapAsExplored = useModeStore(state => state.isSpectating && state.activeView === 'target');
     const isMapLookHeld = heldButton?.id === 'map-long-press' && !heldButton.didFire;
+    const [backgroundAlignMode, setBackgroundAlignMode] = useState(false);
+    const [isCtrlAlignHeld, setIsCtrlAlignHeld] = useState(false);
 
     // Use shared state from MapperContext
     const context = useMapper();
@@ -92,8 +95,39 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
         renderVersion, triggerRender, activeMapFilter, setActiveMapFilter,
-        mapSearchQuery, setMapSearchQuery
+        mapSearchQuery, setMapSearchQuery,
+        regionLabels, regionLabelEditMode
     } = context;
+    const [selectedRegionLabelId, setSelectedRegionLabelId] = useState<string | null>(null);
+
+    const {
+        isTracingMode, calibration, setCalibration, vectors, activePath, hoverCoord,
+        anchorRegisterState, setAnchorRegisterState, anchors, onTraceClick, onTraceHover,
+        onAddPath, onAddLabel, onClearPath, onUndoPoint, onClearAnchors, onAutoCalibrate,
+        onSaveAllToVectorsJson
+    } = useMapperTracing(triggerRender);
+
+    useEffect(() => {
+        if (!isTracingMode) {
+            setIsCtrlAlignHeld(false);
+            return;
+        }
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.ctrlKey) setIsCtrlAlignHeld(true);
+        };
+        const onKeyUp = (event: KeyboardEvent) => {
+            if (!event.ctrlKey) setIsCtrlAlignHeld(false);
+        };
+        const onBlur = () => setIsCtrlAlignHeld(false);
+        window.addEventListener('keydown', onKeyDown);
+        window.addEventListener('keyup', onKeyUp);
+        window.addEventListener('blur', onBlur);
+        return () => {
+            window.removeEventListener('keydown', onKeyDown);
+            window.removeEventListener('keyup', onKeyUp);
+            window.removeEventListener('blur', onBlur);
+        };
+    }, [isTracingMode]);
 
     const { handleCenterOnPlayer } = useMapperPlayerTracking(currentRoomId, rooms, autoCenter, setAutoCenter, cameraRef, canvasRef, playerPosRef, playerTrailRef, lastRoomIdRef, triggerRender, setViewZ, preloadedCoordsRef);
     const { walkTargetId, walkPath, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage);
@@ -208,7 +242,18 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         playerColor: displayPlayerColor,
         npcColor: displayNpcColor,
         activeMapFilter,
-        mapSearchQuery
+        mapSearchQuery,
+        isTracingMode,
+        backgroundAlignMode,
+        calibration,
+        setCalibration,
+        onTraceClick,
+        onTraceHover,
+        regionLabels,
+        regionLabelEditMode,
+        addRegionLabel: context.addRegionLabel,
+        updateRegionLabel: context.updateRegionLabel,
+        setSelectedRegionLabelId
     });
 
     const handleAddMarker = useCallback((wx: number, wy: number, z: number) => {
@@ -219,11 +264,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         }));
     }, [setMarkers]);
 
-    const currentRoom = currentRoomId ? (rooms[currentRoomId] || rooms[`m_${currentRoomId}`]) : null;
-    const terrain = currentRoom?.terrain || undefined;
-
     return (
-        <div className={`mapper-container lighting-state-none ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ 
+        <div className={`mapper-container lighting-state-${lighting || 'none'} ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ 
             position: 'relative', 
             width: '100%', 
             height: '100%', 
@@ -231,7 +273,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             backgroundColor: 'transparent', 
             touchAction: 'none' 
         }}>
-            <EnvironmentGlow terrain={terrain} lighting={lighting} input={input} />
             <div className="mapper-overlay mapper-fog-overlay" />
             <MapCanvas
                 ref={canvasRef}
@@ -257,6 +298,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 stableMarkersRef={markersRef}
                 preloadedCoordsRef={preloadedCoordsRef}
                 spatialIndexRef={context.spatialIndexRef}
+                lighting={lighting}
                 exploredVnums={context.exploredRef.current}
                 exploredRef={context.exploredRef}
                 exploredMarkers={context.exploredMarkers}
@@ -290,6 +332,14 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 heldButton={heldButton}
                 activeMapFilter={activeMapFilter}
                 mapSearchQuery={mapSearchQuery}
+                calibration={calibration}
+                vectors={vectors}
+                isTracingMode={isTracingMode}
+                activePath={activePath}
+                mapTileOpacity={isTracingMode && (backgroundAlignMode || isCtrlAlignHeld) ? 0.5 : 1}
+                regionLabels={regionLabels}
+                regionLabelEditMode={regionLabelEditMode}
+                selectedRegionLabelId={selectedRegionLabelId}
             />
 
             {!effectiveIsMinimized && (
@@ -298,6 +348,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                     mapSearchQuery={mapSearchQuery}
                     setActiveMapFilter={setActiveMapFilter}
                     setMapSearchQuery={setMapSearchQuery}
+                    triggerHaptic={triggerHaptic}
                 />
             )}
 
@@ -305,6 +356,28 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 <div className="map-look-hold-indicator" aria-hidden="true">
                     <Eye size={28} strokeWidth={2.25} />
                 </div>
+            )}
+
+            {isTracingMode && !effectiveIsMinimized && (
+                <button
+                    className="btn-secondary"
+                    onPointerDown={(event) => event.stopPropagation()}
+                    onClick={() => setBackgroundAlignMode(prev => !prev)}
+                    style={{
+                        position: 'absolute',
+                        top: 10,
+                        left: 10,
+                        zIndex: 10000,
+                        width: 'auto',
+                        margin: 0,
+                        background: backgroundAlignMode ? 'var(--accent)' : 'rgba(0, 0, 0, 0.62)',
+                        color: backgroundAlignMode ? '#000' : 'var(--text-primary)',
+                        borderColor: backgroundAlignMode ? 'var(--accent)' : 'rgba(255, 255, 255, 0.18)'
+                    }}
+                    title="Hold Ctrl and drag to align. Hold Ctrl and wheel to scale."
+                >
+                    {backgroundAlignMode ? 'Align Fade On' : 'Fade Real Map'}
+                </button>
             )}
 
             {isMobile && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (
@@ -361,6 +434,26 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 }}>
                     Z: {viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? (rooms[currentRoomId].z || 0).toFixed(1) : '0.0')}
                 </div>
+            )}
+
+            {isTracingMode && (
+                <TracingHUD
+                    calibration={calibration}
+                    setCalibration={setCalibration}
+                    activePath={activePath}
+                    vectors={vectors}
+                    onAddPath={onAddPath}
+                    onAddLabel={onAddLabel}
+                    onClearPath={onClearPath}
+                    onUndoPoint={onUndoPoint}
+                    hoverCoord={hoverCoord}
+                    anchorRegisterState={anchorRegisterState}
+                    setAnchorRegisterState={setAnchorRegisterState}
+                    anchors={anchors}
+                    onAutoCalibrate={onAutoCalibrate}
+                    onClearAnchors={onClearAnchors}
+                    onSaveAllToVectorsJson={onSaveAllToVectorsJson}
+                />
             )}
         </div>
     );

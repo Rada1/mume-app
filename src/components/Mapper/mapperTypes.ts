@@ -28,6 +28,7 @@ export interface MapperExit {
     gmcpDestId?: number;
     name?: string;
     flags?: string[];
+    doorFlags?: string[];
 }
 
 export interface GmcpExitInfo {
@@ -46,6 +47,20 @@ export interface MapperMarker {
     text: string;
     dotSize: number;
     fontSize: number;
+    createdAt: number;
+}
+
+export interface RegionLabel {
+    id: string;
+    text: string;
+    x: number;            // world coords (tile-space, like rooms)
+    y: number;
+    z: number;
+    fontSize: number;     // world-space size; large means LOTR-feel
+    color?: string;       // optional override; falls back to theme default
+    opacity?: number;     // 0..1; defaults applied at render time
+    letterSpacing?: number; // additional spacing for "spread" titles like "M O R D O R"
+    rotation?: number;    // radians; small tilts for stylistic flair
     createdAt: number;
 }
 
@@ -103,4 +118,39 @@ export interface GmcpRoomInfo {
     details?: string[];
     room_quest_flags?: string[];
     spectating?: boolean;
+}
+
+export interface LabelVector {
+    text: string;
+    x: number;
+    y: number;
+    size?: number;
+}
+
+export interface MiddleEarthVectors {
+    coastlines: number[][][];
+    rivers: number[][][];
+    mountains: number[][][];
+    forests: number[][][];
+    labels: LabelVector[];
+}
+
+export interface MapTileVisualAdjustments {
+    terrainColors: Record<string, string>;
+    wallColor: string;
+    doorColor?: string;
+}
+
+export interface MapBackgroundVisualAdjustments {
+    opacity: number;
+    brightness: number;
+    saturation: number;
+    grayscale: number;
+    contrast: number;
+    hue: number;
+    blurMin: number;
+    blurMax: number;
+    blurScale: number;
+    tintColor: string;
+    tintOpacity: number;
 }

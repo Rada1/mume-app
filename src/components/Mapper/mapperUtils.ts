@@ -1,9 +1,9 @@
 export const GRID_SIZE = 50;
-export const ROAD_COLOR_DARK = '#e6c384'; // Yellow-tan for roads
-export const ROAD_COLOR_LIGHT = '#e67e22';
-export const PATH_COLOR_DARK = '#e8a87c'; // Peach-tan for paths
-export const PATH_COLOR_LIGHT = '#d35400';
-export const WALL_COLOR = '#3e2723'; // Much darker brown for walls
+export const ROAD_COLOR_DARK = '#a08858'; // Muted tan for roads
+export const ROAD_COLOR_LIGHT = '#a06828';
+export const PATH_COLOR_DARK = '#8a6850'; // Muted peach-brown for paths
+export const PATH_COLOR_LIGHT = '#884020';
+export const WALL_COLOR = '#3a3c42';
 export const LONG_CONNECTION_COLOR = 'rgba(120, 120, 120, 0.45)'; // Subtle gray for long exits/stairs
 
 export const DIRS: Record<string, { dx: number, dy: number, dz?: number, opp: string, name: string }> = {
@@ -77,31 +77,69 @@ export const getTerrainName = (terrain: string | number | null): string => {
 export const DRAG_SENSITIVITY = 0.95;
 export const ZOOM_SENSITIVITY = 0.85;
 
-export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): string => {
+export const DEFAULT_TERRAIN_COLORS: Record<string, string> = {
+    City: '#78716b',
+    Building: '#7a756c',
+    Forest: '#436847',
+    Field: '#6a9263',
+    Grasslands: '#6a9263',
+    Hills: '#8a796f',
+    Mountains: '#7e6656',
+    Water: '#376d95',
+    Shallows: '#528795',
+    Rapids: '#5c8b99',
+    Underwater: '#34546f',
+    Road: '#616863',
+    Tunnel: '#6a6d6d',
+    Cavern: '#5b5e75',
+    Brush: '#5c7659',
+    Base: '#617669',
+    Unknown: '#6b6e7b',
+};
+
+const darkenTerrainHex = (hex: string, factor: number = 0.62): string => {
+    const r = Math.round(parseInt(hex.slice(1, 3), 16) * factor);
+    const g = Math.round(parseInt(hex.slice(3, 5), 16) * factor);
+    const b = Math.round(parseInt(hex.slice(5, 7), 16) * factor);
+    return `#${[r, g, b].map(v => v.toString(16).padStart(2, '0')).join('')}`;
+};
+
+export const getTerrainColor = (
+    terrain: string | number,
+    isDarkMode: boolean,
+    darkModeBrightness: number = 0.62,
+    terrainColors?: Record<string, string>
+): string => {
     let t = typeof terrain === 'number' ? TERRAIN_MAP[String(terrain)] : terrain;
     t = normalizeTerrain(t);
 
-    // Use the same rich, vivid colors in both dark and light modes to maintain
-    // absolute parity, readability, and high contrast against both backgrounds.
-    switch (t) {
-        case 'City': return '#3d2a18';
-        case 'Building': return '#3d2b1a';
-        case 'Forest': return '#224b1a'; // More vivid deep green
-        case 'Field':
-        case 'Grasslands': return '#4c6e3d'; // Richer grass
-        case 'Hills': return '#6d5437';
-        case 'Mountains': return '#313244';
-        case 'Water': return '#2196f3'; // Brighter blue
-        case 'Shallows': return '#00bcd4'; // Brighter cyan
-        case 'Rapids': return '#4dd0e1';
-        case 'Underwater': return '#1a3a5a'; 
-        case 'Road': return '#455a45'; 
-        case 'Tunnel': return '#5d4037'; 
-        case 'Cavern': return '#313244'; 
-        case 'Brush': return '#4a5a4a';
-        case 'Base': return '#2d3f2d'; 
-        default: return '#2a2a35'; 
-    }
+    const override = terrainColors?.[t] || terrainColors?.Unknown;
+    if (override) return override;
+
+    // Rich, distinct atmospheric colors that match the LotR palette.
+    const baseColor = (() => {
+        switch (t) {
+            case 'City': return '#c2b7ad';
+            case 'Building': return '#c4bdae';
+            case 'Forest': return '#6ca873';
+            case 'Field':
+            case 'Grasslands': return '#abeb9f';
+            case 'Hills': return '#dfc3b3';
+            case 'Mountains': return '#cca48b';
+            case 'Water': return '#59aff0';
+            case 'Shallows': return '#85daf0';
+            case 'Rapids': return '#95e0f7';
+            case 'Underwater': return '#5488b3';
+            case 'Road': return '#9da89f';
+            case 'Tunnel': return '#abafb0';
+            case 'Cavern': return '#9297bd';
+            case 'Brush': return '#94be8f';
+            case 'Base': return '#9cbeaa';
+            default: return '#adb2c7';
+        }
+    })();
+
+    return isDarkMode ? darkenTerrainHex(baseColor, darkModeBrightness) : baseColor;
 };
 
 

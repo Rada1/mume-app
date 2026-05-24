@@ -67,7 +67,7 @@ export interface CommandControllerDeps {
     entities: Record<string, import('../types').GameEntity>;
     applyOptimisticChange: (change: import('../types').OptimisticChange) => void;
     selectedObjectIds: Set<string>;
-    toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
+    toggleObjectSelection: (info: import('../stores/useUIStore').SelectedTargetInfo) => void;
     clearObjectSelection: () => void;
     playClickSound: () => void;
     playEffect: (name: string, options?: { pitch?: number; volume?: number }) => void;

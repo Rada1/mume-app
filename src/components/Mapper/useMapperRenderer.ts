@@ -6,6 +6,40 @@ import { MapperPrediction } from './mapperTypes';
 import { drawTerrains, drawLocalTerrains } from './renderers/drawTerrains';
 import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
 import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee, drawDoorHighlights, drawFilterHighlights } from './renderers/drawEntities';
+import { ZoneFilterConfig } from './zoneFilters';
+
+const didLayoutChange = (oldRooms: Record<string, any>, newRooms: Record<string, any>): boolean => {
+    const oldKeys = Object.keys(oldRooms);
+    const newKeys = Object.keys(newRooms);
+    if (oldKeys.length !== newKeys.length) return true;
+    
+    for (const key of newKeys) {
+        const oldRoom = oldRooms[key];
+        const newRoom = newRooms[key];
+        if (!oldRoom) return true;
+        
+        if (oldRoom.x !== newRoom.x || oldRoom.y !== newRoom.y || oldRoom.z !== newRoom.z) return true;
+        if (oldRoom.terrain !== newRoom.terrain) return true;
+        if (oldRoom.light !== newRoom.light || oldRoom.sundeath !== newRoom.sundeath) return true;
+        
+        const oldExits = oldRoom.exits || {};
+        const newExits = newRoom.exits || {};
+        const oldExitKeys = Object.keys(oldExits);
+        const newExitKeys = Object.keys(newExits);
+        
+        if (oldExitKeys.length !== newExitKeys.length) return true;
+        
+        for (const dir of newExitKeys) {
+            const oldEx = oldExits[dir];
+            const newEx = newExits[dir];
+            if (!oldEx) return true;
+            if (oldEx.target !== newEx.target || oldEx.closed !== newEx.closed || oldEx.hasDoor !== newEx.hasDoor) {
+                return true;
+            }
+        }
+    }
+    return false;
+};
 
 interface RendererProps {
     rooms: Record<string, any>;
@@ -61,6 +95,9 @@ interface RendererProps {
     activeMapFilter?: string | null;
     mapSearchQuery?: string;
     combatPulsesRef?: MutableRefObject<CombatPulse[]>;
+    mapTileOpacity?: number;
+    zoneFilters?: Record<string, ZoneFilterConfig>;
+    lighting?: string;
 }
 
 export const useMapperRenderer = ({
@@ -73,6 +110,8 @@ export const useMapperRenderer = ({
     roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
     opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
     activeMapFilter, mapSearchQuery, combatPulsesRef,
+    mapTileVisuals, mapTileOpacity, zoneFilters,
+    lighting = 'none',
     showOrganicTerrain = true
 }: RendererProps) => {
 
@@ -81,6 +120,9 @@ export const useMapperRenderer = ({
     const lastRoomsRef = useRef<Record<string, any>>({});
     const processedIconsRef = useRef<Record<string, HTMLCanvasElement>>({});
     const roomsVersionRef = useRef(0);
+    const lastMapTileVisualsRef = useRef<any>(null);
+    const lastMapTileOpacityRef = useRef<number>(1);
+    const lastZoneFiltersRef = useRef<Record<string, ZoneFilterConfig> | null>(null);
     const fullExploredRef = useRef<{ count: number, set: Set<string> }>({ count: 0, set: new Set() });
     const emptyExploredAtRef = useRef<Record<string, number>>({});
     const filterCacheRef = useRef<{
@@ -134,19 +176,22 @@ export const useMapperRenderer = ({
 
         // 1. Update Local Spatial Index if rooms changed
         if (allRooms !== lastRoomsRef.current) {
+            const layoutChanged = didLayoutChange(lastRoomsRef.current, allRooms);
             lastRoomsRef.current = allRooms;
-            roomsVersionRef.current += 1;
-            const newIndex: Record<number, Record<string, string[]>> = {};
-            Object.values(allRooms).forEach((room: any) => {
-                if (room.id.startsWith('m_')) return;
-                const rz = Math.round(room.z || 0);
-                if (!newIndex[rz]) newIndex[rz] = {};
-                const bx = Math.floor(room.x / 5), by = Math.floor(room.y / 5);
-                const key = `${bx},${by}`;
-                if (!newIndex[rz][key]) newIndex[rz][key] = [];
-                newIndex[rz][key].push(room.id);
-            });
-            localSpatialIndexRef.current = newIndex;
+            if (layoutChanged) {
+                roomsVersionRef.current += 1;
+                const newIndex: Record<number, Record<string, string[]>> = {};
+                Object.values(allRooms).forEach((room: any) => {
+                    if (room.id.startsWith('m_')) return;
+                    const rz = Math.round(room.z || 0);
+                    if (!newIndex[rz]) newIndex[rz] = {};
+                    const bx = Math.floor(room.x / 5), by = Math.floor(room.y / 5);
+                    const key = `${bx},${by}`;
+                    if (!newIndex[rz][key]) newIndex[rz][key] = [];
+                    newIndex[rz][key].push(room.id);
+                });
+                localSpatialIndexRef.current = newIndex;
+            }
         }
 
         // Filter scans and BFS are expensive on the full Arda map, so cache them
@@ -246,8 +291,18 @@ export const useMapperRenderer = ({
         const lastExplored = effectiveFirstExploredAtRef.current['_latest'] || 0;
         const isExplorationAnimating = (now - lastExplored) < 1000;
 
+        const zoneFiltersChanged = zoneFilters !== lastZoneFiltersRef.current;
+        if (zoneFiltersChanged) {
+            lastZoneFiltersRef.current = zoneFilters;
+        }
+        const visualsChanged = mapTileVisuals !== lastMapTileVisualsRef.current || mapTileOpacity !== lastMapTileOpacityRef.current || zoneFiltersChanged;
+        if (visualsChanged) {
+            lastMapTileVisualsRef.current = mapTileVisuals;
+            lastMapTileOpacityRef.current = mapTileOpacity;
+        }
+
         const baseParams = `${curZInt}_${isDarkMode}_${roomsVersionRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}`;
-        const needsRebuild = cache.lastParams !== baseParams || zoomDiff > 0.25 || moveDist > moveThreshold || isExplorationAnimating;
+        const needsRebuild = cache.lastParams !== baseParams || zoomDiff > 0.25 || moveDist > moveThreshold || isExplorationAnimating || visualsChanged;
 
         if (needsRebuild) {
             const offCtx = cache.ctx;
@@ -327,7 +382,9 @@ export const useMapperRenderer = ({
                 allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
                 triggerRender, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, opponentName, opponentId,
                 activeInlineEntityId, selectedObjectIds,
-                activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef
+                activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
+                mapTileVisuals, mapTileOpacity,
+                zoneFilters
             };
 
             if (floorIndex) drawTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
@@ -394,7 +451,35 @@ export const useMapperRenderer = ({
         ctx.restore();
         drawMarquee(rCtx, marquee);
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, activeMapFilter, mapSearchQuery, combatPulsesRef, currentRoomId]);
+        // Lighting effects overlay (screen space solid tint)
+        if (lighting === 'sun') {
+            ctx.save();
+            ctx.fillStyle = 'rgba(255, 235, 120, 0.05)';
+            ctx.fillRect(0, 0, baseW, baseH);
+            ctx.restore();
+        } else if (lighting === 'moon') {
+            ctx.save();
+            ctx.fillStyle = 'rgba(130, 170, 255, 0.06)';
+            ctx.fillRect(0, 0, baseW, baseH);
+            ctx.restore();
+        } else if (lighting === 'dark') {
+            ctx.save();
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+            ctx.fillRect(0, 0, baseW, baseH);
+            ctx.restore();
+        }
+
+        // Vignette overlay (screen space) - on top
+        const vig = ctx.createRadialGradient(
+            baseW / 2, baseH / 2, Math.min(baseW, baseH) * 0.25,
+            baseW / 2, baseH / 2, Math.max(baseW, baseH) * 0.75
+        );
+        vig.addColorStop(0, 'rgba(0,0,0,0)');
+        vig.addColorStop(1, 'rgba(0,0,0,0.55)');
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, baseW, baseH);
+
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, activeMapFilter, mapSearchQuery, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting]);
 
     return { drawMap };
 };

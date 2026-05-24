@@ -1,8 +1,41 @@
 import { MapperMarker } from './mapperTypes';
 
 export type MapData = {
-    rooms: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[], string, number?, number?]>;
+    rooms: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[], doorFlags?: string[] }>, string, string, string[], string[], string, number?, number?]>;
     markers: Record<string, MapperMarker>;
+};
+
+// MMapper flag name tables (bit index = flag position)
+const MOB_FLAG_NAMES = [
+    'RENT', 'SHOP', 'WEAPON_SHOP', 'ARMOUR_SHOP', 'FOOD_SHOP',
+    'PET_SHOP', 'GUILD', 'SCOUT_GUILD', 'MAGE_GUILD', 'CLERIC_GUILD',
+    'WARRIOR_GUILD', 'RANGER_GUILD', 'AGGRESSIVE_MOB', 'QUEST_MOB',
+    'PASSIVE_MOB', 'ELITE_MOB', 'SUPER_MOB', 'MILKABLE', 'RATTLESNAKE',
+];
+
+const LOAD_FLAG_NAMES = [
+    'TREASURE', 'ARMOUR', 'WEAPON', 'WATER', 'FOOD', 'HERB', 'KEY',
+    'MULE', 'HORSE', 'PACK_HORSE', 'TRAINED_HORSE', 'ROHIRRIM', 'WARG',
+    'BOAT', 'ATTENTION', 'TOWER', 'CLOCK', 'MAIL', 'STABLE',
+    'WHITE_WORD', 'DARK_WORD', 'EQUIPMENT', 'COACH', 'FERRY', 'DEATHTRAP',
+];
+
+const EXIT_FLAG_NAMES = [
+    'EXIT', 'DOOR', 'ROAD', 'CLIMB', 'RANDOM', 'SPECIAL', 'NO_MATCH',
+    'FLOW', 'NO_FLEE', 'DAMAGE', 'FALL', 'GUARDED', 'UNMAPPED',
+];
+
+const DOOR_FLAG_NAMES = [
+    'HIDDEN', 'NEED_KEY', 'NO_BLOCK', 'NO_BREAK', 'NO_PICK',
+    'DELAYED', 'CALLABLE', 'KNOCKABLE', 'MAGIC', 'ACTION', 'NO_BASH',
+];
+
+const decodeBits = (val: number, names: string[]): string[] => {
+    const result: string[] = [];
+    for (let i = 0; i < names.length; i++) {
+        if (val & (1 << i)) result.push(names[i]);
+    }
+    return result;
 };
 
 export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> => {
@@ -46,32 +79,41 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                         }
 
                         let terrain = 0;
-                        const exits: Record<string, { target: string, hasDoor: boolean, flags?: string[] }> = {};
+                        const exits: Record<string, { target: string, hasDoor: boolean, flags?: string[], doorFlags?: string[] }> = {};
                         const exitNodes = room.getElementsByTagName("exit");
                         for (let j = 0; j < exitNodes.length; j++) {
                             const exitNode = exitNodes[j];
                             const dir = exitNode.getAttribute("dir");
                             const toNode = exitNode.getElementsByTagName("to")[0];
                             const doorAttr = exitNode.getAttribute("door");
-                            
+
                             const flags: string[] = [];
                             const flagNodes = exitNode.getElementsByTagName("exitflag");
                             for (let k = 0; k < flagNodes.length; k++) {
-                                if (flagNodes[k].textContent) flags.push(flagNodes[k].textContent.trim());
+                                if (flagNodes[k].textContent) flags.push(flagNodes[k].textContent.trim().toUpperCase());
                             }
                             const flagsAttr = exitNode.getAttribute("flags");
-                            if (flagsAttr) flagsAttr.split(',').forEach(f => flags.push(f.trim()));
+                            if (flagsAttr) flagsAttr.split(',').forEach(f => { const t = f.trim().toUpperCase(); if (t) flags.push(t); });
+
+                            const doorFlags: string[] = [];
+                            const doorFlagNodes = exitNode.getElementsByTagName("doorflag");
+                            for (let k = 0; k < doorFlagNodes.length; k++) {
+                                if (doorFlagNodes[k].textContent) doorFlags.push(doorFlagNodes[k].textContent.trim().toUpperCase());
+                            }
+                            const doorFlagsAttr = exitNode.getAttribute("doorflags");
+                            if (doorFlagsAttr) doorFlagsAttr.split(',').forEach(f => { const t = f.trim().toUpperCase(); if (t) doorFlags.push(t); });
 
                             if (dir && toNode && toNode.textContent) {
                                 let d = dir.toLowerCase();
                                 if (d === 'up') d = 'u';
                                 else if (d === 'down') d = 'd';
                                 else d = d.charAt(0);
-                                
+
                                 exits[d] = {
-                                    target: toNode.textContent.trim(), // Sequential ID for now
+                                    target: toNode.textContent.trim(),
                                     hasDoor: doorAttr === '1' || doorAttr === 'true' || flags.includes('DOOR'),
-                                    flags: flags
+                                    flags,
+                                    doorFlags: doorFlags.length > 0 ? doorFlags : undefined,
                                 };
                             }
                         }
@@ -209,6 +251,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                 const ru16 = () => { const v = s.getUint16(offset, false); offset += 2; return v; };
                 const ru32 = () => { const v = s.getUint32(offset, false); offset += 4; return v; };
                 const ri32 = () => { const v = s.getInt32(offset, false); offset += 4; return v; };
+                const rf64 = () => { const v = s.getFloat64(offset, false); offset += 8; return v; };
                 const rstr = () => {
                     const len = ru32();
                     if (len === 0xFFFFFFFF || len === 0) return '';
@@ -240,8 +283,8 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                     const loadFlagsVal = version >= 33 ? ru32() : ru16();
                     if (version < 39) ru8(); // upToDate
 
-                    const mobFlags: string[] = mobFlagsVal !== 0 ? [`BIN_MOB_${mobFlagsVal}`] : [];
-                    const loadFlags: string[] = loadFlagsVal !== 0 ? [`BIN_LOAD_${loadFlagsVal}`] : [];
+                    const mobFlags: string[] = decodeBits(mobFlagsVal, MOB_FLAG_NAMES);
+                    const loadFlags: string[] = decodeBits(loadFlagsVal, LOAD_FLAG_NAMES);
 
                     const x = ri32();
                     const y = ri32();
@@ -251,8 +294,8 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                     const exits: Record<string, { target: string, hasDoor: boolean, flags?: string[] }> = {};
 
                     for (let e = 0; e < 7; e++) {
-                        const exitFlags = version >= 33 ? ru16() : ru8();
-                        const doorFlags = version >= 32 ? ru16() : ru8();
+                        const exitFlagsVal = version >= 33 ? ru16() : ru8();
+                        const doorFlagsVal = version >= 32 ? ru16() : ru8();
                         rstr(); // doorName
 
                         if (version < 38) {
@@ -267,12 +310,13 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                         }
 
                         if (firstLink) {
-                            // Map binary flags to string if possible, or just numeric string
-                            const flags: string[] = exitFlags !== 0 ? [`BIN_EXIT_${exitFlags}`] : [];
+                            const exitFlagStrs = decodeBits(exitFlagsVal, EXIT_FLAG_NAMES);
+                            const doorFlagStrs = decodeBits(doorFlagsVal, DOOR_FLAG_NAMES);
                             exits[DIRS[e]] = {
                                 target: firstLink,
-                                hasDoor: doorFlags !== 0,
-                                flags: flags
+                                hasDoor: !!(exitFlagsVal & (1 << 1)), // DOOR bit
+                                flags: exitFlagStrs,
+                                doorFlags: doorFlagStrs.length > 0 ? doorFlagStrs : undefined,
                             };
                         }
                     }
@@ -283,29 +327,97 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                     roomCoords[key] = [x + X_OFFSET_BIN, -y + Y_OFFSET_BIN, z * floorHeight, terrain, exits, name, String(serverId || key), mobFlags, loadFlags, "", light, sundeath];
                 }
 
-                for (let i = 0; i < markCount; i++) {
-                    const mType = ru32();
-                    const mClass = rstr();
-                    const mText = rstr();
-                    const mx = ri32();
-                    const my = ri32();
-                    const mz = ri32();
-                    if (version >= 33) ru32(); // color
-                    
-                    const mId = `mbin_${i}`;
-                    const X_OFFSET_BIN = 1;
-                    const Y_OFFSET_BIN = 1;
-                    markers[mId] = {
-                        id: mId,
-                        x: mx + X_OFFSET_BIN,
-                        y: -my + Y_OFFSET_BIN,
-                        z: mz * floorHeight,
-                        text: mText,
-                        dotSize: 4,
-                        fontSize: 12,
-                        createdAt: Date.now()
-                    };
+                // --- MARK / INFOMARK SECTION ---
+                // MMapper writes marks as: u8 type, str className, f64 rotationAngle,
+                // str text, 3xi32 pos1, 3xi32 pos2.
+                // Format varies by version and we don't have the exact spec, so this is
+                // wrapped in try/catch — any decode failure preserves the rooms and reports
+                // what we got. The actual byte layout below was reverse-engineered.
+                const X_OFFSET_BIN = 1;
+                const Y_OFFSET_BIN = 1;
+                let parsedMarks = 0;
+                const markStartOffset = offset;
+
+                // Helper: read u32 in LE for comparison
+                const ru32LE = (off: number) => s.getUint32(off, true);
+                const ru32BE = (off: number) => s.getUint32(off, false);
+
+                // Diagnostic kept minimal — uncomment for debugging future format changes
+                void ru32BE; void ru32LE;
+
+                // Hex dump helper retained for future format-change debugging.
+                const hexDump = (start: number, len: number) => {
+                    const end = Math.min(start + len, s.byteLength);
+                    const bytes: string[] = [];
+                    const ascii: string[] = [];
+                    for (let p = start; p < end; p++) {
+                        const b = s.getUint8(p);
+                        bytes.push(b.toString(16).padStart(2, '0'));
+                        ascii.push(b >= 32 && b < 127 ? String.fromCharCode(b) : '.');
+                    }
+                    return `bytes ${start}..${end - 1}: ${bytes.join(' ')}\nascii: ${ascii.join('')}`;
+                };
+
+                // Reverse-engineered MMapper2 (v42) mark layout — verified by hand against hex dump:
+                //   u32  textLenBytes  // BE; length of UTF-16 BE text in BYTES
+                //   N    text          // UTF-16 BE chars (high byte first)
+                //   u8   type          // 0=TEXT, 1=LINE, 2=ARROW
+                //   5    mystery       // likely color/font flags; not needed for display
+                //   3xi32 pos1 BE      // x, y, z in "fine" units (room_grid * 100), same as XML marks
+                //   3xi32 pos2 BE      // x, y, z (same as pos1 for TEXT, different for LINE/ARROW)
+                // Mark coordinates use 100x fine-grained units (same as MMapper XML format).
+                // Divide by 100 to convert to room-grid space before applying the room-space offset.
+                const MARK_SCALE = 100;
+                try {
+                    for (let i = 0; i < markCount; i++) {
+                        const markOffsetBefore = offset;
+                        try {
+                            const textLen = ru32();
+                            let mText = '';
+                            for (let c = 0; c < textLen / 2; c++) {
+                                mText += String.fromCharCode(ru16());
+                            }
+                            const mType = ru8();
+                            // 5 mystery bytes (likely color/font/flags)
+                            ru32();
+                            ru8();
+                            const mx1 = ri32();
+                            const my1 = ri32();
+                            const mz1 = ri32();
+                            const mx2 = ri32();
+                            const my2 = ri32();
+                            const mz2 = ri32();
+
+                            // verbose per-mark logging removed; enable for future debugging
+
+                            // Only persist marks that have text content (TEXT marks).
+                            // LINE/ARROW marks have empty text and are visual annotations — skip for now.
+                            if (mText && mType === 0) {
+                                const mId = `mbin_${i}`;
+                                markers[mId] = {
+                                    id: mId,
+                                    x: mx1 / MARK_SCALE + X_OFFSET_BIN,
+                                    y: -my1 / MARK_SCALE + Y_OFFSET_BIN,
+                                    z: mz1 * floorHeight,
+                                    text: mText,
+                                    dotSize: 4,
+                                    fontSize: 10,
+                                    createdAt: Date.now()
+                                };
+                            }
+                            parsedMarks++;
+                            void mx2; void my2; void mz2;
+                        } catch (perMarkErr) {
+                            console.warn(`[Parser] Mark #${i} failed at byte ${markOffsetBefore}/${s.byteLength}:`, perMarkErr);
+                            console.warn(`[Parser] Hex dump at failure:\n${hexDump(markOffsetBefore, 80)}`);
+                            console.warn(`[Parser] Hex dump just before failure (last 16 bytes of prior mark):\n${hexDump(Math.max(0, markOffsetBefore - 16), 16)}`);
+                            throw perMarkErr;
+                        }
+                    }
+                } catch (e) {
+                    console.warn(`[Parser] Mark section parse failed after ${parsedMarks}/${markCount} marks (started at byte ${markStartOffset}). Rooms preserved.`, e);
                 }
+                console.log(`[Parser] Decoded ${parsedMarks}/${markCount} marks from .mm2 (version ${version})`);
 
                 resolve({ rooms: roomCoords, markers });
 

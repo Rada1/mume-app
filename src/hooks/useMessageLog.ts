@@ -151,7 +151,8 @@ export function useMessageLog(
         providedIsMissImpact?: boolean,
         providedIsHitterImpact?: boolean,
         providedIsSnoop?: boolean,
-        providedIsSnoopInput?: boolean
+        providedIsSnoopInput?: boolean,
+        providedIsRipMessage?: boolean
     ) => {
         const combatOverride = extra === true || (typeof extra === 'object' && extra?.isCombat);
         let currentText = text;
@@ -175,9 +176,9 @@ export function useMessageLog(
 
         // Only suppress the line if it exactly matches the authoritative GMCP room name.
         // We no longer use ANSI color heuristics — those caused too many false positives.
-        const isActuallyRoomName = !providedIsSnoop && !isCombat && !isComm && type !== 'room-description' && type !== 'prompt' && (
+        const isActuallyRoomName = !isCombat && !isComm && type !== 'room-description' && type !== 'prompt' && (
             isRoomName === true ||
-            (curRoom && !replyCommand && (
+            (!providedIsSnoop && curRoom && !replyCommand && (
                 currentTextOnly === curRoom ||
                 currentTextLower === curRoom.toLowerCase() ||
                 currentTextOnly === curRoom + '.' ||
@@ -387,7 +388,8 @@ export function useMessageLog(
             isMissImpact: providedIsMissImpact,
             isHitterImpact: providedIsHitterImpact,
             isSnoop: providedIsSnoop,
-            isSnoopInput: providedIsSnoopInput
+            isSnoopInput: providedIsSnoopInput,
+            isRipMessage: providedIsRipMessage
         };
 
         if (isCombat) {

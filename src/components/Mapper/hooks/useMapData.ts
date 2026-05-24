@@ -1,9 +1,16 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { MapperRoom, MapperMarker } from '../mapperTypes';
+
+const MARKER_STORAGE_KEY = 'mume_mapper_markers_global';
 
 export const useMapData = () => {
     const [rooms, setRooms] = useState<Record<string, MapperRoom>>({});
-    const [markers, setMarkers] = useState<Record<string, MapperMarker>>({});
+    const [markers, setMarkers] = useState<Record<string, MapperMarker>>(() => {
+        try {
+            const saved = localStorage.getItem(MARKER_STORAGE_KEY);
+            return saved ? JSON.parse(saved) : {};
+        } catch { return {}; }
+    });
     const [exploredVnums, setExploredVnums] = useState<Set<string>>(() => {
         const saved = localStorage.getItem('mume_mapper_explored');
         return saved ? new Set(JSON.parse(saved)) : new Set();
@@ -24,6 +31,33 @@ export const useMapData = () => {
     useEffect(() => { markersRef.current = markers; }, [markers]);
     useEffect(() => { exploredRef.current = exploredVnums; }, [exploredVnums]);
     useEffect(() => { exploredMarkersRef.current = exploredMarkers; }, [exploredMarkers]);
+
+    // Persist markers to localStorage (debounced 2s to avoid thrash during import)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            try {
+                const keys = Object.keys(markers);
+                if (keys.length > 0) {
+                    localStorage.setItem(MARKER_STORAGE_KEY, JSON.stringify(markers));
+                }
+            } catch (e) {
+                console.warn('[MapData] Failed to save markers:', e);
+            }
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, [markers]);
+
+    // Auto-reveal any markers that exist but aren't yet in exploredMarkers.
+    // Mm2-imported markers and previously-saved markers should be visible by default.
+    useEffect(() => {
+        const markerIds = Object.keys(markers);
+        if (markerIds.length === 0) return;
+        const newIds = markerIds.filter(id => !exploredMarkers.has(id));
+        if (newIds.length > 0) {
+            console.log('[useMapData] auto-revealing markers:', { count: newIds.length, total: markerIds.length });
+            setExploredMarkers(prev => new Set([...prev, ...newIds]));
+        }
+    }, [markers]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const spatialIndexRef = useRef<Record<number, Record<string, string[]>>>({});
     const nameIndexRef = useRef<Record<string, string[]>>({});

@@ -118,16 +118,16 @@ export function useCombatParser(deps: CombatParserDeps) {
     }, [inCombatRef, groupMembers, spectateCharacterName, roomPlayers]);
 
     const handleCombatExit = useCallback((lower: string, isSnoop: boolean = false) => {
+        if (/\bis dead!\s*r\.?i\.?p/i.test(lower) && !isSnoop) {
+            playKillSound?.();
+        }
+
         if (inCombatRef.current || (isSnoop && setSpectateInCombat)) {
             const isDeath = /you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) || /\bis dead!\s*r\.?i\.?p/i.test(lower);
             if (isDeath ||
                 /^you flee\b/i.test(lower) ||
                 /\bflees\s/i.test(lower) ||
                 /you stop fighting/i.test(lower)) {
-                
-                if (isDeath) {
-                    // playKillSound?.(); // Removed as requested
-                }
                 
                 if (isSnoop && setSpectateInCombat) {
                     setSpectateInCombat(false, true);

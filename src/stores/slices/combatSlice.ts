@@ -50,26 +50,34 @@ const getGroupMemberKey = (member: Partial<GroupMember>) => {
 };
 
 const mergeGroupMember = (existing: GroupMember, update: Partial<GroupMember>) => {
-    const merged = { ...existing, ...update };
+    const normalizedUpdate = {
+        ...update,
+        name: update.name || update.label
+    };
+    const merged = { ...existing, ...normalizedUpdate };
     if (update.mapid === undefined && existing.mapid !== undefined) merged.mapid = existing.mapid;
     if (update.fighting === undefined && existing.fighting !== undefined) merged.fighting = existing.fighting;
-    if (update.name === undefined && existing.name !== undefined) merged.name = existing.name;
+    if (normalizedUpdate.name === undefined && existing.name !== undefined) merged.name = existing.name;
     if (update.hp === undefined && existing.hp !== undefined) merged.hp = existing.hp;
     return merged;
 };
 
 const upsertGroupMember = (members: GroupMember[], update: GroupMember) => {
-    const updateKey = getGroupMemberKey(update);
+    const normalizedUpdate = {
+        ...update,
+        name: update.name || update.label
+    };
+    const updateKey = getGroupMemberKey(normalizedUpdate);
     if (!updateKey) return members;
 
     let found = false;
     const next = members.map(member => {
         if (getGroupMemberKey(member) !== updateKey) return member;
         found = true;
-        return mergeGroupMember(member, update);
+        return mergeGroupMember(member, normalizedUpdate);
     });
 
-    return found ? next : [...next, update];
+    return found ? next : [...next, normalizedUpdate as GroupMember];
 };
 
 /**
@@ -159,7 +167,7 @@ export const createCombatActions = (set: any, get: any) => ({
             return;
         }
 
-        set({ groupMembers: members });
+        set({ groupMembers: members.map(member => ({ ...member, name: member.name || member.label })) });
     },
 
     setOpponentName: (opponentName: string | null | ((prev: string | null) => string | null)) =>

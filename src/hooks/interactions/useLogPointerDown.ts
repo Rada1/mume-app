@@ -17,7 +17,7 @@ export const useLogPointerDown = (
 ) => {
     const {
         executeCommand, triggerHaptic, btn, joystick, target,
-        viewport, selectedObjectIds, toggleObjectSelection,
+        viewport,
         heldButton, heldButtonRef, setHeldButton, setCommandPreview, lastCommandContextRef, isTrackpadModifierActive,
         keywordOverrides, parley, setParley
     } = deps;
@@ -106,28 +106,10 @@ export const useLogPointerDown = (
         if (targetEl) targetEl.classList.add('pressed');
         if (logLongPressTimerRef.current) clearTimeout(logLongPressTimerRef.current);
 
-        const isMobile = viewport.isMobile;
-
-        // --- 4. Long Press Timer (multi-select) ---
-        logLongPressTimerRef.current = setTimeout(() => {
-            if (targetEl) {
-                const id = targetEl.getAttribute('data-id') || '';
-                const setId = targetEl.getAttribute('data-cmd') || '';
-                if (id) {
-                    const isSelected = Array.from(selectedObjectIds).some(entry => entry === id || entry.endsWith(':' + id));
-                    if (!isSelected) {
-                        toggleObjectSelection(id, setId);
-                        if (longPressJustFiredRef) longPressJustFiredRef.current = true;
-                        triggerHaptic(80);
-                    }
-                }
-            }
-        }, isMobile ? 450 : 500);
-
     }, [
         btn, joystick, target, executeCommand, triggerHaptic, setHeldButton, heldButton,
         viewport, lastCommandContextRef, keywordOverrides, isTrackpadModifierActive,
-        selectedObjectIds, toggleObjectSelection, lookModFiredRef, parley.command, setParley,
+        lookModFiredRef, parley.command, setParley,
         logLongPressTimerRef, markHeldTargetFired
     ]);
 

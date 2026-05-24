@@ -110,6 +110,13 @@ export const useAudioEffects = () => {
     const playStabSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('stab', options), [playEffect]);
     const playArrowHitSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('arrowhit', options), [playEffect]);
     const playClickSound = useCallback(() => playEffect('click', { volume: 2.0 }), [playEffect]);
+    const playAchievementSound = useCallback(() => playEffect('achievement'), [playEffect]);
+    const playEventMoveSound = useCallback(() => playEffect('event-move'), [playEffect]);
+    const playWearSound = useCallback(() => playEffect('wear'), [playEffect]);
+    const playRemoveSound = useCallback(() => playEffect('remove'), [playEffect]);
+    const playLoadFlagSound = useCallback(() => playEffect('loadflag', { skipJitter: true }), [playEffect]);
+    const playRideSound = useCallback(() => playEffect('ride'), [playEffect]);
+    const playStopRidingSound = useCallback(() => playEffect('stopriding'), [playEffect]);
 
     const playDoorSound = useCallback((isOpen: boolean) => playEffect('door1', { pitch: isOpen ? 1.0 : 0.8, volume: 1.5 }), [playEffect]);
     const playMovementSound = useCallback((isRiding: boolean = false, terrain?: string) => {
@@ -171,6 +178,13 @@ export const useAudioEffects = () => {
         stopIncantationSound,
         playSound,
         playRandomSound,
+        playAchievementSound,
+        playEventMoveSound,
+        playWearSound,
+        playRemoveSound,
+        playLoadFlagSound,
+        playRideSound,
+        playStopRidingSound,
         triggerHaptic,
 
         audioCtxRef: { current: audioManager.context },

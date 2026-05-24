@@ -20,6 +20,7 @@ interface UseMapGmcphandlersProps {
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     triggerRender?: () => void;
     onRoomInfoProcessed?: (confirmedRoomId?: string | null) => void;
+    onFirstVisitLoadFlag?: (roomId: string) => void;
     addMessage?: (type: string, msg: string) => void;
     showDebugEchoes?: boolean;
     preMoveRef?: React.MutableRefObject<{ dir: string; targetId: string; time: number } | null>;
@@ -103,6 +104,7 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         firstExploredAtRef: props.firstExploredAtRef,
         triggerRender: props.triggerRender,
         onRoomInfoProcessed: props.onRoomInfoProcessed,
+        onFirstVisitLoadFlag: props.onFirstVisitLoadFlag,
         addMessage: props.addMessage,
         showDebugEchoes: props.showDebugEchoes,
         preMoveRef: props.preMoveRef,

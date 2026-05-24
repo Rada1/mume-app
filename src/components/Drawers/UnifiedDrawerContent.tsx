@@ -67,8 +67,7 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
     setWhereLines
 }) => {
     const lastNearbyRefreshRef = React.useRef(0);
-    const { heldButton, setHeldButton, setCommandPreview, practice } = useGame();
-    const isHeld = (id: string) => heldButton?.id === id && !heldButton.didFire;
+    const { practice } = useGame();
     const practiceTargetLines = React.useMemo<DrawerLine[]>(
         () => buildPracticeDrawerLines(practice.practiceData, practiceLines),
         [practice.practiceData, practiceLines]
@@ -138,13 +137,8 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
             {actions.map(action => (
                 <DrawerHoldCommandButton
                     key={action.id}
-                    id={action.id}
                     label={action.label}
                     command={action.command}
-                    isHeld={isHeld(action.id)}
-                    triggerHaptic={triggerHaptic}
-                    setHeldButton={setHeldButton}
-                    setCommandPreview={setCommandPreview}
                 />
             ))}
         </div>

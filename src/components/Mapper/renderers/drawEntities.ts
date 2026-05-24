@@ -9,6 +9,7 @@ import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupa
 import { getMapOccupantTargets } from '../occupantTargets';
 import { isOpponentOccupant } from '../mapperOpponentUtils';
 import { isObjectSelected } from '../../../utils/selectionUtils';
+import type { GmcpOccupant, GroupMember } from '../../../types';
 
 type RoomAnchor = { x: number, y: number, z: number };
 type RoomLike = { x: number, y: number, z?: number, gmcpId?: string | number };
@@ -35,6 +36,91 @@ const resolveActiveRoomAnchor = (
     return preloadedRoom ? { x: preloadedRoom[0], y: preloadedRoom[1], z: preloadedRoom[2] || 0 } : null;
 };
 
+const getActiveRoomKeys = (rCtx: RenderContext): Set<string> => {
+    const keys = new Set<string>();
+    if (!rCtx.activeId) return keys;
+
+    const rawId = getRawRoomId(rCtx.activeId);
+    const localId = rCtx.serverIdIndexRef?.current?.[rawId] || rawId;
+    keys.add(String(rawId));
+    keys.add(String(localId));
+
+    const activeRoom = rCtx.allRooms[rCtx.activeId] ||
+        rCtx.allRooms[`m_${rawId}`] ||
+        rCtx.allRooms[`m_${localId}`] ||
+        rCtx.allRooms[localId];
+    if (activeRoom?.gmcpId !== undefined && activeRoom.gmcpId !== null) {
+        keys.add(String(activeRoom.gmcpId));
+    }
+
+    return keys;
+};
+
+const groupMemberIsInActiveRoom = (member: GroupMember, activeRoomKeys: Set<string>, rCtx: RenderContext): boolean => {
+    if (member.mapid === undefined || member.mapid === null) return false;
+    const mapid = String(member.mapid);
+    if (activeRoomKeys.has(mapid)) return true;
+
+    const localVnum = rCtx.serverIdIndexRef?.current?.[mapid];
+    return !!localVnum && activeRoomKeys.has(String(localVnum));
+};
+
+const getGroupMemberDisplayName = (member: GroupMember): string | undefined => member.name || member.label;
+
+const occupantMatchesGroupMember = (occupant: GmcpOccupant, member: GroupMember): boolean => {
+    if (member.id !== undefined && occupant.id !== undefined && String(occupant.id) === String(member.id)) return true;
+    const occupantName = (occupant.name || occupant.short || occupant.shortdesc || occupant.keyword || '').toLowerCase();
+    const memberName = (getGroupMemberDisplayName(member) || '').toLowerCase();
+    return !!occupantName && !!memberName && (
+        occupantName === memberName ||
+        occupantName.startsWith(`${memberName} `) ||
+        occupantName.endsWith(` ${memberName}`)
+    );
+};
+
+const addMissingCurrentRoomGroupMembers = (
+    roomChars: Record<number, GmcpOccupant> | undefined,
+    groupMembers: GroupMember[] | undefined,
+    rCtx: RenderContext
+): Record<number, GmcpOccupant> | undefined => {
+    if (!groupMembers?.length) return roomChars;
+
+    const activeRoomKeys = getActiveRoomKeys(rCtx);
+    if (activeRoomKeys.size === 0) return roomChars;
+
+    const next: Record<number, GmcpOccupant> = { ...(roomChars || {}) };
+    let didAdd = false;
+
+    groupMembers.forEach(member => {
+        const memberName = getGroupMemberDisplayName(member);
+        if (member.type === 'you' || !memberName) return;
+        if (!groupMemberIsInActiveRoom(member, activeRoomKeys, rCtx)) return;
+        if (Object.values(next).some(occupant => occupantMatchesGroupMember(occupant, member))) return;
+
+        const syntheticKey = -Math.abs(Number(member.id) || hashGroupMemberName(memberName));
+        next[syntheticKey] = {
+            id: `group:${member.id ?? memberName}`,
+            name: memberName,
+            short: memberName,
+            keyword: memberName,
+            type: 'player',
+            pc: true,
+            mapid: member.mapid
+        } as GmcpOccupant;
+        didAdd = true;
+    });
+
+    return didAdd ? next : roomChars;
+};
+
+const hashGroupMemberName = (name: string): number => {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
+    }
+    return hash || 1;
+};
+
 const getOccupantInitial = (name?: string) => {
     const cleanName = name?.trim().replace(/^(a|an|the)\s+/i, '');
     return cleanName ? cleanName.charAt(0).toUpperCase() : '';
@@ -52,8 +138,11 @@ const getMarkerTextColor = (color: string) => {
 };
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
-    const { ctx, isDarkMode } = rCtx;
-    ctx.strokeStyle = isDarkMode ? 'rgba(0, 0, 0, 0.35)' : 'rgba(255, 255, 255, 1.0)'; // More pronounced black ink grid in dark mode, white gridlines in light mode
+    const { ctx, isDarkMode, camera } = rCtx;
+    return;
+    if (camera && camera.zoom <= 0.35) return;
+
+    ctx.strokeStyle = isDarkMode ? 'rgba(0, 0, 0, 0.45)' : 'rgba(0, 0, 0, 0.65)';
     ctx.lineWidth = 1.1;
     ctx.beginPath();
 
@@ -168,11 +257,12 @@ export const drawRoomOccupants = (
 
     const px = anchor.x * GRID_SIZE + GRID_SIZE / 2;
     const py = anchor.y * GRID_SIZE + GRID_SIZE / 2;
+    const roomCharsWithGroupFallbacks = addMissingCurrentRoomGroupMembers(roomChars, groupMembers, rCtx);
 
     const occupantTargets = getMapOccupantTargets({
         anchor,
         cameraZoom: camera.zoom,
-        roomChars,
+        roomChars: roomCharsWithGroupFallbacks,
         roomPlayers,
         roomNpcs,
         groupMembers,
@@ -458,15 +548,14 @@ export const drawEntities = (
         const px = anchor.x * GRID_SIZE + GRID_SIZE / 2, py = anchor.y * GRID_SIZE + GRID_SIZE / 2;
         const alpha = Math.max(0, 1 - Math.abs(anchor.z - currentZ));
 
-        // 1. Current Room Glow (White highlight)
+        // 1. Current Room Highlight
         ctx.save();
-        const pulse = (Math.sin(now / 350) + 1) / 2; // Smooth sine pulse [0, 1] over ~2.2 seconds cycle
-        
-        ctx.globalAlpha = alpha * (0.28 + pulse * 0.22); // Pulse backdrop opacity between 0.28 and 0.50
-        ctx.shadowBlur = (15 + pulse * 15) * (rCtx.camera.zoom > 1 ? 1 : rCtx.camera.zoom);
-        ctx.shadowColor = '#ffffff';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-        
+
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = alpha * 0.9;
+        ctx.strokeStyle = 'rgba(255, 215, 0, 0.95)';
+        ctx.lineWidth = Math.max(0.8, 1.5 / rCtx.camera.zoom);
+
         const inset = 1;
         ctx.beginPath();
         if (typeof (ctx as any).roundRect === 'function') {
@@ -474,11 +563,6 @@ export const drawEntities = (
         } else {
             ctx.rect(px - GRID_SIZE/2 + inset, py - GRID_SIZE/2 + inset, GRID_SIZE - inset*2, GRID_SIZE - inset*2);
         }
-        ctx.fill();
-
-        // Sleek pulsing white outer border for crisp definition
-        ctx.strokeStyle = `rgba(255, 255, 255, ${0.45 + pulse * 0.35})`;
-        ctx.lineWidth = Math.max(0.6, 1.0 / rCtx.camera.zoom);
         ctx.stroke();
         ctx.restore();
         
@@ -528,8 +612,8 @@ export const drawEntities = (
         ctx.fill();
 
         // 2. Subtle light border, turning red while locked in combat.
-        ctx.strokeStyle = isPlayerInCombat ? 'rgba(248, 113, 113, 0.95)' : 'rgba(255, 255, 255, 0.3)';
-        ctx.lineWidth = isPlayerInCombat ? Math.max(0.9, 1.5 / rCtx.camera.zoom) : 0.5;
+        ctx.strokeStyle = isPlayerInCombat ? 'rgba(248, 113, 113, 0.95)' : 'rgba(255, 215, 0, 0.85)';
+        ctx.lineWidth = isPlayerInCombat ? Math.max(0.9, 1.5 / rCtx.camera.zoom) : Math.max(0.6, 1.2 / rCtx.camera.zoom);
         ctx.shadowBlur = isPlayerInCombat ? 5 + combatPulse * 5 : 0;
         ctx.shadowColor = '#ef4444';
         ctx.stroke();
@@ -690,7 +774,8 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
 
     groupMembers.forEach(member => {
         if (!member.mapid) return;
-        const memberKey = String(member.id ?? member.name ?? member.mapid);
+        const memberName = getGroupMemberDisplayName(member);
+        const memberKey = String(member.id ?? memberName ?? member.mapid);
         const serverVnum = String(member.mapid);
 
         let rx: number | undefined, ry: number | undefined, rz: number | undefined;
@@ -727,6 +812,7 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
     const playerRoomKey = (rCtx as any)._playerRoomKey; // We'll infer this or pass it in Rctx later if needed, for now use currentRoomId/ref
 
     resolvedMembers.forEach(({ member, memberKey, rx, ry, rz }) => {
+        const memberName = getGroupMemberDisplayName(member);
         const roomKey = `${rx},${ry},${rz}`;
         const occupants = roomOccupancy.get(roomKey) || [];
         
@@ -835,7 +921,7 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
                 ctx.textAlign = 'center';
                 ctx.shadowBlur = 4;
                 ctx.shadowColor = 'black';
-                ctx.fillText(member.name, 0, 18);
+                if (memberName) ctx.fillText(memberName, 0, 18);
             }
 
             ctx.restore();
@@ -875,7 +961,7 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
         const isTarget = isOpponentOccupant(member, groupMembers, rCtx.opponentId, rCtx.opponentName);
         const isHeldActive = !!(rCtx.heldButton && !rCtx.heldButton.didFire && !rCtx.heldButton.id?.startsWith('log-inline-'));
 
-        drawOccupantDot(rCtx, px, py, MEMBER_COLOR, alpha * 0.92, member.name, ORB_RADIUS, anim, isTarget, false, false, true, isHeldActive);
+        drawOccupantDot(rCtx, px, py, MEMBER_COLOR, alpha * 0.92, memberName, ORB_RADIUS, anim, isTarget, false, false, true, isHeldActive);
 
         const isSameRoom = prx !== undefined && prx === rx && pry === ry && prz === rz;
         if (!isSameRoom) {
@@ -886,7 +972,7 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
             ctx.textBaseline = 'bottom';
             ctx.shadowBlur = 4;
             ctx.shadowColor = 'black';
-            ctx.fillText(member.name, px, py - (ORB_RADIUS + 2) / camera.zoom);
+            if (memberName) ctx.fillText(memberName, px, py - (ORB_RADIUS + 2) / camera.zoom);
             ctx.restore();
         }
 
@@ -894,37 +980,62 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
 };
 
 
+let _lastMarkerCount = -1;
 export const drawMarkers = (
     rCtx: RenderContext,
     stableMarkersRef: React.MutableRefObject<Record<string, any>>,
     selectedMarkerId: string | null,
     vX1: number, vY1: number, vX2: number, vY2: number
 ) => {
-    const { ctx, now, ANIM_DUR, currentZ, unveilMap, exploredMarkers } = rCtx;
+    const { ctx, now, ANIM_DUR, currentZ, unveilMap, exploredMarkers, invZoom } = rCtx;
 
-    Object.values(stableMarkersRef.current).forEach((marker: any) => {
-        const mx = marker.x * GRID_SIZE, my = marker.y * GRID_SIZE; 
+    if (invZoom > 3) return; // too zoomed out — skip markers
+
+    const allMarkers = Object.values(stableMarkersRef.current);
+    // Log whenever the marker count changes (including 0 → confirms drawMarkers IS being called).
+    if (allMarkers.length !== _lastMarkerCount) {
+        _lastMarkerCount = allMarkers.length;
+        const culledByZ = allMarkers.filter((m: any) => (m.z || 0) !== currentZ).length;
+        const culledByFOW = allMarkers.filter((m: any) => !unveilMap && !exploredMarkers.has(m.id)).length;
+        const sample = allMarkers.slice(0, 5).map((m: any) => ({ id: m.id, text: m.text, x: m.x, y: m.y, z: m.z, fontSize: m.fontSize }));
+        console.log('[Mapper] drawMarkers called:', {
+            totalMarkersInState: allMarkers.length,
+            currentZ,
+            culledByZ,
+            culledByFOW_ifNotUnveil: culledByFOW,
+            unveilMap,
+            exploredMarkersSize: exploredMarkers.size,
+            sample
+        });
+    }
+
+    allMarkers.forEach((marker: any) => {
+        const mx = marker.x * GRID_SIZE, my = marker.y * GRID_SIZE;
         if (mx < vX1 - GRID_SIZE || mx > vX2 + GRID_SIZE || my < vY1 - GRID_SIZE || my > vY2 + GRID_SIZE || (marker.z || 0) !== currentZ) return;
-        
+
         // FOW Check: Hide markers unless unveiled or the marker has been discovered (exploredMarkers)
         if (!unveilMap && !exploredMarkers.has(marker.id)) return;
 
         const isSelected = selectedMarkerId === marker.id;
-        const dotSize = marker.dotSize || 8;
+        // Scale dot/text inversely with zoom so they remain readable at any zoom level.
+        // Clamp invZoom so things don't get absurdly huge when zoomed way in.
+        const sizeScale = Math.min(invZoom, 4);
+        const dotSize = (marker.dotSize || 8) * sizeScale;
         const mSeed = marker.x * 1.5 + marker.y * 2.5;
         const mP = Math.min(1, (now - (marker.createdAt || 0)) / ANIM_DUR);
         
         ctx.save();
+        ctx.globalAlpha = 0.5;
         if (mP < 1) {
-            const mR = dotSize * 6 * mP; 
-            ctx.beginPath(); 
+            const mR = dotSize * 6 * mP;
+            ctx.beginPath();
             for (let i = 0; i < 10; i++) {
                 const angle = (i / 10) * Math.PI * 2;
                 const jitter = (getSeed(mSeed + i, mSeed) - 0.5) * dotSize * 2 * (1 - mP);
                 ctx.lineTo(mx + Math.cos(angle) * (mR + jitter), my + Math.sin(angle) * (mR + jitter));
             }
-            ctx.closePath(); 
-            ctx.clip(); 
+            ctx.closePath();
+            ctx.clip();
             ctx.translate((getSeed(mSeed, now * 0.01) - 0.5) * 2 * (1 - mP), (getSeed(mSeed + 1, now * 0.012) - 0.5) * 2 * (1 - mP));
         }
 
@@ -942,34 +1053,28 @@ export const drawMarkers = (
         ctx.closePath(); 
         ctx.fill(); 
 
-        if (marker.text) { 
-            const fontSize = marker.fontSize || 16;
-            ctx.font = `${fontSize}px Aniron`; 
-            
+        if (marker.text) {
+            const fontSize = (marker.fontSize || 10) * sizeScale;
+            ctx.font = `${fontSize}px Aniron, "Cinzel", serif`;
+
             const metrics = ctx.measureText(marker.text);
             const textWidth = metrics.width;
             const textHeight = fontSize;
-            
-            // Define the center of the text area for the glow
-            const centerX = mx;
-            const centerY = my - dotSize - 4 - (textHeight / 2);
-            
+
             // Draw diffuse background glow - Rectangular with soft edges
-            const paddingX = 16;
-            const paddingY = 6;
+            const paddingX = 16 * sizeScale;
+            const paddingY = 6 * sizeScale;
             const rectW = textWidth + paddingX * 2;
             const rectH = textHeight + paddingY * 2;
             const rectX = mx - rectW / 2;
-            const rectY = my - dotSize - 4 - textHeight - paddingY;
+            const rectY = my - dotSize - 4 * sizeScale - textHeight - paddingY;
 
             ctx.save();
-            // Use shadowBlur for soft edges
             ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = 10 * sizeScale;
             ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-            
-            // Draw rounded rectangle
-            const r = 4; // subtle corner radius
+
+            const r = 4 * sizeScale;
             ctx.beginPath();
             ctx.moveTo(rectX + r, rectY);
             ctx.lineTo(rectX + rectW - r, rectY);
@@ -984,10 +1089,10 @@ export const drawMarkers = (
             ctx.fill();
             ctx.restore();
 
-            ctx.fillStyle = '#8b0000'; // Deep red
-            ctx.textAlign = 'center'; 
-            ctx.textBaseline = 'bottom'; 
-            ctx.fillText(marker.text, mx, my - dotSize - 4); 
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(marker.text, mx, my - dotSize - 4 * sizeScale);
         }
         ctx.restore();
     });
@@ -1385,4 +1490,3 @@ export const drawFilterHighlights = (
         }
     }
 };
-

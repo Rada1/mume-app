@@ -129,7 +129,7 @@ export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, 
             return {
                 roomName: data.name || state.roomName,
                 roomDesc: data.desc || state.roomDesc,
-                roomZone: data.zone || state.roomZone,
+                roomZone: data.zone || data.area || state.roomZone,
                 terrain: data.terrain || state.terrain,
                 roomNum: incomingId !== undefined && incomingId !== null ? Number(incomingId) : state.roomNum,
                 // SMARTER: Only clear occupants if it's a physical room change

@@ -14,6 +14,7 @@ import { useActiveVitals, useActiveCombat, useActiveCharacter } from '../../stor
 import { useModeStore } from '../../stores/useModeStore';
 import { TokenRenderer } from '../Messages/TokenRenderer';
 import PromptCombatStatsLine from './PromptCombatStatsLine';
+import { PromptInventoryChips } from './PromptInventoryChips';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { DispositionSliderPopout, DispositionSliderConfig } from './DispositionSliderPopout';
 
@@ -645,6 +646,8 @@ const PromptBox: FC<PromptBoxProps> = ({
                         )}
                     </div>
                 </div>
+
+                <PromptInventoryChips />
 
                 {activeSlider === 'pos' && activeButtonRect && (
                     <CombatSliderPopout 

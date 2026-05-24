@@ -103,7 +103,7 @@ export function useCommParser(deps: CommParserDeps) {
             const innerPlain = stripMarkup(innerRaw);
             const leadingOffset = innerPlain.search(/\S/);
             const innerText = leadingOffset === -1 ? '' : innerPlain.substring(leadingOffset).trim();
-            const actionMatch = innerText.match(/^(.+?)\s+(tells? you|tells?|whispers?|says?|asks?(?:\s+you)?|exclaims?|narrates?|shouts?|yells?|sings?|prays?)(?:\s+.*?|:\s*|,\s*)(.*)$/i);
+            const actionMatch = innerText.match(/^(.+?)\s+(tells?\s+the\s+group|tells? you|tells?|whispers?|says?|asks?(?:\s+you)?|exclaims?|narrates?|shouts?|yells?|sings?|prays?)(?:\s+.*?|:\s*|,\s*)(.*)$/i);
             
             const chanMap: Record<string, string> = { song: 'sing' };
             replyCommand = chanMap[tag] ?? tag;
@@ -120,6 +120,10 @@ export function useCommParser(deps: CommParserDeps) {
                 commAction = actionMatch[2];
                 commText = sanitizeExtractedText(innerRaw.substring(rawTextStart)).trim();
                 commColor = extractColorAtRawIndex(rawActionIndex >= tagMatch.index ? rawActionIndex : line.length);
+                if (/^tells?\s+the\s+group$/i.test(commAction)) {
+                    replyCommand = 'group';
+                    replyTarget = undefined;
+                }
             } else {
                 replyTarget = undefined;
                 commSender = undefined;
@@ -137,7 +141,7 @@ export function useCommParser(deps: CommParserDeps) {
             if (/<(?:code|highlight|em|prompt|status|xml|object|room|exits|move|weather|magic|hp|mana|move|exp|align|prac|gold|bank|affect|group|help|item|info|object|rune|score|stats|zone|quiet|noquest|notell|noshout|narrate)\b/i.test(line)) return false;
 
             const plain = stripMarkup(line).trim();
-            const actionMatch = plain.match(/^(.+?)\s+(tells? you|tells?|whispers?|says?|asks?(?:\s+you)?|exclaims?|narrates?|shouts?|yells?|sings?|prays?)(?:\s+.*?|:\s*|,\s*)(.*)$/i);
+            const actionMatch = plain.match(/^(.+?)\s+(tells?\s+the\s+group|tells? you|tells?|whispers?|says?|asks?(?:\s+you)?|exclaims?|narrates?|shouts?|yells?|sings?|prays?)(?:\s+.*?|:\s*|,\s*)(.*)$/i);
             if (!actionMatch) return false;
 
             const action = actionMatch[2].toLowerCase();
@@ -145,6 +149,8 @@ export function useCommParser(deps: CommParserDeps) {
                 tells: 'tell',
                 tell: 'tell',
                 'tells you': 'tell',
+                'tells the group': 'group',
+                'tell the group': 'group',
                 whispers: 'whisper',
                 whisper: 'whisper',
                 says: 'say',
@@ -162,8 +168,11 @@ export function useCommParser(deps: CommParserDeps) {
             };
 
             replyCommand = commandMap[action] ?? action.replace(/s$/, '');
-            replyTarget = actionMatch[1].trim();
+            replyTarget = action === 'tells the group' || action === 'tell the group'
+                ? undefined
+                : actionMatch[1].trim();
             commSender = replyTarget;
+            if (!commSender) commSender = actionMatch[1].trim();
             commAction = actionMatch[2];
             commText = actionMatch[3].trim();
             commColor = extractColorAtRawIndex(line.length);

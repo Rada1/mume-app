@@ -95,20 +95,26 @@ const SpatButtonItem = React.memo(({ sb, activeDir, onPointerDown, onPointerMove
                         '--set-accent-rgb': colorToRgb(sb.color, 'var(--accent-rgb)')
                     } as React.CSSProperties}
                 >
-                    {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => {
+                    {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => (
+                        <div
+                            key={d}
+                            className={`swipe-slice ${activeDir === d ? 'active' : ''}`}
+                            style={{ transform: `rotate(${i * 45}deg)`, opacity: 1 }}
+                        >
+                            <div className="slice-separator" />
+                        </div>
+                    ))}
+                    {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d) => {
                         const swipeCmd = sb.swipeCommands?.[d as any];
                         const label = swipeCmd || (d === 'up' ? sb.label : d.toUpperCase());
                         return (
-                            <div
-                                key={d}
-                                className={`swipe-slice ${activeDir === d ? 'active' : ''}`}
-                                style={{ transform: `rotate(${i * 45}deg)`, opacity: 1 }}
+                            <span
+                                key={`label-${d}`}
+                                className={`swipe-sq-label ${activeDir === d ? 'active' : ''}`}
+                                data-dir={d}
                             >
-                                <div className="slice-separator" />
-                                <span className="swipe-slice-label" style={{ '--self-rotation': `${-i * 45}deg` } as any}>
-                                    {label}
-                                </span>
-                            </div>
+                                {label}
+                            </span>
                         );
                     })}
                 </div>,

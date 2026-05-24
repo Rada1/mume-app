@@ -65,6 +65,8 @@ interface GmcpHandlersProps {
     inlineCategories: import('../../types').InlineCategoryConfig[];
     sendGMCP?: (pkg: string, data?: any) => void;
     sendCommand?: (cmd: string) => void;
+    playAchievementSound?: () => void;
+    playEventMoveSound?: () => void;
     pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string; msg?: string } | null>;
     gameTime: import('../../types').MumeTime | null;
     setGameTime: (time: import('../../types').MumeTime | null) => void;
@@ -159,7 +161,11 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
 
     const onEvent = useCallback((pkg: string, data: any) => {
         const pkgLower = pkg.toLowerCase();
-        if (pkgLower === 'event.sun') {
+        if (pkgLower === 'event.achieved') {
+            props.playAchievementSound?.();
+        } else if (pkgLower === 'event.move' || pkgLower === 'event.moved') {
+            props.playEventMoveSound?.();
+        } else if (pkgLower === 'event.sun') {
             const secondsOfDay = typeof data === 'number' ? data : parseInt(data);
             if (!isNaN(secondsOfDay)) {
                 const dayMinutes = secondsOfDay / 60;
@@ -182,7 +188,7 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
                 props.setGameTime(newMumeTime);
             }
         }
-    }, [props.gameTime, props.setGameTime]);
+    }, [props.gameTime, props.setGameTime, props.playAchievementSound, props.playEventMoveSound]);
 
     const onCharRide = useCallback((data: any) => {
         // console.log('[GMCP] Char.Ride:', data);

@@ -55,30 +55,7 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
             setGearTab('inv');
             setPopoverState(null);
         } else {
-            // MULTI-ACTION LOGIC
-            if (selectedObjectIds && selectedObjectIds.size > 1) {
-                const selectedEntries = Array.from(selectedObjectIds) as string[];
-                selectedEntries.forEach(entry => {
-                    const parts = entry.split(':');
-                    const id = parts.length > 2 ? parts[1] : (parts.length === 2 ? parts[1] : parts[0]);
-                    const context = parts.length > 2 ? parts[2] : undefined;
-                    
-                    let noun = context || "";
-                    if (entities[id]) {
-                        const entity = entities[id];
-                        noun = getEffectiveKeyword(entity.name || '', undefined, entity, keywordOverrides || {});
-                    } else if (!noun) {
-                        noun = id.replace(/^(auto-npc-|auto-item-|auto-obj-|roomnpcs:|roomitems:|inventorylist:|equipmentlist:|log-npc-|npc-|player-|object-)/, '')
-                                 .replace(/-[a-f0-9]+$/, '').replace(/-/g, ' ');
-                    }
-                    
-                    handleButtonClick(button, e as any, noun, undefined, popoverState.parentNoun, direction);
-                });
-                clearObjectSelection();
-                setPopoverState(null);
-            } else {
-                handleButtonClick(button, e as any, popoverState.context, undefined, popoverState.parentNoun, direction);
-            }
+            handleButtonClick(button, e as any, popoverState.context, undefined, popoverState.parentNoun, direction);
         }
     };
 

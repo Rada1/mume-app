@@ -97,7 +97,6 @@ export const useMapAnimation = ({
         if ((autoCenter || walkTargetId) && playerPosRef.current && (!effectiveIsDragging || isJoystickActiveRef.current)) {
             // Log once when auto-centering is active if it wasn't before
             if (!(tickRef as any)._autoCenterActive) {
-                // console.log('[MapAnimation] Auto-centering ACTIVE');
                 (tickRef as any)._autoCenterActive = true;
             }
             const zoom = camera.current.zoom || 1;
@@ -119,7 +118,6 @@ export const useMapAnimation = ({
             }
         } else {
             if ((tickRef as any)._autoCenterActive) {
-                // console.log('[MapAnimation] Auto-centering SUPPRESSED (isDragging:', effectiveIsDragging, 'isJoystickActive:', isJoystickActiveRef.current, ')');
                 (tickRef as any)._autoCenterActive = false;
             }
         }
@@ -151,32 +149,39 @@ export const useMapAnimation = ({
         return needsNextFrame;
     };
 
-    useEffect(() => {
-        // Reset context if canvas dimensions or properties change (triggering useEffect)
-        ctxRef.current = null;
-        let active = true;
+    const isDraggingValRef = useRef(isDragging);
+    isDraggingValRef.current = isDragging;
 
+    const triggerAnimation = useCallback(() => {
+        if (requestRef.current !== null) return;
+        
         const animate = () => {
-            if (!active) return;
             const needsNextFrame = tickRef.current?.() ?? false;
-            const effectiveIsDragging = isDragging || isDraggingRef?.current;
+            const effectiveIsDragging = isDraggingValRef.current || isDraggingRef?.current;
             if (needsNextFrame || effectiveIsDragging) {
                 requestRef.current = requestAnimationFrame(animate);
             } else {
                 requestRef.current = null;
             }
         };
+        
+        lastFrameTimeRef.current = performance.now();
+        requestRef.current = requestAnimationFrame(animate);
+    }, [isDraggingRef]);
 
-        animate();
+    useEffect(() => {
+        ctxRef.current = null; // Reset context when dimensions or render dependencies change
+        triggerAnimation();
+    }, [triggerAnimation, drawMap, renderVersion, currentRoomId, walkTargetId, activeMapFilter, combatAnimationActive]);
 
+    useEffect(() => {
         return () => {
-            active = false;
             if (requestRef.current) {
                 cancelAnimationFrame(requestRef.current);
                 requestRef.current = null;
             }
         };
-    }, [renderVersion, isDragging, drawMap, currentRoomId, rooms, preMoveRef, walkTargetId, activeMapFilter, combatAnimationActive]);
+    }, []);
 
     return { tick: tickRef.current };
 };

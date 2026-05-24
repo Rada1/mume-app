@@ -1,76 +1,74 @@
 /**
  * @file DrawerHoldCommandButton.tsx
- * @description Reusable hold-to-target command button for drawer object lists.
+ * @description Drawer action button — tap to fire the command at the currently selected inline target.
  */
 
 import React from 'react';
+import { useGame } from '../../context/GameContext';
+import { useUIStore } from '../../stores/useUIStore';
 
-interface DrawerHoldCommandButtonProps {
-    id: string;
+interface DrawerActionButtonProps {
     label: string;
     command: string;
-    isHeld: boolean;
-    triggerHaptic: (ms: number) => void;
-    setHeldButton: (val: any) => void;
-    setCommandPreview: (val: string | null) => void;
 }
 
-export const DrawerHoldCommandButton: React.FC<DrawerHoldCommandButtonProps> = ({
-    id,
-    label,
-    command,
-    isHeld,
-    triggerHaptic,
-    setHeldButton,
-    setCommandPreview
-}) => {
-    const startHold = (e: React.PointerEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (isHeld) {
-            setCommandPreview(null);
-            setHeldButton((prev: any) => prev?.id === id ? null : prev);
-            return;
-        }
-        const rect = e.currentTarget.getBoundingClientRect();
-        triggerHaptic(15);
-        setCommandPreview(label.toLowerCase());
-        setHeldButton({
-            id,
-            baseCommand: command,
-            modifiers: [],
-            dx: 0,
-            dy: 0,
-            didFire: false,
-            initialX: rect.left + rect.width / 2,
-            initialY: rect.top + rect.height / 2
-        });
-    };
+export const DrawerHoldCommandButton: React.FC<DrawerActionButtonProps> = ({ label, command }) => {
+    const { executeCommand, triggerHaptic, setParley, parley, viewport } = useGame() as any;
+    const selectedTarget = useUIStore(s => s.selectedTarget);
 
-    const endHold = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const hasTarget = !!selectedTarget;
+
+    const handleTap = (e: React.PointerEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
+        if (!selectedTarget) return;
+
+        const contextStr = selectedTarget.context || '';
+        triggerHaptic(60);
+
+        if (command === '__parley__') {
+            setParley({ active: true, command: parley?.command || 'tell', target: contextStr, message: '' });
+            setTimeout(() => {
+                const inputEl = document.querySelector('input') as HTMLInputElement;
+                if (!inputEl) return;
+                const wasReadOnly = inputEl.readOnly;
+                if (viewport?.isMobile) inputEl.readOnly = false;
+                inputEl.focus();
+                if (viewport?.isMobile) {
+                    setTimeout(() => { if (inputEl) inputEl.readOnly = wasReadOnly; }, 100);
+                }
+            }, 10);
+        } else {
+            let finalCmd = command;
+            if (contextStr) {
+                finalCmd = finalCmd.includes('%n')
+                    ? finalCmd.replace(/%n/g, contextStr)
+                    : `${finalCmd} ${contextStr}`;
+            }
+            executeCommand(finalCmd);
+        }
     };
 
     return (
         <button
             type="button"
-            onPointerDown={startHold}
-            onPointerUp={endHold}
-            onPointerCancel={endHold}
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onPointerDown={handleTap}
+            onPointerUp={e => { e.preventDefault(); e.stopPropagation(); }}
+            onPointerCancel={e => { e.preventDefault(); e.stopPropagation(); }}
+            onClick={e => { e.preventDefault(); e.stopPropagation(); }}
             style={{
                 flex: 1,
                 height: '34px',
                 borderRadius: '6px',
-                border: `1px solid ${isHeld ? 'var(--accent)' : 'rgba(255,255,255,0.14)'}`,
-                background: isHeld ? 'rgba(var(--accent-rgb), 0.18)' : 'rgba(255,255,255,0.06)',
-                color: isHeld ? 'var(--accent)' : 'rgba(255,255,255,0.82)',
+                border: `1px solid ${hasTarget ? 'var(--accent)' : 'rgba(255,255,255,0.14)'}`,
+                background: hasTarget ? 'rgba(var(--accent-rgb), 0.18)' : 'rgba(255,255,255,0.06)',
+                color: hasTarget ? 'var(--accent)' : 'rgba(255,255,255,0.4)',
                 fontSize: '0.72rem',
                 fontWeight: 800,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
-                cursor: 'pointer'
+                cursor: hasTarget ? 'pointer' : 'default',
+                transition: 'border-color 0.15s, background 0.15s, color 0.15s',
             }}
         >
             {label}

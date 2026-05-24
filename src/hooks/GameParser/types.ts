@@ -40,7 +40,8 @@ export interface UseGameParserDeps {
         providedIsMissImpact?: boolean,
         providedIsHitterImpact?: boolean,
         providedIsSnoop?: boolean,
-        providedIsSnoopInput?: boolean
+        providedIsSnoopInput?: boolean,
+        providedIsRipMessage?: boolean
     ) => void;
     addSystemMessage: (msg: string) => void;
     executeCommandRef: MutableRefObject<ExecuteCommand | null>;
@@ -69,6 +70,10 @@ export interface UseGameParserDeps {
     playKillSound: (options?: any) => void;
     playLevelSound: (options?: any) => void;
     playClickSound: () => void;
+    playWearSound: () => void;
+    playRemoveSound: () => void;
+    playRideSound: () => void;
+    playStopRidingSound: () => void;
 
     sessionMode: SessionMode;
     inCombatRef: MutableRefObject<boolean>;

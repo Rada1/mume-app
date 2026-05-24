@@ -7,6 +7,7 @@ import React, { ReactNode } from 'react';
 import { X, User, Shield, Users, Activity } from 'lucide-react';
 import { useUI, useGame } from '../../context/GameContext';
 import { EnvironmentGlow } from '../Atmosphere/EnvironmentGlow';
+import { DrawerResizeHandle } from './DrawerResizeHandle';
 
 interface DrawerShellProps {
     id: string;
@@ -36,6 +37,7 @@ export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, child
 
     return (
         <div className={`log-card-drawer drawer-shell ${id}-drawer ${side}-drawer open`}>
+            <DrawerResizeHandle side="left" cssVar="--desktop-right-width" />
             <EnvironmentGlow terrain={accountState?.stage !== 'none' ? undefined : (currentTerrain || undefined)} lighting={lighting} input={input} />
             <div className="drawer-header">
                 <span className="drawer-title">

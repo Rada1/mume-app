@@ -381,7 +381,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                         );
                     })}
                     {room.roomQuestFlags?.map(f => (
-                        <span key={f} style={{ color: '#fab387', backgroundColor: 'rgba(250, 179, 135, 0.15)', padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', border: '1px solid #fab38733', textTransform: 'uppercase' }}>
+                        <span key={f} style={{ color: '#00c0ff', backgroundColor: 'rgba(0, 192, 255, 0.15)', padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', border: '1px solid #00c0ff33', textTransform: 'uppercase' }}>
                             {f}
                         </span>
                     ))}

@@ -15,6 +15,7 @@ interface MapFilterBarProps {
     mapSearchQuery: string;
     setActiveMapFilter: React.Dispatch<React.SetStateAction<string | null>>;
     setMapSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+    triggerHaptic?: (ms: number) => void;
 }
 
 const FILTERS: { id: MapFilterId; label: string; symbol: string }[] = [
@@ -34,7 +35,8 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
     activeMapFilter,
     mapSearchQuery,
     setActiveMapFilter,
-    setMapSearchQuery
+    setMapSearchQuery,
+    triggerHaptic
 }) => {
     const [isCollapsed, setIsCollapsed] = useState(true);
     const activeFilter = FILTERS.find(filter => filter.id === activeMapFilter);
@@ -58,7 +60,10 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
                 className={`map-filter-parent ${activeMapFilter ? 'has-active-filter' : ''}`}
                 aria-expanded={!isCollapsed}
                 title={isCollapsed ? 'Show map filters' : 'Hide map filters'}
-                onClick={() => setIsCollapsed(current => !current)}
+                onClick={() => {
+                    triggerHaptic?.(15);
+                    setIsCollapsed(current => !current);
+                }}
             >
                 <Search size={14} strokeWidth={2.2} />
                 <span>Find</span>

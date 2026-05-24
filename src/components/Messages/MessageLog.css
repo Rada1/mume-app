@@ -326,6 +326,13 @@
         1px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
+.message-content .inline-btn {
+    text-shadow:
+        0 0 4px color-mix(in srgb, var(--glow-color, rgba(255, 255, 255, 0.25)), transparent 25%),
+        0 0 9px color-mix(in srgb, var(--glow-color, rgba(255, 255, 255, 0.18)), transparent 68%),
+        1px 1px 3px rgba(0, 0, 0, 0.48);
+}
+
 /* Category-based color mappings */
 .inline-btn[data-category="npc"] { --glow-color: var(--color-npc) !important; }
 .inline-btn[data-category="player"] { --glow-color: var(--color-player) !important; }
@@ -1206,6 +1213,48 @@
 }
 
 
+.rip-sheen-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    overflow: visible;
+    opacity: 0;
+
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 1) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 300px 100%;
+    background-repeat: no-repeat;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    animation: sheen-sweep 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+
+    filter:
+        drop-shadow(0 0 6px #ffffff)
+        drop-shadow(0 0 15px rgba(255, 255, 255, 0.7))
+        drop-shadow(0 0 30px rgba(255, 255, 255, 0.3));
+}
+
+.rip-sheen-overlay * {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
 /* Default base for spans that aren't also bubbles or buttons */
 span.inline-btn {
     background-color: transparent !important;
@@ -1232,7 +1281,7 @@ span.inline-btn {
     transform: none !important;
     background-color: rgba(0, 0, 0, 0.85) !important;
     border-color: color-mix(in srgb, var(--glow-color, var(--accent)) 50%, transparent) !important;
-    box-shadow: 0 0 12px color-mix(in srgb, var(--glow-color, var(--accent)) 30%, transparent);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--glow-color, var(--accent)) 24%, transparent);
     transition: box-shadow 0.04s ease-out;
     z-index: 100;
 }
@@ -1244,7 +1293,7 @@ span.inline-btn {
 .inline-btn.menu-active {
     background-color: rgba(0, 0, 0, 0.85) !important;
     border-color: color-mix(in srgb, var(--glow-color, var(--accent)) 50%, transparent) !important;
-    box-shadow: 0 0 18px color-mix(in srgb, var(--glow-color, var(--accent)) 30%, transparent);
+    box-shadow: 0 0 11px color-mix(in srgb, var(--glow-color, var(--accent)) 24%, transparent);
     transition: none !important;
     z-index: 100;
 }
@@ -1257,10 +1306,11 @@ span.inline-btn {
 }
 
 .inline-btn.selected {
-    box-shadow: 0 0 0 2px #facc15, 0 0 10px #facc15 !important;
-    background: rgba(250, 204, 21, 0.2) !important;
-    border-color: #facc15 !important;
-    color: #fff !important;
+    border: 1.5px solid var(--color-target) !important;
+    box-shadow:
+        0 0 4px color-mix(in srgb, var(--color-target), transparent 70%),
+        0 0 10px color-mix(in srgb, var(--color-target), transparent 50%) !important;
+    animation: target-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
     transform: none !important;
     z-index: 10;
 }
@@ -1268,8 +1318,8 @@ span.inline-btn {
 .app-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
     background-color: rgba(255, 255, 255, 0.1) !important;
     border-color: color-mix(in srgb, var(--glow-color, #ffffff), #ffffff 18%) !important;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22),
-        0 0 14px color-mix(in srgb, var(--glow-color, #ffffff), transparent 45%) !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18),
+        0 0 9px color-mix(in srgb, var(--glow-color, #ffffff), transparent 62%) !important;
     color: var(--glow-color, #ffffff) !important;
 }
 

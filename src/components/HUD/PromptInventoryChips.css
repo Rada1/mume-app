@@ -1,0 +1,203 @@
+/**
+ * @file PromptInventoryChips.css
+ * @description Prompt-box worn and inventory object chip rows.
+ */
+
+.prompt-inventory-chip-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    min-width: 0;
+    padding: 1px 0 2px;
+}
+
+.prompt-inventory-chip-row {
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr);
+    align-items: center;
+    gap: 5px;
+    min-height: 16px;
+}
+
+.prompt-inventory-chip-label {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.48rem;
+    font-weight: 850;
+    letter-spacing: 0;
+    color: var(--text-faded);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.prompt-inventory-chip-list {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+}
+
+.prompt-inventory-chip-list::-webkit-scrollbar {
+    display: none;
+}
+
+.prompt-inventory-chip-shell {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+    padding-right: 1px;
+}
+
+.prompt-container-toggle {
+    flex: 0 0 auto;
+    width: 12px;
+    height: 12px;
+    padding: 0;
+    border: 0;
+    border-radius: 3px;
+    background: transparent;
+    color: var(--prompt-object-color, rgba(251, 146, 60, 0.95));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+
+.prompt-container-toggle.is-expanded svg {
+    transform: rotate(90deg);
+}
+
+.prompt-container-toggle:hover,
+.prompt-container-toggle.is-expanded {
+    background: rgba(251, 146, 60, 0.14);
+}
+
+.prompt-container-toggle.is-loading {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.45rem;
+    font-weight: 850;
+    line-height: 1;
+}
+
+.prompt-inventory-chip {
+    flex: 0 0 auto;
+    max-width: 88px;
+    width: max-content;
+    min-height: 15px;
+    padding: 1px 5px;
+    border: 1px solid rgba(251, 146, 60, 0.18);
+    border-radius: 4px;
+    background: rgba(251, 146, 60, 0.06);
+    color: var(--prompt-object-color, rgba(251, 146, 60, 0.95));
+    font-family: var(--font-mono, monospace);
+    font-size: 0.5rem;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.prompt-inventory-chip-main {
+    min-width: 0;
+    max-width: 76px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    letter-spacing: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.prompt-inventory-chip:hover,
+.prompt-inventory-chip.is-active {
+    border-color: currentColor;
+    background: rgba(251, 146, 60, 0.11);
+}
+
+.light-mode .prompt-inventory-chip {
+    background: rgba(168, 122, 42, 0.07);
+    border-color: rgba(168, 122, 42, 0.16);
+}
+
+.prompt-container-content-row {
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr);
+    align-items: center;
+    gap: 5px;
+    min-height: 16px;
+    margin-top: -1px;
+    padding-left: 10px;
+}
+
+.prompt-container-content-label {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.46rem;
+    font-weight: 850;
+    letter-spacing: 0;
+    color: rgba(251, 146, 60, 0.72);
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.prompt-container-content-chip {
+    background: rgba(251, 146, 60, 0.045);
+}
+
+@media (max-width: 600px) {
+    .prompt-inventory-chip-row {
+        grid-template-columns: 50px minmax(0, 1fr);
+        gap: 4px;
+        min-height: 15px;
+    }
+
+    .prompt-inventory-chip-label {
+        font-size: 0.43rem;
+    }
+
+    .prompt-inventory-chip {
+        max-width: 92px;
+        min-height: 14px;
+        padding: 1px 4px;
+        font-size: 0.46rem;
+    }
+
+    .prompt-container-toggle {
+        width: 11px;
+        height: 11px;
+    }
+
+    .prompt-inventory-chip-main {
+        max-width: 78px;
+    }
+
+    .prompt-container-content-row {
+        grid-template-columns: 50px minmax(0, 1fr);
+        gap: 4px;
+        min-height: 15px;
+        padding-left: 8px;
+    }
+
+    .prompt-container-content-label {
+        font-size: 0.41rem;
+    }
+}

@@ -125,21 +125,18 @@
     pointer-events: none;
     z-index: 50000;
     opacity: 1;
-    /* Always 1 when rendered */
     scale: 1;
     animation: swipe-wheel-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border-radius: 50%;
-    /* Frosted Glass - Highly Transparent & Subtle Blur */
-    background: #000000; 
+    border-radius: 20px;
+    background: #000000;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     border: 1px solid color-mix(in srgb, var(--set-accent, var(--accent)) 38%, rgba(255, 255, 255, 0.12));
-    box-shadow: 
+    box-shadow:
         0 0 32px rgba(0, 0, 0, 0.5),
         0 0 5px var(--set-accent, var(--accent)),
         0 0 16px color-mix(in srgb, var(--set-accent, var(--accent)) 46%, transparent),
         0 0 46px color-mix(in srgb, var(--set-accent, var(--accent)) 24%, transparent);
-    /* Overflow hidden removed to allow selected slice to grow outward */
 }
 
 @keyframes swipe-wheel-pop {
@@ -161,13 +158,7 @@
     width: 100%;
     height: 100%;
     transform-origin: center center;
-    border-radius: 50%;
     background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding-left: 0;
-    /* Remove padding from container to ensure background reaches center */
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -178,8 +169,6 @@
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 50%;
-    /* Simplified mask: Hole is now 22% (inside the ~30% center button) */
     -webkit-mask-image:
         conic-gradient(from 67.5deg at 50% 50%, #000 45deg, transparent 45deg),
         radial-gradient(circle at 50% 50%, transparent 22%, #000 23%);
@@ -189,7 +178,6 @@
         radial-gradient(circle at 50% 50%, transparent 22%, #000 23%);
     mask-composite: intersect;
     background: transparent;
-    /* Fill applied only by .swipe-slice.active::before */
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: -1;
 }
@@ -223,39 +211,80 @@
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 }
 
-.swipe-slice-label {
+.swipe-sq-label {
+    position: absolute;
     color: rgba(255, 255, 255, 0.5);
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: normal;
+    line-height: 1.2;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-    /* Radiate out towards perimeter, starting just outside center button */
-    text-align: left;
-    justify-content: flex-start;
-    margin-left: 155px;
-    width: 70px;
-    display: flex;
-    align-items: center;
-    line-height: 1.1;
+    transition: color 0.2s ease, letter-spacing 0.2s ease, text-shadow 0.2s ease;
+    z-index: 15;
+    pointer-events: none;
+    max-width: 64px;
 }
 
-/* Flip text on left side of wheel for legibility while radiating out */
-.swipe-slice-label.flip {
-    transform: rotate(180deg);
-    text-align: right;
-    justify-content: flex-end;
-    mask-image: linear-gradient(to left, #000 70%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to left, #000 70%, transparent 100%);
-}
-
-.swipe-slice.active .swipe-slice-label {
+.swipe-sq-label.active {
     color: #fff;
     letter-spacing: 1.5px;
-    scale: 1.05;
     text-shadow: 0 0 20px var(--set-accent, var(--accent));
+}
+
+.swipe-sq-label[data-dir="up"] {
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.swipe-sq-label[data-dir="down"] {
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.swipe-sq-label[data-dir="left"] {
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    text-align: center;
+    max-width: 58px;
+}
+
+.swipe-sq-label[data-dir="right"] {
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    text-align: center;
+    max-width: 58px;
+}
+
+.swipe-sq-label[data-dir="ne"] {
+    top: 12px;
+    right: 12px;
+    text-align: right;
+}
+
+.swipe-sq-label[data-dir="nw"] {
+    top: 12px;
+    left: 12px;
+    text-align: left;
+}
+
+.swipe-sq-label[data-dir="se"] {
+    bottom: 12px;
+    right: 12px;
+    text-align: right;
+}
+
+.swipe-sq-label[data-dir="sw"] {
+    bottom: 12px;
+    left: 12px;
+    text-align: left;
 }
 
 .swap-button {

@@ -4,6 +4,7 @@ import { useMapAnimation } from './useMapAnimation';
 import { MapperPrediction } from './mapperTypes';
 import { gmcpBus } from '../../events/gmcpBus';
 import type { CombatPulse } from './renderers/rendererUtils';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 
 interface MapCanvasProps {
     rooms: Record<string, any>;
@@ -67,6 +68,9 @@ interface MapCanvasProps {
     heldButton?: any | null;
     activeMapFilter?: string | null;
     mapSearchQuery?: string;
+    mapTileOpacity?: number;
+    mapTileVisuals?: import('./mapperTypes').MapTileVisualAdjustments;
+    lighting?: string;
 }
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
@@ -85,8 +89,13 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
         roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
         opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
-        activeMapFilter, mapSearchQuery
+        activeMapFilter, mapSearchQuery, mapTileOpacity, lighting
     } = props;
+
+    const zoneFilters = useSettingsStore(state => state.zoneFilters);
+    const mapTileVisuals = useSettingsStore(state => state.mapTileVisuals);
+
+    // Zone filters are drawn directly onto elements in the canvas rather than using CSS filters
 
     const { drawMap } = useMapperRenderer({
         rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
@@ -97,7 +106,10 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
         roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
         opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
-        activeMapFilter, mapSearchQuery, combatPulsesRef
+        activeMapFilter, mapSearchQuery, combatPulsesRef, zoneFilters,
+        mapTileVisuals,
+        mapTileOpacity,
+        lighting
     });
 
     useEffect(() => gmcpBus.on('Game.CombatPulse', pulse => {

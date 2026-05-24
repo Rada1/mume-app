@@ -1,9 +1,10 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { ExecuteCommand } from '../../types';
 
-import { MapperRoom, MapperMarker } from './mapperTypes';
+import { MapperRoom, MapperMarker, RegionLabel } from './mapperTypes';
 import { GRID_SIZE, DRAG_SENSITIVITY, ZOOM_SENSITIVITY, checkRoomFilter } from './mapperUtils';
 import { useMapHitTest } from './hooks/useMapHitTest';
+import { hitTestRegionLabel, hitTestRegionLabelFull } from './renderers/drawRegionLabels';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import { fireHeldCommandAtMapOccupant } from './mapperHeldCommandTarget';
 import { sanitizeGameTarget } from '../../utils/gameUtils';
@@ -63,6 +64,27 @@ export interface InteractionDeps {
     npcColor?: string;
     activeMapFilter?: string | null;
     mapSearchQuery?: string;
+    isTracingMode?: boolean;
+    backgroundAlignMode?: boolean;
+    calibration?: {
+        bgScale: number;
+        bgTranslateX: number;
+        bgTranslateY: number;
+        bgOpacity: number;
+    };
+    setCalibration?: React.Dispatch<React.SetStateAction<{
+        bgScale: number;
+        bgTranslateX: number;
+        bgTranslateY: number;
+        bgOpacity: number;
+    }>>;
+    onTraceClick?: (wx: number, wy: number) => void;
+    onTraceHover?: (wx: number, wy: number) => void;
+    regionLabels?: Record<string, RegionLabel>;
+    regionLabelEditMode?: boolean;
+    addRegionLabel?: (partial: Partial<RegionLabel> & { text: string; x: number; y: number; z: number }) => string;
+    updateRegionLabel?: (id: string, patch: Partial<RegionLabel>) => void;
+    setSelectedRegionLabelId?: (id: string | null) => void;
 }
 
 export const useMapperInteractions = (deps: InteractionDeps) => {
@@ -103,7 +125,25 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
     const startMouseRef = useRef({ x: 0, y: 0 });
     const startTimeRef = useRef(0);
     const hasDraggedRef = useRef(false);
-    const dragTypeRef = useRef<'pan' | 'room' | 'marker' | 'marquee' | 'joystick' | null>(null);
+    const dragTypeRef = useRef<'pan' | 'room' | 'marker' | 'marquee' | 'joystick' | 'region-label' | 'background-align' | null>(null);
+    const draggedMarkerRef = useRef<{ id: string; offsetX: number; offsetY: number } | null>(null);
+    const markersRefLocal = useRef(deps.markers);
+    useEffect(() => { markersRefLocal.current = deps.markers; }, [deps.markers]);
+
+    const draggedRegionLabelRef = useRef<{
+        id: string;
+        mode: 'move' | 'resize' | 'rotate';
+        // move
+        offsetX: number;
+        offsetY: number;
+        // resize / rotate
+        centerWX: number;          // world px
+        centerWY: number;
+        initialFontSize: number;
+        initialRotation: number;
+        initialAngle: number;      // angle from center to grab point at start (radians)
+        initialDist: number;       // distance center → grab point at start (world px)
+    } | null>(null);
     const isDraggingInternalRef = useRef(false);
     const scrollLockRef = useRef(false);
     const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -231,6 +271,31 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         if (document.body.classList.contains('global-dragging')) return;
 
         e.preventDefault();
+
+        if (depsRef.current.isTracingMode && e.ctrlKey && depsRef.current.setCalibration) {
+            const rect = canvasRef.current!.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            const cam = cameraRef.current;
+            const worldX = cam.x + mx / cam.zoom;
+            const worldY = cam.y + my / cam.zoom;
+            const visualScaleFactor = Math.pow(1.1, e.deltaY / 100);
+
+            depsRef.current.setCalibration(prev => {
+                const oldScale = prev.bgScale || 1;
+                const nextScale = Math.max(0.05, Math.min(80, oldScale * visualScaleFactor));
+                const px = (worldX - prev.bgTranslateX) / oldScale;
+                const py = (worldY - prev.bgTranslateY) / oldScale;
+                return {
+                    ...prev,
+                    bgScale: nextScale,
+                    bgTranslateX: worldX - px * nextScale,
+                    bgTranslateY: worldY - py * nextScale
+                };
+            });
+            triggerRender();
+            return;
+        }
         
         // --- Z-Axis Scrolling (Ctrl + Scroll) ---
         if (e.ctrlKey) {
@@ -314,15 +379,71 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 mapLookActivatedRef.current = false;
                 // console.log(`[MapperInteractions] PointerDown: ${e.pointerType} x=${e.clientX} y=${e.clientY}`);
 
+                if (depsRef.current.isTracingMode && e.ctrlKey && depsRef.current.setCalibration) {
+                    dragTypeRef.current = 'background-align';
+                    depsRef.current.setIsDragging(true);
+                    isDraggingInternalRef.current = true;
+                    depsRef.current.triggerRender();
+                    return;
+                }
+
                 const { screenToWorld, getRoomAt, getMarkerAt } = hitTestRef.current;
                 const world = screenToWorld(e.clientX, e.clientY);
+
                 const roomId = getRoomAt(world.x, world.y);
                 const markerId = getMarkerAt(world.x, world.y);
 
+                // Region-label edit mode: if we hit a label (body OR handle), take over the pointer.
+                // Empty-space clicks fall through to the normal pan/joystick handling so the
+                // map can still be navigated; the onUp handler turns a tap-on-empty into a drop.
+                if (depsRef.current.regionLabelEditMode) {
+                    const labels = depsRef.current.regionLabels || {};
+                    const tileX = world.x / GRID_SIZE;
+                    const tileY = world.y / GRID_SIZE;
+                    const layerZ = depsRef.current.viewZ !== null && depsRef.current.viewZ !== undefined
+                        ? depsRef.current.viewZ
+                        : (depsRef.current.currentRoomId
+                            ? (depsRef.current.rooms[depsRef.current.currentRoomId]?.z || 0)
+                            : 0);
+                    const measureCtx = cvs.getContext('2d');
+                    const invZoom = 1 / cameraRef.current.zoom;
+                    const hit = measureCtx ? hitTestRegionLabelFull(labels, tileX, tileY, layerZ, measureCtx, invZoom, true) : null;
+                    if (hit) {
+                        const label = labels[hit.id];
+                        const grabPx = world.x;
+                        const grabPy = world.y;
+                        const dxw = grabPx - hit.geometry.cx;
+                        const dyw = grabPy - hit.geometry.cy;
+                        draggedRegionLabelRef.current = {
+                            id: hit.id,
+                            mode: hit.mode,
+                            offsetX: label.x - tileX,
+                            offsetY: label.y - tileY,
+                            centerWX: hit.geometry.cx,
+                            centerWY: hit.geometry.cy,
+                            initialFontSize: label.fontSize,
+                            initialRotation: label.rotation || 0,
+                            initialAngle: Math.atan2(dyw, dxw),
+                            initialDist: Math.sqrt(dxw * dxw + dyw * dyw) || 1
+                        };
+                        dragTypeRef.current = 'region-label';
+                        depsRef.current.setSelectedRegionLabelId?.(hit.id);
+                        return;
+                    }
+                }
+
                 if (mode === 'edit') {
                     if (markerId) {
-                        dragTypeRef.current = 'marker';
-                        startMarkerPosRef.current = { x: roomsRef.current[markerId]?.x || 0, y: roomsRef.current[markerId]?.y || 0 };
+                        const marker = markersRefLocal.current[markerId];
+                        if (marker) {
+                            const { screenToWorld } = hitTestRef.current;
+                            const world = screenToWorld(e.clientX, e.clientY);
+                            const tileX = world.x / GRID_SIZE;
+                            const tileY = world.y / GRID_SIZE;
+                            draggedMarkerRef.current = { id: markerId, offsetX: marker.x - tileX, offsetY: marker.y - tileY };
+                            dragTypeRef.current = 'marker';
+                            depsRef.current.setSelectedMarkerId?.(markerId);
+                        }
                     } else if (roomId) {
                         dragTypeRef.current = 'room'; // Specifically room dragging in edit mode
                         if (!selectedRoomIdsRef.current.has(roomId)) {
@@ -431,7 +552,45 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 }
 
                 if (hasDraggedRef.current) {
-                    if (dragTypeRef.current === 'joystick') {
+                    if (dragTypeRef.current === 'marker' && draggedMarkerRef.current) {
+                        const { screenToWorld } = hitTestRef.current;
+                        const world = screenToWorld(p.x, p.y);
+                        const tileX = world.x / GRID_SIZE;
+                        const tileY = world.y / GRID_SIZE;
+                        const { id, offsetX, offsetY } = draggedMarkerRef.current;
+                        depsRef.current.setMarkers((prev: any) => ({
+                            ...prev,
+                            [id]: { ...prev[id], x: tileX + offsetX, y: tileY + offsetY }
+                        }));
+                        triggerRender();
+                    } else if (dragTypeRef.current === 'region-label' && draggedRegionLabelRef.current) {
+                        const { screenToWorld } = hitTestRef.current;
+                        const world = screenToWorld(p.x, p.y);
+                        const grab = draggedRegionLabelRef.current;
+                        if (grab.mode === 'move') {
+                            const tileX = world.x / GRID_SIZE;
+                            const tileY = world.y / GRID_SIZE;
+                            depsRef.current.updateRegionLabel?.(grab.id, { x: tileX + grab.offsetX, y: tileY + grab.offsetY });
+                        } else if (grab.mode === 'resize') {
+                            const dxw = world.x - grab.centerWX;
+                            const dyw = world.y - grab.centerWY;
+                            const dist = Math.sqrt(dxw * dxw + dyw * dyw) || 1;
+                            const ratio = dist / grab.initialDist;
+                            const newFontSize = Math.max(10, Math.min(800, grab.initialFontSize * ratio));
+                            depsRef.current.updateRegionLabel?.(grab.id, { fontSize: newFontSize });
+                        } else if (grab.mode === 'rotate') {
+                            const dxw = world.x - grab.centerWX;
+                            const dyw = world.y - grab.centerWY;
+                            const angle = Math.atan2(dyw, dxw);
+                            const deltaAngle = angle - grab.initialAngle;
+                            let newRot = grab.initialRotation + deltaAngle;
+                            // Normalize to [-PI, PI]
+                            while (newRot > Math.PI) newRot -= Math.PI * 2;
+                            while (newRot < -Math.PI) newRot += Math.PI * 2;
+                            depsRef.current.updateRegionLabel?.(grab.id, { rotation: newRot });
+                        }
+                        triggerRender();
+                    } else if (dragTypeRef.current === 'joystick') {
                         const { joystick, executeCommand, heldButton, setHeldButton, btn, target, triggerHaptic } = depsRef.current;
                         if (joystick?.handleJoystickMove) {
                             // If the trackpad look-modifier fired (long press), we're in "look mode".
@@ -443,6 +602,14 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                             const dir = joystick.handleJoystickMove(e, executeCommand, !!heldButton);
                             // if (dir) console.log(`[MapperInteractions] Joystick Dir: ${dir}`);
                         }
+                    } else if (dragTypeRef.current === 'background-align') {
+                        const cam = cameraRef.current;
+                        depsRef.current.setCalibration?.(prev => ({
+                            ...prev,
+                            bgTranslateX: prev.bgTranslateX - dx / cam.zoom,
+                            bgTranslateY: prev.bgTranslateY - dy / cam.zoom
+                        }));
+                        triggerRender();
                     } else if (dragTypeRef.current === 'pan' || dragTypeRef.current === 'room') {
                         const cam = cameraRef.current;
                         cam.x -= dx / cam.zoom;
@@ -557,6 +724,42 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 const isMapLongPress = activeLPHeld?.id === 'map-long-press' && wasLongPress;
                 let didHandleMapLongPressRelease = false;
 
+                // Region-label edit mode is handled separately from play/edit logic.
+                // dragTypeRef === 'region-label' is set in onDown whenever edit mode is on.
+                if (dragTypeRef.current === 'region-label') {
+                    const isTap = !hasDraggedRef.current;
+                    if (isTap) {
+                        const { screenToWorld } = hitTestRef.current;
+                        const world = screenToWorld(e.clientX, e.clientY);
+                        const labels = depsRef.current.regionLabels || {};
+                        const tileX = world.x / GRID_SIZE;
+                        const tileY = world.y / GRID_SIZE;
+                        const layerZ = depsRef.current.viewZ !== null && depsRef.current.viewZ !== undefined
+                            ? depsRef.current.viewZ
+                            : (depsRef.current.currentRoomId
+                                ? (depsRef.current.rooms[depsRef.current.currentRoomId]?.z || 0)
+                                : 0);
+                        const measureCtx = cvs.getContext('2d');
+                        const hitId = measureCtx ? hitTestRegionLabel(labels, tileX, tileY, layerZ, measureCtx) : null;
+                        if (hitId) {
+                            depsRef.current.setSelectedRegionLabelId?.(hitId);
+                        } else {
+                            const text = window.prompt('Region label text (e.g. "Mordor"):')?.trim();
+                            if (text && depsRef.current.addRegionLabel) {
+                                const newId = depsRef.current.addRegionLabel({ text, x: tileX, y: tileY, z: layerZ, fontSize: 80 });
+                                depsRef.current.setSelectedRegionLabelId?.(newId);
+                            }
+                        }
+                    }
+                    draggedRegionLabelRef.current = null;
+                    draggedMarkerRef.current = null;
+                    isDraggingInternalRef.current = false;
+                    dragTypeRef.current = null;
+                    setIsDragging(false);
+                    triggerRender();
+                    return;
+                }
+
                 if (dragTypeRef.current === 'joystick' || dragTypeRef.current === 'room' || dragTypeRef.current === 'pan') {
                     const isTap = !hasDraggedRef.current;
 
@@ -572,6 +775,32 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
                     const { screenToWorld, getRoomAt, getExitAt, getOccupantAt } = hitTestRef.current;
                     const world = screenToWorld(e.clientX, e.clientY);
+
+                    // Region-label edit mode: tap on empty space drops a new label.
+                    // (Tap on existing label takes the 'region-label' branch above.)
+                    if (isTap && depsRef.current.regionLabelEditMode) {
+                        const tileX = world.x / GRID_SIZE;
+                        const tileY = world.y / GRID_SIZE;
+                        const layerZ = depsRef.current.viewZ !== null && depsRef.current.viewZ !== undefined
+                            ? depsRef.current.viewZ
+                            : (depsRef.current.currentRoomId
+                                ? (depsRef.current.rooms[depsRef.current.currentRoomId]?.z || 0)
+                                : 0);
+                        const text = window.prompt('Region label text (e.g. "Mordor"):')?.trim();
+                        if (text && depsRef.current.addRegionLabel) {
+                            const newId = depsRef.current.addRegionLabel({ text, x: tileX, y: tileY, z: layerZ, fontSize: 80 });
+                            depsRef.current.setSelectedRegionLabelId?.(newId);
+                        }
+                        if (dragTypeRef.current === 'joystick' && depsRef.current.joystick?.handleJoystickCancel) {
+                            depsRef.current.joystick.handleJoystickCancel(e as any);
+                        }
+                        if (depsRef.current.setIsTrackpadModifierActive) depsRef.current.setIsTrackpadModifierActive(false);
+                        isDraggingInternalRef.current = false;
+                        dragTypeRef.current = null;
+                        setIsDragging(false);
+                        triggerRender();
+                        return;
+                    }
 
                     if (isMapLongPress) {
                         didHandleMapLongPressRelease = fireMapLongPressAtLogTarget(e);
@@ -803,6 +1032,8 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                 }
                             }
                         }
+                    } else if (depsRef.current.isTracingMode && isTap) {
+                        depsRef.current.onTraceClick?.(world.x, world.y);
                     } else if (!exitHit && isTap && !wasLongPress && mode === 'edit') {
                         // Priority 3: Standard Room Info
                         const clickedRoomId = getRoomAt(world.x, world.y);
@@ -875,11 +1106,20 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             }
         };
 
+        const onHover = (e: PointerEvent) => {
+            if (depsRef.current.isTracingMode) {
+                const { screenToWorld } = hitTestRef.current;
+                const world = screenToWorld(e.clientX, e.clientY);
+                depsRef.current.onTraceHover?.(world.x, world.y);
+            }
+        };
+
         cvs.addEventListener('pointerdown', onDown, { passive: false });
         window.addEventListener('pointermove', onMove, { passive: false });
         window.addEventListener('pointerup', onUp, { passive: false });
         window.addEventListener('pointercancel', onCancel, { passive: false });
         cvs.addEventListener('wheel', onWheel, { passive: false });
+        cvs.addEventListener('pointermove', onHover, { passive: true });
 
         return () => {
             cvs.removeEventListener('pointerdown', onDown);
@@ -887,6 +1127,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             window.removeEventListener('pointerup', onUp);
             window.removeEventListener('pointercancel', onCancel);
             cvs.removeEventListener('wheel', onWheel);
+            cvs.removeEventListener('pointermove', onHover);
             // DO NOT clear activePointersRef or isDraggingInternal here if it's just a re-render
         };
     }, [canvasRef]); // Stable effect

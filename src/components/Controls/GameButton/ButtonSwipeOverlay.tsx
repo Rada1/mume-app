@@ -72,7 +72,6 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                     const angle = i * 45;
                     const hasCommand = !!(cmdVal || longCmdVal);
                     const isActive = activeDir === d && hasCommand;
-                    const shouldFlip = angle > 90 && angle < 270;
                     return (
                         <div
                             key={d}
@@ -84,12 +83,21 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                             } as any}
                         >
                             <div className="slice-separator" />
-                            {cmdVal && (
-                                <span className={`swipe-slice-label ${shouldFlip ? 'flip' : ''}`}>
-                                    {cmdVal}
-                                </span>
-                            )}
                         </div>
+                    );
+                })}
+                {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d) => {
+                    const cmdVal = (button.swipeCommands?.[d as SwipeDirection] || '').trim();
+                    if (!cmdVal) return null;
+                    const isActive = activeDir === d;
+                    return (
+                        <span
+                            key={`label-${d}`}
+                            className={`swipe-sq-label ${isActive ? 'active' : ''}`}
+                            data-dir={d}
+                        >
+                            {cmdVal}
+                        </span>
                     );
                 })}
                 <div className={`swipe-center ${(activeDir as any) === 'center' ? 'active' : ''}`}>

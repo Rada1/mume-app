@@ -9,10 +9,12 @@ import { DrawerShell } from './DrawerShell';
 import { UnifiedDrawerContent } from './UnifiedDrawerContent';
 import { Mapper } from '../Mapper/Mapper';
 import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
+import { RoomChipRows } from '../Mapper/RoomChipRows';
 import { useMumeTime } from '../../hooks/useMumeTime';
 import { LineCluster } from '../Layout/HUD/LineCluster';
 import { User, Shield, Users, Map as MapIcon, Activity, UtensilsCrossed, Droplets, CloudFog, Clock, X } from 'lucide-react';
 import { StatusDrawer } from './StatusDrawer';
+import { DrawerResizeHandle } from './DrawerResizeHandle';
 
 const SIDEBAR_TABS = [
     { id: 'status',    label: 'Status',  Icon: Activity },
@@ -23,7 +25,7 @@ const SIDEBAR_TABS = [
 
 interface DrawerManagerProps {
     heldButton: any;
-    heldButtonRef?: React.MutableRefObject<any>;
+    heldButtonRef?: React.RefObject<any>;
     setHeldButton: React.Dispatch<React.SetStateAction<any>>;
     setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
 }
@@ -59,6 +61,13 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         }
     }, [ui.mapExpanded, ui.drawer, viewport.isMobile]);
 
+    // Restore saved log width only (drawer widths use auto calc default)
+    React.useEffect(() => {
+        const stored = JSON.parse(localStorage.getItem('mume-desktop-layout-v2') || '{}');
+        if (stored['--desktop-log-width'])
+            document.documentElement.style.setProperty('--desktop-log-width', `${stored['--desktop-log-width']}vw`);
+    }, []);
+
     if (viewport.isMobile && !viewport.isLandscape) {
         return null;
     }
@@ -73,6 +82,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             {!viewport.isMobile && (
                 <div className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}>
+                    <DrawerResizeHandle side="right" cssVar="--desktop-map-width" />
                     <div className="drawer-header">
                         <span className="drawer-title">
                             Map
@@ -90,6 +100,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                             <div>
                                 <MapperRoomInfo />
                             </div>
+                            <RoomChipRows />
                             
                             {/* Persistent Tactical Buttons - now horizontal under the room card on desktop */}
                             <div className="desktop-tactical-buttons-persistent">

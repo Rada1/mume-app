@@ -95,7 +95,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playBuySellSound, playBashSound, playKillSound, playLevelSound,
         playIncantationSound, stopIncantationSound, playMagicExplosionSound,
         playCommMessageSound, triggerHaptic, playEffect,
-        playSound, playRandomSound
+        playSound, playRandomSound,
+        playAchievementSound, playEventMoveSound, playWearSound, playRemoveSound, playLoadFlagSound, playRideSound, playStopRidingSound
     } = audioEffects;
 
     // 2. Global State
@@ -285,7 +286,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setMumeEditState: s.setMumeEditState, setWhoList: s.userSession.game.setWhoList, setWhereList: s.userSession.game.setWhereList,
         opponentId: s.userSession.vitals.opponentId, setOpponentId: s.userSession.vitals.setOpponentId,
         detectLighting: env.detectLighting,
-        playMovementSound, playDoorSound, setWeather: s.userSession.game.setWeather, setIsFoggy: s.userSession.game.setIsFoggy, 
+        playMovementSound, playDoorSound, playAchievementSound, playEventMoveSound, setWeather: s.userSession.game.setWeather, setIsFoggy: s.userSession.game.setIsFoggy, 
         setStats: s.userSession.vitals.setStats, // ALWAYS update user session with real GMCP
         playerPositionRef: s.userSession.game.playerPositionRef, setIsRiding: s.userSession.game.setIsRiding, isRidingRef: s.userSession.game.isRidingRef, isSpectateMode: s.isSpectateMode, inlineCategories: s.inlineCategories,
         registerEntity: s.registry.registerEntity,
@@ -657,6 +658,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playMagicExplosionSound,
         playDoorSound,
         playMovementSound,
+        playWearSound,
+        playRemoveSound,
+        playRideSound,
+        playStopRidingSound,
         triggerHaptic,
         triggerXpTicker: v.triggerXpTicker,
 
@@ -774,7 +779,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         quests: s.quests,
         practice: practice,
         help: help
-    }), [s, v, ui, viewport, settingsStore, mode, addMessage, addSystemMessage, clearLog, playHitImpactSound, playOofSound, playHitImpactSoundSpectate, playOofSoundSpectate, playClickSoundSpectate, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
+    }), [s, v, ui, viewport, settingsStore, mode, addMessage, addSystemMessage, clearLog, playHitImpactSound, playOofSound, playHitImpactSoundSpectate, playOofSoundSpectate, playClickSoundSpectate, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, playWearSound, playRemoveSound, playRideSound, playStopRidingSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
 
 
     const parser = useGameParser(deps, s.userSession);

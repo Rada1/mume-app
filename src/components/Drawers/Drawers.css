@@ -49,11 +49,11 @@
 
 @media (min-width: 1025px) {
     .log-card-drawer {
-        right: var(--drawer-margin);
-        width: max(
-            300px,
-            calc((100vw - var(--log-max-width)) / 2 - var(--drawer-margin) - var(--drawer-gap))
-        );
+        right: 1vw;
+        top: 6%;
+        bottom: 6%;
+        width: var(--desktop-right-width, calc((100vw - clamp(600px, 38vw, 1000px)) / 2 - 2vw));
+        border-radius: var(--radius-card);
     }
 }
 
@@ -412,11 +412,11 @@
 
 @media (min-width: 1025px) {
     .map-drawer-desktop {
-        left: var(--drawer-margin);
-        width: max(
-            300px,
-            calc((100vw - var(--log-max-width)) / 2 - var(--drawer-margin) - var(--drawer-gap))
-        );
+        left: 1vw;
+        top: 6%;
+        bottom: 6%;
+        width: var(--desktop-map-width, calc((100vw - clamp(600px, 38vw, 1000px)) / 2 - 2vw));
+        border-radius: var(--radius-card);
     }
 }
 
@@ -599,4 +599,38 @@
 
 .immersion-mode .map-drawer-desktop {
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+/* ─── Drawer Resize Handles ───────────────────────────────── */
+.drawer-resize-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 10px;
+    z-index: 200;
+    cursor: col-resize;
+}
+
+.drawer-resize-handle--right { right: 0; }
+.drawer-resize-handle--left  { left: 0; }
+
+.drawer-resize-handle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 4px;
+    width: 2px;
+    height: 36px;
+    border-radius: 1px;
+    background: rgba(255, 255, 255, 0);
+    transition: background 0.2s;
+}
+
+.drawer-resize-handle:hover::after {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.global-dragging .drawer-resize-handle::after {
+    background: rgba(255, 255, 255, 0.35);
 }

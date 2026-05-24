@@ -41,7 +41,8 @@ export const useGmcpGroup = ({
             mapid = Number(raw.room);
         }
         // console.log('[Group Member] raw keys:', Object.keys(raw), '| id:', id, '| resolved mapid:', mapid, '| fighting:', raw.fighting, '| raw:', JSON.stringify(raw));
-        return { ...raw, id, mapid: (mapid !== undefined && !isNaN(mapid)) ? mapid : undefined };
+        const name = raw.name || raw.label;
+        return { ...raw, id, name, mapid: (mapid !== undefined && !isNaN(mapid)) ? mapid : undefined };
     };
 
     const isSelfMember = useCallback((member: GroupMember) => {

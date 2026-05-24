@@ -11,10 +11,12 @@ import { useMapPersistence } from '../components/Mapper/hooks/useMapPersistence'
 import { useMapActions } from '../components/Mapper/hooks/useMapActions';
 import { useMapGmcphandlers } from '../components/Mapper/hooks/useMapGmcphandlers';
 import { DIRS, getExitTargetId, getGateState } from '../components/Mapper/mapperUtils';
-import { MapperPrediction, MapperRoom, MapperMarker } from '../components/Mapper/mapperTypes';
+import { MapperPrediction, MapperRoom, MapperMarker, RegionLabel } from '../components/Mapper/mapperTypes';
+import { useRegionLabels } from '../components/Mapper/hooks/useRegionLabels';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { useModeStore } from '../stores/useModeStore';
 import { gmcpBus } from '../events/gmcpBus';
+import { useAudioEffects } from '../hooks/useAudioSystem';
 
 interface MapperContextType {
     rooms: Record<string, MapperRoom>;
@@ -32,6 +34,7 @@ interface MapperContextType {
     allowPersistence: boolean;
     setAllowPersistence: React.Dispatch<React.SetStateAction<boolean>>;
     handleResetAndSync: () => void;
+    loadImportedMapData: (data: Record<string, any>) => void;
     handleClearMap: (force?: boolean) => void;
     handleSyncLocation: (wx: number, wy: number) => void;
     handleRoomInfo: (data: any) => void;
@@ -72,6 +75,15 @@ interface MapperContextType {
     setActiveMapFilter: React.Dispatch<React.SetStateAction<string | null>>;
     mapSearchQuery: string;
     setMapSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+
+    // Region Labels (global, LOTR-style large text)
+    regionLabels: Record<string, RegionLabel>;
+    regionLabelsRef: React.MutableRefObject<Record<string, RegionLabel>>;
+    addRegionLabel: (partial: Partial<RegionLabel> & { text: string; x: number; y: number; z: number }) => string;
+    updateRegionLabel: (id: string, patch: Partial<RegionLabel>) => void;
+    deleteRegionLabel: (id: string) => void;
+    regionLabelEditMode: boolean;
+    setRegionLabelEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const MapperContext = createContext<MapperContextType | undefined>(undefined);
@@ -126,6 +138,13 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [activeMapFilter, setActiveMapFilter] = useState<string | null>(null);
     const [mapSearchQuery, setMapSearchQuery] = useState<string>('');
 
+    // Region Labels (global, LOTR-style large text overlays)
+    const {
+        regionLabels, regionLabelsRef,
+        addRegionLabel, updateRegionLabel, deleteRegionLabel,
+        regionLabelEditMode, setRegionLabelEditMode
+    } = useRegionLabels();
+
     useEffect(() => {
         triggerRender();
     }, [activeMapFilter, mapSearchQuery, triggerRender]);
@@ -163,6 +182,71 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const res = await fetch('/mume_map_data.json?v=' + Date.now());
             if (!res.ok) throw new Error('No preloaded map data');
             const data = await res.json();
+
+            // --- Zone Name Propagation and Fallbacks ---
+            // 1. Queue all rooms that have a valid, non-empty zone name
+            const queue: string[] = [];
+            for (const vnum in data) {
+                const zone = data[vnum][9];
+                if (zone && typeof zone === 'string' && zone.trim() !== '') {
+                    queue.push(vnum);
+                }
+            }
+
+            // 2. Propagate zone names along exit connections (BFS)
+            let head = 0;
+            while (head < queue.length) {
+                const curr = queue[head++];
+                const currZone = data[curr][9];
+                const exits = data[curr][4];
+                if (!exits) continue;
+                for (const dir in exits) {
+                    const exitObj = exits[dir];
+                    const target = exitObj && exitObj.target ? String(exitObj.target) : null;
+                    if (target && data[target]) {
+                        const targetZone = data[target][9];
+                        if (!targetZone || typeof targetZone !== 'string' || targetZone.trim() === '') {
+                            data[target][9] = currZone;
+                            queue.push(target);
+                        }
+                    }
+                }
+            }
+
+            // 3. For any remaining empty zones, use 3D geographic proximity search (threshold 30 units)
+            const knownRooms: { x: number; y: number; z: number; zone: string }[] = [];
+            for (const vnum in data) {
+                const r = data[vnum];
+                if (r[9] && typeof r[9] === 'string' && r[9].trim() !== '') {
+                    knownRooms.push({ x: r[0], y: r[1], z: r[2] || 0, zone: r[9] });
+                }
+            }
+
+            for (const vnum in data) {
+                const r = data[vnum];
+                if (!r[9] || typeof r[9] !== 'string' || r[9].trim() === '') {
+                    let minD = Infinity;
+                    let bestZone = '';
+                    const rx = r[0], ry = r[1], rz = r[2] || 0;
+                    for (let i = 0; i < knownRooms.length; i++) {
+                        const kr = knownRooms[i];
+                        const dx = kr.x - rx;
+                        const dy = kr.y - ry;
+                        const dz = kr.z - rz;
+                        const dist = dx * dx + dy * dy + dz * dz;
+                        if (dist < minD) {
+                            minD = dist;
+                            bestZone = kr.zone;
+                        }
+                    }
+                    if (minD < 900) {
+                        r[9] = bestZone;
+                    } else {
+                        r[9] = 'Unknown Zone';
+                    }
+                }
+            }
+
             preloadedCoordsRef.current = data;
             const index: Record<number, Record<string, string[]>> = {};
             const nIndex: Record<string, string[]> = {};
@@ -243,7 +327,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }, [clientPredictionsRef, currentRoomIdRef, preloadedCoordsRef, roomsRef, serverIdIndexRef]);
 
     // Actions
-    const { handleAddRoom, handleDeleteRoom, handleClearMap, handleSyncLocation, handleResetAndSync } = useMapActions({
+    const { handleAddRoom, handleDeleteRoom, handleClearMap, handleSyncLocation, handleResetAndSync, loadImportedMapData } = useMapActions({
         rooms, setRooms, roomsRef, markers, setMarkers, markersRef, setExploredVnums, setExploredMarkers, setCurrentRoomId, currentRoomIdRef,
         preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, addMessage, lastDetectedTerrainRef, loadMasterMap
     });
@@ -287,12 +371,23 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }, [clearPrediction]);
 
     const { activeView } = useModeStore();
+    const { playLoadFlagSound } = useAudioEffects();
+
+    const [newlyExploredRoomId, setNewlyExploredRoomId] = useState<string | null>(null);
+    const newlyExploredTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const handleFirstVisitLoadFlag = useCallback((roomId: string) => {
+        playLoadFlagSound();
+        setNewlyExploredRoomId(roomId);
+        if (newlyExploredTimerRef.current) clearTimeout(newlyExploredTimerRef.current);
+        newlyExploredTimerRef.current = setTimeout(() => setNewlyExploredRoomId(null), 2000);
+    }, [playLoadFlagSound]);
 
     const masterHandlers = useMapGmcphandlers({
         roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
         discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage,
         showDebugEchoes, nameIndexRef, serverIdIndexRef, firstExploredAtRef, triggerRender,
-        onRoomInfoProcessed, preMoveRef, deathRoomId, setDeathRoomId,
+        onRoomInfoProcessed, onFirstVisitLoadFlag: handleFirstVisitLoadFlag, preMoveRef, deathRoomId, setDeathRoomId,
         clientPredictionsRef, baseMapExitsRef, characterName: characterName || null, executeCommand,
         activeView
     });
@@ -459,11 +554,11 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }, [applyActiveMapId]);
 
     const value = useMemo(() => ({
-        rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId,
+        rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId, newlyExploredRoomId,
         currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef,
         unveilMap, setUnveilMap, allowPersistence, setAllowPersistence,
-        handleResetAndSync, handleClearMap, handleSyncLocation,
-        handleRoomInfo: masterHandlers.handleRoomInfo, 
+        handleResetAndSync, handleClearMap, handleSyncLocation, loadImportedMapData,
+        handleRoomInfo: masterHandlers.handleRoomInfo,
         handleUpdateExits: masterHandlers.handleUpdateExits, 
         handleTerrain: masterHandlers.handleTerrain,
         handleAddRoom, handleDeleteRoom, pushPendingMove,
@@ -473,19 +568,23 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
         markersRef, exploredRef, exploredVnums, exploredMarkers, setExploredMarkers, spatialIndexRef, firstExploredAtRef,
         serverIdIndexRef,
-        activeMapFilter, setActiveMapFilter, mapSearchQuery, setMapSearchQuery
+        activeMapFilter, setActiveMapFilter, mapSearchQuery, setMapSearchQuery,
+        regionLabels, regionLabelsRef, addRegionLabel, updateRegionLabel, deleteRegionLabel,
+        regionLabelEditMode, setRegionLabelEditMode
     }), [
-        rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId,
+        rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId, newlyExploredRoomId,
         currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef,
         unveilMap, setUnveilMap, allowPersistence, setAllowPersistence,
-        handleResetAndSync, handleClearMap, handleSyncLocation,
+        handleResetAndSync, handleClearMap, handleSyncLocation, loadImportedMapData,
         masterHandlers, handleAddRoom, handleDeleteRoom, pushPendingMove,
         handleMoveConfirmed, handleMoveFailure, renderVersion,
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
         markersRef, exploredRef, exploredVnums, exploredMarkers, setExploredMarkers, spatialIndexRef, firstExploredAtRef,
         serverIdIndexRef,
-        activeMapFilter, setActiveMapFilter, mapSearchQuery, setMapSearchQuery
+        activeMapFilter, setActiveMapFilter, mapSearchQuery, setMapSearchQuery,
+        regionLabels, regionLabelsRef, addRegionLabel, updateRegionLabel, deleteRegionLabel,
+        regionLabelEditMode, setRegionLabelEditMode
     ]);
 
     // --- Sync with Active Session ---

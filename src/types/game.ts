@@ -86,6 +86,7 @@ export interface Message {
     isAvoidDamageImpact?: boolean;
     isMissImpact?: boolean;
     isHitterImpact?: boolean;
+    isRipMessage?: boolean;
     isSnoop?: boolean;
     isSnoopInput?: boolean;
     isSpacer?: boolean;

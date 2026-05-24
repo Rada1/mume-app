@@ -82,10 +82,20 @@
     width: 100%;
 }
 
-/* Allow buttons to spill out on desktop if needed, but not on mobile portrait */
+/* Desktop layout — log and drawer widths driven by CSS vars for user resizing */
 @media (min-width: 1025px) {
+    .content-layer {
+        max-width: var(--desktop-log-width, clamp(600px, 38vw, 1000px));
+    }
     .message-log-container {
+        max-width: var(--desktop-log-width, clamp(600px, 38vw, 1000px));
         overflow: visible;
+    }
+    /* Drawers fill their 30vw columns — no push needed */
+    body.map-drawer-open .app-content-shaker,
+    body.utility-drawer-open .app-content-shaker {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }
 }
 
@@ -139,7 +149,7 @@
 
 /* Force Desktop Overrides */
 .force-desktop .content-layer {
-    max-width: 800px !important;
+    max-width: var(--desktop-log-width, clamp(600px, 38vw, 1000px)) !important;
     padding: 10px !important;
     padding-bottom: 10px !important;
 }

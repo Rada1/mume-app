@@ -90,7 +90,7 @@ export interface LogData {
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType) => string;
     processMessageTokens?: (textRaw: string) => import('../../types').Token[];
     selectedObjectIds: Set<string>;
-    toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
+    toggleObjectSelection: (info: import('../../stores/useUIStore').SelectedTargetInfo) => void;
     clearObjectSelection: () => void;
     lastCommIdBySenderRef?: React.MutableRefObject<Map<string, string>>;
     messageActivity: number;
@@ -561,7 +561,7 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
 
     // Selection State
     selectedObjectIds: Set<string>;
-    toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
+    toggleObjectSelection: (info: import('../../stores/useUIStore').SelectedTargetInfo) => void;
     clearObjectSelection: () => void;
 
     // Recorder

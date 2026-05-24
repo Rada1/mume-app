@@ -77,7 +77,7 @@ const extractXmlRoomInfo = (line: string): { num: number; area?: string; terrain
 };
 
 const stripAnsiCodes = (text: string) => text.replace(/\x1b\[[0-9;]*m/g, '');
-const SNOOP_PREFIX_REGEX = /^((?:\x1b\[[0-9;]*m|\s)*)(?:&amp;|&|mp;)[A-Za-z](?:\s|$)/;
+const SNOOP_PREFIX_REGEX = /^((?:\x1b\[[0-9;]*m|\s)*)(?:&amp;|&|mp;)[A-Za-z](?:\x1b\[[0-9;]*m)*(?:\s|$)/;
 const COMM_XML_OPEN_REGEX = /<(tell|say|narrate|shout|yell|song|sing|pray|whisper|social|emote)(?:\s+[^>]*)?>/i;
 
 const getUnclosedCommXmlTag = (text: string): string | null => {
@@ -156,16 +156,18 @@ const addSnoopedPlainLine = (
     addMessage: UseGameParserDeps['addMessage'],
     ansiConvert: UseGameParserDeps['ansiConvert'],
     text: string,
-    html?: string
+    html?: string,
+    messageType: MessageType = 'game',
+    isRoomName: boolean = false
 ) => {
     const textOnly = stripAnsiCodes(text);
     const mid = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     addMessage(
-        'game',
+        messageType,
         text,
         undefined,
         mid,
-        false,
+        isRoomName,
         {
             textOnly,
             lower: textOnly.toLowerCase(),
@@ -187,9 +189,11 @@ const addSnoopedPlainLine = (
         undefined,
         undefined,
         undefined,
+        undefined,
+        undefined,
         true
     );
-    gmcpBus.emit('Game.Text', { type: 'game', text: textOnly });
+    gmcpBus.emit('Game.Text', { type: messageType, text: textOnly });
 };
 
 const buildHelpTermTokens = (prefix: string, termsStr: string, splitOnComma: boolean): Token[] => {
@@ -357,7 +361,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setEqLines: sessionSetEqLines,
         setCharacterInfo,
         extractNoun,
-        ansiConvert: deps.ansiConvert
+        ansiConvert: deps.ansiConvert,
+        onWear: deps.playWearSound,
+        onRemove: deps.playRemoveSound
     });
 
     const comm = useCommParser({
@@ -385,6 +391,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setSpectateLightningEnabled: deps.setSpectateLightningEnabled,
         triggerHaptic: deps.triggerHaptic,
         playDoorSound: deps.playDoorSound,
+        playRideSound: deps.playRideSound,
+        playStopRidingSound: deps.playStopRidingSound,
         setPlayerPosition,
         isSpectateMode: deps.isSpectateMode,
         setSpectatePosition: deps.setSpectatePosition,
@@ -516,7 +524,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         const snoopedRoomTitle = isSnoop ? extractXmlRoomTitle(lineToParse) : null;
         if (snoopedRoomTitle) {
-            addSnoopedPlainLine(deps.addMessage, deps.ansiConvert, snoopedRoomTitle);
+            addSnoopedPlainLine(deps.addMessage, deps.ansiConvert, snoopedRoomTitle, undefined, 'room-name', true);
             return;
         }
 
@@ -946,6 +954,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             const hasDamageTag = lineToParse.includes('<damage>');
             const hasAvoidDamageTag = lineToParse.includes('<avoid_damage>');
             const hasMissTag = lineToParse.includes('<miss>');
+            const isRipMessage = !isSnoop && /\bis dead!\s*r\.?i\.?p/i.test(textOnly);
             if (!isSnoop && (hasHitTag || hasDamageTag)) {
                 const eventTime = Date.now();
                 if (hasHitTag) gmcpBus.emit('Game.CombatPulse', { direction: 'outgoing', time: eventTime });
@@ -958,7 +967,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 commResult.replyTarget, commResult.replyCommand, commResult.commSender, commResult.commAction, commResult.commText, commResult.commColor,
                 commResult.commSender ? tokenizeFresh(commResult.commSender) : undefined,
                 commResult.commText ? tokenizeFresh(commResult.commText) : undefined,
-                undefined, hasHitTag, hasDamageTag, hasAvoidDamageTag, hasMissTag, undefined, isSnoop
+                undefined, hasHitTag, hasDamageTag, hasAvoidDamageTag, hasMissTag, undefined, isSnoop, undefined, isRipMessage
             );
         }
 

@@ -10,6 +10,7 @@ import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplet
 import { useMumeTime } from '../../../hooks/useMumeTime';
 import InputArea from '../../Controls/InputArea';
 import { MapperRoomInfo } from '../../Mapper/MapperRoomInfo';
+import { RoomChipRows } from '../../Mapper/RoomChipRows';
 import { UiPositions, SwipeDirection } from '../../../types';
 import { GutterDrawerPanel } from './GutterDrawerPanel';
 
@@ -895,6 +896,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     <div style={{ width: '100%' }}>
                         <MapperRoomInfo />
                     </div>
+                    <RoomChipRows />
                     
                     {/* Persistent Tactical Buttons - now below the room card */}
                     <div
@@ -973,7 +975,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 {isShown && (lighting !== 'none' || weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty || currentTime) && (
                     <div className="mobile-portrait-env-indicator" style={{
                         position: 'absolute',
-                        bottom: 'calc(100% + 4px)',
+                        bottom: 'calc(100% - 4px)',
                         right: '12px',
                         display: 'flex',
                         alignItems: 'center',
