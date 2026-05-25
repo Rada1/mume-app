@@ -158,6 +158,10 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
     const depsRef = useRef(deps);
     useEffect(() => { depsRef.current = deps; }, [deps]);
 
+    const wakeCameraRender = useCallback(() => {
+        window.dispatchEvent(new CustomEvent('mume-mapper-camera-change'));
+    }, []);
+
     const clearMapLongPressHold = useCallback(() => {
         if (depsRef.current.heldButtonRef?.current?.id === 'map-long-press') {
             depsRef.current.heldButtonRef.current = null;
@@ -336,8 +340,8 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         cam.zoom = newZoom;
 
         depsRef.current.setAutoCenter(false);
-        triggerRender();
-    }, [cameraRef, canvasRef, triggerRender]);
+        wakeCameraRender();
+    }, [cameraRef, canvasRef, wakeCameraRender]);
 
     useEffect(() => {
         const cvs = canvasRef.current;

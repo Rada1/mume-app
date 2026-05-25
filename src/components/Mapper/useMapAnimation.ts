@@ -1,6 +1,9 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { GRID_SIZE } from './mapperUtils';
 
+const PLAYER_PULSE_FRAME_MS = 33;
+const WAKE_ANIMATION_MS = 1500;
+
 interface AnimationProps {
     drawMap: (ctx: CanvasRenderingContext2D, dpr: number, w: number, h: number, marquee: any) => void;
     rooms: Record<string, any>;
@@ -68,9 +71,9 @@ export const useMapAnimation = ({
         const now = performance.now();
         const deltaTime = now - lastFrameTimeRef.current;
         
-        // Filter/path pulses are cosmetic, so 30fps is plenty and much lighter
-        // when a broad filter matches many rooms.
-        const frameBudget = activeMapFilter || combatAnimationActive ? 33 : 16;
+        const effectiveIsDragging = isDragging || isDraggingRef?.current;
+        const hasPlayerRoomPulse = !!(playerPosRef.current || currentRoomId);
+        const frameBudget = effectiveIsDragging ? 16 : hasPlayerRoomPulse ? PLAYER_PULSE_FRAME_MS : 16;
         if (deltaTime < frameBudget) return true;
         
         // Calculate a normalized factor for lerping based on time (aiming for 60fps base)
@@ -87,8 +90,7 @@ export const useMapAnimation = ({
         const w = cvs.width / dpr;
         const h = cvs.height / dpr;
 
-        const effectiveIsDragging = isDragging || isDraggingRef?.current;
-        let needsNextFrame = effectiveIsDragging;
+        let needsNextFrame = effectiveIsDragging || hasPlayerRoomPulse;
 
         // Player position is snapped immediately in useMapperPlayerTracking — no queue/lerp needed here.
         // Camera centering still lerps smoothly toward playerPosRef.current.
@@ -136,14 +138,27 @@ export const useMapAnimation = ({
         const latestExplored = firstExploredAtRef.current['_latest'] || 0;
         if (wallTime - latestExplored < 500) needsNextFrame = true;
 
+        const wakeKey = [
+            renderVersion,
+            currentRoomId || '',
+            walkTargetId || '',
+            activeMapFilter || '',
+            combatAnimationActive ? 'combat' : '',
+            marquee ? 'marquee' : ''
+        ].join('|');
+
+        if ((tickRef as any)._lastWakeKey !== wakeKey) {
+            (tickRef as any)._lastWakeKey = wakeKey;
+            trackerRef.current.endTimes.push(wallTime + WAKE_ANIMATION_MS);
+        }
+
         if ((tickRef as any)._lastRenderVersion !== renderVersion) {
             (tickRef as any)._lastRenderVersion = renderVersion;
-            trackerRef.current.endTimes.push(wallTime + 1500);
+            trackerRef.current.endTimes.push(wallTime + WAKE_ANIMATION_MS);
         }
 
         trackerRef.current.endTimes = trackerRef.current.endTimes.filter((time: number) => time > wallTime);
         if (trackerRef.current.endTimes.length > 0) needsNextFrame = true;
-        if (activeMapFilter || combatAnimationActive || currentRoomId) needsNextFrame = true;
 
         drawMap(ctx, dpr, w, h, marquee);
         return needsNextFrame;
@@ -168,6 +183,11 @@ export const useMapAnimation = ({
         lastFrameTimeRef.current = performance.now();
         requestRef.current = requestAnimationFrame(animate);
     }, [isDraggingRef]);
+
+    useEffect(() => {
+        window.addEventListener('mume-mapper-camera-change', triggerAnimation);
+        return () => window.removeEventListener('mume-mapper-camera-change', triggerAnimation);
+    }, [triggerAnimation]);
 
     useEffect(() => {
         ctxRef.current = null; // Reset context when dimensions or render dependencies change

@@ -553,7 +553,6 @@ export const drawEntities = (
         ctx.save();
 
         const breath = (Math.sin(now / 350) + 1) / 2; // Breathing pulse
-        triggerRender?.(); // Drive the animation loop
 
         ctx.globalCompositeOperation = 'source-over';
         ctx.globalAlpha = alpha * (0.45 + breath * 0.5);
