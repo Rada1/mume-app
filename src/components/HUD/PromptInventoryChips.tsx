@@ -26,6 +26,63 @@ interface GearChip {
 
 type ChipVars = React.CSSProperties & Record<'--prompt-object-color', string>;
 
+const SLOT_LABEL_MAP: Record<string, string> = {
+    '<wielded>':              'wielded',
+    '<held in weapon hand>':  'wielded',
+    '<held in shield hand>':  'shield',
+    '<worn as shield>':       'shield',
+    '<worn on head>':         'head',
+    '<worn on hands>':        'hands',
+    '<worn on arms>':         'arms',
+    '<worn on body>':         'body',
+    '<worn about body>':      'about body',
+    '<worn on legs>':         'legs',
+    '<worn on feet>':         'feet',
+    '<worn on belt>':         'on belt',
+    '<worn as belt>':         'belt',
+    '<worn across back>':     'x-back',
+    '<worn on back>':         'back',
+    '<worn on wrists>':       'wrists',
+    '<worn on finger>':       'finger',
+    '<worn around neck>':     'neck',
+};
+
+const getSlotLabel = (prefix: string | undefined): string | null => {
+    if (!prefix) return null;
+    return SLOT_LABEL_MAP[prefix.trim().toLowerCase()] ?? null;
+};
+
+const SLOT_SORT_ORDER = 'WSHbcahlfnwF-qB';
+
+const PREFIX_TO_SLOT_LETTER: Record<string, string> = {
+    '<wielded>':              'W',
+    '<held in weapon hand>':  'W',
+    '<held in shield hand>':  'S',
+    '<worn as shield>':       'S',
+    '<worn on head>':         'H',
+    '<worn on body>':         'b',
+    '<worn about body>':      'c',
+    '<worn on arms>':         'a',
+    '<worn on hands>':        'h',
+    '<worn on legs>':         'l',
+    '<worn on feet>':         'f',
+    '<worn around neck>':     'n',
+    '<worn on wrists>':       'w',
+    '<worn on finger>':       'F',
+    '<worn on back>':         '-',
+    '<worn across back>':     'q',
+    '<worn as belt>':         'B',
+    '<worn on belt>':         'B',
+};
+
+const getSlotSortWeight = (prefix: string | undefined): number => {
+    if (!prefix) return 999;
+    const letter = PREFIX_TO_SLOT_LETTER[prefix.trim().toLowerCase()];
+    if (!letter) return 999;
+    const idx = SLOT_SORT_ORDER.indexOf(letter);
+    return idx === -1 ? 999 : idx;
+};
+
 const cleanItemText = (line: DrawerLine): string => (
     line.text
         .replace(/<[^>]+>/g, ' ')
@@ -45,10 +102,17 @@ const makeChip = (
     const context = line.context || extractMumeKeyword(text);
     if (!context) return null;
 
+    let label = context;
+    if (kind === 'worn') {
+        const textWithoutParentheses = text.replace(/\([^)]*\)/g, '').trim();
+        const words = textWithoutParentheses.split(/\s+/);
+        label = words.length <= 2 ? textWithoutParentheses : words.slice(-2).join(' ');
+    }
+
     return {
         entityId: line.entityId || line.stableId || line.id,
         menuEntityId: line.entityId || line.stableId || line.id,
-        label: context,
+        label,
         context,
         category,
         kind,
@@ -120,11 +184,15 @@ export const PromptInventoryChips: React.FC = () => {
     const objectColor = useSettingsStore(state => state.objectColor);
     const chipVars: ChipVars = { '--prompt-object-color': objectColor };
 
-    const wornChips = useMemo(() => withDuplicateOrdinals(
-        displayEqLines
+    const wornChips = useMemo(() => {
+        const chips = displayEqLines
             .map(line => makeChip(line, 'worn', 'cat-worn-object'))
-            .filter((chip): chip is GearChip => !!chip)
-    ), [displayEqLines]);
+            .filter((chip): chip is GearChip => !!chip);
+        
+        chips.sort((a, b) => getSlotSortWeight(a.line.prefix) - getSlotSortWeight(b.line.prefix));
+        
+        return withDuplicateOrdinals(chips);
+    }, [displayEqLines]);
 
     const inventoryChips = useMemo(() => withDuplicateOrdinals(
         displayInventoryLines
@@ -183,13 +251,10 @@ export const PromptInventoryChips: React.FC = () => {
         executeCommand(cmd, true, true, false, true);
     };
 
-    const renderContainerContents = (chip: GearChip, lines: DrawerLine[]) => {
+    const renderContainerContents = (chip: GearChip) => {
         if (!expandedContainers.has(chip.line.id)) return null;
         const contents = containerContents[chip.line.id]?.filter(shouldShowContainerLine);
         if (!contents?.length) return null;
-
-        const { count, keyword } = getContainerIndexAndKeyword(chip.line, lines);
-        const parentNoun = keyword ? `${count}.${keyword}` : undefined;
 
         return (
             <div className="prompt-container-content-row" key={`${chip.line.id}:contents`}>
@@ -228,46 +293,52 @@ export const PromptInventoryChips: React.FC = () => {
                                     const isExpanded = expandedContainers.has(chip.line.id);
                                     const isLoading = isExpanded && !containerContents[chip.line.id];
 
+                                    const slotLabel = row.id === 'worn' ? getSlotLabel(chip.line.prefix) : null;
+
                                     return (
-                                        isContainer ? (
-                                            <span
-                                                className={`prompt-inventory-chip prompt-inventory-chip-shell${selectedTarget?.id === chip.menuEntityId ? ' is-active' : ''}`}
-                                                key={`${chip.menuEntityId}:${chip.label}`}
-                                            >
+                                        <span
+                                            key={`${chip.menuEntityId}:${chip.label}`}
+                                            className="prompt-chip-with-slot"
+                                        >
+                                            {slotLabel && <span className="prompt-slot-icon">{slotLabel}</span>}
+                                            {isContainer ? (
+                                                <span
+                                                    className={`prompt-inventory-chip prompt-inventory-chip-shell${selectedTarget?.id === chip.menuEntityId ? ' is-active' : ''}`}
+                                                >
+                                                    <button
+                                                        type="button"
+                                                        className="prompt-inventory-chip-main"
+                                                        onClick={event => selectChip(event, chip)}
+                                                        title={chip.context}
+                                                    >
+                                                        {chip.label}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className={`prompt-container-toggle${isExpanded ? ' is-expanded' : ''}${isLoading ? ' is-loading' : ''}`}
+                                                        onClick={event => toggleContainer(event, chip, sourceLines)}
+                                                        aria-label={`${isExpanded ? 'Hide' : 'Look in'} ${chip.context}`}
+                                                        title={`${isExpanded ? 'Hide' : 'Look in'} ${chip.context}`}
+                                                    >
+                                                        {isLoading ? '...' : <ChevronRight size={10} strokeWidth={2.5} />}
+                                                    </button>
+                                                </span>
+                                            ) : (
                                                 <button
                                                     type="button"
-                                                    className="prompt-inventory-chip-main"
+                                                    className={`prompt-inventory-chip${selectedTarget?.id === chip.menuEntityId ? ' is-active' : ''}`}
                                                     onClick={event => selectChip(event, chip)}
                                                     title={chip.context}
                                                 >
                                                     {chip.label}
                                                 </button>
-                                                <button
-                                                    type="button"
-                                                    className={`prompt-container-toggle${isExpanded ? ' is-expanded' : ''}${isLoading ? ' is-loading' : ''}`}
-                                                    onClick={event => toggleContainer(event, chip, sourceLines)}
-                                                    aria-label={`${isExpanded ? 'Hide' : 'Look in'} ${chip.context}`}
-                                                    title={`${isExpanded ? 'Hide' : 'Look in'} ${chip.context}`}
-                                                >
-                                                    {isLoading ? '...' : <ChevronRight size={10} strokeWidth={2.5} />}
-                                                </button>
-                                            </span>
-                                        ) : (
-                                            <button
-                                                key={`${chip.menuEntityId}:${chip.label}`}
-                                                type="button"
-                                                className={`prompt-inventory-chip${selectedTarget?.id === chip.menuEntityId ? ' is-active' : ''}`}
-                                                onClick={event => selectChip(event, chip)}
-                                                title={chip.context}
-                                            >
-                                                {chip.label}
-                                            </button>
-                                        )
+                                            )}
+                                        </span>
                                     );
                                 })}
                             </div>
                         </div>
-                        {row.chips.map(chip => renderContainerContents(chip, sourceLines))}
+                        {row.chips.map(chip => renderContainerContents(chip))}
                     </React.Fragment>
                 );
             })}

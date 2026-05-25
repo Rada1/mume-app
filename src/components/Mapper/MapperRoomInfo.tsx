@@ -109,7 +109,6 @@ export const MapperRoomInfo: React.FC = () => {
 
     // --- Logic Section: Tokenization ---
     const nameTokens = processMessageTokens ? processMessageTokens(roomName) : [];
-    const descTokens = (processMessageTokens && roomDesc) ? processMessageTokens(`\x1b[0m${roomDesc}`) : [];
     const currentRoomKey = mapper.currentRoomId || '';
     const roomIdVnum = currentRoomKey.replace(/^m_/, '');
     const mapRoom = mapper.rooms[currentRoomKey] || mapper.rooms[`m_${roomIdVnum}`] || mapper.rooms[roomIdVnum];
@@ -158,12 +157,12 @@ export const MapperRoomInfo: React.FC = () => {
                     )}
                 </div>
                 {roomDesc && (
-                    <div className="mri-desc">
-                        {descTokens.length > 0 ? (
-                            <TokenRenderer tokens={descTokens} />
-                        ) : (
-                            <span className="fallback-room-desc">{roomDesc}</span>
-                        )}
+                    <div key={currentRoomKey} className="mri-desc">
+                        {roomDesc.replace(/\x1b\[[0-9;]*m/g, '').split(' ').map((word, i) => (
+                            <span key={i} className="mri-desc-word" style={{ animationDelay: `${i * 150}ms` }}>
+                                {word}{' '}
+                            </span>
+                        ))}
                     </div>
                 )}
             </div>

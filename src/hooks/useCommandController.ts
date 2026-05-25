@@ -168,8 +168,11 @@ export function useCommandController(deps: CommandControllerDeps) {
             if (isSystem && effectiveSilent) practice.setSilentSyncPending(true);
         } else if ((cmd.toLowerCase().startsWith('list') || cmd.toLowerCase().startsWith('browse')) && d.gameState !== 'account') {
             import('../stores/useUIStore').then(({ useUIStore }) => useUIStore.getState().setIsShopOpen(true));
-        } else if (cmd.toLowerCase() === 'help' || cmd.toLowerCase().startsWith('help ')) {
-            deps.help.setIsUiRequested(true);
+        } else if (cmd.toLowerCase() === 'help' || cmd.toLowerCase().startsWith('help ') || cmd.trim().startsWith('?')) {
+            d.help.setIsUiRequested(true);
+            if (d.playEffect) {
+                d.playEffect('help');
+            }
         }
 
         // --- Account Creation Option Clearing ---

@@ -4,6 +4,7 @@ import { getZoneVisuals } from '../zoneFilters';
 
 const TERRAIN_TILE_INSET = 0;
 const FAR_ZOOM_TERRAIN_LOD = 0.22;
+const OVERVIEW_TERRAIN_ZOOM = 0.28;
 
 let tempContentCanvas: HTMLCanvasElement | null = null;
 let tempContentCtx: CanvasRenderingContext2D | null = null;
@@ -34,6 +35,29 @@ function getTempCanvases(size: number) {
 }
 
 export const getTerrainTileInset = (s: number) => Math.min(TERRAIN_TILE_INSET, Math.max(1, s * 0.06));
+
+const getOverviewTerrainColor = (terrain: string | number, isDarkMode: boolean) => {
+    const terrainName = getTerrainName(terrain);
+    const rawTerrain = String(terrain || '').toLowerCase();
+    switch (terrainName) {
+        case 'Water':
+        case 'Shallows':
+        case 'Rapids':
+        case 'Underwater':
+            return isDarkMode ? '#2f6f8e' : '#4fa9d8';
+        case 'Mountains':
+            return isDarkMode ? '#8f8175' : '#b6aaa0';
+        case 'Road':
+            return isDarkMode ? '#a48752' : '#b99755';
+        case 'Forest':
+            return isDarkMode ? '#42684a' : '#5f8f67';
+        default:
+            if (rawTerrain.includes('trail') || rawTerrain.includes('path')) {
+                return isDarkMode ? '#a48752' : '#b99755';
+            }
+            return isDarkMode ? '#242628' : '#55585b';
+    }
+};
 
 const fillTerrainTile = (ctx: CanvasRenderingContext2D, x: number, y: number, s: number) => {
     const inset = getTerrainTileInset(s);
@@ -107,52 +131,163 @@ const drawSingleTree = (
     isDarkMode: boolean
 ) => {
     const trunkColor = isDarkMode ? 'rgba(70, 44, 18, 1.0)' : 'rgba(55, 30, 10, 1.0)';
-    const crownFill  = isDarkMode ? 'rgba(14, 36, 12, 1.0)' : 'rgba(10, 48, 14, 1.0)';
-    const crownEdge  = isDarkMode ? 'rgba(6,  18,  6, 1.0)' : 'rgba(4,  26,  6, 1.0)';
-    const hlColor    = isDarkMode ? 'rgba(50,  88, 36, 0.14)' : 'rgba(34, 86, 24, 0.14)';
+    const crownFill  = isDarkMode ? 'rgba(12, 32, 10, 1.0)' : 'rgba(8, 44, 12, 1.0)';
+    const crownEdge  = isDarkMode ? 'rgba(4, 14, 4, 1.0)' : 'rgba(3, 20, 5, 1.0)';
+    const hlColor    = isDarkMode ? 'rgba(55, 95, 40, 0.22)' : 'rgba(38, 90, 28, 0.22)';
 
-    const tH    = sz * 0.20;
-    const tW    = Math.max(1.5, sz * 0.10);
-    const cRx   = sz * 0.27;
-    const cRy   = sz * 0.36;
-    const cCY   = baseY - tH - cRy * 0.70;
+    // Stable per-tree seed in [0,1) from position
+    const seed = (Math.abs(Math.sin(cx * 127.1 + baseY * 311.7)) % 1);
+    const s2   = (Math.abs(Math.sin(cx * 53.3  + baseY * 191.9)) % 1);
 
-    // Drop shadow (crown shadow) - slightly darker for depth
-    ictx.fillStyle = isDarkMode ? 'rgba(0,0,0,0.30)' : 'rgba(0,0,0,0.22)';
+    const tH    = sz * 0.16;
+    const tW    = Math.max(1.2, sz * 0.08);
+    const cH    = sz * (0.80 + seed  * 0.14);   // height: 0.80–0.94
+    const maxHW = sz * (0.26 + s2    * 0.09);   // half-width: 0.26–0.35
+
+    // Slight lean offset (±4% of sz)
+    const lean  = (seed - 0.5) * sz * 0.08;
+
+    const trunkTop = baseY - tH;
+    const apex     = trunkTop - cH;
+
+    // Ground shadow
+    ictx.fillStyle = isDarkMode ? 'rgba(0,0,0,0.32)' : 'rgba(0,0,0,0.24)';
     ictx.beginPath();
-    ictx.ellipse(cx + 1.5, cCY + 2, cRx, cRy, 0, 0, Math.PI * 2);
-    ictx.fill();
-
-    // Additional base trunk shadow (directly on the ground/under the trunk)
-    ictx.fillStyle = isDarkMode ? 'rgba(0,0,0,0.36)' : 'rgba(0,0,0,0.28)';
-    ictx.beginPath();
-    ictx.ellipse(cx, baseY, tW * 1.5, tH * 0.45, 0, 0, Math.PI * 2);
+    ictx.ellipse(cx + 1.2, baseY, maxHW * 0.80, tH * 0.36, 0, 0, Math.PI * 2);
     ictx.fill();
 
     // Trunk
     ictx.fillStyle = trunkColor;
-    ictx.fillRect(cx - tW / 2, baseY - tH, tW, tH);
+    ictx.fillRect(cx - tW / 2, trunkTop, tW, tH);
 
-    // Crown fill
-    ictx.fillStyle = crownFill;
+    // Draw a triangular tier with canvas drop shadow + right-face darkening.
+    // tipX offsets the apex by lean fraction (0=base, 1=full lean) for a subtle tilt.
+    const shadowOffset = Math.max(1, sz * 0.06);
+    const drawTier = (tipY: number, botY: number, hw: number, leanFrac: number) => {
+        const tipX = cx + lean * leanFrac;
+        // Drop shadow pass
+        ictx.save();
+        ictx.shadowColor   = isDarkMode ? 'rgba(0,0,0,0.70)' : 'rgba(0,0,0,0.50)';
+        ictx.shadowBlur    = sz * 0.12;
+        ictx.shadowOffsetX = shadowOffset;
+        ictx.shadowOffsetY = shadowOffset * 0.6;
+        ictx.beginPath();
+        ictx.moveTo(tipX, tipY);
+        ictx.lineTo(cx + hw, botY);
+        ictx.lineTo(cx - hw, botY);
+        ictx.closePath();
+        ictx.fillStyle = crownFill;
+        ictx.fill();
+        ictx.restore();
+
+        // Fill without shadow (clean colour on top)
+        ictx.beginPath();
+        ictx.moveTo(tipX, tipY);
+        ictx.lineTo(cx + hw, botY);
+        ictx.lineTo(cx - hw, botY);
+        ictx.closePath();
+        ictx.fillStyle = crownFill;
+        ictx.fill();
+
+        // Right-face darkening for a lit-from-left look
+        const midY = (tipY + botY) / 2;
+        const rightGrad = ictx.createLinearGradient(tipX, midY, cx + hw, botY);
+        rightGrad.addColorStop(0, 'rgba(0,0,0,0)');
+        rightGrad.addColorStop(1, isDarkMode ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.40)');
+        ictx.beginPath();
+        ictx.moveTo(tipX, tipY);
+        ictx.lineTo(cx + hw, botY);
+        ictx.lineTo(cx - hw, botY);
+        ictx.closePath();
+        ictx.fillStyle = rightGrad;
+        ictx.fill();
+
+        // Outline
+        ictx.strokeStyle = crownEdge;
+        ictx.lineWidth = 0.7;
+        ictx.beginPath();
+        ictx.moveTo(tipX, tipY);
+        ictx.lineTo(cx + hw, botY);
+        ictx.lineTo(cx - hw, botY);
+        ictx.closePath();
+        ictx.stroke();
+    };
+
+    // Tier 3 — bottom: lean applied least (tilt increases toward apex)
+    drawTier(apex + cH * 0.40, trunkTop, maxHW, 0.3);
+    // Tier 2 — middle
+    drawTier(apex + cH * 0.15, apex + cH * 0.50, maxHW * 0.66, 0.65);
+    // Tier 1 — top: full lean at apex
+    drawTier(apex, apex + cH * 0.26, maxHW * 0.38, 1.0);
+
+    // Left-side highlight on top tier
     ictx.beginPath();
-    ictx.ellipse(cx, cCY, cRx, cRy, 0, 0, Math.PI * 2);
+    ictx.moveTo(cx, apex);
+    ictx.lineTo(cx - maxHW * 0.38, apex + cH * 0.26);
+    ictx.lineTo(cx, apex + cH * 0.13);
+    ictx.closePath();
+    ictx.fillStyle = hlColor;
+    ictx.fill();
+};
+
+// alphaMul < 1 makes specks subtler (e.g. 0.7 for cave floors)
+const drawFloorSpeckTexture = (
+    ictx: CanvasRenderingContext2D,
+    s: number,
+    variant: number,
+    alphaMul: number = 1.0,
+) => {
+    const speckCount = 22;
+    for (let i = 0; i < speckCount; i++) {
+        const s1 = Math.abs(Math.sin((i + variant * 5.3) * 127.1) * 43758.5453) % 1;
+        const s2 = Math.abs(Math.sin((i + variant * 5.3) * 311.7 + 1.3) * 43758.5453) % 1;
+        const s3 = Math.abs(Math.sin((i + variant * 5.3) * 191.9 + 2.7) * 43758.5453) % 1;
+        const px = s1 * s;
+        const py = s2 * s;
+        const r = 0.7 + s3 * 1.4;
+        const isLight = i % 3 === 0;
+        const alpha = (0.07 + s3 * 0.08) * alphaMul;
+        ictx.fillStyle = isLight ? `rgba(255,255,255,${alpha})` : `rgba(0,0,0,${alpha})`;
+        ictx.beginPath();
+        ictx.arc(px, py, r, 0, Math.PI * 2);
+        ictx.fill();
+    }
+};
+
+const drawSingleStone = (
+    ictx: CanvasRenderingContext2D,
+    cx: number,
+    cy: number,
+    sz: number,
+    isDarkMode: boolean
+) => {
+    const rw = sz * 0.52;
+    const rh = sz * 0.32;
+
+    // Ground shadow
+    ictx.fillStyle = isDarkMode ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.25)';
+    ictx.beginPath();
+    ictx.ellipse(cx + sz * 0.08, cy + rh * 0.55, rw * 0.85, rh * 0.40, 0, 0, Math.PI * 2);
     ictx.fill();
 
-    // Crown outline for crisp definition
-    ictx.strokeStyle = crownEdge;
-    ictx.lineWidth = 0.9;
+    // Stone body
+    const bodyGrad = ictx.createLinearGradient(cx - rw, cy - rh, cx + rw, cy + rh);
+    bodyGrad.addColorStop(0, isDarkMode ? 'rgba(105,105,108,1)' : 'rgba(148,148,152,1)');
+    bodyGrad.addColorStop(1, isDarkMode ? 'rgba(52,52,56,1)'  : 'rgba(88,88,92,1)');
     ictx.beginPath();
-    ictx.ellipse(cx, cCY, cRx, cRy, 0, 0, Math.PI * 2);
+    ictx.ellipse(cx, cy, rw, rh, -0.15, 0, Math.PI * 2);
+    ictx.fillStyle = bodyGrad;
+    ictx.fill();
+
+    // Edge outline
+    ictx.strokeStyle = isDarkMode ? 'rgba(30,30,32,0.80)' : 'rgba(55,55,58,0.70)';
+    ictx.lineWidth = 0.6;
     ictx.stroke();
 
-    // Upper-left highlight
-    const hlGrad = ictx.createRadialGradient(cx - cRx * 0.25, cCY - cRy * 0.30, 0, cx, cCY, cRx * 1.2);
-    hlGrad.addColorStop(0, hlColor);
-    hlGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    ictx.fillStyle = hlGrad;
+    // Top-left highlight
     ictx.beginPath();
-    ictx.ellipse(cx, cCY, cRx, cRy, 0, 0, Math.PI * 2);
+    ictx.ellipse(cx - rw * 0.22, cy - rh * 0.28, rw * 0.38, rh * 0.28, -0.3, 0, Math.PI * 2);
+    ictx.fillStyle = isDarkMode ? 'rgba(180,180,185,0.18)' : 'rgba(220,220,225,0.30)';
     ictx.fill();
 };
 
@@ -209,7 +344,7 @@ const drawOutskirtTrees = (
                         ty = ry + offsetFrac * s;
                     }
 
-                    drawSingleTree(ctx, tx, ty, s * 0.13, isDarkMode);
+                    drawSingleTree(ctx, tx, ty, s * 0.33, isDarkMode);
                 }
                 ctx.restore();
             }
@@ -245,6 +380,25 @@ const drawGrassTexture = (
     ictx.restore();
 };
 
+// Returns a bitmask of which directions lead to a neighbouring Tunnel or Cavern room.
+const getCaveConnects = (vnum: string, preloaded: any): number => {
+    const rData = preloaded[vnum];
+    if (!rData || !rData[4]) return 0;
+    const exits = rData[4] as Record<string, any>;
+    let bits = 0;
+    for (const [dir, exit] of Object.entries(exits)) {
+        if (!exit?.target) continue;
+        const tData = preloaded[String(exit.target)];
+        if (tData) {
+            if (dir === 'n') bits |= 1;
+            else if (dir === 's') bits |= 2;
+            else if (dir === 'e') bits |= 4;
+            else if (dir === 'w') bits |= 8;
+        }
+    }
+    return bits;
+};
+
 const drawTerrainTileIcon = (
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -255,10 +409,12 @@ const drawTerrainTileIcon = (
     processedIconsRef: React.MutableRefObject<Record<string, HTMLCanvasElement>>,
     imagesRef: React.MutableRefObject<Record<string, HTMLImageElement>>,
     variant: number,
-    weather?: string
+    weather?: string,
+    connects: number = 0,
+    floorColor?: string,
 ) => {
     const inset = getTerrainTileInset(s);
-    drawTerrainIcon(ctx, x + inset, y + inset, s - inset * 2, terrain, isDarkMode, processedIconsRef, imagesRef, variant, weather);
+    drawTerrainIcon(ctx, x + inset, y + inset, s - inset * 2, terrain, isDarkMode, processedIconsRef, imagesRef, variant, weather, connects, floorColor);
 };
 
 export const drawTerrainIcon = (
@@ -271,10 +427,12 @@ export const drawTerrainIcon = (
     processedIconsRef: React.MutableRefObject<Record<string, HTMLCanvasElement>>,
     imagesRef: React.MutableRefObject<Record<string, HTMLImageElement>>,
     variant: number = 0,
-    weather?: string
+    weather?: string,
+    connects: number = 0,
+    floorColor?: string,
 ) => {
     const tName = getTerrainName(terrain);
-    const variantSpecificTerrains = ['Hills', 'Forest', 'Brush', 'Mountains', 'Field', 'Cavern', 'Tunnel', 'Water', 'Shallows', 'Rapids', 'City', 'Underwater', 'Building'];
+    const variantSpecificTerrains = ['Hills', 'Forest', 'Brush', 'Mountains', 'Field', 'Cavern', 'Tunnel', 'Water', 'Shallows', 'Rapids', 'City', 'Underwater', 'Building', 'Road'];
     const iconSize = Math.round(s);
 
     // Include image-load state in key so the icon rebuilds once the image is ready
@@ -285,8 +443,9 @@ export const drawTerrainIcon = (
     const hillImgReady = !!(hillImg && hillImg.complete && hillImg.naturalWidth > 0);
     const key = variantSpecificTerrains.includes(tName)
         ? `${tName}_v${variant}_${isDarkMode}_s${iconSize}_w${weather || 'none'}_v66${
-            tName === 'Mountains' ? `_i${mountainImgReady ? 1 : 0}` : 
-            tName === 'Hills' ? `_h${hillImgReady ? 1 : 0}` : ''
+            tName === 'Mountains' ? `_i${mountainImgReady ? 1 : 0}` :
+            tName === 'Hills' ? `_h${hillImgReady ? 1 : 0}` :
+            (tName === 'Tunnel' || tName === 'Cavern') ? `_c${connects}_f${floorColor || ''}` : ''
           }`
         : `${tName}_${isDarkMode}_s${iconSize}_w${weather || 'none'}_v66`;
     
@@ -348,9 +507,9 @@ export const drawTerrainIcon = (
                 ictx.restore();
 
                 // Draw a few trees around the mountain base
-                drawSingleTree(ictx, offsetX + targetW * 0.12, canvasH - targetH * 0.05, s * 0.16, isDarkMode);
-                drawSingleTree(ictx, offsetX + targetW * 0.88, canvasH - targetH * 0.07, s * 0.14, isDarkMode);
-                drawSingleTree(ictx, offsetX + targetW * 0.25, canvasH - targetH * 0.02, s * 0.12, isDarkMode);
+                drawSingleTree(ictx, offsetX + targetW * 0.12, canvasH - targetH * 0.05, s * 0.40, isDarkMode);
+                drawSingleTree(ictx, offsetX + targetW * 0.88, canvasH - targetH * 0.07, s * 0.37, isDarkMode);
+                drawSingleTree(ictx, offsetX + targetW * 0.25, canvasH - targetH * 0.02, s * 0.33, isDarkMode);
 
                 if (weather === 'snow') {
                     ictx.save();
@@ -457,9 +616,9 @@ export const drawTerrainIcon = (
             ictx.restore();
 
             // Draw a few trees around the base for procedural mountains
-            drawSingleTree(ictx, s * 0.12, s * 0.90, s * 0.16, isDarkMode);
-            drawSingleTree(ictx, s * 0.88, s * 0.92, s * 0.14, isDarkMode);
-            drawSingleTree(ictx, s * 0.25, s * 0.95, s * 0.12, isDarkMode);
+            drawSingleTree(ictx, s * 0.12, s * 0.90, s * 0.40, isDarkMode);
+            drawSingleTree(ictx, s * 0.88, s * 0.92, s * 0.37, isDarkMode);
+            drawSingleTree(ictx, s * 0.25, s * 0.95, s * 0.33, isDarkMode);
             } // end else (procedural fallback)
         } else if (tName === 'Hills') {
             // Draw background grass texture
@@ -533,49 +692,57 @@ export const drawTerrainIcon = (
             type TreeDef = [number, number, number];
             const treeLayouts: TreeDef[][] = [
                 [
-                    [0.15, 0.08, 0.18], [0.40, 0.07, 0.18], [0.65, 0.09, 0.18], [0.90, 0.08, 0.18],
-                    [0.05, 0.22, 0.19], [0.28, 0.24, 0.19], [0.52, 0.21, 0.19], [0.76, 0.25, 0.19], [0.95, 0.23, 0.18],
-                    [0.15, 0.40, 0.20], [0.38, 0.39, 0.20], [0.62, 0.41, 0.20], [0.85, 0.40, 0.19],
-                    [0.05, 0.56, 0.20], [0.28, 0.58, 0.21], [0.50, 0.55, 0.20], [0.72, 0.57, 0.20], [0.95, 0.56, 0.20],
-                    [0.15, 0.74, 0.21], [0.38, 0.72, 0.21], [0.62, 0.75, 0.21], [0.85, 0.73, 0.21],
-                    [0.05, 0.90, 0.22], [0.28, 0.92, 0.22], [0.50, 0.89, 0.22], [0.72, 0.91, 0.22], [0.95, 0.90, 0.22]
+                    [0.20, 0.12, 0.42], [0.72, 0.10, 0.58],
+                    [0.10, 0.45, 0.62], [0.52, 0.48, 0.45], [0.88, 0.44, 0.55],
+                    [0.35, 0.80, 0.50],
                 ],
                 [
-                    [0.10, 0.07, 0.18], [0.35, 0.09, 0.18], [0.60, 0.08, 0.18], [0.85, 0.07, 0.18],
-                    [0.20, 0.23, 0.19], [0.45, 0.22, 0.19], [0.70, 0.24, 0.19], [0.95, 0.23, 0.18],
-                    [0.05, 0.39, 0.20], [0.30, 0.41, 0.20], [0.55, 0.40, 0.20], [0.80, 0.39, 0.19],
-                    [0.15, 0.55, 0.20], [0.40, 0.57, 0.21], [0.65, 0.56, 0.20], [0.90, 0.55, 0.20],
-                    [0.05, 0.73, 0.21], [0.30, 0.75, 0.22], [0.55, 0.74, 0.21], [0.80, 0.73, 0.21],
-                    [0.15, 0.91, 0.22], [0.40, 0.89, 0.22], [0.65, 0.92, 0.22], [0.90, 0.90, 0.22]
+                    [0.18, 0.10, 0.60], [0.65, 0.12, 0.44],
+                    [0.40, 0.46, 0.55], [0.85, 0.42, 0.63],
+                    [0.12, 0.78, 0.46], [0.60, 0.80, 0.57],
                 ],
                 [
-                    [0.20, 0.08, 0.18], [0.50, 0.07, 0.18], [0.80, 0.09, 0.18],
-                    [0.05, 0.23, 0.19], [0.30, 0.25, 0.19], [0.55, 0.22, 0.19], [0.80, 0.24, 0.19],
-                    [0.15, 0.40, 0.20], [0.40, 0.39, 0.20], [0.65, 0.41, 0.20], [0.90, 0.40, 0.19],
-                    [0.05, 0.56, 0.20], [0.30, 0.58, 0.21], [0.55, 0.55, 0.20], [0.80, 0.57, 0.20],
-                    [0.15, 0.74, 0.21], [0.40, 0.72, 0.22], [0.65, 0.75, 0.21], [0.90, 0.73, 0.21],
-                    [0.05, 0.91, 0.22], [0.30, 0.89, 0.22], [0.55, 0.92, 0.22], [0.80, 0.90, 0.22]
+                    [0.28, 0.10, 0.56], [0.80, 0.13, 0.43],
+                    [0.08, 0.48, 0.64], [0.55, 0.44, 0.48],
+                    [0.30, 0.78, 0.42], [0.82, 0.76, 0.59],
                 ]
             ];
             const trees = [...treeLayouts[variant % 3]].sort((a, b) => a[1] - b[1]);
 
+            // [cx_frac, cy_frac, size_frac]
+            type StoneDef = [number, number, number];
+            const stoneLayouts: StoneDef[][] = [
+                [[0.62, 0.30, 0.10], [0.25, 0.65, 0.08]],
+                [[0.78, 0.58, 0.09], [0.45, 0.28, 0.10]],
+                [[0.50, 0.62, 0.09], [0.18, 0.38, 0.08]],
+            ];
+            const stones = stoneLayouts[variant % 3];
+
             const offsetX = (canvasW - s) / 2;
             const offsetY = canvasH - s;
 
+            ictx.globalAlpha = 0.5;
+            for (const [cxf, cyf, szf] of stones) {
+                drawSingleStone(ictx, offsetX + cxf * s, offsetY + cyf * s, szf * s, isDarkMode);
+            }
             for (const [cxf, byf, szf] of trees) {
                 const j1 = (Math.abs(Math.sin((cxf * 137 + variant * 11.3) * 43758.5453)) % 1 - 0.5) * s * 0.04;
                 drawSingleTree(ictx, offsetX + cxf * s + j1, offsetY + byf * s, szf * s, isDarkMode);
             }
+            ictx.globalAlpha = 1.0;
 
             ictx.restore();
         } else if (tName === 'Field') {
             drawGrassTexture(ictx, s, variant, isDarkMode, 14);
         } else if (tName === 'Brush') {
+            // Draw grass texture under the brush icons
+            drawGrassTexture(ictx, s, variant, isDarkMode, 6);
+
             ictx.font = `${Math.round(s * 0.35)}px monospace`;
             const brushColors = isDarkMode ? [
-                "rgba(130, 110, 88, 0.18)", "rgba(128, 122, 86, 0.18)"
+                "rgba(141, 110, 80, 0.55)", "rgba(122, 95, 66, 0.55)"
             ] : [
-                "rgba(104, 62, 34, 0.18)", "rgba(112, 72, 44, 0.18)"
+                "rgba(101, 67, 33, 0.55)", "rgba(115, 82, 45, 0.55)"
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
@@ -622,13 +789,75 @@ export const drawTerrainIcon = (
                 }
             }
             ictx.restore();
-        } else if (tName === 'Water' || tName === 'Shallows' || tName === 'Rapids' || tName === 'Underwater') {
+        } else if (tName === 'Shallows') {
+            ictx.save();
+            // Draw a bit of sparse background grass
+            drawGrassTexture(ictx, s, variant, isDarkMode, 3);
+
+            // Draw tall swamp reed clusters
+            ictx.save();
+            const reedColor = isDarkMode ? 'rgba(110, 155, 90, 0.70)' : 'rgba(50, 110, 40, 0.65)';
+            ictx.strokeStyle = reedColor;
+            ictx.lineWidth = 0.8;
+            ictx.lineCap = 'round';
+            const reedCount = 5 + (variant % 3); // 5 to 7 reed clusters
+            for (let i = 0; i < reedCount; i++) {
+                const s1 = Math.abs(Math.sin((i * 12.3 + variant * 8.7) * 113.1)) % 1;
+                const s2 = Math.abs(Math.sin((i * 5.7 + variant * 11.1) * 157.9)) % 1;
+                const s3 = Math.abs(Math.sin((i * 9.1 + variant * 3.3) * 271.3)) % 1;
+                
+                const rx = s1 * s;
+                const ry = s2 * s;
+                
+                // Draw a cluster of 3 reeds growing out of (rx, ry)
+                // Center reed: tall
+                const h1 = 5 + s3 * 4;
+                ictx.beginPath();
+                ictx.moveTo(rx, ry);
+                ictx.quadraticCurveTo(rx - 0.5, ry - h1/2, rx - 1, ry - h1);
+                ictx.stroke();
+                
+                // Left reed: slightly bent left
+                const h2 = 4 + s3 * 3;
+                ictx.beginPath();
+                ictx.moveTo(rx, ry);
+                ictx.quadraticCurveTo(rx - 1.5, ry - h2/2, rx - 3, ry - h2);
+                ictx.stroke();
+                
+                // Right reed: slightly bent right
+                const h3 = 3.5 + s3 * 3;
+                ictx.beginPath();
+                ictx.moveTo(rx, ry);
+                ictx.quadraticCurveTo(rx + 1.5, ry - h3/2, rx + 2.5, ry - h3);
+                ictx.stroke();
+            }
+            ictx.restore();
+
+            // Murky water blotches (swamp puddles)
+            const waterBlotchColor = isDarkMode ? 'rgba(38, 77, 89, 0.50)' : 'rgba(56, 116, 133, 0.45)';
+            const blotchCount = 3 + (variant % 3); // 3 to 5 puddles
+            for (let i = 0; i < blotchCount; i++) {
+                const s1 = Math.abs(Math.sin((i * 4.7 + variant * 7.1) * 113.1)) % 1;
+                const s2 = Math.abs(Math.sin((i * 6.3 + variant * 3.3) * 157.9)) % 1;
+                const s3 = Math.abs(Math.sin((i * 2.9 + variant * 5.5) * 271.3)) % 1;
+                
+                const bx = s1 * s;
+                const by = s2 * s;
+                const rw = s * (0.07 + s3 * 0.08); // width (3.5 to 7.5 pixels)
+                const rh = s * (0.04 + s3 * 0.05); // height (2.0 to 4.5 pixels)
+                const rot = (s3 - 0.5) * Math.PI;  // rotation
+                
+                ictx.fillStyle = waterBlotchColor;
+                ictx.beginPath();
+                ictx.ellipse(bx, by, rw, rh, rot, 0, Math.PI * 2);
+                ictx.fill();
+            }
+            ictx.restore();
+        } else if (tName === 'Water' || tName === 'Rapids' || tName === 'Underwater') {
             ictx.font = `${Math.round(s * 0.45)}px monospace`;
             
             let waterColors: string[];
-            if (tName === 'Shallows') {
-                waterColors = isDarkMode ? ["rgba(100, 148, 155, 0.18)", "rgba(110, 148, 156, 0.18)"] : ["rgba(34, 124, 154, 0.18)", "rgba(28, 104, 136, 0.18)"];
-            } else if (tName === 'Rapids') {
+            if (tName === 'Rapids') {
                 waterColors = isDarkMode ? ["rgba(100, 148, 155, 0.18)", "rgba(108, 142, 150, 0.18)"] : ["rgba(0, 100, 140, 0.18)", "rgba(0, 88, 128, 0.18)"];
             } else if (tName === 'Underwater') {
                 waterColors = isDarkMode ? ["rgba(90, 110, 148, 0.18)", "rgba(82, 104, 142, 0.18)"] : ["rgba(0, 50, 100, 0.18)", "rgba(0, 40, 86, 0.18)"];
@@ -641,63 +870,205 @@ export const drawTerrainIcon = (
             ictx.fillStyle = waterColors[variant % 2];
             ictx.fillText('~', cX, cY);
         } else if (tName === 'Cavern') {
-            const caveColors = isDarkMode ? [
-                "rgba(120, 120, 130, 0.18)", "rgba(100, 100, 110, 0.18)"
-            ] : [
-                "rgba(80, 80, 80, 0.18)", "rgba(50, 50, 50, 0.18)"
-            ];
-            ictx.textAlign = 'center';
-            ictx.textBaseline = 'middle';
-            
-            // Hanging stalactites (V) of different sizes
-            ictx.fillStyle = caveColors[0];
-            ictx.font = `${Math.round(s * 0.3)}px monospace`;
-            ictx.fillText('V', s * 0.3, s * 0.2);
-            
-            ictx.fillStyle = caveColors[1];
-            ictx.font = `${Math.round(s * 0.2)}px monospace`;
-            ictx.fillText('V', s * 0.7, s * 0.18);
-            
-            // Rising stalagmite (^) further south
-            ictx.fillStyle = caveColors[0];
-            ictx.font = `${Math.round(s * 0.35)}px monospace`;
-            ictx.fillText('^', s * 0.5, s * 0.9);
-            
+            // Same as Tunnel but wider (hw = 0.44s) and gray-toned instead of brown.
+            const cnoise = (i: number) => (Math.abs(Math.sin(variant * 31.7 + i * 127.1)) % 1);
+            const ccx = s / 2, ccy = s / 2;
+            const chw = s * 0.44; // wider than tunnel
+
+            const cHasN = !!(connects & 1);
+            const cHasS = !!(connects & 2);
+            const cHasE = !!(connects & 4);
+            const cHasW = !!(connects & 8);
+
+            // Outer area: fixed dark so color picker doesn't affect it
+            ictx.fillStyle = isDarkMode ? 'rgba(10, 9, 11, 1)' : 'rgba(18, 16, 20, 1)';
+            ictx.fillRect(0, 0, s, s);
+
+            ictx.save();
+            ictx.beginPath();
+            ictx.rect(ccx - chw, ccy - chw, chw * 2, chw * 2);
+            if (cHasN) ictx.rect(ccx - chw, 0,        chw * 2, ccy - chw);
+            if (cHasS) ictx.rect(ccx - chw, ccy + chw, chw * 2, s - (ccy + chw));
+            if (cHasE) ictx.rect(ccx + chw, ccy - chw, s - (ccx + chw), chw * 2);
+            if (cHasW) ictx.rect(0,         ccy - chw, ccx - chw, chw * 2);
+            ictx.clip();
+
+            // Floor — user-picked color, darkened slightly, + speck texture
+            ictx.fillStyle = floorColor || 'rgba(14, 11, 12, 1)';
+            ictx.fillRect(0, 0, s, s);
+            drawFloorSpeckTexture(ictx, s, variant, 0.65);
+
+            ictx.restore();
+
+            // Jagged wall edges — all four sides closed (pocket room)
+            const cwallW = Math.max(2, s * 0.055);
+            const cjagAmp = s * 0.028;
+
+            const drawCavWall = (x1: number, y1: number, x2: number, y2: number) => {
+                const steps = 7;
+                ictx.save();
+                ictx.lineWidth = cwallW * 2.2;
+                ictx.strokeStyle = 'rgba(6, 5, 6, 1)';
+                ictx.lineCap = 'square';
+                ictx.lineJoin = 'round';
+                
+                // Drop shadow for the inner wall edge
+                ictx.shadowColor = 'rgba(0, 0, 0, 0.85)';
+                ictx.shadowBlur = s * 0.14;
+                ictx.shadowOffsetX = 0;
+                ictx.shadowOffsetY = 0;
+                
+                ictx.beginPath();
+                ictx.moveTo(x1, y1);
+                for (let k = 1; k <= steps; k++) {
+                    const t = k / steps;
+                    const jitter = (cnoise(k * 7 + x1 * 0.1 + y1 * 0.1) - 0.5) * cjagAmp * 2;
+                    const isV = Math.abs(x2 - x1) < 1;
+                    ictx.lineTo(
+                        x1 + (x2 - x1) * t + (isV ? jitter : 0),
+                        y1 + (y2 - y1) * t + (isV ? 0 : jitter)
+                    );
+                }
+                ictx.lineTo(x2, y2);
+                ictx.stroke();
+                
+                // Disable shadow for the highlight stroke
+                ictx.shadowColor = 'transparent';
+                ictx.shadowBlur = 0;
+                
+                ictx.lineWidth = cwallW * 0.6;
+                ictx.strokeStyle = isDarkMode ? 'rgba(68, 68, 76, 0.50)' : 'rgba(88, 88, 98, 0.55)';
+                ictx.stroke();
+                ictx.restore();
+            };
+
+            if (!cHasN) drawCavWall(ccx - chw, ccy - chw, ccx + chw, ccy - chw);
+            if (!cHasS) drawCavWall(ccx - chw, ccy + chw, ccx + chw, ccy + chw);
+            if (!cHasW) drawCavWall(ccx - chw, ccy - chw, ccx - chw, ccy + chw);
+            if (!cHasE) drawCavWall(ccx + chw, ccy - chw, ccx + chw, ccy + chw);
         } else if (tName === 'Tunnel') {
-            ictx.font = `${Math.round(s * 0.4)}px monospace`;
-            const tunnelColors = isDarkMode ? [
-                "rgba(134, 122, 108, 0.18)", "rgba(118, 108, 98, 0.18)"
-            ] : [
-                "rgba(92, 76, 58, 0.18)", "rgba(72, 58, 44, 0.18)"
-            ];
-            ictx.textAlign = 'center';
-            ictx.textBaseline = 'middle';
-            const positions = [{ x: 0.35, y: 0.4 }, { x: 0.65, y: 0.6 }];
-            for (let i = 0; i < positions.length; i++) {
-                const pos = positions[i];
-                ictx.fillStyle = tunnelColors[(variant + i) % 2];
-                ictx.fillText('∩', pos.x * s, pos.y * s);
+            // Top-down cave trench: dark rocky floor, jagged wall edges running toward neighbouring tunnels.
+            const hasN = !!(connects & 1);
+            const hasS = !!(connects & 2);
+            const hasE = !!(connects & 4);
+            const hasW = !!(connects & 8);
+            const cx2 = s / 2, cy2 = s / 2;
+            const hw = s * 0.30; // half-width of trench
+
+            // Stable per-tile noise helper
+            const tnoise = (i: number) => (Math.abs(Math.sin(variant * 31.7 + i * 127.1 + connects * 53.3)) % 1);
+
+            // --- Floor ---
+            // Outer area (between tile edge and wall): fixed dark so color picker doesn't affect it
+            ictx.fillStyle = isDarkMode ? 'rgba(10, 9, 11, 1)' : 'rgba(18, 16, 20, 1)';
+            ictx.fillRect(0, 0, s, s);
+
+            // Inner corridor: clipped to the footprint, colored by picker
+            ictx.save();
+            ictx.beginPath();
+            ictx.rect(cx2 - hw, cy2 - hw, hw * 2, hw * 2);
+            if (hasN) ictx.rect(cx2 - hw, 0,        hw * 2, cy2 - hw);
+            if (hasS) ictx.rect(cx2 - hw, cy2 + hw, hw * 2, s - (cy2 + hw));
+            if (hasE) ictx.rect(cx2 + hw, cy2 - hw, s - (cx2 + hw), hw * 2);
+            if (hasW) ictx.rect(0,        cy2 - hw, cx2 - hw, hw * 2);
+            ictx.clip();
+
+            ictx.fillStyle = floorColor || 'rgba(14, 11, 9, 1)';
+            ictx.fillRect(0, 0, s, s);
+            drawFloorSpeckTexture(ictx, s, variant, 0.65);
+
+            ictx.restore();
+
+            // --- Jagged wall edges ---
+            // Draw a thick dark stroke along each wall edge, then a jagged highlight on top
+            const wallW = Math.max(2, s * 0.055);
+            const jagAmp = s * 0.028; // jaggedness amplitude
+            const jagSteps = 7;
+
+            const drawJaggedWall = (x1: number, y1: number, x2: number, y2: number) => {
+                // Dark wall fill (thick)
+                ictx.save();
+                ictx.lineWidth = wallW * 2.2;
+                ictx.strokeStyle = 'rgba(6, 5, 4, 1)';
+                ictx.lineCap = 'square';
+                ictx.lineJoin = 'round';
+                
+                // Drop shadow for the inner wall edge
+                ictx.shadowColor = 'rgba(0, 0, 0, 0.85)';
+                ictx.shadowBlur = s * 0.14;
+                ictx.shadowOffsetX = 0;
+                ictx.shadowOffsetY = 0;
+                
+                ictx.beginPath();
+                ictx.moveTo(x1, y1);
+                for (let k = 1; k <= jagSteps; k++) {
+                    const t = k / jagSteps;
+                    const jitter = (tnoise(k * 7 + x1 * 0.1 + y1 * 0.1) - 0.5) * jagAmp * 2;
+                    const isV = Math.abs(x2 - x1) < 1; // vertical line
+                    ictx.lineTo(
+                        x1 + (x2 - x1) * t + (isV ? jitter : 0),
+                        y1 + (y2 - y1) * t + (isV ? 0 : jitter)
+                    );
+                }
+                ictx.lineTo(x2, y2);
+                ictx.stroke();
+                
+                // Disable shadow for the highlight stroke
+                ictx.shadowColor = 'transparent';
+                ictx.shadowBlur = 0;
+                
+                // Lighter crumbled-edge highlight
+                ictx.lineWidth = wallW * 0.6;
+                ictx.strokeStyle = isDarkMode ? 'rgba(55, 45, 32, 0.55)' : 'rgba(80, 65, 44, 0.60)';
+                ictx.stroke();
+                ictx.restore();
+            };
+
+            if (hasN) {
+                drawJaggedWall(cx2 - hw, 0,        cx2 - hw, cy2 - hw);
+                drawJaggedWall(cx2 + hw, 0,        cx2 + hw, cy2 - hw);
+            }
+            if (hasS) {
+                drawJaggedWall(cx2 - hw, cy2 + hw, cx2 - hw, s);
+                drawJaggedWall(cx2 + hw, cy2 + hw, cx2 + hw, s);
+            }
+            if (hasE) {
+                drawJaggedWall(cx2 + hw, cy2 - hw, s,        cy2 - hw);
+                drawJaggedWall(cx2 + hw, cy2 + hw, s,        cy2 + hw);
+            }
+            if (hasW) {
+                drawJaggedWall(0,        cy2 - hw, cx2 - hw, cy2 - hw);
+                drawJaggedWall(0,        cy2 + hw, cx2 - hw, cy2 + hw);
+            }
+            // Closed-end wall caps
+            if (!hasN) {
+                drawJaggedWall(cx2 - hw, cy2 - hw, cx2 + hw, cy2 - hw);
+            }
+            if (!hasS) {
+                drawJaggedWall(cx2 - hw, cy2 + hw, cx2 + hw, cy2 + hw);
+            }
+            if (!hasE) {
+                drawJaggedWall(cx2 + hw, cy2 - hw, cx2 + hw, cy2 + hw);
+            }
+            if (!hasW) {
+                drawJaggedWall(cx2 - hw, cy2 - hw, cx2 - hw, cy2 + hw);
             }
         } else if (tName === 'Building') {
+            drawFloorSpeckTexture(ictx, s, variant, 1.0);
+        } else if (tName === 'Road') {
+            const roadStoneLayouts = [
+                [[0.20, 0.20, 0.09], [0.80, 0.80, 0.07], [0.25, 0.75, 0.06]],
+                [[0.80, 0.20, 0.08], [0.20, 0.80, 0.10], [0.75, 0.75, 0.05]],
+                [[0.18, 0.22, 0.07], [0.82, 0.22, 0.09], [0.20, 0.78, 0.08]],
+                [[0.22, 0.78, 0.10], [0.78, 0.78, 0.07], [0.80, 0.20, 0.06]],
+                [[0.18, 0.18, 0.06], [0.82, 0.18, 0.07], [0.82, 0.82, 0.05], [0.18, 0.82, 0.08]],
+                [[0.25, 0.18, 0.07], [0.78, 0.25, 0.09], [0.18, 0.75, 0.06], [0.75, 0.80, 0.08]],
+            ];
+            const stones = roadStoneLayouts[variant % roadStoneLayouts.length];
             ictx.save();
-            // Dirt/gravel: scattered small specks, no geometric structure
-            const speckCount = 22;
-            for (let i = 0; i < speckCount; i++) {
-                const s1 = Math.abs(Math.sin((i + variant * 5.3) * 127.1) * 43758.5453) % 1;
-                const s2 = Math.abs(Math.sin((i + variant * 5.3) * 311.7 + 1.3) * 43758.5453) % 1;
-                const s3 = Math.abs(Math.sin((i + variant * 5.3) * 191.9 + 2.7) * 43758.5453) % 1;
-                const px = s1 * s;
-                const py = s2 * s;
-                const r = 0.7 + s3 * 1.4;
-                // Mix of slightly darker and slightly lighter specks
-                const isLight = i % 3 === 0;
-                const alpha = 0.07 + s3 * 0.08;
-                ictx.fillStyle = isLight
-                    ? `rgba(255,255,255,${alpha})`
-                    : `rgba(0,0,0,${alpha})`;
-                ictx.beginPath();
-                ictx.arc(px, py, r, 0, Math.PI * 2);
-                ictx.fill();
+            drawGrassTexture(ictx, s, variant, isDarkMode, 3); // subtle sparse grass around the road
+            for (const [cxf, cyf, szf] of stones) {
+                drawSingleStone(ictx, cxf * s, cyf * s, szf * s, isDarkMode);
             }
             ictx.restore();
         }
@@ -805,6 +1176,7 @@ export const drawTerrains = (
     const tileBacking = isDarkMode ? '#000000' : '#f2f2f7';
     const tileBackingAlpha = tileOpacity;
     const s = GRID_SIZE;
+    const useOverviewTerrainColors = rCtx.camera.zoom < OVERVIEW_TERRAIN_ZOOM && !isTracingMode;
 
     const exploredBatches: Record<string, { x: number, y: number, terrain: string, vnum: string, light?: number, sundeath?: number, isPermanentSnow?: boolean }[]> = {};
     const ring1Batches: Record<string, { x: number, y: number, terrain: string }[]> = {};
@@ -871,7 +1243,9 @@ export const drawTerrains = (
                     ...terrainColors,
                     ...zoneVis.terrainColors
                 };
-                const color = getTerrainColor(terrain, isDarkMode, 0.62, mergedTerrainColors);
+                const color = useOverviewTerrainColors
+                    ? getOverviewTerrainColor(terrain, isDarkMode)
+                    : getTerrainColor(terrain, isDarkMode, 0.62, mergedTerrainColors);
                 const tx = Math.round(rx) * s;
                 const ty = Math.round(ry) * s;
 
@@ -1146,7 +1520,9 @@ export const drawTerrains = (
                 }
                 ctx.globalAlpha = tileOpacity;
                 const isSnow = r.isPermanentSnow || rCtx.weather === 'snow';
-                drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather);
+                const tConnects = (() => { const t = getTerrainName(r.terrain); return (t === 'Tunnel' || t === 'Cavern') ? getCaveConnects(r.vnum, preloaded) : 0; })();
+                const tFloor = (getTerrainName(r.terrain) === 'Tunnel' || getTerrainName(r.terrain) === 'Cavern') ? color : undefined;
+                drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects, tFloor);
                 drawOutskirtTrees(ctx, r.x, r.y, r.vnum, s, r.terrain, preloaded, isDarkMode, tileOpacity, explored);
                 ctx.restore();
             }
@@ -1245,7 +1621,9 @@ export const drawTerrains = (
                     ctx.save();
                     ctx.globalAlpha = tileOpacity;
                     const isSnow = r.isPermanentSnow || rCtx.weather === 'snow';
-                    drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather);
+                    const tConnects3 = (() => { const t = getTerrainName(r.terrain); return (t === 'Tunnel' || t === 'Cavern') ? getCaveConnects(r.vnum, preloaded) : 0; })();
+                    const tFloor3 = (getTerrainName(r.terrain) === 'Tunnel' || getTerrainName(r.terrain) === 'Cavern') ? color : undefined;
+                    drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects3, tFloor3);
                     drawOutskirtTrees(ctx, r.x, r.y, r.vnum, s, r.terrain, preloaded, isDarkMode, tileOpacity, explored);
                     ctx.restore();
                 }
@@ -1259,6 +1637,7 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
     const terrainColors = mapTileVisuals?.terrainColors;
     const tileOpacity = rCtx.mapTileOpacity ?? 1;
     const s = GRID_SIZE;
+    const useOverviewTerrainColors = rCtx.camera.zoom < OVERVIEW_TERRAIN_ZOOM && !rCtx.isTracingMode;
 
     ctx.save();
     for (let i = 0; i < localRooms.length; i++) {
@@ -1274,7 +1653,9 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
             ...terrainColors,
             ...zoneVis.terrainColors
         };
-        ctx.fillStyle = getTerrainColor(room.terrain, isDarkMode, 0.62, mergedTerrainColors);
+        ctx.fillStyle = useOverviewTerrainColors
+            ? getOverviewTerrainColor(room.terrain, isDarkMode)
+            : getTerrainColor(room.terrain, isDarkMode, 0.62, mergedTerrainColors);
         ctx.globalAlpha = tileOpacity;
         fillTerrainTile(ctx, rx, ry, s);
 
@@ -1304,7 +1685,16 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
             ctx.save();
             ctx.globalAlpha = tileOpacity;
             const isSnow = room.isPermanentSnow || rCtx.weather === 'snow';
-            drawTerrainTileIcon(ctx, rx, ry, s, room.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather);
+            const tConnectsLocal = (getTerrainName(room.terrain) === 'Tunnel' || getTerrainName(room.terrain) === 'Cavern') ? getCaveConnects(room.id, preloaded) : 0;
+            const zoneName = room.zone || '';
+            const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
+            const mergedTerrainColors = {
+                ...terrainColors,
+                ...zoneVis.terrainColors
+            };
+            const localColor = getTerrainColor(room.terrain, isDarkMode, 0.62, mergedTerrainColors);
+            const tFloorLocal = (getTerrainName(room.terrain) === 'Tunnel' || getTerrainName(room.terrain) === 'Cavern') ? localColor : undefined;
+            drawTerrainTileIcon(ctx, rx, ry, s, room.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnectsLocal, tFloorLocal);
             ctx.restore();
         }
     }

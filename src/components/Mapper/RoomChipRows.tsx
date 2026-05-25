@@ -7,6 +7,7 @@ import React, { useMemo } from 'react';
 import { useGame } from '../../context/GameContext';
 import { useUIStore } from '../../stores/useUIStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { audioManager } from '../../services/audio/AudioManager';
 import type { GmcpOccupant } from '../../types';
 import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
 import { getCategoryIdForKindLocation, toCategoryId } from '../../utils/inlineActionModel';
@@ -184,6 +185,7 @@ export const RoomChipRows: React.FC = () => {
 
     const selectChip = (event: React.MouseEvent<HTMLButtonElement>, chip: RoomChip) => {
         event.stopPropagation();
+        audioManager.playEffect('target', { skipJitter: true });
         triggerHaptic?.(15);
         const currentTarget = useUIStore.getState().selectedTarget;
         const isSame = currentTarget?.id === chip.entityId;

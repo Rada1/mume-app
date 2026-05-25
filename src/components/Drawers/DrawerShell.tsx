@@ -43,13 +43,15 @@ export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, child
                 <span className="drawer-title">
                     {title || id}
                 </span>
-                <button
-                    className="drawer-close-btn"
-                    onClick={handleClose}
-                    title="Close Drawer"
-                >
-                    <X size={14} />
-                </button>
+                {viewport.isMobile && (
+                    <button
+                        className="drawer-close-btn"
+                        onClick={handleClose}
+                        title="Close Drawer"
+                    >
+                        <X size={14} />
+                    </button>
+                )}
             </div>
             <div
                 className="drawer-content"

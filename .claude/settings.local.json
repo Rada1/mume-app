@@ -45,7 +45,12 @@
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\pwetz\\\\Downloads\\\\mume app\" -Recurse -Force)",
       "Bash(Select-Object -First 20 FullName)",
       "Bash(grep -r \"\\\\\\\\<hit\\\\\\\\>\" \"/c/Users/pwetz/Downloads/mume app/src\" --include=\"*.ts\" --include=\"*.tsx\")",
-      "Bash(grep -r \"\\\\\\\\<hit\" \"/c/Users/pwetz/Downloads/mume app\" --include=\"*.ts\" --include=\"*.tsx\" --include=\"*.js\" -n)"
+      "Bash(grep -r \"\\\\\\\\<hit\" \"/c/Users/pwetz/Downloads/mume app\" --include=\"*.ts\" --include=\"*.tsx\" --include=\"*.js\" -n)",
+      "Bash(node -e \"const pkg = require\\('./node_modules/lucide-react/package.json'\\); console.log\\(pkg.version\\);\")",
+      "Bash(node -e \"const icons = Object.keys\\(require\\('lucide-react'\\)\\); const wanted = ['Sword','Swords','Shield','Crown','HardHat','Hand','Shirt','Footprints','Backpack','Watch','Ring','Wind','Layers','Zap','CircleDot','Gem','PersonStanding']; wanted.forEach\\(n => console.log\\(n, icons.includes\\(n\\)\\)\\);\")",
+      "Bash(node -e \"const icons = Object.keys\\(require\\('lucide-react'\\)\\); const wanted = ['Necklace','Belt','Armband','Glasses','Gloves','Bracelet','Feather','Link','CircleAlert','Sparkles','Maximize2','AlignCenter','Move','Grab','Anchor']; wanted.forEach\\(n => console.log\\(n, icons.includes\\(n\\)\\)\\);\")",
+      "Bash(node -e \"const icons = Object.keys\\(require\\('lucide-react'\\)\\); ['Smile','CircleUser','UserRound','User','ShoppingBag','Pouch','Bag','BaggageClaim','Briefcase','Package','Box','CircleDot','Disc','Donut','Omega','GripHorizontal','AlignJustify','Minus','StretchHorizontal','SplitSquareHorizontal','RectangleHorizontal','Armchair'].forEach\\(n => console.log\\(n, icons.includes\\(n\\)\\)\\);\")",
+      "Bash(node -e \"const icons = Object.keys\\(require\\('lucide-react'\\)\\); ['Dumbbell','Bicep','Watch','Ring','Gem','Necklace','Footprints','PersonStanding','Shirt','Backpack','Layers','Hand','Swords','Sword','Shield'].forEach\\(n => console.log\\(n, icons.includes\\(n\\)\\)\\);\")"
     ]
   }
 }

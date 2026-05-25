@@ -2,10 +2,12 @@ import { useCallback, useRef, MutableRefObject } from 'react';
 import { GRID_SIZE, normalizeTerrain, checkRoomFilter, findClosestMatchingRoomPath } from './mapperUtils';
 import { RenderContext } from './renderers/rendererUtils';
 import type { CombatPulse } from './renderers/rendererUtils';
-import { MapperPrediction } from './mapperTypes';
+import { CompactMapExit, MapperPrediction, RegionLabel } from './mapperTypes';
 import { drawTerrains, drawLocalTerrains } from './renderers/drawTerrains';
 import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
+import { drawDoorLabels } from './renderers/drawDoorLabels';
 import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee, drawDoorHighlights, drawFilterHighlights } from './renderers/drawEntities';
+import { drawRegionLabels } from './renderers/drawRegionLabels';
 import { ZoneFilterConfig } from './zoneFilters';
 
 const didLayoutChange = (oldRooms: Record<string, any>, newRooms: Record<string, any>): boolean => {
@@ -65,7 +67,7 @@ interface RendererProps {
     exploredMarkers: Set<string>;
     renderVersion: number;
     firstExploredAtRef: MutableRefObject<Record<string, number>>;
-    preloadedCoordsRef: MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[]]>>;
+    preloadedCoordsRef: MutableRefObject<Record<string, [number, number, number, number, Record<string, CompactMapExit>, string, string, string[], string[]]>>;
     spatialIndexRef: MutableRefObject<Record<number, Record<string, string[]>>>;
     baseMapExitsRef: MutableRefObject<Record<string, any>>;
     walkTargetId?: string | null;
@@ -101,6 +103,9 @@ interface RendererProps {
     zoneFilters?: Record<string, ZoneFilterConfig>;
     lighting?: string;
     weather?: string;
+    regionLabels?: Record<string, RegionLabel>;
+    regionLabelEditMode?: boolean;
+    selectedRegionLabelId?: string | null;
 }
 
 export const useMapperRenderer = ({
@@ -116,6 +121,9 @@ export const useMapperRenderer = ({
     mapTileVisuals, mapTileOpacity, zoneFilters,
     lighting = 'none',
     weather = 'none',
+    regionLabels = {},
+    regionLabelEditMode = false,
+    selectedRegionLabelId = null,
     showOrganicTerrain = true
 }: RendererProps) => {
 
@@ -400,6 +408,7 @@ export const useMapperRenderer = ({
             if (camera.zoom > 0.05) {
                 if (floorIndex) drawFeatures(rCtx, bX1, bY1, bX2, bY2, floorIndex);
                 drawLocalFeatures(rCtx, localVisible);
+                if (floorIndex && camera.zoom > 0.35) drawDoorLabels(rCtx, bX1, bY1, bX2, bY2, floorIndex);
             }
             
             offCtx.restore();
@@ -454,6 +463,7 @@ export const useMapperRenderer = ({
         drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);
         drawDoorHighlights(rCtx, playerPosRef);
         drawMarkers(rCtx, stableMarkersRef, selectedMarkerId, camera.x, camera.y, camera.x + baseW/camera.zoom, camera.y + baseH/camera.zoom);
+        drawRegionLabels(rCtx, regionLabels, selectedRegionLabelId, regionLabelEditMode);
 
         ctx.restore();
         drawMarquee(rCtx, marquee);
@@ -469,6 +479,11 @@ export const useMapperRenderer = ({
             ctx.fillStyle = 'rgba(130, 170, 255, 0.06)';
             ctx.fillRect(0, 0, baseW, baseH);
             ctx.restore();
+        } else if (lighting === 'artificial') {
+            ctx.save();
+            ctx.fillStyle = 'rgba(255, 176, 72, 0.08)';
+            ctx.fillRect(0, 0, baseW, baseH);
+            ctx.restore();
         } else if (lighting === 'dark') {
             ctx.save();
             ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
@@ -482,11 +497,11 @@ export const useMapperRenderer = ({
             baseW / 2, baseH / 2, Math.max(baseW, baseH) * 0.75
         );
         vig.addColorStop(0, 'rgba(0,0,0,0)');
-        vig.addColorStop(1, 'rgba(0,0,0,0.55)');
+        vig.addColorStop(1, lighting === 'artificial' ? 'rgba(0,0,0,0.48)' : 'rgba(0,0,0,0.55)');
         ctx.fillStyle = vig;
         ctx.fillRect(0, 0, baseW, baseH);
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, activeMapFilter, mapSearchQuery, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, inCombat]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, activeMapFilter, mapSearchQuery, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, regionLabelEditMode, selectedRegionLabelId, inCombat]);
 
     return { drawMap };
 };

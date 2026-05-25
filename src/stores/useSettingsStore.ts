@@ -12,29 +12,30 @@ import { DEFAULT_URL } from '../constants';
 import type { MapBackgroundVisualAdjustments, MapTileVisualAdjustments } from '../components/Mapper/mapperTypes';
 import { ZONE_FILTERS } from '../components/Mapper/zoneFilters';
 import type { ZoneFilterConfig, ZoneVisualConfig } from '../components/Mapper/zoneFilters';
-import { DEFAULT_TERRAIN_COLORS, WALL_COLOR, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT } from '../components/Mapper/mapperUtils';
+import { DEFAULT_TERRAIN_COLORS, ROAD_COLOR_LIGHT, PATH_COLOR_LIGHT } from '../components/Mapper/mapperUtils';
 
 export const DEFAULT_MAP_TILE_VISUALS: MapTileVisualAdjustments = {
     terrainColors: {
-        Forest: '#19291b',
+        Forest: '#334e2d',
         City: '#393532',
         Building: '#33312e',
-        Field: '#263423',
-        Hills: '#2e271e',
+        Field: '#334e2d',
+        Hills: '#334e2d',
         Water: '#182b3a',
         Rapids: '#30484f',
-        Shallows: '#253f46',
-        Cavern: '#282a33',
+        Shallows: '#2f3c15',
+        Cavern: '#31333f',
         Tunnel: '#333333',
-        Brush: '#303c2f',
-        Road: '#2f3230',
-        Mountains: '#262321'
+        Brush: '#334e2d',
+        Road: '#334e2d',
+        Mountains: '#334e2d',
+        Grasslands: '#53744e',
     },
     wallColor: '#3a3c42',
     doorColor: '#ffcc00',
-    roadColorDark: ROAD_COLOR_DARK,
+    roadColorDark: '#402e26',
     roadColorLight: ROAD_COLOR_LIGHT,
-    pathColorDark: PATH_COLOR_DARK,
+    pathColorDark: '#492f27',
     pathColorLight: PATH_COLOR_LIGHT,
 };
 
@@ -287,7 +288,7 @@ export const useSettingsStore = create<SettingsState>()(
             musicVolume: 0.5,
 
             allowMapPersistence: true,
-            unveilMap: false,
+            unveilMap: true,
             showMapperToolbar: false,
             isTextRevealEnabled: true,
             showBackgroundMap: true,

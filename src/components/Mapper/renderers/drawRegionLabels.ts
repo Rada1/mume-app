@@ -56,7 +56,7 @@ export const drawRegionLabels = (
     const { ctx, currentZ, isDarkMode, camera } = rCtx;
     const list = Object.values(labels);
     if (list.length === 0) return;
-    if (!editMode && camera.zoom >= 1 / 3) return;
+    if (!editMode && camera.zoom >= 1.2) return;
 
     const s = GRID_SIZE;
     const defaultColor = '#ffffff';

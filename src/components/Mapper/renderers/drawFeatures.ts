@@ -1,6 +1,7 @@
 import { RenderContext, drawLine, drawInkyLine } from './rendererUtils';
 import { getZoneVisuals } from '../zoneFilters';
 import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, WALL_COLOR, LONG_CONNECTION_COLOR } from '../mapperUtils';
+import { drawTerrainIcon, getTerrainTileInset } from './drawTerrains';
 
 const hexToRgba = (hex: string, alpha: number): string => {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -106,13 +107,221 @@ export const getIndicatorIcon = (
     return canvas;
 };
 
+const norideIconCache: Record<number, HTMLCanvasElement> = {};
+const getNorideIcon = (size: number): HTMLCanvasElement => {
+    if (norideIconCache[size]) return norideIconCache[size];
+    const pad = 3;
+    const cs = size + pad * 2;
+    const canvas = document.createElement('canvas');
+    canvas.width = cs; canvas.height = cs;
+    const ctx = canvas.getContext('2d')!;
+    const cx = cs / 2, cy = cs / 2;
+    const r = size * 0.38;
+    const lw = Math.max(1.5, size * 0.18);
+
+    ctx.strokeStyle = '#888888';
+    ctx.lineWidth = lw;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = 'rgba(0,0,0,0.85)';
+    ctx.shadowBlur = 3;
+
+    ctx.beginPath();
+    ctx.moveTo(cx - r, cy - r);
+    ctx.lineTo(cx + r, cy + r);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(cx + r, cy - r);
+    ctx.lineTo(cx - r, cy + r);
+    ctx.stroke();
+
+    norideIconCache[size] = canvas;
+    return canvas;
+};
+
+const EXIT_FLAG_STYLES: Record<string, { color: string; style: string }> = {
+    'FLOW':    { color: '#60a5fa', style: 'flow' },
+    'FALL':    { color: '#fbbf24', style: 'fall' },
+    'GUARDED': { color: '#fb923c', style: 'guarded' },
+    'NO_FLEE': { color: '#dc2626', style: 'noflee' },
+};
+
+const DOTTED_EXIT_FLAGS: Record<string, string> = {
+    'RANDOM':  '#a78bfa',
+    'SPECIAL': '#22d3ee',
+    'DAMAGE':  '#ef4444',
+};
+
+const OVERVIEW_ROUTE_ZOOM = 0.28;
+
+const drawDottedExitLine = (
+    ctx: CanvasRenderingContext2D,
+    wx: number, wy: number, s: number,
+    d: string, color: string, invZoom: number,
+) => {
+    const isNS = d === 'n' || d === 's';
+    const margin = 7;
+    const dotRadius = Math.max(1.2, 1.5 * invZoom);
+    const spacing = 5.5;
+
+    const x0 = isNS ? wx + margin : (d === 'e' ? wx + s : wx);
+    const y0 = isNS ? (d === 'n' ? wy : wy + s) : wy + margin;
+    const totalLen = s - margin * 2;
+    const count = Math.floor(totalLen / spacing);
+
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.30;
+    ctx.shadowColor = 'rgba(0,0,0,0.85)';
+    ctx.shadowBlur = 6;
+    for (let i = 0; i <= count; i++) {
+        const t = i / count;
+        const px = isNS ? x0 + totalLen * t : x0;
+        const py = isNS ? y0 : y0 + totalLen * t;
+        ctx.beginPath();
+        ctx.arc(px, py, dotRadius, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.restore();
+};
+
+const drawOverviewRouteLine = (
+    ctx: CanvasRenderingContext2D,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    invZoom: number,
+    alpha: number,
+    dotted: boolean,
+) => {
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    if (dotted) {
+        ctx.setLineDash([Math.max(3.5, 4.5 * invZoom), Math.max(3, 4 * invZoom)]);
+    }
+
+    ctx.globalAlpha = Math.min(1, alpha * 0.9);
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.95)';
+    ctx.lineWidth = Math.max(2.8, (dotted ? 3.2 : 4.2) * invZoom);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+
+    ctx.globalAlpha = Math.min(1, alpha);
+    ctx.strokeStyle = 'rgba(250, 252, 255, 0.98)';
+    ctx.lineWidth = Math.max(1.3, (dotted ? 1.65 : 2.25) * invZoom);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+
+    ctx.restore();
+};
+
+const drawExitFlagIndicators = (
+    ctx: CanvasRenderingContext2D,
+    wx: number, wy: number, s: number,
+    d: string, flags: string[], invZoom: number,
+) => {
+    const toRender = Object.entries(EXIT_FLAG_STYLES).filter(([f]) => flags.includes(f)).map(([, v]) => v);
+    if (toRender.length === 0) return;
+
+    const isNS = d === 'n' || d === 's';
+    // Exit edge midpoint and inward normal (into the room)
+    const ex = isNS ? wx + s / 2 : (d === 'e' ? wx + s : wx);
+    const ey = isNS ? (d === 'n' ? wy : wy + s) : wy + s / 2;
+    const nx = isNS ? 0 : (d === 'e' ? -1 : 1);   // inward x
+    const ny = isNS ? (d === 'n' ? 1 : -1) : 0;    // inward y
+    // Outward (exit) direction
+    const ox = -nx, oy = -ny;
+
+    const inset = 5;
+    const spacing = 8;
+    const r = 3.5;
+    const lw = Math.max(1.2, 1.5 * invZoom);
+
+    for (let i = 0; i < toRender.length; i++) {
+        const offset = (i - (toRender.length - 1) / 2) * spacing;
+        const px = isNS ? ex + offset : ex + nx * inset;
+        const py = isNS ? ey + ny * inset : ey + offset;
+        const { color, style } = toRender[i];
+
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = lw;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.globalAlpha = 0.75;
+        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+        ctx.shadowBlur = 4;
+
+        if (style === 'damage') {
+            // Red lightning zigzag
+            ctx.beginPath();
+            ctx.moveTo(px - r, py + r * 0.4);
+            ctx.lineTo(px - r * 0.1, py - r);
+            ctx.lineTo(px + r * 0.1, py);
+            ctx.lineTo(px + r, py - r * 0.4);
+            ctx.stroke();
+        } else if (style === 'fall') {
+            // Amber downward arrow (gravity always down)
+            ctx.beginPath(); ctx.moveTo(px, py - r); ctx.lineTo(px, py + r); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(px - r * 0.55, py + r * 0.3);
+            ctx.lineTo(px, py + r);
+            ctx.lineTo(px + r * 0.55, py + r * 0.3);
+            ctx.stroke();
+        } else if (style === 'guarded') {
+            // Orange X
+            ctx.beginPath(); ctx.moveTo(px - r, py - r); ctx.lineTo(px + r, py + r); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(px + r, py - r); ctx.lineTo(px - r, py + r); ctx.stroke();
+        } else if (style === 'random') {
+            // Purple scattered dots
+            ctx.beginPath(); ctx.arc(px - r * 0.5, py - r * 0.5, 1.4, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(px + r * 0.5, py - r * 0.3, 1.4, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(px, py + r * 0.55, 1.4, 0, Math.PI * 2); ctx.fill();
+        } else if (style === 'special') {
+            // Cyan circle with center dot
+            ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(px, py, 1.3, 0, Math.PI * 2); ctx.fill();
+        } else if (style === 'noflee') {
+            // Dark red double bars perpendicular to exit
+            const bOff = 1.8;
+            if (isNS) {
+                ctx.beginPath(); ctx.moveTo(px - r, py - bOff); ctx.lineTo(px + r, py - bOff); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(px - r, py + bOff); ctx.lineTo(px + r, py + bOff); ctx.stroke();
+            } else {
+                ctx.beginPath(); ctx.moveTo(px - bOff, py - r); ctx.lineTo(px - bOff, py + r); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(px + bOff, py - r); ctx.lineTo(px + bOff, py + r); ctx.stroke();
+            }
+        } else if (style === 'flow') {
+            // Blue arrow in exit direction
+            ctx.beginPath();
+            ctx.moveTo(px - ox * r, py - oy * r);
+            ctx.lineTo(px + ox * r, py + oy * r);
+            ctx.stroke();
+            const ah = r * 0.65;
+            ctx.beginPath();
+            ctx.moveTo(px + ox * r - ox * ah - oy * ah, py + oy * r - oy * ah + ox * ah);
+            ctx.lineTo(px + ox * r, py + oy * r);
+            ctx.lineTo(px + ox * r - ox * ah + oy * ah, py + oy * r - oy * ah - ox * ah);
+            ctx.stroke();
+        }
+
+        ctx.restore();
+    }
+};
+
 const drawClimbIndicator = (
     ctx: CanvasRenderingContext2D,
     wx: number, wy: number,
     s: number,
     d: string,
     invZoom: number,
-    wallColor: string,
 ) => {
     const isNS = d === 'n' || d === 's';
     const margin = 7;
@@ -127,8 +336,8 @@ const drawClimbIndicator = (
     const totalDy = isNS ? 0 : s - margin * 2;
 
     ctx.save();
-    ctx.globalAlpha = 0.5;
-    ctx.strokeStyle = wallColor;
+    ctx.globalAlpha = 0.25;
+    ctx.strokeStyle = 'rgba(200, 200, 200, 1.0)';
     ctx.lineWidth = 2.0 * invZoom;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -192,9 +401,13 @@ export const drawRoomFlagsOptimized = (
         { regex: /WATER|POND|WELL|FOUNTAIN/i,                           sym: '≈', color: '#89b4fa', size: 15 },
         { regex: /FOOD(?!_SHOP)/i,                                      sym: '🍖', color: '#fab387', size: 13 },
         // --- Mounts / transport ---
-        { regex: /ROHIRRIM|WARG|PACK_HORSE|TRAINED_HORSE|HORSE|MULE|STABLE/i, sym: '♘', color: '#e8b86d', size: 15 },
+        { regex: /STABLE/i,                                             sym: '⌂', color: '#fab387', size: 15 },
+        { regex: /WARG|WOLF/i,                                          sym: '🐾', color: '#ffffff', size: 15 },
+        { regex: /MULE/i,                                               sym: '🫏', color: '#a6adc8', size: 15 },
+        { regex: /PONY/i,                                               sym: '♞', color: '#fab387', size: 14 },
+        { regex: /ROHIRRIM|PACK_HORSE|TRAINED_HORSE|HORSE/i,            sym: '♘', color: '#e8b86d', size: 15 },
         { regex: /BOAT/i,                                               sym: '🛶', color: '#74c7ec', size: 14 },
-        { regex: /FERRY/i,                                              sym: '⌑', color: '#5fb3e0', size: 14 },
+        { regex: /FERRY/i,                                              sym: '⚓', color: '#5fb3e0', size: 14 },
         { regex: /COACH/i,                                              sym: 'C', color: '#c9a66b', size: 13 },
         // --- Infrastructure ---
         { regex: /TOWER/i,                                              sym: '△', color: '#9399b2', size: 14 },
@@ -253,7 +466,9 @@ export const drawFeatures = (
         roadColor: string;
         globalAlpha: number;
         isFade: boolean;
+        isTrail: boolean;
     }[] = [];
+    const useOverviewRoutes = camera.zoom < OVERVIEW_ROUTE_ZOOM;
 
     // Fast return if no buckets
     if (!floorIndex) return;
@@ -333,9 +548,10 @@ export const drawFeatures = (
                     }
                 }
 
-                if (ghostExits && Object.keys(ghostExits).length > 0 && (camera.zoom >= 0.15 || unveilMap)) {
+                if (ghostExits && Object.keys(ghostExits).length > 0 && (camera.zoom >= (useOverviewRoutes ? 0.05 : 0.15) || unveilMap)) {
                     const currentRoomObj = localRoom || { terrain: tSector, exits: {} };
                     const isCurrentRoad = normalizeTerrain(currentRoomObj.terrain) === 'Road';
+                    const currentName = String(localRoom?.name || rData[5] || '').toLowerCase();
                     for (const dir in ghostExits) {
                         const exObj = ghostExits[dir]; if (!exObj) continue;
                         const targetVnum = String(exObj.target), targetData = preloaded[targetVnum];
@@ -355,10 +571,12 @@ export const drawFeatures = (
                                 ...(exObj.flags || [])
                             ];
                             const hasRoadFlag = combinedFlags.some((f: string) => /road|trail|path/i.test(String(f)));
+                            const targetName = String(targetData[5] || '').toLowerCase();
+                            const isTrail = /trail|path/.test(currentName) || /trail|path/.test(targetName);
 
                             if (hasRoadFlag) {
                                 const tpx = targetData[0] * s + s / 2, tpy = targetData[1] * s + s / 2;
-                                const isRoad = isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road';
+                                const isRoad = !isTrail && isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road';
                                 const defaultRoadColor = isDarkMode
                                     ? (isRoad 
                                         ? (rCtx.mapTileVisuals?.roadColorDark || ROAD_COLOR_DARK) 
@@ -396,7 +614,8 @@ export const drawFeatures = (
                                     lineWidth,
                                     roadColor,
                                     globalAlpha,
-                                    isFade
+                                    isFade,
+                                    isTrail
                                 });
                             }
                         }
@@ -408,6 +627,7 @@ export const drawFeatures = (
 
     // --- Render Road & Trail Borders ---
     for (const seg of roadSegments) {
+        if (useOverviewRoutes) continue;
         ctx.save();
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -430,6 +650,11 @@ export const drawFeatures = (
 
     // --- Render Road & Trail Fills ---
     for (const seg of roadSegments) {
+        if (useOverviewRoutes) {
+            drawOverviewRouteLine(ctx, seg.x1, seg.y1, seg.x2, seg.y2, invZoom, seg.globalAlpha, seg.isTrail);
+            continue;
+        }
+
         ctx.save();
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -579,7 +804,7 @@ export const drawFeatures = (
                 if (isExplored || unveilMap) {
                     const currentTerrain = localRoom ? localRoom.terrain : tSector;
                     const tName = normalizeTerrain(currentTerrain);
-                    const isWaterRoom = tName === 'Water' || tName === 'Shallows' || tName === 'Rapids' || tName === 'Underwater';
+                    const isWaterRoom = tName === 'Water' || tName === 'Rapids' || tName === 'Underwater';
                     if (isWaterRoom) {
                         ctx.save();
                         ctx.globalAlpha = unveilMap ? 1.0 : exploredAlphaMul;
@@ -588,7 +813,7 @@ export const drawFeatures = (
                             const exit = ghostExits?.[dir];
                             const targetData = exit ? preloaded[String(exit.target)] : null;
                             const nTName = targetData ? normalizeTerrain(targetData[3]) : null;
-                            const neighborIsWater = nTName === 'Water' || nTName === 'Shallows' || nTName === 'Rapids' || nTName === 'Underwater';
+                            const neighborIsWater = nTName === 'Water' || nTName === 'Rapids' || nTName === 'Underwater';
                             if (!neighborIsWater) {
                                 let grad: CanvasGradient;
                                 const dark = 'rgba(0,0,0,0.52)';
@@ -682,15 +907,44 @@ export const drawFeatures = (
                             ctx.restore(); // restore clip
                         }
 
-                        // Climb indicator — amber oval on the exit edge
                         if (hasExit) {
                             const exFlags = ghostExits?.[d]?.flags || localRoom?.exits?.[d]?.flags || [];
                             if (exFlags.some((f: string) => f === 'CLIMB')) {
-                                drawClimbIndicator(ctx, wx, wy, s, d, invZoom, currentWallColor);
+                                drawClimbIndicator(ctx, wx, wy, s, d, invZoom);
                             }
+                            for (const [flag, color] of Object.entries(DOTTED_EXIT_FLAGS)) {
+                                if (exFlags.includes(flag)) drawDottedExitLine(ctx, wx, wy, s, d, color, invZoom);
+                            }
+                            drawExitFlagIndicators(ctx, wx, wy, s, d, exFlags, invZoom);
                         }
                     }
                     ctx.restore();
+                }
+
+                // Draw mountains icon on top of walls if zoom > 0.3
+                if (camera.zoom > 0.3) {
+                    const currentTerrain = localRoom ? localRoom.terrain : tSector;
+                    if (normalizeTerrain(currentTerrain) === 'Mountains') {
+                        const gridX = Math.round(rx), gridY = Math.round(ry);
+                        const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
+                        ctx.save();
+                        ctx.globalAlpha = isExplored ? exploredAlphaMul : 0.35;
+                        const inset = getTerrainTileInset(s);
+                        const isSnow = localRoom?.isPermanentSnow || rCtx.weather === 'snow';
+                        drawTerrainIcon(
+                            ctx,
+                            wx + inset,
+                            wy + inset,
+                            s - inset * 2,
+                            currentTerrain,
+                            isDarkMode,
+                            rCtx.processedIconsRef,
+                            rCtx.imagesRef,
+                            variant,
+                            isSnow ? 'snow' : rCtx.weather
+                        );
+                        ctx.restore();
+                    }
                 }
 
                 // 3. Indicators and Flags (Zoom > 0.3)
@@ -736,8 +990,8 @@ export const drawFeatures = (
                         ctx.restore();
                     }
 
-                    // Up/down arrows: show for explored and ring-1 revealed, skip for peeked
-                    if (ghostExits && (ghostExits.u || ghostExits.d) && (isExplored || isRevealed)) {
+                    // Up/down arrows: show for explored, ring-1 revealed, and unveil-all mode
+                    if (ghostExits && (ghostExits.u || ghostExits.d) && (isExplored || isRevealed || unveilMap)) {
                         const iconColor = 'rgba(148, 163, 184, 0.8)';
                         const cOff = 12;
                         const arrowSize = 18;
@@ -782,6 +1036,19 @@ export const drawFeatures = (
                             }
                         }
 
+                        ctx.restore();
+                    }
+
+                    // NORIDE indicator — top-right corner
+                    // rData[14] = "NOT_RIDABLE" | "RIDABLE"; localRoom.ridable mirrors this or may be boolean from GMCP
+                    const ridableRaw = localRoom?.ridable !== undefined ? localRoom.ridable : rData[14];
+                    const isNoRide = ridableRaw === 'NOT_RIDABLE' || ridableRaw === false || ridableRaw === 'false';
+                    if ((isExplored || unveilMap) && isNoRide) {
+                        const iconSize = 14;
+                        const icon = getNorideIcon(iconSize);
+                        ctx.save();
+                        ctx.globalAlpha = isExplored ? exploredAlphaMul : 0.7;
+                        ctx.drawImage(icon, wx + s - icon.width + 2, wy - 2);
                         ctx.restore();
                     }
                 }
@@ -948,8 +1215,12 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 if (hasExit) {
                     const exFlags = room.exits?.[d]?.flags || wEx?.flags || [];
                     if (exFlags.some((f: string) => f === 'CLIMB')) {
-                        drawClimbIndicator(ctx, wx, wy, s, d, invZoom, currentWallColor);
+                        drawClimbIndicator(ctx, wx, wy, s, d, invZoom);
                     }
+                    for (const [flag, color] of Object.entries(DOTTED_EXIT_FLAGS)) {
+                        if (exFlags.includes(flag)) drawDottedExitLine(ctx, wx, wy, s, d, color, invZoom);
+                    }
+                    drawExitFlagIndicators(ctx, wx, wy, s, d, exFlags, invZoom);
                 }
             }
         }
@@ -964,6 +1235,14 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
             const mobF = room.mobFlags || [], loadF = room.loadFlags || [], questF = room.roomQuestFlags || [];
             if (mobF.length > 0 || loadF.length > 0 || questF.length > 0) {
                 drawRoomFlagsOptimized(ctx, cX, cY, camera.zoom, mobF, loadF, questF);
+            }
+            if (room.ridable === 'NOT_RIDABLE' || room.ridable === false || room.ridable === 'false') {
+                const iconSize = 14;
+                const icon = getNorideIcon(iconSize);
+                ctx.save();
+                ctx.globalAlpha = 1.0;
+                ctx.drawImage(icon, wx + s - icon.width + 2, wy - 2);
+                ctx.restore();
             }
         }
     }

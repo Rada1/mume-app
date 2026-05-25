@@ -23,14 +23,14 @@
     display: grid;
     grid-template-columns: 52px minmax(0, 1fr);
     align-items: center;
-    gap: 6px;
-    min-height: 18px;
+    gap: 5px;
+    min-height: 16px;
 }
 
 .room-chip-row-label {
     font-family: var(--font-mono, monospace);
-    font-size: 0.5rem;
-    font-weight: 800;
+    font-size: 0.48rem;
+    font-weight: 850;
     letter-spacing: 0;
     color: var(--text-faded);
     text-transform: uppercase;
@@ -58,16 +58,16 @@
     flex: 0 0 auto;
     max-width: 94px;
     width: max-content;
-    min-height: 17px;
-    padding: 2px 6px;
+    min-height: 15px;
+    padding: 1px 5px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 5px;
+    border-radius: 4px;
     background: rgba(255, 255, 255, 0.04);
     color: rgba(255, 255, 255, 0.82);
     font-family: var(--font-mono, monospace);
-    font-size: 0.58rem;
-    font-weight: 750;
-    line-height: 1.1;
+    font-size: 0.5rem;
+    font-weight: 800;
+    line-height: 1.05;
     letter-spacing: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -109,6 +109,22 @@
 .light-mode .room-chip {
     background: rgba(0, 0, 0, 0.04);
     border-color: rgba(0, 0, 0, 0.08);
+}
+
+@media (min-width: 601px) {
+    .room-chip-row {
+        min-height: 24px;
+    }
+
+    .room-chip-row-label {
+        font-size: 0.52rem;
+    }
+
+    .room-chip {
+        min-height: 20px;
+        padding: 3px 8px;
+        font-size: 0.68rem;
+    }
 }
 
 @media (max-width: 600px) {

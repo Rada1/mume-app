@@ -30,8 +30,8 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
     const masterData = preloadedCoordsRef?.current?.[vnum];
     
     if (masterData) {
-        // Arda Map format: [x, y, z, terrainVal, exits, name, masterId, mobFlags, loadFlags, area, light, sundeath, align, portable, ridable, note]
-        const [mx, my, mz, mTVal, mExits, mName, mMasterId, mMobF, mLoadF, mArea, mLight, mSundeath, mAlign, mPortable, mRidable, mNote] = masterData;
+        // Arda Map format: [x, y, z, terrainVal, exits, name, masterId, mobFlags, loadFlags, area, light, sundeath, align, portable, ridable, note, contents, description]
+        const [mx, my, mz, mTVal, mExits, mName, mMasterId, mMobF, mLoadF, mArea, mLight, mSundeath, mAlign, mPortable, mRidable, mNote, mContents, mDescription] = masterData;
 
         if (!room) {
             // Derive a "Virtual Master Room" for rooms in the Arda map that aren't in live state
@@ -60,6 +60,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                             gmcpDestId: destId,
                             closed: false,
                             hasDoor: typeof dest === 'object' ? !!(dest as any).hasDoor : false,
+                            doorName: typeof dest === 'object' ? (dest as any).doorName : undefined,
                             flags: typeof dest === 'object' ? (dest as any).flags : []
                         };
                     }
@@ -87,9 +88,10 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 x: mx, y: my, z: mz,
                 terrain: resolvedTerrain,
                 exits: mappedExits,
-                desc: (mMasterId && mMasterId !== vnum) ? `Alias of room ${mMasterId}` : '',
+                desc: mDescription || '',
                 zone: resolvedZone,
                 notes: mNote || '',
+                contents: mContents || '',
                 mobFlags: mMobF || [],
                 loadFlags: mLoadF || [],
                 light: mLight,
@@ -146,6 +148,8 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
             if (clonedRoom.portable === undefined && mPortable !== undefined) { clonedRoom.portable = mPortable; hasChanged = true; }
             if (clonedRoom.ridable === undefined && mRidable !== undefined) { clonedRoom.ridable = mRidable; hasChanged = true; }
             if ((!clonedRoom.notes || clonedRoom.notes === '') && mNote) { clonedRoom.notes = mNote; hasChanged = true; }
+            if ((!clonedRoom.contents || clonedRoom.contents === '') && mContents) { clonedRoom.contents = mContents; hasChanged = true; }
+            if ((!clonedRoom.desc || clonedRoom.desc.startsWith('Alias of room')) && mDescription) { clonedRoom.desc = mDescription; hasChanged = true; }
 
             if (hasChanged) room = clonedRoom;
         }
@@ -249,6 +253,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
 
     const noteBadges = getNoteBadges();
     const hasNoteHerb = noteBadges.some(b => b.text.includes('Herb'));
+    const staticContents = room.contents || '';
 
     return (
         <div
@@ -341,6 +346,25 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 </div>
             )}
 
+            {staticContents && (
+                <div style={{
+                    fontSize: '12px',
+                    color: isDarkMode ? '#dff6ff' : '#164e63',
+                    backgroundColor: isDarkMode ? 'rgba(116, 199, 236, 0.08)' : 'rgba(8, 145, 178, 0.08)',
+                    padding: '10px 12px',
+                    borderRadius: '8px',
+                    border: isDarkMode ? '1px solid rgba(116, 199, 236, 0.22)' : '1px solid rgba(8, 145, 178, 0.22)',
+                    lineHeight: '1.4',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                    marginTop: '4px'
+                }}>
+                    <span style={{ fontWeight: '800', textTransform: 'uppercase', fontSize: '9px', color: '#74c7ec', letterSpacing: '0.05em' }}>Static Room Contents</span>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{staticContents}</div>
+                </div>
+            )}
+
             {(room.mobFlags?.length || room.loadFlags?.length || room.roomQuestFlags?.length || room.align || room.portable !== undefined || room.ridable !== undefined || room.notes) ? (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                     {room.mobFlags?.map(f => {
@@ -423,7 +447,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                     gap: '4px',
                     marginTop: '4px'
                 }}>
-                    <span style={{ fontWeight: '800', textTransform: 'uppercase', fontSize: '9px', color: '#f9e2af', letterSpacing: '0.05em' }}>Notes / Contents</span>
+                    <span style={{ fontWeight: '800', textTransform: 'uppercase', fontSize: '9px', color: '#f9e2af', letterSpacing: '0.05em' }}>Notes</span>
                     <div style={{ whiteSpace: 'pre-wrap' }}>{room.notes}</div>
                 </div>
             )}
@@ -447,7 +471,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                                     <span style={{ fontSize: '12px', fontWeight: 'bold', color: isActive ? '#60a5fa' : (isDarkMode ? '#3f3f46' : '#8e8e93') }}>{d.toUpperCase()}</span>
                                     {isActive && (
                                         <span style={{ fontSize: '9px', fontWeight: 'bold', color: exit.hasDoor ? '#fab387' : '#52525b' }}>
-                                            DOOR: {exit.hasDoor ? 'YES' : 'NO'}
+                                            {exit.doorName || `DOOR: ${exit.hasDoor ? 'YES' : 'NO'}`}
                                         </span>
                                     )}
                                 </div>

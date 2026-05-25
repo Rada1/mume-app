@@ -25,6 +25,7 @@ export interface TokenRendererProps {
     type?: MessageType;
     forceBoldEntities?: boolean;
     splitFirstWord?: boolean;
+    wordReveal?: boolean;
     metadata?: {
         id?: string;
         context?: string;
@@ -35,12 +36,13 @@ export interface TokenRendererProps {
     };
 }
 
-export const TokenRenderer: React.FC<TokenRendererProps> = ({ 
-    tokens, 
+export const TokenRenderer: React.FC<TokenRendererProps> = ({
+    tokens,
     fallbackHtml,
     type,
     forceBoldEntities = false,
     splitFirstWord = false,
+    wordReveal = false,
     metadata: propMetadata
 }) => {
     const { target, opponentId, opponentName } = useVitals();
@@ -314,6 +316,48 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 })}
             </span>
         );
+    }
+
+    if (wordReveal) {
+        let wordIdx = 0;
+        const wordNodes: React.ReactNode[] = [];
+
+        for (let i = 0; i < tokens.length; i++) {
+            const token = tokens[i];
+
+            if (token.type === 'entity') {
+                wordNodes.push(
+                    <span key={`lw-${i}`} className="log-word" style={{ animationDelay: `${wordIdx * 30}ms` }}>
+                        {renderToken(token, i)}
+                    </span>
+                );
+                wordIdx++;
+                continue;
+            }
+
+            const ansiStyle = token.type === 'ansi' ? (token as AnsiToken).style : undefined;
+            const words = token.content.split(' ');
+
+            for (let j = 0; j < words.length; j++) {
+                const word = words[j];
+                if (!word) {
+                    wordNodes.push(<span key={`sp-${i}-${j}`} style={ansiStyle}> </span>);
+                    continue;
+                }
+                wordNodes.push(
+                    <span
+                        key={`lw-${i}-${j}`}
+                        className="log-word"
+                        style={{ ...ansiStyle, animationDelay: `${wordIdx * 30}ms` }}
+                    >
+                        {word}{j < words.length - 1 ? ' ' : ''}
+                    </span>
+                );
+                wordIdx++;
+            }
+        }
+
+        return <>{wordNodes}</>;
     }
 
     if (splitFirstWord) {

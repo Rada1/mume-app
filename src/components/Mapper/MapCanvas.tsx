@@ -1,7 +1,7 @@
 import React, { useRef, useCallback, useEffect, useMemo, forwardRef } from 'react';
 import { useMapperRenderer } from './useMapperRenderer';
 import { useMapAnimation } from './useMapAnimation';
-import { MapperPrediction } from './mapperTypes';
+import { CompactMapExit, MapperPrediction } from './mapperTypes';
 import { gmcpBus } from '../../events/gmcpBus';
 import type { CombatPulse } from './renderers/rendererUtils';
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -28,7 +28,7 @@ interface MapCanvasProps {
     stableRoomsRef: React.MutableRefObject<Record<string, any>>;
     stableRoomIdRef: React.MutableRefObject<string | null>;
     stableMarkersRef: React.MutableRefObject<Record<string, any>>;
-    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
+    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, CompactMapExit>, string, string, string[], string[]]>>;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     exploredVnums: Set<string>;
     exploredRef: React.MutableRefObject<Set<string>>;
@@ -98,7 +98,8 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
         roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
         opponentName, opponentId, inCombat, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
-        activeMapFilter, mapSearchQuery, mapTileOpacity, lighting
+        activeMapFilter, mapSearchQuery, mapTileOpacity, lighting,
+        regionLabels, regionLabelEditMode, selectedRegionLabelId
     } = props;
 
     const zoneFilters = useSettingsStore(state => state.zoneFilters);
@@ -120,7 +121,10 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         mapTileVisuals,
         mapTileOpacity,
         lighting,
-        weather
+        weather,
+        regionLabels,
+        regionLabelEditMode,
+        selectedRegionLabelId
     });
 
     useEffect(() => gmcpBus.on('Game.CombatPulse', pulse => {

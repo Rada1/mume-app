@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { MapperRoom, MapperMarker } from '../mapperTypes';
+import { CompactMapExit, MapperRoom, MapperMarker } from '../mapperTypes';
 import { generateId, GRID_SIZE, DIRS } from '../mapperUtils';
 
 interface UseMapActionsProps {
@@ -12,7 +12,7 @@ interface UseMapActionsProps {
     setExploredMarkers: React.Dispatch<React.SetStateAction<Set<string>>>;
     setCurrentRoomId: React.Dispatch<React.SetStateAction<string | null>>;
     currentRoomIdRef: React.MutableRefObject<string | null>;
-    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
+    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, CompactMapExit>, string, string, string[], string[]]>>;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     baseMapExitsRef: React.MutableRefObject<Record<string, any>>;
     markersRef: React.MutableRefObject<Record<string, MapperMarker>>;
@@ -112,7 +112,7 @@ export const useMapActions = ({
         addMessage?.('system', `[Mapper] Synced current room location to ghost map.`);
     }, [addMessage, currentRoomIdRef, setRooms, preloadedCoordsRef]);
 
-    const loadImportedMapData = useCallback((data: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>) => {
+    const loadImportedMapData = useCallback((data: Record<string, [number, number, number, number, Record<string, CompactMapExit>, string, string, string[], string[]]>) => {
         const merged = { ...preloadedCoordsRef.current };
         for (const vnum in data) {
             const newData = data[vnum];

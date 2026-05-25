@@ -185,4 +185,5 @@ export interface UseGameParserDeps {
     setLastSnoopStartTime: (time: number | null) => void;
     actionsRef: RefObject<GameAction[]>;
     gameTime: MumeTime | null;
+    setPopoverState?: (state: PopoverState | null) => void;
 }

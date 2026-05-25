@@ -86,7 +86,7 @@ export const DEFAULT_TERRAIN_COLORS: Record<string, string> = {
     Hills: '#8a796f',
     Mountains: '#7e6656',
     Water: '#376d95',
-    Shallows: '#528795',
+    Shallows: '#5d694e',
     Rapids: '#5c8b99',
     Underwater: '#34546f',
     Road: '#616863',
@@ -127,7 +127,7 @@ export const getTerrainColor = (
             case 'Hills': return '#dfc3b3';
             case 'Mountains': return '#cca48b';
             case 'Water': return '#59aff0';
-            case 'Shallows': return '#85daf0';
+            case 'Shallows': return '#899971';
             case 'Rapids': return '#95e0f7';
             case 'Underwater': return '#5488b3';
             case 'Road': return '#9da89f';
@@ -259,6 +259,7 @@ export const checkRoomFilter = (
     const loadFlags = (localRoom?.loadFlags || preloadedData?.[8] || []) as string[];
     const questFlags = (localRoom?.roomQuestFlags || preloadedData?.[9] || []) as string[];
     const notes = (localRoom?.notes || preloadedData?.[15] || '') as string;
+    const contents = (localRoom?.contents || preloadedData?.[16] || '') as string;
     const terrain = (localRoom?.terrain || preloadedData?.[3] || '') as string;
 
     const allText = [
@@ -266,6 +267,7 @@ export const checkRoomFilter = (
         ...loadFlags,
         ...questFlags,
         notes,
+        contents,
         terrain
     ].join(' ').toLowerCase();
 

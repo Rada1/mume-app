@@ -57,6 +57,34 @@ def parse_sundeath(value: str) -> int | None:
     return None
 
 
+def get_normalized_child_text(elem: ET.Element, tag: str, default: str) -> str:
+    value = get_child_text(elem, tag)
+    return value if value else default
+
+
+def normalize_description_text(value: str) -> str:
+    paragraphs = [
+        " ".join(line.strip() for line in paragraph.splitlines() if line.strip())
+        for paragraph in value.split("\n\n")
+    ]
+    return "\n\n".join(paragraph for paragraph in paragraphs if paragraph)
+
+
+def normalize_contents_text(value: str) -> str:
+    lines = [" ".join(line.split()) for line in value.splitlines() if line.strip()]
+    if not lines:
+        return ""
+
+    normalized: list[str] = []
+    for line in lines:
+        if normalized and not normalized[-1].endswith((".", "!", "?", '"', "'")):
+            normalized[-1] = f"{normalized[-1]} {line}"
+        else:
+            normalized.append(line)
+
+    return "\n".join(normalized)
+
+
 def parse_exit(exit_elem: ET.Element) -> tuple[str, dict[str, object]] | None:
     raw_dir = (exit_elem.get("dir") or exit_elem.get("direction") or "").lower()
     direction = DIR_MAP.get(raw_dir, raw_dir[:1])
@@ -83,6 +111,9 @@ def parse_exit(exit_elem: ET.Element) -> tuple[str, dict[str, object]] | None:
         "target": target,
         "hasDoor": has_door,
     }
+    door_name = exit_elem.get("doorname") or exit_elem.get("doorName") or exit_elem.get("door_name")
+    if door_name:
+        exit_data["doorName"] = door_name.strip()
     if flags:
         exit_data["flags"] = flags
 
@@ -127,6 +158,12 @@ def parse_xml_to_json(xml_file: Path, output_file: Path, floor_height: float = 1
         load_flags = get_all_child_text(elem, "loadflag")
         light = parse_light(get_child_text(elem, "light"))
         sundeath = parse_sundeath(get_child_text(elem, "sundeath"))
+        align = get_normalized_child_text(elem, "align", "NEUTRAL")
+        portable = get_normalized_child_text(elem, "portable", "PORTABLE")
+        ridable = get_normalized_child_text(elem, "ridable", "RIDABLE")
+        note = get_child_text(elem, "note")
+        contents = normalize_contents_text(get_child_text(elem, "contents"))
+        description = normalize_description_text(get_child_text(elem, "description"))
 
         room_data: list[object] = [
             x,
@@ -139,11 +176,15 @@ def parse_xml_to_json(xml_file: Path, output_file: Path, floor_height: float = 1
             mob_flags,
             load_flags,
             area,
+            light,
+            sundeath if sundeath is not None else 1,
+            align,
+            portable,
+            ridable,
+            note,
+            contents,
+            description,
         ]
-        if light or sundeath is not None:
-            room_data.append(light)
-        if sundeath is not None:
-            room_data.append(sundeath)
 
         rooms[room_id] = room_data
         elem.clear()

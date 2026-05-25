@@ -8,6 +8,7 @@ import { useViewport } from '../../hooks/useViewport';
 import { X } from 'lucide-react';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 
 interface HelpCardProps {
     helpData: string;
@@ -21,6 +22,8 @@ export const HelpCard: React.FC<HelpCardProps> = ({
 }) => {
     const { isMobile, isLandscape } = useViewport();
     const isPortrait = isMobile && !isLandscape;
+    const theme = useSettingsStore(state => state.theme);
+    const isDarkMode = theme === 'dark';
 
     // --- Parsing Logic ---
     // Extract "See also" section to turn keywords into buttons
@@ -36,22 +39,43 @@ export const HelpCard: React.FC<HelpCardProps> = ({
     }
 
     // Convert help text to HTML with ANSI support
-    const contentHtml = ansiConvert.toHtml(mainText);
+    const contentHtmlRaw = ansiConvert.toHtml(mainText);
+
+    // Convert all CAPS words to clickable help button spans (length >= 2) with bright gold/yellow theming (#ffcc00), avoiding HTML tags/attributes
+    const contentHtml = contentHtmlRaw.replace(/(<[^>]+>)|(\b[A-Z]{2,}\b)/g, (match, tag, word) => {
+        if (tag) return tag;
+        return `<span class="help-topic-btn" data-cmd="${word}" style="color: #ffcc00; cursor: pointer; font-weight: bold; padding: 1px 4px; background: rgba(255, 204, 0, 0.1); border: 1px solid rgba(255, 204, 0, 0.25); border-radius: 4px; display: inline-block; margin: 1px 0;">${word}</span>`;
+    });
+
+    const handleContentClick = (e: React.MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const btn = target.closest('.help-topic-btn') as HTMLElement;
+        if (btn) {
+            const topic = btn.getAttribute('data-cmd');
+            if (topic && executeCommand) {
+                executeCommand(topic.toLowerCase() === 'help' ? 'help' : `help ${topic}`);
+            }
+        }
+    };
 
     return (
-        <div className="floating-group-card-overlay" onClick={onClose} style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 30000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'rgba(0, 0, 0, 0.6)',
-            padding: isMobile ? '0' : '20px'
-        }}>
+        <div 
+            className="floating-group-card-overlay" 
+            onClick={onClose} 
+            style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 30000,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(0, 0, 0, 0.6)',
+                padding: isMobile ? '0' : '20px'
+            }}
+        >
             <div className="floating-group-card help-card" ref={popoverRef} onClick={(e) => e.stopPropagation()} style={{
                 width: isMobile ? '100%' : '100%',
                 left: isMobile ? 0 : 'auto',
@@ -59,10 +83,10 @@ export const HelpCard: React.FC<HelpCardProps> = ({
                 margin: 0,
                 height: 'auto',
                 maxHeight: isMobile ? '65vh' : '80vh',
-                background: 'rgba(15, 15, 20, 0.6)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: isMobile ? 'none' : '1px solid rgba(255, 255, 255, 0.2)',
+                background: isDarkMode ? 'rgba(24, 24, 27, 0.4)' : 'rgba(245, 245, 247, 0.6)',
+                backdropFilter: 'blur(25px)',
+                WebkitBackdropFilter: 'blur(25px)',
+                border: isMobile ? 'none' : (isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)'),
                 borderLeft: isMobile ? 'none' : undefined,
                 borderRight: isMobile ? 'none' : undefined,
                 boxShadow: isMobile ? 'none' : '0 20px 50px rgba(0, 0, 0, 0.8)',
@@ -76,16 +100,16 @@ export const HelpCard: React.FC<HelpCardProps> = ({
             }}>
                 <div className="card-header" style={{
                     padding: '12px 20px',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderBottom: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    background: 'rgba(255, 255, 255, 0.03)',
+                    background: 'transparent',
                     minHeight: '50px'
                 }}>
                     <h3 style={{ 
                         margin: 0, 
-                        color: 'var(--accent)', 
+                        color: '#ffcc00', 
                         fontSize: '0.9rem', 
                         letterSpacing: '1.5px', 
                         textTransform: 'uppercase',
@@ -97,7 +121,7 @@ export const HelpCard: React.FC<HelpCardProps> = ({
                     <button onClick={onClose} style={{
                         background: 'rgba(255, 255, 255, 0.1)',
                         border: 'none',
-                        color: '#fff',
+                        color: isDarkMode ? '#fff' : '#000',
                         width: '32px',
                         height: '32px',
                         borderRadius: '16px',
@@ -119,12 +143,14 @@ export const HelpCard: React.FC<HelpCardProps> = ({
                     overflowY: 'auto',
                     overflowX: 'hidden',
                     flex: 1,
-                    background: '#000',
+                    background: 'transparent',
                     display: 'flex',
                     flexDirection: 'column',
-                    containerType: 'inline-size'
+                    containerType: 'inline-size',
+                    overscrollBehavior: 'contain'
                 }}>
                     <pre 
+                        onClick={handleContentClick}
                         style={{
                             margin: 0,
                             fontFamily: 'var(--font-mono, "Cascadia Code", monospace)',
@@ -133,7 +159,7 @@ export const HelpCard: React.FC<HelpCardProps> = ({
                                 ? 'clamp(7px, calc((100cqw - 24px) / 48), 16px)' 
                                 : 'clamp(10px, calc((100cqw - 24px) / 48), 15px)',
                             lineHeight: '1.25',
-                            color: '#ccc',
+                            color: isDarkMode ? '#ccc' : '#222',
                             whiteSpace: 'pre-wrap',
                             wordBreak: 'normal',
                             width: '100%'
@@ -145,11 +171,11 @@ export const HelpCard: React.FC<HelpCardProps> = ({
                         <div style={{
                             marginTop: '20px',
                             paddingTop: '15px',
-                            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderTop: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
                             fontFamily: 'var(--font-mono, monospace)',
                             fontSize: '0.8rem'
                         }}>
-                            <span style={{ color: '#888', marginRight: '8px' }}>See also:</span>
+                            <span style={{ color: isDarkMode ? '#888' : '#555', marginRight: '8px' }}>See also:</span>
                             <div style={{ 
                                 display: 'inline-flex', 
                                 flexWrap: 'wrap', 
@@ -162,24 +188,24 @@ export const HelpCard: React.FC<HelpCardProps> = ({
                                         className="inline-btn"
                                         onClick={() => executeCommand?.(kw.toLowerCase() === 'help' ? 'help' : `help ${kw}`)}
                                         style={{
-                                            color: 'var(--accent)',
+                                            color: '#ffcc00',
                                             textDecoration: 'none',
                                             cursor: 'pointer',
                                             fontWeight: 'bold',
                                             padding: '2px 8px',
-                                            background: 'rgba(var(--accent-rgb), 0.1)',
+                                            background: 'rgba(255, 204, 0, 0.1)',
                                             borderRadius: '4px',
-                                            border: '1px solid rgba(var(--accent-rgb), 0.2)',
+                                            border: '1px solid rgba(255, 204, 0, 0.2)',
                                             transition: 'all 0.2s ease',
                                             textTransform: 'uppercase'
                                         }}
                                         onMouseEnter={(e) => {
-                                            e.currentTarget.style.background = 'rgba(var(--accent-rgb), 0.2)';
-                                            e.currentTarget.style.borderColor = 'var(--accent)';
+                                            e.currentTarget.style.background = 'rgba(255, 204, 0, 0.2)';
+                                            e.currentTarget.style.borderColor = '#ffcc00';
                                         }}
                                         onMouseLeave={(e) => {
-                                            e.currentTarget.style.background = 'rgba(var(--accent-rgb), 0.1)';
-                                            e.currentTarget.style.borderColor = 'rgba(var(--accent-rgb), 0.2)';
+                                            e.currentTarget.style.background = 'rgba(255, 204, 0, 0.1)';
+                                            e.currentTarget.style.borderColor = 'rgba(255, 204, 0, 0.2)';
                                         }}
                                     >
                                         {kw}
@@ -192,15 +218,15 @@ export const HelpCard: React.FC<HelpCardProps> = ({
                 
                 <div className="card-footer" style={{
                     padding: '8px 20px',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderTop: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
                     display: 'flex',
                     justifyContent: 'center',
-                    background: 'rgba(255, 255, 255, 0.02)'
+                    background: 'transparent'
                 }}>
                     <button 
                         onClick={onClose}
                         style={{
-                            background: 'var(--accent)',
+                            background: '#ffcc00',
                             color: '#000',
                             border: 'none',
                             padding: '6px 24px',
@@ -209,7 +235,16 @@ export const HelpCard: React.FC<HelpCardProps> = ({
                             fontWeight: 'bold',
                             cursor: 'pointer',
                             textTransform: 'uppercase',
-                            letterSpacing: '1px'
+                            letterSpacing: '1px',
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#ffe57f';
+                            e.currentTarget.style.boxShadow = '0 0 10px rgba(255, 204, 0, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = '#ffcc00';
+                            e.currentTarget.style.boxShadow = 'none';
                         }}
                     >
                         Exit Help

@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { useLogPointerDown } from './useLogPointerDown';
 import { useLogPointerUp } from './useLogPointerUp';
+import { audioManager } from '../../services/audio/AudioManager';
 
 export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>, heldBtnFiredRef?: React.MutableRefObject<boolean>) => {
     const {
@@ -56,6 +57,10 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
 
         window.addEventListener('pointerup', handleGlobalUp);
         window.addEventListener('pointercancel', handleGlobalUp);
+
+        if (targetEl && targetEl.getAttribute('data-targetable') !== 'false') {
+            audioManager.playEffect('target', { skipJitter: true });
+        }
 
         if (viewport.isMobile && targetEl && targetEl.getAttribute('data-targetable') !== 'false') {
             if (heldButton && !heldButton.id.startsWith('log-inline-')) {

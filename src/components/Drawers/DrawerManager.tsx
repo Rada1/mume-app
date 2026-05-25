@@ -87,13 +87,6 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                         <span className="drawer-title">
                             Map
                         </span>
-                        <button
-                            className="drawer-close-btn"
-                            onClick={() => { triggerHaptic(15); toggleMap(); }}
-                            title="Collapse Map"
-                        >
-                            <X size={14} />
-                        </button>
                     </div>
                     <div className="drawer-content" style={{ flex: 1, padding: 0, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                         <div className="mapper-header-desktop">

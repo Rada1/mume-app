@@ -27,7 +27,8 @@ const Header: React.FC<HeaderProps> = () => {
         telnet,
         executeCommand,
         triggerHaptic,
-        gameState
+        gameState,
+        clearObjectSelection
     } = useGame();
 
     // Get mode state
@@ -70,7 +71,7 @@ const Header: React.FC<HeaderProps> = () => {
     const effectiveShowControls = showControls;
     const { activeSet, isEditMode, availableSets, setActiveSet } = btn;
     const teleportTargetsCount = teleportTargets.length;
-    const onClearTarget = () => setTarget(null);
+    const onClearTarget = () => { setTarget(null); clearObjectSelection(); };
     const onTeleportClick = () => {
         setPopoverState({
             type: 'teleport-manage',
@@ -166,12 +167,12 @@ const Header: React.FC<HeaderProps> = () => {
                         </div>
                         <div className="player-stats-mini">
                             <div className="stat-pill xp">
-                                <span className="pill-label">TNL</span>
-                                <span className="pill-value">{formatCompactNumber(characterInfo.tnl)}</span>
+                                <span className="pill-label">XP</span>
+                                <span className="pill-value">{formatCompactNumber(characterInfo.xp)}</span>
                             </div>
                             <div className="stat-pill tp">
-                                <span className="pill-label">TPNL</span>
-                                <span className="pill-value">{formatCompactNumber(characterInfo.tpnl)}</span>
+                                <span className="pill-label">TP</span>
+                                <span className="pill-value">{formatCompactNumber(characterInfo.tp)}</span>
                             </div>
                         </div>
                     </div>

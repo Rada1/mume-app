@@ -148,6 +148,8 @@ export const AUDIO_MANIFEST = {
         'loadflag': { path: '/assets/Sounds/UI/loadflag.mp3', defaultVolume: 0.8 },
         'ride': { path: '/assets/Sounds/UI/ride.mp3', defaultVolume: 0.8 },
         'stopriding': { path: '/assets/Sounds/UI/stopriding.mp3', defaultVolume: 0.8 },
+        'target': { path: '/assets/Sounds/UI/target.mp3', defaultVolume: 0.07 },
+        'help': { path: '/assets/Sounds/UI/help.mp3', defaultVolume: 0.8 },
     } as Record<string, SoundConfig>,
     bpmMap: {
         'AncientBrokenRoad.mp3': 72,

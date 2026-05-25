@@ -770,6 +770,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setInput: s.setInput,
 
         // Others
+        setPopoverState: ui.setPopoverState,
         addDiagnosticLog: ui.addDiagnosticLog,
         registerEntity: s.registry.registerEntity,
         entities: s.registry.entities,
@@ -801,6 +802,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     const executeCommandRef = useRef<any>(null);
+    const loginInventoryRefreshSentRef = useRef(false);
 
     const uiValue: UIContextType = useMemo(() => {
         const requestDrawerRefresh = (drawer: DrawerType) => {
@@ -951,6 +953,24 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         executeCommandRef.current = controller.executeCommand;
         parserExecuteCommandRef.current = controller.executeCommand;
     }, [controller.executeCommand]);
+
+    useEffect(() => {
+        if (s.gameState !== 'playing' || s.status !== 'connected') {
+            loginInventoryRefreshSentRef.current = false;
+            return;
+        }
+        if (loginInventoryRefreshSentRef.current) return;
+
+        loginInventoryRefreshSentRef.current = true;
+        const timers = [
+            setTimeout(() => controller.executeCommand('inv', true, true, false, true), 700),
+            setTimeout(() => controller.executeCommand('eq', true, true, false, true), 1200),
+        ];
+
+        return () => {
+            timers.forEach(timer => clearTimeout(timer));
+        };
+    }, [controller.executeCommand, s.gameState, s.status]);
 
     const logValue: LogContextType = useMemo(() => ({
         ...activeLog,

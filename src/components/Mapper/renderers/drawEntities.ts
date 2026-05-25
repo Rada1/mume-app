@@ -992,6 +992,7 @@ export const drawMarkers = (
         if (marker.text) {
             const fontSize = (marker.fontSize || 10) * sizeScale;
             ctx.font = `${fontSize}px Aniron, "Cinzel", serif`;
+            const labelY = my - dotSize - 4 * sizeScale;
 
             const metrics = ctx.measureText(marker.text);
             const textWidth = metrics.width;
@@ -1003,12 +1004,13 @@ export const drawMarkers = (
             const rectW = textWidth + paddingX * 2;
             const rectH = textHeight + paddingY * 2;
             const rectX = mx - rectW / 2;
-            const rectY = my - dotSize - 4 * sizeScale - textHeight - paddingY;
+            const rectY = labelY - textHeight - paddingY;
 
             ctx.save();
+            ctx.globalAlpha = 1.0;
             ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
             ctx.shadowBlur = 10 * sizeScale;
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
 
             const r = 4 * sizeScale;
             ctx.beginPath();
@@ -1025,10 +1027,23 @@ export const drawMarkers = (
             ctx.fill();
             ctx.restore();
 
-            ctx.fillStyle = '#ffffff';
+            ctx.globalAlpha = 1.0;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
-            ctx.fillText(marker.text, mx, my - dotSize - 4 * sizeScale);
+
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
+            ctx.shadowBlur = Math.max(3, 6 * sizeScale);
+            ctx.fillStyle = '#ffcc00';
+            ctx.fillText(marker.text, mx, labelY);
+
+            ctx.shadowColor = 'rgba(255, 204, 0, 0.65)';
+            ctx.shadowBlur = Math.max(4, 8 * sizeScale);
+            ctx.fillStyle = 'rgba(255, 204, 0, 0.92)';
+            ctx.fillText(marker.text, mx, labelY);
+
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = '#ffcc00';
+            ctx.fillText(marker.text, mx, labelY);
         }
         ctx.restore();
     });

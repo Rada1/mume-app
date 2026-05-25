@@ -2,6 +2,27 @@ import xml.etree.ElementTree as ET
 import json
 import os
 
+def normalize_description_text(value):
+    paragraphs = [
+        " ".join(line.strip() for line in paragraph.splitlines() if line.strip())
+        for paragraph in value.split("\n\n")
+    ]
+    return "\n\n".join(paragraph for paragraph in paragraphs if paragraph)
+
+def normalize_contents_text(value):
+    lines = [" ".join(line.split()) for line in value.splitlines() if line.strip()]
+    if not lines:
+        return ""
+
+    normalized = []
+    for line in lines:
+        if normalized and not normalized[-1].endswith((".", "!", "?", '"', "'")):
+            normalized[-1] = f"{normalized[-1]} {line}"
+        else:
+            normalized.append(line)
+
+    return "\n".join(normalized)
+
 def compile_ardagmcp():
     # Prioritise the Nazgum map if available
     xml_paths = ['data/ardanazgum.xml', 'public/ardagmcp.xml', 'data/ardagmcp.xml', 'ardagmcp.xml']
@@ -67,6 +88,7 @@ def compile_ardagmcp():
             door_flags = [df.text.strip() for df in exit_elem.findall('doorflag') if df.text]
             
             door_attr = exit_elem.get('door')
+            door_name = exit_elem.get('doorname') or exit_elem.get('doorName') or exit_elem.get('door_name')
             has_door = (door_attr == '1' or door_attr == 'true' or len(door_flags) > 0 or 'DOOR' in exit_flags)
             
             flags_attr = exit_elem.get('flags', '')
@@ -85,6 +107,8 @@ def compile_ardagmcp():
                     "hasDoor": has_door,
                     "flags": combined_flags
                 }
+                if door_name:
+                    exits[d_key]["doorName"] = door_name.strip()
         
         mob_flags = [f.text.strip() for f in elem.findall('mobflag') if f.text]
         load_flags = [f.text.strip() for f in elem.findall('loadflag') if f.text]
@@ -95,7 +119,7 @@ def compile_ardagmcp():
         terrain_elem = elem.find('terrain')
         terrain = terrain_elem.text.strip() if terrain_elem is not None and terrain_elem.text else "0"
 
-        # Extract alignment, portable, ridable, light, sundeath, notes
+        # Extract alignment, portable, ridable, light, sundeath, notes, contents, descriptions
         align_elem = elem.find('align')
         align = align_elem.text.strip() if align_elem is not None and align_elem.text else "NEUTRAL"
 
@@ -116,12 +140,18 @@ def compile_ardagmcp():
         note_elem = elem.find('note')
         note = note_elem.text.strip() if note_elem is not None and note_elem.text else ""
 
+        contents_elem = elem.find('contents')
+        contents = normalize_contents_text(contents_elem.text.strip()) if contents_elem is not None and contents_elem.text else ""
+
+        description_elem = elem.find('description')
+        description = normalize_description_text(description_elem.text.strip()) if description_elem is not None and description_elem.text else ""
+
         rooms[room_id] = [
             x, -y, z * floor_height,
             terrain, exits, name, server_id,
             mob_flags, load_flags, area,
             light_val, sundeath_val,
-            align, portable, ridable, note
+            align, portable, ridable, note, contents, description
         ]        
         count += 1
         if count % 5000 == 0:

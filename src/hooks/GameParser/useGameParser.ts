@@ -504,6 +504,44 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 return;
             }
         }
+        
+        // --- Help Response Capture ---
+        // Intercept help headers, buffer help output until the next prompt, suppress from log, and show in a popup card
+        const lowerLine = lineToParse.toLowerCase();
+        const isHeaderLine = !isSnoop && (lowerLine.includes('<header') || lowerLine.includes('&lt;header'));
+        const isPromptLine = isPromptResolved || 
+            lowerLine.includes('<prompt') || 
+            lowerLine.includes('&lt;prompt') || 
+            isPromptBoundaryLine(lineToParse) || 
+            prompt.parsePrompt(stripAnsiCodes(lineToParse), isSnoop).isMatch;
+        const isEndPromptLine = isPromptLine && !isHeaderLine;
+
+        if (deps.help.isUiRequestedRef.current) {
+            if (isHeaderLine) {
+                deps.help.setIsHelpActive(true);
+                deps.help.setIsUiRequested(false);
+            } else if (isEndPromptLine) {
+                deps.help.setIsUiRequested(false);
+            }
+        }
+
+        if (deps.help.isHelpActiveRef.current) {
+            if (isEndPromptLine) {
+                if (deps.setPopoverState) {
+                    deps.help.finalizeHelp(deps.setPopoverState);
+                }
+            } else {
+                // Strip the prompt tag and its contents if present on the header line
+                const cleanHelpLine = lineToParse
+                    .replace(/<(prompt)\b[^>]*>.*?<\/\1>/gi, '')
+                    .replace(/&lt;(prompt)\b[^&]*&gt;.*?&lt;\/\1&gt;/gi, '')
+                    .replace(/<\/?(?:header|help)\b[^>]*>/gi, '')
+                    .replace(/&lt;\/?(?:header|help)\b[^&]*&gt;/gi, '');
+
+                deps.help.parseHelpLine(cleanHelpLine);
+                return;
+            }
+        }
 
         if (!isSnoop && deps.gameState === 'account' && isGameplayXmlLine(lineToParse)) {
             deps.accountStageRef.current = 'none' as any;

@@ -121,6 +121,18 @@
     flex-shrink: 0;
 }
 
+@keyframes tactical-line-cascade-glow {
+    0%   { box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1); border-color: rgba(232, 176, 32, 0.48); }
+    25%  { box-shadow: 0 0 10px rgba(232, 176, 32, 0.65), 0 0 22px rgba(232, 176, 32, 0.45), 0 0 40px rgba(232, 176, 32, 0.25), inset 0 0 8px rgba(232, 176, 32, 0.12); border-color: rgba(232, 176, 32, 0.82); }
+    50%  { box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1); border-color: rgba(232, 176, 32, 0.48); }
+    100% { box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1); border-color: rgba(232, 176, 32, 0.48); }
+}
+
+.tactical-line-wrapper.is-targeting .line-btn {
+    animation: tactical-line-cascade-glow 2.4s ease-in-out infinite !important;
+    animation-delay: var(--cascade-delay, 0s) !important;
+}
+
 .tactical-line-wrapper .line-btn {
     border-color: rgba(232, 176, 32, 0.48) !important;
     border-width: 0.75px !important;

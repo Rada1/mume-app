@@ -5,6 +5,7 @@ import { getButtonCommand } from '../../utils/buttonUtils';
 import { formatNpcKeywordTarget, sanitizeGameTarget } from '../../utils/gameUtils';
 import { getInlineCategoryAxes, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 import { useUIStore } from '../../stores/useUIStore';
+import { audioManager } from '../../services/audio/AudioManager';
 
 export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>, heldBtnFiredRef?: React.MutableRefObject<boolean>) => {
     const {
@@ -81,6 +82,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         if (selection) {
             const cleanSelection = sanitizeGameTarget(selection) || selection;
             setTarget(cleanSelection);
+            audioManager.playEffect('target', { skipJitter: true });
             triggerHaptic(30);
 
             try {

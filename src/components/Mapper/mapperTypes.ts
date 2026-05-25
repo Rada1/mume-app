@@ -10,6 +10,7 @@ export interface MapperRoom {
     terrain: string;
     exits: Record<string, MapperExit>;
     notes: string;
+    contents?: string;
     mobFlags?: string[];
     loadFlags?: string[];
     roomQuestFlags?: string[];
@@ -19,6 +20,7 @@ export interface MapperRoom {
     portable?: string;
     ridable?: string;
     isPermanentSnow?: boolean;
+    details?: string[];
     createdAt: number;
 }
 
@@ -28,6 +30,15 @@ export interface MapperExit {
     hasDoor?: boolean;
     gmcpDestId?: number;
     name?: string;
+    doorName?: string;
+    flags?: string[];
+    doorFlags?: string[];
+}
+
+export interface CompactMapExit {
+    target: string;
+    hasDoor: boolean;
+    doorName?: string;
     flags?: string[];
     doorFlags?: string[];
 }

@@ -114,7 +114,8 @@
 .modals-layer-wrapper .desktop-drawer-tabs,
 .modals-layer-wrapper .drawer-backdrop.open,
 .modals-layer-wrapper .standard-menu-popover,
-.modals-layer-wrapper .map-drawer-desktop {
+.modals-layer-wrapper .map-drawer-desktop,
+.modals-layer-wrapper .floating-group-card-overlay {
     pointer-events: auto;
 }
 

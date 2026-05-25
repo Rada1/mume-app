@@ -150,6 +150,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
     React.useEffect(() => {
         const handleClickOutside = (event: PointerEvent) => {
             if (!popoverState) return;
+            if (popoverState.type === 'help-card') return; // Exclude help card from global click-outside closure
             const target = event.target as Node;
 
             // Don't close if clicking inside the popover

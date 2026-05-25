@@ -102,7 +102,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }, [popoverState?.entityId]);
 
     useLayoutEffect(() => {
-        if (popoverState && popoverRef.current) {
+        if (popoverState && popoverState.type !== 'help-card' && popoverRef.current) {
             const el = popoverRef.current;
             const rect = el.getBoundingClientRect();
             const winH = window.innerHeight, winW = window.innerWidth;

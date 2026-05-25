@@ -163,6 +163,50 @@
     background: rgba(251, 146, 60, 0.045);
 }
 
+.prompt-chip-with-slot {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    flex: 0 0 auto;
+}
+
+.prompt-slot-icon {
+    flex-shrink: 0;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.42rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--text-faded, rgba(160, 160, 160, 0.7));
+    user-select: none;
+    white-space: nowrap;
+}
+
+@media (min-width: 601px) {
+    .prompt-inventory-chip-row {
+        min-height: 24px;
+    }
+
+    .prompt-inventory-chip {
+        min-height: 20px;
+        padding: 3px 8px;
+        font-size: 0.68rem;
+    }
+
+    .prompt-inventory-chip-main {
+        font-size: 0.68rem;
+    }
+
+    .prompt-inventory-chip-label {
+        font-size: 0.58rem;
+    }
+
+    .prompt-slot-icon {
+        font-size: 0.48rem;
+    }
+}
+
 @media (max-width: 600px) {
     .prompt-inventory-chip-row {
         grid-template-columns: 50px minmax(0, 1fr);

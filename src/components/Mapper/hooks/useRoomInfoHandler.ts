@@ -399,6 +399,7 @@ export const useRoomInfoHandler = ({
         let zone = data.area || data.zone || (ghostData ? ghostData[9] : 'Unknown Zone');
         const freshTerrain = normalizeTerrain(data.terrain || data.environment || null);
         const questFlags = data.room_quest_flags || [];
+        const details = (data as any).details || [];
 
         discoverySourceRef.current = discoverySource;
 
@@ -446,6 +447,7 @@ export const useRoomInfoHandler = ({
                 mobFlags: Array.from(new Set(ghostData ? ghostData[7] : [])),
                 loadFlags: Array.from(new Set(ghostData ? ghostData[8] : [])),
                 roomQuestFlags: questFlags,
+                details: details.length > 0 ? details : undefined,
                 // NEW FORMAT: 1 is Dark, 0 is Lit. Default 0.
                 light: data.light !== undefined ? data.light : (mLight !== undefined ? mLight : 0),
                 // NEW FORMAT: 0 is No-Sundeath (Death), 1 is Safe. Default 1.
@@ -467,6 +469,7 @@ export const useRoomInfoHandler = ({
             const newMobFlags = ghostData ? ghostData[7] : existingRoom.mobFlags || [];
             const newLoadFlags = ghostData ? ghostData[8] : existingRoom.loadFlags || [];
             const newRoomQuestFlags = questFlags.length > 0 ? questFlags : existingRoom.roomQuestFlags || [];
+            const newDetails = details.length > 0 ? details : existingRoom.details;
 
             const rawGmcpId = String(gmcpId);
             const mData = (baseMapExitsRef?.current?.[rawGmcpId]) || (ghostData);
@@ -485,6 +488,7 @@ export const useRoomInfoHandler = ({
                 arraysDiffer(existingRoom.mobFlags || [], newMobFlags) ||
                 arraysDiffer(existingRoom.loadFlags || [], newLoadFlags) ||
                 arraysDiffer(existingRoom.roomQuestFlags || [], newRoomQuestFlags) ||
+                arraysDiffer(existingRoom.details || [], newDetails || []) ||
                 (ghostData && (existingRoom.x !== ghostData[0] || existingRoom.y !== ghostData[1])) ||
                 (!isSpectateUpdate && currentActiveRoom && dirUsed && activeRoomId !== targetId) ||
                 (data.light !== undefined && existingRoom.light !== data.light) ||
@@ -502,6 +506,7 @@ export const useRoomInfoHandler = ({
                     mobFlags: newMobFlags,
                     loadFlags: newLoadFlags,
                     roomQuestFlags: newRoomQuestFlags,
+                    details: newDetails,
                     // light 1 is Dark, 0 is Lit
                     light: data.light !== undefined ? data.light : (mLight !== undefined ? mLight : (existingRoom.light ?? 0)),
                     // sundeath 0 is Death, 1 is Safe

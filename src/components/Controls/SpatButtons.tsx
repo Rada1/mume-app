@@ -7,6 +7,7 @@ import React, { useRef, useLayoutEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { SpatButton, PopoverState } from '../../types';
 import { triggerRingAnimation, getPressedColor } from '../../hooks/interactions/pointerUtils';
+import { useVitalsStore } from '../../stores/useVitalsStore';
 
 interface SpatButtonsProps {
     spatButtons: SpatButton[];
@@ -318,6 +319,10 @@ export const SpatButtons: React.FC<SpatButtonsProps> = React.memo(({
                     accentColor: sb.color
                 });
             } else {
+                if (cmd.includes('%n')) {
+                    const target = useVitalsStore.getState().target;
+                    cmd = target ? cmd.replace(/%n/g, target) : cmd.replace(/ %n/g, '').replace(/%n/g, '');
+                }
                 executeCommand(cmd, false, false, false, false, { shouldFocus: false, fromUi: true });
             }
 

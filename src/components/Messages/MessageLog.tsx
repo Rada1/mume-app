@@ -101,7 +101,10 @@ const MessageItem = React.memo(({
 }) => {
     const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
     const content = msg.html;
-    const isRecent = Date.now() - msg.timestamp < 2000;
+    // Frozen at mount — prevents wordReveal from toggling off mid-life when re-renders
+    // cross the 2-second mark (rapid combat GMCP updates), which collapses inline-block
+    // log-word wrappers and shifts inline button positions.
+    const [isRecent] = React.useState(() => Date.now() - msg.timestamp < 2000);
     const isLatestBatch = msg.batchId === undefined || msg.batchId === maxBatchId;
     const isOldBatchDim = brightBatchFloor !== undefined && (msg.batchId === undefined || msg.batchId < brightBatchFloor);
     
@@ -208,7 +211,7 @@ const MessageItem = React.memo(({
                                     <span className="comm-action" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
                                 </>
                             )}
-                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} splitFirstWord={true} /></span>
+                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} splitFirstWord={true} wordReveal={isRecent} /></span>
                         </div>
                         <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                     </div>
@@ -244,6 +247,7 @@ const MessageItem = React.memo(({
                                     tokens={msg.tokens}
                                     fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
                                     splitFirstWord={true}
+                                    wordReveal={isRecent && !msg.isRoomName}
                                     metadata={msg.isRoomName ? {
                                         id: `room:${(currentRoomName || msg.textRaw || '').toLowerCase()}`,
                                         context: currentRoomName || msg.textRaw || '',

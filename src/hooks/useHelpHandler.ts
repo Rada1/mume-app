@@ -14,7 +14,13 @@ export function useHelpHandler() {
         _setIsHelpActive(val);
     }, []);
 
-    const [isUiRequested, setIsUiRequested] = useState(false);
+    const [isUiRequested, _setIsUiRequested] = useState(false);
+    const isUiRequestedRef = useRef(false);
+
+    const setIsUiRequested = useCallback((val: boolean) => {
+        isUiRequestedRef.current = val;
+        _setIsUiRequested(val);
+    }, []);
     const helpBuffer = useRef<string[]>([]);
 
     const parseHelpLine = useCallback((text: string) => {
@@ -54,6 +60,7 @@ export function useHelpHandler() {
         setIsUiRequested,
         parseHelpLine,
         finalizeHelp,
-        isHelpActiveRef
+        isHelpActiveRef,
+        isUiRequestedRef
     };
 }

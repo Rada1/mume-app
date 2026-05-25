@@ -119,7 +119,8 @@ export function useActionTracker(deps: ActionTrackerDeps) {
 
         const wearMatch = textOnly.match(/^You (?:wear|put on|fasten|sling|slip|tie|buckle|don|drape|loop|attach|wrap) (.*?)\.$/i);
         if (wearMatch) {
-            const itemText = stripResultTail(wearMatch[1]);
+            const objectTagMatch = cleanLine.match(/<object>(.*?)<\/object>/i);
+            const itemText = objectTagMatch ? objectTagMatch[1] : wearMatch[1];
             moveToEquipment(itemText, inferWearSlot(itemText));
             onWear?.();
             return;
@@ -186,7 +187,9 @@ export function useActionTracker(deps: ActionTrackerDeps) {
         
         const wieldMatch = textOnly.match(/^You (?:\w+\s+)*(?:wield|hold) (.*?)(?:, .*)?\.$/i);
         if (wieldMatch) {
-            moveToEquipment(wieldMatch[1], '<wielded>');
+            const objectTagMatch = cleanLine.match(/<object>(.*?)<\/object>/i);
+            const itemText = objectTagMatch ? objectTagMatch[1] : wieldMatch[1];
+            moveToEquipment(itemText, '<wielded>');
             onWear?.();
             return;
         }

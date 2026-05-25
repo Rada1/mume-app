@@ -1,7 +1,9 @@
-import { MapperMarker } from './mapperTypes';
+import { CompactMapExit, MapperMarker } from './mapperTypes';
+
+type CompactRoomTuple = [number, number, number, number, Record<string, CompactMapExit>, string, string, string[], string[], string, number?, number?, string?, string?, string?, string?, string?, string?];
 
 export type MapData = {
-    rooms: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[], doorFlags?: string[] }>, string, string, string[], string[], string, number?, number?]>;
+    rooms: Record<string, CompactRoomTuple>;
     markers: Record<string, MapperMarker>;
 };
 
@@ -46,7 +48,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
 
         reader.onload = async (e) => {
             try {
-                const roomCoords: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[], doorFlags?: string[] }>, string, string, string[], string[], string, number?, number?]> = {};
+                const roomCoords: Record<string, CompactRoomTuple> = {};
                 const markers: Record<string, MapperMarker> = {};
 
                 if (isXML) {
@@ -70,6 +72,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                         idToServerId[idAttr] = serverIdAttr;
 
                         const name = room.getAttribute("name") || "Unknown";
+                        const getFirstText = (tagName: string) => room.getElementsByTagName(tagName)[0]?.textContent?.trim() || "";
                         let x = 0, y = 0, z = 0;
                         const coordNode = room.getElementsByTagName("coord")[0];
                         if (coordNode) {
@@ -79,13 +82,14 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                         }
 
                         let terrain = 0;
-                        const exits: Record<string, { target: string, hasDoor: boolean, flags?: string[], doorFlags?: string[] }> = {};
+                        const exits: Record<string, CompactMapExit> = {};
                         const exitNodes = room.getElementsByTagName("exit");
                         for (let j = 0; j < exitNodes.length; j++) {
                             const exitNode = exitNodes[j];
                             const dir = exitNode.getAttribute("dir");
                             const toNode = exitNode.getElementsByTagName("to")[0];
                             const doorAttr = exitNode.getAttribute("door");
+                            const doorName = exitNode.getAttribute("doorname")?.trim();
 
                             const flags: string[] = [];
                             const flagNodes = exitNode.getElementsByTagName("exitflag");
@@ -112,6 +116,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                                 exits[d] = {
                                     target: toNode.textContent.trim(),
                                     hasDoor: doorAttr === '1' || doorAttr === 'true' || flags.includes('DOOR'),
+                                    doorName: doorName || undefined,
                                     flags,
                                     doorFlags: doorFlags.length > 0 ? doorFlags : undefined,
                                 };
@@ -137,8 +142,15 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                         const sundeathNode = room.getElementsByTagName("sundeath")[0];
                         const sundeathText = sundeathNode ? sundeathNode.textContent?.trim() : null;
                         const sundeath = sundeathText === 'NO_SUNDEATH' ? 0 : (sundeathText === 'SUNDEATH' ? 1 : undefined);
+                        const area = getFirstText("area");
+                        const align = getFirstText("align");
+                        const portable = getFirstText("portable");
+                        const ridable = getFirstText("ridable");
+                        const note = getFirstText("note");
+                        const contents = getFirstText("contents");
+                        const description = getFirstText("description");
 
-                        parsedRooms.push({ idAttr, serverIdAttr, x, y, z, terrain, exits, name, mobFlags, loadFlags, light, sundeath });
+                        parsedRooms.push({ idAttr, serverIdAttr, x, y, z, terrain, exits, name, mobFlags, loadFlags, area, light, sundeath, align, portable, ridable, note, contents, description });
 
                         // Room markers
                         const roomMarkerNodes = room.getElementsByTagName("marker");
@@ -170,7 +182,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                                 pr.exits[dir].target = idToServerId[targetId];
                             }
                         }
-                        roomCoords[pr.serverIdAttr] = [pr.x + 1, -pr.y + 1, pr.z * floorHeight, pr.terrain, pr.exits, pr.name, pr.serverIdAttr, pr.mobFlags, pr.loadFlags, pr.zone || "", pr.light, pr.sundeath];
+                        roomCoords[pr.serverIdAttr] = [pr.x + 1, -pr.y + 1, pr.z * floorHeight, pr.terrain, pr.exits, pr.name, pr.serverIdAttr, pr.mobFlags, pr.loadFlags, pr.area || "", pr.light, pr.sundeath, pr.align, pr.portable, pr.ridable, pr.note, pr.contents, pr.description];
                     }
 
                     // Parse standalone markers - Use scale 100.0 (Global Arda Alignment)
@@ -269,10 +281,11 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                 for (let i = 0; i < roomCount; i++) {
                     if (version >= 42) rstr(); // area
                     const name = rstr();
-                    rstr(); rstr(); // desc, contents
+                    const description = rstr();
+                    const contents = rstr();
                     const internalId = ru32();
                     const serverId = version >= 40 ? ru32() : undefined;
-                    rstr(); // note
+                    const note = rstr();
 
                     const terrain = ru8();
                     const light = ru8();
@@ -291,12 +304,12 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                     const z = ri32();
 
                     const DIRS = ['n', 's', 'e', 'w', 'u', 'd', 'out'];
-                    const exits: Record<string, { target: string, hasDoor: boolean, flags?: string[], doorFlags?: string[] }> = {};
+                    const exits: Record<string, CompactMapExit> = {};
 
                     for (let e = 0; e < 7; e++) {
                         const exitFlagsVal = version >= 33 ? ru16() : ru8();
                         const doorFlagsVal = version >= 32 ? ru16() : ru8();
-                        rstr(); // doorName
+                        const doorName = rstr();
 
                         if (version < 38) {
                             while (ru32() !== 0xFFFFFFFF) { }
@@ -315,6 +328,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                             exits[DIRS[e]] = {
                                 target: firstLink,
                                 hasDoor: !!(exitFlagsVal & (1 << 1)), // DOOR bit
+                                doorName: doorName || undefined,
                                 flags: exitFlagStrs,
                                 doorFlags: doorFlagStrs.length > 0 ? doorFlagStrs : undefined,
                             };
@@ -324,7 +338,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                     const key = String(internalId);
                     const X_OFFSET_BIN = 1;
                     const Y_OFFSET_BIN = 1;
-                    roomCoords[key] = [x + X_OFFSET_BIN, -y + Y_OFFSET_BIN, z * floorHeight, terrain, exits, name, String(serverId || key), mobFlags, loadFlags, "", light, sundeath];
+                    roomCoords[key] = [x + X_OFFSET_BIN, -y + Y_OFFSET_BIN, z * floorHeight, terrain, exits, name, String(serverId || key), mobFlags, loadFlags, "", light, sundeath, undefined, undefined, undefined, note, contents, description];
                 }
 
                 // --- MARK / INFOMARK SECTION ---

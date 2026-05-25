@@ -10,6 +10,7 @@ import { fireHeldCommandAtMapOccupant } from './mapperHeldCommandTarget';
 import { sanitizeGameTarget } from '../../utils/gameUtils';
 import type { GmcpOccupant, GroupMember, InlineCategoryConfig } from '../../types';
 import { registerOccupantTap } from './occupantAnimStore';
+import { audioManager } from '../../services/audio/AudioManager';
 
 export interface InteractionDeps {
     canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -897,6 +898,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                             }
 
                             if (fireHeldCommandAtMapOccupant(depsRef.current, occupantHit)) {
+                                audioManager.playEffect('target', { skipJitter: true });
                                 registerOccupantTap(occupantHit.id, occupantHit.name, occupantHit.kind === 'player');
                                 depsRef.current.triggerRender();
                                 if (isMapLongPress) {
@@ -905,6 +907,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                     return;
                                 }
                             } else {
+                                audioManager.playEffect('target', { skipJitter: true });
                                 registerOccupantTap(occupantHit.id, occupantHit.name, occupantHit.kind === 'player');
                                 depsRef.current.triggerRender();
 
@@ -1114,12 +1117,24 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             }
         };
 
+        const onContextMenu = (e: MouseEvent) => {
+            e.preventDefault();
+            const { screenToWorld, getRoomAt } = hitTestRef.current;
+            const world = screenToWorld(e.clientX, e.clientY);
+            const clickedRoomId = getRoomAt(world.x, world.y);
+            if (clickedRoomId) {
+                depsRef.current.setInfoRoomId(clickedRoomId);
+                depsRef.current.playClickSound?.();
+            }
+        };
+
         cvs.addEventListener('pointerdown', onDown, { passive: false });
         window.addEventListener('pointermove', onMove, { passive: false });
         window.addEventListener('pointerup', onUp, { passive: false });
         window.addEventListener('pointercancel', onCancel, { passive: false });
         cvs.addEventListener('wheel', onWheel, { passive: false });
         cvs.addEventListener('pointermove', onHover, { passive: true });
+        cvs.addEventListener('contextmenu', onContextMenu);
 
         return () => {
             cvs.removeEventListener('pointerdown', onDown);
@@ -1128,6 +1143,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             window.removeEventListener('pointercancel', onCancel);
             cvs.removeEventListener('wheel', onWheel);
             cvs.removeEventListener('pointermove', onHover);
+            cvs.removeEventListener('contextmenu', onContextMenu);
             // DO NOT clear activePointersRef or isDraggingInternal here if it's just a re-render
         };
     }, [canvasRef]); // Stable effect

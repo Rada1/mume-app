@@ -237,3 +237,14 @@
         background: rgba(13, 16, 23, 0.62) !important;
     }
 }
+
+@keyframes descWordReveal {
+    from { opacity: 0; filter: blur(3px); transform: translateX(-6px); }
+    to   { opacity: 1; filter: blur(0);   transform: translateX(0);    }
+}
+
+.mri-desc-word {
+    opacity: 0;
+    animation: descWordReveal 1.2s ease both;
+    display: inline;
+}

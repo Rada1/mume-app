@@ -87,14 +87,18 @@ export const LineCluster: React.FC<LineClusterProps> = ({
     );
 
     return (
-        <div className="tactical-line-wrapper">
+        <div className={`tactical-line-wrapper${target ? ' is-targeting' : ''}`}>
             {charmieButton && (
                 <div className="line-cluster-aux">
                     {renderButton(charmieButton, 'default', 'line-btn tactical-charmie auxiliary-charmie')}
                 </div>
             )}
             <div className="line-cluster">
-                {sortedButtons.map((button) => renderButton(button, 'diamond', `line-btn ${button.id}`))}
+                {sortedButtons.map((button, index) => (
+                    <div key={button.id} style={{ '--cascade-delay': `${index * 0.12}s`, display: 'contents' } as React.CSSProperties}>
+                        {renderButton(button, 'diamond', `line-btn ${button.id}`)}
+                    </div>
+                ))}
                 <ActionMenuButton triggerHaptic={triggerHaptic} className="line-cluster-action-menu" />
             </div>
         </div>
