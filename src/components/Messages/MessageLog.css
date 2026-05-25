@@ -1315,6 +1315,22 @@ span.inline-btn {
     z-index: 10;
 }
 
+.inline-btn.is-opponent {
+    border: 1.5px solid #ef4444 !important;
+    box-shadow:
+        0 0 4px rgba(239, 68, 68, 0.3),
+        0 0 10px rgba(239, 68, 68, 0.5) !important;
+    animation: opponent-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    transform: none !important;
+    z-index: 10;
+}
+
+@keyframes opponent-pulse {
+    0%   { box-shadow: 0 0 4px rgba(239, 68, 68, 0.3); }
+    50%  { box-shadow: 0 0 10px rgba(239, 68, 68, 0.7), 0 0 20px rgba(239, 68, 68, 0.4); }
+    100% { box-shadow: 0 0 4px rgba(239, 68, 68, 0.3); }
+}
+
 .app-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
     background-color: rgba(255, 255, 255, 0.1) !important;
     border-color: color-mix(in srgb, var(--glow-color, #ffffff), #ffffff 18%) !important;

@@ -37,7 +37,14 @@ export function useTelnetSocket() {
 
     const openSocket = useCallback((url: string, onData: (data: ArrayBuffer) => void) => {
         try {
-            const ws = new WebSocket(url);
+            let finalUrl = url;
+            if (typeof window !== 'undefined' && window.location.hostname) {
+                const hostname = window.location.hostname;
+                if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+                    finalUrl = url.replace(/\/\/(localhost|127\.0\.0\.1)(:|\/|$)/, `//${hostname}$2`);
+                }
+            }
+            const ws = new WebSocket(finalUrl);
             ws.binaryType = 'arraybuffer';
             socketRef.current = ws;
 

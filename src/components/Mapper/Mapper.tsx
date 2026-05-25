@@ -23,6 +23,7 @@ import { GRID_SIZE } from './mapperUtils';
 import { toThemeLinkedColor } from '../../utils/themeLinkedColors';
 import { useMapperTracing } from './hooks/useMapperTracing';
 import { TracingHUD } from './TracingHUD';
+import { useMapAssets } from './hooks/useMapAssets';
 import './Mapper.css';
 
 interface MapperProps {
@@ -61,6 +62,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const cameraRef = useRef({ x: 0, y: 0, zoom: 1 });
     const cardRef = useRef<HTMLDivElement>(null);
     const imagesRef = useRef<Record<string, HTMLImageElement>>({});
+    useMapAssets(imagesRef);
     const playerPosRef = useRef<{ x: number, y: number, z: number } | null>(null);
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
@@ -68,7 +70,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const {
         triggerHaptic, executeCommand, theme, btn, joystick, playClickSound,
         setIsTrackpadModifierActive, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode,
-        selectedObjectIds, lighting
+        selectedObjectIds, lighting, inCombat
     } = useGame();
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
@@ -271,7 +273,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             height: '100%', 
             overflow: 'hidden', 
             backgroundColor: 'transparent', 
-            touchAction: 'none' 
+            touchAction: 'none',
+            zIndex: infoRoomId ? 2900 : undefined
         }}>
             <div className="mapper-overlay mapper-fog-overlay" />
             <MapCanvas
@@ -326,6 +329,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 targetColor={displayTargetColor}
                 opponentName={opponentName}
                 opponentId={opponentId}
+                inCombat={inCombat}
                 activeInlineEntityId={popoverState?.entityId || null}
                 selectedObjectIds={selectedObjectIds}
                 deathRoomId={deathRoomId}

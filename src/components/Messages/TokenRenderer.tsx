@@ -43,9 +43,9 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
     splitFirstWord = false,
     metadata: propMetadata
 }) => {
-    const { target } = useVitals();
+    const { target, opponentId, opponentName } = useVitals();
     const settings = useSettingsStore();
-    const { inlineCategories, selectedObjectIds } = useBaseGame();
+    const { inlineCategories, selectedObjectIds, inCombat } = useBaseGame();
     const { popoverState } = useUI();
 
     if (!tokens || tokens.length === 0) {
@@ -199,6 +199,25 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                         props.className = `${props.className} menu-active`.trim();
                     }
                 }
+            }
+
+            const entityId = propMetadata?.id || e.entityId;
+            let isOpponentMatch = false;
+            if (inCombat) {
+                if (opponentId && entityId && String(opponentId) === String(entityId)) {
+                    isOpponentMatch = true;
+                } else if (opponentName) {
+                    const normOpponent = opponentName.replace(/^[*-]+|[*-]+$/g, '').replace(/^(a|an|the)\s+/i, '').trim().toLowerCase();
+                    const entityName = (e.metadata?.context || content || '').toLowerCase();
+                    const normEntity = entityName.replace(/^[*-]+|[*-]+$/g, '').replace(/^(a|an|the)\s+/i, '').trim().toLowerCase();
+                    if (normOpponent && normEntity && (normOpponent === normEntity || normOpponent.includes(normEntity) || normEntity.includes(normOpponent))) {
+                        isOpponentMatch = true;
+                    }
+                }
+            }
+
+            if (isOpponentMatch) {
+                props.className = `${props.className} is-opponent`.trim();
             }
 
             // Resolve display color: explicit glowColor (e.g. who-list) > getInlineGlowColor (override → user setting → category default) > token ANSI color

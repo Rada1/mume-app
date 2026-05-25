@@ -8,7 +8,7 @@ import { useEffect, useState, MutableRefObject } from 'react';
 const ASSETS = {
     parchment: '/assets/parchment.png',
     tree: '/assets/map/forest/tree1.png',
-    hill: '/assets/map/hills/hill.png',
+    hill: '/assets/Pictures/terrain/hills.png',
     peak1: '/assets/map/m_peaks/peak1.png',
     peak2: '/assets/map/m_peaks/peak2.png',
     peak3: '/assets/map/m_peaks/peak3.png',
@@ -17,7 +17,9 @@ const ASSETS = {
     road: '/assets/map/road/1.png',
     shallows: '/assets/map/water/1.png',
     water: '/assets/map/water/2.png',
-    cavern: '/assets/map/cavern/1.png'
+    cavern: '/assets/map/cavern/1.png',
+    mountain: '/assets/Pictures/terrain/mountains.png',
+    mountain2: '/assets/Pictures/terrain/mountain2.png',
 };
 
 export const useMapAssets = (imagesRef: MutableRefObject<Record<string, HTMLImageElement>>) => {

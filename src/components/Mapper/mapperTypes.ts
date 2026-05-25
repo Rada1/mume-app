@@ -18,6 +18,7 @@ export interface MapperRoom {
     align?: string;
     portable?: string;
     ridable?: string;
+    isPermanentSnow?: boolean;
     createdAt: number;
 }
 
@@ -139,6 +140,10 @@ export interface MapTileVisualAdjustments {
     terrainColors: Record<string, string>;
     wallColor: string;
     doorColor?: string;
+    roadColorDark?: string;
+    roadColorLight?: string;
+    pathColorDark?: string;
+    pathColorLight?: string;
 }
 
 export interface MapBackgroundVisualAdjustments {

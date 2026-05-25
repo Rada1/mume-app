@@ -46,7 +46,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
 
         reader.onload = async (e) => {
             try {
-                const roomCoords: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[], string, number?, number?]> = {};
+                const roomCoords: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[], doorFlags?: string[] }>, string, string, string[], string[], string, number?, number?]> = {};
                 const markers: Record<string, MapperMarker> = {};
 
                 if (isXML) {
@@ -291,7 +291,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                     const z = ri32();
 
                     const DIRS = ['n', 's', 'e', 'w', 'u', 'd', 'out'];
-                    const exits: Record<string, { target: string, hasDoor: boolean, flags?: string[] }> = {};
+                    const exits: Record<string, { target: string, hasDoor: boolean, flags?: string[], doorFlags?: string[] }> = {};
 
                     for (let e = 0; e < 7; e++) {
                         const exitFlagsVal = version >= 33 ? ru16() : ru8();

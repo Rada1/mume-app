@@ -299,17 +299,20 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 Login
                             </button>
                         </div>
-                        {accountState?.currentPrompt?.toLowerCase().includes('by what name') && (
-                            <div className="login-card-new-account">
-                                <button
-                                    type="button"
-                                    className="login-new-acc-btn"
-                                    onClick={() => { triggerHaptic?.(30); executeCommand('new'); }}
-                                >
-                                    New Account
-                                </button>
-                            </div>
-                        )}
+                        <div 
+                            className="login-card-new-account"
+                            style={{ 
+                                visibility: accountState?.currentPrompt?.toLowerCase().includes('by what name') ? 'visible' : 'hidden'
+                            }}
+                        >
+                            <button
+                                type="button"
+                                className="login-new-acc-btn"
+                                onClick={() => { triggerHaptic?.(30); executeCommand('new'); }}
+                            >
+                                New Account
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

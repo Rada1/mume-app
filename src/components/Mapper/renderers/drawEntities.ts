@@ -315,6 +315,7 @@ export const drawRoomOccupants = (
     const combatantIds = new Set<string>();
     allOccupants.forEach(occ => {
         if (occ.id == null || occ.fighting == null || occ.fighting === 'Someone') return;
+        if (occ.fighting === 'you' && !rCtx.inCombat) return;
         combatantIds.add(String(occ.id));
         if (occ.fighting !== 'you') combatantIds.add(String(occ.fighting));
     });
@@ -407,7 +408,7 @@ export const drawRoomOccupants = (
                 if (t < 1.0) triggerRender?.();
             }
 
-            const isOpponent = isOpponentOccupant(occ, allOccupants, opponentId, opponentName);
+            const isOpponent = !!rCtx.inCombat && isOpponentOccupant(occ, allOccupants, opponentId, opponentName);
             const isCombatant = isOpponent || (occ.id != null && combatantIds.has(String(occ.id)));
             const isGroupOcc = occ.ring === 'inner';
             drawDot(orbX, orbY, occ.color, alpha, occ.name, occ.radius, anim, isOpponent, isOccupantActive(occ), isCombatant, isGroupOcc);
@@ -551,10 +552,16 @@ export const drawEntities = (
         // 1. Current Room Highlight
         ctx.save();
 
+        const breath = (Math.sin(now / 350) + 1) / 2; // Breathing pulse
+        triggerRender?.(); // Drive the animation loop
+
         ctx.globalCompositeOperation = 'source-over';
-        ctx.globalAlpha = alpha * 0.9;
-        ctx.strokeStyle = 'rgba(255, 215, 0, 0.95)';
+        ctx.globalAlpha = alpha * (0.45 + breath * 0.5);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
         ctx.lineWidth = Math.max(0.8, 1.5 / rCtx.camera.zoom);
+        
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+        ctx.shadowBlur = (4 + breath * 8) / rCtx.camera.zoom;
 
         const inset = 1;
         ctx.beginPath();
@@ -565,77 +572,6 @@ export const drawEntities = (
         }
         ctx.stroke();
         ctx.restore();
-        
-        const orbRadius = GRID_SIZE * 0.03; // ~1.5px — tiny center-of-room indicator
-        
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        
-        // Wall-aware clipping: Only if zoomed in
-        if (rCtx.camera.zoom > 0.1) {
-            const room = activeId ? (allRooms[activeId] || allRooms[`m_${activeId}`]) : null;
-            let exits = room?.exits;
-            if (!exits && activeId) {
-                const rawId = activeId.startsWith('m_') ? activeId.substring(2) : activeId;
-                if (preloaded[rawId]) exits = preloaded[rawId][4];
-            }
-
-            if (exits) {
-                ctx.beginPath();
-                ctx.rect(px - GRID_SIZE / 2 - 1, py - GRID_SIZE / 2 - 1, GRID_SIZE + 2, GRID_SIZE + 2);
-                for (const dir in exits) {
-                    const d = DIRS[dir];
-                    if (d && (d.dx !== 0 || d.dy !== 0)) {
-                        ctx.rect(px + d.dx * (GRID_SIZE / 2) - GRID_SIZE / 2 - 1, py + d.dy * (GRID_SIZE / 2) - GRID_SIZE / 2 - 1, GRID_SIZE + 2, GRID_SIZE + 2);
-                    }
-                }
-                ctx.clip();
-            }
-        }
-
-        // Soft-cornered square player icon
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        const isPlayerInCombat = !!(rCtx.opponentId || rCtx.opponentName);
-        const combatPulse = (Math.sin(now / 240) + 1) / 2;
-        
-        // 1. Solid command-bar grey body
-        const size = orbRadius * 2;
-        const corner = Math.max(1.5, orbRadius * 0.35);
-        ctx.fillStyle = 'rgba(15, 15, 15, 0.95)';
-        ctx.beginPath();
-        if (typeof (ctx as any).roundRect === 'function') {
-            (ctx as any).roundRect(px - orbRadius, py - orbRadius, size, size, corner);
-        } else {
-            ctx.rect(px - orbRadius, py - orbRadius, size, size);
-        }
-        ctx.fill();
-
-        // 2. Subtle light border, turning red while locked in combat.
-        ctx.strokeStyle = isPlayerInCombat ? 'rgba(248, 113, 113, 0.95)' : 'rgba(255, 215, 0, 0.85)';
-        ctx.lineWidth = isPlayerInCombat ? Math.max(0.9, 1.5 / rCtx.camera.zoom) : Math.max(0.6, 1.2 / rCtx.camera.zoom);
-        ctx.shadowBlur = isPlayerInCombat ? 5 + combatPulse * 5 : 0;
-        ctx.shadowColor = '#ef4444';
-        ctx.stroke();
-
-        if (isPlayerInCombat) {
-            const ringPad = Math.max(1.2, (2 + combatPulse) / rCtx.camera.zoom);
-            ctx.globalAlpha = alpha * (0.55 + combatPulse * 0.25);
-            ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)';
-            ctx.lineWidth = Math.max(0.55, 0.85 / rCtx.camera.zoom);
-            ctx.shadowBlur = 0;
-            ctx.beginPath();
-            if (typeof (ctx as any).roundRect === 'function') {
-                (ctx as any).roundRect(px - orbRadius - ringPad, py - orbRadius - ringPad, size + ringPad * 2, size + ringPad * 2, corner + ringPad);
-            } else {
-                ctx.rect(px - orbRadius - ringPad, py - orbRadius - ringPad, size + ringPad * 2, size + ringPad * 2);
-            }
-            ctx.stroke();
-        }
-        
-        ctx.restore();
-        
-        ctx.restore(); // Final restore for the main block
 
         // 3. Client-side movement predictions (Target Room Glow)
         const predictions = rCtx.clientPredictionsRef?.current;

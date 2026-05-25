@@ -217,8 +217,6 @@ const MapVisualSettings: React.FC = () => {
         const BLACKLISTED_ZONES = new Set([
             'swanfleet',
             'valinor',
-            'central anduin vale',
-            'northern anduin vale'
         ]);
         const zones = new Set<string>();
         Object.keys(zoneFilters || {}).forEach(k => {
@@ -298,6 +296,26 @@ const MapVisualSettings: React.FC = () => {
                 label="Door Color"
                 value={mapTileVisuals.doorColor || DEFAULT_MAP_TILE_VISUALS.doorColor || '#ffcc00'}
                 onChange={(doorColor) => setMapTileVisuals({ doorColor })}
+            />
+            <ColorRow
+                label="Road Color (Dark)"
+                value={mapTileVisuals.roadColorDark || DEFAULT_MAP_TILE_VISUALS.roadColorDark || ROAD_COLOR_DARK}
+                onChange={(roadColorDark) => setMapTileVisuals({ roadColorDark })}
+            />
+            <ColorRow
+                label="Road Color (Light)"
+                value={mapTileVisuals.roadColorLight || DEFAULT_MAP_TILE_VISUALS.roadColorLight || ROAD_COLOR_LIGHT}
+                onChange={(roadColorLight) => setMapTileVisuals({ roadColorLight })}
+            />
+            <ColorRow
+                label="Path Color (Dark)"
+                value={mapTileVisuals.pathColorDark || DEFAULT_MAP_TILE_VISUALS.pathColorDark || PATH_COLOR_DARK}
+                onChange={(pathColorDark) => setMapTileVisuals({ pathColorDark })}
+            />
+            <ColorRow
+                label="Path Color (Light)"
+                value={mapTileVisuals.pathColorLight || DEFAULT_MAP_TILE_VISUALS.pathColorLight || PATH_COLOR_LIGHT}
+                onChange={(pathColorLight) => setMapTileVisuals({ pathColorLight })}
             />
             <div style={terrainGridStyle}>
                 {Object.keys(DEFAULT_TERRAIN_COLORS).map((terrain) => (

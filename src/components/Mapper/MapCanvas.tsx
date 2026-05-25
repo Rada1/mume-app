@@ -5,6 +5,7 @@ import { MapperPrediction } from './mapperTypes';
 import { gmcpBus } from '../../events/gmcpBus';
 import type { CombatPulse } from './renderers/rendererUtils';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { useVitalsStore } from '../../stores/useVitalsStore';
 
 interface MapCanvasProps {
     rooms: Record<string, any>;
@@ -62,6 +63,7 @@ interface MapCanvasProps {
     targetColor?: string;
     opponentName?: string | null;
     opponentId?: string | null;
+    inCombat?: boolean;
     activeInlineEntityId?: string | null;
     selectedObjectIds?: Set<string>;
     deathRoomId?: string | null;
@@ -71,6 +73,13 @@ interface MapCanvasProps {
     mapTileOpacity?: number;
     mapTileVisuals?: import('./mapperTypes').MapTileVisualAdjustments;
     lighting?: string;
+    calibration?: any;
+    vectors?: any;
+    isTracingMode?: boolean;
+    activePath?: any;
+    regionLabels?: any;
+    regionLabelEditMode?: boolean;
+    selectedRegionLabelId?: string | null;
 }
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
@@ -88,12 +97,13 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
         roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
-        opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
+        opponentName, opponentId, inCombat, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
         activeMapFilter, mapSearchQuery, mapTileOpacity, lighting
     } = props;
 
     const zoneFilters = useSettingsStore(state => state.zoneFilters);
     const mapTileVisuals = useSettingsStore(state => state.mapTileVisuals);
+    const weather = useVitalsStore(state => state.weather);
 
     // Zone filters are drawn directly onto elements in the canvas rather than using CSS filters
 
@@ -105,11 +115,12 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
         roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
-        opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
+        opponentName, opponentId, inCombat, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
         activeMapFilter, mapSearchQuery, combatPulsesRef, zoneFilters,
         mapTileVisuals,
         mapTileOpacity,
-        lighting
+        lighting,
+        weather
     });
 
     useEffect(() => gmcpBus.on('Game.CombatPulse', pulse => {

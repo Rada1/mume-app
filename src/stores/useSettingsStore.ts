@@ -12,12 +12,30 @@ import { DEFAULT_URL } from '../constants';
 import type { MapBackgroundVisualAdjustments, MapTileVisualAdjustments } from '../components/Mapper/mapperTypes';
 import { ZONE_FILTERS } from '../components/Mapper/zoneFilters';
 import type { ZoneFilterConfig, ZoneVisualConfig } from '../components/Mapper/zoneFilters';
-import { DEFAULT_TERRAIN_COLORS, WALL_COLOR } from '../components/Mapper/mapperUtils';
+import { DEFAULT_TERRAIN_COLORS, WALL_COLOR, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT } from '../components/Mapper/mapperUtils';
 
 export const DEFAULT_MAP_TILE_VISUALS: MapTileVisualAdjustments = {
-    terrainColors: {},
-    wallColor: WALL_COLOR,
+    terrainColors: {
+        Forest: '#19291b',
+        City: '#393532',
+        Building: '#33312e',
+        Field: '#263423',
+        Hills: '#2e271e',
+        Water: '#182b3a',
+        Rapids: '#30484f',
+        Shallows: '#253f46',
+        Cavern: '#282a33',
+        Tunnel: '#333333',
+        Brush: '#303c2f',
+        Road: '#2f3230',
+        Mountains: '#262321'
+    },
+    wallColor: '#3a3c42',
     doorColor: '#ffcc00',
+    roadColorDark: ROAD_COLOR_DARK,
+    roadColorLight: ROAD_COLOR_LIGHT,
+    pathColorDark: PATH_COLOR_DARK,
+    pathColorLight: PATH_COLOR_LIGHT,
 };
 
 export const DEFAULT_MAP_BACKGROUND_VISUALS: MapBackgroundVisualAdjustments = {

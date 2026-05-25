@@ -143,7 +143,7 @@ export const useMapAnimation = ({
 
         trackerRef.current.endTimes = trackerRef.current.endTimes.filter((time: number) => time > wallTime);
         if (trackerRef.current.endTimes.length > 0) needsNextFrame = true;
-        if (activeMapFilter || combatAnimationActive) needsNextFrame = true;
+        if (activeMapFilter || combatAnimationActive || currentRoomId) needsNextFrame = true;
 
         drawMap(ctx, dpr, w, h, marquee);
         return needsNextFrame;

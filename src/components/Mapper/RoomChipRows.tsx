@@ -111,7 +111,7 @@ const withDuplicateOrdinals = (chips: RoomChip[]): RoomChip[] => {
 export const RoomChipRows: React.FC = () => {
     const {
         characterName, roomChars, roomPlayers, roomNpcs, roomItems,
-        triggerHaptic
+        triggerHaptic, setTarget, inCombat, opponentId, opponentName
     } = useGame();
     const selectedTarget = useUIStore(s => s.selectedTarget);
     const toggleObjectSelection = useUIStore(s => s.toggleObjectSelection);
@@ -185,12 +185,15 @@ export const RoomChipRows: React.FC = () => {
     const selectChip = (event: React.MouseEvent<HTMLButtonElement>, chip: RoomChip) => {
         event.stopPropagation();
         triggerHaptic?.(15);
+        const currentTarget = useUIStore.getState().selectedTarget;
+        const isSame = currentTarget?.id === chip.entityId;
         toggleObjectSelection({
             id: chip.entityId,
             setId: chip.category,
             category: chip.category,
             context: chip.context,
         });
+        setTarget(isSame ? null : chip.context);
     };
 
     return (
@@ -199,17 +202,36 @@ export const RoomChipRows: React.FC = () => {
                 <div className="room-chip-row" key={row.id}>
                     <span className="room-chip-row-label">{row.label}</span>
                     <div className="room-chip-list">
-                        {row.chips.map(chip => (
-                            <button
-                                key={chip.entityId}
-                                type="button"
-                                className={`room-chip room-chip-${chip.kind}${selectedTarget?.id === chip.entityId ? ' is-active' : ''}`}
-                                onClick={event => selectChip(event, chip)}
-                                title={chip.context}
-                            >
-                                {chip.label}
-                            </button>
-                        ))}
+                        {row.chips.map(chip => {
+                            const isOpponent = !!inCombat && (() => {
+                                const rawIdMatch = chip.entityId.match(/^roomchars:([^#]+)/);
+                                const occupantIdStr = rawIdMatch ? rawIdMatch[1] : '';
+                                if (opponentId && occupantIdStr && String(opponentId) === String(occupantIdStr)) {
+                                    return true;
+                                }
+                                if (opponentName) {
+                                    const normOpponent = opponentName.replace(/^[*-]+|[*-]+$/g, '').replace(/^(a|an|the)\s+/i, '').trim().toLowerCase();
+                                    const cleanLabel = chip.label.replace(/^\d+\./, '');
+                                    const normChipLabel = cleanLabel.replace(/^[*-]+|[*-]+$/g, '').replace(/^(a|an|the)\s+/i, '').trim().toLowerCase();
+                                    if (normOpponent && normChipLabel && (normOpponent === normChipLabel || normOpponent.includes(normChipLabel) || normChipLabel.includes(normOpponent))) {
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            })();
+
+                            return (
+                                <button
+                                    key={chip.entityId}
+                                    type="button"
+                                    className={`room-chip room-chip-${chip.kind}${selectedTarget?.id === chip.entityId ? ' is-active' : ''}${isOpponent ? ' is-opponent' : ''}`}
+                                    onClick={event => selectChip(event, chip)}
+                                    title={chip.context}
+                                >
+                                    {chip.label}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             ))}

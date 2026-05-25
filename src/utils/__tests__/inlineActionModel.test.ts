@@ -15,7 +15,7 @@ describe('getInlineGlowColor', () => {
     });
 
     it('keeps the remote ally category color separate from room player color', () => {
-        expect(getInlineGlowColor('cat-ally-remote', [], { player: '#4173e6' })).toBe('#4173e6');
+        expect(getInlineGlowColor('cat-ally-remote', [], { player: '#4173e6' })).toBe('#55a5e2');
     });
 
     it('lets category overrides beat the room player color', () => {

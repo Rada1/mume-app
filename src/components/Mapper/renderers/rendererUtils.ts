@@ -41,6 +41,7 @@ export interface RenderContext {
     targetColor?: string;
     opponentName?: string | null;
     opponentId?: string | null;
+    inCombat?: boolean;
     activeInlineEntityId?: string | null;
     selectedObjectIds?: Set<string>;
     preloaded: Record<string, any>;
@@ -70,6 +71,7 @@ export interface RenderContext {
     mapTileVisuals?: MapTileVisualAdjustments;
     mapTileOpacity?: number;
     zoneFilters?: Record<string, ZoneFilterConfig>;
+    weather?: string;
 }
 
 export const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);

@@ -114,7 +114,7 @@ export const getTerrainColor = (
     t = normalizeTerrain(t);
 
     const override = terrainColors?.[t] || terrainColors?.Unknown;
-    if (override) return override;
+    if (override) return isDarkMode ? darkenTerrainHex(override, darkModeBrightness) : override;
 
     // Rich, distinct atmospheric colors that match the LotR palette.
     const baseColor = (() => {

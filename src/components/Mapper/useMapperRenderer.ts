@@ -88,6 +88,7 @@ interface RendererProps {
     targetColor?: string;
     opponentName?: string | null;
     opponentId?: string | null;
+    inCombat?: boolean;
     activeInlineEntityId?: string | null;
     selectedObjectIds?: Set<string>;
     deathRoomId?: string | null;
@@ -96,8 +97,10 @@ interface RendererProps {
     mapSearchQuery?: string;
     combatPulsesRef?: MutableRefObject<CombatPulse[]>;
     mapTileOpacity?: number;
+    mapTileVisuals?: any;
     zoneFilters?: Record<string, ZoneFilterConfig>;
     lighting?: string;
+    weather?: string;
 }
 
 export const useMapperRenderer = ({
@@ -108,10 +111,11 @@ export const useMapperRenderer = ({
     unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
     triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
     roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
-    opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
+    opponentName, opponentId, inCombat, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
     activeMapFilter, mapSearchQuery, combatPulsesRef,
     mapTileVisuals, mapTileOpacity, zoneFilters,
     lighting = 'none',
+    weather = 'none',
     showOrganicTerrain = true
 }: RendererProps) => {
 
@@ -301,7 +305,7 @@ export const useMapperRenderer = ({
             lastMapTileOpacityRef.current = mapTileOpacity;
         }
 
-        const baseParams = `${curZInt}_${isDarkMode}_${roomsVersionRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}`;
+        const baseParams = `${curZInt}_${isDarkMode}_${roomsVersionRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}_${weather}`;
         const needsRebuild = cache.lastParams !== baseParams || zoomDiff > 0.25 || moveDist > moveThreshold || isExplorationAnimating || visualsChanged;
 
         if (needsRebuild) {
@@ -384,7 +388,9 @@ export const useMapperRenderer = ({
                 activeInlineEntityId, selectedObjectIds,
                 activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
                 mapTileVisuals, mapTileOpacity,
-                zoneFilters
+                zoneFilters,
+                weather,
+                inCombat
             };
 
             if (floorIndex) drawTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
@@ -438,7 +444,8 @@ export const useMapperRenderer = ({
             preloaded: preloadedCoordsRef.current, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef,
             groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, opponentName,
             opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
-            activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef
+            activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
+            inCombat
         };
 
         drawGroupMembers(rCtx);
@@ -479,7 +486,7 @@ export const useMapperRenderer = ({
         ctx.fillStyle = vig;
         ctx.fillRect(0, 0, baseW, baseH);
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, activeMapFilter, mapSearchQuery, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, activeMapFilter, mapSearchQuery, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, inCombat]);
 
     return { drawMap };
 };

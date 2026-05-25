@@ -136,3 +136,17 @@
         border-radius: 4px;
     }
 }
+
+.room-chip.is-opponent {
+    border-color: #ef4444 !important;
+    box-shadow:
+        0 0 3px rgba(239, 68, 68, 0.3),
+        0 0 6px rgba(239, 68, 68, 0.5) !important;
+    animation: chip-opponent-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes chip-opponent-pulse {
+    0%   { box-shadow: 0 0 3px rgba(239, 68, 68, 0.3); }
+    50%  { box-shadow: 0 0 8px rgba(239, 68, 68, 0.7), 0 0 14px rgba(239, 68, 68, 0.4); }
+    100% { box-shadow: 0 0 3px rgba(239, 68, 68, 0.3); }
+}

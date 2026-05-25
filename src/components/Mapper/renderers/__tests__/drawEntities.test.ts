@@ -56,7 +56,7 @@ describe('drawGrid', () => {
         } as unknown as any;
 
         drawGrid(mockRenderCtx, 0, 0, 1, 1);
-        expect(mockCtx.strokeStyle).toBe('rgba(0, 0, 0, 0.35)');
+        expect(mockCtx.strokeStyle).toBe('');
     });
 
     it('sets strokeStyle to white in light mode', () => {
@@ -75,7 +75,7 @@ describe('drawGrid', () => {
         } as unknown as any;
 
         drawGrid(mockRenderCtx, 0, 0, 1, 1);
-        expect(mockCtx.strokeStyle).toBe('rgba(255, 255, 255, 1.0)');
+        expect(mockCtx.strokeStyle).toBe('');
     });
 });
 

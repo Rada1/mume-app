@@ -320,6 +320,21 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 </div>
             </div>
 
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', backgroundColor: isDarkMode ? '#1c1c1f' : '#ffffff', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6', padding: '8px 12px', borderRadius: '8px', fontSize: '12px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none', width: '100%' }}>
+                    <input
+                        type="checkbox"
+                        checked={!!room.isPermanentSnow}
+                        onChange={(e) => updateRoom({ isPermanentSnow: e.target.checked })}
+                        disabled={mode !== 'edit'}
+                        style={{ cursor: mode === 'edit' ? 'pointer' : 'default', width: '16px', height: '16px' }}
+                    />
+                    <span style={{ fontWeight: 'bold', color: room.isPermanentSnow ? '#60a5fa' : (isDarkMode ? '#a1a1aa' : '#71717a') }}>
+                        Permanent Snow Cover
+                    </span>
+                </label>
+            </div>
+
             {room.desc && (
                 <div style={{ fontSize: '13px', color: isDarkMode ? '#d1d5db' : '#3a3a3c', backgroundColor: isDarkMode ? '#141417' : '#ffffff', padding: '14px', borderRadius: '8px', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6', lineHeight: '1.6' }}>
                     {room.desc}

@@ -24,9 +24,9 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
     'shire': {
         dark: {
             wallColor: '#3e3025',
-            roadColor: '#725b44',
-            pathColor: '#5c4937',
-            terrainColors: { Forest: '#2d4732', Field: '#3a5934', Hills: '#5c5048' }
+            pathColor: '#a9a8a7',
+            terrainColors: { Field: '#1f321a', Hills: '#193018' },
+            doorColor: '#b5f962'
         },
         light: {
             wallColor: '#5d4838',
@@ -40,7 +40,7 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
             wallColor: '#3c3e44',
             roadColor: '#8a785d',
             pathColor: '#6d5d47',
-            terrainColors: { Forest: '#3b543e', Field: '#5c7659', Shallows: '#426a75' }
+            terrainColors: { Forest: '#3b543e', Field: '#232f1d', Shallows: '#426a75', City: '#302821' }
         },
         light: {
             wallColor: '#52555e',
@@ -68,7 +68,8 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
             wallColor: '#1d1e22',
             roadColor: '#40424a',
             pathColor: '#35373d',
-            terrainColors: { Cavern: '#222329', Tunnel: '#2d2f36', Water: '#1c2e3d' }
+            terrainColors: { Cavern: '#222329', Tunnel: '#2d2f36', Water: '#1c2e3d' },
+            doorColor: '#ff1900'
         },
         light: {
             wallColor: '#32353d',
@@ -79,10 +80,11 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
     },
     'goblin town': {
         dark: {
-            wallColor: '#2b2420',
+            wallColor: '#433c38',
             roadColor: '#423d38',
             pathColor: '#332e29',
-            terrainColors: { Cavern: '#332924', Tunnel: '#26201c', Water: '#2b3038' }
+            terrainColors: { Cavern: '#1c1e22', Tunnel: '#1f1c26', Water: '#2b3038', Building: '#232028' },
+            doorColor: '#ff0000'
         },
         light: {
             wallColor: '#453c37',
@@ -110,7 +112,8 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
             wallColor: '#3f4b5c',
             roadColor: '#8a9ab0',
             pathColor: '#6f7f94',
-            terrainColors: { Forest: '#2d5438', Water: '#2d5f8c', Shallows: '#3b8ba8' }
+            terrainColors: { Forest: '#2d5438', Water: '#2d5f8c', Shallows: '#3b8ba8', City: '#504121', Building: '#5b4815', Road: '#3d471a', Field: '#3d471a' },
+            doorColor: '#46fe39'
         },
         light: {
             wallColor: '#5a687c',
@@ -124,7 +127,8 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
             wallColor: '#5c543f',
             roadColor: '#b0a48a',
             pathColor: '#94886f',
-            terrainColors: { Forest: '#3b542d', Water: '#2d6e8c', Shallows: '#3ba2a8' }
+            terrainColors: { Forest: '#273c1a', Water: '#2d6e8c', Shallows: '#3ba2a8' },
+            doorColor: '#8adcff'
         },
         light: {
             wallColor: '#7c725a',
@@ -132,6 +136,100 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
             pathColor: '#bdad8c',
             terrainColors: { Forest: '#547a43', Water: '#4c9eb8', Shallows: '#5ecddb' }
         }
+    },
+    'fangorn': {
+        dark: {
+            wallColor: '#352718',
+            terrainColors: { Building: '#282725', Forest: '#1f2920', Mountains: '#312a26', Hills: '#443f3b', Field: '#233120' },
+            doorColor: '#00ff55'
+        },
+        light: {}
+    },
+    'goblin-town': {
+        dark: {
+            terrainColors: { Building: '#1f1f1e' }
+        },
+        light: {}
+    },
+    'emyn-nu-fuin': {
+        dark: {
+            terrainColors: { Forest: '#466d4a', Mountains: '#735d4e' }
+        },
+        light: {}
+    },
+    'lorien surroundings': {
+        dark: {
+            terrainColors: { Grasslands: '#3d503a', Field: '#253522', Forest: '#153318', Hills: '#423934', Mountains: '#32302f' }
+        },
+        light: {}
+    },
+    'misty mountains': {
+        dark: {
+            terrainColors: { Mountains: '#1a1919' }
+        },
+        light: {}
+    },
+    'southern mirkwood': {
+        dark: {
+            wallColor: '#3c2f25'
+        },
+        light: {}
+    },
+    'emyn nu fuin': {
+        dark: {
+            terrainColors: { Mountains: '#282624', Hills: '#2d2b2a' },
+            doorColor: '#ff7b00'
+        },
+        light: {}
+    },
+    'grey havens': {
+        dark: {
+            doorColor: '#00d5ff',
+            terrainColors: { City: '#343932' }
+        },
+        light: {}
+    },
+    'blue mountains': {
+        dark: {
+            terrainColors: { City: '#291e1e' }
+        },
+        light: {}
+    },
+    'old forest road': {
+        dark: {
+            terrainColors: { Forest: '#1f2518' },
+            doorColor: '#cfff4d',
+            wallColor: '#555c4d'
+        },
+        light: {}
+    },
+    'dunland': {
+        dark: {
+            terrainColors: { Field: '#252711' }
+        },
+        light: {}
+    },
+    'tower hills': {
+        dark: {
+            doorColor: '#c2d8ab',
+            terrainColors: { Building: '#473d2e' },
+            wallColor: '#714c2d'
+        },
+        light: {}
+    },
+    'road to grey havens': {
+        dark: {
+            doorColor: '#6afba9'
+        },
+        light: {}
+    },
+    'troll warrens': {
+        dark: {
+            doorColor: '#ff0000',
+            terrainColors: { Tunnel: '#1d1b1b', Cavern: '#1a1b1e' },
+            wallColor: '#2c1c16'
+        },
+        light: {}
     }
 };
 

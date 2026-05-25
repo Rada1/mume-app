@@ -111,7 +111,8 @@ export const PromptInventoryChips: React.FC = () => {
         setExpandedContainers,
         containerContents,
         executeCommand,
-        parser
+        parser,
+        setTarget
     } = useGame();
     const { displayEqLines, displayInventoryLines } = useUI();
     const selectedTarget = useUIStore(s => s.selectedTarget);
@@ -141,6 +142,8 @@ export const PromptInventoryChips: React.FC = () => {
     const selectChip = (event: React.MouseEvent<HTMLButtonElement>, chip: GearChip) => {
         event.stopPropagation();
         triggerHaptic?.(12);
+        const currentTarget = useUIStore.getState().selectedTarget;
+        const isSame = currentTarget?.id === chip.menuEntityId;
         toggleObjectSelection({
             id: chip.menuEntityId,
             setId: chip.category,
@@ -149,6 +152,7 @@ export const PromptInventoryChips: React.FC = () => {
             accentColor: objectColor,
             menuDisplay: 'list',
         });
+        setTarget(isSame ? null : chip.context);
     };
 
     const toggleContainer = (event: React.MouseEvent<HTMLButtonElement>, chip: GearChip, lines: DrawerLine[]) => {

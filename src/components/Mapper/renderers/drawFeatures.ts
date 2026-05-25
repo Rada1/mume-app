@@ -156,7 +156,8 @@ export const drawRoomFlagsOptimized = (
     zoom: number,
     mobF: string[],
     loadF: string[],
-    questF: string[]
+    questF: string[],
+    scale: number = 1.0
 ) => {
     type Indicator = { regex: RegExp, sym: string, color: string, size: number, glowStrength?: number, noBlackBg?: boolean };
 
@@ -226,7 +227,11 @@ export const drawRoomFlagsOptimized = (
         ctx.shadowBlur = 8;
         ctx.shadowOffsetX = 1;
         ctx.shadowOffsetY = 2;
-        ctx.drawImage(icon, anchorX + off - icon.width / 2, anchorY - icon.height / 2);
+        
+        ctx.translate(anchorX + off, anchorY);
+        ctx.scale(scale, scale);
+        ctx.drawImage(icon, -icon.width / 2, -icon.height / 2);
+        
         ctx.restore();
         off += ind.size + 4;
     }
@@ -238,8 +243,17 @@ export const drawFeatures = (
     floorIndex: Record<string, string[]>
 ) => {
     const { ctx, dpr, isDarkMode, invZoom, currentZ, explored, unveilMap, allRooms, preloaded, camera, baseMapExitsRef } = rCtx;
-    const wallColor = rCtx.mapTileVisuals?.wallColor || WALL_COLOR;
     const s = GRID_SIZE;
+    const roadSegments: {
+        x1: number;
+        y1: number;
+        x2: number;
+        y2: number;
+        lineWidth: number;
+        roadColor: string;
+        globalAlpha: number;
+        isFade: boolean;
+    }[] = [];
 
     // Fast return if no buckets
     if (!floorIndex) return;
@@ -282,6 +296,194 @@ export const drawFeatures = (
         }
     }
 
+    // --- Pass 1: Collect and render roads and trails first so they are below doors, walls, and flags ---
+    for (let bx = bX1; bx <= bX2; bx++) {
+        for (let by = bY1; by <= bY2; by++) {
+            const bucket = floorIndex[`${bx},${by}`];
+            if (!bucket) continue;
+            for (let i = 0; i < bucket.length; i++) {
+                const vnum = bucket[i];
+                const rData = preloaded[vnum];
+                if (!rData) continue;
+
+                const isExplored = explored.has(vnum);
+                const isRevealed = !isExplored && ring1Revealed.has(vnum);
+                const ghostExits = rData[4];
+
+                if (!isExplored && !isRevealed && !unveilMap) continue;
+
+                const rx = rData[0], ry = rData[1], tSector = rData[3];
+                const anchorX = rx * s + s / 2, anchorY = ry * s + s / 2;
+                const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
+                const zoneName = localRoom?.zone || rData[9] || '';
+                const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
+
+                // Calculate fade-in for newly explored rooms (skip for active room)
+                let exploredAlphaMul = 1.0;
+                const isActive = vnum && rCtx.activeId && (
+                    vnum === rCtx.activeId || 
+                    `m_${vnum}` === rCtx.activeId || 
+                    vnum === `m_${rCtx.activeId}`
+                );
+                if (!isActive && isExplored && rCtx.firstExploredAtRef.current[vnum]) {
+                    const elapsed = rCtx.now - rCtx.firstExploredAtRef.current[vnum];
+                    const animDur = 800;
+                    if (elapsed < animDur) {
+                        exploredAlphaMul = elapsed / animDur;
+                    }
+                }
+
+                if (ghostExits && Object.keys(ghostExits).length > 0 && (camera.zoom >= 0.15 || unveilMap)) {
+                    const currentRoomObj = localRoom || { terrain: tSector, exits: {} };
+                    const isCurrentRoad = normalizeTerrain(currentRoomObj.terrain) === 'Road';
+                    for (const dir in ghostExits) {
+                        const exObj = ghostExits[dir]; if (!exObj) continue;
+                        const targetVnum = String(exObj.target), targetData = preloaded[targetVnum];
+                        if (targetData && (Math.abs(targetData[2] - currentZ) <= 0.5 || ((dir === 'u' || dir === 'd') && Math.abs(targetData[2] - currentZ) <= 1.5))) {
+                            const isTargetExplored = explored.has(targetVnum);
+                            const isTargetRevealed = ring1Revealed.has(targetVnum);
+
+                            if (!unveilMap && !isExplored && !isRevealed && !isTargetExplored && !isTargetRevealed) continue;
+
+                            const ardaMapping = preloaded[vnum];
+                            const sId = ardaMapping ? String(ardaMapping[6]) : vnum;
+                            const ardaExit = baseMapExitsRef.current[sId]?.[4]?.[dir];
+
+                            const combinedFlags = [
+                                ...(ardaExit?.flags || []),
+                                ...(currentRoomObj.exits?.[dir]?.flags || []),
+                                ...(exObj.flags || [])
+                            ];
+                            const hasRoadFlag = combinedFlags.some((f: string) => /road|trail|path/i.test(String(f)));
+
+                            if (hasRoadFlag) {
+                                const tpx = targetData[0] * s + s / 2, tpy = targetData[1] * s + s / 2;
+                                const isRoad = isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road';
+                                const defaultRoadColor = isDarkMode
+                                    ? (isRoad 
+                                        ? (rCtx.mapTileVisuals?.roadColorDark || ROAD_COLOR_DARK) 
+                                        : (rCtx.mapTileVisuals?.pathColorDark || PATH_COLOR_DARK))
+                                    : (isRoad 
+                                        ? (rCtx.mapTileVisuals?.roadColorLight || ROAD_COLOR_LIGHT) 
+                                        : (rCtx.mapTileVisuals?.pathColorLight || PATH_COLOR_LIGHT));
+                                const roadColor = isRoad
+                                    ? (zoneVis.roadColor || defaultRoadColor)
+                                    : (zoneVis.pathColor || defaultRoadColor);
+                                const lineWidth = isRoad ? 12 : 6;
+
+                                let globalAlpha = 1.0;
+                                let isFade = false;
+                                if (unveilMap) {
+                                    globalAlpha = 1.0;
+                                } else if (!isExplored && !isRevealed) {
+                                    continue;
+                                } else if (!isTargetExplored && !isTargetRevealed) {
+                                    globalAlpha = isRevealed ? 0.25 : exploredAlphaMul;
+                                    isFade = true;
+                                } else {
+                                    let alpha = 1.0;
+                                    if (!isExplored || !isTargetExplored) {
+                                        alpha = (isExplored || isTargetExplored) ? 0.6 : 0.3;
+                                    }
+                                    globalAlpha = alpha * exploredAlphaMul;
+                                }
+
+                                roadSegments.push({
+                                    x1: anchorX,
+                                    y1: anchorY,
+                                    x2: tpx,
+                                    y2: tpy,
+                                    lineWidth,
+                                    roadColor,
+                                    globalAlpha,
+                                    isFade
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // --- Render Road & Trail Borders ---
+    for (const seg of roadSegments) {
+        ctx.save();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.globalAlpha = seg.globalAlpha;
+        if (seg.isFade) {
+            const borderGrad = ctx.createLinearGradient(seg.x1, seg.y1, seg.x2, seg.y2);
+            borderGrad.addColorStop(0, '#000000');
+            borderGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.strokeStyle = borderGrad;
+            ctx.lineWidth = seg.lineWidth + 2.0 * invZoom;
+            ctx.beginPath();
+            ctx.moveTo(seg.x1, seg.y1);
+            ctx.lineTo(seg.x2, seg.y2);
+            ctx.stroke();
+        } else {
+            drawLine(ctx, seg.x1, seg.y1, seg.x2, seg.y2, '#000000', seg.lineWidth + 2.0 * invZoom, dpr, invZoom);
+        }
+        ctx.restore();
+    }
+
+    // --- Render Road & Trail Fills ---
+    for (const seg of roadSegments) {
+        ctx.save();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.globalAlpha = seg.globalAlpha;
+        if (seg.isFade) {
+            const grad = ctx.createLinearGradient(seg.x1, seg.y1, seg.x2, seg.y2);
+            grad.addColorStop(0, seg.roadColor);
+            grad.addColorStop(1, hexToRgba(seg.roadColor, 0));
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = seg.lineWidth;
+            ctx.beginPath();
+            ctx.moveTo(seg.x1, seg.y1);
+            ctx.lineTo(seg.x2, seg.y2);
+            ctx.stroke();
+        } else {
+            drawLine(ctx, seg.x1, seg.y1, seg.x2, seg.y2, seg.roadColor, seg.lineWidth, dpr, invZoom);
+        }
+
+        // Draw textured dirt/gravel specks along the line
+        const dx = seg.x2 - seg.x1;
+        const dy = seg.y2 - seg.y1;
+        const len = Math.sqrt(dx * dx + dy * dy);
+        if (len > 0) {
+            const nx = -dy / len;
+            const ny = dx / len;
+            const speckCount = Math.floor(len * (seg.lineWidth > 8 ? 0.45 : 0.28));
+            ctx.save();
+            ctx.globalAlpha = seg.globalAlpha * 0.40;
+            for (let j = 0; j < speckCount; j++) {
+                const seed = Math.sin(seg.x1 * 12.9898 + seg.y1 * 78.233 + j * 93.19) * 43758.5453;
+                const randT = (Math.abs(seed) % 1);
+                const maxOffset = Math.max(1, (seg.lineWidth - 2.5 * invZoom) / 2);
+                const randOffset = ((Math.abs(seed * 7.1) % 1) - 0.5) * maxOffset;
+                const randSize = 0.5 + (Math.abs(seed * 13.3) % 1) * 0.8 * invZoom;
+
+                const px = seg.x1 + dx * randT + nx * randOffset;
+                const py = seg.y1 + dy * randT + ny * randOffset;
+
+                const isDark = (j % 2 === 0);
+                ctx.fillStyle = isDark
+                    ? (isDarkMode ? '#000000' : 'rgba(50, 30, 10, 0.75)')
+                    : (isDarkMode ? '#555555' : 'rgba(255, 255, 255, 0.85)');
+
+                ctx.beginPath();
+                ctx.arc(px, py, randSize, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        ctx.restore();
+    }
+
+    // --- Pass 2: Draw everything else (walls, doors, flags, etc.) ---
     for (let bx = bX1; bx <= bX2; bx++) {
         for (let by = bY1; by <= bY2; by++) {
             const bucket = floorIndex[`${bx},${by}`];
@@ -336,99 +538,81 @@ export const drawFeatures = (
                     }
                 }
 
-                // 1. Roads and trails (Zoom >= 0.15 or reveal all mode)
-                if (ghostExits && Object.keys(ghostExits).length > 0 && (camera.zoom >= 0.15 || unveilMap)) {
-                    const currentRoomObj = localRoom || { terrain: tSector, exits: {} };
-                    const isCurrentRoad = normalizeTerrain(currentRoomObj.terrain) === 'Road';
+                // 1. Vertical Arrow Connections (Bidirectional Only, Zoom > 0.3)
+                if (ghostExits && Object.keys(ghostExits).length > 0 && camera.zoom > 0.3) {
                     for (const dir in ghostExits) {
+                        if (dir !== 'u' && dir !== 'd') continue;
                         const exObj = ghostExits[dir]; if (!exObj) continue;
                         const targetVnum = String(exObj.target), targetData = preloaded[targetVnum];
-                        if (targetData && (Math.abs(targetData[2] - currentZ) <= 0.5 || ((dir === 'u' || dir === 'd') && Math.abs(targetData[2] - currentZ) <= 1.5))) {
+                        if (targetData && (Math.abs(targetData[2] - currentZ) <= 1.5)) {
                             const isTargetExplored = explored.has(targetVnum);
                             const isTargetRevealed = ring1Revealed.has(targetVnum);
 
-                            // Show exit if at least one side is explored or ring-1 revealed
                             if (!unveilMap && !isExplored && !isRevealed && !isTargetExplored && !isTargetRevealed) continue;
 
-                            const ardaMapping = preloaded[vnum];
-                            const sId = ardaMapping ? String(ardaMapping[6]) : vnum;
-                            const ardaExit = baseMapExitsRef.current[sId]?.[4]?.[dir];
+                            const oppDir = dir === 'u' ? 'd' : 'u';
+                            const targetExits = targetData[4];
+                            const pointsBack = targetExits?.[oppDir] &&
+                                String(targetExits[oppDir].target).replace(/^m_/, '') === String(vnum).replace(/^m_/, '');
 
-                            const combinedFlags = [
-                                ...(ardaExit?.flags || []),
-                                ...(currentRoomObj.exits?.[dir]?.flags || []),
-                                ...(exObj.flags || [])
-                            ];
-                            const hasRoadFlag = combinedFlags.some((f: string) => /road|trail|path/i.test(String(f)));
+                            if (pointsBack) {
+                                const iconColor = 'rgba(148, 163, 184, 0.8)';
+                                const cOff = 12;
+                                const startX = anchorX + (dir === 'u' ? -cOff : cOff);
+                                const startY = anchorY + (dir === 'u' ? -cOff : cOff);
+                                const endX = targetData[0] * s + s / 2 + (dir === 'u' ? cOff : -cOff);
+                                const endY = targetData[1] * s + s / 2 + (dir === 'u' ? cOff : -cOff);
 
-                            const tpx = targetData[0] * s + s / 2, tpy = targetData[1] * s + s / 2;
-                            ctx.save();
-                            if (!isExplored && !isRevealed) ctx.globalAlpha = 0.15;
-                            else if (isRevealed) ctx.globalAlpha = 0.3;
-                            else ctx.globalAlpha = exploredAlphaMul;
-
-                            if (hasRoadFlag) {
                                 ctx.save();
-                                const isRoad = isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road';
-                                const defaultRoadColor = isDarkMode
-                                    ? (isRoad ? ROAD_COLOR_DARK : PATH_COLOR_DARK)
-                                    : (isRoad ? ROAD_COLOR_LIGHT : PATH_COLOR_LIGHT);
-                                const roadColor = isRoad
-                                    ? (zoneVis.roadColor || defaultRoadColor)
-                                    : (zoneVis.pathColor || defaultRoadColor);
-                                const lineWidth = isRoad ? 12 : 6;
-
-                                if (unveilMap) {
-                                    drawLine(ctx, anchorX, anchorY, tpx, tpy, roadColor, lineWidth, dpr, invZoom);
-                                } else if (!isExplored && !isRevealed) {
-                                    // Ring-2 peeked → skip; the ring-1 side will draw toward us
-                                } else if (!isTargetExplored && !isTargetRevealed) {
-                                    // Explored/revealed → unknown: fade to transparent
-                                    const grad = ctx.createLinearGradient(anchorX, anchorY, tpx, tpy);
-                                    grad.addColorStop(0, roadColor);
-                                    grad.addColorStop(1, hexToRgba(roadColor, 0));
-                                    ctx.strokeStyle = grad;
-                                    ctx.lineWidth = lineWidth;
-                                    ctx.globalAlpha = isRevealed ? 0.25 : exploredAlphaMul;
-                                    ctx.beginPath();
-                                    ctx.moveTo(anchorX, anchorY);
-                                    ctx.lineTo(tpx, tpy);
-                                    ctx.stroke();
-                                } else {
-                                    // Both visible (explored or revealed)
-                                    let alpha = 1.0;
-                                    if (!isExplored || !isTargetExplored) {
-                                        alpha = (isExplored || isTargetExplored) ? 0.6 : 0.3;
-                                    }
-                                    ctx.globalAlpha = alpha * exploredAlphaMul;
-                                    drawLine(ctx, anchorX, anchorY, tpx, tpy, roadColor, lineWidth, dpr, invZoom);
-                                }
+                                if (unveilMap) ctx.globalAlpha = 1.0;
+                                else if (!isExplored && !isRevealed) ctx.globalAlpha = 0.15;
+                                else if (isRevealed) ctx.globalAlpha = 0.3;
+                                else ctx.globalAlpha = exploredAlphaMul * 0.5;
+                                drawLine(ctx, startX, startY, endX, endY, iconColor, 1.5, dpr, invZoom, true);
                                 ctx.restore();
                             }
+                        }
+                    }
+                }
 
-                            // --- 1.1 Vertical Arrow Connections (Bidirectional Only) ---
-                            if ((dir === 'u' || dir === 'd') && camera.zoom > 0.3) {
-                                const oppDir = dir === 'u' ? 'd' : 'u';
-                                const targetExits = targetData[4];
-                                const pointsBack = targetExits?.[oppDir] &&
-                                    String(targetExits[oppDir].target).replace(/^m_/, '') === String(vnum).replace(/^m_/, '');
-
-                                if (pointsBack) {
-                                    const iconColor = 'rgba(148, 163, 184, 0.8)';
-                                    const cOff = 12;
-                                    const startX = anchorX + (dir === 'u' ? -cOff : cOff);
-                                    const startY = anchorY + (dir === 'u' ? -cOff : cOff);
-                                    const endX = tpx + (dir === 'u' ? cOff : -cOff);
-                                    const endY = tpy + (dir === 'u' ? cOff : -cOff);
-
-                                    ctx.save();
-                                    ctx.globalAlpha = isExplored ? exploredAlphaMul * 0.5 : 0.2;
-                                    drawLine(ctx, startX, startY, endX, endY, iconColor, 1.5, dpr, invZoom, true);
-                                    ctx.restore();
+                // 1.5. Water edge shadows: heavy inward gradient on sides not touching another water room
+                if (isExplored || unveilMap) {
+                    const currentTerrain = localRoom ? localRoom.terrain : tSector;
+                    const tName = normalizeTerrain(currentTerrain);
+                    const isWaterRoom = tName === 'Water' || tName === 'Shallows' || tName === 'Rapids' || tName === 'Underwater';
+                    if (isWaterRoom) {
+                        ctx.save();
+                        ctx.globalAlpha = unveilMap ? 1.0 : exploredAlphaMul;
+                        const depth = s * 0.10;
+                        for (const dir of ['n', 's', 'e', 'w'] as const) {
+                            const exit = ghostExits?.[dir];
+                            const targetData = exit ? preloaded[String(exit.target)] : null;
+                            const nTName = targetData ? normalizeTerrain(targetData[3]) : null;
+                            const neighborIsWater = nTName === 'Water' || nTName === 'Shallows' || nTName === 'Rapids' || nTName === 'Underwater';
+                            if (!neighborIsWater) {
+                                let grad: CanvasGradient;
+                                const dark = 'rgba(0,0,0,0.52)';
+                                const fade = 'rgba(0,0,0,0)';
+                                if (dir === 'n') {
+                                    grad = ctx.createLinearGradient(wx, wy, wx, wy + depth);
+                                    grad.addColorStop(0, dark); grad.addColorStop(1, fade);
+                                    ctx.fillStyle = grad; ctx.fillRect(wx, wy, s, depth);
+                                } else if (dir === 's') {
+                                    grad = ctx.createLinearGradient(wx, wy + s, wx, wy + s - depth);
+                                    grad.addColorStop(0, dark); grad.addColorStop(1, fade);
+                                    ctx.fillStyle = grad; ctx.fillRect(wx, wy + s - depth, s, depth);
+                                } else if (dir === 'e') {
+                                    grad = ctx.createLinearGradient(wx + s, wy, wx + s - depth, wy);
+                                    grad.addColorStop(0, dark); grad.addColorStop(1, fade);
+                                    ctx.fillStyle = grad; ctx.fillRect(wx + s - depth, wy, depth, s);
+                                } else {
+                                    grad = ctx.createLinearGradient(wx, wy, wx + depth, wy);
+                                    grad.addColorStop(0, dark); grad.addColorStop(1, fade);
+                                    ctx.fillStyle = grad; ctx.fillRect(wx, wy, depth, s);
                                 }
                             }
-                            ctx.restore();
                         }
+                        ctx.restore();
                     }
                 }
 
@@ -437,7 +621,7 @@ export const drawFeatures = (
                     ctx.save();
                     if (isPeeked) {
                         // Clip wall drawing to sides facing ring-1 revealed neighbors
-                        const clipExtent = s * 0.7;
+                        const clipExtent = s * 0.25;
                         ctx.beginPath();
                         for (const pd of peekDirs) {
                             if (pd === 'n') ctx.rect(wx, wy, s, clipExtent);
@@ -522,11 +706,33 @@ export const drawFeatures = (
                     // Skip synthetic map icons for DARK/SUNDEATH as per user request
                     // Shading is handled in drawTerrains.ts
 
-                    // Only draw flags for fully explored rooms
-                    if (isExplored && (finalMobF.length > 0 || loadF.length > 0 || questF.length > 0)) {
+                    // Draw flags for explored rooms, or all rooms in reveal-all mode
+                    if ((isExplored || unveilMap) && (finalMobF.length > 0 || loadF.length > 0 || questF.length > 0)) {
                         ctx.save();
-                        ctx.globalAlpha = exploredAlphaMul;
-                        drawRoomFlagsOptimized(ctx, anchorX, anchorY, camera.zoom, finalMobF, loadF, questF);
+                        
+                        let flagScale = 1.0;
+                        const exploredAt = rCtx.firstExploredAtRef.current[vnum];
+                        if (isExplored && exploredAt && !unveilMap) {
+                            const elapsed = rCtx.now - exploredAt;
+                            const delay = 100;   // 100ms delay
+                            const animDur = 450; // duration of bounce
+                            
+                            if (elapsed < delay) {
+                                flagScale = 0.0;
+                                rCtx.triggerRender?.(); // keep rendering loop active
+                            } else if (elapsed < delay + animDur) {
+                                const t = (elapsed - delay) / animDur;
+                                // Ease out back (bouncy ease out)
+                                const c1 = 1.70158;
+                                const c3 = c1 + 1;
+                                flagScale = 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+                                rCtx.triggerRender?.(); // keep rendering loop active
+                            }
+                        }
+                        
+                        if (flagScale > 0.0) {
+                            drawRoomFlagsOptimized(ctx, anchorX, anchorY, camera.zoom, finalMobF, loadF, questF, flagScale);
+                        }
                         ctx.restore();
                     }
 
