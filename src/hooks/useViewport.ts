@@ -57,81 +57,17 @@ export function useViewport(
             if (!isNearBottom) return;
         }
 
-        // --- Continuous Glide Logic ---
-        // If already animating and the target has moved, we don't want to cancel and restart (laggy).
-        // Instead, we let the existing loop know about the new target distance.
-
-        // Dynamic Snap: If the distance is too great (e.g. command spam), instantly snap instead of
-        // trying to smooth glide through hundreds of pixels which creates a "lagging behind" visual effect.
-        const dist = Math.abs(targetScroll - currentScroll);
-        const shouldSnap = instant || dist > 250;
-
-        const isSmoothEnabled = !shouldSnap && !disableSmoothScroll && isImmersionMode;
-
-        if (isSmoothEnabled && dist > 0.5) {
-            // Store the target for the animation loop to consume
-            (container as any).lastTargetScroll = targetScroll;
-
-            if (isAutoScrollingRef.current && scrollAnimationRef.current) {
-                // If already gliding, just update the start position and time to "re-center" the ease
-                // but keep it smooth. We don't want to reset startTime entirely as that causes 0-velocity jumps.
-                // Instead, we just let the animation continue; it naturally pulls towards dynamicTarget.
-                return;
-            }
-
-            isAutoScrollingRef.current = true;
-            const startTime = performance.now();
-            const duration = 250;
-            const startScroll = container.scrollTop;
-
-            const animate = (currentTime: number) => {
-                if (!isAutoScrollingRef.current) {
-                    scrollAnimationRef.current = null;
-                    return;
-                }
-
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-
-                // Exponential ease-out for that "premium" feel
-                const easeOut = 1 - Math.pow(2, -10 * progress);
-
-                const dynamicTarget = container.scrollHeight - container.clientHeight;
-                const currentDistance = dynamicTarget - startScroll;
-
-                // Velocity-aware smoothing: if the gap is tiny, just snap
-                if (progress < 1 && Math.abs(dynamicTarget - container.scrollTop) > 0.5) {
-                    const newScroll = startScroll + (currentDistance * easeOut);
-                    container.scrollTop = newScroll;
-                    scrollAnimationRef.current = requestAnimationFrame(animate);
-                } else {
-                    container.scrollTop = dynamicTarget;
-                    scrollAnimationRef.current = null;
-                    // Start post-animation cooldown from HERE (when animation actually ends),
-                    // not from animation start — the old 150ms timeout fired mid-animation
-                    // and never cleared isAutoScrollingRef, causing it to get stuck true.
-                    if (autoScrollTimeoutRef.current) clearTimeout(autoScrollTimeoutRef.current);
-                    autoScrollTimeoutRef.current = setTimeout(() => {
-                        isAutoScrollingRef.current = false;
-                    }, 100);
-                }
-            };
-
-            if (scrollAnimationRef.current) cancelAnimationFrame(scrollAnimationRef.current);
-            scrollAnimationRef.current = requestAnimationFrame(animate);
-        } else {
-            if (scrollAnimationRef.current) {
-                cancelAnimationFrame(scrollAnimationRef.current);
-                scrollAnimationRef.current = null;
-            }
-            // Set isAutoScrollingRef BEFORE scrollTop so the resulting scroll event
-            // is recognized as programmatic — otherwise handleScroll sets isUserScrollingRef=true
-            // for 150ms which blocks VirtualizerResize corrections during rapid text.
-            isAutoScrollingRef.current = true;
-            container.scrollTop = targetScroll;
-            requestAnimationFrame(() => { isAutoScrollingRef.current = false; });
+        if (scrollAnimationRef.current) {
+            cancelAnimationFrame(scrollAnimationRef.current);
+            scrollAnimationRef.current = null;
         }
-    }, [disableSmoothScroll, isImmersionMode]);
+        // Set isAutoScrollingRef BEFORE scrollTop so the resulting scroll event
+        // is recognized as programmatic — otherwise handleScroll sets isUserScrollingRef=true
+        // for 150ms which blocks VirtualizerResize corrections during rapid text.
+        isAutoScrollingRef.current = true;
+        container.scrollTop = targetScroll;
+        requestAnimationFrame(() => { isAutoScrollingRef.current = false; });
+    }, []);
 
     useEffect(() => {
         const container = scrollContainerRef.current;

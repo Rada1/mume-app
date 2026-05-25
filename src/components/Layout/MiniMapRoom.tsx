@@ -31,6 +31,8 @@ export const MiniMapRoom: React.FC = () => {
     const lastFrameTimeRef = useRef(performance.now());
     const requestRef = useRef<number | null>(null);
     const trailRef = useRef<any[]>([]); // Empty trail for mini-map
+    const lastCanvasSizeRef = useRef<{ w: number, h: number, dpr: number }>({ w: 0, h: 0, dpr: 0 });
+    const lastIdleDrawAtRef = useRef(0);
 
     const isDarkMode = theme === 'dark';
 
@@ -131,19 +133,38 @@ export const MiniMapRoom: React.FC = () => {
 
         const nowTs = performance.now();
         const deltaTime = nowTs - lastFrameTimeRef.current;
-        lastFrameTimeRef.current = nowTs;
 
         // Smooth camera lerp
         const frameScale = Math.min(2, deltaTime / 16.67);
         const camLerp = 1 - Math.pow(0.85, frameScale);
-        cameraRef.current.x += (targetRef.current.x - cameraRef.current.x) * camLerp;
-        cameraRef.current.y += (targetRef.current.y - cameraRef.current.y) * camLerp;
+        const cdx = targetRef.current.x - cameraRef.current.x;
+        const cdy = targetRef.current.y - cameraRef.current.y;
+        const cameraSettled = Math.abs(cdx) < 0.002 && Math.abs(cdy) < 0.002;
+
+        // Idle throttle: when camera is at target, drop to ~10fps for the entity heartbeat
+        // (combat pulses, group glow, etc). Saves ~83% of idle CPU vs. 60fps.
+        if (cameraSettled && nowTs - lastIdleDrawAtRef.current < 100) return;
+
+        lastFrameTimeRef.current = nowTs;
+        if (cameraSettled) {
+            cameraRef.current.x = targetRef.current.x;
+            cameraRef.current.y = targetRef.current.y;
+            lastIdleDrawAtRef.current = nowTs;
+        } else {
+            cameraRef.current.x += cdx * camLerp;
+            cameraRef.current.y += cdy * camLerp;
+        }
 
         const dpr = window.devicePixelRatio || 1;
         const size = 120;
-        canvas.width = size * dpr;
-        canvas.height = size * dpr;
-        ctx.scale(dpr, dpr);
+        const targetW = size * dpr;
+        const targetH = size * dpr;
+        if (lastCanvasSizeRef.current.w !== targetW || lastCanvasSizeRef.current.h !== targetH || lastCanvasSizeRef.current.dpr !== dpr) {
+            canvas.width = targetW;
+            canvas.height = targetH;
+            ctx.scale(dpr, dpr);
+            lastCanvasSizeRef.current = { w: targetW, h: targetH, dpr };
+        }
 
         ctx.clearRect(0, 0, size, size);
 

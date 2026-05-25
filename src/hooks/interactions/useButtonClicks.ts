@@ -19,14 +19,6 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         : () => {};
 
     const handleButtonClick = useCallback((button: CustomButton & { entityId?: string, _skipInteractionFire?: boolean }, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string, direction?: string) => {
-        console.log('[useButtonClicks] handleButtonClick:', { 
-            buttonId: button.id, 
-            actionType: button.actionType,
-            command: button.command,
-            context,
-            direction: direction || popoverState?.direction,
-            isEditMode: btn.isEditMode
-        });
         initAudio();
         e.stopPropagation();
         if (isSoundEnabled) playClickSound();
@@ -80,9 +72,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         const effectiveContext = (context && keywordOverrides[context]) ? keywordOverrides[context] : context;
         const popoverAxes = getInlineCategoryAxes(popoverState?.category || popoverState?.setId);
         const isNpcContext = popoverAxes.isCharacter || !!popoverState?.setId?.startsWith('npc');
-        console.log('[useButtonClicks] context resolution:', { context, effectiveContext, keywordOverride: context ? keywordOverrides[context] : undefined });
         let finalContext = formatMumeTarget(effectiveContext) || effectiveContext || '';
-        console.log('[useButtonClicks] finalContext:', finalContext);
         let detectedParent = parentNoun;
 
         // If no explicit parentNoun, try to detect it from the context (e.g. food.2.backpack or 2.boots.backpack)
@@ -132,7 +122,6 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             const appendTarget = resolvedDir || target || finalContext;
             if (appendTarget && !cmd.toLowerCase().includes(appendTarget.toLowerCase())) {
                 cmd = `${cmd} ${appendTarget}`;
-                console.log('[useButtonClicks] Smart Append for doors:', cmd);
             }
         }
 
@@ -151,12 +140,10 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
             finalCmd = `${finalCmd} ${dirMap[joystick.currentDir] || joystick.currentDir}`;
             joystick.setIsJoystickConsumed(true);
-            console.log(`[useButtonClicks] Combo fired: hiding swipe wheel`);
             joystick.setIsSwipeWheelHidden(true);
         } else if (joystick.isTargetModifierActive && target && !consumedTarget && !(button as any)._skipJoystick) {
-            finalCmd = `${finalCmd} ${target}`; 
+            finalCmd = `${finalCmd} ${target}`;
             joystick.setIsJoystickConsumed(true);
-            console.log(`[useButtonClicks] Target combo fired: hiding swipe wheel`);
             joystick.setIsSwipeWheelHidden(true);
         }
         const commandPrefixes = deps.heldButton?.commandPrefixes || [];
@@ -193,11 +180,6 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             const eventX = (e as any).clientX !== undefined ? (e as any).clientX : (e as any).nativeEvent?.clientX;
             const eventY = (e as any).clientY !== undefined ? (e as any).clientY : (e as any).nativeEvent?.clientY;
 
-            console.log('[useButtonClicks] Setting PopoverState for specialized action:', {
-                type: button.actionType === 'select-recipient' ? 'give-recipient-select' : (button.actionType === 'select-container' ? 'put-container-select' : undefined),
-                setId: button.command,
-                context: button.actionType === 'select-assign' ? (joystick.currentDir || (joystick.isTargetModifierActive ? target : '')) : (context || button.label)
-            });
             setPopoverState({
                 x: eventX || (rect ? rect.right + 10 : window.innerWidth / 2),
                 y: eventY || (rect ? rect.top : window.innerHeight / 2),

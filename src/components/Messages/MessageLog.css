@@ -119,6 +119,9 @@
     transition: none !important;
     transform: none !important;
 
+    /* Contain layout/style so internal changes don't force full-list reflow */
+    contain: layout style;
+
     /* Hover effect: Subtle dark shadow for depth against the background */
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
 }

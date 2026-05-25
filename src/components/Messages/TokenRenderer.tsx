@@ -2,6 +2,7 @@ import React from 'react';
 import { Token, EntityToken, AnsiToken } from '../../types';
 import { useVitals, useBaseGame, useUI } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { useShallow } from 'zustand/react/shallow';
 import { getInlineGlowColor } from '../../utils/inlineActionModel';
 import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
 import { extractMumeKeyword } from '../../utils/gameUtils';
@@ -46,7 +47,15 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
     metadata: propMetadata
 }) => {
     const { target, opponentId, opponentName } = useVitals();
-    const settings = useSettingsStore();
+    const settings = useSettingsStore(useShallow(s => ({
+        playerColor: s.playerColor,
+        enemyColor: s.enemyColor,
+        neutralColor: s.neutralColor,
+        npcColor: s.npcColor,
+        objectColor: s.objectColor,
+        roomColor: s.roomColor,
+        theme: s.theme,
+    })));
     const { inlineCategories, selectedObjectIds, inCombat } = useBaseGame();
     const { popoverState } = useUI();
 

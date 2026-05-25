@@ -1,12 +1,11 @@
 /**
  * @file useMapAssets.ts
- * @description Preloads and manages image assets for the Mapper (parchment, icons).
+ * @description Preloads and manages image assets for the Mapper (terrain icons).
  */
 
 import { useEffect, useState, MutableRefObject } from 'react';
 
 const ASSETS = {
-    parchment: '/assets/parchment.png',
     tree: '/assets/map/forest/tree1.png',
     hill: '/assets/Pictures/terrain/hills.png',
     peak1: '/assets/map/m_peaks/peak1.png',

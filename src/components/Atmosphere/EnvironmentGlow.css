@@ -22,15 +22,18 @@
     object-fit: cover;
     pointer-events: none;
     border-radius: inherit;
+    /* Blur runs on GPU compositor — much cheaper than ctx.filter on the main thread */
+    filter: blur(16px);
+    transform: scale(1.05); /* compensate for edge clipping from the blur */
 }
 
-/* Semi-transparent frosted-glass overlay to protect text legibility */
+/* Semi-transparent overlay to protect text legibility.
+   backdrop-filter removed — the canvas is already CSS-blurred at the element level,
+   so blurring again here was double work on the compositor. */
 .environment-glow-overlay {
     position: absolute;
     inset: 0;
     background: rgba(13, 13, 13, 0.45); /* Dark tint */
-    backdrop-filter: blur(12px) saturate(120%);
-    -webkit-backdrop-filter: blur(12px) saturate(120%);
     pointer-events: none;
     border-radius: inherit;
     z-index: 1;
@@ -40,8 +43,6 @@
 /* Light mode adjustments */
 .light-mode .environment-glow-overlay {
     background: rgba(255, 255, 255, 0.55); /* White tint */
-    backdrop-filter: blur(12px) saturate(130%);
-    -webkit-backdrop-filter: blur(12px) saturate(130%);
 }
 
 /* Static fallback gradient style when immersion mode is off */

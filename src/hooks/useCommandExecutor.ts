@@ -125,6 +125,16 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         const finalCmd = decodeCommandEntities(result);
         const normalizedFinalCmd = finalCmd.trim().toLowerCase();
         const shouldRefreshPractice = !silent && !isSystem && normalizedFinalCmd.startsWith('practice ');
+
+        // --- Send bytes ASAP for snappy tap-to-server feel ---
+        // All client-side bookkeeping (echo, mapper prediction, timers, nav cleanup)
+        // happens after the send is in flight.
+        if (status === 'connected') {
+            telnet.sendCommand(finalCmd);
+        } else if (!silent) {
+            addMessage('error', 'Not connected.');
+        }
+
         if (!silent && !isSystem) recordEffectTimerCommand(finalCmd);
 
         if (normalizedFinalCmd.startsWith('practice ')) {
@@ -195,13 +205,10 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-push-move', { detail: dir }));
         }
 
-        // --- 9. Telnet Send ---
-        if (status === 'connected') {
-            telnet.sendCommand(finalCmd);
-            if (shouldRefreshPractice) {
-                setTimeout(() => executeCommand('practice', true, true, false, true), 300);
-            }
-        } else if (!silent) addMessage('error', 'Not connected.');
+        // --- 9. Practice Refresh (send already happened) ---
+        if (status === 'connected' && shouldRefreshPractice) {
+            setTimeout(() => executeCommand('practice', true, true, false, true), 300);
+        }
 
     }, [registry]);
 

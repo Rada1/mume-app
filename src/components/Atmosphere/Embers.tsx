@@ -21,7 +21,8 @@ export const Embers: React.FC<EmbersProps> = ({ count }) => {
     const { lighting } = env;
     
     // Use prop count or determine from lighting
-    const emberCount = count ?? (lighting === 'artificial' ? 25 : 12);
+    // Optimize particle counts: limit maximum particles to significantly reduce rendering strain
+    const emberCount = count ? Math.min(count, 12) : (lighting === 'artificial' ? 12 : 6);
     
     const activityMultiplier = 1 + (messageActivity * 4); // 1x to 5x speed
     const containerRef = React.useRef<HTMLDivElement>(null);
@@ -53,7 +54,7 @@ export const Embers: React.FC<EmbersProps> = ({ count }) => {
             swayX: `${(Math.random() - 0.5) * 40}px`,
             swayY: `${(Math.random() - 0.5) * 40}px`,
         }));
-    }, [count, isImmersionMode]);
+    }, [emberCount, isImmersionMode]);
 
     if (!isImmersionMode) return null;
 
@@ -69,8 +70,8 @@ export const Embers: React.FC<EmbersProps> = ({ count }) => {
                         width: `${ember.size}px`,
                         height: `${ember.size}px`,
                         backgroundColor: `hsl(${ember.hue}, 100%, 70%)`,
-                        boxShadow: `0 0 ${ember.size * 2}px hsl(${ember.hue}, 100%, 50%), 
-                                    0 0 ${ember.size * 4}px hsl(${ember.hue}, 100%, 30%)`,
+                        // Simplified single small box shadow to prevent heavy GPU compositor passes
+                        boxShadow: `0 0 2px hsl(${ember.hue}, 100%, 50%)`,
                         animationDuration: `${ember.duration}s`,
                         animationDelay: `-${ember.delay}s`,
                         opacity: ember.opacity,

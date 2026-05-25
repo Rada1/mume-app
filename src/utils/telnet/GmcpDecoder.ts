@@ -44,9 +44,6 @@ export class GmcpDecoder {
         const pkgLower = pkg.toLowerCase();
         const { handlers } = this;
 
-        // --- GMCP Debug Logging ---
-        console.log('[GMCP] Received:', pkg, json ? json.substring(0, 200) : '(no body)');
-
         if (pkgLower === 'char.vitals' || pkgLower === 'mume.client.vitals') {
             this.handleCharVitals(json);
         } else if (pkgLower === 'room.info' || pkgLower === 'external.room.info' || pkgLower === 'mume.client.room' || pkgLower.endsWith('.room.info')) {

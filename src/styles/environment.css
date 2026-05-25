@@ -17,94 +17,6 @@
     display: none;
 }
 
-.log-background-mask {
-    position: absolute;
-    width: 100%;
-    background-image: var(--bg-image, none);
-    background-size: cover;
-    background-position: center 30%;
-    background-repeat: no-repeat;
-    z-index: 0;
-
-    pointer-events: none;
-
-    /* LoL-style: keep the image's natural color but dim & slightly desaturate,
-       so it reads as scenery rather than subject. No blend mode — preserves color. */
-    opacity: 0.95;
-    filter: blur(2px) brightness(0.7) saturate(0.7) contrast(1.05);
-}
-
-.log-background-mask.top {
-    top: 0;
-    height: 100dvh;
-    mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 75%);
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 75%);
-    transition: opacity 0.2s ease-in-out;
-}
-
-.log-background-mask.top.hidden {
-    opacity: 0 !important;
-}
-
-.log-background-mask.top.visible {
-    opacity: 0.95;
-}
-
-.log-background-mask.bottom {
-    top: 0;
-    height: 100dvh;
-    background-size: auto calc(50% * var(--bottom-bg-scale, 1));
-    background-position: center bottom;
-    z-index: 0;
-    opacity: 0.5;
-    filter: blur(2px) brightness(0.7) saturate(0.7) contrast(1.05);
-    mask-image: linear-gradient(to top, black 0%, black 35%, transparent 65%);
-    -webkit-mask-image: linear-gradient(to top, black 0%, black 35%, transparent 65%);
-
-    /* Breathing Animation */
-    transform-origin: bottom;
-    animation: breathing-stretch 5s ease-in-out infinite;
-}
-
-/* Portrait Mode: Enable Both Images with a Cross-Fade in the Log Area */
-@media (max-width: 1024px) and (orientation: portrait) {
-    .log-background-mask.top {
-        top: calc(env(safe-area-inset-top, 0px) + 42px);
-        bottom: var(--mobile-gutter-height, 140px);
-        height: auto;
-        left: 0;
-        right: 0;
-        background-position: center top;
-        /* Fade out as it reaches the bottom half */
-        mask-image: linear-gradient(to bottom, black 0%, black 40%, transparent 80%);
-        -webkit-mask-image: linear-gradient(to bottom, black 0%, black 40%, transparent 80%);
-        box-shadow: inset 0 20px 40px rgba(0, 0, 0, 0.4);
-        filter: blur(2px) brightness(0.7) saturate(0.7) contrast(1.05);
-    }
-
-    .log-background-mask.bottom {
-        display: block;
-        bottom: var(--mobile-gutter-height, 140px);
-        top: calc(env(safe-area-inset-top, 0px) + 42px);
-        height: auto;
-        left: 0;
-        right: 0;
-        background-position: center bottom;
-        /* Fade in from its own top edge (the midpoint of the log) */
-        mask-image: linear-gradient(to top, black 50%, transparent 90%);
-        -webkit-mask-image: linear-gradient(to top, black 50%, transparent 90%);
-        opacity: 0.55;
-        filter: blur(2px) brightness(0.7) saturate(0.7) contrast(1.05);
-        z-index: 0;
-    }
-}
-
-/* Artificial Lighting Overrides for Background Mask
-   Match the default dim so silhouettes outside the lit area stay dark. */
-.app-container.has-artificial-light .log-background-mask.visible {
-    opacity: 0.95;
-    filter: blur(2px) brightness(0.7) saturate(0.7) contrast(1.05);
-}
 
 .environment-root.front {
     z-index: 4500;
@@ -148,12 +60,11 @@
     background: rgba(0, 5, 20, 0.2);
     opacity: 0;
     transition: opacity 3s ease-in-out;
-    backdrop-filter: blur(0px) contrast(1.1);
+    /* backdrop-filter removed — blur(0px) still creates a compositor layer for nothing */
 }
 
 .storm-overlay-layer.active {
     opacity: 1;
-    backdrop-filter: blur(0.2px) contrast(1.2);
 }
 
 .lighting-state-moon .overlay-layer {
@@ -313,32 +224,27 @@
 }
 
 .lighting-sun .lighting-inner {
-    /* WEAKENED sun origin with a VERY SUBTLE BLUE SKY glow in the top right */
-    background: 
+    background:
         radial-gradient(circle at 95% -10%, rgba(0, 160, 255, 0.08) 0%, transparent 65%),
         radial-gradient(ellipse 90% 160% at 92% -30%,
             rgba(255, 255, 252, 0.52) 0%,
             rgba(255, 252, 230, 0.2) 40%,
             transparent 82%);
-    animation: light-drift-sun 60s linear infinite alternate;
 }
 
 .is-mobile .lighting-sun .lighting-inner {
-    /* WEAKENED sun origin for mobile with subtle blue sky accent - Narrowed to keep bottom-left darker */
     background:
         radial-gradient(circle at 95% -10%, rgba(0, 160, 255, 0.06) 0%, transparent 60%),
         radial-gradient(ellipse 110% 150% at 92% -30%,
             rgba(255, 255, 252, 0.52) 0%,
             rgba(255, 252, 230, 0.2) 36%,
             transparent 80%);
-    animation: light-drift-sun 60s linear infinite alternate;
 }
 
 .lighting-moon .lighting-inner {
     background: radial-gradient(circle at 50% 15%, rgba(100, 150, 255, 0.14), rgba(70, 100, 255, 0.05) 35%, transparent 80%),
         radial-gradient(circle at 50% 55%, rgba(60, 90, 255, 0.08), transparent 62%),
         linear-gradient(to bottom, rgba(50, 80, 255, 0.05), transparent);
-    animation: light-drift-moon 50s linear infinite alternate;
 }
 
 .lighting-artificial .lighting-inner {
@@ -358,12 +264,6 @@
     background: radial-gradient(circle at 50% 50%, rgba(200, 200, 200, 0.08) 0%, transparent 90%);
 }
 
-/* Background Mask Overrides for Dark/Night State
-   Cool desaturated tone — keep some color so the scene still reads, vignette + cool wash sell the night. */
-.app-container.state-dark .log-background-mask.visible {
-    opacity: 0.6;
-    filter: blur(0.5px) brightness(0.35) saturate(0.4) contrast(1.05);
-}
 
 .weather-layer {
     mix-blend-mode: soft-light;
@@ -678,7 +578,7 @@
 
 
 
-.ember-particle::after {
+/* .ember-particle::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -686,7 +586,7 @@
     background: inherit;
     filter: blur(1px);
     animation: ember-flicker 0.2s infinite alternate;
-}
+} */
 
 
 
@@ -781,68 +681,4 @@
     background-color: rgba(101, 67, 33, 0.1);
 }
 
-@keyframes breathing-stretch {
-    0%, 100% { transform: scaleY(1) scaleX(1); }
-    50% { transform: scaleY(1.015) scaleX(1.003); }
-}
 
-/* --- Water Motion Effect --- */
-.environment-root.water-motion-active .log-background-mask.top {
-    background-size: 120% 120% !important;
-    animation: water-drift-primary 35s ease-in-out infinite alternate;
-}
-
-/* The secondary layer that blends over the primary to create ripple interference */
-.environment-root.water-motion-active .log-background-mask.top::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: var(--bg-image, none);
-    background-size: 135% 135%;
-    background-repeat: no-repeat;
-    mix-blend-mode: soft-light; /* Blends ripples smoothly without over-exposing */
-    opacity: 0.45;
-    pointer-events: none;
-    animation: water-drift-secondary 26s ease-in-out infinite alternate-reverse;
-}
-
-/* Main drift (diagonally down-right) */
-@keyframes water-drift-primary {
-    0% {
-        background-position: 0% 0%;
-    }
-    100% {
-        background-position: 100% 100%;
-    }
-}
-
-/* Secondary drift (diagonally up-left with subtle scale pulsating) */
-@keyframes water-drift-secondary {
-    0% {
-        background-position: 100% 100%;
-        transform: scale(1);
-    }
-    50% {
-        background-position: 50% 0%;
-        transform: scale(1.03); /* Subtle organic magnification */
-    }
-    100% {
-        background-position: 0% 100%;
-        transform: scale(1);
-    }
-}
-
-/* --- Forest Motion Effect (Swaying Trees) --- */
-.environment-root.forest-motion-active .log-background-mask.top {
-    transform-origin: bottom center;
-    animation: forest-sway 24s ease-in-out infinite alternate;
-}
-
-@keyframes forest-sway {
-    0% {
-        transform: scale(1.04) skewX(-1.0deg) rotate(-0.2deg);
-    }
-    100% {
-        transform: scale(1.04) skewX(1.0deg) rotate(0.2deg);
-    }
-}

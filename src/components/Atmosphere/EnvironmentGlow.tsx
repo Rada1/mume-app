@@ -256,18 +256,31 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
         if (!ctx) return;
 
         let frameId = 0;
+        let lastFrameTime = 0;
+        const FRAME_MS = 100; // 10fps — glow is a slow ambient effect; canvas re-uploads
+                               // to GPU every frame, so fewer frames = less compositor churn.
+
+        // Draw at half DPR — the CSS blur hides all pixel detail anyway,
+        // so halving resolution cuts the GPU upload size by 75%.
+        const CANVAS_SCALE = Math.max(0.5, (window.devicePixelRatio || 1) * 0.5);
 
         const resize = () => {
             const rect = canvas.parentElement?.getBoundingClientRect();
-            canvas.width = (rect?.width || canvas.clientWidth) * (window.devicePixelRatio || 1);
-            canvas.height = (rect?.height || canvas.clientHeight) * (window.devicePixelRatio || 1);
+            canvas.width = (rect?.width || canvas.clientWidth) * CANVAS_SCALE;
+            canvas.height = (rect?.height || canvas.clientHeight) * CANVAS_SCALE;
         };
         resize();
 
         const observer = new ResizeObserver(resize);
         if (canvas.parentElement) observer.observe(canvas.parentElement);
 
-        const render = () => {
+        const render = (timestamp: number) => {
+            if (timestamp - lastFrameTime < FRAME_MS) {
+                frameId = requestAnimationFrame(render);
+                return;
+            }
+            lastFrameTime = timestamp;
+
             const w = canvas.width;
             const h = canvas.height;
             if (w <= 0 || h <= 0) {
@@ -311,8 +324,9 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
 
             // Typing influence is now gentler and has momentum:
             const finalSpeed = cur.speed * (1.0 + act * 0.35);
-            // Scale amplitude based on screen/canvas height for a majestic, full-canvas look
-            const screenScale = Math.min(3.0, Math.max(0.6, h / 350));
+            // Use CSS height (not canvas pixels) so amplitude stays correct at half resolution
+            const cssH = h / CANVAS_SCALE;
+            const screenScale = Math.min(3.0, Math.max(0.6, cssH / 350));
             const finalAmp = cur.amplitude * screenScale * (1.0 + act * 0.45) * flicker;
 
             // Typing brightness/saturation boost is now a soft wash rather than a sharp flash
@@ -335,9 +349,6 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
             ) => {
                 ctx.save();
                 ctx.globalAlpha = alpha;
-                if (typeof ctx.filter === 'string') {
-                    ctx.filter = 'blur(16px)';
-                }
 
                 const s = Math.min(100, color.s + saturationBoost);
                 const l = Math.min(100, color.l + brightnessBoost);

@@ -915,7 +915,6 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
 };
 
 
-let _lastMarkerCount = -1;
 export const drawMarkers = (
     rCtx: RenderContext,
     stableMarkersRef: React.MutableRefObject<Record<string, any>>,
@@ -927,22 +926,6 @@ export const drawMarkers = (
     if (invZoom > 3) return; // too zoomed out — skip markers
 
     const allMarkers = Object.values(stableMarkersRef.current);
-    // Log whenever the marker count changes (including 0 → confirms drawMarkers IS being called).
-    if (allMarkers.length !== _lastMarkerCount) {
-        _lastMarkerCount = allMarkers.length;
-        const culledByZ = allMarkers.filter((m: any) => (m.z || 0) !== currentZ).length;
-        const culledByFOW = allMarkers.filter((m: any) => !unveilMap && !exploredMarkers.has(m.id)).length;
-        const sample = allMarkers.slice(0, 5).map((m: any) => ({ id: m.id, text: m.text, x: m.x, y: m.y, z: m.z, fontSize: m.fontSize }));
-        console.log('[Mapper] drawMarkers called:', {
-            totalMarkersInState: allMarkers.length,
-            currentZ,
-            culledByZ,
-            culledByFOW_ifNotUnveil: culledByFOW,
-            unveilMap,
-            exploredMarkersSize: exploredMarkers.size,
-            sample
-        });
-    }
 
     allMarkers.forEach((marker: any) => {
         const mx = marker.x * GRID_SIZE, my = marker.y * GRID_SIZE;
