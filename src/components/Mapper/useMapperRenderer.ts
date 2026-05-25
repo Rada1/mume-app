@@ -481,7 +481,7 @@ export const useMapperRenderer = ({
             ctx.restore();
         } else if (lighting === 'artificial') {
             ctx.save();
-            ctx.fillStyle = 'rgba(255, 176, 72, 0.08)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
             ctx.fillRect(0, 0, baseW, baseH);
             ctx.restore();
         } else if (lighting === 'dark') {

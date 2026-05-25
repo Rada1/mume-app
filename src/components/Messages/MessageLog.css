@@ -361,9 +361,9 @@
 }
 
 @keyframes target-pulse {
-    0%   { box-shadow: 0 0 6px color-mix(in srgb, var(--color-target), transparent 80%); }
-    50%  { box-shadow: 0 0 18px color-mix(in srgb, var(--color-target), transparent 45%), 0 0 36px color-mix(in srgb, var(--color-target), transparent 72%); }
-    100% { box-shadow: 0 0 6px color-mix(in srgb, var(--color-target), transparent 80%); }
+    0%   { box-shadow: 0 0 0 1.5px var(--color-target), 0 0 6px color-mix(in srgb, var(--color-target), transparent 80%); }
+    50%  { box-shadow: 0 0 0 1.5px var(--color-target), 0 0 18px color-mix(in srgb, var(--color-target), transparent 45%), 0 0 36px color-mix(in srgb, var(--color-target), transparent 72%); }
+    100% { box-shadow: 0 0 0 1.5px var(--color-target), 0 0 6px color-mix(in srgb, var(--color-target), transparent 80%); }
 }
 
 /* Force standard color application */
@@ -1261,12 +1261,10 @@ span.inline-btn {
 }
 
 .inline-btn.active-target {
-    border: 1px solid var(--target-color, #facc15) !important;
     color: var(--target-color, #facc15) !important;
     background: rgba(255, 255, 255, 0.05) !important;
     border-radius: 4px;
-    padding: 0 3px !important;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 0 1px var(--target-color, #facc15), 0 0 4px rgba(0, 0, 0, 0.2);
 }
 
 .inline-btn:hover,
@@ -1302,7 +1300,7 @@ span.inline-btn {
 }
 
 .inline-btn.selected {
-    border: 1.5px solid var(--color-target) !important;
+    border-radius: 3px;
     animation: target-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
     transform: none !important;
     z-index: 10;
@@ -1358,7 +1356,7 @@ span.inline-btn {
 }
 
 .inline-btn.exit-btn {
-    border: 1px solid rgba(0, 255, 100, 0.6);
+    box-shadow: 0 0 0 1px rgba(0, 255, 100, 0.6);
     background-color: transparent !important;
 }
 

@@ -590,6 +590,58 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         regionLabelEditMode, setRegionLabelEditMode
     ]);
 
+    // --- Proximity Reveal for Markers ---
+    useEffect(() => {
+        if (unveilMap) return;
+        if (!currentRoomId) return;
+
+        let px: number, py: number, pz: number;
+        const r = rooms[currentRoomId];
+        if (r) {
+            px = r.x;
+            py = r.y;
+            pz = r.z || 0;
+        } else {
+            const rawId = currentRoomId.startsWith('m_') ? currentRoomId.substring(2) : currentRoomId;
+            const pData = preloadedCoordsRef.current[rawId];
+            if (pData) {
+                px = pData[0];
+                py = pData[1];
+                pz = pData[2] || 0;
+            } else {
+                return;
+            }
+        }
+
+        const discoveryRadius = 15; // Reveal when within 15 rooms
+        const newlyDiscovered: string[] = [];
+
+        Object.values(markers).forEach((marker: any) => {
+            if (exploredMarkers.has(marker.id)) return;
+            
+            // Check Z level difference
+            if (Math.abs((marker.z || 0) - pz) >= 1.0) return;
+
+            // Calculate Euclidean distance
+            const dx = marker.x - px;
+            const dy = marker.y - py;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist <= discoveryRadius) {
+                newlyDiscovered.push(marker.id);
+            }
+        });
+
+        if (newlyDiscovered.length > 0) {
+            setExploredMarkers(prev => {
+                const next = new Set(prev);
+                newlyDiscovered.forEach(id => next.add(id));
+                return next;
+            });
+            triggerRender();
+        }
+    }, [currentRoomId, rooms, markers, exploredMarkers, setExploredMarkers, unveilMap, preloadedCoordsRef, triggerRender]);
+
     // --- Sync with Active Session ---
     // When the active view switches (Me -> Target), the mapper needs to snap to the
     // room currently being seen by the active session.

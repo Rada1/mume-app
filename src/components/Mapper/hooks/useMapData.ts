@@ -47,17 +47,7 @@ export const useMapData = () => {
         return () => clearTimeout(timer);
     }, [markers]);
 
-    // Auto-reveal any markers that exist but aren't yet in exploredMarkers.
-    // Mm2-imported markers and previously-saved markers should be visible by default.
-    useEffect(() => {
-        const markerIds = Object.keys(markers);
-        if (markerIds.length === 0) return;
-        const newIds = markerIds.filter(id => !exploredMarkers.has(id));
-        if (newIds.length > 0) {
-            console.log('[useMapData] auto-revealing markers:', { count: newIds.length, total: markerIds.length });
-            setExploredMarkers(prev => new Set([...prev, ...newIds]));
-        }
-    }, [markers]); // eslint-disable-line react-hooks/exhaustive-deps
+
 
     const spatialIndexRef = useRef<Record<number, Record<string, string[]>>>({});
     const nameIndexRef = useRef<Record<string, string[]>>({});

@@ -341,6 +341,9 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             for (let j = 0; j < words.length; j++) {
                 const word = words[j];
                 if (!word) {
+                    // Skip trailing empty word — the previous word's trailing space already
+                    // represents that whitespace; emitting another <span> would double it.
+                    if (j === words.length - 1) continue;
                     wordNodes.push(<span key={`sp-${i}-${j}`} style={ansiStyle}> </span>);
                     continue;
                 }

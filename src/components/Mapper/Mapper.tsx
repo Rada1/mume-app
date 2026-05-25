@@ -98,7 +98,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
         renderVersion, triggerRender, activeMapFilter, setActiveMapFilter,
         mapSearchQuery, setMapSearchQuery,
-        regionLabels, regionLabelEditMode
+        regionLabels, regionLabelEditMode, setExploredMarkers
     } = context;
     const [selectedRegionLabelId, setSelectedRegionLabelId] = useState<string | null>(null);
 
@@ -264,7 +264,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             ...prev,
             [id]: { id, x: wx, y: wy, z, text: 'New Marker', dotSize: 5, fontSize: 12, createdAt: Date.now() }
         }));
-    }, [setMarkers]);
+        setExploredMarkers(prev => new Set([...prev, id]));
+    }, [setMarkers, setExploredMarkers]);
 
     return (
         <div className={`mapper-container lighting-state-${lighting || 'none'} ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ 
