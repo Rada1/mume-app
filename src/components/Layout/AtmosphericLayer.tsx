@@ -28,7 +28,7 @@ export const AtmosphericLayer: React.FC = () => {
     const activeView = useModeStore(state => state.activeView);
     const isSpectating = activeSession === 'spectate' || activeView === 'target';
     const activeTerrain = isSpectating ? spectateTerrain : currentTerrain;
-    const effectiveTerrain = isAccountMode ? undefined : activeTerrain;
+    const effectiveTerrain = isAccountMode ? 'account-blue' : activeTerrain;
 
     // Account Mode Overrides: Stage-aware lighting and background
     const isCreationSequence = ['character-creation', 'stat-editing', 'account-confirmation'].includes(accountState.stage);

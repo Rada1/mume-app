@@ -84,6 +84,12 @@ const TERRAIN_CONFIGS: Record<string, TerrainConfig> = {
         speed: 0.005,
         amplitude: 8,
     },
+    'account-blue': {
+        color1: { h: 220, s: 70, l: 12 },
+        color2: { h: 200, s: 60, l: 16 },
+        speed: 0.010,
+        amplitude: 18,
+    },
     default: {
         color1: { h: 220, s: 20, l: 16 },
         color2: { h: 200, s: 15, l: 20 },
