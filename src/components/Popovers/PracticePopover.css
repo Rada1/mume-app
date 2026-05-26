@@ -1,4 +1,4 @@
-.practice-popover {
+﻿.practice-popover {
     width: 90vw;
     max-width: 500px;
     max-height: 80vh;
@@ -120,7 +120,7 @@
 }
 
 .skill-diff.easy {
-    color: #b8860b;
+    color: #d4aa00;
 }
 
 .skill-diff.normal {

@@ -1,4 +1,4 @@
-/* Message Log and Input Area Styles */
+﻿/* Message Log and Input Area Styles */
 
 .message-log-container {
     flex: 1;
@@ -1510,11 +1510,11 @@ span.inline-btn {
 }
 
 .reply-btn:hover {
-    background: #b8860b;
+    background: #d4aa00;
     border-color: #ffffff;
     color: #ffffff;
     transform: scale(1.1);
-    box-shadow: 0 0 15px rgba(184, 134, 11, 0.5);
+    box-shadow: 0 0 15px rgba(212, 170, 0, 0.5);
     opacity: 1;
 }
 

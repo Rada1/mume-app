@@ -54,6 +54,8 @@ interface GeneralSettingsProps {
     setAutoSaveSessions: (val: boolean) => void;
     showSpectatePromptInLog: boolean;
     setShowSpectatePromptInLog: (val: boolean) => void;
+    isTextRevealEnabled: boolean;
+    setIsTextRevealEnabled: (val: boolean) => void;
     hidePrompt: boolean;
     setHidePrompt: (val: boolean) => void;
     showBlockHeaders: boolean;
@@ -104,6 +106,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setAutoSaveSessions,
     showSpectatePromptInLog,
     setShowSpectatePromptInLog,
+    isTextRevealEnabled,
+    setIsTextRevealEnabled,
     hidePrompt,
     setHidePrompt,
     showBlockHeaders,
@@ -145,8 +149,9 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             margin: 0,
                             padding: '4px 12px',
                             fontSize: '0.8rem',
-                            borderColor: status === 'connected' ? 'var(--accent)' : status === 'connecting' ? '#f59e0b' : '#ef4444',
-                            color: status === 'connected' ? 'var(--accent)' : status === 'connecting' ? '#f59e0b' : '#ef4444',
+                            background: status === 'connected' ? '#16a34a' : 'transparent',
+                            borderColor: status === 'connected' ? '#16a34a' : status === 'connecting' ? '#f59e0b' : '#ef4444',
+                            color: status === 'connected' ? '#fff' : status === 'connecting' ? '#f59e0b' : '#ef4444',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px'
@@ -281,20 +286,20 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </div>
             </div>
 
-            <div className="setting-group" style={{ border: '1px solid rgba(59, 130, 246, 0.3)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+            <div className="setting-group" style={{ border: '1px solid rgba(212, 170, 0, 0.3)', background: 'rgba(10, 13, 21, 0.6)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                        <label className="setting-label" style={{ color: '#60a5fa', fontWeight: 'bold', margin: 0 }}>mMapper Integration</label>
+                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>mMapper Integration</label>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginTop: '4px' }}>Use the external mMapper application.</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: isMmapperMode ? '#60a5fa' : '#64748b' }}>{isMmapperMode ? 'ACTIVE' : 'OFF'}</span>
+                        <span style={{ fontSize: '0.8rem', color: isMmapperMode ? 'var(--accent)' : '#64748b' }}>{isMmapperMode ? 'ACTIVE' : 'OFF'}</span>
                         <div
                             onClick={() => setIsMmapperMode(!isMmapperMode)}
                             style={{
                                 width: '40px',
                                 height: '20px',
-                                background: isMmapperMode ? '#3b82f6' : 'var(--input-bg)',
+                                background: isMmapperMode ? 'var(--accent)' : 'var(--input-bg)',
                                 borderRadius: '20px',
                                 position: 'relative',
                                 cursor: 'pointer',
@@ -336,23 +341,23 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 )}
             </div>
 
-            <div className="setting-group" style={{ border: '1px solid rgba(245, 158, 11, 0.3)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+            <div className="setting-group" style={{ border: '1px solid rgba(212, 170, 0, 0.3)', background: 'rgba(10, 13, 21, 0.6)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <label className="setting-label" style={{ color: '#fbbf24', fontWeight: 'bold', margin: 0 }}>Debug Messages</label>
-                            <span style={{ fontSize: '0.65rem', background: '#f59e0b', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>DEV</span>
+                            <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Debug Messages</label>
+                            <span style={{ fontSize: '0.65rem', background: 'var(--accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>DEV</span>
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginTop: '4px' }}>Show technical client echoes (e.g. Mapper coordinates).</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: showDebugEchoes ? '#fbbf24' : '#64748b' }}>{showDebugEchoes ? 'ON' : 'OFF'}</span>
+                        <span style={{ fontSize: '0.8rem', color: showDebugEchoes ? 'var(--accent)' : '#64748b' }}>{showDebugEchoes ? 'ON' : 'OFF'}</span>
                         <div
                             onClick={() => setShowDebugEchoes(!showDebugEchoes)}
                             style={{
                                 width: '40px',
                                 height: '20px',
-                                background: showDebugEchoes ? '#f59e0b' : 'var(--input-bg)',
+                                background: showDebugEchoes ? 'var(--accent)' : 'var(--input-bg)',
                                 borderRadius: '20px',
                                 position: 'relative',
                                 cursor: 'pointer',
@@ -478,12 +483,12 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </div>
             </div>
 
-            <div className="setting-group" style={{ border: '1px solid rgba(236, 72, 153, 0.3)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+            <div className="setting-group" style={{ border: '1px solid rgba(212, 170, 0, 0.3)', background: 'rgba(10, 13, 21, 0.6)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                     <div style={{ flex: '1 1 200px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <label className="setting-label" style={{ color: '#f472b6', fontWeight: 'bold', margin: 0 }}>Experiments</label>
-                            <span style={{ fontSize: '0.65rem', background: '#ec4899', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>LAB</span>
+                            <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Experiments</label>
+                            <span style={{ fontSize: '0.65rem', background: 'var(--accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>LAB</span>
                         </div>
                     </div>
                 </div>
@@ -496,7 +501,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     <button
                         className={`setting-toggle ${autoSaveSessions ? 'active' : ''}`}
                         onClick={() => setAutoSaveSessions(!autoSaveSessions)}
-                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: autoSaveSessions ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: autoSaveSessions ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
                     >
                         <div style={{
                             width: '20px',
@@ -523,8 +528,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                                 onClick={() => setTheme(t)}
                                 style={{
                                     padding: '4px 12px', borderRadius: '18px', border: 'none', cursor: 'pointer',
-                                    backgroundColor: theme === t ? '#ec4899' : 'transparent',
-                                    color: theme === t ? '#fff' : 'var(--text-primary)',
+                                    backgroundColor: theme === t ? 'var(--accent)' : 'transparent',
+                                    color: theme === t ? '#000' : 'var(--text-primary)',
                                     fontSize: '0.8rem', fontWeight: 'bold',
                                     textTransform: 'capitalize'
                                 }}
@@ -539,11 +544,11 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Enable lighting, weather, fog, embers, and scene backgrounds.</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: isImmersionMode ? '#ec4899' : '#64748b' }}>{isImmersionMode ? 'ON' : 'OFF'}</span>
+                        <span style={{ fontSize: '0.8rem', color: isImmersionMode ? 'var(--accent)' : '#64748b' }}>{isImmersionMode ? 'ON' : 'OFF'}</span>
                         <button
                             className={`setting-toggle ${isImmersionMode ? 'active' : ''}`}
                             onClick={() => setIsImmersionMode(!isImmersionMode)}
-                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isImmersionMode ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isImmersionMode ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
                         >
                             <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: isImmersionMode ? '22px' : '2px', transition: 'all 0.3s' }} />
                         </button>
@@ -556,11 +561,11 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Display the snooped player's prompt line in the message log during spectate mode.</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: showSpectatePromptInLog ? '#ec4899' : '#64748b' }}>{showSpectatePromptInLog ? 'ON' : 'OFF'}</span>
+                        <span style={{ fontSize: '0.8rem', color: showSpectatePromptInLog ? 'var(--accent)' : '#64748b' }}>{showSpectatePromptInLog ? 'ON' : 'OFF'}</span>
                         <button
                             className={`setting-toggle ${showSpectatePromptInLog ? 'active' : ''}`}
                             onClick={() => setShowSpectatePromptInLog(!showSpectatePromptInLog)}
-                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showSpectatePromptInLog ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showSpectatePromptInLog ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
                         >
                             <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: showSpectatePromptInLog ? '22px' : '2px', transition: 'all 0.3s' }} />
                         </button>
@@ -571,14 +576,14 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     <div style={{ flex: '1 1 200px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Spectate Mode</label>
-                            <span style={{ fontSize: '0.65rem', background: '#ec4899', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>EXP</span>
+                            <span style={{ fontSize: '0.65rem', background: 'var(--accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>EXP</span>
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Mirror a grouped player's location and vitals as if you are them. Requires Group.</div>
                     </div>
                     <button
                         className={`setting-toggle ${isSpectateMode ? 'active' : ''}`}
                         onClick={(e) => { e.stopPropagation(); setIsSpectateMode(!isSpectateMode); }}
-                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isSpectateMode ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isSpectateMode ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
                     >
                         <div style={{
                             width: '20px',
@@ -599,11 +604,11 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Hide the prompt bar above the input area.</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: hidePrompt ? '#ec4899' : '#64748b' }}>{hidePrompt ? 'ON' : 'OFF'}</span>
+                        <span style={{ fontSize: '0.8rem', color: hidePrompt ? 'var(--accent)' : '#64748b' }}>{hidePrompt ? 'ON' : 'OFF'}</span>
                         <button
                             className={`setting-toggle ${hidePrompt ? 'active' : ''}`}
                             onClick={() => setHidePrompt(!hidePrompt)}
-                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: hidePrompt ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: hidePrompt ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
                         >
                             <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: hidePrompt ? '22px' : '2px', transition: 'all 0.3s' }} />
                         </button>
@@ -616,13 +621,30 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Show block header indicators for combat messages and location changes.</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: showBlockHeaders ? '#ec4899' : '#64748b' }}>{showBlockHeaders ? 'ON' : 'OFF'}</span>
+                        <span style={{ fontSize: '0.8rem', color: showBlockHeaders ? 'var(--accent)' : '#64748b' }}>{showBlockHeaders ? 'ON' : 'OFF'}</span>
                         <button
                             className={`setting-toggle ${showBlockHeaders ? 'active' : ''}`}
                             onClick={() => setShowBlockHeaders(!showBlockHeaders)}
-                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showBlockHeaders ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showBlockHeaders ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
                         >
                             <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: showBlockHeaders ? '22px' : '2px', transition: 'all 0.3s' }} />
+                        </button>
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>Text Reveal Effect</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Animate new messages with a typewriter-style reveal as they arrive.</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '0.8rem', color: isTextRevealEnabled ? 'var(--accent)' : '#64748b' }}>{isTextRevealEnabled ? 'ON' : 'OFF'}</span>
+                        <button
+                            className={`setting-toggle ${isTextRevealEnabled ? 'active' : ''}`}
+                            onClick={() => setIsTextRevealEnabled(!isTextRevealEnabled)}
+                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isTextRevealEnabled ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                        >
+                            <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: isTextRevealEnabled ? '22px' : '2px', transition: 'all 0.3s' }} />
                         </button>
                     </div>
                 </div>

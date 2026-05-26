@@ -1,8 +1,8 @@
-@keyframes chip-pulse-glow {
-    0%   { box-shadow: 0 0 0px rgba(184, 134, 11, 0),    inset 0 0 0px rgba(184, 134, 11, 0); }
-    25%  { box-shadow: 0 0 7px rgba(184, 134, 11, 0.45), inset 0 0 5px rgba(184, 134, 11, 0.08); }
-    50%  { box-shadow: 0 0 0px rgba(184, 134, 11, 0),    inset 0 0 0px rgba(184, 134, 11, 0); }
-    100% { box-shadow: 0 0 0px rgba(184, 134, 11, 0),    inset 0 0 0px rgba(184, 134, 11, 0); }
+﻿@keyframes chip-pulse-glow {
+    0%   { box-shadow: 0 0 0px rgba(212, 170, 0, 0),    inset 0 0 0px rgba(212, 170, 0, 0); }
+    25%  { box-shadow: 0 0 7px rgba(212, 170, 0, 0.45), inset 0 0 5px rgba(212, 170, 0, 0.08); }
+    50%  { box-shadow: 0 0 0px rgba(212, 170, 0, 0),    inset 0 0 0px rgba(212, 170, 0, 0); }
+    100% { box-shadow: 0 0 0px rgba(212, 170, 0, 0),    inset 0 0 0px rgba(212, 170, 0, 0); }
 }
 
 @keyframes popover-bounce-in {
@@ -21,9 +21,9 @@
 .popover-action-chip:hover,
 .popover-action-chip:active {
     animation: none;
-    background: rgba(184, 134, 11, 0.14) !important;
-    border-color: rgba(184, 134, 11, 0.65) !important;
-    box-shadow: 0 0 12px rgba(184, 134, 11, 0.55), inset 0 0 8px rgba(184, 134, 11, 0.12) !important;
+    background: rgba(212, 170, 0, 0.14) !important;
+    border-color: rgba(212, 170, 0, 0.65) !important;
+    box-shadow: 0 0 12px rgba(212, 170, 0, 0.55), inset 0 0 8px rgba(212, 170, 0, 0.12) !important;
     color: #ffd166 !important;
 }
 
@@ -33,11 +33,11 @@
     background: #101010;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    border: 1px solid rgba(184, 134, 11, 0.2);
+    border: 1px solid rgba(212, 170, 0, 0.2);
     border-radius: 16px;
     padding: 10px;
     z-index: 60000;
-    box-shadow: 0 0 20px rgba(184, 134, 11, 0.35), 0 40px 100px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 20px rgba(212, 170, 0, 0.35), 0 40px 100px rgba(0, 0, 0, 0.8);
     display: flex;
     flex-direction: column;
     gap: 6px;

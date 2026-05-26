@@ -118,7 +118,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 }
             }}
         >
-            <div className={`modal ${settingsTab === 'help' ? 'large' : ''}`} onClick={e => e.stopPropagation()}>
+            <div className={`modal settings ${settingsTab === 'help' ? 'large' : ''}`} onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                     <div className="modal-title">Settings</div>
                     <button onClick={() => setIsSettingsOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>

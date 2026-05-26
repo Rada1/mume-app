@@ -26,7 +26,7 @@
     width: 95%;
     max-width: 500px;
     border-radius: 12px;
-    box-shadow: 0 0 24px rgba(184, 134, 11, 0.35), 0 12px 48px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 0 24px rgba(212, 170, 0, 0.35), 0 12px 48px rgba(0, 0, 0, 0.7);
     max-height: 85dvh;
     display: flex;
     flex-direction: column;
@@ -37,6 +37,17 @@
 
 .modal.large {
     max-width: 850px;
+}
+
+@media (min-width: 768px) {
+    .modal.settings {
+        max-width: 760px;
+    }
+    .modal-tabs {
+        flex-wrap: wrap;
+        overflow-x: visible;
+        white-space: normal;
+    }
 }
 
 @media (max-width: 600px) {
@@ -55,6 +66,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    flex-shrink: 0;
 }
 
 .modal-title {
@@ -71,6 +83,7 @@
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none; /* Hide scrollbars on Firefox */
+    flex-shrink: 0;
 }
 
 .modal-tabs::-webkit-scrollbar {
@@ -109,11 +122,11 @@
 }
 
 .modal-tab.active {
-    background: var(--accent, #b8860b);
+    background: var(--accent, #d4aa00);
     color: #ffffff;
     border-bottom: 2px solid transparent;
     font-weight: bold;
-    box-shadow: 0 -4px 12px rgba(184, 134, 11, 0.2);
+    box-shadow: 0 -4px 12px rgba(212, 170, 0, 0.2);
 }
 
 .setting-group {

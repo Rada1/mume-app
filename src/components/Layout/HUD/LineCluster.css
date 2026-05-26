@@ -1,4 +1,4 @@
-.line-cluster {
+﻿.line-cluster {
     display: flex;
     gap: 8px;
     align-items: center;
@@ -127,7 +127,7 @@
 
 @keyframes tactical-line-cascade-glow {
     0%   { box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1); border-color: rgba(232, 176, 32, 0.48); }
-    25%  { box-shadow: 0 0 7px rgba(184, 134, 11, 0.45), 0 0 18px rgba(184, 134, 11, 0.32), inset 0 0 5px rgba(184, 134, 11, 0.08); border-color: rgba(232, 176, 32, 0.78); }
+    25%  { box-shadow: 0 0 7px rgba(212, 170, 0, 0.45), 0 0 18px rgba(212, 170, 0, 0.32), inset 0 0 5px rgba(212, 170, 0, 0.08); border-color: rgba(232, 176, 32, 0.78); }
     50%  { box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1); border-color: rgba(232, 176, 32, 0.48); }
     100% { box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1); border-color: rgba(232, 176, 32, 0.48); }
 }

@@ -10,21 +10,33 @@ const NUMPAD_MAP: Record<string, string> = {
     Numpad5: 'look',
 };
 
-export function useNumpadControls(executeCommand: (cmd: string) => void) {
+export function useNumpadControls(
+    executeCommand: (cmd: string) => void,
+    getExitState?: (dir: string) => { hasDoor: boolean; isClosed: boolean } | null
+) {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            const cmd = NUMPAD_MAP[e.code];
-            if (!cmd) return;
+            const dir = NUMPAD_MAP[e.code];
+            if (!dir) return;
 
-            // Don't intercept when typing in an input or textarea
             const tag = (e.target as HTMLElement)?.tagName;
             if (tag === 'INPUT' || tag === 'TEXTAREA') return;
 
             e.preventDefault();
-            executeCommand(cmd);
+
+            // Alt+numpad: toggle open/close on the exit in that direction
+            if (e.altKey && dir !== 'look' && getExitState) {
+                const state = getExitState(dir);
+                if (state?.hasDoor) {
+                    executeCommand(state.isClosed ? `open ${dir}` : `close ${dir}`);
+                }
+                return;
+            }
+
+            executeCommand(dir);
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [executeCommand]);
+    }, [executeCommand, getExitState]);
 }

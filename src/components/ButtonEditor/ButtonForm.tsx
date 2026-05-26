@@ -36,6 +36,16 @@ const ButtonForm: React.FC<ButtonFormProps> = ({
                         <option value="inline">Inline Highlight</option>
                     </select>
                 </div>
+                <div className="setting-group">
+                    <label className="setting-label">Keyboard Hotkey</label>
+                    <select className="setting-input" value={editingButton.hotkey || ''} onChange={e => updateButton(editingButton.id, { hotkey: e.target.value || undefined })}>
+                        <option value="">None</option>
+                        {['F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12'].map(k => (
+                            <option key={k} value={k}>{k}</option>
+                        ))}
+                    </select>
+                    <span className="setting-helper">Press this F-key to fire the button's command without opening the input.</span>
+                </div>
                 {(editingButton.actionType === 'menu' || editingButton.longActionType === 'menu') && (
                     <div className="setting-group">
                         <label className="setting-label">Menu Display Style</label>

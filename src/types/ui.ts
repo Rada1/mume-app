@@ -150,6 +150,7 @@ export interface CustomButton {
     offKeyboard?: boolean;
     duration?: number;
     mid?: string;
+    hotkey?: string; // e.g. "F1" through "F12" — fires command on keydown
 }
 
 export type DrawerType = 'none' | 'account' | 'character' | 'players' | 'equipment' | 'status';

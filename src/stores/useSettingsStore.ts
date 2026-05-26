@@ -248,7 +248,7 @@ export const useSettingsStore = create<SettingsState>()(
             
             theme: 'dark',
             isImmersionMode: true,
-            accentColor: '#f48f3c',
+            accentColor: '#d4aa00',
             bgImage: null,
             bgImageBottom: null,
             fontFamily: DEFAULT_FONT_FAMILY,
@@ -428,7 +428,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 18,
+            version: 19,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -544,7 +544,7 @@ export const useSettingsStore = create<SettingsState>()(
                             const id = toCategoryId(override.id) || override.id;
                             const color = String(override.color || '').toLowerCase();
                             if ((id === 'cat-ally' || id === 'cat-ally-remote') && oldDefaultAllyColors.has(color)) {
-                                return { ...override, color: COLOR_ALLY };
+                                  return { ...override, color: COLOR_ALLY };
                             }
                             return override;
                         });
@@ -589,6 +589,12 @@ export const useSettingsStore = create<SettingsState>()(
                 if (version < 18) {
                     if (!persistedState.fontFamily || persistedState.fontFamily === LEGACY_DEFAULT_FONT_FAMILY) {
                         persistedState.fontFamily = DEFAULT_FONT_FAMILY;
+                    }
+                }
+
+                if (version < 19) {
+                    if (persistedState.accentColor === '#f48f3c') {
+                        persistedState.accentColor = '#d4aa00';
                     }
                 }
                 

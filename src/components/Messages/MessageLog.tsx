@@ -310,7 +310,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { 
         inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, 
         triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled, 
-        isNewbieMode, showSpectatePromptInLog, input, setInput, sessionMode
+        isNewbieMode, showSpectatePromptInLog, input, setInput, sessionMode,
+        accountState
     } = useBaseGame() as any;
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const activeView = useModeStore(s => s.activeView);
@@ -318,6 +319,38 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { messages } = useLog();
     const { target, setTarget, opponentName, opponentHealthStatus } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom, isLockedToBottomRef } = viewport;
+
+    // Highlight the selected character line in the log via a dynamic <style> rule.
+    const selectedCharName = accountState?.selectedCharacter?.name ?? null;
+    useEffect(() => {
+        const id = 'account-char-select-style';
+        let styleEl = document.getElementById(id) as HTMLStyleElement | null;
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = id;
+            document.head.appendChild(styleEl);
+        }
+        styleEl.textContent = selectedCharName
+            ? `.account-char-name[data-context="${CSS.escape(selectedCharName)}"] { outline: 1.5px solid rgba(var(--accent-rgb, 212,170,0),0.85); background: rgba(var(--accent-rgb, 212,170,0),0.15); border-radius: 3px; color: #fff; }`
+            : '';
+        return () => { if (styleEl) styleEl.textContent = ''; };
+    }, [selectedCharName]);
+
+    // Highlight the selected menu command line in the log via a dynamic <style> rule.
+    const selectedMenuCommand = accountState?.selectedMenuCommand ?? null;
+    useEffect(() => {
+        const id = 'account-menu-cmd-style';
+        let styleEl = document.getElementById(id) as HTMLStyleElement | null;
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = id;
+            document.head.appendChild(styleEl);
+        }
+        styleEl.textContent = selectedMenuCommand
+            ? `.account-menu-cmd[data-context="${CSS.escape(selectedMenuCommand)}"] { outline: 1.5px solid rgba(var(--accent-rgb, 212,170,0),0.85); background: rgba(var(--accent-rgb, 212,170,0),0.15); border-radius: 3px; color: #fff; }`
+            : '';
+        return () => { if (styleEl) styleEl.textContent = ''; };
+    }, [selectedMenuCommand]);
 
     // Extracted colors and inlineCategories to pass down directly
     const inlineCategories = useBaseGame().inlineCategories;

@@ -3,6 +3,8 @@ import { mudParser } from '../services/parser/services/mudParser';
 import { useCommandExecutor } from './useCommandExecutor';
 import { useInteractionHandlers } from './useInteractionHandlers';
 import { useNumpadControls } from './useNumpadControls';
+import { useFKeyControls } from './useFKeyControls';
+import { getGateState } from '../components/Mapper/mapperUtils';
 import { CaptureStage } from '../types';
 // import { useAtmosphereStore } from '../stores/useAtmosphereStore';
 
@@ -244,7 +246,21 @@ export function useCommandController(deps: CommandControllerDeps) {
         }
     }, [executor.executeCommand]);
 
-    useNumpadControls(executeCommand);
+    const getExitState = useCallback((dir: string) => {
+        const mapper = depsRef.current.mapperRef?.current;
+        if (!mapper) return null;
+        const roomId = mapper.stableRoomIdRef?.current;
+        const rooms = mapper.stableRoomsRef?.current;
+        const preloaded = mapper.preloadedCoordsRef?.current;
+        if (!roomId || !rooms || !preloaded) return null;
+        const room = rooms[roomId] || rooms[`m_${roomId}`];
+        const rawId = roomId.startsWith('m_') ? roomId.substring(2) : roomId;
+        const wEx = preloaded[rawId]?.[4]?.[dir];
+        return getGateState(room, wEx, dir, rooms, preloaded);
+    }, []);
+
+    useNumpadControls(executeCommand, getExitState);
+    useFKeyControls(deps.btn?.buttonsRef, executeCommand);
 
     const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp } = useInteractionHandlers({
         ...deps, executeCommand, input, ui: deps.ui, parley: deps.parley, setParley: deps.setParley,

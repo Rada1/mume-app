@@ -108,38 +108,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         }
     }, [liveOptions.length, liveOptionsKey]);
 
-    // Highlight the selected character line in the log via a dynamic <style> rule.
-    // Using CSS (not classList) means React re-renders can never cause a flash.
-    const selectedCharName = accountState.selectedCharacter?.name ?? null;
-    useEffect(() => {
-        const id = 'account-char-select-style';
-        let styleEl = document.getElementById(id) as HTMLStyleElement | null;
-        if (!styleEl) {
-            styleEl = document.createElement('style');
-            styleEl.id = id;
-            document.head.appendChild(styleEl);
-        }
-        styleEl.textContent = selectedCharName
-            ? `.account-char-name[data-context="${CSS.escape(selectedCharName)}"] { outline: 1px solid rgba(var(--accent-rgb,139,92,246),0.75); background: rgba(var(--accent-rgb,139,92,246),0.12); border-radius: 3px; color: #fff; }`
-            : '';
-        return () => { if (styleEl) styleEl.textContent = ''; };
-    }, [selectedCharName]);
-
-    // Highlight the selected menu command line in the log via a dynamic <style> rule.
     const selectedMenuCommand = accountState.selectedMenuCommand ?? null;
-    useEffect(() => {
-        const id = 'account-menu-cmd-style';
-        let styleEl = document.getElementById(id) as HTMLStyleElement | null;
-        if (!styleEl) {
-            styleEl = document.createElement('style');
-            styleEl.id = id;
-            document.head.appendChild(styleEl);
-        }
-        styleEl.textContent = selectedMenuCommand
-            ? `.account-menu-cmd[data-context="${CSS.escape(selectedMenuCommand)}"] { outline: 1px solid rgba(var(--accent-rgb,139,92,246),0.75); background: rgba(var(--accent-rgb,139,92,246),0.12); border-radius: 3px; color: #fff; }`
-            : '';
-        return () => { if (styleEl) styleEl.textContent = ''; };
-    }, [selectedMenuCommand]);
 
     const [playNameInput, setPlayNameInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');

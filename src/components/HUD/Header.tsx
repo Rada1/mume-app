@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Edit3, Settings, MoreVertical, FolderOpen, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, RefreshCw, X, FileText, User, Map as MapIcon } from 'lucide-react';
-import { LightingType, WeatherType } from '../../types';
+import { Layers, Settings, MoreVertical, FolderOpen, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, FileText, User, Map as MapIcon } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { formatCompactNumber } from '../../utils/gameUtils';
 import { useModeStore } from '../../stores/useModeStore';
@@ -15,17 +14,11 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = () => {
     const {
-        lighting,
-        weather,
-        isFoggy,
         btn,
         teleportTargets,
-        showControls,
-        setShowControls,
         viewport,
         status,
         telnet,
-        executeCommand,
         triggerHaptic,
         gameState,
         clearObjectSelection
@@ -35,7 +28,7 @@ const Header: React.FC<HeaderProps> = () => {
     const mode = useModeStore();
     const isSpectating = mode.isSpectating;
     const { spectateTarget, activeView, setActiveView } = mode;
-    const { stats, setStats, target, setTarget, characterInfo } = useVitals();
+    const { target, setTarget, characterInfo } = useVitals();
     const {
         ui, setUI, setIsSettingsOpen, setIsLibraryOpen, setPopoverState,
         setSettingsTab, replayer
@@ -62,13 +55,6 @@ const Header: React.FC<HeaderProps> = () => {
         }
     }, [characterInfo]);
 
-    const handleWimpyChange = (val: number) => {
-        triggerHaptic(10);
-        setStats(prev => ({ ...prev, wimpy: val }));
-        executeCommand(`change wimpy ${val}`);
-    };
-
-    const effectiveShowControls = showControls;
     const { activeSet, isEditMode, availableSets, setActiveSet } = btn;
     const teleportTargetsCount = teleportTargets.length;
     const onClearTarget = () => { setTarget(null); clearObjectSelection(); };
@@ -534,21 +520,6 @@ const Header: React.FC<HeaderProps> = () => {
                                             </div>
                                         </div>
                                     )}
-
-                                    <div
-                                        className={`dropdown-item ${effectiveShowControls ? 'active' : ''}`}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setShowControls(effectiveShowControls ? false : true);
-                                        }}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
-                                                {effectiveShowControls ? <Eye size={16} /> : <EyeOff size={16} />}
-                                            </div>
-                                            <span>{effectiveShowControls ? 'Hide HUD Controls' : 'Show HUD Controls'}</span>
-                                        </div>
-                                    </div>
 
                                     <div
                                         className="dropdown-item"

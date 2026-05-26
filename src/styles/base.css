@@ -1,7 +1,7 @@
-:root {
+﻿:root {
     /* Common variables */
-    --accent: #b8860b;
-    --accent-rgb: 184, 134, 11;
+    --accent: #d4aa00;
+    --accent-rgb: 212, 170, 0;
     --accent-glow: rgba(var(--accent-rgb), 0.5);
     --map-accent: #fcd34d;
     --font-main: 'Iosevka', monospace;
@@ -18,15 +18,15 @@
     --text-primary: #d1d5db;   /* Cool Gray 300 - Softer than pure white */
     --text-dim: #9ca3af;       /* Gray 400 */
     --text-faded: #6b7280;     /* Gray 500 */
-    --border-color: rgba(184, 134, 11, 0.4);
+    --border-color: rgba(212, 170, 0, 0.4);
     --input-bg: rgb(35, 35, 40);
     --command-surface-bg: rgb(45, 39, 43);
     --header-bg: rgba(0, 0, 0, 0.75);
     --bg-modal: #101010;
-    --border-modal: rgba(184, 134, 11, 0.2);
+    --border-modal: rgba(212, 170, 0, 0.2);
     --color-exit: rgba(255, 255, 255, 0.9);
     --mapper-bg: #0a0d15;
-    --mapper-border: rgba(184, 134, 11, 0.3);
+    --mapper-border: rgba(212, 170, 0, 0.3);
     
     /* Inline Button Colors */
     --color-npc: rgba(253, 224, 71, 0.95);    /* Bright Pastel Yellow */
