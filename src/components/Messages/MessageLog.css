@@ -10,7 +10,9 @@
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
-    margin: 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: var(--message-log-max-width, 100%);
     transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
 }
 

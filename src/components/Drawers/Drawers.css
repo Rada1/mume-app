@@ -361,6 +361,17 @@
     box-shadow: inset 0 -3px 0 var(--tab-accent);
 }
 
+.account-drawer .desktop-drawer-tabs-in-shell {
+    justify-content: center;
+}
+
+.account-drawer .desktop-drawer-tabs-in-shell .desktop-edge-tab {
+    flex: 0 0 auto;
+    width: 25%;
+    min-width: 80px;
+    max-width: 140px;
+}
+
 .light-mode .desktop-drawer-tabs-in-shell {
     border-top-color: var(--tab-border);
     background: rgba(0, 0, 0, 0.03);

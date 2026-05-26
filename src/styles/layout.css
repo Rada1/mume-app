@@ -78,7 +78,7 @@
     overflow: hidden; /* Default to hidden to ensure log bottom respects boundaries */
     
     /* Align the readable log lane with the header and prompt/control card. */
-    max-width: var(--log-max-width);
+    max-width: var(--message-log-max-width, var(--log-max-width));
     margin: 0 auto;
     width: 100%;
 }
@@ -89,7 +89,7 @@
         max-width: var(--desktop-log-width, clamp(600px, 38vw, 1000px));
     }
     .message-log-container {
-        max-width: var(--desktop-log-width, clamp(600px, 38vw, 1000px));
+        max-width: var(--message-log-max-width, var(--desktop-log-width, clamp(600px, 38vw, 1000px)));
         overflow: visible;
     }
     /* Drawers fill their 30vw columns — no push needed */
@@ -105,6 +105,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    align-items: center;
     min-height: 0;
     position: relative;
     background: transparent;

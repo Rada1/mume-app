@@ -1,3 +1,8 @@
+/**
+ * @file state.ts
+ * @description Initializes and composes the global game provider state.
+ */
+
 import React, { useState, useRef, useCallback, useMemo } from 'react';
 import {
     GameStats, LightingType, WeatherType, DrawerLine, GameAction,
@@ -37,7 +42,7 @@ export const useGameProviderState = (audioTriggers?: {
 
     // --- Global App State ---
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
-    const [gameState, setGameState] = useState<import('../../types').GameState>('disconnected');
+    const [gameState, setGameState] = useState<import('../../types').GameState>('account');
     const [characterName, setCharacterName] = useState<string | null>(null);
     const [activeSession, setActiveSession] = useState<SessionSlot>('user');
     const [isPasswordMode, setIsPasswordMode] = useState(false);
@@ -50,9 +55,12 @@ export const useGameProviderState = (audioTriggers?: {
     const [commandPreview, setCommandPreview] = useState<string | null>(null);
 
     const [accountState, setAccountState] = useState<import('../../types').AccountState>({
-        stage: 'none', characters: [], selectedCharacter: null
+        stage: 'login',
+        characters: [],
+        selectedCharacter: null,
+        currentPrompt: 'By what name do you wish to be known?'
     });
-    const accountStageRef = useRef<import('../../types').AccountStage>('none');
+    const accountStageRef = useRef<import('../../types').AccountStage>('login');
     React.useEffect(() => { accountStageRef.current = accountState.stage; }, [accountState.stage]);
 
     // --- Activity State ---
@@ -77,7 +85,7 @@ export const useGameProviderState = (audioTriggers?: {
 
     // --- Global Refs ---
     const roomDescRef = useRef<string | null>(null);
-    const isAccountModeRef = useRef(false);
+    const isAccountModeRef = useRef(true);
     React.useEffect(() => { isAccountModeRef.current = gameState === 'account'; }, [gameState]);
 
     // --- Session Slots ---

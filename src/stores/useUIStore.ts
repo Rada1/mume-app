@@ -1,3 +1,8 @@
+/**
+ * @file useUIStore.ts
+ * @description Zustand store for shared layout, drawer, and transient UI state.
+ */
+
 import { create } from 'zustand';
 import { PopoverState, DrawerType } from '../types';
 
@@ -108,7 +113,7 @@ const defaultMumeEditState: MumeEditState = {
 const isDesktopViewport = () => typeof window !== 'undefined' && window.innerWidth >= 1024;
 
 export const useUIStore = create<UIState>((set) => ({
-    drawer: isDesktopViewport() ? 'status' : 'none',
+    drawer: isDesktopViewport() ? 'account' : 'none',
     isDrawerPeeking: false,
     mapExpanded: typeof window !== 'undefined' ? isDesktopViewport() : true,
     popoverState: null,

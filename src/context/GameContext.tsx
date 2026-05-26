@@ -453,8 +453,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 s.setGameState('account');
                 s.setAccountState(prev => ({
                     ...prev,
-                    stage: 'none',
-                    currentPrompt: undefined,
+                    stage: 'login',
+                    currentPrompt: 'By what name do you wish to be known?',
                     creationPrompt: undefined,
                     selectedCharacter: null,
                     charCapture: null

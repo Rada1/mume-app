@@ -225,6 +225,16 @@ export function useViewport(
             // Sub-pixel buffer: use a small buffer to prevent rounding-induced wrapping across different browsers.
             // Mobile portrait targets "barely fits 80 cols" so we skip the buffer there.
             const safetyBuffer = (isMobile && !isLandscape) ? 0 : 2;
+
+            if (!isMobile) {
+                const maxFontSize = DESKTOP_MAX_AUTO_LOG_FONT_SIZE_PX * logFontSize;
+                const textWidth = targetCols * charWidthRatio * maxFontSize;
+                const neededWidth = textWidth + totalPadding + safetyBuffer + 6; // 6px scrollbar buffer
+                document.documentElement.style.setProperty('--message-log-max-width', `${neededWidth}px`);
+            } else {
+                document.documentElement.style.setProperty('--message-log-max-width', 'none');
+            }
+
             const usableWidth = Math.max(0, width - totalPadding - safetyBuffer); 
 
             let calculatedFontSize = usableWidth / (targetCols * charWidthRatio);

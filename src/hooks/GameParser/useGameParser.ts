@@ -603,7 +603,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             // Account text is raw terminal output. We trim leading/trailing whitespace
             // to ensure consistent alignment in the mobile log container.
             const ansiStripped = lineToParse.replace(/\x1b\[[0-9;]*m/g, '');
-            let normalized = decodeTextEntities(ansiStripped.trim());
+            let normalized = decodeTextEntities(ansiStripped.trimEnd());
 
             // --- Privacy: Strip the "Host" column from `list` output ---
             // Matches the column header "Host" at the end of the header line.
@@ -773,7 +773,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             }
         }
 
-        const accountParserLine = isAccountPhase ? redactAccountDisplayLine(lineToParse.trim()) : textOnly;
+        const accountParserLine = isAccountPhase ? redactAccountDisplayLine(lineToParse.trimEnd()) : textOnly;
         if (account.parseAccountLine(accountParserLine, isPromptResolved)) return;
         if (stat.parseCompactCombatInfo(textOnly)) return;
         if (stat.parseGlobalStatus(textOnly, lower)) msgType = 'info' as any;
@@ -959,7 +959,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         if (isVisible) {
             const mid = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            let lineToConvert = isAccountPhase ? lineToParse.trim() : lineToParse;
+            let lineToConvert = isAccountPhase ? lineToParse.trimEnd() : lineToParse;
             if (isAccountPhase) {
                 // Mirror the privacy redaction on the raw ANSI string so the
                 // rendered HTML also hides the Host column from `list` output.
