@@ -7,7 +7,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 
 // --- Constants ---
 
-const DESKTOP_BASE_LOG_FONT_SIZE_PX = 15;
+const DESKTOP_MAX_AUTO_LOG_FONT_SIZE_PX = 16;
 
 // --- Helpers ---
 
@@ -120,8 +120,8 @@ export function useViewport(
         return () => resizeObserver.disconnect();
     }, [scrollToBottom]);
 
-    // logFontSize is a MULTIPLIER on top of the platform base size.
-    // Desktop uses a fixed 15px base. Mobile still auto-fits game text to 80 columns.
+    // logFontSize is a MULTIPLIER on top of the auto-fit base size.
+    // Desktop and mobile fit game text to 80 columns, with desktop capped at 16px.
     const [logFontSize, setLogFontSize] = useState(() => {
         const saved = localStorage.getItem('logFontSizeMultiplier');
         const v = saved ? parseFloat(saved) : 1.0;
@@ -227,10 +227,10 @@ export function useViewport(
             const safetyBuffer = (isMobile && !isLandscape) ? 0 : 2;
             const usableWidth = Math.max(0, width - totalPadding - safetyBuffer); 
 
-            // Mobile keeps the 80-column fit. Desktop uses a predictable terminal size.
-            let calculatedFontSize = isMobile
-                ? usableWidth / (targetCols * charWidthRatio)
-                : DESKTOP_BASE_LOG_FONT_SIZE_PX;
+            let calculatedFontSize = usableWidth / (targetCols * charWidthRatio);
+            if (!isMobile) {
+                calculatedFontSize = Math.min(DESKTOP_MAX_AUTO_LOG_FONT_SIZE_PX, calculatedFontSize);
+            }
 
             // Apply user zoom multiplier
             calculatedFontSize *= logFontSize;
