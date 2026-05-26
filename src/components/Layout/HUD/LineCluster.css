@@ -121,25 +121,48 @@
     flex-shrink: 0;
 }
 
+.line-cluster-step {
+    display: contents;
+}
+
 @keyframes tactical-line-cascade-glow {
     0%   { box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1); border-color: rgba(232, 176, 32, 0.48); }
-    25%  { box-shadow: 0 0 10px rgba(232, 176, 32, 0.65), 0 0 22px rgba(232, 176, 32, 0.45), 0 0 40px rgba(232, 176, 32, 0.25), inset 0 0 8px rgba(232, 176, 32, 0.12); border-color: rgba(232, 176, 32, 0.82); }
+    25%  { box-shadow: 0 0 7px rgba(184, 134, 11, 0.45), 0 0 18px rgba(184, 134, 11, 0.32), inset 0 0 5px rgba(184, 134, 11, 0.08); border-color: rgba(232, 176, 32, 0.78); }
     50%  { box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1); border-color: rgba(232, 176, 32, 0.48); }
     100% { box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1); border-color: rgba(232, 176, 32, 0.48); }
 }
 
-.tactical-line-wrapper.is-targeting .line-btn {
-    animation: tactical-line-cascade-glow 2.4s ease-in-out infinite !important;
-    animation-delay: var(--cascade-delay, 0s) !important;
+.tactical-line-wrapper .line-btn::after,
+.tactical-line-wrapper .line-cluster-action-menu::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border: 1px solid rgba(232, 176, 32, 0.48);
+    border-radius: inherit;
+    box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.16s ease;
+}
+
+.tactical-line-wrapper .line-cluster-action-menu {
+    position: relative;
+}
+
+.tactical-line-wrapper.is-targeting .line-btn::after,
+.tactical-line-wrapper.is-targeting .line-cluster-action-menu:not(.is-disabled)::after {
+    opacity: 1;
+    animation: tactical-line-cascade-glow 3s ease-in-out infinite;
+    animation-delay: var(--cascade-delay, 0s);
 }
 
 .tactical-line-wrapper .line-btn {
-    border-color: rgba(232, 176, 32, 0.48) !important;
+    border-color: rgba(232, 176, 32, 0.2) !important;
     border-width: 0.75px !important;
     box-shadow:
-        0 0 5px rgba(232, 176, 32, 0.22),
-        0 0 14px rgba(232, 176, 32, 0.18),
-        0 0 26px rgba(232, 176, 32, 0.1) !important;
+        0 0 3px rgba(232, 176, 32, 0.08),
+        0 0 9px rgba(232, 176, 32, 0.06),
+        0 0 16px rgba(232, 176, 32, 0.035) !important;
 }
 
 .tactical-line-wrapper .line-btn:not(.triggered):not(:active):not(.is-swiping) .button-icon,
@@ -162,11 +185,11 @@
 
 .tactical-line-wrapper .line-btn:active,
 .tactical-line-wrapper .line-btn.is-swiping {
-    border-color: rgba(232, 176, 32, 0.68) !important;
+    border-color: rgba(232, 176, 32, 0.52) !important;
     box-shadow:
-        0 0 7px rgba(232, 176, 32, 0.34),
-        0 0 18px rgba(232, 176, 32, 0.26),
-        0 0 34px rgba(232, 176, 32, 0.14) !important;
+        0 0 6px rgba(232, 176, 32, 0.24),
+        0 0 15px rgba(232, 176, 32, 0.16),
+        0 0 28px rgba(232, 176, 32, 0.08) !important;
 }
 
 /* Adjust labels and icons for smaller buttons */

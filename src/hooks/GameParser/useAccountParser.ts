@@ -186,7 +186,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         // --- Char Data Capture: intercept info/practice response lines ---
         // Active between sending `info <name>`/`practice <name>` and the next Account> prompt.
         if (charCaptureModeRef.current && !isPrompt) {
-            charCaptureLinesRef.current.push(cleanLine);
+            charCaptureLinesRef.current.push(line);
             return true;
         }
 
@@ -331,6 +331,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 ...prev, 
                 stage: 'character-creation', 
                 currentPrompt: undefined,
+                selectedMenuCommand: null,
                 characters: [] // Clear characters when entering creation
             }));
             captureStage.current = 'none';
@@ -378,8 +379,8 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 }
                 if (Object.keys(stats).length > 0) {
                     setAccountState(prev => ({ ...prev, stats: { ...(prev.stats || {}), ...stats } }));
-                    // Suppress stat lines when in the editor to keep it clean
-                    if (accountStageRef.current === 'stat-editing') return true;
+                    // Mobile keeps the creation surface compact; desktop keeps the raw log visible.
+                    if (accountStageRef.current === 'stat-editing' && isMobileRef.current) return true;
                 }
             }
 
@@ -393,7 +394,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                         accountStageRef.current = 'stat-editing';
                         setAccountState(prev => ({ ...prev, stage: 'stat-editing' }));
                     }
-                    return true;
+                    return isMobileRef.current;
                 }
             }
 
@@ -461,7 +462,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
 
         const isStatLine = /Str:\s*\d+.*Int:\s*\d+.*Wis:\s*\d+/i.test(trimmedLine);
         if (isStatLine) {
-            if (accountStageRef.current === 'stat-editing') {
+            if (accountStageRef.current === 'stat-editing' && isMobileRef.current) {
                 setMessages?.(prev => prev.filter(m => m.id !== 'account-stat-line'));
                 return true;
             }
@@ -469,7 +470,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
 
         const isPointsLine = /point[s]?\s+left/i.test(trimmedLine);
         if (isPointsLine) {
-            if (accountStageRef.current === 'stat-editing') {
+            if (accountStageRef.current === 'stat-editing' && isMobileRef.current) {
                 setMessages?.(prev => prev.filter(m => m.id !== 'account-points-line'));
                 return true;
             }

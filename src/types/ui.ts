@@ -152,4 +152,4 @@ export interface CustomButton {
     mid?: string;
 }
 
-export type DrawerType = 'none' | 'character' | 'players' | 'equipment' | 'status';
+export type DrawerType = 'none' | 'account' | 'character' | 'players' | 'equipment' | 'status';

@@ -6,21 +6,26 @@
 import React from 'react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { DrawerShell } from './DrawerShell';
-import { UnifiedDrawerContent } from './UnifiedDrawerContent';
 import { Mapper } from '../Mapper/Mapper';
 import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
 import { RoomChipRows } from '../Mapper/RoomChipRows';
 import { useMumeTime } from '../../hooks/useMumeTime';
 import { LineCluster } from '../Layout/HUD/LineCluster';
-import { User, Shield, Users, Map as MapIcon, Activity, UtensilsCrossed, Droplets, CloudFog, Clock, X } from 'lucide-react';
+import { User, Shield, Users, Map as MapIcon, Activity, UtensilsCrossed, Droplets, CloudFog, Clock, X, LogIn } from 'lucide-react';
 import { StatusDrawer } from './StatusDrawer';
 import { DrawerResizeHandle } from './DrawerResizeHandle';
+import { AccountDrawer } from './AccountDrawer';
+import { DrawerUnifiedPanel } from './DrawerUnifiedPanel';
 
 const SIDEBAR_TABS = [
     { id: 'status',    label: 'Status',  Icon: Activity },
     { id: 'character', label: 'Char',    Icon: User },
     { id: 'players',   label: 'Players', Icon: Users },
     { id: 'equipment', label: 'Gear',    Icon: Shield },
+];
+
+const ACCOUNT_TABS = [
+    { id: 'account', label: 'Account', Icon: LogIn },
 ];
 
 interface DrawerManagerProps {
@@ -53,6 +58,12 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         toggleMap
     } = useUI();
     const { groupMembers, target, activePrompt, stats } = useVitals();
+    const drawerData = {
+        gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab,
+        displayInventoryLines, displayEqLines, roomItems, whoLines, whereLines,
+        infoLines, questLines, achievementLines, practiceLines, groupMembers,
+        triggerHaptic, executeCommand, setWhoLines, setWhereLines
+    };
     // Body classes for desktop layout
     React.useEffect(() => {
         if (!viewport.isMobile) {
@@ -60,6 +71,15 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             document.body.classList.toggle('utility-drawer-open', ui.drawer !== 'none');
         }
     }, [ui.mapExpanded, ui.drawer, viewport.isMobile]);
+
+    React.useEffect(() => {
+        if (viewport.isMobile) return;
+        if (gameState === 'account' && ui.drawer !== 'account') {
+            setUI(prev => ({ ...prev, drawer: 'account' }));
+        } else if (gameState !== 'account' && ui.drawer === 'account') {
+            setUI(prev => ({ ...prev, drawer: 'status' }));
+        }
+    }, [gameState, setUI, ui.drawer, viewport.isMobile]);
 
     // Restore saved log width only (drawer widths use auto calc default)
     React.useEffect(() => {
@@ -195,95 +215,34 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             )}
 
             {/* Status Drawer */}
+            <DrawerShell id="account" side="right" title="Account">
+                <AccountDrawer />
+            </DrawerShell>
+
+            {/* Status Drawer */}
             <DrawerShell id="status" side="right" title="Status">
                 <StatusDrawer />
             </DrawerShell>
 
             {/* Gear Drawer */}
             <DrawerShell id="equipment" side="right" title="Gear">
-                <UnifiedDrawerContent
-                    drawer="equipment"
-                    gearTab={gearTab}
-                    setGearTab={setGearTab}
-                    playersTab={playersTab}
-                    setPlayersTab={setPlayersTab}
-                    charTab={charTab}
-                    setCharTab={setCharTab}
-                    displayInventoryLines={displayInventoryLines}
-                    displayEqLines={displayEqLines}
-                    roomItems={roomItems}
-                    whoLines={whoLines}
-                    whereLines={whereLines}
-                    infoLines={infoLines}
-                    questLines={questLines}
-                    achievementLines={achievementLines}
-                    practiceLines={practiceLines}
-                    groupMembers={groupMembers}
-                    triggerHaptic={triggerHaptic}
-                    executeCommand={executeCommand}
-                    setWhoLines={setWhoLines}
-                    setWhereLines={setWhereLines}
-                />
+                <DrawerUnifiedPanel drawer="equipment" drawerData={drawerData} />
             </DrawerShell>
 
             {/* Players Drawer */}
             <DrawerShell id="players" side="right" title="Players">
-                <UnifiedDrawerContent
-                    drawer="players"
-                    gearTab={gearTab}
-                    setGearTab={setGearTab}
-                    playersTab={playersTab}
-                    setPlayersTab={setPlayersTab}
-                    charTab={charTab}
-                    setCharTab={setCharTab}
-                    displayInventoryLines={displayInventoryLines}
-                    displayEqLines={displayEqLines}
-                    roomItems={roomItems}
-                    whoLines={whoLines}
-                    whereLines={whereLines}
-                    infoLines={infoLines}
-                    questLines={questLines}
-                    achievementLines={achievementLines}
-                    practiceLines={practiceLines}
-                    groupMembers={groupMembers}
-                    triggerHaptic={triggerHaptic}
-                    executeCommand={executeCommand}
-                    setWhoLines={setWhoLines}
-                    setWhereLines={setWhereLines}
-                />
+                <DrawerUnifiedPanel drawer="players" drawerData={drawerData} />
             </DrawerShell>
 
             {/* Character Drawer */}
             <DrawerShell id="character" side="right" title="Character">
-                <UnifiedDrawerContent
-                    drawer="character"
-                    gearTab={gearTab}
-                    setGearTab={setGearTab}
-                    playersTab={playersTab}
-                    setPlayersTab={setPlayersTab}
-                    charTab={charTab}
-                    setCharTab={setCharTab}
-                    displayInventoryLines={displayInventoryLines}
-                    displayEqLines={displayEqLines}
-                    roomItems={roomItems}
-                    whoLines={whoLines}
-                    whereLines={whereLines}
-                    infoLines={infoLines}
-                    questLines={questLines}
-                    achievementLines={achievementLines}
-                    practiceLines={practiceLines}
-                    groupMembers={groupMembers}
-                    triggerHaptic={triggerHaptic}
-                    executeCommand={executeCommand}
-                    setWhoLines={setWhoLines}
-                    setWhereLines={setWhereLines}
-                />
+                <DrawerUnifiedPanel drawer="character" drawerData={drawerData} />
             </DrawerShell>
 
             {/* Desktop Side Tabs */}
             {!viewport.isMobile && gameState !== 'disconnected' && ui.drawer === 'none' && (
                 <div className="desktop-drawer-tabs right horizontal-bottom-tabs">
-                    {SIDEBAR_TABS.map(({ id, label, Icon }) => (
+                    {(gameState === 'account' ? ACCOUNT_TABS : SIDEBAR_TABS).map(({ id, label, Icon }) => (
                         <div
                             key={id}
                             className={`desktop-edge-tab right ${ui.drawer === id ? 'active' : ''}`}

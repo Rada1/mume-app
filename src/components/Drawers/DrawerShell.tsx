@@ -4,7 +4,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import { X, User, Shield, Users, Activity } from 'lucide-react';
+import { X, User, Shield, Users, Activity, LogIn } from 'lucide-react';
 import { useUI, useGame } from '../../context/GameContext';
 import { EnvironmentGlow } from '../Atmosphere/EnvironmentGlow';
 import { DrawerResizeHandle } from './DrawerResizeHandle';
@@ -23,10 +23,15 @@ const SIDEBAR_TABS = [
     { id: 'equipment', label: 'Gear',    Icon: Shield },
 ];
 
+const ACCOUNT_TABS = [
+    { id: 'account', label: 'Account', Icon: LogIn },
+];
+
 export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, children }) => {
     const { ui, setUI, handleTabClick } = useUI();
-    const { triggerHaptic, handleLogClick, handleLogPointerDown, handleLogPointerUp, viewport, currentTerrain, lighting, input, accountState } = useGame() as any;
+    const { triggerHaptic, handleLogClick, handleLogPointerDown, handleLogPointerUp, viewport, currentTerrain, lighting, input, accountState, gameState } = useGame() as any;
     const isOpen = ui.drawer === id;
+    const tabs = gameState === 'account' ? ACCOUNT_TABS : SIDEBAR_TABS;
 
     if (!isOpen) return null;
 
@@ -65,7 +70,7 @@ export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, child
             </div>
             {!viewport.isMobile && (
                 <div className="desktop-drawer-tabs-in-shell">
-                    {SIDEBAR_TABS.map(({ id: tabId, label, Icon }) => (
+                    {tabs.map(({ id: tabId, label, Icon }) => (
                         <div
                             key={tabId}
                             className={`desktop-edge-tab right ${ui.drawer === tabId ? 'active' : ''}`}

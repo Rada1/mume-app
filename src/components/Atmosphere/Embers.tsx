@@ -21,8 +21,8 @@ export const Embers: React.FC<EmbersProps> = ({ count }) => {
     const { lighting } = env;
     
     // Use prop count or determine from lighting
-    // Optimize particle counts: limit maximum particles to significantly reduce rendering strain
-    const emberCount = count ? Math.min(count, 12) : (lighting === 'artificial' ? 12 : 6);
+    // Optimize particle counts: limit maximum particles to significantly reduce rendering strain (higher cap of 30 for desktop)
+    const emberCount = count ? Math.min(count, 30) : (lighting === 'artificial' ? 12 : 6);
     
     const activityMultiplier = 1 + (messageActivity * 4); // 1x to 5x speed
     const containerRef = React.useRef<HTMLDivElement>(null);

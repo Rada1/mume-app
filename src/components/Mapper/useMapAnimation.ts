@@ -5,7 +5,7 @@ const PLAYER_PULSE_FRAME_MS = 33;
 const WAKE_ANIMATION_MS = 1500;
 
 interface AnimationProps {
-    drawMap: (ctx: CanvasRenderingContext2D, dpr: number, w: number, h: number, marquee: any) => void;
+    drawMap: (ctx: CanvasRenderingContext2D, dpr: number, w: number, h: number, marquee: any, isDragging?: boolean) => void;
     rooms: Record<string, any>;
     markers: Record<string, any>;
     currentRoomId: string | null;
@@ -160,7 +160,7 @@ export const useMapAnimation = ({
         trackerRef.current.endTimes = trackerRef.current.endTimes.filter((time: number) => time > wallTime);
         if (trackerRef.current.endTimes.length > 0) needsNextFrame = true;
 
-        drawMap(ctx, dpr, w, h, marquee);
+        drawMap(ctx, dpr, w, h, marquee, effectiveIsDragging);
         return needsNextFrame;
     };
 

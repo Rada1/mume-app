@@ -193,6 +193,7 @@ export const LineItem: React.FC<LineItemProps> = ({
         const skillName = line.context || match?.[1]?.trim() || line.text.trim();
         const rest = match?.[2] || '';
         const skillColor = getPracticeClassColor(line.text, skillName);
+        const restHtml = sanitizeMumeHtml(ansiConvert.toHtml(rest));
 
         return (
             <div style={baseStyle}>
@@ -217,7 +218,7 @@ export const LineItem: React.FC<LineItemProps> = ({
                     >
                         {skillName}
                     </span>
-                    <span>{rest}</span>
+                    <span dangerouslySetInnerHTML={{ __html: restHtml }} />
                 </div>
             </div>
         );

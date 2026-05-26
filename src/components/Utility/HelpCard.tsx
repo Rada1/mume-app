@@ -67,7 +67,7 @@ export const HelpCard: React.FC<HelpCardProps> = ({
                 top: 0,
                 left: 0,
                 right: 0,
-                bottom: 0,
+                bottom: 'calc(62px + env(safe-area-inset-bottom, 0px))',
                 zIndex: 30000,
                 display: 'flex',
                 alignItems: 'center',

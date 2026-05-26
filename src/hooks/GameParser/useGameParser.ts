@@ -80,6 +80,10 @@ const stripAnsiCodes = (text: string) => text.replace(/\x1b\[[0-9;]*m/g, '');
 const SNOOP_PREFIX_REGEX = /^((?:\x1b\[[0-9;]*m|\s)*)(?:&amp;|&|mp;)[A-Za-z](?:\x1b\[[0-9;]*m)*(?:\s|$)/;
 const COMM_XML_OPEN_REGEX = /<(tell|say|narrate|shout|yell|song|sing|pray|whisper|social|emote)(?:\s+[^>]*)?>/i;
 
+const redactAccountDisplayLine = (line: string): string => line
+    .replace(/\s+Host\s*$/, '')
+    .replace(/\s+(?:\d{1,3}(?:[.-]\d{1,3}){2,}[\w.-]*|[\w-]+(?:\.[\w-]+){2,})\s*$/, '');
+
 const getUnclosedCommXmlTag = (text: string): string | null => {
     const match = text.match(COMM_XML_OPEN_REGEX);
     if (!match) return null;
@@ -607,10 +611,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             // Matches trailing IP addresses in dashed notation (e.g. 162-236-88-200)
             // and fully qualified domain names (e.g. 112.lightspeed.moblal.sbcglobal.net)
             // that appear after the delete/rent fields in character list entries.
-            normalized = normalized.replace(
-                /\s+(?:\d{1,3}(?:[.-]\d{1,3}){2,}[\w.-]*|[\w-]+(?:\.[\w-]+){2,})\s*$/,
-                ''
-            );
+            normalized = redactAccountDisplayLine(normalized);
 
             tokenizerContext = {};
             derivedTokens = [];
@@ -772,7 +773,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             }
         }
 
-        if (account.parseAccountLine(textOnly, isPromptResolved)) return;
+        const accountParserLine = isAccountPhase ? redactAccountDisplayLine(lineToParse.trim()) : textOnly;
+        if (account.parseAccountLine(accountParserLine, isPromptResolved)) return;
         if (stat.parseCompactCombatInfo(textOnly)) return;
         if (stat.parseGlobalStatus(textOnly, lower)) msgType = 'info' as any;
         if (stat.parseDetailedScore(textOnly, lower)) msgType = 'info' as any;
@@ -961,11 +963,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             if (isAccountPhase) {
                 // Mirror the privacy redaction on the raw ANSI string so the
                 // rendered HTML also hides the Host column from `list` output.
-                lineToConvert = lineToConvert.replace(/\s+Host\s*$/, '');
-                lineToConvert = lineToConvert.replace(
-                    /\s+(?:\d{1,3}(?:[.-]\d{1,3}){2,}[\w.-]*|[\w-]+(?:\.[\w-]+){2,})\s*$/,
-                    ''
-                );
+                lineToConvert = redactAccountDisplayLine(lineToConvert);
             }
             const ansiHtml = deps.ansiConvert.toHtml(lineToConvert);
 

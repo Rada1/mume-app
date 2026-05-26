@@ -87,8 +87,10 @@ export const drawRegionLabels = (
         const widths = chars.map(ch => ctx.measureText(ch).width);
         let cursor = -geom.totalWidth / 2;
 
-        ctx.shadowColor = 'rgba(0,0,0,0.85)';
-        ctx.shadowBlur = Math.max(4, geom.fontPx * 0.15);
+        if (!rCtx.isDragging) {
+            ctx.shadowColor = 'rgba(0,0,0,0.85)';
+            ctx.shadowBlur = Math.max(4, geom.fontPx * 0.15);
+        }
         ctx.strokeStyle = 'rgba(0,0,0,0.75)';
         ctx.lineWidth = Math.max(1.5, geom.fontPx * 0.04);
         ctx.fillStyle = color;

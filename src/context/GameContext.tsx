@@ -860,7 +860,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setPlayersTab: ui.setPlayersTab,
         charTab: ui.charTab,
         setCharTab: ui.setCharTab,
-        handleTabClick: (drawer: 'none' | 'character' | 'players' | 'equipment' | 'status') => {
+        handleTabClick: (drawer: 'none' | 'account' | 'character' | 'players' | 'equipment' | 'status') => {
             if (drawer === 'none') {
                 ui.setDrawer('none');
                 return;

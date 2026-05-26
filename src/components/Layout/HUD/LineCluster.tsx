@@ -1,5 +1,11 @@
+/**
+ * @file LineCluster.tsx
+ * @description Renders the persistent tactical action row.
+ */
+
 import React from 'react';
 import { useGame } from '../../../context/GameContext';
+import { useUIStore } from '../../../stores/useUIStore';
 import './LineCluster.css';
 
 interface LineClusterProps {
@@ -39,6 +45,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
     isGridEnabled, gridSize, setActiveSet, setButtons, isMobile
 }) => {
     const { viewport } = useGame();
+    const selectedTarget = useUIStore(state => state.selectedTarget);
     const { isLandscape } = viewport;
 
     // Pull the 6 tactical buttons by their setId
@@ -87,7 +94,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
     );
 
     return (
-        <div className={`tactical-line-wrapper${target ? ' is-targeting' : ''}`}>
+        <div className={`tactical-line-wrapper${selectedTarget ? ' is-targeting' : ''}`}>
             {charmieButton && (
                 <div className="line-cluster-aux">
                     {renderButton(charmieButton, 'default', 'line-btn tactical-charmie auxiliary-charmie')}
@@ -95,11 +102,20 @@ export const LineCluster: React.FC<LineClusterProps> = ({
             )}
             <div className="line-cluster">
                 {sortedButtons.map((button, index) => (
-                    <div key={button.id} style={{ '--cascade-delay': `${index * 0.12}s`, display: 'contents' } as React.CSSProperties}>
+                    <div
+                        key={button.id}
+                        className="line-cluster-step"
+                        style={{ '--cascade-delay': `${index * 0.12}s` } as React.CSSProperties}
+                    >
                         {renderButton(button, 'diamond', `line-btn ${button.id}`)}
                     </div>
                 ))}
-                <ActionMenuButton triggerHaptic={triggerHaptic} className="line-cluster-action-menu" />
+                <div
+                    className="line-cluster-step"
+                    style={{ '--cascade-delay': `${sortedButtons.length * 0.12}s` } as React.CSSProperties}
+                >
+                    <ActionMenuButton triggerHaptic={triggerHaptic} className="line-cluster-action-menu" />
+                </div>
             </div>
         </div>
     );

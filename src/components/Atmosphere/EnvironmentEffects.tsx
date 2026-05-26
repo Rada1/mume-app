@@ -67,7 +67,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         {lightning && <div className="lightning-glow-drop" />}
                         {!isMobile && (weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
                         {weather === 'snow' && <div className="weather-layer weather-snow" />}
-                        {/* {!isMobile && <Embers count={lighting === 'artificial' ? 60 : 30} />} */}
+                        {!isMobile && <Embers count={lighting === 'artificial' ? 60 : 30} />}
                     </>
                 )}
                 {isImmersionMode && <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} />}

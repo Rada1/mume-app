@@ -4,7 +4,7 @@ import { getZoneVisuals } from '../zoneFilters';
 
 const TERRAIN_TILE_INSET = 0;
 const FAR_ZOOM_TERRAIN_LOD = 0.22;
-const OVERVIEW_TERRAIN_ZOOM = 0.28;
+const OVERVIEW_TERRAIN_ZOOM = 0.15;
 
 let tempContentCanvas: HTMLCanvasElement | null = null;
 let tempContentCtx: CanvasRenderingContext2D | null = null;
@@ -1176,7 +1176,7 @@ export const drawTerrains = (
     const tileBacking = isDarkMode ? '#000000' : '#f2f2f7';
     const tileBackingAlpha = tileOpacity;
     const s = GRID_SIZE;
-    const useOverviewTerrainColors = rCtx.camera.zoom < OVERVIEW_TERRAIN_ZOOM && !isTracingMode;
+    const useOverviewTerrainColors = false;
 
     const exploredBatches: Record<string, { x: number, y: number, terrain: string, vnum: string, light?: number, sundeath?: number, isPermanentSnow?: boolean }[]> = {};
     const ring1Batches: Record<string, { x: number, y: number, terrain: string }[]> = {};
@@ -1637,7 +1637,7 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
     const terrainColors = mapTileVisuals?.terrainColors;
     const tileOpacity = rCtx.mapTileOpacity ?? 1;
     const s = GRID_SIZE;
-    const useOverviewTerrainColors = rCtx.camera.zoom < OVERVIEW_TERRAIN_ZOOM && !rCtx.isTracingMode;
+    const useOverviewTerrainColors = false;
 
     ctx.save();
     for (let i = 0; i < localRooms.length; i++) {

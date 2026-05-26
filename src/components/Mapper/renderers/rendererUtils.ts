@@ -72,6 +72,7 @@ export interface RenderContext {
     mapTileOpacity?: number;
     zoneFilters?: Record<string, ZoneFilterConfig>;
     weather?: string;
+    isDragging?: boolean;
 }
 
 export const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);

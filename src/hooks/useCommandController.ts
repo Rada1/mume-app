@@ -274,7 +274,10 @@ export function useCommandController(deps: CommandControllerDeps) {
         setInput('');
 
         let finalCmd = cmd;
-        if (deps.parley.active && cmd) {
+        const currentMode = deps.parley.mode || (deps.parley.active ? 'parley' : 'command');
+        if (currentMode === 'help' && cmd) {
+            finalCmd = `help ${cmd}`;
+        } else if (currentMode === 'parley' && cmd) {
             const TARGETLESS = ['say', 'narrate', 'shout', 'yell', 'sing'];
             const isTargetless = TARGETLESS.includes(deps.parley.command);
             if (isTargetless) {

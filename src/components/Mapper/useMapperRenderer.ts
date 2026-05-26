@@ -10,6 +10,16 @@ import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarke
 import { drawRegionLabels } from './renderers/drawRegionLabels';
 import { ZoneFilterConfig } from './zoneFilters';
 
+const LIGHTING_COLORS: Record<string, [number, number, number, number]> = {
+    sun:        [255, 248, 200, 0.09],
+    moon:       [130, 170, 255, 0.06],
+    artificial: [255, 255, 255, 0.08],
+    dark:       [0,   0,   0,   0.05],
+    none:       [0,   0,   0,   0],
+    normal:     [0,   0,   0,   0],
+};
+const LIGHTING_TRANSITION_MS = 1500;
+
 const didLayoutChange = (oldRooms: Record<string, any>, newRooms: Record<string, any>): boolean => {
     const oldKeys = Object.keys(oldRooms);
     const newKeys = Object.keys(newRooms);
@@ -127,6 +137,14 @@ export const useMapperRenderer = ({
     showOrganicTerrain = true
 }: RendererProps) => {
 
+    // Lighting transition state for smooth cross-fades
+    const lightingTransRef = useRef<{
+        from: [number, number, number, number];
+        to:   [number, number, number, number];
+        startTime: number;
+        lastLighting: string;
+    }>({ from: [0,0,0,0], to: [0,0,0,0], startTime: 0, lastLighting: lighting });
+
     const offscreenCacheRef = useRef<{ canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, lastParams: string } | null>(null);
     const localSpatialIndexRef = useRef<Record<number, Record<string, string[]>>>({});
     const lastRoomsRef = useRef<Record<string, any>>({});
@@ -151,7 +169,7 @@ export const useMapperRenderer = ({
         filterPathDistance: 0
     });
 
-    const drawMap = useCallback((ctx: CanvasRenderingContext2D, dpr: number, canvasWidth: number, canvasHeight: number, marquee: { start: { x: number, y: number }, end: { x: number, y: number } } | null) => {
+    const drawMap = useCallback((ctx: CanvasRenderingContext2D, dpr: number, canvasWidth: number, canvasHeight: number, marquee: { start: { x: number, y: number }, end: { x: number, y: number } } | null, isDragging: boolean = false) => {
         const now = Date.now();
         const activeId = stableRoomIdRef.current;
         let baseZ = 0;
@@ -297,8 +315,14 @@ export const useMapperRenderer = ({
         
         // Distance from center of cache in world units
         const moveDist = Math.hypot(camera.x - lastBuildX, camera.y - lastBuildY) * camera.zoom * dpr;
-        // Rebuild if we moved more than 30% of the screen width from the cached center
-        const moveThreshold = baseW * 0.4;
+
+        // Dynamic threshold adjustment: during drag/pinch zoom interactions, 
+        // we use much higher thresholds to avoid rebuilding the static cache 
+        // constantly, letting the GPU stretch/scale the cached canvas smoothly.
+        // Once the interaction ends, thresholds drop back to standard levels,
+        // triggering a crisp cache rebuild instantly.
+        const zoomThreshold = isDragging ? 0.65 : 0.28;
+        const moveThreshold = isDragging ? baseW * 0.75 : baseW * 0.4;
 
         const lastExplored = effectiveFirstExploredAtRef.current['_latest'] || 0;
         const isExplorationAnimating = (now - lastExplored) < 1000;
@@ -314,7 +338,7 @@ export const useMapperRenderer = ({
         }
 
         const baseParams = `${curZInt}_${isDarkMode}_${roomsVersionRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}_${weather}`;
-        const needsRebuild = cache.lastParams !== baseParams || zoomDiff > 0.25 || moveDist > moveThreshold || isExplorationAnimating || visualsChanged;
+        const needsRebuild = cache.lastParams !== baseParams || zoomDiff > zoomThreshold || moveDist > moveThreshold || isExplorationAnimating || visualsChanged;
 
         if (needsRebuild) {
             const offCtx = cache.ctx;
@@ -398,7 +422,8 @@ export const useMapperRenderer = ({
                 mapTileVisuals, mapTileOpacity,
                 zoneFilters,
                 weather,
-                inCombat
+                inCombat,
+                isDragging
             };
 
             if (floorIndex) drawTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
@@ -454,7 +479,8 @@ export const useMapperRenderer = ({
             groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, opponentName,
             opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
             activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
-            inCombat
+            inCombat,
+            isDragging
         };
 
         drawGroupMembers(rCtx);
@@ -468,36 +494,38 @@ export const useMapperRenderer = ({
         ctx.restore();
         drawMarquee(rCtx, marquee);
 
-        // Lighting effects overlay (screen space solid tint)
-        if (lighting === 'sun') {
+        // Lighting effects overlay — smooth cross-fade between states
+        const lt = lightingTransRef.current;
+        const litColor = LIGHTING_COLORS[lighting] ?? LIGHTING_COLORS.none;
+        if (lt.lastLighting !== lighting) {
+            lt.from = [...lt.to] as [number, number, number, number];
+            lt.to = [...litColor] as [number, number, number, number];
+            lt.startTime = performance.now();
+            lt.lastLighting = lighting;
+        }
+        const elapsed = performance.now() - lt.startTime;
+        const t = Math.min(elapsed / LIGHTING_TRANSITION_MS, 1);
+        const ease = t < 1 ? 1 - Math.pow(1 - t, 3) : 1; // ease-out cubic
+        const r = lt.from[0] + (lt.to[0] - lt.from[0]) * ease;
+        const g = lt.from[1] + (lt.to[1] - lt.from[1]) * ease;
+        const b = lt.from[2] + (lt.to[2] - lt.from[2]) * ease;
+        const a = lt.from[3] + (lt.to[3] - lt.from[3]) * ease;
+        if (a > 0.001) {
             ctx.save();
-            ctx.fillStyle = 'rgba(255, 235, 120, 0.05)';
-            ctx.fillRect(0, 0, baseW, baseH);
-            ctx.restore();
-        } else if (lighting === 'moon') {
-            ctx.save();
-            ctx.fillStyle = 'rgba(130, 170, 255, 0.06)';
-            ctx.fillRect(0, 0, baseW, baseH);
-            ctx.restore();
-        } else if (lighting === 'artificial') {
-            ctx.save();
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-            ctx.fillRect(0, 0, baseW, baseH);
-            ctx.restore();
-        } else if (lighting === 'dark') {
-            ctx.save();
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+            ctx.fillStyle = `rgba(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}, ${a.toFixed(4)})`;
             ctx.fillRect(0, 0, baseW, baseH);
             ctx.restore();
         }
+        if (t < 1) triggerRender?.();
 
         // Vignette overlay (screen space) - on top
+        const vigAlpha = lt.from[3] + (lt.to[3] - lt.from[3]) * ease;
         const vig = ctx.createRadialGradient(
             baseW / 2, baseH / 2, Math.min(baseW, baseH) * 0.25,
             baseW / 2, baseH / 2, Math.max(baseW, baseH) * 0.75
         );
         vig.addColorStop(0, 'rgba(0,0,0,0)');
-        vig.addColorStop(1, lighting === 'artificial' ? 'rgba(0,0,0,0.48)' : 'rgba(0,0,0,0.55)');
+        vig.addColorStop(1, vigAlpha > 0.06 ? 'rgba(0,0,0,0.32)' : 'rgba(0,0,0,0.38)');
         ctx.fillStyle = vig;
         ctx.fillRect(0, 0, baseW, baseH);
 

@@ -171,6 +171,29 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         combatAnimationActive
     });
 
+    // Parallax: drive --parallax-x/y on .mapper-container from camera position
+    useEffect(() => {
+        const FACTOR = 0.035;
+        const LERP = 0.04;
+        let rafId: number;
+        let currentX = 0;
+        let currentY = 0;
+        const tick = () => {
+            const container = canvasRef.current?.closest('.mapper-container') as HTMLElement | null;
+            if (container) {
+                const targetX = -props.camera.current.x * FACTOR;
+                const targetY = -props.camera.current.y * FACTOR;
+                currentX += (targetX - currentX) * LERP;
+                currentY += (targetY - currentY) * LERP;
+                container.style.setProperty('--parallax-x', `${currentX}px`);
+                container.style.setProperty('--parallax-y', `${currentY}px`);
+            }
+            rafId = requestAnimationFrame(tick);
+        };
+        rafId = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(rafId);
+    }, [canvasRef, props.camera]);
+
     useEffect(() => {
         const cvs = canvasRef.current;
         const parent = cvs?.parentElement;

@@ -30,6 +30,10 @@ const findTeacherLine = (lines: DrawerLine[]): DrawerLine | null => (
     lines.find(line => /can teach you the (?:skills|spells) below/i.test(line.text)) || null
 );
 
+const findSessionsLine = (lines: DrawerLine[]): DrawerLine | null => (
+    lines.find(line => /you have\s+\d+\s+(?:practice\s+)?sessions?/i.test(line.text)) || null
+);
+
 const formatGuildHeader = (label: string) => (
     `${label.padEnd(COL.name)}${'Sessions'.padStart(COL.sessions)}${'Knowledge'.padStart(COL.knowledge)}  ${'Difficulty'.padEnd(COL.difficulty)}Advice`
 );
@@ -63,9 +67,10 @@ export const buildPracticeDrawerLines = (
     const label = isSpellList(capturedLines, practiceData.skills) ? 'Spell' : 'Skill';
     const guildmasterList = isGuildmasterList(practiceData);
     const teacherLine = findTeacherLine(capturedLines);
-    const lines: DrawerLine[] = [
-        makeLine('practice-sessions-left', `You have ${practiceData.sessionsLeft} practice sessions left.`)
-    ];
+    const sessionsLine = findSessionsLine(capturedLines);
+    const lines: DrawerLine[] = sessionsLine
+        ? [{ ...sessionsLine, id: 'practice-sessions-left' }]
+        : [makeLine('practice-sessions-left', `You have ${practiceData.sessionsLeft} practice sessions left.`)];
 
     if (teacherLine) {
         lines.push({

@@ -24,6 +24,23 @@
     background: var(--mapper-bg) !important;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    position: relative;
+}
+
+.mapper-container::before {
+    content: '';
+    position: absolute;
+    top: 120%;
+    left: 180%;
+    transform: translate(calc(-50% + var(--parallax-x, 0px)), calc(-50% + var(--parallax-y, 0px)));
+    width: 800%;
+    height: 800%;
+    background: url('/assets/Pictures/UIPics/darkmap.png') no-repeat center center;
+    background-size: contain;
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: 0;
+    filter: sepia(1) hue-rotate(195deg) saturate(6) brightness(1.4);
 }
 
 .mapper-overlay {

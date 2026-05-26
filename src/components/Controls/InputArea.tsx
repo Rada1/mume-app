@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { MessageCircle, Reply, Repeat, XCircle } from 'lucide-react';
+import { MessageCircle, Reply, Repeat, XCircle, HelpCircle } from 'lucide-react';
 import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../../types';
 import { useUI, useBaseGame, useVitals, useGame } from '../../context/GameContext';
@@ -36,7 +36,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     const { ui, setUI } = useUI();
     const { viewport } = useBaseGame();
     const { stats } = useVitals();
-    const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode, accountState, env } = useGame() as any;
+    const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode, accountState, env, popoverState } = useGame() as any;
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
     const setLoginName = useSettingsStore(s => s.setLoginName);
@@ -48,6 +48,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     const startPos = useRef<{ x: number, y: number } | null>(null);
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const isSwiping = useRef(false);
+    const [isModeMenuOpen, setIsModeMenuOpen] = useState(false);
 
     // Global listeners to catch fast swipes that leave the element bounds
     React.useEffect(() => {
@@ -129,6 +130,30 @@ const InputArea: React.FC<InputAreaProps> = ({
         }
     }, [input]);
 
+    React.useEffect(() => {
+        if (!isModeMenuOpen) return;
+        const handleOutsideClick = () => {
+            setIsModeMenuOpen(false);
+        };
+        window.addEventListener('click', handleOutsideClick);
+        return () => window.removeEventListener('click', handleOutsideClick);
+    }, [isModeMenuOpen]);
+    const isHelpCardOpen = popoverState?.type === 'help-card';
+
+    // Auto set to help mode when help card is open, and restore to command when closed
+    useEffect(() => {
+        if (isHelpCardOpen) {
+            setParley(prev => ({ ...prev, active: false, mode: 'help' }));
+        } else {
+            // Revert to command mode when help card closes (if it was help mode)
+            setParley(prev => {
+                if (prev.mode === 'help') {
+                    return { ...prev, active: false, mode: 'command' };
+                }
+                return prev;
+            });
+        }
+    }, [isHelpCardOpen, setParley]);
     // Use a ref for input to avoid closure issues in the event listener
     const inputRefState = useRef(input);
     useEffect(() => { inputRefState.current = input; }, [input]);
@@ -212,17 +237,30 @@ const InputArea: React.FC<InputAreaProps> = ({
         initAudio?.();
         if (isSoundEnabled) playClickSound?.();
         triggerHaptic(20);
-        setParley({ ...parley, active: false });
+        setParley({ ...parley, active: false, mode: 'command' });
     };
 
-    const handleParleyToggle = () => {
+    const handleModeMenuToggle = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
         initAudio?.();
         if (isSoundEnabled) playClickSound?.();
         triggerHaptic(20);
-        if (parley.active) {
-            setParley({ ...parley, active: false });
-        } else {
-            setParley(prev => ({ ...prev, active: true }));
+        setIsModeMenuOpen(prev => !prev);
+    };
+
+    const selectMode = (mode: 'command' | 'parley' | 'help') => {
+        initAudio?.();
+        if (isSoundEnabled) playClickSound?.();
+        triggerHaptic(20);
+        setIsModeMenuOpen(false);
+        if (mode === 'command') {
+            setParley({ ...parley, active: false, mode: 'command' });
+        } else if (mode === 'parley') {
+            setParley({ ...parley, active: true, mode: 'parley' });
+            requestAnimationFrame(() => inputRef.current?.focus());
+        } else if (mode === 'help') {
+            setParley({ ...parley, active: false, mode: 'help' });
             requestAnimationFrame(() => inputRef.current?.focus());
         }
     };
@@ -319,8 +357,13 @@ const InputArea: React.FC<InputAreaProps> = ({
         );
     }
 
+    const currentMode = parley.mode || (parley.active ? 'parley' : 'command');
+
     return (
-        <div className={`input-area ${terrainClass} input-container`}>
+        <div 
+            className={`input-area ${terrainClass} input-container`}
+            style={isHelpCardOpen ? { zIndex: 31000 } : (isModeMenuOpen ? { zIndex: 10005 } : undefined)}
+        >
             {isLoginStage && (
                 <label className="remember-login-toggle">
                     <input
@@ -334,6 +377,7 @@ const InputArea: React.FC<InputAreaProps> = ({
             <div className="input-main-container" ref={containerRef}>
                 <form className="input-form" onSubmit={handleSubmit}>
                     {(() => {
+                        const currentMode = parley.mode || (parley.active ? 'parley' : 'command');
                         const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
                         const PARLEY_COLORS: Record<string, string> = {
                             tell: '#22c55e',
@@ -345,20 +389,118 @@ const InputArea: React.FC<InputAreaProps> = ({
                             sing: '#f472b6'
                         };
                         const commandColor = PARLEY_COLORS[parley.command.toLowerCase()] || 'inherit';
+                        const isPillActive = currentMode !== 'command';
 
                         return (
-                            <div className={`parley-pill${parley.active ? ' parley-pill-active' : ''}`}>
+                            <div className={`parley-pill${isPillActive ? ' parley-pill-active' : ''}`} style={{ position: 'relative' }}>
                                 <button
                                     type="button"
-                                    className={`cmd-prompt-btn${parley.active ? ' parley-active' : ''}`}
+                                    className={`cmd-prompt-btn${isPillActive ? ' parley-active' : ''}`}
                                     onPointerDown={(e) => e.stopPropagation()}
-                                    onClick={handleParleyToggle}
-                                    title={parley.active ? 'Exit parley mode' : 'Enter parley mode'}
+                                    onClick={handleModeMenuToggle}
+                                    title={`Current mode: ${currentMode}. Click to switch.`}
                                 >
-                                    {parley.active ? <MessageCircle size={16} /> : '>'}
+                                    {currentMode === 'parley' ? <MessageCircle size={16} /> : currentMode === 'help' ? <HelpCircle size={16} /> : '>'}
                                 </button>
 
-                                {parley.active && (<>
+                                {isModeMenuOpen && (
+                                    <div
+                                        className="mode-dropdown-menu"
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: 'calc(100% + 8px)',
+                                            left: '4px',
+                                            background: '#121214',
+                                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                                            borderRadius: '8px',
+                                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+                                            zIndex: 10000,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            padding: '4px 0',
+                                            minWidth: '130px'
+                                        }}
+                                        onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                        onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                        onTouchStart={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                        onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                    >
+                                        <button
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); selectMode('command'); }}
+                                            onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                            onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                            onTouchStart={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                            style={{
+                                                background: 'transparent',
+                                                border: 'none',
+                                                color: currentMode === 'command' ? 'var(--accent)' : 'var(--text-primary, #ffffff)',
+                                                padding: '8px 12px',
+                                                textAlign: 'left',
+                                                fontSize: '0.8rem',
+                                                fontWeight: currentMode === 'command' ? '700' : '500',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                width: '100%'
+                                            }}
+                                        >
+                                            <span style={{ width: '14px', display: 'inline-block', textAlign: 'center', fontSize: '14px', fontWeight: 'bold' }}>&gt;</span>
+                                            Command
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); selectMode('parley'); }}
+                                            onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                            onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                            onTouchStart={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                            style={{
+                                                background: 'transparent',
+                                                border: 'none',
+                                                color: currentMode === 'parley' ? 'var(--accent)' : 'var(--text-primary, #ffffff)',
+                                                padding: '8px 12px',
+                                                textAlign: 'left',
+                                                fontSize: '0.8rem',
+                                                fontWeight: currentMode === 'parley' ? '700' : '500',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                width: '100%'
+                                            }}
+                                        >
+                                            <MessageCircle size={14} />
+                                            Parley
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); selectMode('help'); }}
+                                            onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                            onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                            onTouchStart={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                            style={{
+                                                background: 'transparent',
+                                                border: 'none',
+                                                color: currentMode === 'help' ? 'var(--accent)' : 'var(--text-primary, #ffffff)',
+                                                padding: '8px 12px',
+                                                textAlign: 'left',
+                                                fontSize: '0.8rem',
+                                                fontWeight: currentMode === 'help' ? '700' : '500',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                width: '100%'
+                                            }}
+                                        >
+                                            <HelpCircle size={14} />
+                                            Help
+                                        </button>
+                                    </div>
+                                )}
+
+                                {currentMode === 'parley' && (<>
                                     <div
                                         className="parley-indicator parley-command"
                                         onClick={handleParleyCommandClick}
@@ -372,6 +514,28 @@ const InputArea: React.FC<InputAreaProps> = ({
                                         title={isTargetless ? 'This command has no target' : undefined}
                                     >
                                         {isTargetless ? '' : (parley.target ?? '')}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="parley-clear-btn"
+                                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleParleyClear(); }}
+                                    >
+                                        ×
+                                    </button>
+                                </>)}
+
+                                {currentMode === 'help' && (<>
+                                    <div
+                                        className="parley-indicator"
+                                        style={{
+                                            background: 'rgba(234, 179, 8, 0.2)',
+                                            color: '#eab308',
+                                            borderColor: 'rgba(234, 179, 8, 0.3)',
+                                            borderWidth: '1px',
+                                            borderStyle: 'solid'
+                                        }}
+                                    >
+                                        help
                                     </div>
                                     <button
                                         type="button"
@@ -436,7 +600,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                                     inputRef.current.focus();
                                 }
                             }}
-                            placeholder={isPasswordMode ? "Enter password..." : (gameState === 'account' ? "Enter username..." : (commandPreview ? "" : "Enter command..."))}
+                            placeholder={isPasswordMode ? "Enter password..." : (gameState === 'account' ? "Enter username..." : (commandPreview ? "" : (currentMode === 'help' ? "Enter help topic..." : "Enter command...")))}
                         />
                     </div>
 

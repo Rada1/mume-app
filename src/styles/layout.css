@@ -13,6 +13,7 @@
     --mobile-gutter-height: 140px;
 }
 
+
 .app-container.is-map-expanded,
 .app-container.has-drawer-open {
     --mobile-gutter-height: 50dvh;

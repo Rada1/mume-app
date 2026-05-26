@@ -1,0 +1,68 @@
+/**
+ * @file SubraceBanner.css
+ * @description Banner styles for GMCP subrace imagery.
+ */
+
+/* --- Logic Section --- */
+
+.subrace-banner {
+    pointer-events: none;
+    filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.58));
+}
+
+.subrace-banner--header {
+    position: absolute;
+    top: calc(100% - 2px);
+    right: 42px;
+    width: 60px;
+    height: 88px;
+    z-index: -1;
+}
+
+.subrace-banner--drawer {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 108px;
+    height: 76px;
+    z-index: 1;
+}
+
+.subrace-banner--drawer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at center, transparent 42%, rgba(0, 0, 0, 0.18) 68%, rgba(0, 0, 0, 0.62) 100%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.42), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.42));
+    z-index: 2;
+}
+
+.subrace-banner-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    border: none;
+    background: transparent;
+}
+
+.mobile-header .subrace-banner--header {
+    right: 36px;
+    width: 46px;
+    height: 66px;
+}
+
+@media (max-width: 420px) {
+    .mobile-header .subrace-banner--header {
+        right: 32px;
+        width: 40px;
+        height: 58px;
+    }
+
+    .subrace-banner--drawer {
+        right: 10px;
+        width: 88px;
+        height: 66px;
+    }
+}

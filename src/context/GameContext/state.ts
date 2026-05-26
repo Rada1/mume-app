@@ -43,7 +43,7 @@ export const useGameProviderState = (audioTriggers?: {
     const [isPasswordMode, setIsPasswordMode] = useState(false);
     const popoverState = uiStore.popoverState;
     const setPopoverState = uiStore.setPopoverState;
-    const [parley, setParley] = useState<ParleyState>({ active: false, command: 'tell', target: null, message: '' });
+    const [parley, setParley] = useState<ParleyState>({ active: false, mode: 'command', command: 'tell', target: null, message: '' });
     const [mumeEditState, setMumeEditState] = [uiStore.mumeEditState, uiStore.setMumeEditState] as const;
 
     const [input, setInput] = useState("");

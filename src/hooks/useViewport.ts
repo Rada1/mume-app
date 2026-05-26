@@ -213,8 +213,9 @@ export function useViewport(
                 totalPadding += 20; 
             }
 
-            // Sub-pixel buffer: use a small buffer to prevent rounding-induced wrapping across different browsers
-            const safetyBuffer = 2; 
+            // Sub-pixel buffer: use a small buffer to prevent rounding-induced wrapping across different browsers.
+            // Mobile portrait targets "barely fits 80 cols" so we skip the buffer there.
+            const safetyBuffer = (isMobile && !isLandscape) ? 0 : 2;
             const usableWidth = Math.max(0, width - totalPadding - safetyBuffer); 
 
             // Calculate font size for perfect 80-column fit using the actual measured ratio.

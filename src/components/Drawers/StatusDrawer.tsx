@@ -6,6 +6,7 @@ import { CombatHealthStatus } from '../../types';
 import { DrawerTabBar } from './DrawerTabBar';
 import { TimerDrawerTab } from '../Timers/TimerDrawerTab';
 import { MagicKeysTab } from '../Timers/MagicKeysTab';
+import { StatusCharacterCard } from './StatusCharacterCard';
 
 // ── Primitives ────────────────────────────────────────────────────────────────
 
@@ -186,24 +187,7 @@ export const StatusDrawer: React.FC = () => {
             fontSize: 'calc(var(--dynamic-log-size, 16px) + 1px)'
         }}>
             {/* ── Identity ── */}
-            <Card title="Character">
-                {characterInfo.fullname ? (
-                    <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'rgba(255,255,255,0.9)', lineHeight: 1.3 }}>
-                        {characterInfo.fullname}
-                    </div>
-                ) : characterInfo.name ? (
-                    <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>
-                        {characterInfo.name}
-                    </div>
-                ) : (
-                    <div style={{ fontSize: '1em', color: 'rgba(255,255,255,0.2)', fontStyle: 'italic' }}>Not logged in</div>
-                )}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px', marginTop: 2 }}>
-                    {characterInfo.level > 0 && <Row label="Level" value={characterInfo.level} />}
-                    {characterInfo.race && <Row label="Race" value={[characterInfo.race, characterInfo.subrace].filter(Boolean).join(' · ')} />}
-                    {characterInfo.class && <Row label="Class" value={[characterInfo.class, characterInfo.subclass].filter(Boolean).join(' · ')} />}
-                </div>
-            </Card>
+            <StatusCharacterCard characterInfo={characterInfo} />
 
             {/* ── Vitals ── */}
             <Card title="Vitals">

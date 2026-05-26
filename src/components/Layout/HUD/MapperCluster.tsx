@@ -13,6 +13,7 @@ import { MapperRoomInfo } from '../../Mapper/MapperRoomInfo';
 import { RoomChipRows } from '../../Mapper/RoomChipRows';
 import { UiPositions, SwipeDirection } from '../../../types';
 import { GutterDrawerPanel } from './GutterDrawerPanel';
+import { AccountAnsiLine } from '../../Drawers/AccountAnsiLine';
 
 type CreationOption = { id: string; label: string };
 const EMPTY_CREATION_OPTIONS: CreationOption[] = [];
@@ -330,7 +331,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                             </div>
                                             <div className="char-detail-content">
                                                 {(accountState.timeLines ?? []).length > 0
-                                                    ? <div className="char-data-lines">{(accountState.timeLines ?? []).map((line, i) => <div key={i} className="char-data-line">{line}</div>)}</div>
+                                                    ? <div className="char-data-lines">{(accountState.timeLines ?? []).map((line, i) => <AccountAnsiLine key={i} line={line} />)}</div>
                                                     : accountState.charCapture?.type === 'time'
                                                         ? <div className="char-data-loading">Loading…</div>
                                                         : null}
@@ -347,7 +348,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                             </div>
                                             <div className="char-detail-content">
                                                 {(accountState.linkLines ?? []).length > 0
-                                                    ? <div className="char-data-lines">{(accountState.linkLines ?? []).map((line, i) => <div key={i} className="char-data-line">{line}</div>)}</div>
+                                                    ? <div className="char-data-lines">{(accountState.linkLines ?? []).map((line, i) => <AccountAnsiLine key={i} line={line} />)}</div>
                                                     : accountState.charCapture?.type === 'link'
                                                         ? <div className="char-data-loading">Loading…</div>
                                                         : null}
@@ -364,7 +365,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                             </div>
                                             <div className="char-detail-content">
                                                 {(accountState.lagLines ?? []).length > 0
-                                                    ? <div className="char-data-lines">{(accountState.lagLines ?? []).map((line, i) => <div key={i} className="char-data-line">{line}</div>)}</div>
+                                                    ? <div className="char-data-lines">{(accountState.lagLines ?? []).map((line, i) => <AccountAnsiLine key={i} line={line} />)}</div>
                                                     : accountState.charCapture?.type === 'lag'
                                                         ? <div className="char-data-loading">Loading…</div>
                                                         : null}
@@ -460,7 +461,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                 <div className="char-data-lines">
                                                     {(accountState.charInfoLines ?? []).length > 0
                                                         ? (accountState.charInfoLines ?? []).map((line, i) => (
-                                                            <div key={i} className="char-data-line">{line}</div>
+                                                            <AccountAnsiLine key={i} line={line} />
                                                         ))
                                                         : accountState.charCapture?.type === 'info'
                                                             ? <div className="char-data-loading">Loading…</div>
@@ -471,7 +472,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                 <div className="char-data-lines">
                                                     {(accountState.charPracticeLines ?? []).length > 0
                                                         ? (accountState.charPracticeLines ?? []).map((line, i) => (
-                                                            <div key={i} className="char-data-line">{line}</div>
+                                                            <AccountAnsiLine key={i} line={line} />
                                                         ))
                                                         : accountState.charCapture?.type === 'practice'
                                                             ? <div className="char-data-loading">Loading…</div>

@@ -10,7 +10,9 @@ import { useUIStore } from '../../stores/useUIStore';
 import type { DrawerLine } from '../../types';
 import { extractMumeKeyword, isItemContainer } from '../../utils/gameUtils';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { audioManager } from '../../services/audio/AudioManager';
 import './PromptInventoryChips.css';
+
 
 type GearChipKind = 'worn' | 'inventory';
 
@@ -176,7 +178,9 @@ export const PromptInventoryChips: React.FC = () => {
         containerContents,
         executeCommand,
         parser,
-        setTarget
+        setTarget,
+        setPopoverState,
+        popoverState
     } = useGame();
     const { displayEqLines, displayInventoryLines } = useUI();
     const selectedTarget = useUIStore(s => s.selectedTarget);
@@ -209,9 +213,35 @@ export const PromptInventoryChips: React.FC = () => {
 
     const selectChip = (event: React.MouseEvent<HTMLButtonElement>, chip: GearChip) => {
         event.stopPropagation();
-        triggerHaptic?.(12);
         const currentTarget = useUIStore.getState().selectedTarget;
-        const isSame = currentTarget?.id === chip.menuEntityId;
+        const isAlreadySelected = currentTarget?.id === chip.menuEntityId;
+
+        if (isAlreadySelected) {
+            const el = event.currentTarget;
+            const rect = el.getBoundingClientRect();
+            if (popoverState?.entityId === chip.menuEntityId && popoverState.setId === chip.category) {
+                setPopoverState(null);
+                triggerHaptic?.(10);
+            } else {
+                setPopoverState({
+                    x: rect.right,
+                    y: rect.top + rect.height / 2,
+                    setId: chip.category,
+                    category: chip.category,
+                    context: chip.context,
+                    entityId: chip.menuEntityId,
+                    accentColor: objectColor,
+                    menuDisplay: 'list',
+                    preferSide: 'right',
+                });
+                audioManager.playEffect('actionmenu');
+                triggerHaptic?.(20);
+            }
+            return;
+        }
+
+        audioManager.playEffect('target', { skipJitter: true });
+        triggerHaptic?.(12);
         toggleObjectSelection({
             id: chip.menuEntityId,
             setId: chip.category,
@@ -220,7 +250,7 @@ export const PromptInventoryChips: React.FC = () => {
             accentColor: objectColor,
             menuDisplay: 'list',
         });
-        setTarget(isSame ? null : chip.context);
+        setTarget(chip.context);
     };
 
     const toggleContainer = (event: React.MouseEvent<HTMLButtonElement>, chip: GearChip, lines: DrawerLine[]) => {

@@ -166,6 +166,7 @@ export interface ActivePrompt {
 
 export interface ParleyState {
     active: boolean;
+    mode?: 'command' | 'parley' | 'help';
     command: 'tell' | 'whisper' | 'ask' | 'say' | 'narrate' | 'shout' | 'yell' | 'sing' | 'none';
     target: string | null;
     message: string;
