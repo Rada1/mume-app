@@ -69,8 +69,9 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const {
         triggerHaptic, executeCommand, theme, btn, joystick, playClickSound,
         setIsTrackpadModifierActive, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode,
-        selectedObjectIds, lighting, inCombat
+        selectedObjectIds, lighting, inCombat, viewport
     } = useGame();
+    const { isLandscape } = viewport;
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
     const { setPopoverState, popoverState, ui } = useUI();
@@ -181,9 +182,15 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         const w = canvasRef.current.clientWidth;
         const h = canvasRef.current.clientHeight;
         cameraRef.current.x = (playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2) - (w / (2 * zoom));
-        cameraRef.current.y = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));
+        let targetY = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));
+        if (isMobile && !isLandscape) {
+            // Apply the same offset in snapCameraToPlayer
+            const topOverlayHeight = 160;
+            targetY -= (topOverlayHeight / 2) / zoom;
+        }
+        cameraRef.current.y = targetY;
         cameraRef.current.zoom = zoom;
-    }, [playerPosRef, canvasRef, cameraRef]);
+    }, [playerPosRef, canvasRef, cameraRef, isMobile, isLandscape]);
 
     useEffect(() => {
         if (!isMobile) return;
@@ -287,6 +294,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 camera={cameraRef}
                 isDarkMode={isDarkMode}
                 isMobile={isMobile}
+                isLandscape={isLandscape}
                 imagesRef={imagesRef}
                 characterName={characterName ?? null}
                 playerPosRef={playerPosRef}

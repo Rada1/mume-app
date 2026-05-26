@@ -5,9 +5,16 @@
 
 import React from 'react';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
+import { DrawerType } from '../../../context/GameContext/types';
 import { UnifiedDrawerContent } from '../../Drawers/UnifiedDrawerContent';
 
-export const GutterDrawerPanel: React.FC = () => {
+interface GutterDrawerPanelProps {
+    // When provided, render this drawer's content instead of ui.drawer. Lets the panel
+    // keep showing the previous drawer while it slides out after ui.drawer becomes 'none'.
+    displayDrawer?: DrawerType;
+}
+
+export const GutterDrawerPanel: React.FC<GutterDrawerPanelProps> = ({ displayDrawer }) => {
     const {
         triggerHaptic,
         executeCommand,
@@ -37,7 +44,8 @@ export const GutterDrawerPanel: React.FC = () => {
     } = useUI();
     const { groupMembers } = useVitals();
 
-    if (ui.drawer === 'none') return null;
+    const effectiveDrawer = displayDrawer ?? ui.drawer;
+    if (effectiveDrawer === 'none') return null;
 
     return (
         <div className="gutter-drawer-container gutter-panel-card" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
@@ -50,7 +58,7 @@ export const GutterDrawerPanel: React.FC = () => {
                 onPointerCancel={handleLogPointerUp}
             >
                 <UnifiedDrawerContent
-                    drawer={ui.drawer}
+                    drawer={effectiveDrawer}
                     gearTab={gearTab}
                     setGearTab={setGearTab}
                     playersTab={playersTab}

@@ -16,6 +16,7 @@ interface MapCanvasProps {
     camera: React.MutableRefObject<{ x: number, y: number, zoom: number }>;
     isDarkMode: boolean;
     isMobile: boolean;
+    isLandscape?: boolean;
     imagesRef: React.MutableRefObject<Record<string, HTMLImageElement>>;
     characterName: string | null;
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>;
@@ -92,7 +93,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
 
     const {
         rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
-        camera, isDarkMode, isMobile, imagesRef, characterName,
+        camera, isDarkMode, isMobile, isLandscape, imagesRef, characterName,
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
@@ -169,7 +170,9 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         walkTargetId: props.walkTargetId,
         walkPath: props.walkPath,
         activeMapFilter: props.activeMapFilter,
-        combatAnimationActive
+        combatAnimationActive,
+        isMobile,
+        isLandscape
     });
 
     // Parallax: update when mapper state wakes instead of running a permanent RAF loop.

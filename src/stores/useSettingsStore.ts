@@ -53,8 +53,8 @@ export const DEFAULT_MAP_BACKGROUND_VISUALS: MapBackgroundVisualAdjustments = {
     tintOpacity: 0.46,
 };
 
-const DEFAULT_FONT_FAMILY = "'Roboto Mono', monospace";
-const LEGACY_DEFAULT_FONT_FAMILY = "'Iosevka', monospace";
+const DEFAULT_FONT_FAMILY = "'Iosevka', monospace";
+const LEGACY_DEFAULT_FONT_FAMILY = "'Roboto Mono', monospace";
 
 interface SettingsState {
     connectionUrl: string;
@@ -420,7 +420,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 20,
+            version: 21,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -587,6 +587,12 @@ export const useSettingsStore = create<SettingsState>()(
                 if (version < 19) {
                     if (persistedState.accentColor === '#f48f3c') {
                         persistedState.accentColor = '#d4aa00';
+                    }
+                }
+
+                if (version < 21) {
+                    if (!persistedState.fontFamily || persistedState.fontFamily === "'Roboto Mono', monospace") {
+                        persistedState.fontFamily = "'Iosevka', monospace";
                     }
                 }
 

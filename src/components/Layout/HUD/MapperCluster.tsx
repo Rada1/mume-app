@@ -3,7 +3,7 @@ import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
-import { GameContextType, UIContextType } from '../../../context/GameContext/types';
+import { DrawerType, GameContextType, UIContextType } from '../../../context/GameContext/types';
 import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock } from 'lucide-react';
 
 
@@ -70,6 +70,15 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
     // Mobile DOCKED (Gutter) Mode
     const isReplaying = (useGame() as GameContextType).sessionMode === 'replay';
+
+    // Remember the most recent non-'none' drawer so the drawer slide keeps rendering
+    // its content while sliding out of view (otherwise the panel would go blank mid-animation).
+    const [lastShownDrawer, setLastShownDrawer] = useState<DrawerType>(
+        ui.drawer !== 'none' ? ui.drawer : 'status'
+    );
+    useEffect(() => {
+        if (ui.drawer !== 'none') setLastShownDrawer(ui.drawer);
+    }, [ui.drawer]);
 
 
     // --- Sticky options for smooth creation-screen transitions ---
@@ -836,97 +845,127 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 gap: '0'
             }}
         >
-            {/* Map Area at the TOP */}
+            {/* Horizontal slide-track holding [drawer | map] so switching between
+                them animates with the same swipe transition used between drawers. */}
             <div
-                className="mobile-mapper-touch-surface gutter-panel-card"
+                className="mobile-gutter-slide-viewport"
                 style={{
-                    display: ui.mapExpanded || ui.drawer !== 'none' ? 'block' : 'none',
-                    pointerEvents: ui.mapExpanded && ui.drawer === 'none' ? 'auto' : 'none',
-                    opacity: ui.mapExpanded || ui.drawer !== 'none' ? 1 : 0,
-                    touchAction: 'none',
-                    position: 'absolute',
-                    inset: '0',
-                    zIndex: 0
+                    position: 'relative',
+                    flex: 1,
+                    minHeight: 0,
+                    overflow: 'hidden'
                 }}
             >
-                
-                {/* Header Group: Room Info + Tactical Buttons */}
-                <div style={{
-                    position: 'absolute',
-                    top: '0',
-                    left: '0',
-                    right: '0',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    zIndex: 2800,
-                    pointerEvents: 'none'
-                }}>
-                    <div style={{ width: '100%' }}>
-                        <MapperRoomInfo />
-                    </div>
-                    <RoomChipRows />
-                    
-                    {/* Persistent Tactical Buttons - now below the room card */}
+                <div
+                    className="mobile-gutter-slide-track"
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        width: '200%',
+                        height: '100%',
+                        transform: isShown ? 'translateX(-50%)' : 'translateX(0)',
+                        transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                    }}
+                >
+                    {/* Drawer slide (left half) */}
                     <div
-                        className="mobile-tactical-buttons-persistent"
                         style={{
-                            position: 'relative',
-                            marginTop: '10px', // Now pushes down naturally relative to room card
-                            zIndex: 20,
-                            overflow: 'visible',
-                            pointerEvents: 'auto'
+                            width: '50%',
+                            height: '100%',
+                            flexShrink: 0,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            minHeight: 0,
+                            pointerEvents: ui.drawer !== 'none' ? 'auto' : 'none'
                         }}
                     >
-                        <LineCluster
-                            isEditMode={isEditMode}
-                            handleDragStart={handleDragStart}
-                            buttons={btn.buttons}
-                            selectedButtonIds={btn.selectedButtonIds}
-                            dragState={dragState}
-                            handleButtonClick={handleButtonClick}
-                            wasDraggingRef={wasDraggingRef}
-                            triggerHaptic={triggerHaptic}
-                            setPopoverState={setPopoverState}
-                            setEditingButtonId={btn.setEditingButtonId}
-                            setSelectedIds={btn.setSelectedIds}
-                            activePrompt={activePrompt}
-                            executeCommand={executeCommand}
-                            setCommandPreview={setCommandPreview}
+                        <GutterDrawerPanel displayDrawer={lastShownDrawer} />
+                    </div>
+
+                    {/* Map slide (right half) */}
+                    <div
+                        className="mobile-mapper-touch-surface gutter-panel-card"
+                        style={{
+                            width: '50%',
+                            height: '100%',
+                            flexShrink: 0,
+                            position: 'relative',
+                            pointerEvents: isShown ? 'auto' : 'none',
+                            touchAction: 'none'
+                        }}
+                    >
+                        {/* Header Group: Room Info + Tactical Buttons */}
+                        <div style={{
+                            position: 'absolute',
+                            top: '0',
+                            left: '0',
+                            right: '0',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            zIndex: 2800,
+                            pointerEvents: 'none'
+                        }}>
+                            <div style={{ width: '100%' }}>
+                                <MapperRoomInfo />
+                            </div>
+                            <RoomChipRows />
+
+                            {/* Persistent Tactical Buttons - now below the room card */}
+                            <div
+                                className="mobile-tactical-buttons-persistent"
+                                style={{
+                                    position: 'relative',
+                                    marginTop: '10px',
+                                    zIndex: 20,
+                                    overflow: 'visible',
+                                    pointerEvents: 'auto'
+                                }}
+                            >
+                                <LineCluster
+                                    isEditMode={isEditMode}
+                                    handleDragStart={handleDragStart}
+                                    buttons={btn.buttons}
+                                    selectedButtonIds={btn.selectedButtonIds}
+                                    dragState={dragState}
+                                    handleButtonClick={handleButtonClick}
+                                    wasDraggingRef={wasDraggingRef}
+                                    triggerHaptic={triggerHaptic}
+                                    setPopoverState={setPopoverState}
+                                    setEditingButtonId={btn.setEditingButtonId}
+                                    setSelectedIds={btn.setSelectedIds}
+                                    activePrompt={activePrompt}
+                                    executeCommand={executeCommand}
+                                    setCommandPreview={setCommandPreview}
+                                    heldButton={heldButton}
+                                    setHeldButton={setHeldButton}
+                                    joystick={joystick}
+                                    target={target}
+                                    isGridEnabled={btn.isGridEnabled}
+                                    gridSize={btn.gridSize}
+                                    setActiveSet={btn.setActiveSet}
+                                    setButtons={btn.setButtons}
+                                    isMobile={isMobile}
+                                />
+                            </div>
+                        </div>
+
+                        <Mapper
+                            ref={mapperRef}
+                            isDesignMode={isEditMode}
+                            characterName={characterName}
+                            isMobile={true}
+                            isExpanded={isExpanded}
+                            setIsMinimized={(min) => {
+                                handleTabClick('none' as any);
+                            }}
                             heldButton={heldButton}
                             setHeldButton={setHeldButton}
-                            joystick={joystick}
-                            target={target}
-                            isGridEnabled={btn.isGridEnabled}
-                            gridSize={btn.gridSize}
-                            setActiveSet={btn.setActiveSet}
-                            setButtons={btn.setButtons}
-                            isMobile={isMobile}
+                            setCommandPreview={setCommandPreview}
                         />
                     </div>
                 </div>
-
-                <Mapper
-                    ref={mapperRef}
-                    isDesignMode={isEditMode}
-                    characterName={characterName}
-                    isMobile={true}
-                    isExpanded={isExpanded}
-                    setIsMinimized={(min) => {
-                        handleTabClick('none' as any);
-                    }}
-                    heldButton={heldButton}
-                    setHeldButton={setHeldButton}
-                    setCommandPreview={setCommandPreview}
-                />
-
-
             </div>
-
-            {/* Drawer Area */}
-            {!isShown && ui.drawer !== 'none' && (
-                <GutterDrawerPanel />
-            )}
 
             {/* Command Bar at the BOTTOM of the gutter */}
             <div

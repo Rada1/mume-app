@@ -10,11 +10,12 @@ interface QuickChipProps {
     id: string;
     label: string;
     command: string;
+    hotkey?: string;
     onFire: () => void;
     onRemove: () => void;
 }
 
-const QuickChip: React.FC<QuickChipProps> = ({ label, command, onFire, onRemove }) => {
+const QuickChip: React.FC<QuickChipProps> = ({ label, command, hotkey, onFire, onRemove }) => {
     const [offsetX, setOffsetX] = useState(0);
     const [isDismissing, setIsDismissing] = useState(false);
     const pointerStartX = useRef<number | null>(null);
@@ -73,7 +74,7 @@ const QuickChip: React.FC<QuickChipProps> = ({ label, command, onFire, onRemove 
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onClick={handleClick}
-            title={command}
+            title={hotkey ? `[${hotkey}] ${command}` : command}
         >
             {label}
         </button>
@@ -121,6 +122,28 @@ export const QuickButtonBar: React.FC = () => {
         executeCommand(command);
     }, [triggerHaptic, executeCommand]);
 
+    // Global hotkey F1-F12 mapping
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            const key = e.key;
+            if (key.length === 2 && key[0] === 'F') {
+                const fNum = parseInt(key.substring(1), 10);
+                if (fNum >= 1 && fNum <= 12) {
+                    const btnIndex = fNum - 1;
+                    if (btnIndex < quickButtons.length) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const btn = quickButtons[btnIndex];
+                        handleFire(btn.command);
+                    }
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [quickButtons, handleFire]);
+
     // Autofocus command input when form opens
     useEffect(() => {
         if (isCreating && commandInputRef.current) {
@@ -144,6 +167,16 @@ export const QuickButtonBar: React.FC = () => {
         <div className="quick-button-bar">
             {isCreating && (
                 <div className="quick-create-form" ref={formRef}>
+                    <div style={{
+                        fontSize: '0.55rem',
+                        color: 'rgba(255, 255, 255, 0.4)',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        padding: '1px 2px 3px 2px',
+                        fontFamily: 'var(--font-mono, monospace)'
+                    }}>
+                        Hotkey: F{quickButtons.length + 1}
+                    </div>
                     <input
                         className="quick-create-input quick-create-input--label"
                         type="text"
@@ -183,16 +216,20 @@ export const QuickButtonBar: React.FC = () => {
                 </div>
             )}
             <div className="quick-chip-row">
-                {[...quickButtons].reverse().map(btn => (
-                    <QuickChip
-                        key={btn.id}
-                        id={btn.id}
-                        label={btn.label}
-                        command={btn.command}
-                        onFire={() => handleFire(btn.command)}
-                        onRemove={() => removeQuickButton(btn.id)}
-                    />
-                ))}
+                {[...quickButtons].reverse().map(btn => {
+                    const origIndex = quickButtons.findIndex(b => b.id === btn.id);
+                    return (
+                        <QuickChip
+                            key={btn.id}
+                            id={btn.id}
+                            label={btn.label}
+                            command={btn.command}
+                            hotkey={origIndex !== -1 ? `F${origIndex + 1}` : undefined}
+                            onFire={() => handleFire(btn.command)}
+                            onRemove={() => removeQuickButton(btn.id)}
+                        />
+                    );
+                })}
                 <button
                     className="quick-add-btn"
                     onClick={openCreate}

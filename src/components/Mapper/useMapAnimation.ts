@@ -34,13 +34,16 @@ interface AnimationProps {
     walkPath?: string[];
     activeMapFilter?: string | null;
     combatAnimationActive?: boolean;
+    isMobile?: boolean;
+    isLandscape?: boolean;
 }
 
 export const useMapAnimation = ({
     drawMap, rooms, markers, currentRoomId, isDragging, renderVersion,
     canvasRef, camera, playerPosRef, playerTrailRef, getDPR, marquee, autoCenter, 
     stableRoomsRef, stableRoomIdRef, stableMarkersRef, firstExploredAtRef, preloadedCoordsRef,
-    preMoveRef, walkTargetId, walkPath, isDraggingRef, activeMapFilter, combatAnimationActive
+    preMoveRef, walkTargetId, walkPath, isDraggingRef, activeMapFilter, combatAnimationActive,
+    isMobile, isLandscape
 }: AnimationProps) => {
     const requestRef = useRef<number | null>(null);
     const tickRef = useRef<(() => boolean) | null>(null);
@@ -108,7 +111,14 @@ export const useMapAnimation = ({
             }
             const zoom = camera.current.zoom || 1;
             const targetCamX = (playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2) - (w / (2 * zoom));
-            const targetCamY = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));
+            let targetCamY = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));
+
+            if (isMobile && !isLandscape) {
+                // Offset camera Y upward by half the top overlay height (~160px) in portrait mobile
+                // This shifts the world drawing down, placing the player room centered in the visible area below the tactical buttons.
+                const topOverlayHeight = 160;
+                targetCamY -= (topOverlayHeight / 2) / zoom;
+            }
 
             const cdx = targetCamX - camera.current.x;
             const cdy = targetCamY - camera.current.y;

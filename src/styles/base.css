@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     /* Common variables */
     --accent: #d4aa00;
     --accent-rgb: 212, 170, 0;
@@ -82,8 +82,8 @@
 
 @media (min-width: 1025px) {
     :root {
-        --font-main: 'Roboto Mono', monospace;
-        --font-mono: 'Roboto Mono', monospace;
+        --font-main: 'Iosevka', monospace;
+        --font-mono: 'Iosevka', monospace;
     }
 }
 

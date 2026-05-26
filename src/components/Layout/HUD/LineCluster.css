@@ -1,4 +1,4 @@
-﻿.line-cluster {
+.line-cluster {
     display: flex;
     gap: 8px;
     align-items: center;
@@ -121,15 +121,35 @@
     flex-shrink: 0;
 }
 
+.line-cluster .line-cluster-action-menu {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    border-radius: 0 !important;
+    transform: rotate(45deg) !important;
+}
+
+.line-cluster .line-cluster-action-menu .action-menu-button__icon {
+    transform: rotate(-45deg) !important;
+    display: inline-block;
+}
+
 .line-cluster-step {
     display: contents;
 }
 
 @keyframes tactical-line-cascade-glow {
-    0%   { box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1); border-color: rgba(232, 176, 32, 0.48); }
-    25%  { box-shadow: 0 0 7px rgba(212, 170, 0, 0.45), 0 0 18px rgba(212, 170, 0, 0.32), inset 0 0 5px rgba(212, 170, 0, 0.08); border-color: rgba(232, 176, 32, 0.78); }
-    50%  { box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1); border-color: rgba(232, 176, 32, 0.48); }
-    100% { box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1); border-color: rgba(232, 176, 32, 0.48); }
+    0%, 100% {
+        opacity: 0.1;
+        box-shadow: 0 0 4px rgba(232, 176, 32, 0.15), 0 0 10px rgba(232, 176, 32, 0.08);
+        border-color: rgba(232, 176, 32, 0.22);
+    }
+    50% {
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(232, 176, 32, 0.55), 0 0 24px rgba(232, 176, 32, 0.35), inset 0 0 4px rgba(232, 176, 32, 0.1);
+        border-color: rgba(232, 176, 32, 0.85);
+    }
 }
 
 .tactical-line-wrapper .line-btn::after,
@@ -142,18 +162,20 @@
     box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.16s ease;
+    transition: opacity 0.3s ease;
 }
 
 .tactical-line-wrapper .line-cluster-action-menu {
     position: relative;
+    animation: none !important;
+    color: rgba(255, 255, 255, 0.72) !important;
 }
 
 .tactical-line-wrapper.is-targeting .line-btn::after,
 .tactical-line-wrapper.is-targeting .line-cluster-action-menu:not(.is-disabled)::after {
-    opacity: 1;
     animation: tactical-line-cascade-glow 3s ease-in-out infinite;
     animation-delay: var(--cascade-delay, 0s);
+    animation-fill-mode: backwards;
 }
 
 .tactical-line-wrapper .line-btn {
@@ -317,6 +339,17 @@
     min-height: 16px !important;
 }
 
+.mobile-tactical-buttons-persistent .line-cluster .line-cluster-action-menu {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+}
+
+.mobile-tactical-buttons-persistent .line-cluster .line-cluster-action-menu .action-menu-button__icon {
+    font-size: 0.6rem !important;
+}
+
 .mobile-tactical-buttons-persistent .line-cluster .custom-btn .button-icon {
     font-size: 0.6rem !important;
 }
@@ -404,6 +437,30 @@
     min-width: 22px !important;
     min-height: 22px !important;
     transition: transform 0.14s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.14s ease !important;
+}
+
+.desktop-tactical-buttons-persistent .line-cluster .line-cluster-action-menu {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    min-height: 22px !important;
+    border-radius: 0 !important;
+    transform: rotate(45deg) !important;
+    transition: transform 0.14s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.14s ease !important;
+}
+
+.desktop-tactical-buttons-persistent .line-cluster .line-cluster-action-menu:not(.is-disabled):hover {
+    transform: rotate(45deg) scale(1.6) !important;
+    z-index: 30 !important;
+}
+
+.desktop-tactical-buttons-persistent .line-cluster .line-cluster-action-menu:not(.is-disabled):active {
+    transform: rotate(45deg) scale(2.0) !important;
+    z-index: 30 !important;
+}
+
+.desktop-tactical-buttons-persistent .line-cluster .line-cluster-action-menu .action-menu-button__icon {
+    font-size: 0.78rem !important;
 }
 
 .desktop-tactical-buttons-persistent .line-cluster .custom-btn:hover {

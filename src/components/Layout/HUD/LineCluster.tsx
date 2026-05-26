@@ -114,7 +114,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
                     className="line-cluster-step"
                     style={{ '--cascade-delay': `${sortedButtons.length * 0.12}s` } as React.CSSProperties}
                 >
-                    <ActionMenuButton triggerHaptic={triggerHaptic} className="line-cluster-action-menu" />
+                    <ActionMenuButton triggerHaptic={triggerHaptic} className="line-btn line-cluster-action-menu" />
                 </div>
             </div>
         </div>

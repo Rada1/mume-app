@@ -319,29 +319,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Appearance</label>
 
-                {/* Client Theme */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Client Theme</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Switch between clean dark and light palettes.</div>
-                    </div>
-                    <div style={{ display: 'flex', backgroundColor: 'var(--input-bg)', borderRadius: '20px', padding: '2px', border: '1px solid var(--border-modal)' }}>
-                        {(['dark', 'light'] as const).map(t => (
-                            <button
-                                key={t}
-                                onClick={() => setTheme(t)}
-                                style={{
-                                    padding: '4px 12px', borderRadius: '18px', border: 'none', cursor: 'pointer',
-                                    backgroundColor: theme === t ? 'var(--accent)' : 'transparent',
-                                    color: theme === t ? '#000' : 'var(--text-primary)',
-                                    fontSize: '0.8rem', fontWeight: 'bold',
-                                    textTransform: 'capitalize'
-                                }}
-                            >{t}</button>
-                        ))}
-                    </div>
-                </div>
-
                 {/* Main Font Family */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
