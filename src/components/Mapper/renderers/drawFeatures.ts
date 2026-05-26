@@ -843,7 +843,7 @@ export const drawFeatures = (
                     `m_${vnum}` === rCtx.activeId || 
                     vnum === `m_${rCtx.activeId}`
                 );
-                if (!isActive && isExplored && rCtx.firstExploredAtRef.current[vnum]) {
+                if (!isActive && isExplored && rCtx.firstExploredAtRef.current[vnum] && !unveilMap) {
                     const elapsed = rCtx.now - rCtx.firstExploredAtRef.current[vnum];
                     const animDur = 800;
                     if (elapsed < animDur) {
@@ -1057,7 +1057,7 @@ export const drawFeatures = (
                     `m_${vnum}` === rCtx.activeId || 
                     vnum === `m_${rCtx.activeId}`
                 );
-                if (!isActive && isExplored && rCtx.firstExploredAtRef.current[vnum]) {
+                if (!isActive && isExplored && rCtx.firstExploredAtRef.current[vnum] && !unveilMap) {
                     const elapsed = rCtx.now - rCtx.firstExploredAtRef.current[vnum];
                     const animDur = 800;
                     if (elapsed < animDur) {

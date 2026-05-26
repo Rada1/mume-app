@@ -10,7 +10,7 @@
     flex-direction: column;
     background: var(--bg-app);
     perspective: 1200px;
-    --mobile-gutter-height: 140px;
+    --mobile-gutter-height: 110px;
 }
 
 

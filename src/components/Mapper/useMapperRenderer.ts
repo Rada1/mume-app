@@ -14,7 +14,7 @@ import { buildLocalSpatialIndex, didLocalLayoutChange } from './mapLayoutIndex';
 const LIGHTING_COLORS: Record<string, [number, number, number, number]> = {
     sun:        [255, 248, 200, 0.09],
     moon:       [130, 170, 255, 0.06],
-    artificial: [255, 0,   0,   0.06],
+    artificial: [180, 255, 200, 0.06],
     dark:       [0,   0,   0,   0],
     none:       [0,   0,   0,   0],
     normal:     [0,   0,   0,   0],

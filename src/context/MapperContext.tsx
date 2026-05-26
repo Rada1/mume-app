@@ -161,7 +161,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const preMoveRef = useRef<{ dir: string, targetId: string, time: number } | null>(null);
     const clientPredictionsRef = useRef<MapperPrediction[]>([]);
     const predictionSeqRef = useRef(0);
-    const lastReconciledRoomIdRef = useRef<string | null>(null);
+    const recentlyReconciledRef = useRef<Set<string>>(new Set());
     const lastDetectedTerrainRef = useRef<string | null>(null);
     const discoverySourceRef = useRef<string | null>(null);
     const firstExploredAtRef = useRef<Record<string, number>>({});
@@ -361,21 +361,39 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }, [preloadedCoordsRef, roomsRef]);
 
     const clearPrediction = useCallback((confirmedRoomId?: string | null) => {
-        // Idempotency guard: room-info and move-confirmed events both fire per move and both
-        // call this with the same confirmed room id. Without this, the second call sees the
-        // already-reconciled queue, can't find the id, and chews off an extra prediction head.
+        // Idempotency guard: tracks every room ID consumed from the prediction queue.
+        // This blocks both duplicate same-event calls (move-confirmed + room-info for the
+        // same move) AND out-of-order late GMCP packets that arrive after the queue has
+        // already advanced past that room — the previous single-ID guard only blocked
+        // the most-recently reconciled room, so a late GMCP for room B would slip through
+        // once room C had been reconciled, incorrectly dropping the queue head.
         const normalizedConfirmed = confirmedRoomId ? String(confirmedRoomId).replace(/^m_/, '') : null;
-        if (normalizedConfirmed && lastReconciledRoomIdRef.current === normalizedConfirmed) {
+        if (normalizedConfirmed && recentlyReconciledRef.current.has(normalizedConfirmed)) {
             return;
         }
 
         const confirmedCoords = confirmedRoomId ? resolvePredictionCoords(confirmedRoomId) : null;
-        const result = reconcilePredictions(clientPredictionsRef.current, confirmedRoomId, confirmedCoords);
+        const prevQueue = clientPredictionsRef.current;
+        const result = reconcilePredictions(prevQueue, confirmedRoomId, confirmedCoords);
 
-        if (normalizedConfirmed) lastReconciledRoomIdRef.current = normalizedConfirmed;
+        if (result.changed) {
+            // Add every room consumed from the queue head to the guard set so that
+            // late duplicates for any of those rooms are suppressed.
+            const consumedCount = prevQueue.length - result.predictions.length;
+            for (let i = 0; i < consumedCount; i++) {
+                const id = String(prevQueue[i].toId || '').replace(/^m_/, '');
+                if (id) recentlyReconciledRef.current.add(id);
+            }
+        } else if (normalizedConfirmed) {
+            recentlyReconciledRef.current.add(normalizedConfirmed);
+        }
 
         if (!result.changed) {
-            preMoveRef.current = null;
+            // Only clear preMoveRef when the queue is truly empty — not when reconciliation
+            // was a no-op because no ID/coords were provided (text-based move-confirmed
+            // before GMCP arrives). Clearing it prematurely kills the ghost animation
+            // while predictions are still waiting.
+            if (prevQueue.length === 0) preMoveRef.current = null;
             return;
         }
 
@@ -486,6 +504,9 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const wasQueueEmpty = clientPredictionsRef.current.length === 0;
             if (wasQueueEmpty) {
                 preMoveRef.current = { dir, targetId, time: createdAt };
+                // Fresh journey — clear the dedup guard so rooms visited on a previous
+                // run through this area aren't accidentally suppressed if revisited.
+                recentlyReconciledRef.current.clear();
             }
             if (showDebugEchoesRef.current) {
                 addMessageRef.current?.('system', `[MapperPredict] received ${dir} -> ${targetId}`);

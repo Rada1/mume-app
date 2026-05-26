@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, Download, Upload } from 'lucide-react';
 import { DEFAULT_MAP_TILE_VISUALS, useSettingsStore } from '../../stores/useSettingsStore';
 import { useGame } from '../../context/GameContext';
 import { useContext } from 'react';
@@ -211,6 +211,41 @@ const MapVisualSettings: React.FC = () => {
     const mapperContext = useContext(MapperContext);
     const preloaded = mapperContext?.preloadedCoordsRef?.current || {};
 
+    const importRef = React.useRef<HTMLInputElement>(null);
+
+    const handleExport = () => {
+        const data = JSON.stringify({ mapTileVisuals, mapBackgroundVisuals, zoneFilters }, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'mume-map-visuals.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    };
+
+    const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const parsed = JSON.parse(ev.target?.result as string);
+                if (parsed.mapTileVisuals) setMapTileVisuals(parsed.mapTileVisuals);
+                if (parsed.mapBackgroundVisuals) setMapBackgroundVisuals(parsed.mapBackgroundVisuals);
+                if (parsed.zoneFilters) {
+                    Object.entries(parsed.zoneFilters).forEach(([zone, config]: [string, any]) => {
+                        if (config.dark) setZoneFilter(zone, true, config.dark);
+                        if (config.light) setZoneFilter(zone, false, config.light);
+                    });
+                }
+            } catch {
+                alert('Invalid file — could not import map visuals.');
+            }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+    };
+
     const scannedZones = React.useMemo(() => {
         const BLACKLISTED_ZONES = new Set([
             'swanfleet',
@@ -279,9 +314,18 @@ const MapVisualSettings: React.FC = () => {
                         Adjust terrain tiles and the background image live while we search for the right mood.
                     </div>
                 </div>
-                <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={resetMapVisuals}>
-                    <RotateCcw size={15} /> Reset
-                </button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={handleExport}>
+                        <Download size={15} /> Export
+                    </button>
+                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => importRef.current?.click()}>
+                        <Upload size={15} /> Import
+                    </button>
+                    <input ref={importRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
+                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={resetMapVisuals}>
+                        <RotateCcw size={15} /> Reset
+                    </button>
+                </div>
             </div>
 
             <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: '8px 0', display: 'block' }}>MUME Tiles</label>

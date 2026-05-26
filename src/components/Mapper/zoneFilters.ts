@@ -68,7 +68,7 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
             wallColor: '#000000',
             roadColor: '#40424a',
             pathColor: '#35373d',
-            terrainColors: {},
+            terrainColors: { Building: '#686e8d' },
             doorColor: '#ff1900'
         },
         light: {

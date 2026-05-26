@@ -823,6 +823,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             } else {
                 ui.setMapExpanded(!ui.mapExpanded);
             }
+            playEffect('drawertab');
         },
         characterName: s.characterName,
         isRecording: s.userSession.recorder.isRecording,

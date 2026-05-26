@@ -1457,13 +1457,13 @@ export const drawTerrains = (
             const r = rooms[i];
             let alphaMul = 1.0;
             const exploredAt = r.vnum ? rCtx.firstExploredAtRef.current[r.vnum] : 0;
-            if (exploredAt) {
+            if (exploredAt && !rCtx.unveilMap) {
                 const elapsed = rCtx.now - exploredAt;
                 const animDur = 60;
                 if (elapsed < animDur) {
                     alphaMul = elapsed / animDur;
                     rCtx.triggerRender?.(); // Keep animating
-                    
+
                     const sourceDir = getSourceDirection(r.vnum, rCtx);
                     if (sourceDir) {
                         ctx.save();
@@ -1545,7 +1545,7 @@ export const drawTerrains = (
                 
                 ctx.save();
                 const exploredAt = r.vnum ? rCtx.firstExploredAtRef.current[r.vnum] : 0;
-                if (exploredAt) {
+                if (exploredAt && !rCtx.unveilMap) {
                     const elapsed = rCtx.now - exploredAt;
                     const animDur = 60;
                     if (elapsed < animDur) {
