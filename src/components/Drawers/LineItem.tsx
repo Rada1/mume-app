@@ -13,6 +13,8 @@ import { COLOR_OBJ } from '../../utils/categorizationUtils';
 import { getPracticeClassKey } from '../../utils/practiceClassCatalog';
 import { rememberLastPracticedSkill } from '../../utils/practiceLastSkillMemory';
 import { TokenRenderer } from '../Messages/TokenRenderer';
+import { isObjectSelected } from '../../utils/selectionUtils';
+import { useUIStore } from '../../stores/useUIStore';
 
 interface LineItemProps {
     line: DrawerLine;
@@ -59,6 +61,7 @@ export const LineItem: React.FC<LineItemProps> = ({
     parentNoun
 }) => {
     const objectColor = useSettingsStore(s => s.objectColor) || COLOR_OBJ;
+    const selectedObjectIds = useUIStore(s => s.selectedObjectIds);
     const depth = line.depth || 0;
     const isHeader = !!line.isHeader;
     const lineContext = line.context || extractMumeKeyword(line.text);
@@ -113,14 +116,18 @@ export const LineItem: React.FC<LineItemProps> = ({
 
             const objectName = match[1].replace(/<[^>]*>/g, '').replace(/\x1b\[[0-9;]*m/g, '').trim();
             const objectContext = line.context || extractMumeKeyword(objectName);
+            const entityId = line.entityId || line.stableId || line.id;
+            const itemCategory = parentNoun ? 'inline-container-item' : category;
+            const isSelected = entityId ? isObjectSelected(selectedObjectIds, entityId, itemCategory) : false;
+
             parts.push(
                 <span
                     key={`obj-${match.index}`}
-                    className="inline-btn"
-                    data-id={line.entityId || line.stableId || line.id}
+                    className={`inline-btn${isSelected ? ' selected' : ''}`}
+                    data-id={entityId}
                     data-cmd={parentNoun ? 'inline-container-item' : (line.cmd || category || 'inline-inventory')}
                     data-context={objectContext}
-                    data-category={parentNoun ? 'inline-container-item' : category}
+                    data-category={itemCategory}
                     data-action={isCommandLine ? 'command' : 'menu'}
                     data-from-drawer={isCommandLine ? 'true' : undefined}
                     data-parent-noun={parentNoun}
@@ -267,23 +274,30 @@ export const LineItem: React.FC<LineItemProps> = ({
                 >
                     {line.prefix && <span style={{ opacity: 0.6 }}>{line.prefix}</span>}
                     {line.isItem ? (
-                        <span
-                            className="inline-btn"
-                            data-id={line.entityId || line.stableId || line.id}
-                            data-cmd={parentNoun ? 'inline-container-item' : (line.cmd || category || 'inline-inventory')}
-                            data-context={lineContext}
-                            data-category={parentNoun ? 'inline-container-item' : category}
-                            data-action={isCommandLine ? 'command' : 'menu'}
-                            data-from-drawer={isCommandLine ? 'true' : undefined}
-                            data-parent-noun={parentNoun}
-                            style={{
-                                '--glow-color': objectColor,
-                                color: 'var(--glow-color)',
-                                fontWeight: 800
-                            } as React.CSSProperties}
-                        >
-                            {line.text}
-                        </span>
+                        (() => {
+                            const entityId = line.entityId || line.stableId || line.id;
+                            const itemCategory = parentNoun ? 'inline-container-item' : category;
+                            const isSelected = entityId ? isObjectSelected(selectedObjectIds, entityId, itemCategory) : false;
+                            return (
+                                <span
+                                    className={`inline-btn${isSelected ? ' selected' : ''}`}
+                                    data-id={entityId}
+                                    data-cmd={parentNoun ? 'inline-container-item' : (line.cmd || category || 'inline-inventory')}
+                                    data-context={lineContext}
+                                    data-category={itemCategory}
+                                    data-action={isCommandLine ? 'command' : 'menu'}
+                                    data-from-drawer={isCommandLine ? 'true' : undefined}
+                                    data-parent-noun={parentNoun}
+                                    style={{
+                                        '--glow-color': objectColor,
+                                        color: 'var(--glow-color)',
+                                        fontWeight: 800
+                                    } as React.CSSProperties}
+                                >
+                                    {line.text}
+                                </span>
+                            );
+                        })()
                     ) : (
                         <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html || line.text) }} />
                     )}

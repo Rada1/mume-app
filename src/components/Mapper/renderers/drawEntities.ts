@@ -8,7 +8,8 @@ import { COLOR_NPC, COLOR_PLAYER, COLOR_OBJ } from '../../../utils/categorizatio
 import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
 import { getMapOccupantTargets } from '../occupantTargets';
 import { isOpponentOccupant } from '../mapperOpponentUtils';
-import { isObjectSelected } from '../../../utils/selectionUtils';
+import { isObjectSelected, targetTextMatchesEntity } from '../../../utils/selectionUtils';
+import { drawPlayerZoomBeacon, drawGroupMemberZoomBeacon } from './playerBeacon';
 import type { GmcpOccupant, GroupMember } from '../../../types';
 
 type RoomAnchor = { x: number, y: number, z: number };
@@ -126,6 +127,10 @@ const getOccupantInitial = (name?: string) => {
     return cleanName ? cleanName.charAt(0).toUpperCase() : '';
 };
 
+const getRoomItemTargetText = (item: GmcpOccupant): string => (
+    item.keyword || item.name || item.short || item.shortdesc || item.desc || ''
+);
+
 const getMarkerTextColor = (color: string) => {
     const rgbMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
     if (!rgbMatch) return 'rgba(15, 15, 15, 0.92)';
@@ -189,12 +194,10 @@ const drawOccupantDot = (
     ctx.save();
     ctx.globalAlpha = alpha;
 
-    // 1. Soft-cornered square body
+    // 1. Soft-cornered square body (no shadow — too expensive per occupant per frame)
     const size = radius * 2;
     const corner = Math.max(1.5, radius * 0.35);
     ctx.fillStyle = 'rgba(15, 15, 15, 0.95)';
-    ctx.shadowColor = color;
-    ctx.shadowBlur = Math.max(4, 10 / camera.zoom) + extraGlow;
     ctx.beginPath();
     if (typeof (ctx as any).roundRect === 'function') {
         (ctx as any).roundRect(orbX - radius, orbY - radius, size, size, corner);
@@ -202,19 +205,23 @@ const drawOccupantDot = (
         ctx.rect(orbX - radius, orbY - radius, size, size);
     }
     ctx.fill();
-    ctx.shadowBlur = 0;
 
-    // 2. Border
-    const borderColor = isCombatant ? '#ef4444' : isTarget ? targetColor : isGroupMember ? GROUP_DOT_BORDER : (isHeldActive || isActive) ? color : 'rgba(255, 255, 255, 0.2)';
-    ctx.globalAlpha = isCombatant ? alpha : isTarget ? alpha : isHeldActive ? alpha * 0.7 : isActive ? alpha * 0.55 : alpha;
+    // 2. Border — keep glow only for target/combatant (high-signal cases)
+    const borderColor = isTarget ? targetColor : isCombatant ? '#ef4444' : isGroupMember ? GROUP_DOT_BORDER : (isHeldActive || isActive) ? color : 'rgba(255, 255, 255, 0.2)';
+    ctx.globalAlpha = isTarget ? alpha : isCombatant ? alpha : isHeldActive ? alpha * 0.7 : isActive ? alpha * 0.55 : alpha;
     ctx.strokeStyle = borderColor;
-    ctx.lineWidth = isCombatant ? Math.max(1.1, 1.7 / camera.zoom) : isTarget ? Math.max(0.8, 1.2 / camera.zoom) : isGroupMember ? Math.max(0.55, 0.9 / camera.zoom) : (isHeldActive || isActive) ? Math.max(0.55, 0.9 / camera.zoom) : 0.5;
-    ctx.shadowBlur = isCombatant ? (radius * (1.05 + combatPulse * 0.7)) + extraGlow : isTarget ? (radius * 0.8) + extraGlow : isGroupMember ? 3 : isHeldActive ? (radius * 0.6) + extraGlow : isActive ? (radius * 0.45) + extraGlow : 0;
-    ctx.shadowColor = borderColor;
+    ctx.lineWidth = isTarget ? Math.max(0.8, 1.2 / camera.zoom) : isCombatant ? Math.max(1.1, 1.7 / camera.zoom) : isGroupMember ? Math.max(0.55, 0.9 / camera.zoom) : (isHeldActive || isActive) ? Math.max(0.55, 0.9 / camera.zoom) : 0.5;
+    if (isTarget) {
+        ctx.shadowColor = borderColor;
+        ctx.shadowBlur = (radius * 0.8) + extraGlow;
+    } else if (isCombatant) {
+        ctx.shadowColor = borderColor;
+        ctx.shadowBlur = (radius * (1.05 + combatPulse * 0.7)) + extraGlow;
+    }
     ctx.stroke();
     ctx.restore();
 
-    // 3. Layered bloom initial
+    // 3. Initial — single flat draw (no layered bloom)
     if (initial) {
         ctx.save();
         ctx.globalAlpha = alpha;
@@ -222,14 +229,6 @@ const drawOccupantDot = (
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = color;
-        ctx.shadowColor = color;
-        ctx.shadowBlur = Math.max(2.5, 6 / camera.zoom);
-        ctx.fillText(initial, orbX, orbY);
-        ctx.shadowBlur = Math.max(5, 14 / camera.zoom);
-        ctx.globalAlpha = alpha * 0.55;
-        ctx.fillText(initial, orbX, orbY);
-        ctx.globalAlpha = alpha;
-        ctx.shadowBlur = 0;
         ctx.fillText(initial, orbX, orbY);
         ctx.restore();
     }
@@ -409,9 +408,10 @@ export const drawRoomOccupants = (
             }
 
             const isOpponent = !!rCtx.inCombat && isOpponentOccupant(occ, allOccupants, opponentId, opponentName);
+            const isSelectedTarget = targetTextMatchesEntity(rCtx.targetName, occ.commandTarget, occ.name);
             const isCombatant = isOpponent || (occ.id != null && combatantIds.has(String(occ.id)));
             const isGroupOcc = occ.ring === 'inner';
-            drawDot(orbX, orbY, occ.color, alpha, occ.name, occ.radius, anim, isOpponent, isOccupantActive(occ), isCombatant, isGroupOcc);
+            drawDot(orbX, orbY, occ.color, alpha, occ.name, occ.radius, anim, isOpponent || isSelectedTarget, isOccupantActive(occ), isCombatant, isGroupOcc);
 
             // Opponent tether. Name fallback is allowed only when it resolves to
             // exactly one visible occupant; duplicate names require GMCP ID.
@@ -447,11 +447,22 @@ export const drawRoomOccupants = (
         const itemY = py + (GRID_SIZE / 2) - 2;
 
         roomItems.forEach(item => {
+            const itemId = item.id != null ? `roomitems:${item.id}` : `roomitems:${getRoomItemTargetText(item)}`;
+            const isItemTargeted = targetTextMatchesEntity(rCtx.targetName, getRoomItemTargetText(item));
+            const isItemActive = isItemTargeted || isObjectSelected(activeEntityIds, itemId, 'cat-room-object');
             ctx.save();
             ctx.fillStyle = objectColor || COLOR_OBJ;
             ctx.shadowBlur = 4 + pulse * 2;
             ctx.shadowColor = objectColor || COLOR_OBJ;
             ctx.fillRect(startX, itemY, itemSize, itemSize);
+            if (isItemActive) {
+                const activeColor = isItemTargeted ? (rCtx.targetColor || '#facc15') : (objectColor || COLOR_OBJ);
+                ctx.strokeStyle = activeColor;
+                ctx.lineWidth = Math.max(0.7, 1.2 / camera.zoom);
+                ctx.shadowBlur = 6 + pulse * 3;
+                ctx.shadowColor = activeColor;
+                ctx.strokeRect(startX - 1 / camera.zoom, itemY - 1 / camera.zoom, itemSize + 2 / camera.zoom, itemSize + 2 / camera.zoom);
+            }
             ctx.restore();
             startX += itemSize + itemGap;
         });
@@ -548,6 +559,8 @@ export const drawEntities = (
     if (anchor && Math.abs(anchor.z - currentZ) < 1.0) {
         const px = anchor.x * GRID_SIZE + GRID_SIZE / 2, py = anchor.y * GRID_SIZE + GRID_SIZE / 2;
         const alpha = Math.max(0, 1 - Math.abs(anchor.z - currentZ));
+
+        drawPlayerZoomBeacon(rCtx, anchor, alpha);
 
         // 1. Current Room Highlight
         ctx.save();
@@ -773,6 +786,10 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
         // Skip — drawRoomOccupants handles group members in the player's current room
         if (prx !== undefined && rx === prx && ry === pry && rz === prz) return;
 
+        // Far-zoom beacon for group members not in the player's room (green, smaller than player beacon)
+        const memberFloorAlpha = Math.max(0, 1 - Math.abs(rz - currentZ));
+        drawGroupMemberZoomBeacon(rCtx, { x: rx, y: ry, z: rz }, memberFloorAlpha);
+
         // --- Calculate Petal Offset ---
         const index = occupants.indexOf(memberKey);
         const count = occupants.length;
@@ -990,9 +1007,7 @@ export const drawMarkers = (
 
             ctx.save();
             ctx.globalAlpha = 1.0;
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-            ctx.shadowBlur = 10 * sizeScale;
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
 
             const r = 4 * sizeScale;
             ctx.beginPath();
@@ -1013,17 +1028,6 @@ export const drawMarkers = (
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
 
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
-            ctx.shadowBlur = Math.max(3, 6 * sizeScale);
-            ctx.fillStyle = '#ffcc00';
-            ctx.fillText(marker.text, mx, labelY);
-
-            ctx.shadowColor = 'rgba(255, 204, 0, 0.65)';
-            ctx.shadowBlur = Math.max(4, 8 * sizeScale);
-            ctx.fillStyle = 'rgba(255, 204, 0, 0.92)';
-            ctx.fillText(marker.text, mx, labelY);
-
-            ctx.shadowBlur = 0;
             ctx.fillStyle = '#ffcc00';
             ctx.fillText(marker.text, mx, labelY);
         }

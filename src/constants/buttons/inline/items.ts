@@ -19,6 +19,8 @@ export const ITEM_BUTTONS = [
 
     // --- WEAPONS & ARMOR ---
     createButton({ id: 'btn-weapon-wield', label: 'Wield', command: 'wield %n', setId: 'inline-weapon', color: '#6366f1' }),
+    createButton({ id: 'btn-throw', label: 'Throw', command: 'throw %n', setId: 'inline-throwable', color: '#f43f5e' }),
+    createButton({ id: 'btn-use', label: 'Use', command: 'use %n', setId: 'inline-useable', color: '#10b981' }),
     // --- GENERIC OBJECTS ---
     createButton({ id: 'btn-get', label: 'Get', command: 'get %n', setId: 'inline-in-room-obj', color: '#f59e0b' }),
     createButton({ id: 'btn-obj-examine', label: 'Examine', command: 'examine %n', setId: 'inline-object', color: '#3b82f6', width: 100 }),
@@ -52,7 +54,7 @@ export const ITEM_BUTTONS = [
     createButton({ id: 'btn-worn-examine', label: 'Examine', command: 'examine %n', setId: 'cat-worn-object', color: '#3b82f6', width: 100 }),
     createButton({ id: 'btn-whet', label: 'Whet', command: 'whet %n', setId: 'inline-whetstone', color: '#64748b' }),
     createButton({ id: 'btn-recite', label: 'Recite', command: 'recite %n', setId: 'inline-scroll', color: '#8b5cf6' }),
-    createButton({ id: 'btn-draw', label: 'Draw', command: 'draw %n', setId: 'inline-drawable', color: '#6366f1' }),
+    createButton({ id: 'btn-draw', label: 'Draw', command: 'draw %n', setId: 'inline-sheath', color: '#6366f1' }),
     // --- CONTAINER ITEMS ---
     createButton({ id: 'btn-container-get-item', label: 'Get', command: 'get %n %p', setId: 'inline-container-item', color: '#f59e0b' })
 ];

@@ -17,6 +17,7 @@ import PromptCombatStatsLine from './PromptCombatStatsLine';
 import { PromptInventoryChips } from './PromptInventoryChips';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { DispositionSliderPopout, DispositionSliderConfig } from './DispositionSliderPopout';
+import { targetTextMatchesEntity } from '../../utils/selectionUtils';
 
 interface PromptBoxProps {
     processMessageHtml?: (html: string, mid: string, isRoomName: boolean, type?: string, isCombat?: boolean, side?: string) => string;
@@ -276,10 +277,12 @@ const PromptBox: FC<PromptBoxProps> = ({
     } = useGame();
     const { handleTabClick, setPopoverState, popoverState } = useUI();
     const enemyColor = useSettingsStore(state => state.enemyColor);
+    const targetColor = useSettingsStore(state => state.targetColor);
     const theme = useSettingsStore(state => state.theme);
     
     // --- Active View State Selectors ---
     const activeVitals = useActiveVitals();
+    const target = activeVitals.target;
     const hp = activeVitals.gmcpVitals.hp;
     const maxHp = activeVitals.gmcpVitals.maxHp;
     const mana = activeVitals.gmcpVitals.mana;
@@ -307,6 +310,7 @@ const PromptBox: FC<PromptBoxProps> = ({
     const [activeButtonRect, setActiveButtonRect] = useState<DOMRect | null>(null);
     const [showNumbers, setShowNumbers] = useState(false);
     const numbersTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     // Dynamic scaling linked directly to the authoritative log font size
     const nameFontSize = `var(--dynamic-log-size)`;
@@ -413,6 +417,12 @@ const PromptBox: FC<PromptBoxProps> = ({
         { id: 'alert', label: 'Alertness', value: alertness || 'normal', options: ALERT_OPTIONS, displayLabels: ALERT_LABELS }
     ]), [alertness, mood, spellSpeed]);
 
+    const handleBoxToggle = useCallback((e: React.MouseEvent) => {
+        if ((e.target as HTMLElement).closest('button')) return;
+        triggerHaptic(10);
+        setIsExpanded(prev => !prev);
+    }, [triggerHaptic]);
+
     const handleDispositionSelect = useCallback((id: DispositionSliderConfig['id'], val: string) => {
         if (id === 'mood') {
             setMood(val);
@@ -495,17 +505,20 @@ const PromptBox: FC<PromptBoxProps> = ({
 
     const renderOpponentInlineButton = () => {
         if (!opponentName || !opponentEntityId) return null;
-        const isActive = popoverState?.entityId === opponentEntityId;
+        const isActive = popoverState?.entityId === opponentEntityId || targetTextMatchesEntity(target, opponentName);
         return (
             <span
-                className={`inline-btn prompt-opponent-inline${isActive ? ' menu-active' : ''}`}
+                className={`inline-btn prompt-opponent-inline${isActive ? ' menu-active is-target' : ''}`}
                 data-action="menu"
                 data-category="cat-enemy"
                 data-cmd="cat-enemy"
                 data-context={opponentName}
                 data-id={opponentEntityId}
                 data-menu-display="list"
-                style={{ '--glow-color': opponentColor || enemyColor } as React.CSSProperties}
+                style={{
+                    '--glow-color': opponentColor || enemyColor,
+                    '--target-color': targetColor
+                } as React.CSSProperties & Record<'--glow-color' | '--target-color', string>}
                 onClick={handleOpponentClick}
             >
                 {opponentName}
@@ -514,8 +527,8 @@ const PromptBox: FC<PromptBoxProps> = ({
     };
 
     return (
-        <div className="prompt-box-container" id="prompt-box" style={{ '--prompt-name-font-size': nameFontSize } as any}>
-            <div className="prompt-box-content">
+        <div className={`prompt-box-container${isExpanded ? ' is-expanded' : ''}`} id="prompt-box" style={{ '--prompt-name-font-size': nameFontSize } as any}>
+            <div className="prompt-box-content" onClick={handleBoxToggle}>
                 {/* Names Row — only shown in combat */}
                 <div className="prompt-vitals-row-ascii">
                     {/* Player Side */}
@@ -647,7 +660,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                     </div>
                 </div>
 
-                <PromptInventoryChips />
+                {isExpanded && <PromptInventoryChips />}
 
                 {activeSlider === 'pos' && activeButtonRect && (
                     <CombatSliderPopout 

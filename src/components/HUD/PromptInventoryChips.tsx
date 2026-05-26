@@ -11,6 +11,8 @@ import type { DrawerLine } from '../../types';
 import { extractMumeKeyword, isItemContainer } from '../../utils/gameUtils';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { audioManager } from '../../services/audio/AudioManager';
+import { useObjectDragCommands } from '../../hooks/useObjectDragCommands';
+import { targetTextMatchesEntity } from '../../utils/selectionUtils';
 import './PromptInventoryChips.css';
 
 
@@ -26,7 +28,7 @@ interface GearChip {
     line: DrawerLine;
 }
 
-type ChipVars = React.CSSProperties & Record<'--prompt-object-color', string>;
+type ChipVars = React.CSSProperties & Record<'--prompt-object-color' | '--target-color', string>;
 
 const SLOT_LABEL_MAP: Record<string, string> = {
     '<wielded>':              'wielded',
@@ -170,6 +172,14 @@ const withDuplicateOrdinals = (chips: GearChip[]): GearChip[] => {
     });
 };
 
+const getChipCommandNoun = (chip: GearChip): string => (
+    chip.context
+);
+
+const isChipTargeted = (chip: GearChip, selectedTargetId: string | undefined, target: string | null | undefined): boolean => (
+    selectedTargetId === chip.menuEntityId || targetTextMatchesEntity(target, chip.context, chip.label)
+);
+
 export const PromptInventoryChips: React.FC = () => {
     const {
         triggerHaptic,
@@ -179,14 +189,18 @@ export const PromptInventoryChips: React.FC = () => {
         executeCommand,
         parser,
         setTarget,
+        target,
         setPopoverState,
         popoverState
     } = useGame();
     const { displayEqLines, displayInventoryLines } = useUI();
     const selectedTarget = useUIStore(s => s.selectedTarget);
     const toggleObjectSelection = useUIStore(s => s.toggleObjectSelection);
+    const objectDragState = useUIStore(s => s.objectDragState);
     const objectColor = useSettingsStore(state => state.objectColor);
-    const chipVars: ChipVars = { '--prompt-object-color': objectColor };
+    const targetColor = useSettingsStore(state => state.targetColor);
+    const chipVars: ChipVars = { '--prompt-object-color': objectColor, '--target-color': targetColor };
+    const startObjectDrag = useObjectDragCommands({ executeCommand, triggerHaptic });
 
     const wornChips = useMemo(() => {
         const chips = displayEqLines
@@ -297,8 +311,13 @@ export const PromptInventoryChips: React.FC = () => {
                         <button
                             key={`${chip.line.id}:${subChip.menuEntityId}:${subChip.label}`}
                             type="button"
-                            className={`prompt-inventory-chip prompt-container-content-chip${selectedTarget?.id === subChip.menuEntityId ? ' is-active' : ''}`}
+                            className={`prompt-inventory-chip prompt-container-content-chip${isChipTargeted(subChip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
                             onClick={event => selectChip(event, subChip)}
+                            onPointerDown={event => startObjectDrag(event, {
+                                row: 'inventory',
+                                noun: getChipCommandNoun(subChip),
+                                label: subChip.label
+                            })}
                             title={subChip.context}
                         >
                             {subChip.label}
@@ -315,7 +334,10 @@ export const PromptInventoryChips: React.FC = () => {
                 const sourceLines = row.id === 'worn' ? displayEqLines : displayInventoryLines;
                 return (
                     <React.Fragment key={row.id}>
-                        <div className="prompt-inventory-chip-row">
+                        <div
+                            className={`prompt-inventory-chip-row${objectDragState?.target?.type === 'row' && objectDragState.target.row === row.id ? ' is-drop-target' : ''}`}
+                            data-object-drop-row={row.id}
+                        >
                             <span className="prompt-inventory-chip-label">{row.label}</span>
                             <div className="prompt-inventory-chip-list">
                                 {row.chips.map(chip => {
@@ -328,17 +350,24 @@ export const PromptInventoryChips: React.FC = () => {
                                     return (
                                         <span
                                             key={`${chip.menuEntityId}:${chip.label}`}
-                                            className="prompt-chip-with-slot"
+                                            className={`prompt-chip-with-slot${objectDragState?.target?.type === 'row' && objectDragState.target.row === 'worn' && objectDragState.target.slot === slotLabel ? ' is-drop-target' : ''}`}
+                                            data-object-drop-row={row.id === 'worn' ? 'worn' : undefined}
+                                            data-object-drop-slot={row.id === 'worn' ? slotLabel || undefined : undefined}
                                         >
                                             {slotLabel && <span className="prompt-slot-icon">{slotLabel}</span>}
                                             {isContainer ? (
                                                 <span
-                                                    className={`prompt-inventory-chip prompt-inventory-chip-shell${selectedTarget?.id === chip.menuEntityId ? ' is-active' : ''}`}
+                                                    className={`prompt-inventory-chip prompt-inventory-chip-shell${isChipTargeted(chip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
                                                 >
                                                     <button
                                                         type="button"
                                                         className="prompt-inventory-chip-main"
                                                         onClick={event => selectChip(event, chip)}
+                                                        onPointerDown={event => startObjectDrag(event, {
+                                                            row: row.id,
+                                                            noun: getChipCommandNoun(chip),
+                                                            label: chip.label
+                                                        })}
                                                         title={chip.context}
                                                     >
                                                         {chip.label}
@@ -356,8 +385,13 @@ export const PromptInventoryChips: React.FC = () => {
                                             ) : (
                                                 <button
                                                     type="button"
-                                                    className={`prompt-inventory-chip${selectedTarget?.id === chip.menuEntityId ? ' is-active' : ''}`}
+                                                    className={`prompt-inventory-chip${isChipTargeted(chip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
                                                     onClick={event => selectChip(event, chip)}
+                                                    onPointerDown={event => startObjectDrag(event, {
+                                                        row: row.id,
+                                                        noun: getChipCommandNoun(chip),
+                                                        label: chip.label
+                                                    })}
                                                     title={chip.context}
                                                 >
                                                     {chip.label}

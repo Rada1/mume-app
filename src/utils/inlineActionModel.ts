@@ -23,7 +23,6 @@ export interface CategoryConfig {
 
 /** Maps a canonical category id to its actual EntityKind. Replaces CategoryConfig.kind. */
 export const CATEGORY_KIND_MAP: Readonly<Record<string, EntityKind>> = {
-    'cat-target':           'none',
     'cat-ally':             'ally',
     'cat-enemy':            'enemy',
     'cat-neutral':          'neutral',
@@ -48,6 +47,8 @@ export interface TraitConfig {
     legacySetIds?: string[];
     kind?: EntityKind;
     requirement?: CustomButton['requirement'];
+    /** If set, keyword matching only applies when the entity's category is in this list. */
+    categoryIds?: string[];
 }
 
 export interface ResolvedTraitSection {
@@ -125,7 +126,6 @@ export const getCategoryIdForKindLocation = (
         if (location === 'worn' || location === 'equipment') return 'cat-worn-object';
         return 'cat-room-object';
     }
-    if (kind === 'target') return 'cat-target';
     return 'cat-object';
 };
 
@@ -154,7 +154,8 @@ export const getResolvedTraitSections = (
     customTraits: InlineActionConfigRecord[] = []
 ): ResolvedTraitSection[] => {
     const categoryTraits = getTraitsForCategoryWithOverrides(categoryId, customTraits);
-    const keywordTraits = name ? getTraitsForName(name, customTraits) : [];
+    const keywordTraits = (name ? getTraitsForName(name, customTraits) : [])
+        .filter(trait => !trait.categoryIds || (categoryId != null && trait.categoryIds.includes(categoryId)));
     return dedupeTraits([...categoryTraits, ...keywordTraits]).map(trait => ({
         trait,
         buttonIds: trait.buttonIds
@@ -297,8 +298,10 @@ const dedupeTraits = (traits: TraitConfig[]): TraitConfig[] => {
     });
 };
 
-const matchesKeyword = (lowerName: string, keyword: string): boolean => {
+export const matchesKeyword = (lowerName: string, keyword: string): boolean => {
     const lowKey = keyword.toLowerCase();
-    const escaped = lowKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return new RegExp(`(^|[^a-z])${escaped}([^a-z]|$)`, 'i').test(lowerName);
+    const regexPattern = lowKey
+        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        .replace(/-/g, '[-\\s]');
+    return new RegExp(`(^|[^a-z])${regexPattern}([^a-z]|$)`, 'i').test(lowerName);
 };

@@ -105,7 +105,7 @@ export const useMapPersistence = ({
             clearTimeout(fullDataTimer);
             clearTimeout(posDataTimer);
         };
-    }, [rooms, markers, exploredVnums, currentRoomId, allowPersistence, storageKey, markerStorageKey, posStorageKey, unveilMap, cameraRef]);
+    }, [rooms, markers, exploredVnums, exploredMarkers, currentRoomId, allowPersistence, storageKey, markerStorageKey, posStorageKey, unveilMap, cameraRef]);
 
     return { storageKey };
 };

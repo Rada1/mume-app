@@ -1,5 +1,5 @@
 import { RenderContext } from './rendererUtils';
-import { GRID_SIZE, getTerrainColor, getTerrainName } from '../mapperUtils';
+import { GRID_SIZE, getTerrainColor, getTerrainName, getGateState } from '../mapperUtils';
 import { getZoneVisuals } from '../zoneFilters';
 
 const TERRAIN_TILE_INSET = 0;
@@ -160,27 +160,10 @@ const drawSingleTree = (
     ictx.fillStyle = trunkColor;
     ictx.fillRect(cx - tW / 2, trunkTop, tW, tH);
 
-    // Draw a triangular tier with canvas drop shadow + right-face darkening.
-    // tipX offsets the apex by lean fraction (0=base, 1=full lean) for a subtle tilt.
-    const shadowOffset = Math.max(1, sz * 0.06);
+    // Triangular tier with right-face darkening (no canvas shadow — too expensive per-tree).
     const drawTier = (tipY: number, botY: number, hw: number, leanFrac: number) => {
         const tipX = cx + lean * leanFrac;
-        // Drop shadow pass
-        ictx.save();
-        ictx.shadowColor   = isDarkMode ? 'rgba(0,0,0,0.70)' : 'rgba(0,0,0,0.50)';
-        ictx.shadowBlur    = sz * 0.12;
-        ictx.shadowOffsetX = shadowOffset;
-        ictx.shadowOffsetY = shadowOffset * 0.6;
-        ictx.beginPath();
-        ictx.moveTo(tipX, tipY);
-        ictx.lineTo(cx + hw, botY);
-        ictx.lineTo(cx - hw, botY);
-        ictx.closePath();
-        ictx.fillStyle = crownFill;
-        ictx.fill();
-        ictx.restore();
-
-        // Fill without shadow (clean colour on top)
+        // Fill (clean colour)
         ictx.beginPath();
         ictx.moveTo(tipX, tipY);
         ictx.lineTo(cx + hw, botY);
@@ -399,6 +382,28 @@ const getCaveConnects = (vnum: string, preloaded: any): number => {
     return bits;
 };
 
+export const getRoomWalls = (
+    room: any,
+    exits: any,
+    allRooms: any,
+    preloaded: any,
+    explored: Set<string>,
+    unveilMap: boolean
+) => {
+    const isExplored = (targetVnum: any) => targetVnum && explored.has(String(targetVnum));
+    const exitN = exits?.['n'];
+    const exitS = exits?.['s'];
+    const exitE = exits?.['e'];
+    const exitW = exits?.['w'];
+
+    const wallN = !getGateState(room, exits, 'n', allRooms, preloaded).hasExit || (!unveilMap && exitN && !isExplored(exitN.target));
+    const wallS = !getGateState(room, exits, 's', allRooms, preloaded).hasExit || (!unveilMap && exitS && !isExplored(exitS.target));
+    const wallE = !getGateState(room, exits, 'e', allRooms, preloaded).hasExit || (!unveilMap && exitE && !isExplored(exitE.target));
+    const wallW = !getGateState(room, exits, 'w', allRooms, preloaded).hasExit || (!unveilMap && exitW && !isExplored(exitW.target));
+
+    return { n: wallN, s: wallS, e: wallE, w: wallW };
+};
+
 const drawTerrainTileIcon = (
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -412,9 +417,27 @@ const drawTerrainTileIcon = (
     weather?: string,
     connects: number = 0,
     floorColor?: string,
+    walls?: { n: boolean; s: boolean; e: boolean; w: boolean }
 ) => {
     const inset = getTerrainTileInset(s);
-    drawTerrainIcon(ctx, x + inset, y + inset, s - inset * 2, terrain, isDarkMode, processedIconsRef, imagesRef, variant, weather, connects, floorColor);
+    drawTerrainIcon(
+        ctx,
+        x + inset,
+        y + inset,
+        s - inset * 2,
+        terrain,
+        isDarkMode,
+        processedIconsRef,
+        imagesRef,
+        variant,
+        weather,
+        connects,
+        floorColor,
+        walls,
+        x,
+        y,
+        s
+    );
 };
 
 export const drawTerrainIcon = (
@@ -430,6 +453,10 @@ export const drawTerrainIcon = (
     weather?: string,
     connects: number = 0,
     floorColor?: string,
+    walls?: { n: boolean; s: boolean; e: boolean; w: boolean },
+    tileX?: number,
+    tileY?: number,
+    tileS?: number
 ) => {
     const tName = getTerrainName(terrain);
     const variantSpecificTerrains = ['Hills', 'Forest', 'Brush', 'Mountains', 'Field', 'Cavern', 'Tunnel', 'Water', 'Shallows', 'Rapids', 'City', 'Underwater', 'Building', 'Road'];
@@ -1088,7 +1115,25 @@ export const drawTerrainIcon = (
              offsetY += (s2 - 0.5) * s * 0.16; // slightly less vertical jitter
          }
 
+         let clipped = false;
+         if (walls && tileX !== undefined && tileY !== undefined && tileS !== undefined) {
+             const clipLeft = walls.w ? tileX : tileX - tileS * 1.5;
+             const clipRight = walls.e ? tileX + tileS : tileX + tileS * 2.5;
+             const clipTop = walls.n ? tileY : tileY - tileS * 1.5;
+             const clipBottom = walls.s ? tileY + tileS : tileY + tileS * 2.5;
+
+             ctx.save();
+             ctx.beginPath();
+             ctx.rect(clipLeft, clipTop, clipRight - clipLeft, clipBottom - clipTop);
+             ctx.clip();
+             clipped = true;
+         }
+
          ctx.drawImage(cachedIcon, offsetX, offsetY);
+
+         if (clipped) {
+             ctx.restore();
+         }
      }
 };
 
@@ -1170,19 +1215,23 @@ export const drawTerrains = (
     bX1: number, bY1: number, bX2: number, bY2: number,
     floorIndex: Record<string, string[]>
 ) => {
-    const { ctx, isDarkMode, explored, unveilMap, allRooms, preloaded, imagesRef, isTracingMode, mapTileVisuals } = rCtx;
+    const { ctx, isDarkMode, explored, unveilMap, allRooms, preloaded, imagesRef, isTracingMode, mapTileVisuals, lighting } = rCtx;
     const terrainColors = mapTileVisuals?.terrainColors;
     const tileOpacity = rCtx.mapTileOpacity ?? 1;
     const tileBacking = isDarkMode ? '#000000' : '#f2f2f7';
     const tileBackingAlpha = tileOpacity;
     const s = GRID_SIZE;
     const useOverviewTerrainColors = false;
+    const ringRevealGray = lighting === 'dark'
+        ? (isDarkMode ? '#2e2e2e' : '#767676')
+        : (isDarkMode ? '#202020' : '#5c5c5c');
 
     const exploredBatches: Record<string, { x: number, y: number, terrain: string, vnum: string, light?: number, sundeath?: number, isPermanentSnow?: boolean }[]> = {};
-    const ring1Batches: Record<string, { x: number, y: number, terrain: string }[]> = {};
+    const ring1Batches: Record<string, { x: number, y: number, terrain: string, vnum: string }[]> = {};
     const revealedBatches: Record<string, { x: number, y: number, terrain: string, vnum: string, light?: number, sundeath?: number, isPermanentSnow?: boolean }[]> = {};
     const peekedRooms: { tx: number, ty: number, terrain: string, color: string, vnum: string }[] = [];
     const ring1Animating: { x: number, y: number, terrain: string, vnum: string, revealInfo: { time: number, dir: string } }[] = [];
+    const ringRevealMs = 200;
     if (!floorIndex) return;
 
     // Compute ring-1 revealed rooms: adjacent to explored, not explored themselves
@@ -1259,11 +1308,11 @@ export const drawTerrains = (
                      exploredBatches[color].push({ x: tx, y: ty, terrain, vnum, light: l, sundeath: sd, isPermanentSnow });
                 } else if (ring1Revealed.has(vnum)) {
                      const revealInfo = getRevealSource(vnum, rCtx);
-                     if (revealInfo && (rCtx.now - revealInfo.time < 400)) {
+                     if (revealInfo && (rCtx.now - revealInfo.time < ringRevealMs)) {
                          ring1Animating.push({ x: tx, y: ty, terrain, vnum, revealInfo });
                      } else {
                          if (!ring1Batches[color]) ring1Batches[color] = [];
-                         ring1Batches[color].push({ x: tx, y: ty, terrain });
+                         ring1Batches[color].push({ x: tx, y: ty, terrain, vnum });
                      }
                 } else if (ring2Peeked.has(vnum)) {
                      peekedRooms.push({ tx, ty, terrain, color, vnum });
@@ -1276,10 +1325,10 @@ export const drawTerrains = (
     }
 
     if (rCtx.camera.zoom < FAR_ZOOM_TERRAIN_LOD && !isTracingMode) {
-        const ring1GrayLod = isDarkMode ? '#383838' : '#b0b0b0';
+        const ring1GrayLod = ringRevealGray;
         ctx.save();
         ctx.fillStyle = ring1GrayLod;
-        ctx.globalAlpha = 0.45;
+        ctx.globalAlpha = 1.0;
         for (const color in ring1Batches) {
             for (const r of ring1Batches[color]) fillTerrainTile(ctx, r.x, r.y, s);
         }
@@ -1289,12 +1338,12 @@ export const drawTerrains = (
         return;
     }
 
-    // Draw ring-1 revealed rooms: flat medium-dark gray tile, no terrain color (made a tad bit darker by reducing opacity to 0.45)
+    // Draw ring-1 revealed rooms: flat medium-dark gray tile, no terrain color
     if (ring1Revealed.size > 0) {
-        const ring1Gray = isDarkMode ? '#383838' : '#b0b0b0';
+        const ring1Gray = ringRevealGray;
         ctx.save();
         ctx.fillStyle = ring1Gray;
-        ctx.globalAlpha = 0.45;
+        ctx.globalAlpha = 1.0;
         for (const color in ring1Batches) {
             const rooms = ring1Batches[color];
             for (let i = 0; i < rooms.length; i++) fillTerrainTile(ctx, rooms[i].x, rooms[i].y, s);
@@ -1304,15 +1353,15 @@ export const drawTerrains = (
 
     // Draw animating ring-1 revealed rooms: flat medium-dark gray tile, wipe reveal
     if (ring1Animating.length > 0) {
-        const ring1Gray = isDarkMode ? '#383838' : '#b0b0b0';
+        const ring1Gray = ringRevealGray;
         ctx.save();
         ctx.fillStyle = ring1Gray;
         for (let i = 0; i < ring1Animating.length; i++) {
             const r = ring1Animating[i];
             const elapsed = rCtx.now - r.revealInfo.time;
-            const animDur = 400;
+            const animDur = ringRevealMs;
             const alphaMul = Math.min(1.0, elapsed / animDur);
-            ctx.globalAlpha = 0.45 * alphaMul;
+            ctx.globalAlpha = 1.0 * alphaMul;
             rCtx.triggerRender?.(); // Force continue animation loop
             
             fillAnimatedTerrainTile(ctx, r.x, r.y, s, r.revealInfo.dir, alphaMul);
@@ -1332,57 +1381,55 @@ export const drawTerrains = (
                 const ghostExits = rData[4];
                 if (!ghostExits) continue;
 
-                const peekDirs: string[] = [];
+                const peekDirs: { dir: string, alpha: number }[] = [];
                 for (const dir of ['n', 's', 'e', 'w']) {
                     const exit = ghostExits[dir];
                     if (exit && ring1Revealed.has(String(exit.target))) {
-                        peekDirs.push(dir);
+                        const revealInfo = getRevealSource(String(exit.target), rCtx);
+                        const revealStart = revealInfo ? revealInfo.time + ringRevealMs : 0;
+                        const alpha = Math.max(0, Math.min(1, (rCtx.now - revealStart) / ringRevealMs));
+                        if (alpha > 0) peekDirs.push({ dir, alpha });
+                        if (alpha < 1) rCtx.triggerRender?.();
                     }
                 }
                 if (peekDirs.length === 0) continue;
 
-                // 1. Draw Content (Backing + terrain color)
+                // 1. Draw Content (same flat gray as ring-1)
+                const ring2Gray = ringRevealGray;
                 contentCtx.clearRect(0, 0, s, s);
-                contentCtx.fillStyle = tileBacking;
+                contentCtx.fillStyle = ring2Gray;
                 contentCtx.fillRect(0, 0, s, s);
-                contentCtx.fillStyle = pr.color;
-                contentCtx.fillRect(0, 0, s, s);
-
-                // Draw terrain icon when the renderer's zoom LOD allows it.
-                if (rCtx.showTerrainIcons) {
-                    const gridX = Math.round(pr.tx / s), gridY = Math.round(pr.ty / s);
-                    const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
-                    drawTerrainTileIcon(contentCtx, 0, 0, s, pr.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather);
-                }
 
                 // 2. Draw Mask
                 maskCtx.clearRect(0, 0, s, s);
-                for (const pd of peekDirs) {
+                const peekDepth = 0.65;
+                for (const peek of peekDirs) {
                     let grad: CanvasGradient;
+                    const pd = peek.dir;
                     if (pd === 'n') {
-                        grad = maskCtx.createLinearGradient(0, 0, 0, s * 0.25);
-                        grad.addColorStop(0, 'rgba(0,0,0,1)');
+                        grad = maskCtx.createLinearGradient(0, 0, 0, s * peekDepth);
+                        grad.addColorStop(0, `rgba(0,0,0,${peek.alpha})`);
                         grad.addColorStop(1, 'rgba(0,0,0,0)');
                         maskCtx.fillStyle = grad;
-                        maskCtx.fillRect(0, 0, s, s * 0.25);
+                        maskCtx.fillRect(0, 0, s, s * peekDepth);
                     } else if (pd === 's') {
-                        grad = maskCtx.createLinearGradient(0, s, 0, s - s * 0.25);
-                        grad.addColorStop(0, 'rgba(0,0,0,1)');
+                        grad = maskCtx.createLinearGradient(0, s, 0, s - s * peekDepth);
+                        grad.addColorStop(0, `rgba(0,0,0,${peek.alpha})`);
                         grad.addColorStop(1, 'rgba(0,0,0,0)');
                         maskCtx.fillStyle = grad;
-                        maskCtx.fillRect(0, s - s * 0.25, s, s * 0.25);
+                        maskCtx.fillRect(0, s - s * peekDepth, s, s * peekDepth);
                     } else if (pd === 'e') {
-                        grad = maskCtx.createLinearGradient(s, 0, s - s * 0.25, 0);
-                        grad.addColorStop(0, 'rgba(0,0,0,1)');
+                        grad = maskCtx.createLinearGradient(s, 0, s - s * peekDepth, 0);
+                        grad.addColorStop(0, `rgba(0,0,0,${peek.alpha})`);
                         grad.addColorStop(1, 'rgba(0,0,0,0)');
                         maskCtx.fillStyle = grad;
-                        maskCtx.fillRect(s - s * 0.25, 0, s * 0.25, s);
+                        maskCtx.fillRect(s - s * peekDepth, 0, s * peekDepth, s);
                     } else if (pd === 'w') {
-                        grad = maskCtx.createLinearGradient(0, 0, s * 0.25, 0);
-                        grad.addColorStop(0, 'rgba(0,0,0,1)');
+                        grad = maskCtx.createLinearGradient(0, 0, s * peekDepth, 0);
+                        grad.addColorStop(0, `rgba(0,0,0,${peek.alpha})`);
                         grad.addColorStop(1, 'rgba(0,0,0,0)');
                         maskCtx.fillStyle = grad;
-                        maskCtx.fillRect(0, 0, s * 0.25, s);
+                        maskCtx.fillRect(0, 0, s * peekDepth, s);
                     }
                 }
 
@@ -1395,7 +1442,7 @@ export const drawTerrains = (
                 // 3. Draw contentCanvas to main canvas (grayscale, alpha = 0.35)
                 ctx.save();
                 ctx.filter = 'grayscale(1)';
-                ctx.globalAlpha = 0.35 * tileOpacity;
+                ctx.globalAlpha = tileOpacity;
                 ctx.drawImage(contentCanvas, pr.tx, pr.ty);
                 ctx.restore();
             }
@@ -1412,7 +1459,7 @@ export const drawTerrains = (
             const exploredAt = r.vnum ? rCtx.firstExploredAtRef.current[r.vnum] : 0;
             if (exploredAt) {
                 const elapsed = rCtx.now - exploredAt;
-                const animDur = 100;
+                const animDur = 60;
                 if (elapsed < animDur) {
                     alphaMul = elapsed / animDur;
                     rCtx.triggerRender?.(); // Keep animating
@@ -1500,7 +1547,7 @@ export const drawTerrains = (
                 const exploredAt = r.vnum ? rCtx.firstExploredAtRef.current[r.vnum] : 0;
                 if (exploredAt) {
                     const elapsed = rCtx.now - exploredAt;
-                    const animDur = 100;
+                    const animDur = 60;
                     if (elapsed < animDur) {
                         const alphaMul = elapsed / animDur;
                         ctx.globalAlpha = alphaMul * tileOpacity;
@@ -1522,7 +1569,12 @@ export const drawTerrains = (
                 const isSnow = r.isPermanentSnow || rCtx.weather === 'snow';
                 const tConnects = (() => { const t = getTerrainName(r.terrain); return (t === 'Tunnel' || t === 'Cavern') ? getCaveConnects(r.vnum, preloaded) : 0; })();
                 const tFloor = (getTerrainName(r.terrain) === 'Tunnel' || getTerrainName(r.terrain) === 'Cavern') ? color : undefined;
-                drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects, tFloor);
+                
+                const exits = preloaded[r.vnum]?.[4];
+                const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
+                const walls = getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap);
+
+                drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects, tFloor, walls);
                 drawOutskirtTrees(ctx, r.x, r.y, r.vnum, s, r.terrain, preloaded, isDarkMode, tileOpacity, explored);
                 ctx.restore();
             }
@@ -1533,14 +1585,19 @@ export const drawTerrains = (
     if (rCtx.showTerrainIcons && ring1Revealed.size > 0) {
         ctx.save();
         ctx.filter = 'grayscale(1)';
-        ctx.globalAlpha = 0.3;
+        ctx.globalAlpha = 1.0;
         for (const color in ring1Batches) {
             const rooms = ring1Batches[color];
             for (let i = 0; i < rooms.length; i++) {
                 const r = rooms[i];
                 const gridX = Math.round(r.x / s), gridY = Math.round(r.y / s);
                 const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
-                drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather);
+                
+                const exits = preloaded[r.vnum]?.[4];
+                const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
+                const walls = getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap);
+
+                drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls);
             }
         }
         ctx.restore();
@@ -1553,11 +1610,11 @@ export const drawTerrains = (
         for (let i = 0; i < ring1Animating.length; i++) {
             const r = ring1Animating[i];
             const elapsed = rCtx.now - r.revealInfo.time;
-            const animDur = 400;
+            const animDur = ringRevealMs;
             const alphaMul = Math.min(1.0, elapsed / animDur);
             
             ctx.save();
-            ctx.globalAlpha = 0.3 * alphaMul;
+            ctx.globalAlpha = 1.0 * alphaMul;
             
             // Clip to wipe path
             ctx.beginPath();
@@ -1575,7 +1632,12 @@ export const drawTerrains = (
             
             const gridX = Math.round(r.x / s), gridY = Math.round(r.y / s);
             const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
-            drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather);
+            
+            const exits = preloaded[r.vnum]?.[4];
+            const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
+            const walls = getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap);
+
+            drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls);
             ctx.restore();
         }
         ctx.restore();
@@ -1623,7 +1685,12 @@ export const drawTerrains = (
                     const isSnow = r.isPermanentSnow || rCtx.weather === 'snow';
                     const tConnects3 = (() => { const t = getTerrainName(r.terrain); return (t === 'Tunnel' || t === 'Cavern') ? getCaveConnects(r.vnum, preloaded) : 0; })();
                     const tFloor3 = (getTerrainName(r.terrain) === 'Tunnel' || getTerrainName(r.terrain) === 'Cavern') ? color : undefined;
-                    drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects3, tFloor3);
+                    
+                    const exits = preloaded[r.vnum]?.[4];
+                    const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
+                    const walls = getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap);
+
+                    drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects3, tFloor3, walls);
                     drawOutskirtTrees(ctx, r.x, r.y, r.vnum, s, r.terrain, preloaded, isDarkMode, tileOpacity, explored);
                     ctx.restore();
                 }
@@ -1633,7 +1700,7 @@ export const drawTerrains = (
 };
 
 export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
-    const { ctx, isDarkMode, currentZ, imagesRef, mapTileVisuals } = rCtx;
+    const { ctx, isDarkMode, currentZ, imagesRef, mapTileVisuals, allRooms, preloaded } = rCtx;
     const terrainColors = mapTileVisuals?.terrainColors;
     const tileOpacity = rCtx.mapTileOpacity ?? 1;
     const s = GRID_SIZE;
@@ -1694,7 +1761,12 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
             };
             const localColor = getTerrainColor(room.terrain, isDarkMode, 0.62, mergedTerrainColors);
             const tFloorLocal = (getTerrainName(room.terrain) === 'Tunnel' || getTerrainName(room.terrain) === 'Cavern') ? localColor : undefined;
-            drawTerrainTileIcon(ctx, rx, ry, s, room.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnectsLocal, tFloorLocal);
+            
+            const rId = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;
+            const exits = preloaded[rId]?.[4];
+            const walls = getRoomWalls(room, exits, allRooms, preloaded, rCtx.explored, rCtx.unveilMap);
+
+            drawTerrainTileIcon(ctx, rx, ry, s, room.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnectsLocal, tFloorLocal, walls);
             ctx.restore();
         }
     }

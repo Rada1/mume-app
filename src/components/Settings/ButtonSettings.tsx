@@ -62,7 +62,6 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
         objectColor,
         enemyColor, setEnemyColor,
         neutralColor, setNeutralColor,
-        targetColor, setTargetColor,
         roomColor, setRoomColor,
         theme,
         categoryOverrides, setCategoryOverrides,
@@ -244,14 +243,6 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                         </div>
                         <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Inline menus &amp; logs</div>
                         <CategoryTraitCards categoryId="cat-neutral" kind="player" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
-                    </div>
-                    <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                            <input type="color" value={displayColor(targetColor)} onChange={(e) => setTargetColor(storeInputColor(e.target.value))} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Target</div>
-                        </div>
-                        <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Double-click menu</div>
-                        <CategoryTraitCards categoryId="cat-target" kind="none" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                     </div>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>

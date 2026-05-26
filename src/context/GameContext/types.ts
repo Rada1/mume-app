@@ -140,8 +140,8 @@ export interface UIContextType {
     setIsSettingsOpen: (val: boolean) => void;
     isLibraryOpen: boolean;
     setIsLibraryOpen: (val: boolean) => void;
-    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help';
-    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help') => void;
+    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays';
+    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays') => void;
     setIsMapExpanded: (open: boolean) => void;
     setIsSetManagerOpen: (open: boolean) => void;
     setManagerSelectedSet: (setId: string | null) => void;
@@ -344,8 +344,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     // Settings & Mode
     isNewbieMode: boolean;
     setIsNewbieMode: (val: boolean) => void;
-    isMmapperMode: boolean;
-    setIsMmapperMode: (val: boolean) => void;
     isSoundEnabled: boolean;
     setIsSoundEnabled: (val: boolean) => void;
     theme: 'light' | 'dark';
@@ -468,10 +466,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setTeleportTargets: (val: TeleportTarget[] | ((prev: TeleportTarget[]) => TeleportTarget[])) => void;
 
     // Settings
-    bgImage: string | null;
-    bgImageBottom: string | null;
-    setBgImage: (val: string | null) => void;
-    setBgImageBottom: (val: string | null) => void;
     connectionUrl: string;
     setConnectionUrl: Dispatch<SetStateAction<string>>;
     loginName: string;
@@ -487,9 +481,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setNewSoundPattern: Dispatch<SetStateAction<string>>;
     newSoundRegex: boolean;
     setNewSoundRegex: Dispatch<SetStateAction<boolean>>;
-    handleFileUpload: (e: ChangeEvent<HTMLInputElement>) => void;
-    handleBottomFileUpload: (e: ChangeEvent<HTMLInputElement>) => void;
-
     exportSettings: () => Record<string, unknown>;
     exportSettingsFile: (buttons: CustomButton[]) => void;
     importSettings: (e: ChangeEvent<HTMLInputElement>, setIsSettingsOpen: (v: boolean) => void) => void;

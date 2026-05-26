@@ -4,7 +4,7 @@
  */
 
 import { create } from 'zustand';
-import { PopoverState, DrawerType } from '../types';
+import { PopoverState, DrawerType, ObjectDragState, QuickButton } from '../types';
 
 export interface SelectedTargetInfo {
     id: string;
@@ -34,7 +34,7 @@ export interface UIState {
     isSettingsOpen: boolean;
     isLibraryOpen: boolean;
     isButtonsOpen: boolean;
-    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help';
+    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays';
     diagnosticLogs: string[];
     showReplayHud: boolean;
     characterTab: 'info' | 'practice' | 'quests';
@@ -51,12 +51,18 @@ export interface UIState {
     keywordFailureBanner: { context: string; displayText: string } | null;
     selectedObjectIds: Set<string>;
     selectedTarget: SelectedTargetInfo | null;
+    objectDragState: ObjectDragState | null;
     managerSelectedSet: string | null;
     
     // Tab States for Drawers
     gearTab: 'worn' | 'inv' | 'vicinity';
     playersTab: 'online' | 'nearby' | 'group';
     charTab: 'info' | 'quests' | 'skills' | 'achievements';
+
+    // Quick buttons (ephemeral, session-only)
+    quickButtons: QuickButton[];
+    addQuickButton: (btn: { label: string; command: string }) => void;
+    removeQuickButton: (id: string) => void;
 
     // Shop panel
     isShopOpen: boolean;
@@ -71,6 +77,8 @@ export interface UIState {
     setShopBalance: (balance: string | null) => void;
     shopBalanceRequested: boolean;
     setShopBalanceRequested: (v: boolean) => void;
+    shopkeeperName: string | null;
+    setShopkeeperName: (name: string | null) => void;
 
     // Actions
     setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
@@ -87,7 +95,7 @@ export interface UIState {
     setIsSettingsOpen: (open: boolean) => void;
     setIsLibraryOpen: (open: boolean) => void;
     setIsButtonsOpen: (open: boolean) => void;
-    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help') => void;
+    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays') => void;
     addDiagnosticLog: (msg: string) => void;
     setShowReplayHud: (show: boolean) => void;
     setKeywordEditState: (state: { context: string; displayText: string } | null) => void;
@@ -95,6 +103,7 @@ export interface UIState {
     setSelectedObjectIds: (ids: Set<string> | ((prev: Set<string>) => Set<string>)) => void;
     toggleObjectSelection: (info: SelectedTargetInfo) => void;
     clearObjectSelection: () => void;
+    setObjectDragState: (state: ObjectDragState | null) => void;
     setManagerSelectedSet: (setId: string | null) => void;
     setIsSetManagerOpen: (open: boolean) => void;
 
@@ -135,8 +144,17 @@ export const useUIStore = create<UIState>((set) => ({
     keywordFailureBanner: null,
     selectedObjectIds: new Set<string>(),
     selectedTarget: null,
+    objectDragState: null,
     managerSelectedSet: null,
     
+    quickButtons: [],
+    addQuickButton: ({ label, command }) => set((state) => ({
+        quickButtons: [...state.quickButtons, { id: `qb-${Date.now()}`, label, command }]
+    })),
+    removeQuickButton: (id) => set((state) => ({
+        quickButtons: state.quickButtons.filter(b => b.id !== id)
+    })),
+
     isShopOpen: false,
     setIsShopOpen: (open) => set({ isShopOpen: open }),
     shopItems: [],
@@ -149,6 +167,8 @@ export const useUIStore = create<UIState>((set) => ({
     setShopBalance: (balance) => set({ shopBalance: balance }),
     shopBalanceRequested: false,
     setShopBalanceRequested: (v) => set({ shopBalanceRequested: v }),
+    shopkeeperName: null,
+    setShopkeeperName: (name) => set({ shopkeeperName: name }),
 
     gearTab: 'worn',
     playersTab: 'online',
@@ -191,6 +211,7 @@ export const useUIStore = create<UIState>((set) => ({
         };
     }),
     clearObjectSelection: () => set({ selectedObjectIds: new Set(), selectedTarget: null }),
+    setObjectDragState: (state) => set({ objectDragState: state }),
     setManagerSelectedSet: (setId) => set({ managerSelectedSet: setId }),
     setIsSetManagerOpen: (open) => set({ setManagerOpen: open }),
 

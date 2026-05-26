@@ -33,7 +33,6 @@ interface MapperProps {
     isMobile?: boolean;
     isExpanded?: boolean;
     isDesignMode?: boolean;
-    isMmapperMode?: boolean;
     heldButton?: any;
     setHeldButton?: (val: any) => void;
     heldButtonRef?: React.MutableRefObject<any>;
@@ -75,7 +74,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
     const { setPopoverState, popoverState, ui } = useUI();
-    const { playerColor, npcColor, enemyColor, objectColor, targetColor } = useSettingsStore();
+    const { playerColor, npcColor, enemyColor, objectColor, targetColor, showBackgroundImage } = useSettingsStore();
     const isDarkMode = theme === 'dark';
     const displayPlayerColor = toThemeLinkedColor(playerColor, theme) || playerColor;
     const displayNpcColor = toThemeLinkedColor(npcColor, theme) || npcColor;
@@ -157,7 +156,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
     useEffect(() => {
         triggerRender();
-    }, [roomEntitySignature, popoverState?.entityId, selectedObjectIds, triggerRender]);
+    }, [roomEntitySignature, popoverState?.entityId, selectedObjectIds, target, triggerRender]);
 
     const controllerOptions = useMemo(() => ({
         onRecenter: handleCenterOnPlayer,
@@ -268,7 +267,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     }, [setMarkers, setExploredMarkers]);
 
     return (
-        <div className={`mapper-container lighting-state-${lighting || 'none'} ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ 
+        <div className={`mapper-container lighting-state-${lighting || 'none'} ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''} ${!showBackgroundImage ? 'no-bg-image' : ''}`} style={{ 
             position: 'relative', 
             width: '100%', 
             height: '100%', 
@@ -328,6 +327,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 enemyColor={displayEnemyColor}
                 objectColor={displayObjectColor}
                 targetColor={displayTargetColor}
+                targetName={target}
                 opponentName={opponentName}
                 opponentId={opponentId}
                 inCombat={inCombat}
@@ -418,6 +418,9 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                     preloadedCoordsRef={preloadedCoordsRef}
                     setViewZ={setViewZ}
                     isDarkMode={isDarkMode}
+                    onWalkStart={(rid) => { startWalking(rid); }}
+                    stopWalking={stopWalking}
+                    walkTargetId={walkTargetId}
                 />
             )}
 

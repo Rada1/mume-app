@@ -4,6 +4,7 @@
  */
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { clampLogFontSize, getMinimumLogFontSize, getMobilePortraitFontBias } from '../utils/logFontSizing';
 
 // --- Constants ---
 
@@ -249,8 +250,9 @@ export function useViewport(
             // On mobile portrait, we allow it to go down to 6px to satisfy the "fit 80" requirement.
             // On desktop/landscape, we now allow it to shrink further (down to 10px) to better honor 
             // the 80-column requirement on smaller windows/split-screens, while still preventing illegibility.
-            const minSize = (isMobile && !isLandscape) ? 6 : 10;
-            const safeSize = Math.min(48, Math.max(minSize, calculatedFontSize));
+            calculatedFontSize += getMobilePortraitFontBias(isMobile, isLandscape);
+            const minSize = getMinimumLogFontSize(isMobile, isLandscape);
+            const safeSize = clampLogFontSize(calculatedFontSize, minSize);
             document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);
             setLogFontSizePx(safeSize);
 

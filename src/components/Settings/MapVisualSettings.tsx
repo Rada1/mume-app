@@ -9,12 +9,10 @@ import { DEFAULT_MAP_TILE_VISUALS, useSettingsStore } from '../../stores/useSett
 import { useGame } from '../../context/GameContext';
 import { useContext } from 'react';
 import { MapperContext } from '../../context/MapperContext';
-import { 
+import {
     WALL_COLOR,
-    ROAD_COLOR_DARK, 
-    ROAD_COLOR_LIGHT, 
-    PATH_COLOR_DARK, 
-    PATH_COLOR_LIGHT,
+    ROAD_COLOR_DARK,
+    PATH_COLOR_DARK,
     DEFAULT_TERRAIN_COLORS,
     getTerrainColor
 } from '../Mapper/mapperUtils';
@@ -303,19 +301,9 @@ const MapVisualSettings: React.FC = () => {
                 onChange={(roadColorDark) => setMapTileVisuals({ roadColorDark })}
             />
             <ColorRow
-                label="Road Color (Light)"
-                value={mapTileVisuals.roadColorLight || DEFAULT_MAP_TILE_VISUALS.roadColorLight || ROAD_COLOR_LIGHT}
-                onChange={(roadColorLight) => setMapTileVisuals({ roadColorLight })}
-            />
-            <ColorRow
                 label="Path Color (Dark)"
                 value={mapTileVisuals.pathColorDark || DEFAULT_MAP_TILE_VISUALS.pathColorDark || PATH_COLOR_DARK}
                 onChange={(pathColorDark) => setMapTileVisuals({ pathColorDark })}
-            />
-            <ColorRow
-                label="Path Color (Light)"
-                value={mapTileVisuals.pathColorLight || DEFAULT_MAP_TILE_VISUALS.pathColorLight || PATH_COLOR_LIGHT}
-                onChange={(pathColorLight) => setMapTileVisuals({ pathColorLight })}
             />
             <div style={terrainGridStyle}>
                 {Object.keys(DEFAULT_TERRAIN_COLORS).map((terrain) => (
@@ -385,14 +373,14 @@ const MapVisualSettings: React.FC = () => {
                     />
                     <ZoneColorRow
                         label="Road Color"
-                        value={currentThemeSettings.roadColor || (editMode === 'dark' ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT)}
+                        value={currentThemeSettings.roadColor || ROAD_COLOR_DARK}
                         isOverridden={!!currentThemeSettings.roadColor}
                         onReset={() => setZoneFilter(selectedZone, editMode === 'dark', { roadColor: undefined })}
                         onChange={(color) => setZoneFilter(selectedZone, editMode === 'dark', { roadColor: color })}
                     />
                     <ZoneColorRow
                         label="Path Color"
-                        value={currentThemeSettings.pathColor || (editMode === 'dark' ? PATH_COLOR_DARK : PATH_COLOR_LIGHT)}
+                        value={currentThemeSettings.pathColor || PATH_COLOR_DARK}
                         isOverridden={!!currentThemeSettings.pathColor}
                         onReset={() => setZoneFilter(selectedZone, editMode === 'dark', { pathColor: undefined })}
                         onChange={(color) => setZoneFilter(selectedZone, editMode === 'dark', { pathColor: color })}

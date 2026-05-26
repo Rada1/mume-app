@@ -1074,7 +1074,8 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 if (isMapLongPress) {
                     const latestHeld = depsRef.current.heldButtonRef?.current || depsRef.current.heldButton;
                     if (!didHandleMapLongPressRelease && !latestHeld?.didFire) {
-                        depsRef.current.executeCommand('look', false, false, false, false, { fromUi: true });
+                        const cmd = depsRef.current.target ? `look ${depsRef.current.target}` : 'look';
+                        depsRef.current.executeCommand(cmd, false, false, false, false, { fromUi: true });
                         depsRef.current.playClickSound?.();
                     }
                     resetMapLookGestureState();

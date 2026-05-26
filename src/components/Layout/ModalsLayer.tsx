@@ -35,12 +35,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setCustomTraits,
         connectionUrl,
         setConnectionUrl,
-        bgImage,
-        setBgImage,
-        bgImageBottom,
-        setBgImageBottom,
-        handleFileUpload,
-        handleBottomFileUpload,
         exportSettings,
         exportSettingsFile,
         importSettings,
@@ -76,13 +70,9 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setSettings,
         autoConnect,
         setAutoConnect,
-        showDebugEchoes,
-        setShowDebugEchoes,
         status,
         uiMode,
         setUiMode,
-        disableSmoothScroll,
-        setDisableSmoothScroll,
         isImmersionMode,
         setIsImmersionMode,
         favorites,
@@ -91,8 +81,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         playerColor,
         npcColor,
         roomColor,
-        isBloomEnabled,
-        setIsBloomEnabled,
         showSpectatePromptInLog,
         setShowSpectatePromptInLog,
         isTimestampEnabled,
@@ -189,12 +177,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 <SettingsModal
                     connectionUrl={connectionUrl}
                     setConnectionUrl={setConnectionUrl}
-                    bgImage={bgImage}
-                    setBgImage={setBgImage}
-                    bgImageBottom={bgImageBottom}
-                    setBgImageBottom={setBgImageBottom}
-                    handleFileUpload={handleFileUpload}
-                    handleBottomFileUpload={handleBottomFileUpload}
                     exportSettings={() => exportSettingsFile(btn.rawButtons)}
                     importSettings={(e) => importSettings(e, setIsSettingsOpen)}
                     isLoading={isLoading}
@@ -213,16 +195,10 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setLoginPassword={setLoginPassword}
                     autoConnect={autoConnect}
                     setAutoConnect={setAutoConnect}
-                    showDebugEchoes={showDebugEchoes}
-                    setShowDebugEchoes={setShowDebugEchoes}
                     uiMode={uiMode}
                     setUiMode={setUiMode}
-                    disableSmoothScroll={disableSmoothScroll}
-                    setDisableSmoothScroll={setDisableSmoothScroll}
                     isImmersionMode={isImmersionMode}
                     setIsImmersionMode={setIsImmersionMode}
-                    isBloomEnabled={isBloomEnabled}
-                    setIsBloomEnabled={setIsBloomEnabled}
                     isTimestampEnabled={isTimestampEnabled}
                     setIsTimestampEnabled={setIsTimestampEnabled}
                     isTextRevealEnabled={isTextRevealEnabled}

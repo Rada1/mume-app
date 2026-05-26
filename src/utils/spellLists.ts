@@ -50,7 +50,7 @@ export const WARRIOR_SKILLS = [
 ];
 
 export const RANGER_SKILLS = [
-    "Bandage", "Climb", "Ride", "Swim", "Track"
+    "Bandage", "Climb", "Swim", "Track"
 ];
 
 export const THIEF_SKILLS = [

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Settings, MoreVertical, FolderOpen, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, FileText, User, Map as MapIcon } from 'lucide-react';
+import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { formatCompactNumber } from '../../utils/gameUtils';
 import { useModeStore } from '../../stores/useModeStore';
@@ -30,7 +30,7 @@ const Header: React.FC<HeaderProps> = () => {
     const { spectateTarget, activeView, setActiveView } = mode;
     const { target, setTarget, characterInfo } = useVitals();
     const {
-        ui, setUI, setIsSettingsOpen, setIsLibraryOpen, setPopoverState,
+        ui, setUI, setIsSettingsOpen, setPopoverState,
         setSettingsTab, replayer
     } = useUI();
 
@@ -94,28 +94,6 @@ const Header: React.FC<HeaderProps> = () => {
         document.addEventListener('pointerdown', handleClickOutside, { capture: true });
         return () => document.removeEventListener('pointerdown', handleClickOutside, { capture: true });
     }, [ui.isMenuOpen, ui.isSetMenuOpen, setIsMenuOpen, setIsSetMenuOpen, setMenuView]);
-
-    const handleReplayUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            console.log('[Header] Replay file loaded');
-            try {
-                if (event.target?.result) {
-                    const log = JSON.parse(event.target.result as string);
-                    console.log('[Header] Parsed log entries:', log.entries?.length);
-                    replayer.loadLog(log);
-                }
-            } catch (err) {
-                console.error('[Header] Failed to parse MUME log:', err);
-            }
-        };
-        reader.readAsText(file);
-        setIsMenuOpen(false);
-    };
-
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Portal-positioned coords for the main menu dropdown (escapes content-layer stacking)
     const [menuDropdownPos, setMenuDropdownPos] = useState<{ top: number; right: number } | null>(null);
@@ -417,13 +395,6 @@ const Header: React.FC<HeaderProps> = () => {
                 )}
 
                 <div className="action-menu-wrapper main-menu-dots" ref={menuRef} style={{ flexShrink: 0 }}>
-                    <input 
-                        type="file" 
-                        ref={fileInputRef} 
-                        style={{ display: 'none' }} 
-                        accept=".mume-log,.json" 
-                        onChange={handleReplayUpload}
-                    />
                     <button
                         className={`menu-toggle-btn ${isMenuOpen ? 'active' : ''}`}
                         onClick={() => {
@@ -451,40 +422,6 @@ const Header: React.FC<HeaderProps> = () => {
                         >
                             {menuView === 'main' ? (
                                 <>
-                                    <div
-                                        className="dropdown-item"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setIsLibraryOpen(true);
-                                            setIsMenuOpen(false);
-                                        }}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
-                                                <FileText size={16} />
-                                            </div>
-                                            <span>Session Library</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="menu-divider" />
-
-                                    <div
-                                        className="dropdown-item"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            fileInputRef.current?.click();
-                                            setIsMenuOpen(false);
-                                        }}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
-                                                <FolderOpen size={16} />
-                                            </div>
-                                            <span>Open Replay (.mume-log)</span>
-                                        </div>
-                                    </div>
-
                                     {replayer.log && !replayer.state.isVisible && (
                                         <div
                                             className="dropdown-item"
@@ -521,34 +458,33 @@ const Header: React.FC<HeaderProps> = () => {
                                         </div>
                                     )}
 
-                                    <div
-                                        className="dropdown-item"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setSettingsTab('map');
-                                            setIsSettingsOpen(true);
-                                            setIsMenuOpen(false);
-                                        }}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    {(
+                                        [
+                                            { tab: 'general',  label: 'General',     icon: <Cog size={16} /> },
+                                            { tab: 'sound',    label: 'Sound',       icon: <Music size={16} /> },
+                                            { tab: 'actions',  label: 'Actions',     icon: <Activity size={16} /> },
+                                            { tab: 'buttons',  label: 'Buttons',     icon: <Settings size={16} /> },
+                                            { tab: 'map',      label: 'Map',         icon: <MapIcon size={16} /> },
+                                            { tab: 'replays',  label: 'Replays',     icon: <Film size={16} /> },
+                                            { tab: 'help',     label: 'Help & Guides', icon: <HelpCircle size={16} /> },
+                                        ] as const
+                                    ).map(({ tab, label, icon }) => (
+                                        <div
+                                            key={tab}
+                                            className="dropdown-item"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSettingsTab(tab);
+                                                setIsSettingsOpen(true);
+                                                setIsMenuOpen(false);
+                                            }}
+                                        >
                                             <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
-                                                <MapIcon size={16} />
+                                                {icon}
                                             </div>
-                                            <span>Map Settings</span>
+                                            <span>{label}</span>
                                         </div>
-                                    </div>
-
-                                    <div
-                                        className="dropdown-item"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setIsSettingsOpen(true);
-                                            setIsMenuOpen(false);
-                                        }}
-                                    >
-                                        <Settings size={16} />
-                                        <span>Settings</span>
-                                    </div>
+                                    ))}
                                 </>
                             ) : (
                                 <div className="menu-group" style={{ padding: '4px' }}>

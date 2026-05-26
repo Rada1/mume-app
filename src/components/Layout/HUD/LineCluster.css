@@ -167,8 +167,7 @@
 
 .tactical-line-wrapper .line-btn:not(.triggered):not(:active):not(.is-swiping) .button-icon,
 .tactical-line-wrapper .line-btn:not(.triggered):not(:active):not(.is-swiping) .button-label {
-    filter: saturate(0.82) brightness(1.04);
-    opacity: 0.88;
+    opacity: 1;
 }
 
 .tactical-line-wrapper .line-btn:hover .button-icon,

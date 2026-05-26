@@ -7,6 +7,20 @@ import { getInlineCategoryAxes, normalizeInlineCategoryId } from '../../utils/in
 import { useUIStore } from '../../stores/useUIStore';
 import { audioManager } from '../../services/audio/AudioManager';
 
+const isLogBlankTapTarget = (target: EventTarget | null): boolean => {
+    if (!(target instanceof HTMLElement)) return false;
+    if (target.closest('.inline-btn')) return false;
+    return !!target.closest('.message-log, .log-card-drawer') && (
+        target.classList.contains('message-log') ||
+        target.classList.contains('log-card-drawer') ||
+        target.classList.contains('log-bottom-spacer') ||
+        target.classList.contains('message-content') ||
+        target.classList.contains('content-row') ||
+        target.classList.contains('message') ||
+        target.hasAttribute('data-index')
+    );
+};
+
 export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>, heldBtnFiredRef?: React.MutableRefObject<boolean>) => {
     const {
         executeCommand, setInput, setTarget, triggerHaptic, btn, joystick, target,
@@ -98,30 +112,31 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         // Allow clicks in mobile portrait even if map is open in gutter
         if (ui.mapExpanded && viewport.isMobile && viewport.isLandscape) return;
 
-        // Close shop panel if open when tapping log
-        if (useUIStore.getState().isShopOpen) {
+        const targetEl = (e.target instanceof HTMLElement) ? e.target.closest('.inline-btn') as HTMLElement : (e.target as any)?.parentElement?.closest('.inline-btn') as HTMLElement;
+
+        // Close shop panel if open when tapping log background (not on an inline button)
+        if (useUIStore.getState().isShopOpen && !targetEl) {
             useUIStore.getState().setIsShopOpen(false);
         }
 
         const now = Date.now();
-        const targetEl = (e.target instanceof HTMLElement) ? e.target.closest('.inline-btn') as HTMLElement : (e.target as any)?.parentElement?.closest('.inline-btn') as HTMLElement;
 
         const doubleTapThreshold = viewport.isMobile ? 400 : 300;
 
         if (targetEl) {
             if (now - lastBtnClickRef.current < doubleTapThreshold) {
                 lastBtnClickRef.current = 0;
-                const context = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
-                if (context) {
-                    setTarget(context);
-                    triggerHaptic(30);
-                    e.stopPropagation();
-                }
-                return;
             }
             if (isSoundEnabled) playClickSound();
             lastBtnClickRef.current = now;
         } else {
+            if (isLogBlankTapTarget(e.target)) {
+                clearObjectSelection();
+                setTarget(null);
+                setPopoverState(null);
+                lastLogClickRef.current = now;
+                return;
+            }
             if (now - lastLogClickRef.current < doubleTapThreshold) {
                 lastLogClickRef.current = 0;
                 handleLogDoubleClick(e);
@@ -256,46 +271,9 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             return;
         }
 
-        // --- Second tap on a target-highlighted entity ---
-        // After the first tap, TokenRenderer overrides data-cmd='target' and strips data-id/data-category
-        // on the matched button. Detect this and open the action menu using the stored selectedTarget.
-        const storedTarget = useUIStore.getState().selectedTarget;
-        const isSecondTapOnTarget =
-            cmd === 'target' &&
-            action === 'menu' &&
-            !isLong && !isMod &&
-            !!storedTarget &&
-            storedTarget.context === contextStr;
-        if (isSecondTapOnTarget) {
-            const effectiveSetId = storedTarget.setId || storedTarget.category || 'selection';
-            const glowColor = targetEl.style.getPropertyValue('--glow-color').trim();
-            const accentColor = glowColor || targetEl.style.color || storedTarget.accentColor || undefined;
-            if (popoverState?.entityId === storedTarget.id && popoverState.setId === effectiveSetId) {
-                setPopoverState(null);
-                triggerHaptic(10);
-                return;
-            }
-            const rect = targetEl.getBoundingClientRect();
-            setPopoverState({
-                x: rect.right,
-                y: rect.top + rect.height / 2,
-                setId: effectiveSetId,
-                category: storedTarget.category,
-                context: storedTarget.context,
-                entityId: storedTarget.id,
-                menuDisplay: storedTarget.menuDisplay,
-                accentColor,
-                preferSide: 'right',
-                parentNoun: storedTarget.parentNoun
-            });
-            playEffect('actionmenu');
-            targetEl.classList.add('menu-active');
-            triggerHaptic(20);
-            return;
-        }
-
         // --- First tap: select a targetable entity ---
         const tapAxes = getInlineCategoryAxes(category);
+        const isTargetHighlight = targetEl.classList.contains('target-highlighter') || targetEl.classList.contains('is-target');
         const isEntityTap =
             isTargetableInline &&
             entityId &&
@@ -304,8 +282,36 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             !isLong &&
             !isMod;
         if (isEntityTap) {
+            const shopStore = useUIStore.getState();
+            if (shopStore.isShopOpen && shopStore.heldShopAction === 'compare' && shopStore.compareFirstTarget !== null) {
+                triggerHaptic(30);
+                executeCommand(`compare ${shopStore.compareFirstTarget} ${contextStr}`);
+                shopStore.setHeldShopAction(null);
+                shopStore.setCompareFirstTarget(null);
+                return;
+            }
+
             const glowColor = targetEl.style.getPropertyValue('--glow-color').trim();
             const accentColor = glowColor || targetEl.style.color || undefined;
+            if (isTargetHighlight || shopStore.selectedTarget?.id === entityId) {
+                const rect = targetEl.getBoundingClientRect();
+                setPopoverState({
+                    x: rect.right,
+                    y: rect.top + rect.height / 2,
+                    setId: cmd || category || 'selection',
+                    category: category || undefined,
+                    context: contextStr || undefined,
+                    entityId,
+                    menuDisplay,
+                    accentColor,
+                    preferSide: 'right',
+                    parentNoun
+                });
+                playEffect('actionmenu');
+                targetEl.classList.add('menu-active');
+                triggerHaptic(20);
+                return;
+            }
             toggleObjectSelection({
                 id: entityId,
                 setId: cmd || undefined,
@@ -327,8 +333,8 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             const glowColor = targetEl.style.getPropertyValue('--glow-color').trim();
             const accentColor = glowColor || targetEl.style.color || undefined;
 
-            // Toggle logic: If clicking the same button, close the popover
-            if (popoverState && popoverState.entityId === entityId && popoverState.setId === (cmd || 'selection')) {
+            // Toggle logic: If clicking the same non-highlight button, close the popover
+            if (!isTargetHighlight && popoverState && popoverState.entityId === entityId && popoverState.setId === (cmd || 'selection')) {
                 setPopoverState(null);
                 triggerHaptic(10);
                 return;
@@ -389,9 +395,6 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 executeCommand(finalCmd, isSilent, false, false, fromDrawer, { shouldFocus: false });
             }
             triggerHaptic(40);
-        } else if (cmd === 'target' && context) {
-            setTarget(contextStr);
-            triggerHaptic(30);
         }
 
         const accountStage = targetEl.getAttribute('data-account-stage');

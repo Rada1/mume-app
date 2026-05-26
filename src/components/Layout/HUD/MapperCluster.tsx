@@ -28,7 +28,6 @@ interface MapperClusterProps {
     isEditMode: boolean;
     handleDragStart: (e: React.PointerEvent, id: string, type: string, force?: boolean) => void;
     characterName: string;
-    isMmapperMode: boolean;
     isMobile: boolean;
     mapperRef: React.RefObject<any>;
     dragState: { id: string; type: string; startX: number; startY: number } | null;
@@ -45,7 +44,7 @@ interface MapperClusterProps {
 }
 
 export const MapperCluster: React.FC<MapperClusterProps> = ({
-    uiPositions, isEditMode, handleDragStart, characterName, isMmapperMode, isMobile, mapperRef,
+    uiPositions, isEditMode, handleDragStart, characterName, isMobile, mapperRef,
     dragState, isLandscape, wasDraggingRef, heldButton, setHeldButton, setCommandPreview,
     input, setInput, handleSend, handleInputSwipe
 }) => {
@@ -841,9 +840,9 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             <div
                 className="mobile-mapper-touch-surface gutter-panel-card"
                 style={{
-                    display: isShown ? 'block' : 'none',
-                    pointerEvents: isShown ? 'auto' : 'none',
-                    opacity: isShown ? 1 : 0,
+                    display: ui.mapExpanded || ui.drawer !== 'none' ? 'block' : 'none',
+                    pointerEvents: ui.mapExpanded && ui.drawer === 'none' ? 'auto' : 'none',
+                    opacity: ui.mapExpanded || ui.drawer !== 'none' ? 1 : 0,
                     touchAction: 'none',
                     position: 'absolute',
                     inset: '0',
@@ -911,7 +910,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     ref={mapperRef}
                     isDesignMode={isEditMode}
                     characterName={characterName}
-                    isMmapperMode={isMmapperMode}
                     isMobile={true}
                     isExpanded={isExpanded}
                     setIsMinimized={(min) => {

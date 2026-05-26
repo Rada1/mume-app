@@ -8,7 +8,6 @@ import { createButton } from '../../utils/buttonFactory';
 export const META_BUTTONS = [
     createButton({ id: 'btn-who', label: 'Who', command: 'who', setId: 'info', color: '#8b5cf6', x: 85, y: 75, width: 80 }),
     createButton({ id: 'btn-where', label: 'Where', command: 'where', setId: 'info', color: '#8b5cf6', x: 75, y: 75, width: 80 }),
-    createButton({ id: 'btn-target-clear', label: 'Clear Target', command: '__clear_target__', setId: 'target', color: 'rgba(100,100,100,0.6)', width: 110 }),
 
     // --- SHARED CHARACTER ACTIONS (used across ally / enemy / neutral / npc traits) ---
     createButton({ id: 'btn-examine', label: 'Examine', command: 'examine %n', setId: 'inline-ally', color: '#2563eb' }),
@@ -19,8 +18,4 @@ export const META_BUTTONS = [
     createButton({ id: 'btn-follow', label: 'Follow', command: 'follow %n', setId: 'inline-ally', color: '#16a34a' }),
     createButton({ id: 'btn-social', label: 'Social', command: 'social list', setId: 'inline-ally', color: '#06b6d4', actionType: 'menu' }),
     createButton({ id: 'btn-converse', label: 'Converse', command: '__parley__', setId: 'inline-ally', color: '#8b5cf6' }),
-
-    // --- TARGET MENU ---
-    createButton({ id: 'btn-look', label: 'Look', command: 'look %n', setId: 'target', color: '#3b82f6', width: 100 }),
-    createButton({ id: 'btn-get', label: 'Get', command: 'get %n', setId: 'target', color: '#22c55e', width: 100 }),
 ];

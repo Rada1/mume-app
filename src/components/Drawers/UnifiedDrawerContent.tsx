@@ -14,6 +14,7 @@ import { StatusDrawer } from './StatusDrawer';
 import { DrawerHoldCommandButton } from './DrawerHoldCommandButton';
 import { DrawerTabBar } from './DrawerTabBar';
 import { buildPracticeDrawerLines } from '../../utils/practiceDrawerLines';
+import { extractMumeKeyword } from '../../utils/gameUtils';
 
 type GearTab = 'worn' | 'inv' | 'vicinity';
 type PlayersTab = 'online' | 'nearby' | 'group';
@@ -88,7 +89,7 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                 entityId: id,
                 text: label,
                 html: label,
-                context: item.keyword,
+                context: extractMumeKeyword(label),
                 isItem: true,
                 cmd: 'cat-room-object'
             };
@@ -106,30 +107,30 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
 
     const selectGearTab = (tab: GearTab) => {
         triggerHaptic(10);
-        setGearTab(tab);
         if (tab === 'worn') executeCommand('eq', true, true, false, true);
         else if (tab === 'inv') executeCommand('inv', true, true, false, true);
         else executeCommand('look', true, true, false, true);
+        setGearTab(tab);
     };
 
     const selectPlayersTab = (tab: PlayersTab) => {
         triggerHaptic(10);
-        setPlayersTab(tab);
         if (tab === 'online') {
             setWhoLines?.([]);
             executeCommand('who', true, true, false, true);
         } else if (tab === 'nearby') {
             refreshNearby();
         }
+        setPlayersTab(tab);
     };
 
     const selectCharTab = (tab: CharacterTab) => {
         triggerHaptic(10);
-        setCharTab(tab);
         if (tab === 'info') executeCommand('info', true, true, false, true);
         else if (tab === 'quests') executeCommand('quest', true, true, false, true);
         else if (tab === 'skills') executeCommand('practice', true, true, false, true);
         else if (tab === 'achievements') executeCommand('achievement', true, true, false, true);
+        setCharTab(tab);
     };
 
     const renderHoldActions = (actions: { id: string; label: string; command: string }[]) => (
@@ -144,144 +145,211 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
         </div>
     );
 
-    // --- Status Section ---
-    if (drawer === 'status') {
-        return <StatusDrawer />;
+    if (drawer === 'account') {
+        return <AccountDrawer />;
     }
 
-    // --- Gear Section ---
-    if (drawer === 'equipment') {
-        return (
-            <>
-                <DrawerTabBar
-                    tabs={[{ id: 'worn', label: 'Worn' }, { id: 'inv', label: 'Inventory' }, { id: 'vicinity', label: 'Vicinity' }]}
-                    active={gearTab}
-                    onChange={(id) => selectGearTab(id as GearTab)}
-                />
-                {gearTab === 'worn' && (
-                    <>
-                        <UnifiedView
-                            lines={displayEqLines}
-                            category="cat-worn-object"
-                            emptyMessage="No equipment data. Tap refresh to update."
-                            onRefresh={() => { triggerHaptic(15); executeCommand('eq', true, true, false, true); }}
-                        />
-                        {renderHoldActions([{ id: 'drawer-worn-remove', label: 'Remove', command: 'remove %n' }])}
-                    </>
-                )}
-                {gearTab === 'inv' && (
-                    <>
-                        <UnifiedView
-                            lines={displayInventoryLines}
-                            category="cat-inventory-object"
-                            emptyMessage="No inventory data. Tap refresh to update."
-                            onRefresh={() => { triggerHaptic(15); executeCommand('inv', true, true, false, true); }}
-                        />
-                        {renderHoldActions([
-                            { id: 'drawer-inv-wear', label: 'Wear', command: 'wear %n' },
-                            { id: 'drawer-inv-drop', label: 'Drop', command: 'drop %n' }
-                        ])}
-                    </>
-                )}
-                {gearTab === 'vicinity' && (
-                    <>
-                        <UnifiedView
-                            lines={roomObjectLines}
-                            category="cat-room-object"
-                            emptyMessage="No room objects detected. Tap refresh to look around."
-                            onRefresh={() => { triggerHaptic(15); executeCommand('look', true, true, false, true); }}
-                        />
-                        {renderHoldActions([{ id: 'drawer-vicinity-get', label: 'Get', command: 'get %n' }])}
-                    </>
-                )}
-            </>
-        );
+    const categories = ['status', 'character', 'players', 'equipment'] as DrawerType[];
+    const activeCategoryIndex = categories.indexOf(drawer);
+
+    if (activeCategoryIndex === -1) {
+        return null;
     }
 
-    // --- Players Section ---
-    if (drawer === 'players') {
-        return (
-            <>
-                <DrawerTabBar
-                    tabs={[{ id: 'online', label: 'Online' }, { id: 'nearby', label: 'Nearby' }, { id: 'group', label: 'Group' }]}
-                    active={playersTab}
-                    onChange={(id) => selectPlayersTab(id as PlayersTab)}
-                />
-                {playersTab === 'online' && (
-                    <>
-                        <UnifiedView
-                            lines={whoLines}
-                            category="inline-player"
-                            emptyMessage="No player data. Tap refresh to update."
-                            onRefresh={() => { triggerHaptic(15); setWhoLines?.([]); executeCommand('who', true, true, false, true); }}
-                        />
-                        {renderHoldActions([
-                            { id: 'drawer-online-whois', label: 'Whois', command: 'whois %n' },
-                            { id: 'drawer-online-chat', label: 'Chat', command: '__parley__' }
-                        ])}
-                    </>
-                )}
-                {playersTab === 'nearby' && (
-                    <>
-                        <NearbyWhereView
-                            lines={whereLines}
-                            onRefresh={() => {
-                                triggerHaptic(15);
-                                refreshNearby();
-                            }}
-                        />
-                        {renderHoldActions([
-                            { id: 'drawer-nearby-whois', label: 'Whois', command: 'whois %n' },
-                            { id: 'drawer-nearby-chat', label: 'Chat', command: '__parley__' }
-                        ])}
-                    </>
-                )}
-                {playersTab === 'group' && (
-                    <GroupTableView members={groupMembers} />
-                )}
-            </>
-        );
-    }
+    return (
+        <div className="drawer-category-viewport" style={{ overflow: 'hidden', width: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <div 
+                className="drawer-category-track" 
+                style={{ 
+                    display: 'flex', 
+                    flexDirection: 'row', 
+                    width: '400%', 
+                    height: '100%', 
+                    transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)', 
+                    transform: `translateX(-${activeCategoryIndex * 25}%)` 
+                }}
+            >
+                {/* 1. Status View */}
+                <div className="drawer-category-slide" style={{ width: '25%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                    <StatusDrawer />
+                </div>
 
-    // --- Character Section ---
-    if (drawer === 'character') {
-        return (
-            <>
-                <DrawerTabBar
-                    tabs={[{ id: 'info', label: 'Info' }, { id: 'quests', label: 'Quests' }, { id: 'skills', label: 'Skills' }, { id: 'achievements', label: 'Achievements' }]}
-                    active={charTab}
-                    onChange={(id) => selectCharTab(id as CharacterTab)}
-                />
-                {charTab === 'info' && (
-                    <UnifiedView
-                        lines={infoLines}
-                        emptyMessage="No info data. Tap refresh to update."
-                        onRefresh={() => { triggerHaptic(15); executeCommand('info', true, true, false, true); }}
-                    />
-                )}
-                {charTab === 'quests' && (
-                    <UnifiedView
-                        lines={questLines}
-                        emptyMessage="No quest data. Tap refresh to update."
-                        onRefresh={() => { triggerHaptic(15); executeCommand('quest', true, true, false, true); }}
-                    />
-                )}
-                {charTab === 'skills' && (
-                    <>
-                        <UnifiedView
-                            lines={practiceTargetLines}
-                            emptyMessage="No skills data. Tap refresh to update."
-                            onRefresh={() => { triggerHaptic(15); executeCommand('practice', true, true, false, true); }}
-                        />
-                        {renderHoldActions([{ id: 'drawer-skills-practice', label: 'Practice', command: 'practice %n' }])}
-                    </>
-                )}
-                {charTab === 'achievements' && (
-                    <UnifiedView lines={achievementLines} emptyMessage="No achievement data. Tap refresh to update." onRefresh={() => { triggerHaptic(15); executeCommand('achievement', true, true, false, true); }} />
-                )}
-            </>
-        );
-    }
+                {/* 2. Character View */}
+                <div className="drawer-category-slide" style={{ width: '25%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                    {(() => {
+                        const tabs = ['info', 'quests', 'skills', 'achievements'] as CharacterTab[];
+                        const activeIndex = tabs.indexOf(charTab);
+                        return (
+                            <>
+                                <DrawerTabBar
+                                    tabs={[{ id: 'info', label: 'Info' }, { id: 'quests', label: 'Quests' }, { id: 'skills', label: 'Skills' }, { id: 'achievements', label: 'Achievements' }]}
+                                    active={charTab}
+                                    onChange={(id) => selectCharTab(id as CharacterTab)}
+                                />
+                                <div className="drawer-tab-viewport" style={{ overflow: 'hidden', width: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <div 
+                                        className="drawer-tab-track" 
+                                        style={{ 
+                                            display: 'flex', 
+                                            flexDirection: 'row', 
+                                            width: '400%', 
+                                            height: '100%', 
+                                            transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)', 
+                                            transform: `translateX(-${activeIndex * 25}%)` 
+                                        }}
+                                    >
+                                        <div className="drawer-tab-slide" style={{ width: '25%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                                            <UnifiedView
+                                                lines={infoLines}
+                                                emptyMessage="No info data. Tap refresh to update."
+                                                onRefresh={() => { triggerHaptic(15); executeCommand('info', true, true, false, true); }}
+                                            />
+                                        </div>
+                                        <div className="drawer-tab-slide" style={{ width: '25%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                                            <UnifiedView
+                                                lines={questLines}
+                                                emptyMessage="No quest data. Tap refresh to update."
+                                                onRefresh={() => { triggerHaptic(15); executeCommand('quest', true, true, false, true); }}
+                                            />
+                                        </div>
+                                        <div className="drawer-tab-slide" style={{ width: '25%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                                            <UnifiedView
+                                                lines={practiceTargetLines}
+                                                emptyMessage="No skills data. Tap refresh to update."
+                                                onRefresh={() => { triggerHaptic(15); executeCommand('practice', true, true, false, true); }}
+                                            />
+                                            {renderHoldActions([{ id: 'drawer-skills-practice', label: 'Practice', command: 'practice %n' }])}
+                                        </div>
+                                        <div className="drawer-tab-slide" style={{ width: '25%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                                            <UnifiedView lines={achievementLines} emptyMessage="No achievement data. Tap refresh to update." onRefresh={() => { triggerHaptic(15); executeCommand('achievement', true, true, false, true); }} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        );
+                    })()}
+                </div>
 
-    return null;
+                {/* 3. Players View */}
+                <div className="drawer-category-slide" style={{ width: '25%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                    {(() => {
+                        const tabs = ['online', 'nearby', 'group'] as PlayersTab[];
+                        const activeIndex = tabs.indexOf(playersTab);
+                        return (
+                            <>
+                                <DrawerTabBar
+                                    tabs={[{ id: 'online', label: 'Online' }, { id: 'nearby', label: 'Nearby' }, { id: 'group', label: 'Group' }]}
+                                    active={playersTab}
+                                    onChange={(id) => selectPlayersTab(id as PlayersTab)}
+                                />
+                                <div className="drawer-tab-viewport" style={{ overflow: 'hidden', width: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <div 
+                                        className="drawer-tab-track" 
+                                        style={{ 
+                                            display: 'flex', 
+                                            flexDirection: 'row', 
+                                            width: '300%', 
+                                            height: '100%', 
+                                            transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)', 
+                                            transform: `translateX(-${activeIndex * (100 / 3)}%)` 
+                                        }}
+                                    >
+                                        <div className="drawer-tab-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                                            <UnifiedView
+                                                lines={whoLines}
+                                                category="inline-player"
+                                                emptyMessage="No player data. Tap refresh to update."
+                                                onRefresh={() => { triggerHaptic(15); setWhoLines?.([]); executeCommand('who', true, true, false, true); }}
+                                            />
+                                            {renderHoldActions([
+                                                { id: 'drawer-online-whois', label: 'Whois', command: 'whois %n' },
+                                                { id: 'drawer-online-chat', label: 'Chat', command: '__parley__' }
+                                            ])}
+                                        </div>
+                                        <div className="drawer-tab-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                                            <NearbyWhereView
+                                                lines={whereLines}
+                                                onRefresh={() => {
+                                                    triggerHaptic(15);
+                                                    refreshNearby();
+                                                }}
+                                            />
+                                            {renderHoldActions([
+                                                { id: 'drawer-nearby-whois', label: 'Whois', command: 'whois %n' },
+                                                { id: 'drawer-nearby-chat', label: 'Chat', command: '__parley__' }
+                                            ])}
+                                        </div>
+                                        <div className="drawer-tab-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                                            <GroupTableView members={groupMembers} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        );
+                    })()}
+                </div>
+
+                {/* 4. Gear View */}
+                <div className="drawer-category-slide" style={{ width: '25%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                    {(() => {
+                        const tabs = ['worn', 'inv', 'vicinity'] as GearTab[];
+                        const activeIndex = tabs.indexOf(gearTab);
+                        return (
+                            <>
+                                <DrawerTabBar
+                                    tabs={[{ id: 'worn', label: 'Worn' }, { id: 'inv', label: 'Inventory' }, { id: 'vicinity', label: 'Vicinity' }]}
+                                    active={gearTab}
+                                    onChange={(id) => selectGearTab(id as GearTab)}
+                                />
+                                <div className="drawer-tab-viewport" style={{ overflow: 'hidden', width: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <div 
+                                        className="drawer-tab-track" 
+                                        style={{ 
+                                            display: 'flex', 
+                                            flexDirection: 'row', 
+                                            width: '300%', 
+                                            height: '100%', 
+                                            transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)', 
+                                            transform: `translateX(-${activeIndex * (100 / 3)}%)` 
+                                        }}
+                                    >
+                                        <div className="drawer-tab-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                                            <UnifiedView
+                                                lines={displayEqLines}
+                                                category="cat-worn-object"
+                                                emptyMessage="No equipment data. Tap refresh to update."
+                                                onRefresh={() => { triggerHaptic(15); executeCommand('eq', true, true, false, true); }}
+                                            />
+                                            {renderHoldActions([{ id: 'drawer-worn-remove', label: 'Remove', command: 'remove %n' }])}
+                                        </div>
+                                        <div className="drawer-tab-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                                            <UnifiedView
+                                                lines={displayInventoryLines}
+                                                category="cat-inventory-object"
+                                                emptyMessage="No inventory data. Tap refresh to update."
+                                                onRefresh={() => { triggerHaptic(15); executeCommand('inv', true, true, false, true); }}
+                                            />
+                                            {renderHoldActions([
+                                                { id: 'drawer-inv-wear', label: 'Wear', command: 'wear %n' },
+                                                { id: 'drawer-inv-drop', label: 'Drop', command: 'drop %n' }
+                                            ])}
+                                        </div>
+                                        <div className="drawer-tab-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                                            <UnifiedView
+                                                lines={roomObjectLines}
+                                                category="cat-room-object"
+                                                emptyMessage="No room objects detected. Tap refresh to look around."
+                                                onRefresh={() => { triggerHaptic(15); executeCommand('look', true, true, false, true); }}
+                                            />
+                                            {renderHoldActions([{ id: 'drawer-vicinity-get', label: 'Get', command: 'get %n' }])}
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        );
+                    })()}
+                </div>
+            </div>
+        </div>
+    );
 };

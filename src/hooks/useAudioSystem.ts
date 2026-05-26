@@ -89,8 +89,9 @@ export const useAmbientController = (accountStage: string = 'none') => {
 export const useAudioEffects = () => {
     const isSoundEnabled = useSettingsStore(state => state.isSoundEnabled);
     const { triggerHaptic } = useHaptics();
+    type EffectOptions = { pitch?: number, volume?: number, filterFrequency?: number, skipJitter?: boolean };
 
-    const playEffect = useCallback((name: string, options?: { pitch?: number, volume?: number, filterFrequency?: number }) => {
+    const playEffect = useCallback((name: string, options?: EffectOptions) => {
         if (isSoundEnabled) {
             audioManager.playEffect(name, options);
         }
@@ -114,7 +115,7 @@ export const useAudioEffects = () => {
     const playEventMoveSound = useCallback(() => playEffect('event-move'), [playEffect]);
     const playWearSound = useCallback(() => playEffect('wear'), [playEffect]);
     const playRemoveSound = useCallback(() => playEffect('remove'), [playEffect]);
-    const playLoadFlagSound = useCallback(() => playEffect('loadflag', { skipJitter: true }), [playEffect]);
+    const playLoadFlagSound = useCallback(() => playEffect('loadflag', { pitch: 1.0, skipJitter: true }), [playEffect]);
     const playRideSound = useCallback(() => playEffect('ride'), [playEffect]);
     const playStopRidingSound = useCallback(() => playEffect('stopriding'), [playEffect]);
 

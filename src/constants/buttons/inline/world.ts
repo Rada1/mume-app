@@ -12,9 +12,25 @@ export const WORLD_BUTTONS = [
     createButton({ id: 'btn-lantern-fill', label: 'Fill', command: 'fill %n', setId: 'inline-lantern', color: '#3b82f6' }),
     createButton({ id: 'btn-lightsource-cover', label: 'Cover', command: 'cover %n', setId: 'inline-lightsource', color: '#475569' }),
     createButton({ id: 'btn-lightsource-uncover', label: 'Uncover', command: 'uncover %n', setId: 'inline-lightsource', color: '#facc15' }),
+    createButton({ id: 'btn-lightsource-snuff', label: 'Snuff', command: 'snuff %n', setId: 'inline-lightsource', color: '#94a3b8' }),
+    createButton({ id: 'btn-lightsource-light', label: 'Light', command: 'light %n', setId: 'inline-lightsource', color: '#facc15' }),
+
+    // --- POISON ---
+    createButton({ id: 'btn-poison', label: 'Poison', command: 'poison', setId: 'inline-poison', color: '#4ade80' }),
+
+    // --- QUAFFABLE ---
+    createButton({ id: 'btn-quaff', label: 'Quaff', command: 'quaff %n', setId: 'inline-quaffable', color: '#f472b6' }),
+
+    // --- PIPES ---
+    createButton({ id: 'btn-pipe-smoke', label: 'Smoke', command: 'smoke pipe', setId: 'inline-pipe', color: '#a3e635' }),
+
+    // --- BOOKS ---
+    createButton({ id: 'btn-book-read', label: 'Read', command: 'read %n', setId: 'inline-book', color: '#a78bfa' }),
 
     // --- CORPSES ---
     createButton({ id: 'btn-corpse-drag', label: 'Drag', command: 'drag %n', setId: 'inline-corpses', color: '#94a3b8' }),
+    createButton({ id: 'btn-corpse-look-in', label: 'Look In', command: 'look in %n', setId: 'inline-corpses', color: '#3b82f6' }),
+    createButton({ id: 'btn-corpse-get-all', label: 'G/All', command: 'get all %n', setId: 'inline-corpses', color: '#f59e0b' }),
     createButton({ id: 'btn-corpse-butcher', label: 'Butcher', command: 'butcher %n', setId: 'inline-corpses', color: '#dc2626' }),
     createButton({ id: 'btn-corpse-burn', label: 'Burn', command: 'burn %n', setId: 'inline-corpses', color: '#ea580c' }),
     createButton({ id: 'btn-corpse-bury', label: 'Bury', command: 'bury %n', setId: 'inline-corpses', color: '#78716c' }),

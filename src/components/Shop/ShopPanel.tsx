@@ -20,6 +20,16 @@ const INV_ACTIONS: { id: InvAction; label: string }[] = [
     { id: 'mend',  label: 'Mend' },
 ];
 
+const KNOWN_MUME_SHOPKEEPERS = new Set([
+    'nordri', 'harn', 'gillie', 'sadie', 'corbec', 'clara', 'bill', 'eostra', 'kraz', 
+    'litri', 'gymir', 'thulin', 'edrahil', 'lindir', 'al', 'olo', 'gaffer', 'boffin',
+    'thrain', 'dwalin', 'gimli', 'gloin', 'bofur', 'bombur', 'thorin', 'arminas', 
+    'fili', 'kili', 'elrond', 'galadriel', 'celeborn', 'thranduil', 'legolas', 
+    'balin', 'dori', 'nori', 'ori', 'oen', 'grocer', 'weaponsmith', 'armourer', 
+    'provisioner', 'innkeeper', 'dealer', 'merchant', 'keeper', 'smith', 'trader',
+    'magni', 'modi', 'var', 'syn', 'gullveig'
+]);
+
 export const ShopPanel: React.FC = () => {
     const isShopOpen      = useUIStore(s => s.isShopOpen);
     const setIsShopOpen   = useUIStore(s => s.setIsShopOpen);
@@ -31,11 +41,27 @@ export const ShopPanel: React.FC = () => {
     const setHeldAction    = useUIStore(s => s.setHeldShopAction);
     const compareFirst     = useUIStore(s => s.compareFirstTarget);
     const setCompareFirst  = useUIStore(s => s.setCompareFirstTarget);
+    const shopkeeperNameFromStore = useUIStore(s => s.shopkeeperName);
+    const setShopkeeperName       = useUIStore(s => s.setShopkeeperName);
 
-    const { triggerHaptic, executeCommand } = useGame() as any;
+    const { triggerHaptic, executeCommand, roomNpcs, roomName, registry } = useGame() as any;
     const { handleTabClick, setGearTab } = useUI() as any;
     const [search, setSearch] = useState('');
     const selectedTarget = useUIStore(s => s.selectedTarget);
+
+    const shopkeeper = roomNpcs?.find((npc: any) => {
+        const entity = registry?.getEntity(npc.id);
+        return entity?.capabilities?.includes('shopkeeper') || 
+               npc.name?.toLowerCase().includes('shopkeeper') ||
+               npc.name?.toLowerCase().includes('dealer') ||
+               npc.name?.toLowerCase().includes('merchant') ||
+               npc.name?.toLowerCase().includes('keeper') ||
+               npc.name?.toLowerCase().includes('smith') ||
+               npc.name?.toLowerCase().includes('trader') ||
+               (npc.name && KNOWN_MUME_SHOPKEEPERS.has(npc.name.toLowerCase()));
+    });
+
+    const shopkeeperName = shopkeeperNameFromStore || (shopkeeper ? shopkeeper.name : null);
 
     useEffect(() => { if (!isShopOpen) setSearch(''); }, [isShopOpen]);
 
@@ -53,15 +79,13 @@ export const ShopPanel: React.FC = () => {
         executeCommand('info %r', true, true);
     }, [setShopBalanceRequested, executeCommand]);
 
-    // Disable MUME pager while shop is open; also open inventory drawer
+    // Open inventory drawer and refresh balance when shop is open
     useEffect(() => {
         if (isShopOpen) {
-            executeCommand('change page off', true, true);
             setGearTab('inv');
             handleTabClick('equipment');
             refreshBalance();
         } else {
-            executeCommand('change page on', true, true);
             setShopBalance(null);
         }
     }, [isShopOpen]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -88,6 +112,33 @@ export const ShopPanel: React.FC = () => {
         }
     }, [heldAction, triggerHaptic, setHeldAction, setCompareFirst]);
 
+    const handleShopActionDown = useCallback((action: ShopAction, e: React.PointerEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const target = useUIStore.getState().selectedTarget;
+        if (target && target.category === 'shopitem') {
+            triggerHaptic(30);
+            if (action === 'compare') {
+                setHeldAction('compare');
+                setCompareFirst(Number(target.context));
+                heldActionRef.current = 'compare';
+                compareFirstRef.current = Number(target.context);
+                useUIStore.getState().clearObjectSelection();
+            } else {
+                executeCommand(`${action} ${target.context}`);
+                useUIStore.getState().clearObjectSelection();
+                if (action === 'buy') {
+                    setTimeout(() => {
+                        refreshBalance();
+                        executeCommand('i', true, true);
+                    }, 400);
+                }
+            }
+        } else {
+            handleActionDown(action);
+        }
+    }, [triggerHaptic, executeCommand, refreshBalance, handleActionDown, setHeldAction, setCompareFirst]);
+
     const handleActionUp = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
@@ -95,7 +146,16 @@ export const ShopPanel: React.FC = () => {
 
     const handleItemPress = useCallback((item: ShopItem) => {
         const action = heldActionRef.current;
-        if (!action) return;
+        if (!action) {
+            triggerHaptic(15);
+            const targetInfo = {
+                id: `shopitem:${item.num}`,
+                context: String(item.num),
+                category: 'shopitem'
+            };
+            useUIStore.getState().toggleObjectSelection(targetInfo);
+            return;
+        }
 
         if (action === 'compare') {
             const first = compareFirstRef.current;
@@ -123,7 +183,7 @@ export const ShopPanel: React.FC = () => {
             heldActionRef.current = null;
             setHeldAction(null);
         }
-    }, [triggerHaptic, executeCommand, setHeldAction, setCompareFirst]);
+    }, [triggerHaptic, executeCommand, setHeldAction, setCompareFirst, refreshBalance]);
 
     const handleInvActionDown = useCallback((action: InvAction, e: React.PointerEvent) => {
         e.preventDefault();
@@ -146,12 +206,21 @@ export const ShopPanel: React.FC = () => {
         setIsShopOpen(false);
         setHeldAction(null);
         setCompareFirst(null);
+        setShopkeeperName(null);
     };
 
     const isTargeting = heldAction !== null;
 
     return (
         <div className={`shop-panel${isShopOpen ? ' open' : ''}`}>
+
+            {/* Header / Title Bar */}
+            <div className="shop-header-title-bar">
+                <span className="shop-header-label">Shop</span>
+                <span className="shop-header-sublabel">
+                    {shopkeeperName ? `Dealing with: ${shopkeeperName}` : (roomName || 'Store')}
+                </span>
+            </div>
 
             {/* Search bar */}
             <div className="shop-search-bar">
@@ -171,6 +240,34 @@ export const ShopPanel: React.FC = () => {
                 )}
             </div>
 
+            {/* Item list */}
+            <div className="shop-panel-content">
+                {filteredItems.length === 0 ? (
+                    <div className="shop-panel-empty">
+                        {shopItems.length === 0 ? 'No items listed.' : 'No items match your search.'}
+                    </div>
+                ) : (
+                    <div className="shop-item-list">
+                        {filteredItems.map(item => {
+                            const isFirstCompare = compareFirst === item.num;
+                            const isSelected = selectedTarget?.id === `shopitem:${item.num}`;
+                            return (
+                                <div
+                                    key={item.num}
+                                    className={`shop-item-row${isSelected ? ' selected' : ''}${isTargeting ? ' targeting' : ''}${isFirstCompare ? ' compare-selected' : ''}`}
+                                    onPointerDown={() => handleItemPress(item)}
+                                >
+                                    <span className="shop-item-num">{item.num}.</span>
+                                    <span className="shop-item-name">{item.name}</span>
+                                    {item.vnum && <span className="shop-item-vnum">&lt;{item.vnum}&gt;</span>}
+                                    <span className="shop-item-price">{item.price}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+
             {/* Balance bar */}
             {shopBalance && (
                 <div className="shop-balance-bar">
@@ -185,37 +282,11 @@ export const ShopPanel: React.FC = () => {
                 </div>
             )}
 
-            {/* Item list */}
-            <div className="shop-panel-content">
-                {filteredItems.length === 0 ? (
-                    <div className="shop-panel-empty">
-                        {shopItems.length === 0 ? 'No items listed.' : 'No items match your search.'}
-                    </div>
-                ) : (
-                    <div className="shop-item-list">
-                        {filteredItems.map(item => {
-                            const isFirstCompare = compareFirst === item.num;
-                            return (
-                                <div
-                                    key={item.num}
-                                    className={`shop-item-row${isTargeting ? ' targeting' : ''}${isFirstCompare ? ' compare-selected' : ''}`}
-                                    onPointerDown={() => handleItemPress(item)}
-                                >
-                                    <span className="shop-item-num">{item.num}.</span>
-                                    <span className="shop-item-name">{item.name}</span>
-                                    {item.vnum && <span className="shop-item-vnum">&lt;{item.vnum}&gt;</span>}
-                                    <span className="shop-item-price">{item.price}</span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-            </div>
-
             {/* Action buttons — styled like DrawerHoldCommandButton (WHOIS/CHAT style) */}
             <div className="shop-panel-tab-bar">
                 {SHOP_ACTIONS.map(action => {
-                    const isHeld = heldAction === action.id;
+                    const isShopTargetSelected = selectedTarget?.category === 'shopitem';
+                    const isHeld = heldAction === action.id || isShopTargetSelected;
                     const isPending = action.needsTwo && compareFirst !== null;
                     const displayLabel = isPending ? `#${compareFirst} → ?` : action.label;
                     return (
@@ -223,7 +294,7 @@ export const ShopPanel: React.FC = () => {
                             key={action.id}
                             type="button"
                             className={`shop-action-btn${isHeld ? ' held' : ''}${isPending ? ' compare-step2' : ''}`}
-                            onPointerDown={() => handleActionDown(action.id)}
+                            onPointerDown={(e) => handleShopActionDown(action.id, e)}
                             onPointerUp={handleActionUp}
                             onPointerCancel={handleActionUp}
                             onClick={e => { e.preventDefault(); e.stopPropagation(); }}
@@ -235,22 +306,25 @@ export const ShopPanel: React.FC = () => {
 
                 <div className="shop-action-divider" />
 
-                {INV_ACTIONS.map(action => (
-                    <button
-                        key={action.id}
-                        type="button"
-                        className={`shop-action-btn${selectedTarget ? ' held' : ''}`}
-                        onPointerDown={e => handleInvActionDown(action.id, e)}
-                        onPointerUp={e => { e.preventDefault(); e.stopPropagation(); }}
-                        onPointerCancel={e => { e.preventDefault(); e.stopPropagation(); }}
-                        onClick={e => { e.preventDefault(); e.stopPropagation(); }}
-                    >
-                        {action.label}
-                    </button>
-                ))}
+                {INV_ACTIONS.map(action => {
+                    const isInvTargetSelected = selectedTarget !== null && selectedTarget.category !== 'shopitem';
+                    return (
+                        <button
+                            key={action.id}
+                            type="button"
+                            className={`shop-action-btn${isInvTargetSelected ? ' held' : ''}`}
+                            onPointerDown={e => handleInvActionDown(action.id, e)}
+                            onPointerUp={e => { e.preventDefault(); e.stopPropagation(); }}
+                            onPointerCancel={e => { e.preventDefault(); e.stopPropagation(); }}
+                            onClick={e => { e.preventDefault(); e.stopPropagation(); }}
+                        >
+                            {action.label}
+                        </button>
+                    );
+                })}
 
-                <button type="button" className="shop-action-btn shop-close-btn" onClick={handleClose}>
-                    Close
+                <button type="button" className="shop-action-btn shop-close-btn" onClick={handleClose} title="Close Shop">
+                    <X size={16} />
                 </button>
             </div>
         </div>

@@ -9,56 +9,33 @@ import { drawDoorLabels } from './renderers/drawDoorLabels';
 import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee, drawDoorHighlights, drawFilterHighlights } from './renderers/drawEntities';
 import { drawRegionLabels } from './renderers/drawRegionLabels';
 import { ZoneFilterConfig } from './zoneFilters';
+import { buildLocalSpatialIndex, didLocalLayoutChange } from './mapLayoutIndex';
 
 const LIGHTING_COLORS: Record<string, [number, number, number, number]> = {
     sun:        [255, 248, 200, 0.09],
     moon:       [130, 170, 255, 0.06],
-    artificial: [255, 255, 255, 0.08],
-    dark:       [0,   0,   0,   0.05],
+    artificial: [255, 0,   0,   0.06],
+    dark:       [0,   0,   0,   0],
     none:       [0,   0,   0,   0],
     normal:     [0,   0,   0,   0],
 };
+const VIGNETTE_EDGE_ALPHA: Record<string, number> = {
+    sun: 0.32,
+    moon: 0.38,
+    artificial: 0.38,
+    dark: 0.35,
+    none: 0.38,
+    normal: 0.38,
+};
 const LIGHTING_TRANSITION_MS = 1500;
+const EXPLORATION_CACHE_FRAME_MS = 120;
 const ZOOM_SETTLE_MS = 180;
-const ICONS_ZOOM_IN = 0.36;
-const ICONS_ZOOM_OUT = 0.22;
-const ICONS_FORCE_OFF_ZOOM = 0.16;
+const ICONS_ZOOM_IN = 0.38;
+const ICONS_ZOOM_OUT = 0.30;
+const ICONS_FORCE_OFF_ZOOM = 0.28;
 const LABELS_ZOOM_IN = 0.42;
 const LABELS_ZOOM_OUT = 0.28;
 const LABELS_FORCE_OFF_ZOOM = 0.2;
-
-const didLayoutChange = (oldRooms: Record<string, any>, newRooms: Record<string, any>): boolean => {
-    const oldKeys = Object.keys(oldRooms);
-    const newKeys = Object.keys(newRooms);
-    if (oldKeys.length !== newKeys.length) return true;
-    
-    for (const key of newKeys) {
-        const oldRoom = oldRooms[key];
-        const newRoom = newRooms[key];
-        if (!oldRoom) return true;
-        
-        if (oldRoom.x !== newRoom.x || oldRoom.y !== newRoom.y || oldRoom.z !== newRoom.z) return true;
-        if (oldRoom.terrain !== newRoom.terrain) return true;
-        if (oldRoom.light !== newRoom.light || oldRoom.sundeath !== newRoom.sundeath) return true;
-        
-        const oldExits = oldRoom.exits || {};
-        const newExits = newRoom.exits || {};
-        const oldExitKeys = Object.keys(oldExits);
-        const newExitKeys = Object.keys(newExits);
-        
-        if (oldExitKeys.length !== newExitKeys.length) return true;
-        
-        for (const dir of newExitKeys) {
-            const oldEx = oldExits[dir];
-            const newEx = newExits[dir];
-            if (!oldEx) return true;
-            if (oldEx.target !== newEx.target || oldEx.closed !== newEx.closed || oldEx.hasDoor !== newEx.hasDoor) {
-                return true;
-            }
-        }
-    }
-    return false;
-};
 
 interface RendererProps {
     rooms: Record<string, any>;
@@ -105,6 +82,7 @@ interface RendererProps {
     neutralColor?: string;
     objectColor?: string;
     targetColor?: string;
+    targetName?: string | null;
     opponentName?: string | null;
     opponentId?: string | null;
     inCombat?: boolean;
@@ -132,7 +110,7 @@ export const useMapperRenderer = ({
     preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, exploredRef, exploredMarkers,
     unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
     triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-    roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
+    roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName,
     opponentName, opponentId, inCombat, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
     activeMapFilter, mapSearchQuery, combatPulsesRef,
     mapTileVisuals, mapTileOpacity, zoneFilters,
@@ -153,6 +131,7 @@ export const useMapperRenderer = ({
     }>({ from: [0,0,0,0], to: [0,0,0,0], startTime: 0, lastLighting: lighting });
 
     const offscreenCacheRef = useRef<{ canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, lastParams: string } | null>(null);
+    const vignetteCacheRef = useRef<{ canvas: HTMLCanvasElement, w: number, h: number, edgeAlpha: number } | null>(null);
     const localSpatialIndexRef = useRef<Record<number, Record<string, string[]>>>({});
     const lastRoomsRef = useRef<Record<string, any>>({});
     const processedIconsRef = useRef<Record<string, HTMLCanvasElement>>({});
@@ -242,21 +221,11 @@ export const useMapperRenderer = ({
 
         // 1. Update Local Spatial Index if rooms changed
         if (allRooms !== lastRoomsRef.current) {
-            const layoutChanged = didLayoutChange(lastRoomsRef.current, allRooms);
+            const layoutChanged = didLocalLayoutChange(lastRoomsRef.current, allRooms);
             lastRoomsRef.current = allRooms;
             if (layoutChanged) {
                 roomsVersionRef.current += 1;
-                const newIndex: Record<number, Record<string, string[]>> = {};
-                Object.values(allRooms).forEach((room: any) => {
-                    if (room.id.startsWith('m_')) return;
-                    const rz = Math.round(room.z || 0);
-                    if (!newIndex[rz]) newIndex[rz] = {};
-                    const bx = Math.floor(room.x / 5), by = Math.floor(room.y / 5);
-                    const key = `${bx},${by}`;
-                    if (!newIndex[rz][key]) newIndex[rz][key] = [];
-                    newIndex[rz][key].push(room.id);
-                });
-                localSpatialIndexRef.current = newIndex;
+                localSpatialIndexRef.current = buildLocalSpatialIndex(allRooms);
             }
         }
 
@@ -362,6 +331,8 @@ export const useMapperRenderer = ({
 
         const lastExplored = effectiveFirstExploredAtRef.current['_latest'] || 0;
         const isExplorationAnimating = (now - lastExplored) < 1000;
+        const lastExplorationBuild = (cache as any).lastExplorationBuild ?? 0;
+        const explorationFrameDue = isExplorationAnimating && (now - lastExplorationBuild) > EXPLORATION_CACHE_FRAME_MS;
 
         const zoneFiltersChanged = zoneFilters !== lastZoneFiltersRef.current;
         if (zoneFiltersChanged) {
@@ -376,7 +347,7 @@ export const useMapperRenderer = ({
         const lodParams = `${zoomLod.showTerrainIcons}_${zoomLod.showDoorLabels}`;
         const lodChanged = (cache as any).lastLodParams !== lodParams;
         const baseParams = `${curZInt}_${isDarkMode}_${roomsVersionRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}_${weather}`;
-        const needsRebuild = cache.lastParams !== baseParams || (!isViewportInteracting && lodChanged) || zoomDiff > zoomThreshold || moveDist > moveThreshold || isExplorationAnimating || visualsChanged;
+        const needsRebuild = cache.lastParams !== baseParams || (!isViewportInteracting && lodChanged) || zoomDiff > zoomThreshold || moveDist > moveThreshold || explorationFrameDue || visualsChanged;
 
         if (needsRebuild) {
             const offCtx = cache.ctx;
@@ -454,11 +425,12 @@ export const useMapperRenderer = ({
                 ctx: offCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
                 imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
                 allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
-                triggerRender, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, opponentName, opponentId,
+                triggerRender, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName, opponentId,
                 activeInlineEntityId, selectedObjectIds,
                 activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
                 mapTileVisuals, mapTileOpacity,
                 zoneFilters,
+                lighting,
                 weather,
                 inCombat,
                 isDragging,
@@ -487,6 +459,9 @@ export const useMapperRenderer = ({
             (cache as any).lastLodParams = lodParams;
             (cache as any).roomAtCoord = roomAtCoord;
             (cache as any).visitedAtCoord = visitedAtCoord;
+            if (isExplorationAnimating) {
+                (cache as any).lastExplorationBuild = now;
+            }
         }
 
         // 3. Main Rendering Pass (Draw the static cache with scaling/projection)
@@ -517,9 +492,10 @@ export const useMapperRenderer = ({
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
             allRooms, roomAtCoord: (cache as any).roomAtCoord, visitedAtCoord: (cache as any).visitedAtCoord,
             preloaded: preloadedCoordsRef.current, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef,
-            groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, opponentName,
+            groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName,
             opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
             activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
+            lighting,
             inCombat,
             isDragging,
             showTerrainIcons: zoomLod.showTerrainIcons,
@@ -561,18 +537,32 @@ export const useMapperRenderer = ({
         }
         if (t < 1) triggerRender?.();
 
-        // Vignette overlay (screen space) - on top
-        const vigAlpha = lt.from[3] + (lt.to[3] - lt.from[3]) * ease;
-        const vig = ctx.createRadialGradient(
-            baseW / 2, baseH / 2, Math.min(baseW, baseH) * 0.25,
-            baseW / 2, baseH / 2, Math.max(baseW, baseH) * 0.75
-        );
-        vig.addColorStop(0, 'rgba(0,0,0,0)');
-        vig.addColorStop(1, vigAlpha > 0.06 ? 'rgba(0,0,0,0.32)' : 'rgba(0,0,0,0.38)');
-        ctx.fillStyle = vig;
-        ctx.fillRect(0, 0, baseW, baseH);
+        // Vignette overlay (screen space) - on top. Cached: only rebuild when size or lighting changes.
+        const vigEdgeAlpha = VIGNETTE_EDGE_ALPHA[lighting] ?? VIGNETTE_EDGE_ALPHA.none;
+        if (vigEdgeAlpha > 0.001) {
+            let vc = vignetteCacheRef.current;
+            if (!vc || vc.w !== baseW || vc.h !== baseH || vc.edgeAlpha !== vigEdgeAlpha) {
+                const off = document.createElement('canvas');
+                off.width = baseW;
+                off.height = baseH;
+                const offCtx = off.getContext('2d');
+                if (offCtx) {
+                    const grad = offCtx.createRadialGradient(
+                        baseW / 2, baseH / 2, Math.min(baseW, baseH) * 0.25,
+                        baseW / 2, baseH / 2, Math.max(baseW, baseH) * 0.75
+                    );
+                    grad.addColorStop(0, 'rgba(0,0,0,0)');
+                    grad.addColorStop(1, `rgba(0,0,0,${vigEdgeAlpha})`);
+                    offCtx.fillStyle = grad;
+                    offCtx.fillRect(0, 0, baseW, baseH);
+                }
+                vc = { canvas: off, w: baseW, h: baseH, edgeAlpha: vigEdgeAlpha };
+                vignetteCacheRef.current = vc;
+            }
+            ctx.drawImage(vc.canvas, 0, 0);
+        }
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, activeMapFilter, mapSearchQuery, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, regionLabelEditMode, selectedRegionLabelId, inCombat]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, activeMapFilter, mapSearchQuery, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, regionLabelEditMode, selectedRegionLabelId, inCombat]);
 
     return { drawMap };
 };

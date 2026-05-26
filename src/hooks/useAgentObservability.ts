@@ -113,11 +113,11 @@ export const useAgentObservability = (vitals: VitalsContextType, game: any, game
         }
 
         // Room Sanity
-        if (gameState === 'playing' && (game as any).isMmapperMode && !game.roomZone) {
+        if (gameState === 'playing' && !game.roomZone) {
             results.push({
                 id: 'mapper-no-zone',
                 passed: false,
-                message: 'mMapper mode active but roomZone is missing',
+                message: 'roomZone is missing',
                 data: { roomZone: game.roomZone }
             });
         }

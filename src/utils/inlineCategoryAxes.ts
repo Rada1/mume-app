@@ -8,7 +8,7 @@ import { getCategoryConfig, toCategoryId } from './inlineActionModel';
 
 // --- Type Definitions ---
 
-export type InlineCategoryFamily = 'character' | 'object' | 'room' | 'exit' | 'target' | 'unknown';
+export type InlineCategoryFamily = 'character' | 'object' | 'room' | 'exit' | 'unknown';
 
 export interface InlineCategoryAxes {
     categoryId: string;
@@ -36,14 +36,12 @@ const LEGACY_CATEGORY_IDS: Record<string, string> = {
     enemy: 'cat-enemy',
     neutral: 'cat-neutral',
     object: 'cat-object',
-    target: 'cat-target',
     room: 'cat-room',
     'inline-container-item': 'cat-container-item',
     exits: 'cat-exit',
 };
 
 const CATEGORY_AXES: Record<string, Omit<InlineCategoryAxes, 'categoryId'>> = {
-    'cat-target': { family: 'target', location: 'none', isCharacter: false, isObject: false, isInlineAction: true, isTargetable: false },
     'cat-ally': { family: 'character', location: 'room', isCharacter: true, isObject: false, isInlineAction: true, isTargetable: true },
     'cat-ally-remote': { family: 'character', location: 'none', isCharacter: true, isObject: false, isInlineAction: true, isTargetable: true },
     'cat-enemy': { family: 'character', location: 'room', isCharacter: true, isObject: false, isInlineAction: true, isTargetable: true },

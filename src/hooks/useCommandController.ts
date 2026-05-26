@@ -8,6 +8,26 @@ import { getGateState } from '../components/Mapper/mapperUtils';
 import { CaptureStage } from '../types';
 // import { useAtmosphereStore } from '../stores/useAtmosphereStore';
 
+const findCommandInput = (): HTMLTextAreaElement | HTMLInputElement | null => {
+    const active = document.activeElement;
+    if (
+        active instanceof HTMLTextAreaElement &&
+        active.id === 'mud-input'
+    ) return active;
+    if (
+        active instanceof HTMLInputElement &&
+        active.id === 'mud-input'
+    ) return active;
+
+    const candidates = Array.from(
+        document.querySelectorAll<HTMLTextAreaElement | HTMLInputElement>(
+            'textarea#mud-input, input#mud-input, textarea[name="mud-input"], input[name="mud-input"]'
+        )
+    );
+
+    return candidates.find(el => !el.disabled && el.getClientRects().length > 0) ?? null;
+};
+
 export interface CommandControllerDeps {
     telnet: { sendCommand: (cmd: string) => void };
     addMessage: (type: any, text: string, extra?: any, mid?: string, room?: boolean, pre?: any, shop?: any, skill?: any, hdr?: any, skip?: boolean, ...rest: any[]) => void;
@@ -141,7 +161,7 @@ export function useCommandController(deps: CommandControllerDeps) {
 
             if (shouldFocus) {
                 setTimeout(() => {
-                    const inputEl = document.querySelector('input') as HTMLInputElement;
+                    const inputEl = findCommandInput();
                     if (inputEl) {
                         const wasReadOnly = inputEl.readOnly;
                         if (isInputPrefix && viewport.isMobile) inputEl.readOnly = false;
@@ -156,7 +176,7 @@ export function useCommandController(deps: CommandControllerDeps) {
             } else if (viewport.isMobile) {
                 // FORCE BLUR on mobile if focus wasn't requested.
                 // This breaks the "stuck focus" that causes the OS to re-open the keyboard.
-                const inputEl = document.querySelector('input') as HTMLInputElement;
+                const inputEl = findCommandInput();
                 if (inputEl && document.activeElement === inputEl) {
                     inputEl.blur();
                 }

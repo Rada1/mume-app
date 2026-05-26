@@ -50,3 +50,38 @@ export const isObjectSelected = (selectedObjectIds: Set<string>, id: string, set
 
     return false;
 };
+
+export const normalizeSelectionTarget = (value: string | null | undefined): string => (
+    (value || '')
+        .toLowerCase()
+        .replace(/^[*-]+|[*-]+$/g, '')
+        .replace(/^\d+\./, '')
+        .replace(/^(a|an|the)\s+/i, '')
+        .replace(/[^\p{L}\p{N}'.-]+/gu, ' ')
+        .trim()
+);
+
+export const targetTextMatchesEntity = (
+    target: string | null | undefined,
+    ...candidates: Array<string | null | undefined>
+): boolean => {
+    const normalizedTarget = normalizeSelectionTarget(target);
+    if (!normalizedTarget) return false;
+
+    return candidates.some(candidate => {
+        const normalizedCandidate = normalizeSelectionTarget(candidate);
+        if (!normalizedCandidate) return false;
+        return normalizedCandidate === normalizedTarget;
+    });
+};
+
+export const isEntitySelectedOrTargeted = (
+    selectedObjectIds: Set<string> | undefined,
+    id: string | null | undefined,
+    category: string | null | undefined,
+    target: string | null | undefined,
+    ...targetCandidates: Array<string | null | undefined>
+): boolean => (
+    (!!id && isObjectSelected(selectedObjectIds || new Set(), id, category || undefined)) ||
+    targetTextMatchesEntity(target, ...targetCandidates)
+);

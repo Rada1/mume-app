@@ -25,33 +25,47 @@ export const useSmartWalk = (
         return id;
     };
 
+    const dirShortNames: Record<string, string> = {
+        north: 'n', south: 's', east: 'e', west: 'w',
+        up: 'u', down: 'd', northeast: 'ne', northwest: 'nw',
+        southeast: 'se', southwest: 'sw'
+    };
+
+    const parsePreloadedExits = (rawExits: Record<string, any>): Record<string, any> => {
+        const formatted: Record<string, any> = {};
+        for (const [dir, ex] of Object.entries(rawExits)) {
+            const shortDir = dirShortNames[dir.toLowerCase()] ?? dir.toLowerCase();
+            // Exits can be a raw vnum number, an object with .target or .id, or a string
+            const rawDest = typeof ex === 'number' ? ex
+                : typeof ex === 'object' && ex !== null ? (ex.target ?? ex.id ?? null)
+                : typeof ex === 'string' ? ex
+                : null;
+            if (rawDest === null) continue;
+            const targetVnum = String(rawDest);
+            formatted[shortDir] = {
+                target: targetVnum.startsWith('m_') ? targetVnum : `m_${targetVnum}`,
+                closed: false
+            };
+        }
+        return formatted;
+    };
+
     const getExits = useCallback((id: string) => {
         if (!id) return null;
 
         const normId = normalizeId(id);
-        
-        // 1. Try local rooms with various ID formats (raw, prefixed, numeric)
+
+        // Check preloaded exits first so we get the full graph even for visited rooms
+        const ghost = preloadedCoordsRef.current[normId];
+        const preloadedExits = ghost?.[4] ? parsePreloadedExits(ghost[4]) : null;
+
+        // Local rooms may have richer door/flag data — merge on top of preloaded base
         const local = rooms[id] || rooms[`m_${normId}`] || rooms[normId];
-        if (local && local.exits && Object.keys(local.exits).length > 0) {
-            return local.exits;
+        if (local?.exits && Object.keys(local.exits).length > 0) {
+            return preloadedExits ? { ...preloadedExits, ...local.exits } : local.exits;
         }
 
-        // 2. Try master map (remove m_ prefix if present)
-        const ghost = preloadedCoordsRef.current[normId];
-        if (ghost && ghost[4]) {
-            const ghostExits = ghost[4] as Record<string, { target: string }>;
-            const formatted: Record<string, any> = {};
-            for (const [dir, ex] of Object.entries(ghostExits)) {
-                // Ensure the ghost target is ALWAYS prefixed for our BFS
-                const targetVnum = String(ex.target);
-                formatted[dir] = { 
-                    target: targetVnum.startsWith('m_') ? targetVnum : `m_${targetVnum}`, 
-                    closed: false 
-                };
-            }
-            return formatted;
-        }
-        return null;
+        return preloadedExits;
     }, [rooms, preloadedCoordsRef]);
 
     const findPath = useCallback((startId: string, endId: string): { dirs: string[], ids: string[] } | null => {

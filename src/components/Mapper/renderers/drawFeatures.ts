@@ -1,7 +1,7 @@
 import { RenderContext, drawLine, drawInkyLine } from './rendererUtils';
 import { getZoneVisuals } from '../zoneFilters';
 import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, WALL_COLOR, LONG_CONNECTION_COLOR } from '../mapperUtils';
-import { drawTerrainIcon, getTerrainTileInset } from './drawTerrains';
+import { drawTerrainIcon, getTerrainTileInset, getRoomWalls } from './drawTerrains';
 
 const hexToRgba = (hex: string, alpha: number): string => {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -72,34 +72,293 @@ export const getIndicatorIcon = (
         ctx.fill();
     }
 
-    ctx.font = `bold ${size}px "Inter", sans-serif`;
+    const hasSuperscript = sym.includes('^');
+    const baseChar = hasSuperscript ? sym.split('^')[0] : sym;
+    const superChar = hasSuperscript ? sym.split('^')[1] : '';
+
+    const isMob = sym.startsWith('mob:');
+    const mobType = isMob ? sym.split(':')[1] : '';
+
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillStyle = color;
+
+    const drawStickFigure = (c: CanvasRenderingContext2D, x: number, y: number, h: number, stroke: boolean) => {
+        c.save();
+        c.fillStyle = color;
+        c.strokeStyle = color;
+        c.lineWidth = Math.max(1.2, h * 0.12);
+        c.lineCap = 'round';
+        c.lineJoin = 'round';
+
+        if (stroke) {
+            c.shadowColor = color;
+            c.shadowBlur = glowStrength;
+        }
+
+        // Head
+        const headR = h * 0.18;
+        const headY = y - h * 0.28;
+        c.beginPath();
+        c.arc(x, headY, headR, 0, Math.PI * 2);
+        c.fill();
+        if (stroke) c.stroke();
+
+        // Spine (Torso)
+        const neckY = headY + headR;
+        const hipsY = y + h * 0.15;
+        c.beginPath();
+        c.moveTo(x, neckY);
+        c.lineTo(x, hipsY);
+        c.stroke();
+
+        // Arms
+        const armY = neckY + h * 0.10;
+        const armW = h * 0.28;
+        c.beginPath();
+        c.moveTo(x - armW, armY);
+        c.lineTo(x + armW, armY);
+        c.stroke();
+
+        // Legs
+        const legW = h * 0.22;
+        const footY = y + h * 0.48;
+        c.beginPath();
+        c.moveTo(x, hipsY);
+        c.lineTo(x - legW, footY);
+        c.moveTo(x, hipsY);
+        c.lineTo(x + legW, footY);
+        c.stroke();
+
+        c.restore();
+    };
+
+    const drawCrossedSwords = (c: CanvasRenderingContext2D, x: number, y: number, len: number, stroke: boolean, lineWidth: number = 1.8) => {
+        c.save();
+        c.strokeStyle = color; // use indicator's primary color
+        c.lineWidth = lineWidth;
+        c.lineCap = 'round';
+        if (stroke) {
+            c.shadowColor = color;
+            c.shadowBlur = glowStrength;
+        }
+
+        const half = len / 2;
+        c.beginPath();
+        c.moveTo(x - half, y - half);
+        c.lineTo(x + half, y + half);
+        c.stroke();
+
+        c.beginPath();
+        c.moveTo(x + half, y - half);
+        c.lineTo(x - half, y + half);
+        c.stroke();
+        c.restore();
+    };
+
+    const drawSnakeIcon = (c: CanvasRenderingContext2D, x: number, y: number, h: number, stroke: boolean) => {
+        c.save();
+
+        c.strokeStyle = '#800c0c';
+        c.fillStyle = '#800c0c';
+        c.lineCap = 'round';
+        c.lineJoin = 'round';
+
+        if (stroke) {
+            c.shadowColor = '#800c0c';
+            c.shadowBlur = glowStrength * 0.5;
+        }
+
+        // 1. Draw the head (teardrop shape)
+        c.beginPath();
+        c.ellipse(x, y - h * 0.36, h * 0.04, h * 0.055, 0, 0, Math.PI * 2);
+        c.fill();
+
+        // 2. Draw the main thick body
+        c.beginPath();
+        c.moveTo(x, y - h * 0.32);
+        // Neck curving left
+        c.bezierCurveTo(
+            x - h * 0.15, y - h * 0.28,
+            x - h * 0.15, y - h * 0.22,
+            x + h * 0.05, y - h * 0.18
+        );
+        // First loop curving right
+        c.bezierCurveTo(
+            x + h * 0.36, y - h * 0.12,
+            x + h * 0.32, y + h * 0.00,
+            x - h * 0.05, y + h * 0.02
+        );
+        // Second loop curving left
+        c.bezierCurveTo(
+            x - h * 0.40, y + h * 0.05,
+            x - h * 0.36, y + h * 0.20,
+            x + h * 0.05, y + h * 0.22
+        );
+        // Third loop curving right
+        c.bezierCurveTo(
+            x + h * 0.38, y + h * 0.24,
+            x + h * 0.25, y + h * 0.34,
+            x - h * 0.08, y + h * 0.35
+        );
+        c.lineWidth = h * 0.055;
+        c.stroke();
+
+        // 3. Draw the tapering tail
+        c.beginPath();
+        c.moveTo(x - h * 0.08, y + h * 0.35);
+        // Tail curving left and tapering down
+        c.bezierCurveTo(
+            x - h * 0.18, y + h * 0.36,
+            x - h * 0.15, y + h * 0.43,
+            x - h * 0.05, y + h * 0.48
+        );
+        c.lineWidth = h * 0.025;
+        c.stroke();
+
+        c.restore();
+
+        // 4. Neon green ! above head
+        c.save();
+        c.font = `bold ${h * 0.28}px sans-serif`;
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.fillStyle = '#39ff14';
+        if (stroke) {
+            c.shadowColor = '#39ff14';
+            c.shadowBlur = glowStrength * 0.6;
+        }
+        c.fillText('!', x, y - h * 0.54);
+        c.restore();
+    };
+
+    const drawContent = (c: CanvasRenderingContext2D, stroke: boolean) => {
+        if (isMob) {
+            if (mobType === 'passive') {
+                drawStickFigure(c, center, center, size * 0.80, stroke);
+            } else if (mobType === 'aggressive') {
+                // Thinner lines and smaller size for regular aggressive
+                drawCrossedSwords(c, center, center, size * 0.38, stroke, 1.3);
+            } else if (mobType === 'elite') {
+                // Medium lines and medium size for elite (2 side-by-side)
+                drawCrossedSwords(c, center - size * 0.16, center, size * 0.43, stroke, 2.0);
+                drawCrossedSwords(c, center + size * 0.16, center, size * 0.43, stroke, 2.0);
+            } else if (mobType === 'super') {
+                // Thicker lines and larger size for super (3 in cluster)
+                drawCrossedSwords(c, center, center - size * 0.12, size * 0.50, stroke, 2.8);
+                drawCrossedSwords(c, center - size * 0.18, center + size * 0.16, size * 0.50, stroke, 2.8);
+                drawCrossedSwords(c, center + size * 0.18, center + size * 0.16, size * 0.50, stroke, 2.8);
+            } else if (mobType === 'quest') {
+                // Base yellow exclamation point
+                c.font = `bold ${size * 0.90}px "Inter", sans-serif`;
+                c.fillStyle = '#f9e2af';
+                c.strokeStyle = '#f9e2af';
+                const baseQuestY = center - size * 0.15;
+                if (stroke) {
+                    c.strokeText('!', center, baseQuestY);
+                } else {
+                    c.fillText('!', center, baseQuestY);
+                }
+                // Small red X underneath
+                drawCrossedSwords(c, center, center + size * 0.32, size * 0.35, stroke);
+            } else if (mobType === 'rattlesnake') {
+                // Centered red vector snake icon
+                drawSnakeIcon(c, center, center, size * 0.85, stroke);
+            }
+        } else if (hasSuperscript) {
+            c.font = `bold ${size}px "Inter", sans-serif`;
+            const baseX = center - size * 0.12;
+            const baseY = center + size * 0.05;
+            if (stroke) {
+                c.strokeText(baseChar, baseX, baseY);
+            } else {
+                c.fillText(baseChar, baseX, baseY);
+            }
+
+            let displaySuper = superChar;
+            let superColor = color;
+            let isEmoji = false;
+
+            if (baseChar === 'G') {
+                if (superChar === 'C') {
+                    displaySuper = '✋';
+                    superColor = '#fbbf24'; // Cleric yellow
+                    isEmoji = true;
+                } else if (superChar === 'W') {
+                    displaySuper = '🗡'; // Warrior single sword
+                    superColor = '#9c1010'; // Warrior deep red
+                    isEmoji = true;
+                } else if (superChar === 'M') {
+                    displaySuper = '⚡'; // Mage lightning bolt
+                    superColor = '#1d4ed8'; // Mage deep blue
+                    isEmoji = true;
+                } else if (superChar === 'R') {
+                    displaySuper = '♧'; // Ranger leaf/club
+                    superColor = '#15803d'; // Ranger deep green
+                    isEmoji = true;
+                } else if (superChar === 'S') {
+                    displaySuper = '🏹'; // Scout bow
+                    superColor = '#06b6d4'; // Scout cyan
+                    isEmoji = true;
+                }
+            }
+
+            c.save();
+            if (isEmoji) {
+                // Use Segoe UI Symbol first to render monochrome vector symbols that respect fillStyle/superColor
+                c.font = `bold ${Math.round(size * 0.68)}px "Segoe UI Symbol", "Arial Unicode MS", sans-serif`;
+                const superX = center + size * 0.36;
+                const superY = center - size * 0.28;
+                c.strokeStyle = '#000000';
+                c.lineWidth = Math.max(2, size * 0.12);
+                c.lineJoin = 'round';
+                c.strokeText(displaySuper, superX, superY);
+                c.fillStyle = superColor;
+                c.fillText(displaySuper, superX, superY);
+            } else {
+                c.font = `bold ${Math.round(size * 0.72)}px "Inter", sans-serif`;
+                const superX = center + size * 0.35;
+                const superY = center - size * 0.28;
+                c.strokeStyle = '#000000';
+                c.lineWidth = Math.max(2, size * 0.12);
+                c.lineJoin = 'round';
+                c.strokeText(displaySuper, superX, superY);
+                c.fillStyle = superColor;
+                c.fillText(displaySuper, superX, superY);
+            }
+            c.restore();
+        } else {
+            c.font = `bold ${size}px "Inter", sans-serif`;
+            if (stroke) {
+                c.strokeText(sym, center, center);
+            } else {
+                c.fillText(sym, center, center);
+            }
+        }
+    };
 
     if (outline) {
         ctx.shadowBlur = glowStrength;
         ctx.shadowColor = color;
         ctx.strokeStyle = color;
         ctx.lineWidth = size * 0.12;
-        ctx.strokeText(sym, center, center);
+        drawContent(ctx, true);
         ctx.shadowBlur = 0;
     } else if (glowStrength > 10) {
-        // Multi-pass bloom for heavy glow on the icon itself
         ctx.shadowColor = color;
         ctx.globalAlpha = 0.35;
         ctx.shadowBlur = glowStrength * 1.5;
-        ctx.fillText(sym, center, center);
+        drawContent(ctx, false);
         ctx.globalAlpha = 0.55;
         ctx.shadowBlur = glowStrength * 0.75;
-        ctx.fillText(sym, center, center);
+        drawContent(ctx, false);
         ctx.globalAlpha = 1.0;
         ctx.shadowBlur = glowStrength * 0.3;
-        ctx.fillText(sym, center, center);
+        drawContent(ctx, false);
         ctx.shadowBlur = 0;
     } else {
         ctx.shadowBlur = glowStrength;
         ctx.shadowColor = color;
-        ctx.fillText(sym, center, center);
+        drawContent(ctx, false);
         ctx.shadowBlur = 0;
     }
 
@@ -116,8 +375,8 @@ const getNorideIcon = (size: number): HTMLCanvasElement => {
     canvas.width = cs; canvas.height = cs;
     const ctx = canvas.getContext('2d')!;
     const cx = cs / 2, cy = cs / 2;
-    const r = size * 0.38;
-    const lw = Math.max(1.5, size * 0.18);
+    const r = size * 0.20;
+    const lw = Math.max(1.0, size * 0.08);
 
     ctx.strokeStyle = '#888888';
     ctx.lineWidth = lw;
@@ -194,6 +453,7 @@ const drawOverviewRouteLine = (
     invZoom: number,
     alpha: number,
     dotted: boolean,
+    roadColor: string = 'rgba(250, 252, 255, 0.98)',
 ) => {
     ctx.save();
     ctx.lineCap = 'round';
@@ -202,16 +462,8 @@ const drawOverviewRouteLine = (
         ctx.setLineDash([Math.max(3.5, 4.5 * invZoom), Math.max(3, 4 * invZoom)]);
     }
 
-    ctx.globalAlpha = Math.min(1, alpha * 0.9);
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.95)';
-    ctx.lineWidth = Math.max(2.8, (dotted ? 3.2 : 4.2) * invZoom);
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-
     ctx.globalAlpha = Math.min(1, alpha);
-    ctx.strokeStyle = 'rgba(250, 252, 255, 0.98)';
+    ctx.strokeStyle = roadColor;
     ctx.lineWidth = Math.max(1.3, (dotted ? 1.65 : 2.25) * invZoom);
     ctx.beginPath();
     ctx.moveTo(x1, y1);
@@ -341,10 +593,6 @@ const drawClimbIndicator = (
     ctx.lineWidth = 2.0 * invZoom;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.92)';
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetX = 1.5 * invZoom;
-    ctx.shadowOffsetY = 2.5 * invZoom;
     ctx.beginPath();
     for (let i = 0; i <= steps; i++) {
         const t = i / steps;
@@ -374,24 +622,29 @@ export const drawRoomFlagsOptimized = (
     const indicators: Indicator[] = [
         // --- Danger ---
         { regex: /DEATHTRAP/i,                                          sym: '☠', color: '#ff3030', size: 20, glowStrength: 14, noBlackBg: true },
-        { regex: /AGGRESSIVE_MOB/i,                                     sym: '!', color: '#ff2020', size: 26, glowStrength: 12, noBlackBg: true },
-        { regex: /SUPER_MOB/i,                                          sym: '★', color: '#ff6060', size: 16 },
-        { regex: /ELITE_MOB/i,                                          sym: '✦', color: '#f38ba8', size: 13 },
-        { regex: /RATTLESNAKE/i,                                        sym: '🐍', color: '#ff3030', size: 15, glowStrength: 10, noBlackBg: true },
+        { regex: /AGGRESSIVE_MOB/i,                                     sym: 'mob:aggressive', color: '#800c0c', size: 26, glowStrength: 12, noBlackBg: true },
+        { regex: /SUPER_MOB/i,                                          sym: 'mob:super', color: '#de1f1f', size: 26, glowStrength: 12, noBlackBg: true },
+        { regex: /ELITE_MOB/i,                                          sym: 'mob:elite', color: '#9c1010', size: 26, glowStrength: 12, noBlackBg: true },
+        { regex: /RATTLESNAKE/i,                                        sym: 'mob:rattlesnake', color: '#800c0c', size: 26, glowStrength: 12, noBlackBg: true },
         // --- Quest / mission ---
-        { regex: /QUEST/i,                                              sym: '?', color: '#00c0ff', size: 22 },
+        { regex: /QUEST/i,                                              sym: 'mob:quest', color: '#f9e2af', size: 26, glowStrength: 12, noBlackBg: true },
         // --- Mob services ---
-        { regex: /RENT/i,                                               sym: 'R', color: '#89b4fa', size: 13 },
-        { regex: /WEAPON_SHOP/i,                                        sym: '⚔', color: '#bac2de', size: 13 },
-        { regex: /ARMOUR_SHOP/i,                                        sym: 'A', color: '#a6adc8', size: 13 },
-        { regex: /FOOD_SHOP/i,                                          sym: 'F', color: '#fab387', size: 13 },
-        { regex: /PET_SHOP/i,                                           sym: '♞', color: '#e8b86d', size: 13 },
-        { regex: /SHOP/i,                                               sym: '$', color: '#f9e2af', size: 13 },
-        { regex: /GUILD/i,                                              sym: 'G', color: '#cba6f7', size: 13 },
+        { regex: /RENT/i,                                               sym: 'R', color: '#89b4fa', size: 15 },
+        { regex: /WEAPON_SHOP/i,                                        sym: 'S^⚔', color: '#a6e3a1', size: 15 },
+        { regex: /ARMOUR_SHOP/i,                                        sym: 'S^🛡', color: '#a6e3a1', size: 15 },
+        { regex: /FOOD_SHOP/i,                                          sym: 'S^F', color: '#a6e3a1', size: 15 },
+        { regex: /PET_SHOP/i,                                           sym: 'S^P', color: '#a6e3a1', size: 15 },
+        { regex: /SHOP/i,                                               sym: 'S', color: '#a6e3a1', size: 15 },
+        { regex: /MAGE_GUILD/i,                                         sym: 'G^M', color: '#89b4fa', size: 15 },
+        { regex: /CLERIC_GUILD/i,                                       sym: 'G^C', color: '#89b4fa', size: 15 },
+        { regex: /WARRIOR_GUILD/i,                                      sym: 'G^W', color: '#89b4fa', size: 15 },
+        { regex: /RANGER_GUILD/i,                                       sym: 'G^R', color: '#89b4fa', size: 15 },
+        { regex: /SCOUT_GUILD/i,                                        sym: 'G^S', color: '#89b4fa', size: 15 },
+        { regex: /GUILD/i,                                              sym: 'G', color: '#89b4fa', size: 15 },
         { regex: /MILKABLE/i,                                           sym: '🐄', color: '#e8d5c0', size: 13 },
-        { regex: /PASSIVE_MOB/i,                                        sym: '·', color: '#6c7086', size: 14 },
+        { regex: /PASSIVE_MOB/i,                                        sym: 'mob:passive', color: '#800c0c', size: 26, glowStrength: 12, noBlackBg: true },
         // --- Valuables ---
-        { regex: /TREASURE/i,                                           sym: '💰', color: '#ffd700', size: 14 },
+        { regex: /TREASURE/i,                                           sym: '💎', color: '#ffd700', size: 14 },
         { regex: /WEAPON(?!_SHOP)/i,                                    sym: '🗡', color: '#bac2de', size: 15 },
         { regex: /ARMOUR(?!_SHOP)/i,                                    sym: '🛡', color: '#9399b2', size: 13 },
         { regex: /EQUIPMENT/i,                                          sym: '⚙', color: '#9399b2', size: 13 },
@@ -418,35 +671,85 @@ export const drawRoomFlagsOptimized = (
         { regex: /DARK_WORD/i,                                          sym: 'D', color: '#7f849c', size: 12 },
     ];
 
-    const allFlagsStr = [...mobF, ...loadF].join('|').toUpperCase();
-    const hasQuest = questF.length > 0 || /QUEST/i.test(allFlagsStr);
+    const mobFlagsStr = mobF.join('|').toUpperCase();
+    const loadFlagsStr = loadF.join('|').toUpperCase();
+    const hasQuest = questF.length > 0 || /QUEST/i.test([...mobF, ...loadF].join('|'));
 
     // First pass: collect matching indicators (deduplicated by symbol)
-    const matched: Indicator[] = [];
+    const mobMatched: Indicator[] = [];
+    const loadMatched: Indicator[] = [];
     const seenSyms = new Set<string>();
+    let hasSpecificGuild = false;
+    let hasSpecificShop = false;
+
     for (const ind of indicators) {
         if (seenSyms.has(ind.sym)) continue;
-        const matches = ind.sym === '?' ? hasQuest : ind.regex.test(allFlagsStr);
-        if (matches) { matched.push(ind); seenSyms.add(ind.sym); }
+        
+        // Skip generic guild/shop if specific ones were already matched
+        if (/^GUILD$/i.test(ind.regex.source) && hasSpecificGuild) continue;
+        if (/^SHOP$/i.test(ind.regex.source) && hasSpecificShop) continue;
+
+        const isLoadIndicator = /TREASURE|WEAPON(?!_SHOP)|ARMOUR(?!_SHOP)|EQUIPMENT|KEY|HERB|WATER|POND|WELL|FOUNTAIN|FOOD(?!_SHOP)/i.test(ind.regex.source);
+
+        if (isLoadIndicator) {
+            const matches = ind.regex.test(loadFlagsStr);
+            if (matches) {
+                loadMatched.push(ind);
+                seenSyms.add(ind.sym);
+            }
+        } else {
+            const matches = ind.sym === '?' ? hasQuest : ind.regex.test(mobFlagsStr);
+            if (matches) {
+                mobMatched.push(ind);
+                seenSyms.add(ind.sym);
+                
+                // Track if we matched a specific subclass
+                if (/MAGE_GUILD|CLERIC_GUILD|WARRIOR_GUILD|RANGER_GUILD|SCOUT_GUILD/i.test(ind.regex.source)) {
+                    hasSpecificGuild = true;
+                }
+                if (/WEAPON_SHOP|ARMOUR_SHOP|FOOD_SHOP|PET_SHOP/i.test(ind.regex.source)) {
+                    hasSpecificShop = true;
+                }
+            }
+        }
     }
 
-    // Draw centered on anchorX
-    const totalW = matched.reduce((sum, ind) => sum + ind.size + 4, 0);
-    let off = -totalW / 2 + (matched[0]?.size ?? 0) / 2;
-    for (const ind of matched) {
-        const icon = getIndicatorIcon(ind.sym, ind.color, false, ind.glowStrength, false, true, ind.size);
-        ctx.save();
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
-        ctx.shadowBlur = 8;
-        ctx.shadowOffsetX = 1;
-        ctx.shadowOffsetY = 2;
-        
-        ctx.translate(anchorX + off, anchorY);
-        ctx.scale(scale, scale);
-        ctx.drawImage(icon, -icon.width / 2, -icon.height / 2);
-        
-        ctx.restore();
-        off += ind.size + 4;
+    // 1. Draw mob/status flags in the center of the tile
+    if (mobMatched.length > 0) {
+        const totalW = mobMatched.reduce((sum, ind) => sum + ind.size + 4, 0);
+        let off = -totalW / 2 + (mobMatched[0]?.size ?? 0) / 2;
+        for (const ind of mobMatched) {
+            const icon = getIndicatorIcon(ind.sym, ind.color, false, ind.glowStrength, false, true, ind.size);
+            ctx.save();
+            ctx.translate(anchorX + off, anchorY);
+            ctx.scale(scale, scale);
+            ctx.drawImage(icon, -icon.width / 2, -icon.height / 2);
+            
+            ctx.restore();
+            off += ind.size + 4;
+        }
+    }
+
+    // 2. Draw load/item flags on the outskirts (smaller)
+    if (loadMatched.length > 0) {
+        const loadCount = loadMatched.length;
+        for (let i = 0; i < loadCount; i++) {
+            const ind = loadMatched[i];
+            const angle = (i / loadCount) * Math.PI * 2 - Math.PI / 4;
+            const radius = GRID_SIZE * 0.36; // 18 pixels outwards
+            const ox = Math.cos(angle) * radius;
+            const oy = Math.sin(angle) * radius;
+
+            const size = Math.max(9, Math.round(ind.size * 0.75));
+            const icon = getIndicatorIcon(ind.sym, ind.color, false, ind.glowStrength, false, true, size);
+            
+            ctx.save();
+            ctx.translate(anchorX + ox, anchorY + oy);
+            ctx.scale(scale, scale);
+            ctx.drawImage(icon, -icon.width / 2, -icon.height / 2);
+            
+            ctx.restore();
+        }
     }
 };
 
@@ -651,7 +954,7 @@ export const drawFeatures = (
     // --- Render Road & Trail Fills ---
     for (const seg of roadSegments) {
         if (useOverviewRoutes) {
-            drawOverviewRouteLine(ctx, seg.x1, seg.y1, seg.x2, seg.y2, invZoom, seg.globalAlpha, seg.isTrail);
+            drawOverviewRouteLine(ctx, seg.x1, seg.y1, seg.x2, seg.y2, invZoom, seg.globalAlpha, seg.isTrail, seg.roadColor);
             continue;
         }
 
@@ -872,12 +1175,8 @@ export const drawFeatures = (
                             // Clip to this room's tile so the door doesn't bleed into the neighbor
                             ctx.save();
                             ctx.beginPath(); ctx.rect(wx, wy, s, s); ctx.clip();
-                            // Brown post segments with drop shadow
+                            // Brown post segments (no drop shadow)
                             ctx.save();
-                            ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
-                            ctx.shadowBlur = 6 * invZoom;
-                            ctx.shadowOffsetX = 1.5 * invZoom;
-                            ctx.shadowOffsetY = 2.0 * invZoom;
                             ctx.strokeStyle = currentWallColor;
                             ctx.lineWidth = 3.5;
                             ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
@@ -931,6 +1230,7 @@ export const drawFeatures = (
                         ctx.globalAlpha = isExplored ? exploredAlphaMul : 0.35;
                         const inset = getTerrainTileInset(s);
                         const isSnow = localRoom?.isPermanentSnow || rCtx.weather === 'snow';
+                        const walls = getRoomWalls(localRoom, ghostExits, allRooms, preloaded, explored, unveilMap);
                         drawTerrainIcon(
                             ctx,
                             wx + inset,
@@ -941,7 +1241,13 @@ export const drawFeatures = (
                             rCtx.processedIconsRef,
                             rCtx.imagesRef,
                             variant,
-                            isSnow ? 'snow' : rCtx.weather
+                            isSnow ? 'snow' : rCtx.weather,
+                            0,
+                            undefined,
+                            walls,
+                            wx,
+                            wy,
+                            s
                         );
                         ctx.restore();
                     }
@@ -1181,12 +1487,8 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                     // Clip to this room's tile so the door doesn't bleed into the neighbor
                     ctx.save();
                     ctx.beginPath(); ctx.rect(wx, wy, s, s); ctx.clip();
-                    // Brown post segments with drop shadow
+                    // Brown post segments (no drop shadow)
                     ctx.save();
-                    ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
-                    ctx.shadowBlur = 6 * invZoom;
-                    ctx.shadowOffsetX = 1.5 * invZoom;
-                    ctx.shadowOffsetY = 2.0 * invZoom;
                     ctx.strokeStyle = currentWallColor; ctx.lineWidth = 3.5;
                     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
                     ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();

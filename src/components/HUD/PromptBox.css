@@ -84,6 +84,11 @@
     text-align: right;
 }
 
+.opponent-name .prompt-opponent-inline.is-target {
+    border-color: var(--target-color, #facc15) !important;
+    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.65), 0 0 10px rgba(250, 204, 21, 0.24) !important;
+}
+
 .player-name {
     text-align: left;
 }
@@ -709,5 +714,30 @@
     to {
         opacity: 1;
         transform: translate(-50%, 0) skewX(-20deg);
+    }
+}
+
+/* --- Prompt box expand/collapse --- */
+.prompt-box-content {
+    cursor: pointer;
+}
+
+.prompt-box-content button,
+.prompt-box-content [role="button"] {
+    cursor: pointer;
+}
+
+.prompt-inventory-chip-rows {
+    animation: promptChipsReveal 0.15s ease-out;
+}
+
+@keyframes promptChipsReveal {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

@@ -18,6 +18,14 @@
     align-items: center;
     gap: 5px;
     min-height: 16px;
+    border-radius: 5px;
+    transition: background 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
+}
+
+.prompt-inventory-chip-row.is-drop-target {
+    background: rgba(34, 197, 94, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.55), 0 0 12px rgba(34, 197, 94, 0.14);
+    transform: translateX(2px);
 }
 
 .prompt-inventory-chip-label {
@@ -78,7 +86,7 @@
 
 .prompt-container-toggle:hover,
 .prompt-container-toggle.is-expanded {
-    background: rgba(251, 146, 60, 0.14);
+    background: rgba(255, 255, 255, 0.09);
 }
 
 .prompt-container-toggle.is-loading {
@@ -94,9 +102,9 @@
     width: max-content;
     min-height: 15px;
     padding: 1px 5px;
-    border: 1px solid rgba(251, 146, 60, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 4px;
-    background: rgba(251, 146, 60, 0.06);
+    background: rgba(255, 255, 255, 0.04);
     color: var(--prompt-object-color, rgba(251, 146, 60, 0.95));
     font-family: var(--font-mono, monospace);
     font-size: 0.5rem;
@@ -108,6 +116,7 @@
     text-overflow: ellipsis;
     cursor: pointer;
     touch-action: manipulation;
+    transition: border-color 0.12s ease, background 0.12s ease, transform 0.12s ease;
 }
 
 .prompt-inventory-chip-main {
@@ -129,12 +138,21 @@
 .prompt-inventory-chip:hover,
 .prompt-inventory-chip.is-active {
     border-color: currentColor;
-    background: rgba(251, 146, 60, 0.11);
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.prompt-inventory-chip.is-target {
+    border-color: var(--target-color, #facc15);
+    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.65), 0 0 10px rgba(250, 204, 21, 0.24);
+}
+
+.object-chip-dragging .prompt-inventory-chip:hover {
+    transform: translateY(-1px);
 }
 
 .light-mode .prompt-inventory-chip {
-    background: rgba(168, 122, 42, 0.07);
-    border-color: rgba(168, 122, 42, 0.16);
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.08);
 }
 
 .prompt-container-content-row {
@@ -152,7 +170,7 @@
     font-size: 0.46rem;
     font-weight: 850;
     letter-spacing: 0;
-    color: rgba(251, 146, 60, 0.72);
+    color: color-mix(in srgb, var(--prompt-object-color, rgba(251, 146, 60, 0.95)) 72%, transparent);
     text-transform: uppercase;
     white-space: nowrap;
     overflow: hidden;
@@ -160,7 +178,7 @@
 }
 
 .prompt-container-content-chip {
-    background: rgba(251, 146, 60, 0.045);
+    background: rgba(255, 255, 255, 0.04);
 }
 
 .prompt-chip-with-slot {
@@ -168,6 +186,14 @@
     align-items: center;
     gap: 2px;
     flex: 0 0 auto;
+    border-radius: 5px;
+    transition: background 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
+}
+
+.prompt-chip-with-slot.is-drop-target {
+    background: rgba(34, 197, 94, 0.12);
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2), 0 0 12px rgba(34, 197, 94, 0.18);
+    transform: translateY(-1px) scale(1.03);
 }
 
 .prompt-slot-icon {

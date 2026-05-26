@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Direction, ExecuteCommand } from '../types';
 
 
-export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits: string[] = [], playClickSound?: () => void) => {
+export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits: string[] = [], playClickSound?: () => void, target?: string) => {
     const [joystickActive, setJoystickActive] = useState(false);
     const [currentDir, setCurrentDir] = useState<Direction | null>(null);
     const [isJoystickConsumed, setIsJoystickConsumed] = useState(false);
@@ -312,7 +312,8 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         if (!wasConsumed) {
             // Tap to Look
             if (displacement < 20 && dist < 20) {
-                executeCommand('look', false, false, false, false, { fromUi: true });
+                const cmd = target ? `look ${target}` : 'look';
+                executeCommand(cmd, false, false, false, false, { fromUi: true });
                 if (playClickSound) playClickSound();
                 // Removed release haptic for lookout/tap
                 return true;
@@ -338,7 +339,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
         joystickStartPos.current = null;
         return false;
-    }, [joystickActive, isJoystickConsumed, isTargetModifierActive, currentDir, triggerHaptic]);
+    }, [joystickActive, isJoystickConsumed, isTargetModifierActive, currentDir, triggerHaptic, target]);
 
     const handleNavStart = useCallback((dir: 'up' | 'down', e: React.PointerEvent) => {
         setIsJoystickConsumed(false);

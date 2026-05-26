@@ -12,10 +12,14 @@ interface RoomInfoCardProps {
     preloadedCoordsRef?: React.MutableRefObject<Record<string, any[]>>;
     setViewZ?: (z: number | null) => void;
     isDarkMode: boolean;
+    onWalkStart?: (roomId: string) => void;
+    stopWalking?: () => void;
+    walkTargetId?: string | null;
 }
 
 export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
-    roomId, rooms, setRooms, mode, onClose, cardRef, preloadedCoordsRef, setViewZ, isDarkMode
+    roomId, rooms, setRooms, mode, onClose, cardRef, preloadedCoordsRef, setViewZ, isDarkMode,
+    onWalkStart, stopWalking, walkTargetId
 }) => {
     let room = rooms[roomId];
 
@@ -274,9 +278,28 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
         >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                 <h3 style={{ margin: 0, color: '#ffcc00', fontSize: '18px', fontWeight: 'bold' }}>Room Info</h3>
-                <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#71717a', cursor: 'pointer' }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {mode === 'play' && onWalkStart && (
+                        walkTargetId === roomId ? (
+                            <button
+                                onClick={() => stopWalking?.()}
+                                style={{ background: 'rgba(243, 139, 168, 0.15)', border: '1px solid rgba(243, 139, 168, 0.4)', color: '#f38ba8', cursor: 'pointer', borderRadius: '8px', padding: '5px 12px', fontSize: '12px', fontWeight: '600' }}
+                            >
+                                Stop
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => onWalkStart(roomId)}
+                                style={{ background: 'rgba(166, 227, 161, 0.15)', border: '1px solid rgba(166, 227, 161, 0.4)', color: '#a6e3a1', cursor: 'pointer', borderRadius: '8px', padding: '5px 12px', fontSize: '12px', fontWeight: '600' }}
+                            >
+                                Walk Here
+                            </button>
+                        )
+                    )}
+                    <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#71717a', cursor: 'pointer' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#a1a1aa' }}>

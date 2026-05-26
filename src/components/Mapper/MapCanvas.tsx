@@ -61,6 +61,7 @@ interface MapCanvasProps {
     enemyColor?: string;
     objectColor?: string;
     targetColor?: string;
+    targetName?: string | null;
     opponentName?: string | null;
     opponentId?: string | null;
     inCombat?: boolean;
@@ -96,7 +97,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
+        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName,
         opponentName, opponentId, inCombat, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
         activeMapFilter, mapSearchQuery, mapTileOpacity, lighting,
         regionLabels, regionLabelEditMode, selectedRegionLabelId
@@ -115,7 +116,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
+        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName,
         opponentName, opponentId, inCombat, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
         activeMapFilter, mapSearchQuery, combatPulsesRef, zoneFilters,
         mapTileVisuals,
@@ -171,28 +172,14 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         combatAnimationActive
     });
 
-    // Parallax: drive --parallax-x/y on .mapper-container from camera position
+    // Parallax: update when mapper state wakes instead of running a permanent RAF loop.
     useEffect(() => {
         const FACTOR = 0.035;
-        const LERP = 0.04;
-        let rafId: number;
-        let currentX = 0;
-        let currentY = 0;
-        const tick = () => {
-            const container = canvasRef.current?.closest('.mapper-container') as HTMLElement | null;
-            if (container) {
-                const targetX = -props.camera.current.x * FACTOR;
-                const targetY = -props.camera.current.y * FACTOR;
-                currentX += (targetX - currentX) * LERP;
-                currentY += (targetY - currentY) * LERP;
-                container.style.setProperty('--parallax-x', `${currentX}px`);
-                container.style.setProperty('--parallax-y', `${currentY}px`);
-            }
-            rafId = requestAnimationFrame(tick);
-        };
-        rafId = requestAnimationFrame(tick);
-        return () => cancelAnimationFrame(rafId);
-    }, [canvasRef, props.camera]);
+        const container = canvasRef.current?.closest('.mapper-container') as HTMLElement | null;
+        if (!container) return;
+        container.style.setProperty('--parallax-x', `${-props.camera.current.x * FACTOR}px`);
+        container.style.setProperty('--parallax-y', `${-props.camera.current.y * FACTOR}px`);
+    }, [canvasRef, props.camera, props.renderVersion]);
 
     useEffect(() => {
         const cvs = canvasRef.current;

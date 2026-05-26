@@ -101,14 +101,9 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                     );
                 })}
                 <div className={`swipe-center ${(activeDir as any) === 'center' ? 'active' : ''}`}>
-                    <svg className="curved-label-svg" viewBox="0 0 100 100" style={{ position: 'absolute', width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none' }}>
-                        <path id={`swipe-curve-${button.id}`} d="M 18,50 A 32,32 0 1 1 82,50 A 32,32 0 1 1 18,50" fill="transparent" />
-                        <text style={{ fontSize: '12.5px', fontWeight: '900', fill: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            <textPath href={`#swipe-curve-${button.id}`} startOffset="25%" textAnchor="middle">
-                                {button.command || button.label}
-                            </textPath>
-                        </text>
-                    </svg>
+                    <span className="swipe-center-label">
+                        {button.label || button.command}
+                    </span>
                 </div>
             </div>
             {(() => {

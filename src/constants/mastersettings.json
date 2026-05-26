@@ -195,75 +195,6 @@
       }
     },
     {
-      "id": "btn-get",
-      "label": "Get",
-      "command": "get %n",
-      "setId": "target",
-      "actionType": "command",
-      "display": "floating",
-      "style": {
-        "x": 0,
-        "y": 0,
-        "w": 100,
-        "h": 40,
-        "backgroundColor": "#22c55e",
-        "shape": "pill"
-      },
-      "trigger": {
-        "enabled": false,
-        "pattern": "",
-        "isRegex": false,
-        "autoHide": false,
-        "duration": 0
-      }
-    },
-    {
-      "id": "btn-look",
-      "label": "Look",
-      "command": "look %n",
-      "setId": "target",
-      "actionType": "command",
-      "display": "floating",
-      "style": {
-        "x": 0,
-        "y": 0,
-        "w": 100,
-        "h": 40,
-        "backgroundColor": "#3b82f6",
-        "shape": "pill"
-      },
-      "trigger": {
-        "enabled": false,
-        "pattern": "",
-        "isRegex": false,
-        "autoHide": false,
-        "duration": 0
-      }
-    },
-    {
-      "id": "btn-target-clear",
-      "label": "Clear Target",
-      "command": "__clear_target__",
-      "setId": "target",
-      "actionType": "command",
-      "display": "floating",
-      "style": {
-        "x": 0,
-        "y": 0,
-        "w": 110,
-        "h": 40,
-        "backgroundColor": "rgba(100,100,100,0.6)",
-        "shape": "pill"
-      },
-      "trigger": {
-        "enabled": false,
-        "pattern": "",
-        "isRegex": false,
-        "autoHide": false,
-        "duration": 0
-      }
-    },
-    {
       "id": "tactical-ranger",
       "label": "Ranger",
       "command": "bandage",
@@ -547,7 +478,7 @@
     },
     {
       "id": "tactical-doors",
-      "label": "Doors",
+      "label": "Scout",
       "command": "scout",
       "setId": "Tactical",
       "actionType": "command",
@@ -3668,7 +3599,7 @@
         "queen",
         "lord",
         "lady",
-        "dúnadan",
+        "d\u00fanadan",
         "dunadan",
         "soldier",
         "officer",

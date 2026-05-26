@@ -4,7 +4,7 @@
  */
 
 import { CustomButton, InlineCategoryConfig, GameEntity, EntityCapability, GmcpOccupant, EntityLocation, CharacterInfo } from '../types';
-import { getButtonIdsForTraits, getResolvedTraitSections } from './inlineActionModel';
+import { getButtonIdsForTraits, getResolvedTraitSections, matchesKeyword } from './inlineActionModel';
 import { getInlineCategoryAxes, normalizeInlineCategoryId } from './inlineCategoryAxes';
 import { isButtonEligibleForCharacter } from './characterEligibility';
 
@@ -94,6 +94,41 @@ export function isButtonValidForEntity(
 
     // 7. Draw actions only apply when worn
     if (button.id === 'btn-draw' && location !== 'worn') {
+        return false;
+    }
+
+    // 8. Throw actions only apply under specific location/category constraints:
+    // - "glass flask" must be worn
+    // - "a twisted rock fragment" must be inventory (carried) or worn
+    if (button.id === 'btn-throw') {
+        const lowerName = (entity?.name || context || '').toLowerCase();
+        const matchesRock = matchesKeyword(lowerName, 'twisted-rock');
+        const matchesFlask = matchesKeyword(lowerName, 'glass-flask');
+
+        if (matchesFlask && location !== 'worn') {
+            return false;
+        }
+        if (matchesRock && location !== 'carried' && location !== 'worn') {
+            return false;
+        }
+    }
+
+    // 9. Use actions only apply under specific location/category constraints:
+    // - "pale blue stone", rings, and other useables must be worn
+    if (button.id === 'btn-use') {
+        const lowerName = (entity?.name || context || '').toLowerCase();
+        const matchesStone = matchesKeyword(lowerName, 'pale-blue-stone');
+        const matchesRing = ['topaz-ring', 'ruby-ring', 'garnet-ring', 'emerald-ring', 'opal-ring'].some(k => matchesKeyword(lowerName, k));
+        const matchesEye = matchesKeyword(lowerName, 'obsidian-eye');
+        const matchesOther = ['black-candle', 'small-pouch', 'fragile-parchment', 'deep-black-orb'].some(k => matchesKeyword(lowerName, k));
+
+        if ((matchesStone || matchesRing || matchesEye || matchesOther) && location !== 'worn') {
+            return false;
+        }
+    }
+
+    // 10. Cover/Uncover actions only apply when worn
+    if ((button.id === 'btn-lightsource-cover' || button.id === 'btn-lightsource-uncover') && location !== 'worn') {
         return false;
     }
 

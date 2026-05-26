@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { X, Music, Cog, Activity, HelpCircle, Map } from 'lucide-react';
+import { X, Music, Cog, Activity, HelpCircle, Map, Film } from 'lucide-react';
 import { useGame, useUI } from '../../context/GameContext';
 import GeneralSettings from '../Settings/GeneralSettings';
 import DataManagement from '../Settings/DataManagement';
@@ -13,6 +13,7 @@ import ActionSettings from '../Settings/ActionSettings';
 import ButtonSettings from '../Settings/ButtonSettings';
 import MapSettings from '../Settings/MapSettings';
 import HelpGuides from '../Settings/HelpGuides';
+import ReplaySettings from '../Settings/ReplaySettings';
 import { SoundTrigger, UiMode } from '../../types';
 
 // --- Interface ---
@@ -20,12 +21,6 @@ import { SoundTrigger, UiMode } from '../../types';
 interface SettingsModalProps {
     connectionUrl: string;
     setConnectionUrl: (val: string) => void;
-    bgImage: string | null;
-    bgImageBottom?: string | null;
-    setBgImage: (val: string | null) => void;
-    setBgImageBottom?: (val: string | null) => void;
-    handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleBottomFileUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     exportSettings: () => void;
     importSettings: (e: React.ChangeEvent<HTMLInputElement>) => void;
     isLoading: boolean;
@@ -44,14 +39,8 @@ interface SettingsModalProps {
     setLoginPassword: (val: string) => void;
     autoConnect: boolean;
     setAutoConnect: (val: boolean) => void;
-    showDebugEchoes: boolean;
-    setShowDebugEchoes: (val: boolean) => void;
     uiMode: UiMode;
     setUiMode: (val: UiMode) => void;
-    disableSmoothScroll: boolean;
-    setDisableSmoothScroll: (val: boolean) => void;
-    isBloomEnabled: boolean;
-    setIsBloomEnabled: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
     isTimestampEnabled: boolean;
@@ -81,13 +70,11 @@ interface SettingsModalProps {
 // --- Component ---
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
-    connectionUrl, setConnectionUrl, bgImage, setBgImage, bgImageBottom, setBgImageBottom, handleFileUpload, handleBottomFileUpload,
+    connectionUrl, setConnectionUrl,
     exportSettings, importSettings, isLoading,
     newSoundPattern, setNewSoundPattern, newSoundRegex, setNewSoundRegex, handleSoundUpload, soundTriggers, setSoundTriggers,
     resetButtons, connect, loginName, setLoginName, loginPassword, setLoginPassword,
-    autoConnect, setAutoConnect, showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode,
-    disableSmoothScroll, setDisableSmoothScroll,
-    isBloomEnabled, setIsBloomEnabled,
+    autoConnect, setAutoConnect, uiMode, setUiMode,
     isImmersionMode, setIsImmersionMode,
     isTimestampEnabled, setIsTimestampEnabled, fontFamily, setFontFamily,
     autoSaveSessions, setAutoSaveSessions, showSpectatePromptInLog, setShowSpectatePromptInLog,
@@ -98,7 +85,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsSetManagerOpen,
 }) => {
     const {
-        isMmapperMode, setIsMmapperMode,
         isSoundEnabled, setIsSoundEnabled,
         theme, setTheme,
         actions, setActions,
@@ -142,6 +128,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     <div className={`modal-tab ${settingsTab === 'map' ? 'active' : ''}`} onClick={() => setSettingsTab('map')}>
                         <Map size={16} /> <span>Map</span>
                     </div>
+                    <div className={`modal-tab ${settingsTab === 'replays' ? 'active' : ''}`} onClick={() => setSettingsTab('replays')}>
+                        <Film size={16} /> <span>Replays</span>
+                    </div>
                     <div className={`modal-tab ${settingsTab === 'help' ? 'active' : ''}`} onClick={() => setSettingsTab('help')}>
                         <HelpCircle size={16} /> <span>Help & Guides</span>
                     </div>
@@ -161,26 +150,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setLoginName={setLoginName}
                                 loginPassword={loginPassword}
                                 setLoginPassword={setLoginPassword}
-                                isMmapperMode={isMmapperMode}
-                                setIsMmapperMode={setIsMmapperMode}
                                 theme={theme}
                                 setTheme={setTheme}
                                 isImmersionMode={isImmersionMode}
                                 setIsImmersionMode={setIsImmersionMode}
-                                showDebugEchoes={showDebugEchoes}
-                                setShowDebugEchoes={setShowDebugEchoes}
-                                bgImage={bgImage}
-                                setBgImage={setBgImage}
-                                bgImageBottom={bgImageBottom}
-                                setBgImageBottom={setBgImageBottom}
-                                handleFileUpload={handleFileUpload}
-                                handleBottomFileUpload={handleBottomFileUpload}
                                 uiMode={uiMode}
                                 setUiMode={setUiMode}
-                                disableSmoothScroll={disableSmoothScroll}
-                                setDisableSmoothScroll={setDisableSmoothScroll}
-                                isBloomEnabled={isBloomEnabled}
-                                setIsBloomEnabled={setIsBloomEnabled}
                                 isTimestampEnabled={isTimestampEnabled}
                                 setIsTimestampEnabled={setIsTimestampEnabled}
                                 fontFamily={fontFamily}
@@ -245,6 +220,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
                     {settingsTab === 'map' && (
                         <MapSettings />
+                    )}
+
+                    {settingsTab === 'replays' && (
+                        <ReplaySettings />
                     )}
 
                     {settingsTab === 'help' && (

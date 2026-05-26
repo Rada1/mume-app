@@ -4,8 +4,7 @@
  */
 
 import React from 'react';
-import { Wifi, WifiOff, Upload } from 'lucide-react';
-import { DEFAULT_BG } from '../../constants';
+import { Wifi, WifiOff } from 'lucide-react';
 import { useModeStore } from '../../stores/useModeStore';
 import FontSizeSetting from './FontSizeSetting';
 
@@ -20,29 +19,14 @@ interface GeneralSettingsProps {
     setAutoConnect: (val: boolean) => void;
     loginName: string;
     setLoginName: (val: string) => void;
-
     loginPassword: string;
     setLoginPassword: (val: string) => void;
-    isMmapperMode: boolean;
-    setIsMmapperMode: (val: boolean) => void;
     theme: 'light' | 'dark';
     setTheme: (val: 'light' | 'dark') => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
-    bgImage: string | null;
-    bgImageBottom?: string | null;
-    setBgImage: (val: string | null) => void;
-    setBgImageBottom?: (val: string | null) => void;
-    handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleBottomFileUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    showDebugEchoes: boolean;
-    setShowDebugEchoes: (val: boolean) => void;
     uiMode: import('../../types').UiMode;
     setUiMode: (val: import('../../types').UiMode) => void;
-    disableSmoothScroll: boolean;
-    setDisableSmoothScroll: (val: boolean) => void;
-    isBloomEnabled: boolean;
-    setIsBloomEnabled: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
     fontFamily: string;
@@ -62,6 +46,37 @@ interface GeneralSettingsProps {
     setShowBlockHeaders: (val: boolean) => void;
 }
 
+// --- Helpers ---
+
+const ToggleRow: React.FC<{
+    label: string;
+    description: string;
+    value: boolean;
+    onToggle: () => void;
+    badge?: string;
+    first?: boolean;
+}> = ({ label, description, value, onToggle, badge, first }) => (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', ...(first ? {} : { marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }) }}>
+        <div style={{ flex: '1 1 200px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>{label}</label>
+                {badge && <span style={{ fontSize: '0.65rem', background: 'var(--accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>{badge}</span>}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>{description}</div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '0.8rem', color: value ? 'var(--accent)' : '#64748b' }}>{value ? 'ON' : 'OFF'}</span>
+            <button
+                className={`setting-toggle ${value ? 'active' : ''}`}
+                onClick={onToggle}
+                style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: value ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+            >
+                <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: value ? '22px' : '2px', transition: 'all 0.3s' }} />
+            </button>
+        </div>
+    </div>
+);
+
 // --- Component ---
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -75,26 +90,12 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setLoginName,
     loginPassword,
     setLoginPassword,
-    isMmapperMode,
-    setIsMmapperMode,
     theme,
     setTheme,
     isImmersionMode,
     setIsImmersionMode,
-    bgImage,
-    setBgImage,
-    bgImageBottom,
-    setBgImageBottom,
-    handleFileUpload,
-    handleBottomFileUpload,
-    showDebugEchoes,
-    setShowDebugEchoes,
     uiMode,
     setUiMode,
-    disableSmoothScroll,
-    setDisableSmoothScroll,
-    isBloomEnabled,
-    setIsBloomEnabled,
     isTimestampEnabled,
     setIsTimestampEnabled,
     fontFamily,
@@ -115,6 +116,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
 }) => {
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const setIsSpectateMode = useModeStore(s => s.setIsSpectating);
+
     let protocol = 'wss:';
     let host = '';
     let port = '';
@@ -139,6 +141,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
 
     return (
         <>
+            {/* Connection Details */}
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                     <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Connection Details</label>
@@ -286,100 +289,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </div>
             </div>
 
-            <div className="setting-group" style={{ border: '1px solid rgba(212, 170, 0, 0.3)', background: 'rgba(10, 13, 21, 0.6)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>mMapper Integration</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginTop: '4px' }}>Use the external mMapper application.</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: isMmapperMode ? 'var(--accent)' : '#64748b' }}>{isMmapperMode ? 'ACTIVE' : 'OFF'}</span>
-                        <div
-                            onClick={() => setIsMmapperMode(!isMmapperMode)}
-                            style={{
-                                width: '40px',
-                                height: '20px',
-                                background: isMmapperMode ? 'var(--accent)' : 'var(--input-bg)',
-                                borderRadius: '20px',
-                                position: 'relative',
-                                cursor: 'pointer',
-                                transition: 'all 0.3s'
-                            }}
-                        >
-                            <div style={{
-                                width: '16px',
-                                height: '16px',
-                                background: '#fff',
-                                borderRadius: '50%',
-                                position: 'absolute',
-                                top: '2px',
-                                left: isMmapperMode ? '22px' : '2px',
-                                transition: 'all 0.3s'
-                            }} />
-                        </div>
-                    </div>
-                </div>
-                {isMmapperMode && (
-                    <div style={{ marginTop: '12px', padding: '12px', background: 'var(--input-bg)', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-modal)' }}>
-                        <div style={{ color: 'var(--text-primary)', marginBottom: '10px', fontSize: '0.85rem', fontWeight: 'bold', borderBottom: '1px solid var(--border-modal)', paddingBottom: '5px' }}>Setup Instructions:</div>
-
-                        <div style={{ marginBottom: '12px' }}>
-                            <div style={{ color: 'var(--accent)', fontWeight: 'bold' }}>1. Start the Bridge</div>
-                            <div style={{ color: '#94a3b8' }}>Run this in your project terminal (keep it open):</div>
-                            <code style={{ display: 'block', background: '#000', padding: '6px', borderRadius: '4px', color: '#60a5fa', marginTop: '4px', border: '1px solid #222' }}>node mmapper-bridge.js</code>
-                        </div>
-
-                        <div style={{ marginBottom: '0' }}>
-                            <div style={{ color: 'var(--accent)', fontWeight: 'bold' }}>2. Connect App</div>
-                            <div style={{ color: 'var(--text-dim, #94a3b8)' }}>Ensure mMapper is running, then click "Connect" at the top.</div>
-                        </div>
-
-                        <div style={{ marginTop: '12px', fontSize: '0.7rem', color: 'var(--text-dim, #64748b)', fontStyle: 'italic', borderTop: '1px solid var(--border-color, #333)', paddingTop: '8px' }}>
-                            Note: The bridge will auto-detect mMapper on Port 900 or 4242.
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            <div className="setting-group" style={{ border: '1px solid rgba(212, 170, 0, 0.3)', background: 'rgba(10, 13, 21, 0.6)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Debug Messages</label>
-                            <span style={{ fontSize: '0.65rem', background: 'var(--accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>DEV</span>
-                        </div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginTop: '4px' }}>Show technical client echoes (e.g. Mapper coordinates).</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: showDebugEchoes ? 'var(--accent)' : '#64748b' }}>{showDebugEchoes ? 'ON' : 'OFF'}</span>
-                        <div
-                            onClick={() => setShowDebugEchoes(!showDebugEchoes)}
-                            style={{
-                                width: '40px',
-                                height: '20px',
-                                background: showDebugEchoes ? 'var(--accent)' : 'var(--input-bg)',
-                                borderRadius: '20px',
-                                position: 'relative',
-                                cursor: 'pointer',
-                                transition: 'all 0.3s'
-                            }}
-                        >
-                            <div style={{
-                                width: '16px',
-                                height: '16px',
-                                background: '#fff',
-                                borderRadius: '50%',
-                                position: 'absolute',
-                                top: '2px',
-                                left: showDebugEchoes ? '22px' : '2px',
-                                transition: 'all 0.3s'
-                            }} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
+            {/* Interface Mode */}
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
@@ -405,117 +315,11 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </div>
             </div>
 
+            {/* Appearance */}
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Main Font Family</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Choose your preferred monospaced typeface.</div>
-                    </div>
-                    <select 
-                        className="setting-input" 
-                        value={fontFamily} 
-                        onChange={(e) => setFontFamily(e.target.value)}
-                        style={{ 
-                            width: 'auto', 
-                            minWidth: '150px',
-                            fontFamily: fontFamily,
-                            fontSize: '0.9rem'
-                        }}
-                    >
-                        <option value="'Iosevka', monospace">Iosevka</option>
-                        <option value="'Input Mono', monospace">Input Mono</option>
-                        <option value="'Input Mono Condensed', monospace">Input Mono Condensed</option>
-                        <option value="'Input Mono Compressed', monospace">Input Mono Compressed</option>
-                        <option value="'Menlo', monospace">Menlo</option>
-                        <option value="'Space Mono', monospace">Space Mono</option>
-                        <option value="'Fira Code', monospace">Fira Code</option>
-                        <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
-                        <option value="'Roboto Mono', monospace">Roboto Mono</option>
-                        <option value="'Inconsolata', monospace">Inconsolata</option>
-                        <option value="'Source Code Pro', monospace">Source Code Pro</option>
-                        <option value="'Ubuntu Mono', monospace">Ubuntu Mono</option>
-                        <option value="'Courier Prime', monospace">Courier Prime</option>
-                        <option value="'IBM Plex Mono', monospace">IBM Plex Mono</option>
-                        <option value="'Anonymous Pro', monospace">Anonymous Pro</option>
-                        <option value="'Aniron', serif">Aniron (Elven)</option>
-                    </select>
-                </div>
-            </div>
+                <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Appearance</label>
 
-            <FontSizeSetting
-                logFontSize={logFontSize}
-                logFontSizePx={logFontSizePx}
-                setLogFontSize={setLogFontSize}
-            />
-
-            <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Show Timestamps</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Display the time for each message (excludes room info).</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: isTimestampEnabled ? 'var(--accent)' : '#64748b' }}>{isTimestampEnabled ? 'ON' : 'OFF'}</span>
-                        <div
-                            onClick={() => setIsTimestampEnabled(!isTimestampEnabled)}
-                            style={{
-                                width: '40px',
-                                height: '20px',
-                                background: isTimestampEnabled ? 'var(--accent)' : 'var(--input-bg)',
-                                borderRadius: '20px',
-                                position: 'relative',
-                                cursor: 'pointer',
-                                transition: 'all 0.3s'
-                            }}
-                        >
-                            <div style={{
-                                width: '16px',
-                                height: '16px',
-                                background: '#fff',
-                                borderRadius: '50%',
-                                position: 'absolute',
-                                top: '2px',
-                                left: isTimestampEnabled ? '22px' : '2px',
-                                transition: 'all 0.3s'
-                            }} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="setting-group" style={{ border: '1px solid rgba(212, 170, 0, 0.3)', background: 'rgba(10, 13, 21, 0.6)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                    <div style={{ flex: '1 1 200px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Experiments</label>
-                            <span style={{ fontSize: '0.65rem', background: 'var(--accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>LAB</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Auto-Save Sessions</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Automatically start recording on login and save to archive on logoff.</div>
-                    </div>
-                    <button
-                        className={`setting-toggle ${autoSaveSessions ? 'active' : ''}`}
-                        onClick={() => setAutoSaveSessions(!autoSaveSessions)}
-                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: autoSaveSessions ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                    >
-                        <div style={{
-                            width: '20px',
-                            height: '20px',
-                            background: '#fff',
-                            borderRadius: '50%',
-                            position: 'absolute',
-                            top: '2px',
-                            left: autoSaveSessions ? '22px' : '2px',
-                            transition: 'all 0.3s'
-                        }} />
-                    </button>
-                </div>
-
+                {/* Client Theme */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
                         <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Client Theme</label>
@@ -538,40 +342,117 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     </div>
                 </div>
 
+                {/* Main Font Family */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>Immersion Mode</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Enable lighting, weather, fog, embers, and scene backgrounds.</div>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Main Font Family</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Choose your preferred monospaced typeface.</div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: isImmersionMode ? 'var(--accent)' : '#64748b' }}>{isImmersionMode ? 'ON' : 'OFF'}</span>
-                        <button
-                            className={`setting-toggle ${isImmersionMode ? 'active' : ''}`}
-                            onClick={() => setIsImmersionMode(!isImmersionMode)}
-                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isImmersionMode ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                        >
-                            <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: isImmersionMode ? '22px' : '2px', transition: 'all 0.3s' }} />
-                        </button>
-                    </div>
+                    <select
+                        className="setting-input"
+                        value={fontFamily}
+                        onChange={(e) => setFontFamily(e.target.value)}
+                        style={{ width: 'auto', minWidth: '150px', fontFamily: fontFamily, fontSize: '0.9rem' }}
+                    >
+                        <option value="'Iosevka', monospace">Iosevka</option>
+                        <option value="'Input Mono', monospace">Input Mono</option>
+                        <option value="'Input Mono Condensed', monospace">Input Mono Condensed</option>
+                        <option value="'Input Mono Compressed', monospace">Input Mono Compressed</option>
+                        <option value="'Menlo', monospace">Menlo</option>
+                        <option value="'Space Mono', monospace">Space Mono</option>
+                        <option value="'Fira Code', monospace">Fira Code</option>
+                        <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                        <option value="'Roboto Mono', monospace">Roboto Mono</option>
+                        <option value="'Inconsolata', monospace">Inconsolata</option>
+                        <option value="'Source Code Pro', monospace">Source Code Pro</option>
+                        <option value="'Ubuntu Mono', monospace">Ubuntu Mono</option>
+                        <option value="'Courier Prime', monospace">Courier Prime</option>
+                        <option value="'IBM Plex Mono', monospace">IBM Plex Mono</option>
+                        <option value="'Anonymous Pro', monospace">Anonymous Pro</option>
+                        <option value="'Aniron', serif">Aniron (Elven)</option>
+                    </select>
                 </div>
 
+                {/* Font Size */}
+                <FontSizeSetting
+                    logFontSize={logFontSize}
+                    logFontSizePx={logFontSizePx}
+                    setLogFontSize={setLogFontSize}
+                    inline
+                />
+
+                {/* Show Timestamps */}
+                <ToggleRow
+                    label="Show Timestamps"
+                    description="Display the time for each message (excludes room info)."
+                    value={isTimestampEnabled}
+                    onToggle={() => setIsTimestampEnabled(!isTimestampEnabled)}
+                />
+
+                {/* Hide Vitals/Prompt */}
+                <ToggleRow
+                    label="Hide Vitals/Prompt"
+                    description="Hide the prompt bar above the input area."
+                    value={hidePrompt}
+                    onToggle={() => setHidePrompt(!hidePrompt)}
+                />
+
+                {/* Show Combat/Location Headers */}
+                <ToggleRow
+                    label="Show Combat/Location Headers"
+                    description="Show block header indicators for combat messages and location changes."
+                    value={showBlockHeaders}
+                    onToggle={() => setShowBlockHeaders(!showBlockHeaders)}
+                />
+
+                {/* Text Reveal Effect */}
+                <ToggleRow
+                    label="Text Reveal Effect"
+                    description="Animate new messages with a typewriter-style reveal as they arrive."
+                    value={isTextRevealEnabled}
+                    onToggle={() => setIsTextRevealEnabled(!isTextRevealEnabled)}
+                />
+
+                {/* Immersion Mode */}
+                <ToggleRow
+                    label="Immersion Mode"
+                    description="Enable lighting, weather, fog, embers, and scene backgrounds."
+                    value={isImmersionMode}
+                    onToggle={() => setIsImmersionMode(!isImmersionMode)}
+                />
+            </div>
+
+            {/* Experiments */}
+            <div className="setting-group" style={{ border: '1px solid rgba(212, 170, 0, 0.3)', background: 'rgba(10, 13, 21, 0.6)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Experiments</label>
+                    <span style={{ fontSize: '0.65rem', background: 'var(--accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>LAB</span>
+                </div>
+
+                {/* Auto-Save Sessions */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>Show Spectated Player's Prompt</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Display the snooped player's prompt line in the message log during spectate mode.</div>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Auto-Save Sessions</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Automatically start recording on login and save to archive on logoff.</div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: showSpectatePromptInLog ? 'var(--accent)' : '#64748b' }}>{showSpectatePromptInLog ? 'ON' : 'OFF'}</span>
-                        <button
-                            className={`setting-toggle ${showSpectatePromptInLog ? 'active' : ''}`}
-                            onClick={() => setShowSpectatePromptInLog(!showSpectatePromptInLog)}
-                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showSpectatePromptInLog ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                        >
-                            <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: showSpectatePromptInLog ? '22px' : '2px', transition: 'all 0.3s' }} />
-                        </button>
-                    </div>
+                    <button
+                        className={`setting-toggle ${autoSaveSessions ? 'active' : ''}`}
+                        onClick={() => setAutoSaveSessions(!autoSaveSessions)}
+                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: autoSaveSessions ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                    >
+                        <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: autoSaveSessions ? '22px' : '2px', transition: 'all 0.3s' }} />
+                    </button>
                 </div>
 
+                {/* Show Spectated Player's Prompt */}
+                <ToggleRow
+                    label="Show Spectated Player's Prompt"
+                    description="Display the snooped player's prompt line in the message log during spectate mode."
+                    value={showSpectatePromptInLog}
+                    onToggle={() => setShowSpectatePromptInLog(!showSpectatePromptInLog)}
+                />
+
+                {/* Spectate Mode */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -585,111 +466,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         onClick={(e) => { e.stopPropagation(); setIsSpectateMode(!isSpectateMode); }}
                         style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isSpectateMode ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
                     >
-                        <div style={{
-                            width: '20px',
-                            height: '20px',
-                            background: '#fff',
-                            borderRadius: '50%',
-                            position: 'absolute',
-                            top: '2px',
-                            left: isSpectateMode ? '22px' : '2px',
-                            transition: 'all 0.3s'
-                        }} />
-                    </button>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>Hide Vitals/Prompt</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Hide the prompt bar above the input area.</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: hidePrompt ? 'var(--accent)' : '#64748b' }}>{hidePrompt ? 'ON' : 'OFF'}</span>
-                        <button
-                            className={`setting-toggle ${hidePrompt ? 'active' : ''}`}
-                            onClick={() => setHidePrompt(!hidePrompt)}
-                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: hidePrompt ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                        >
-                            <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: hidePrompt ? '22px' : '2px', transition: 'all 0.3s' }} />
-                        </button>
-                    </div>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>Show Combat/Location Headers</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Show block header indicators for combat messages and location changes.</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: showBlockHeaders ? 'var(--accent)' : '#64748b' }}>{showBlockHeaders ? 'ON' : 'OFF'}</span>
-                        <button
-                            className={`setting-toggle ${showBlockHeaders ? 'active' : ''}`}
-                            onClick={() => setShowBlockHeaders(!showBlockHeaders)}
-                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showBlockHeaders ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                        >
-                            <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: showBlockHeaders ? '22px' : '2px', transition: 'all 0.3s' }} />
-                        </button>
-                    </div>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>Text Reveal Effect</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Animate new messages with a typewriter-style reveal as they arrive.</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: isTextRevealEnabled ? 'var(--accent)' : '#64748b' }}>{isTextRevealEnabled ? 'ON' : 'OFF'}</span>
-                        <button
-                            className={`setting-toggle ${isTextRevealEnabled ? 'active' : ''}`}
-                            onClick={() => setIsTextRevealEnabled(!isTextRevealEnabled)}
-                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isTextRevealEnabled ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                        >
-                            <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: isTextRevealEnabled ? '22px' : '2px', transition: 'all 0.3s' }} />
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div className="setting-group">
-                <label className="setting-label">Background Image (Top/Full)</label>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    <input
-                        type="file"
-                        id="bg-upload"
-                        hidden
-                        onChange={handleFileUpload}
-                        accept="image/*"
-                    />
-                    <label htmlFor="bg-upload" className="btn-secondary" style={{ marginTop: 0, width: 'auto' }}>
-                        <Upload size={16} /> Upload
-                    </label>
-                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => setBgImage(null)}>
-                        Clear
-                    </button>
-                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => setBgImage(DEFAULT_BG)}>
-                        Reset
-                    </button>
-                </div>
-            </div>
-
-            <div className="setting-group">
-                <label className="setting-label">Background Image (Bottom)</label>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <input
-                        type="file"
-                        id="bg-bottom-upload"
-                        hidden
-                        onChange={handleBottomFileUpload}
-                        accept="image/*"
-                    />
-                    <label htmlFor="bg-bottom-upload" className="btn-secondary" style={{ marginTop: 0, width: 'auto' }}>
-                        <Upload size={16} /> Upload
-                    </label>
-                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => setBgImageBottom?.(null)}>
-                        Clear
-                    </button>
-                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => setBgImageBottom?.(bgImage)}>
-                        Sync to Top
+                        <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: isSpectateMode ? '22px' : '2px', transition: 'all 0.3s' }} />
                     </button>
                 </div>
             </div>

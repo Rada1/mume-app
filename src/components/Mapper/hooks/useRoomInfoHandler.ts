@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
 import { GmcpRoomInfo, MapperRoom } from '../mapperTypes';
 import { generateId, normalizeTerrain, DIRS, getExitTargetId } from '../mapperUtils';
+import { findBestTextRoomMatch } from '../textRoomMatcher';
+import { sanitizeTextDerivedDoorExits } from '../mapperExitSanitizer';
 
 interface RoomInfoProps {
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
@@ -44,6 +46,7 @@ export const useRoomInfoHandler = ({
         let matchedInternalId: string | null = null;
         let discoverySource: string | null = null;
         const isSpectateUpdate = data.spectating === true;
+        const isTextRoomEvent = data.source === 'text';
 
         if (gmcpId === undefined || gmcpId === null) return;
 
@@ -238,7 +241,22 @@ export const useRoomInfoHandler = ({
                 }
             }
 
-            // Priority 3: Coordinate-Restricted Fingerprinting (Global Search)
+            // Priority 3: Text-derived neighbor scoring for no-GMCP movement.
+            if (!matchedInternalId && !targetId && isTextRoomEvent && isVnumZero && currentActiveRoom) {
+                const textMatch = findBestTextRoomMatch(data, currentActiveRoom, dirUsed, roomsRef.current, preloadedCoordsRef.current);
+                if (textMatch) {
+                    targetId = textMatch.id;
+                    const rawTextMatchId = textMatch.id.replace(/^m_/, '');
+                    const textGhostData = preloadedCoordsRef.current[rawTextMatchId];
+                    if (textGhostData) {
+                        matchedInternalId = rawTextMatchId;
+                        ghostData = textGhostData;
+                    }
+                    discoverySource = textMatch.source;
+                }
+            }
+
+            // Priority 4: Coordinate-Restricted Fingerprinting (Global Search)
             if (!matchedInternalId && !targetId && !isVnumZero) {
                 const candidates = nameIndexRef.current[gmcpName];
                 if (candidates && candidates.length > 0) {
@@ -267,7 +285,7 @@ export const useRoomInfoHandler = ({
                     }
                 }
             } else if (!matchedInternalId && !targetId && currentActiveRoom && dirUsed) {
-                // Priority 4: Pure Adjacency (Dark Reckoning / VNUM 0)
+                // Priority 5: Pure Adjacency (Dark Reckoning / VNUM 0)
                 const d = DIRS[dirUsed];
                 if (d) {
                     const px = currentActiveRoom.x + (d.dx || 0);
@@ -312,7 +330,7 @@ export const useRoomInfoHandler = ({
         }
 
         // Prioritize finding a room that's an existing exit from our current location
-        if (!isSpectateUpdate && currentActiveRoom && dirUsed && currentActiveRoom.exits[dirUsed]) {
+        if (!targetId && !isSpectateUpdate && currentActiveRoom && dirUsed && currentActiveRoom.exits[dirUsed]) {
             const ex = currentActiveRoom.exits[dirUsed];
             if (ex.target) {
                 const existingTarget = roomsRef.current[ex.target];
@@ -365,16 +383,14 @@ export const useRoomInfoHandler = ({
         if (targetId && targetId.startsWith('m_')) {
             const vnum = targetId.substring(2);
             if (!exploredRef.current.has(vnum)) {
+                const nextExplored = new Set(exploredRef.current);
+                nextExplored.add(vnum);
+                exploredRef.current = nextExplored;
                 if (firstExploredAtRef.current[vnum] === undefined) {
                     firstExploredAtRef.current[vnum] = now;
                     firstExploredAtRef.current['_latest'] = now;
                 }
-                setExploredVnums(prev => {
-                    const next = new Set(prev);
-                    next.add(vnum);
-                    exploredRef.current = next;
-                    return next;
-                });
+                setExploredVnums(nextExplored);
                 triggerRender?.();
                 const roomLoadFlags = preloadedCoordsRef.current[vnum]?.[8] as string[] | undefined;
                 if (roomLoadFlags && roomLoadFlags.length > 0) {
@@ -383,7 +399,8 @@ export const useRoomInfoHandler = ({
             }
         }
         if (!targetId && isVnumZero) {
-            targetId = `ghost_${predX}_${predY}_${predZ}`;
+            onRoomInfoProcessed?.(null);
+            return;
         }
         if (!targetId) targetId = generateId();
 
@@ -426,6 +443,26 @@ export const useRoomInfoHandler = ({
         const prevRooms = roomsRef.current;
         let newRooms = prevRooms;
         let existingRoom = newRooms[targetId!];
+
+        if (isTextRoomEvent) {
+            const sanitizeStoredRoom = (roomId: string | null | undefined) => {
+                if (!roomId) return;
+                const storedRoom = newRooms[roomId];
+                if (!storedRoom) return;
+                const sanitizedRoom = sanitizeTextDerivedDoorExits(storedRoom);
+                if (sanitizedRoom !== storedRoom) {
+                    if (!topologyChanged) newRooms = { ...prevRooms };
+                    newRooms[roomId] = sanitizedRoom;
+                    topologyChanged = true;
+                    if (roomId === targetId) existingRoom = sanitizedRoom;
+                }
+            };
+
+            sanitizeStoredRoom(activeRoomId);
+            sanitizeStoredRoom(targetId);
+
+            if (targetId) existingRoom = newRooms[targetId];
+        }
 
         if (!existingRoom) {
             topologyChanged = true;
@@ -524,7 +561,9 @@ export const useRoomInfoHandler = ({
             }
         }
 
-        if (data.exits && !isVnumZero) {
+        // Text exits contain destination room names, not door names or vnums.
+        // Keep them available for matching, but never persist them as topology.
+        if (data.exits && !isVnumZero && !isTextRoomEvent) {
             const room = newRooms[targetId!];
             const updatedExits: Record<string, any> = {};
             let exitsChanged = false;

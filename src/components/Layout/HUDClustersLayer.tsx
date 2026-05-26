@@ -35,7 +35,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
     handleDragStart, wasDraggingRef, commandPreview, setCommandPreview, heldButton, heldButtonRef, setHeldButton, btnGlow, setBtnGlow,
     input, setInput, handleSend, handleInputSwipe
 }) => {
-    const { characterName, isMmapperMode, btn, joystick, mapperRef, triggerHaptic, executeCommand, handleButtonClick, viewport, showControls, showLegacyButtons, gameState, sessionMode } = useGame();
+    const { characterName, btn, joystick, mapperRef, triggerHaptic, executeCommand, handleButtonClick, viewport, showControls, showLegacyButtons, gameState, sessionMode } = useGame();
     const { target, stats, activePrompt } = useVitals();
     const { setPopoverState } = useUI();
     const { isMobile, isLandscape, logFontSize, resetLogFontSize, isKeyboardOpen } = viewport;
@@ -66,7 +66,6 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                     isEditMode={btn.isEditMode}
                     handleDragStart={handleDragStart}
                     characterName={characterName || ''}
-                    isMmapperMode={isMmapperMode}
                     isMobile={isMobile}
                     mapperRef={mapperRef}
                     dragState={btn.dragState}

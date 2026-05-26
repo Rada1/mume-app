@@ -1,3 +1,8 @@
+/**
+ * @file useMapAnimation.ts
+ * @description Drives finite mapper canvas animation bursts for movement and live overlays.
+ */
+
 import { useEffect, useRef, useCallback } from 'react';
 import { GRID_SIZE } from './mapperUtils';
 
@@ -41,7 +46,7 @@ export const useMapAnimation = ({
     const tickRef = useRef<(() => boolean) | null>(null);
 
     const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
-    const trackerRef = useRef<{ endTimes: number[] }>({ endTimes: [] });
+    const wakeUntilRef = useRef(0);
 
     const lastFrameTimeRef = useRef<number>(0);
 
@@ -72,8 +77,8 @@ export const useMapAnimation = ({
         const deltaTime = now - lastFrameTimeRef.current;
         
         const effectiveIsDragging = isDragging || isDraggingRef?.current;
-        const hasPlayerRoomPulse = !!(playerPosRef.current || currentRoomId);
-        const frameBudget = effectiveIsDragging ? 16 : hasPlayerRoomPulse ? PLAYER_PULSE_FRAME_MS : 16;
+        const hasLiveOverlayAnimation = !!(activeMapFilter || combatAnimationActive || walkTargetId);
+        const frameBudget = effectiveIsDragging || hasLiveOverlayAnimation ? 16 : PLAYER_PULSE_FRAME_MS;
         if (deltaTime < frameBudget) return true;
         
         // Calculate a normalized factor for lerping based on time (aiming for 60fps base)
@@ -90,7 +95,7 @@ export const useMapAnimation = ({
         const w = cvs.width / dpr;
         const h = cvs.height / dpr;
 
-        let needsNextFrame = effectiveIsDragging || hasPlayerRoomPulse;
+        let needsNextFrame = effectiveIsDragging || hasLiveOverlayAnimation;
 
         // Player position is snapped immediately in useMapperPlayerTracking — no queue/lerp needed here.
         // Camera centering still lerps smoothly toward playerPosRef.current.
@@ -149,16 +154,19 @@ export const useMapAnimation = ({
 
         if ((tickRef as any)._lastWakeKey !== wakeKey) {
             (tickRef as any)._lastWakeKey = wakeKey;
-            trackerRef.current.endTimes.push(wallTime + WAKE_ANIMATION_MS);
+            wakeUntilRef.current = Math.max(wakeUntilRef.current, wallTime + WAKE_ANIMATION_MS);
         }
 
         if ((tickRef as any)._lastRenderVersion !== renderVersion) {
             (tickRef as any)._lastRenderVersion = renderVersion;
-            trackerRef.current.endTimes.push(wallTime + WAKE_ANIMATION_MS);
+            wakeUntilRef.current = Math.max(wakeUntilRef.current, wallTime + WAKE_ANIMATION_MS);
         }
 
-        trackerRef.current.endTimes = trackerRef.current.endTimes.filter((time: number) => time > wallTime);
-        if (trackerRef.current.endTimes.length > 0) needsNextFrame = true;
+        if (wakeUntilRef.current > wallTime) {
+            needsNextFrame = true;
+        } else {
+            wakeUntilRef.current = 0;
+        }
 
         drawMap(ctx, dpr, w, h, marquee, effectiveIsDragging);
         return needsNextFrame;

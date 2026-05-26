@@ -1,0 +1,175 @@
+/**
+ * @file textMapperEvents.ts
+ * @description Builds mapper room updates from MUME XML/text output when GMCP is absent.
+ */
+
+import { GmcpExitInfo } from '../../components/Mapper/mapperTypes';
+
+// --- Types Section ---
+export interface TextMapperRoomEvent {
+    num: number;
+    name: string;
+    desc?: string;
+    area?: string;
+    terrain?: string;
+    exits?: Record<string, GmcpExitInfo>;
+    source: 'text';
+}
+
+export interface TextMapperState {
+    room?: Partial<TextMapperRoomEvent>;
+    descLines: string[];
+    exitLines: string[];
+    inRoom: boolean;
+}
+
+export interface TextMapperResult {
+    event?: TextMapperRoomEvent;
+    roomName?: string;
+    roomDesc?: string;
+    roomZone?: string;
+    terrain?: string;
+    exits?: string[];
+}
+
+// --- Logic Section ---
+const dirMap: Record<string, string> = {
+    n: 'n', north: 'n',
+    s: 's', south: 's',
+    e: 'e', east: 'e',
+    w: 'w', west: 'w',
+    u: 'u', up: 'u',
+    d: 'd', down: 'd',
+    ne: 'ne', northeast: 'ne',
+    nw: 'nw', northwest: 'nw',
+    se: 'se', southeast: 'se',
+    sw: 'sw', southwest: 'sw'
+};
+
+export const createTextMapperState = (): TextMapperState => ({
+    descLines: [],
+    exitLines: [],
+    inRoom: false
+});
+
+export const decodeTextMapperEntities = (text: string) => text
+    .replace(/&gt;/gi, '>')
+    .replace(/&lt;/gi, '<')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'");
+
+const stripTags = (text: string) => decodeTextMapperEntities(text.replace(/<[^>]+>/g, '')).trim();
+
+const getTagText = (line: string, tagName: string) => {
+    const match = line.match(new RegExp(`<${tagName}\\b[^>]*>(.*?)<\\/${tagName}>`, 'i'));
+    return match?.[1] ? stripTags(match[1]) : null;
+};
+
+const getAttr = (attrs: string, name: string) => {
+    return attrs.match(new RegExp(`\\b${name}=["']?([^"'\\s>/]*)`, 'i'))?.[1];
+};
+
+export const extractXmlMovementDir = (line: string): string | null => {
+    const decoded = decodeTextMapperEntities(line);
+    const attrs = decoded.match(/<movement\b([^>]*)\/?>/i)?.[1];
+    if (attrs === undefined) return null;
+
+    const dir = getAttr(attrs, 'dir');
+    if (!dir) return '';
+    return dirMap[dir.toLowerCase()] || dir.toLowerCase();
+};
+
+const parseExitLines = (lines: string[]): Record<string, GmcpExitInfo> | undefined => {
+    const exits: Record<string, GmcpExitInfo> = {};
+
+    for (const line of lines) {
+        const clean = stripTags(line).replace(/^exits:\s*/i, '').trim();
+        const longMatch = clean.match(/^(North|South|East|West|Up|Down|Northeast|Northwest|Southeast|Southwest)\s+-\s+(.+)$/i);
+        if (longMatch) {
+            exits[dirMap[longMatch[1].toLowerCase()]] = { name: longMatch[2].trim() };
+            continue;
+        }
+
+        for (const token of clean.split(/[\s,]+/)) {
+            const dir = dirMap[token.toLowerCase()];
+            if (dir) exits[dir] = { name: token };
+        }
+    }
+
+    return Object.keys(exits).length > 0 ? exits : undefined;
+};
+
+const finalize = (state: TextMapperState): TextMapperResult => {
+    const room = state.room;
+    if (!room?.name) return {};
+
+    const desc = state.descLines.map(stripTags).filter(Boolean).join(' ');
+    const exits = parseExitLines(state.exitLines);
+    const event: TextMapperRoomEvent = {
+        num: room.num || 0,
+        name: room.name,
+        desc: desc || room.desc,
+        area: room.area,
+        terrain: room.terrain,
+        exits,
+        source: 'text'
+    };
+
+    return {
+        event,
+        roomName: event.name,
+        roomDesc: event.desc,
+        roomZone: event.area,
+        terrain: event.terrain,
+        exits: exits ? Object.keys(exits) : undefined
+    };
+};
+
+export const consumeTextMapperLine = (
+    state: TextMapperState,
+    line: string,
+    isPromptBoundary: boolean
+): TextMapperResult => {
+    if (isPromptBoundary) {
+        const result = finalize(state);
+        Object.assign(state, createTextMapperState());
+        return result;
+    }
+
+    const roomAttrs = line.match(/<room\b([^>]*)>/i)?.[1];
+    if (roomAttrs !== undefined) {
+        Object.assign(state, createTextMapperState());
+        state.inRoom = true;
+        const id = getAttr(roomAttrs, 'id');
+        state.room = {
+            num: id ? Number(id) || 0 : 0,
+            area: decodeTextMapperEntities(getAttr(roomAttrs, 'area') || ''),
+            terrain: decodeTextMapperEntities(getAttr(roomAttrs, 'terrain') || '')
+        };
+    }
+
+    const name = getTagText(line, 'name');
+    if (name) {
+        state.inRoom = true;
+        state.room = { ...(state.room || {}), name };
+    }
+
+    const description = getTagText(line, 'description');
+    if (description) state.descLines.push(description);
+
+    const exits = getTagText(line, 'exits');
+    if (exits) state.exitLines.push(exits);
+
+    if (state.inRoom && /^(?:North|South|East|West|Up|Down|Northeast|Northwest|Southeast|Southwest)\s+-\s+/i.test(stripTags(line))) {
+        state.exitLines.push(line);
+    }
+
+    if (/<\/room>/i.test(line)) {
+        const result = finalize(state);
+        Object.assign(state, createTextMapperState());
+        return result;
+    }
+
+    return {};
+};

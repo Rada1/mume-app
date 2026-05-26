@@ -7,8 +7,32 @@ import { SwipeDirection } from './game';
 import { EntityKind, EntityLocation } from './entities';
 
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
+
+export interface QuickButton {
+    id: string;
+    label: string;
+    command: string;
+}
 export type TriggerAction = 'spit' | 'hide' | 'show' | 'command';
 export type ActionType = 'command' | 'menu' | 'nav' | 'select-assign' | 'select-recipient' | 'select-container' | 'assign' | 'teleport-manage' | 'historical' | 'preload' | 'show' | 'modifier';
+export type ObjectDragRow = 'inventory' | 'worn' | 'room';
+
+export interface ObjectDragSource {
+    row: ObjectDragRow;
+    noun: string;
+    label: string;
+}
+
+export type ObjectDropTarget =
+    | { type: 'row'; row: ObjectDragRow; slot?: string }
+    | { type: 'entity'; entityId: string; noun: string; label: string };
+
+export interface ObjectDragState {
+    source: ObjectDragSource;
+    x: number;
+    y: number;
+    target: ObjectDropTarget | null;
+}
 
 export interface UiPosition {
     x?: number;

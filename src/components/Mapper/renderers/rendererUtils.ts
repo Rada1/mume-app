@@ -39,6 +39,7 @@ export interface RenderContext {
     neutralColor?: string;
     objectColor?: string;
     targetColor?: string;
+    targetName?: string | null;
     opponentName?: string | null;
     opponentId?: string | null;
     inCombat?: boolean;
@@ -67,10 +68,10 @@ export interface RenderContext {
     filterPathDistance?: number;
     combatPulsesRef?: React.MutableRefObject<CombatPulse[]>;
     isTracingMode?: boolean;
-    showBackgroundMap?: boolean;
     mapTileVisuals?: MapTileVisualAdjustments;
     mapTileOpacity?: number;
     zoneFilters?: Record<string, ZoneFilterConfig>;
+    lighting?: string;
     weather?: string;
     isDragging?: boolean;
     showTerrainIcons?: boolean;

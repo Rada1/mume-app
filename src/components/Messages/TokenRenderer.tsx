@@ -10,14 +10,8 @@ import { isObjectSelected } from '../../utils/selectionUtils';
 
 import { MessageType } from '../../types';
 
-interface InlineTargetProps {
+interface TargetHighlightProps {
     className: string;
-    'data-id': string;
-    'data-cmd': string;
-    'data-context': string;
-    'data-category': string;
-    'data-action': string;
-    'data-targetable'?: string;
 }
 
 export interface TokenRendererProps {
@@ -89,76 +83,70 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
 
     const propCategoryAxes = propMetadata?.category ? getInlineCategoryAxes(propMetadata.category) : null;
     
-    const getInlineTargetProps = (id: string, context: string): InlineTargetProps => ({
-        className: 'inline-btn is-target target-highlighter',
-        'data-id': id,
-        'data-cmd': 'target',
-        'data-context': context,
-        'data-category': 'target',
-        'data-action': 'menu'
+    const getTargetHighlightProps = (): TargetHighlightProps => ({
+        className: 'is-target target-highlighter',
     });
+
+    const renderTextWithTarget = (text: string, key: string | number) => {
+        if (!currentTarget || !text.toLowerCase().includes(currentTarget)) {
+            return <span key={key}>{text}</span>;
+        }
+
+        // Use word boundaries for target matching to avoid over-highlighting
+        const escapedTarget = currentTarget.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const parts = [];
+        let lastIndex = 0;
+        let match;
+
+        // Safe word boundary matching without lookbehind
+        const pattern = `(?:^|[^a-zA-Z0-9\\u00C0-\\u00FF])(${escapedTarget})(?=[^a-zA-Z0-9\\u00C0-\\u00FF]|$)`;
+        const regex = new RegExp(pattern, 'gi');
+
+        while ((match = regex.exec(text)) !== null) {
+            let matchContent = match[0];
+            let matchIndex = match.index;
+            let targetMatch = match[1];
+
+            // If match includes a boundary character at the start, skip it
+            if (matchContent.length > targetMatch.length) {
+                matchIndex += 1;
+            }
+
+            // Add the text before the match
+            if (matchIndex > lastIndex) {
+                parts.push(text.substring(lastIndex, matchIndex));
+            }
+
+            parts.push(
+                <span
+                    key={`target-${matchIndex}`}
+                    {...getTargetHighlightProps()}
+                >
+                    {targetMatch}
+                </span>
+            );
+            lastIndex = matchIndex + targetMatch.length;
+            // Avoid infinite loops if match is empty
+            if (regex.lastIndex === match.index) regex.lastIndex++;
+        }
+
+        if (lastIndex < text.length) {
+            parts.push(text.substring(lastIndex));
+        }
+
+        return <span key={key}>{parts}</span>;
+    };
 
     const renderToken = (token: Token, idx: number | string, textOverride?: string) => {
         const content = textOverride !== undefined ? textOverride : token.content;
         const tokenContentLower = content.toLowerCase();
-        
+
         // 1. Determine if this token EXACTLY matches the target
         let isTargetMatch = !!currentTarget && (
-            tokenContentLower === currentTarget || 
+            tokenContentLower === currentTarget ||
             (token.type === 'entity' && token.metadata?.context?.toLowerCase() === currentTarget) ||
             (token.type === 'entity' && token.metadata?.category !== 'cat-room' && tokenContentLower.includes(currentTarget))
         );
-
-        // Helper to render text with target highlighting
-        const renderTextWithTarget = (text: string, key: string | number) => {
-            if (!currentTarget || !text.toLowerCase().includes(currentTarget)) {
-                return <span key={key}>{text}</span>;
-            }
-
-            // Use word boundaries for target matching to avoid over-highlighting
-            const escapedTarget = currentTarget.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const parts = [];
-            let lastIndex = 0;
-            let match;
-
-            // Safe word boundary matching without lookbehind
-            const pattern = `(?:^|[^a-zA-Z0-9\\u00C0-\\u00FF])(${escapedTarget})(?=[^a-zA-Z0-9\\u00C0-\\u00FF]|$)`;
-            const regex = new RegExp(pattern, 'gi');
-
-            while ((match = regex.exec(text)) !== null) {
-                let matchContent = match[0];
-                let matchIndex = match.index;
-                let targetMatch = match[1];
-
-                // If match includes a boundary character at the start, skip it
-                if (matchContent.length > targetMatch.length) {
-                    matchIndex += 1;
-                }
-
-                // Add the text before the match
-                if (matchIndex > lastIndex) {
-                    parts.push(text.substring(lastIndex, matchIndex));
-                }
-                
-                parts.push(
-                    <span 
-                        key={`target-${matchIndex}`} 
-                        {...getInlineTargetProps(`reactive-target-${currentTarget}`, currentTarget)}
-                    >
-                        {targetMatch}
-                    </span>
-                );
-                lastIndex = matchIndex + targetMatch.length;
-                // Avoid infinite loops if match is empty
-                if (regex.lastIndex === match.index) regex.lastIndex++;
-            }
-
-            if (lastIndex < text.length) {
-                parts.push(text.substring(lastIndex));
-            }
-
-            return <span key={key}>{parts}</span>;
-        };
 
         if (token.type === 'entity') {
             const e = token as EntityToken;
@@ -179,23 +167,16 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 className: `${isRoom ? 'inline-btn room-name-inline' : `inline-btn`} ${extraClasses.join(' ')}`.trim(),
             };
 
-            if (isTargetMatch && currentTarget) {
-                // Preserve entity identity/color; only override the action so tapping fires 'target'
-                props['data-cmd'] = 'target';
-                props['data-action'] = 'menu';
-                props['data-context'] = propMetadata?.context || defaultContext;
-            } else {
-                props['data-id'] = propMetadata?.id || e.entityId;
-                props['data-cmd'] = propMetadata?.cmd || e.metadata?.cmd || propMetadata?.category || e.metadata?.category || (isAuto ? (e.metadata?.kind || content) : content);
-                props['data-context'] = propMetadata?.context || defaultContext;
-                props['data-category'] = tokenCategoryId;
-                props['data-targetable'] = categoryAxes.isTargetable ? 'true' : 'false';
-                if (propMetadata?.action || e.metadata?.action || isRoom) props['data-action'] = propMetadata?.action || e.metadata?.action || 'menu';
-                
-                const parent = propMetadata?.parent || e.metadata?.parent;
-                if (parent) {
-                    props['data-parent-noun'] = parent;
-                }
+            props['data-id'] = propMetadata?.id || e.entityId;
+            props['data-cmd'] = propMetadata?.cmd || e.metadata?.cmd || propMetadata?.category || e.metadata?.category || (isAuto ? (e.metadata?.kind || content) : content);
+            props['data-context'] = propMetadata?.context || defaultContext;
+            props['data-category'] = tokenCategoryId;
+            props['data-targetable'] = categoryAxes.isTargetable ? 'true' : 'false';
+            if (propMetadata?.action || e.metadata?.action || isRoom) props['data-action'] = propMetadata?.action || e.metadata?.action || 'menu';
+            
+            const parent = propMetadata?.parent || e.metadata?.parent;
+            if (parent) {
+                props['data-parent-noun'] = parent;
             }
 
             const selectedId = props['data-id'];
@@ -272,7 +253,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     <span 
                         key={idx} 
                         style={a.style}
-                        {...(isTargetMatch && currentTarget ? getInlineTargetProps(`ansi-target-${currentTarget}`, currentTarget) : {})}
+                        {...(isTargetMatch && currentTarget ? getTargetHighlightProps() : {})}
                     >
                         {currentTarget && !isTargetMatch ? renderTextWithTarget(content, idx) : content}
                     </span>
@@ -286,7 +267,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 return (
                     <span 
                         key={idx} 
-                        {...(isTargetMatch && currentTarget ? getInlineTargetProps(`text-target-${currentTarget}`, currentTarget) : {})}
+                        {...(isTargetMatch && currentTarget ? getTargetHighlightProps() : {})}
                     >
                         {content}
                     </span>
@@ -356,13 +337,16 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     wordNodes.push(<span key={`sp-${i}-${j}`} style={ansiStyle}> </span>);
                     continue;
                 }
+                const wordContent = currentTarget && word.toLowerCase().includes(currentTarget)
+                    ? renderTextWithTarget(word, `${i}-${j}`)
+                    : word;
                 wordNodes.push(
                     <span
                         key={`lw-${i}-${j}`}
                         className="log-word"
                         style={{ ...ansiStyle, animationDelay: `${wordIdx * 30}ms` }}
                     >
-                        {word}{j < words.length - 1 ? ' ' : ''}
+                        {wordContent}{j < words.length - 1 ? ' ' : ''}
                     </span>
                 );
                 wordIdx++;

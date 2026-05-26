@@ -100,6 +100,9 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
 
     const detectItemsInRoom = useCallback((textOnly: string, cleanLine: string, isDrawerHiding: boolean) => {
         if (capture.hasSession() || isDrawerHiding) return;
+        const line = textOnly.trim();
+        const isObjectActionResult = /^(?:You|[A-Z][\w' -]+)\s+(?:drop|drops|get|gets|take|takes|pick up|picks up)\s+/i.test(line);
+        if (isObjectActionResult) return;
 
         const objects: string[] = [];
         const objectMatcher = /<object\b[^>]*>(.*?)<\/object>/gis;

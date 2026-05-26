@@ -18,14 +18,14 @@ export const DEFAULT_MAP_TILE_VISUALS: MapTileVisualAdjustments = {
     terrainColors: {
         Forest: '#334e2d',
         City: '#393532',
-        Building: '#33312e',
+        Building: '#5b5852',
         Field: '#334e2d',
         Hills: '#334e2d',
         Water: '#182b3a',
         Rapids: '#30484f',
-        Shallows: '#2f3c15',
-        Cavern: '#31333f',
-        Tunnel: '#333333',
+        Shallows: '#494e0e',
+        Cavern: '#686e8d',
+        Tunnel: '#686e8d',
         Brush: '#334e2d',
         Road: '#334e2d',
         Mountains: '#334e2d',
@@ -89,7 +89,6 @@ interface SettingsState {
     showBlockHeaders: boolean;
     isSoundEnabled: boolean;
     isNewbieMode: boolean;
-    isMmapperMode: boolean;
     autoSaveSessions: boolean;
     soundTriggers: import('../types').SoundTrigger[];
     teleportTargets: TeleportTarget[];
@@ -107,7 +106,6 @@ interface SettingsState {
     unveilMap: boolean;
     showMapperToolbar: boolean;
     isTextRevealEnabled: boolean;
-    showBackgroundMap: boolean;
     showBackgroundImage: boolean;
     mapTileVisuals: MapTileVisualAdjustments;
     mapBackgroundVisuals: MapBackgroundVisualAdjustments;
@@ -144,7 +142,6 @@ interface SettingsState {
     setShowBlockHeaders: (val: boolean) => void;
     setIsSoundEnabled: (val: boolean) => void;
     setIsNewbieMode: (val: boolean) => void;
-    setIsMmapperMode: (val: boolean) => void;
     setAutoSaveSessions: (val: boolean) => void;
     setSoundTriggers: (val: import('../types').SoundTrigger[]) => void;
     setTeleportTargets: (val: TeleportTarget[] | ((prev: TeleportTarget[]) => TeleportTarget[])) => void;
@@ -161,7 +158,6 @@ interface SettingsState {
     setUnveilMap: (val: boolean) => void;
     setShowMapperToolbar: (val: boolean) => void;
     setIsTextRevealEnabled: (val: boolean) => void;
-    setShowBackgroundMap: (val: boolean) => void;
     setShowBackgroundImage: (val: boolean) => void;
     setMapTileVisuals: (val: Partial<MapTileVisualAdjustments>) => void;
     setMapBackgroundVisuals: (val: Partial<MapBackgroundVisualAdjustments>) => void;
@@ -275,7 +271,6 @@ export const useSettingsStore = create<SettingsState>()(
             
             isSoundEnabled: true,
             isNewbieMode: false,
-            isMmapperMode: false,
             autoSaveSessions: true,
             soundTriggers: [],
             teleportTargets: [],
@@ -294,7 +289,6 @@ export const useSettingsStore = create<SettingsState>()(
             unveilMap: true,
             showMapperToolbar: false,
             isTextRevealEnabled: true,
-            showBackgroundMap: true,
             showBackgroundImage: true,
             mapTileVisuals: DEFAULT_MAP_TILE_VISUALS,
             mapBackgroundVisuals: DEFAULT_MAP_BACKGROUND_VISUALS,
@@ -333,7 +327,6 @@ export const useSettingsStore = create<SettingsState>()(
             setShowBlockHeaders: (showBlockHeaders) => set({ showBlockHeaders }),
             setIsSoundEnabled: (isSoundEnabled) => set({ isSoundEnabled }),
             setIsNewbieMode: (isNewbieMode) => set({ isNewbieMode }),
-            setIsMmapperMode: (isMmapperMode) => set({ isMmapperMode }),
             setAutoSaveSessions: (autoSaveSessions) => set({ autoSaveSessions }),
             setSoundTriggers: (soundTriggers) => set({ soundTriggers }),
             setTeleportTargets: (val) => set((state) => {
@@ -384,7 +377,6 @@ export const useSettingsStore = create<SettingsState>()(
             setUnveilMap: (unveilMap) => set({ unveilMap }),
             setShowMapperToolbar: (showMapperToolbar) => set({ showMapperToolbar }),
             setIsTextRevealEnabled: (isTextRevealEnabled) => set({ isTextRevealEnabled }),
-            setShowBackgroundMap: (showBackgroundMap) => set({ showBackgroundMap }),
             setShowBackgroundImage: (showBackgroundImage) => set({ showBackgroundImage }),
             setMapTileVisuals: (mapTileVisuals) => set((state) => ({
                 mapTileVisuals: {
@@ -428,7 +420,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 19,
+            version: 20,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -597,7 +589,7 @@ export const useSettingsStore = create<SettingsState>()(
                         persistedState.accentColor = '#d4aa00';
                     }
                 }
-                
+
                 return persistedState;
             },
             merge: (persistedState: any, currentState) => {

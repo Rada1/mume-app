@@ -12,6 +12,9 @@ import type { GmcpOccupant } from '../../types';
 import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
 import { getCategoryIdForKindLocation, toCategoryId } from '../../utils/inlineActionModel';
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
+import { extractMumeKeyword } from '../../utils/gameUtils';
+import { useObjectDragCommands } from '../../hooks/useObjectDragCommands';
+import { targetTextMatchesEntity } from '../../utils/selectionUtils';
 import './RoomChipRows.css';
 
 type CharacterKind = 'enemy' | 'npc' | 'ally' | 'neutral';
@@ -79,7 +82,7 @@ const getItemEntityId = (source: GmcpOccupant, keyword: string): string => {
 };
 
 type ChipColorVars = React.CSSProperties & Record<
-    '--enemy-color' | '--npc-color' | '--player-color' | '--neutral-color' | '--object-color',
+    '--enemy-color' | '--npc-color' | '--player-color' | '--neutral-color' | '--object-color' | '--target-color',
     string
 >;
 
@@ -112,16 +115,19 @@ const withDuplicateOrdinals = (chips: RoomChip[]): RoomChip[] => {
 export const RoomChipRows: React.FC = () => {
     const {
         characterName, roomChars, roomPlayers, roomNpcs, roomItems,
-        triggerHaptic, setTarget, inCombat, opponentId, opponentName
+        triggerHaptic, setTarget, target, inCombat, opponentId, opponentName, executeCommand
     } = useGame();
     const selectedTarget = useUIStore(s => s.selectedTarget);
     const toggleObjectSelection = useUIStore(s => s.toggleObjectSelection);
+    const objectDragState = useUIStore(s => s.objectDragState);
+    const startObjectDrag = useObjectDragCommands({ executeCommand, triggerHaptic });
     const colorVars: ChipColorVars = {
         '--enemy-color': useSettingsStore(s => s.enemyColor),
         '--npc-color': useSettingsStore(s => s.npcColor),
         '--player-color': useSettingsStore(s => s.playerColor),
         '--neutral-color': useSettingsStore(s => s.neutralColor),
-        '--object-color': useSettingsStore(s => s.objectColor)
+        '--object-color': useSettingsStore(s => s.objectColor),
+        '--target-color': useSettingsStore(s => s.targetColor)
     };
 
     const characterChips = useMemo(() => {
@@ -160,7 +166,7 @@ export const RoomChipRows: React.FC = () => {
             .map<RoomChip | null>(item => {
                 const name = getName(item);
                 if (!name) return null;
-                const keyword = getKeyword(item, name);
+                const keyword = extractMumeKeyword(name || getKeyword(item, name));
                 const category = toCategoryId(item.category) || getCategoryIdForKindLocation('object', 'room');
 
                 return {
@@ -201,10 +207,16 @@ export const RoomChipRows: React.FC = () => {
     return (
         <div className="room-chip-rows" style={colorVars} aria-label="Room entities and objects">
             {rows.map(row => (
-                <div className="room-chip-row" key={row.id}>
+                <div
+                    className={`room-chip-row${objectDragState?.target?.type === 'row' && objectDragState.target.row === 'room' && row.id === 'items' ? ' is-drop-target' : ''}`}
+                    data-object-drop-row={row.id === 'items' ? 'room' : undefined}
+                    key={row.id}
+                >
                     <span className="room-chip-row-label">{row.label}</span>
                     <div className="room-chip-list">
                         {row.chips.map(chip => {
+                            const isTarget = targetTextMatchesEntity(target, chip.context, chip.label);
+                            const isSelected = selectedTarget?.id === chip.entityId || isTarget;
                             const isOpponent = !!inCombat && (() => {
                                 const rawIdMatch = chip.entityId.match(/^roomchars:([^#]+)/);
                                 const occupantIdStr = rawIdMatch ? rawIdMatch[1] : '';
@@ -226,8 +238,16 @@ export const RoomChipRows: React.FC = () => {
                                 <button
                                     key={chip.entityId}
                                     type="button"
-                                    className={`room-chip room-chip-${chip.kind}${selectedTarget?.id === chip.entityId ? ' is-active' : ''}${isOpponent ? ' is-opponent' : ''}`}
+                                    className={`room-chip room-chip-${chip.kind}${isSelected ? ' is-active is-target' : ''}${isOpponent ? ' is-opponent' : ''}${objectDragState?.target?.type === 'entity' && objectDragState.target.entityId === chip.entityId ? ' is-drop-target' : ''}`}
                                     onClick={event => selectChip(event, chip)}
+                                    onPointerDown={chip.kind === 'object' ? event => startObjectDrag(event, {
+                                        row: 'room',
+                                        noun: chip.label,
+                                        label: chip.label
+                                    }) : undefined}
+                                    data-object-drop-entity={chip.kind !== 'object' ? chip.entityId : undefined}
+                                    data-object-drop-noun={chip.kind !== 'object' ? chip.label : undefined}
+                                    data-object-drop-label={chip.kind !== 'object' ? chip.label : undefined}
                                     title={chip.context}
                                 >
                                     {chip.label}

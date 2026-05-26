@@ -231,8 +231,9 @@ export const useButtonGestures = ({
         const distToCancelBubble = Math.sqrt(Math.pow(e.clientX - cancelX, 2) + Math.pow(e.clientY - cancelY, 2));
         const isCancelZone = distToCancelBubble < 45;
 
+        let nextActiveDir: SwipeDirection | 'center' | null = null;
+
         if (isCancelZone) {
-            setActiveDir(null);
             el.style.setProperty('--cancel-opacity', '1');
             el.style.setProperty('--cancel-scale', '1.35');
             if (!el._wasInCancelZone) {
@@ -242,26 +243,29 @@ export const useButtonGestures = ({
             setIsCancelling(true);
         } else if (preview?.isSwipe) {
             el._wasInCancelZone = false;
-            setActiveDir(preview.dir || null);
+            nextActiveDir = preview.dir || null;
             el.style.setProperty('--cancel-opacity', '0');
             setIsCancelling(false);
         } else if (preview && isSwipedOut && distVal < 20) {
             el._wasInCancelZone = false;
-            setActiveDir('center' as any);
+            nextActiveDir = 'center';
             el.style.setProperty('--cancel-opacity', '0');
             setIsCancelling(false);
         } else {
             el._wasInCancelZone = false;
-            setActiveDir(null);
             el.style.setProperty('--cancel-opacity', '0');
             el.style.setProperty('--cancel-scale', '0.5');
             setIsCancelling(false);
         }
 
-        if (distVal > 20 && snappedAngle !== el._lastSnappedAngle) {
-            triggerHaptic(15);
-            if (isSoundEnabled) playClickSound();
-            el._lastSnappedAngle = snappedAngle;
+        setActiveDir(nextActiveDir as any);
+
+        if (nextActiveDir !== el._lastActiveDir) {
+            if (!isCancelZone) {
+                triggerHaptic(15);
+                if (isSoundEnabled) playClickSound();
+            }
+            el._lastActiveDir = nextActiveDir;
         }
 
         const menuActionType = isLong ? button.longActionType : button.actionType;

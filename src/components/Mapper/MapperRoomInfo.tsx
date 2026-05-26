@@ -159,7 +159,7 @@ export const MapperRoomInfo: React.FC = () => {
                 {roomDesc && (
                     <div key={currentRoomKey} className="mri-desc">
                         {roomDesc.replace(/\x1b\[[0-9;]*m/g, '').split(' ').map((word, i) => (
-                            <span key={i} className="mri-desc-word" style={{ animationDelay: `${i * 150}ms` }}>
+                            <span key={i} className="mri-desc-word" style={{ animationDelay: `${i * 80}ms` }}>
                                 {word}{' '}
                             </span>
                         ))}

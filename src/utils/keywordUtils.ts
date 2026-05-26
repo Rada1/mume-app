@@ -4,6 +4,12 @@
  */
 
 import { GameEntity } from '../types';
+/**
+ * @file keywordUtils.ts
+ * @description Unified utility for MUME keyword extraction, sanitization, and overrides.
+ */
+
+import { GameEntity } from '../types';
 
 /**
  * Hardcoded keyword exceptions for specific MUME items where heuristic parsing fails.
@@ -16,6 +22,20 @@ const getHardcodedKeywordException = (name: string): string | null => {
     // 1. Specific legendary or complex items
     if (clean.includes('belt of pearls and crystals')) return 'belt';
     if (clean.includes('belt of fell hide')) return 'belt';
+    if (clean.includes('twisted rock fragment')) return 'twisted-rock';
+    if (clean.includes('glass flask')) return 'glass-flask';
+    if (clean.includes('pale blue stone')) return 'pale-blue-stone';
+    if (clean.includes('topaz ring')) return 'topaz-ring';
+    if (clean.includes('ruby ring')) return 'ruby-ring';
+    if (clean.includes('garnet ring')) return 'garnet-ring';
+    if (clean.includes('emerald ring')) return 'emerald-ring';
+    if (clean.includes('opal ring')) return 'opal-ring';
+    if (clean.includes('obsidian eye')) return 'obsidian-eye';
+    if (clean.includes('black candle')) return 'black-candle';
+    if (clean.includes('small pouch')) return 'small-pouch';
+    if (clean.includes('fragile parchment')) return 'fragile-parchment';
+    if (clean.includes('deep black orb')) return 'deep-black-orb';
+    if (clean.includes('red ruby')) return 'ruby';
 
     // 2. Keyword-dominant types: if these appear anywhere, they are the primary keyword
     if (clean.includes('sheath')) return 'sheath';
@@ -30,19 +50,15 @@ const getHardcodedKeywordException = (name: string): string | null => {
  * Only the core noun (not adjectives or material prefixes) is a valid keyword.
  */
 export const extractMumeKeyword = (label: string): string => {
-    // Check for hardcoded exceptions first
-    const exception = getHardcodedKeywordException(label);
-    if (exception) return exception;
-
     // Strip ANSI, tags, parentheses, and brackets
     let name = label.replace(/\x1b\[[0-9;]*m/g, '')
                     .replace(/<[^>]*>/g, '')
                     .replace(/\([^)]*\)/g, '')
                     .replace(/\[[^\]]*\]/g, '')
+                    .replace(/[.,:;!?"'()[\]{}<>*#~]/g, ' ')
+                    .replace(/[-_]+/g, ' ')
                     .trim().toLowerCase();
 
-    // quantifiers that indicate the true noun is after "of"
-    const isOfQuantifier = /\b(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)\b/i;
     // words to filter out when isolating the keyword
     const skipWords = /^(of|a|an|the|some|several|many|various|pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion|is|are|at|to|here|from|with|in|on|by)$/i;
 
@@ -53,8 +69,7 @@ export const extractMumeKeyword = (label: string): string => {
         const after  = ofMatch[2].trim();
         
         // Compound quantifiers → keyword is what comes AFTER "of"
-        const isQuantifier = isOfQuantifier.test(before);
-        const source = isQuantifier ? after : before;
+        const source = after || before;
         const words = source.split(/\s+/).filter(w => !skipWords.test(w));
         return words[words.length - 1] || source.split(/\s+/).pop() || source;
     }

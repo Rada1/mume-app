@@ -54,7 +54,7 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
             wallColor: '#252d27',
             roadColor: '#4f4b3f',
             pathColor: '#3f3b31',
-            terrainColors: { Forest: '#1e3323', Brush: '#3a4a35', Water: '#243a4e' }
+            terrainColors: {}
         },
         light: {
             wallColor: '#3a443c',
@@ -68,7 +68,7 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
             wallColor: '#000000',
             roadColor: '#40424a',
             pathColor: '#35373d',
-            terrainColors: { Tunnel: '#2b314a', Water: '#1c2e3d', Building: '#2b314a', Cavern: '#413a4b' },
+            terrainColors: {},
             doorColor: '#ff1900'
         },
         light: {
@@ -112,7 +112,7 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
             wallColor: '#3f4b5c',
             roadColor: '#8a9ab0',
             pathColor: '#6f7f94',
-            terrainColors: { Forest: '#2d5438', Water: '#2d5f8c', Shallows: '#3b8ba8', City: '#504121', Building: '#5b4815', Road: '#3d471a', Field: '#3d471a' },
+            terrainColors: { Forest: '#2d5438', Water: '#2d5f8c', Shallows: '#3b8ba8', City: '#54472c', Building: '#4e4837', Road: '#3d471a', Field: '#3d471a' },
             doorColor: '#46fe39'
         },
         light: {
@@ -159,7 +159,7 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
     },
     'lorien surroundings': {
         dark: {
-            terrainColors: { Hills: '#423934' }
+            terrainColors: {}
         },
         light: {}
     },
@@ -177,7 +177,7 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
     },
     'emyn nu fuin': {
         dark: {
-            terrainColors: { Mountains: '#282624', Hills: '#2d2b2a' },
+            terrainColors: {},
             doorColor: '#ff7b00'
         },
         light: {}
@@ -197,7 +197,7 @@ export const ZONE_FILTERS: Record<string, ZoneFilterConfig> = {
     },
     'old forest road': {
         dark: {
-            terrainColors: { Forest: '#1f2518' },
+            terrainColors: {},
             doorColor: '#cfff4d',
             wallColor: '#555c4d'
         },

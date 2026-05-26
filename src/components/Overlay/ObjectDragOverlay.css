@@ -1,0 +1,57 @@
+/**
+ * @file ObjectDragOverlay.css
+ * @description Floating object drag preview chip.
+ */
+
+.object-drag-overlay {
+    position: fixed;
+    left: var(--object-drag-x, -100px);
+    top: var(--object-drag-y, -100px);
+    z-index: 10000001;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: min(260px, calc(100vw - 24px));
+    padding: 4px 7px;
+    border: 1px solid rgba(251, 146, 60, 0.34);
+    border-radius: 6px;
+    background: rgba(12, 14, 20, 0.88);
+    color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+    pointer-events: none;
+    transform: translate(10px, -50%);
+    transition: border-color 0.12s ease, transform 0.12s ease;
+}
+
+.object-drag-overlay.is-valid {
+    border-color: rgba(34, 197, 94, 0.78);
+    transform: translate(12px, -50%) scale(1.04);
+}
+
+.object-drag-chip,
+.object-drag-command {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-mono, monospace);
+    letter-spacing: 0;
+}
+
+.object-drag-chip {
+    max-width: 92px;
+    color: var(--color-obj, #fb923c);
+    font-size: 0.66rem;
+    font-weight: 850;
+}
+
+.object-drag-command {
+    max-width: 150px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.58rem;
+    font-weight: 750;
+}
+
+.object-chip-dragging {
+    cursor: grabbing;
+}

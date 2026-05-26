@@ -64,6 +64,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         infoLines, questLines, achievementLines, practiceLines, groupMembers,
         triggerHaptic, executeCommand, setWhoLines, setWhereLines
     };
+
     // Body classes for desktop layout
     React.useEffect(() => {
         if (!viewport.isMobile) {
@@ -214,30 +215,26 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 </div>
             )}
 
-            {/* Status Drawer */}
+            {/* Account Drawer */}
             <DrawerShell id="account" side="right" title="Account">
                 <AccountDrawer />
             </DrawerShell>
 
-            {/* Status Drawer */}
-            <DrawerShell id="status" side="right" title="Status">
-                <StatusDrawer />
-            </DrawerShell>
-
-            {/* Gear Drawer */}
-            <DrawerShell id="equipment" side="right" title="Gear">
-                <DrawerUnifiedPanel drawer="equipment" drawerData={drawerData} />
-            </DrawerShell>
-
-            {/* Players Drawer */}
-            <DrawerShell id="players" side="right" title="Players">
-                <DrawerUnifiedPanel drawer="players" drawerData={drawerData} />
-            </DrawerShell>
-
-            {/* Character Drawer */}
-            <DrawerShell id="character" side="right" title="Character">
-                <DrawerUnifiedPanel drawer="character" drawerData={drawerData} />
-            </DrawerShell>
+            {/* Unified Gameplay Utility Drawer */}
+            {gameState !== 'account' && ui.drawer !== 'none' && ui.drawer !== 'account' && (
+                <DrawerShell 
+                    key="gameplay-utility-drawer"
+                    id={ui.drawer} 
+                    side="right" 
+                    title={
+                        ui.drawer === 'status' ? 'Status' :
+                        ui.drawer === 'character' ? 'Character' :
+                        ui.drawer === 'players' ? 'Players' : 'Gear'
+                    }
+                >
+                    <DrawerUnifiedPanel drawer={ui.drawer} drawerData={drawerData} />
+                </DrawerShell>
+            )}
 
             {/* Desktop Side Tabs */}
             {!viewport.isMobile && gameState !== 'disconnected' && ui.drawer === 'none' && (

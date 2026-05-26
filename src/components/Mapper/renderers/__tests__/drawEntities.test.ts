@@ -6,6 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import { isOpponentOccupant } from '../../mapperOpponentUtils';
 import { drawGrid } from '../drawEntities';
+import { getPlayerBeaconMetrics } from '../playerBeacon';
 
 describe('isOpponentOccupant', () => {
     it('matches by GMCP id even when multiple occupants share a name', () => {
@@ -76,6 +77,22 @@ describe('drawGrid', () => {
 
         drawGrid(mockRenderCtx, 0, 0, 1, 1);
         expect(mockCtx.strokeStyle).toBe('');
+    });
+});
+
+describe('getPlayerBeaconMetrics', () => {
+    it('stays hidden at normal mapper zoom levels', () => {
+        expect(getPlayerBeaconMetrics(0.5, 0)).toBeNull();
+    });
+
+    it('scales to a screen-stable beacon at far zoom levels', () => {
+        const metrics = getPlayerBeaconMetrics(0.1, 0);
+
+        expect(metrics).not.toBeNull();
+        expect(metrics?.visibility).toBe(1);
+        expect(metrics?.outerRadius).toBeGreaterThan(250);
+        expect(metrics?.outerRadius).toBeLessThan(500);
+        expect(metrics?.lineWidth).toBeCloseTo(17);
     });
 });
 

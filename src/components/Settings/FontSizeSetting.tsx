@@ -17,6 +17,7 @@ interface FontSizeSettingProps {
     logFontSize: number;
     logFontSizePx: number;
     setLogFontSize: (v: number | ((prev: number) => number)) => void;
+    inline?: boolean;
 }
 
 // --- Helpers ---
@@ -33,6 +34,7 @@ const FontSizeSetting: React.FC<FontSizeSettingProps> = ({
     logFontSize,
     logFontSizePx,
     setLogFontSize,
+    inline = false,
 }) => {
     const displayedFontSizePx = toDisplayedFontSize(logFontSizePx);
     const baseFontSizePx = logFontSize > 0 ? logFontSizePx / logFontSize : logFontSizePx;
@@ -48,9 +50,8 @@ const FontSizeSetting: React.FC<FontSizeSettingProps> = ({
         setLogFontSize(toStableMultiplier(nextMultiplier));
     };
 
-    return (
-        <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    const inner = (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', ...(inline ? { flexWrap: 'wrap' as const, gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' } : {}) }}>
                 <div>
                     <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Font Size</label>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Auto-sizes to fit 80 chars. Adjust to taste.</div>
@@ -94,7 +95,12 @@ const FontSizeSetting: React.FC<FontSizeSettingProps> = ({
                         >Reset</button>
                     )}
                 </div>
-            </div>
+        </div>
+    );
+
+    return inline ? inner : (
+        <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+            {inner}
         </div>
     );
 };

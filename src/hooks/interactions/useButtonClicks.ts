@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { CustomButton } from '../../types';
-import { formatMumeTarget, sanitizeGameTarget } from '../../utils/gameUtils';
+import { extractMumeKeyword, formatMumeTarget, sanitizeGameTarget } from '../../utils/gameUtils';
 import { triggerRingAnimation, getPressedColor } from './pointerUtils';
 import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
 import { decodeCommandEntities } from '../../utils/commandTextUtils';
@@ -72,7 +72,9 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         const effectiveContext = (context && keywordOverrides[context]) ? keywordOverrides[context] : context;
         const popoverAxes = getInlineCategoryAxes(popoverState?.category || popoverState?.setId);
         const isNpcContext = popoverAxes.isCharacter || !!popoverState?.setId?.startsWith('npc');
-        let finalContext = formatMumeTarget(effectiveContext) || effectiveContext || '';
+        let finalContext = popoverAxes.isObject
+            ? extractMumeKeyword(effectiveContext || '')
+            : formatMumeTarget(effectiveContext) || effectiveContext || '';
         let detectedParent = parentNoun;
 
         // If no explicit parentNoun, try to detect it from the context (e.g. food.2.backpack or 2.boots.backpack)

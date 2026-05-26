@@ -25,6 +25,14 @@
     align-items: center;
     gap: 5px;
     min-height: 16px;
+    border-radius: 5px;
+    transition: background 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
+}
+
+.room-chip-row.is-drop-target {
+    background: rgba(34, 197, 94, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.55), 0 0 12px rgba(34, 197, 94, 0.14);
+    transform: translateX(2px);
 }
 
 .room-chip-row-label {
@@ -74,12 +82,25 @@
     text-overflow: ellipsis;
     cursor: pointer;
     touch-action: manipulation;
+    transition: border-color 0.12s ease, background 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .room-chip:hover,
 .room-chip.is-active {
     border-color: currentColor;
     background: rgba(255, 255, 255, 0.09);
+}
+
+.room-chip.is-target {
+    border-color: var(--target-color, #facc15);
+    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.65), 0 0 10px rgba(250, 204, 21, 0.24);
+}
+
+.room-chip.is-drop-target {
+    border-color: rgba(34, 197, 94, 0.9);
+    background: rgba(34, 197, 94, 0.12);
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.18), 0 0 14px rgba(34, 197, 94, 0.2);
+    transform: translateY(-1px) scale(1.04);
 }
 
 .room-chip-enemy {
@@ -159,6 +180,11 @@
         0 0 3px rgba(239, 68, 68, 0.3),
         0 0 6px rgba(239, 68, 68, 0.5) !important;
     animation: chip-opponent-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.room-chip.is-opponent.is-target {
+    border-color: var(--target-color, #facc15) !important;
+    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.7), 0 0 12px rgba(250, 204, 21, 0.28) !important;
 }
 
 @keyframes chip-opponent-pulse {

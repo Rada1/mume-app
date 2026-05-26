@@ -354,12 +354,14 @@
 .inline-btn[data-category="player"] { --glow-color: var(--color-player) !important; }
 .inline-btn[data-category="object"] { --glow-color: var(--color-obj) !important; }
 .inline-btn[data-category="account"] { --glow-color: var(--color-account) !important; }
-.inline-btn[data-category="target"] { --glow-color: var(--color-target) !important; }
 .inline-btn[data-category="quest"] { --glow-color: var(--color-quest) !important; }
 
 /* Dynamic Target Highlighting (Reactive) */
 .target-highlighter.is-target {
+    display: inline-block;
+    vertical-align: baseline;
     border-radius: 3px;
+    padding: 0 1px;
     font-weight: bold !important;
     animation: target-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1;

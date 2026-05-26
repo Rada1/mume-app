@@ -33,6 +33,7 @@ import { useUIStore } from '../../stores/useUIStore';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { parseEffectTimerLine } from '../../services/timers/effectTimerParser';
 import { parseMagicKeyLine, upsertMagicKeyTarget } from '../../utils/magicKeyUtils';
+import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir } from './textMapperEvents';
 
 const decodeTextEntities = (text: string) => text
     .replace(/&gt;/gi, '>')
@@ -257,6 +258,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const shopCaptureRef = useRef<{ active: boolean; items: import('../../types').ShopItem[] }>({ active: false, items: [] });
     const pendingHelpInterestRef = useRef(false);
     const pendingCommXmlRef = useRef<{ tag: string; line: string; isSnoop: boolean } | null>(null);
+    const textMapperStateRef = useRef(createTextMapperState());
     const finalizeNearbyCapture = useCallback(() => {
         if (!nearbyCaptureRef.current.active) return;
         setWhereLines([...nearbyCaptureRef.current.lines]);
@@ -532,7 +534,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (deps.help.isHelpActiveRef.current) {
             if (isEndPromptLine) {
                 if (deps.setPopoverState) {
-                    deps.help.finalizeHelp(deps.setPopoverState);
+                    deps.help.scheduleFinalizeHelp(deps.setPopoverState);
                 }
             } else {
                 // Strip the prompt tag and its contents if present on the header line
@@ -543,6 +545,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                     .replace(/&lt;\/?(?:header|help)\b[^&]*&gt;/gi, '');
 
                 deps.help.parseHelpLine(cleanHelpLine);
+                if (deps.setPopoverState && /^\s*See also:\s*.+/i.test(stripAnsiCodes(cleanHelpLine))) {
+                    deps.help.finalizeHelp(deps.setPopoverState);
+                }
                 return;
             }
         }
@@ -562,6 +567,34 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 }));
             }
             gmcpBus.emit('Room.Info', { ...snoopedRoomInfo, spectating: true } as any);
+        }
+
+        if (!isSnoop) {
+            const xmlMoveDir = extractXmlMovementDir(lineToParse);
+            if (xmlMoveDir !== null && typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('mume-mapper-move-confirmed', {
+                    detail: { dir: xmlMoveDir || undefined, source: 'xml' }
+                }));
+            }
+
+            const textMapperResult = consumeTextMapperLine(
+                textMapperStateRef.current,
+                lineToParse,
+                isEndPromptLine
+            );
+            if (textMapperResult.roomName) setRoomName(textMapperResult.roomName);
+            if (textMapperResult.roomDesc !== undefined) {
+                setRoomDesc(textMapperResult.roomDesc);
+                deps.roomDescRef.current = textMapperResult.roomDesc;
+            }
+            if (textMapperResult.roomZone) setRoomZone(textMapperResult.roomZone);
+            if (textMapperResult.terrain) setCurrentTerrain(textMapperResult.terrain);
+            if (textMapperResult.exits) setRoomExits(textMapperResult.exits);
+
+            const event = textMapperResult.event;
+            if (event && typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('mume-gmcp-room-info', { detail: event }));
+            }
         }
 
         const snoopedRoomTitle = isSnoop ? extractXmlRoomTitle(lineToParse) : null;
@@ -803,14 +836,30 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                         shopCaptureRef.current = { active: false, items: [] };
                     }
                 }
-            } else if (
-                /^you can buy:/i.test(lower) ||
-                /^items? (?:for sale|matching)/i.test(lower) ||
-                /^\d+ items? for sale/i.test(lower)
-            ) {
-                shopCaptureRef.current = { active: true, items: [] };
-                shopStore.setIsShopOpen(true);
-                return;
+            } else {
+                const speakerMatch = textOnly.match(/^([A-Z][a-zA-Z\s\'-]+?)\s+(?:says|tells you|asks|whispers|says\s+to\s+you),?\s+['"]?(you can buy:|items? (?:for sale|matching)|\d+ items? for sale)/i);
+                const isShopStart = 
+                    /^you can buy:/i.test(lower) ||
+                    /^items? (?:for sale|matching)/i.test(lower) ||
+                    /^\d+ items? for sale/i.test(lower) ||
+                    !!speakerMatch;
+
+                if (isShopStart) {
+                    let parsedShopkeeperName: string | null = null;
+                    if (speakerMatch) {
+                        parsedShopkeeperName = speakerMatch[1].trim();
+                        const matchingNpc = deps.roomNpcs?.find(npc => 
+                            npc.name?.toLowerCase() === parsedShopkeeperName!.toLowerCase()
+                        );
+                        if (matchingNpc) {
+                            deps.registerEntity(`roomchars:${matchingNpc.id}`, matchingNpc.name, 'room', 'shopkeeper');
+                        }
+                    }
+                    shopStore.setShopkeeperName(parsedShopkeeperName);
+                    shopCaptureRef.current = { active: true, items: [] };
+                    shopStore.setIsShopOpen(true);
+                    return;
+                }
             }
 
             // Parse 'info %r' money line while shop is open

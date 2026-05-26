@@ -26,6 +26,7 @@ import { MapperProvider } from './context/MapperContext';
 import { SpatButtons } from './components/Controls/SpatButtons';
 import { useSpatButtons } from './hooks/useSpatButtons';
 import SwipeFeedbackOverlay from './components/Overlay/SwipeFeedbackOverlay';
+import ObjectDragOverlay from './components/Overlay/ObjectDragOverlay';
 import { AgentHUD } from './components/Utility/AgentHUD';
 import { useSettingsStore } from './stores/useSettingsStore';
 import { useDisplayMode } from './hooks/useDisplayMode';
@@ -351,6 +352,7 @@ const MudClient = () => {
                             connect={() => telnet.connect()}
                         />
                         <SwipeFeedbackOverlay />
+                        <ObjectDragOverlay />
                     </div>
                 </ErrorBoundary>,
                 document.body

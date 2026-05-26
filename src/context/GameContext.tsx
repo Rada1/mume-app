@@ -113,80 +113,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const settingsStore = useSettingsStore();
     const mapperRef = useRef<MapperRef>(null);
 
-    const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            const result = typeof reader.result === 'string' ? reader.result : null;
-            settingsStore.setBgImage(result);
-        };
-        reader.readAsDataURL(file);
-        e.target.value = '';
-    }, [settingsStore]);
-
-    const handleBottomFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            const dataUrl = typeof reader.result === 'string' ? reader.result : null;
-            if (!dataUrl) return;
-
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                const ctx = canvas.getContext('2d');
-                if (!ctx) return;
-
-                ctx.drawImage(img, 0, 0);
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const data = imageData.data;
-
-                // Chroma key: make near-white pixels transparent; flatten everything else to pure black
-                // Preserve "glowing" pixels (high saturation/color, e.g. the green glowing eyes)
-                const whiteThreshold = 220;
-                for (let i = 0; i < data.length; i += 4) {
-                    const r = data[i];
-                    const g = data[i + 1];
-                    const b = data[i + 2];
-
-                    if (r > whiteThreshold && g > whiteThreshold && b > whiteThreshold) {
-                        // Near-white → transparent
-                        data[i + 3] = 0;
-                    } else {
-                        // Check if this is a "glowing" colored pixel (e.g. green eyes)
-                        const max = Math.max(r, g, b);
-                        const min = Math.min(r, g, b);
-                        const saturation = max > 0 ? (max - min) / max : 0;
-                        const isGlowing = saturation > 0.4 && max > 80;
-
-                        if (isGlowing) {
-                            // Keep original glowing color
-                        } else {
-                            // Force to pure black silhouette
-                            data[i] = 0;
-                            data[i + 1] = 0;
-                            data[i + 2] = 0;
-                            data[i + 3] = 255;
-                        }
-                    }
-                }
-
-                ctx.putImageData(imageData, 0, 0);
-                const result = canvas.toDataURL('image/png');
-                settingsStore.setBgImageBottom(result);
-            };
-            img.src = dataUrl;
-        };
-        reader.readAsDataURL(file);
-        e.target.value = '';
-    }, [settingsStore]);
-
     // 3. Logic Hooks
     const env = useEnvironment({
         lighting: s.lighting || 'none', setLighting: s.setLighting,
@@ -608,7 +534,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     useEffect(() => {
         btn.setAddMessage(addMessage);
     }, [btn, addMessage]);
-    const joystick = useJoystick(triggerHaptic, s.roomExits, playClickSound);
+    const joystick = useJoystick(triggerHaptic, s.roomExits, playClickSound, v.target);
     const editor = useButtonEditor(btn);
     const help = useHelpHandler();
     const quests = useQuestsHandler(s.setQuests, s.quests.activeQuests);
@@ -1036,10 +962,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         accountStageRef: s.accountStageRef,
         gameTime: s.gameTime,
         setGameTime: s.setGameTime,
-        bgImage: settingsStore.bgImage,
-        bgImageBottom: settingsStore.bgImageBottom,
-        setBgImage: settingsStore.setBgImage,
-        setBgImageBottom: settingsStore.setBgImageBottom,
         teleportTargets: settingsStore.teleportTargets,
         setTeleportTargets: settingsStore.setTeleportTargets,
         practice,
@@ -1047,8 +969,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         quests,
         keywordOverrides: keywordOverrides.overrides,
         containerRef: { current: null },
-        handleFileUpload,
-        handleBottomFileUpload,
         exportSettings: () => ({}),
         exportSettingsFile: () => {},
         importSettings: () => {},

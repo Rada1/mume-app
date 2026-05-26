@@ -1,0 +1,141 @@
+.quick-button-bar {
+    position: absolute;
+    bottom: 8px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    z-index: 50;
+    pointer-events: none;
+}
+
+/* Row of chips + add button — always visible */
+.quick-chip-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    pointer-events: auto;
+}
+
+/* Individual quick button chip */
+.quick-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    min-height: 34px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-family: var(--font-mono, monospace);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    cursor: pointer;
+    user-select: none;
+    touch-action: none;
+    white-space: nowrap;
+    transition: background 0.12s ease, border-color 0.12s ease;
+    will-change: transform, opacity;
+}
+
+.quick-chip:active {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* The + add button */
+.quick-add-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+    flex-shrink: 0;
+}
+
+.quick-add-btn:active,
+.quick-add-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Creation form — floats above the chip row */
+.quick-create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 8px;
+    background: rgba(15, 15, 20, 0.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    min-width: 180px;
+    pointer-events: auto;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+.quick-create-input {
+    width: 100%;
+    padding: 5px 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 5px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.7rem;
+    font-family: var(--font-mono, monospace);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.12s ease;
+}
+
+.quick-create-input:focus {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.quick-create-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.quick-create-input--label {
+    font-size: 0.65rem;
+}
+
+.quick-create-confirm {
+    align-self: flex-end;
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-family: var(--font-mono, monospace);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.quick-create-confirm:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.quick-create-confirm:disabled {
+    opacity: 0.4;
+    cursor: default;
+}

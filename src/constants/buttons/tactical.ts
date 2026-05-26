@@ -26,7 +26,8 @@ const DOOR_SWIPE_COMMANDS: CustomButton['swipeCommands'] = {
     down: 'close',
     left: 'lock',
     right: 'unlock',
-    sw: 'knock'
+    sw: 'knock',
+    se: 'reveal quick'
 };
 
 export const TACTICAL_BUTTONS: CustomButton[] = [
@@ -111,7 +112,7 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
     }),
     withAssignLongActions({
         id: "tactical-doors",
-        label: "Doors",
+        label: "Scout",
         command: "doors",
         setId: "tactical",
         actionType: "menu",

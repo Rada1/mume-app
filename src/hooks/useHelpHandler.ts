@@ -4,6 +4,9 @@
  */
 
 import { useState, useRef, useCallback } from 'react';
+import { PopoverState } from '../types';
+
+const HELP_PROMPT_SETTLE_MS = 200;
 
 export function useHelpHandler() {
     const [isHelpActive, _setIsHelpActive] = useState(false);
@@ -22,17 +25,26 @@ export function useHelpHandler() {
         _setIsUiRequested(val);
     }, []);
     const helpBuffer = useRef<string[]>([]);
+    const finalizeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const clearFinalizeTimer = useCallback(() => {
+        if (!finalizeTimer.current) return;
+        clearTimeout(finalizeTimer.current);
+        finalizeTimer.current = null;
+    }, []);
 
     const parseHelpLine = useCallback((text: string) => {
+        clearFinalizeTimer();
         // Collect help lines into a buffer.
         // MUME help text is usually just raw text.
         helpBuffer.current.push(text);
-    }, []);
+    }, [clearFinalizeTimer]);
 
     const finalizeHelp = useCallback((
-        setPopoverState: (state: any) => void
+        setPopoverState: (state: PopoverState) => void
     ) => {
         if (!isHelpActiveRef.current) return;
+        clearFinalizeTimer();
 
         const helpData = helpBuffer.current.join('\n');
         
@@ -51,7 +63,18 @@ export function useHelpHandler() {
         setIsHelpActive(false);
         setIsUiRequested(false);
         helpBuffer.current = [];
-    }, [setIsHelpActive]);
+    }, [clearFinalizeTimer, setIsHelpActive, setIsUiRequested]);
+
+    const scheduleFinalizeHelp = useCallback((
+        setPopoverState: (state: PopoverState) => void
+    ) => {
+        if (!isHelpActiveRef.current) return;
+        clearFinalizeTimer();
+        finalizeTimer.current = setTimeout(() => {
+            finalizeTimer.current = null;
+            finalizeHelp(setPopoverState);
+        }, HELP_PROMPT_SETTLE_MS);
+    }, [clearFinalizeTimer, finalizeHelp]);
 
     return {
         isHelpActive,
@@ -60,6 +83,7 @@ export function useHelpHandler() {
         setIsUiRequested,
         parseHelpLine,
         finalizeHelp,
+        scheduleFinalizeHelp,
         isHelpActiveRef,
         isUiRequestedRef
     };

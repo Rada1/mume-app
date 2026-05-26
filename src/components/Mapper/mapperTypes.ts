@@ -110,7 +110,6 @@ export interface MapperProps {
     characterName?: string;
     isExpanded?: boolean;
     isMobile?: boolean;
-    isMmapperMode?: boolean;
 }
 
 export interface GmcpRoomInfo {
@@ -130,6 +129,7 @@ export interface GmcpRoomInfo {
     details?: string[];
     room_quest_flags?: string[];
     spectating?: boolean;
+    source?: 'gmcp' | 'text';
 }
 
 export interface LabelVector {

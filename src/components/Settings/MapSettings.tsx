@@ -49,10 +49,10 @@ const MapSettings: React.FC = () => {
     const { ui, setUI } = useUI();
     const mapper = useMapper();
     const {
-        showBackgroundMap,
         showBackgroundImage,
-        setShowBackgroundMap,
-        setShowBackgroundImage
+        setShowBackgroundImage,
+        showDebugEchoes,
+        setShowDebugEchoes,
     } = useSettingsStore();
     const {
         rooms, setRooms, markers, setMarkers, allowPersistence, setAllowPersistence,
@@ -74,12 +74,6 @@ const MapSettings: React.FC = () => {
         mapper,
         setExploredMarkers
     );
-    const openAlignmentTools = React.useCallback(() => {
-        const url = new URL(window.location.href);
-        url.searchParams.set('trace', 'true');
-        window.location.assign(url.toString());
-    }, []);
-
     return (
         <div className="settings-section">
             <h3 className="settings-section-title">Map</h3>
@@ -121,31 +115,11 @@ const MapSettings: React.FC = () => {
 
                 <div style={rowStyle}>
                     <div>
-                        <label className="setting-label" style={{ margin: 0 }}>Show Background Map</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Display Middle-earth continent and oceans behind the map.</div>
-                    </div>
-                    <button className={`setting-toggle ${showBackgroundMap ? 'active' : ''}`} onClick={() => setShowBackgroundMap(!showBackgroundMap)} style={toggleStyle(showBackgroundMap)}>
-                        <div style={knobStyle(showBackgroundMap)} />
-                    </button>
-                </div>
-
-                <div style={rowStyle}>
-                    <div>
                         <label className="setting-label" style={{ margin: 0 }}>Show Background Image</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Toggle only the large Middle-earth bitmap to test map performance.</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Show the Middle-earth map image behind the mapper.</div>
                     </div>
                     <button className={`setting-toggle ${showBackgroundImage ? 'active' : ''}`} onClick={() => setShowBackgroundImage(!showBackgroundImage)} style={toggleStyle(showBackgroundImage)}>
                         <div style={knobStyle(showBackgroundImage)} />
-                    </button>
-                </div>
-
-                <div style={rowStyle}>
-                    <div>
-                        <label className="setting-label" style={{ margin: 0 }}>Background Alignment Tools</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Open tracing mode, then use Align Background to drag and scale the bitmap.</div>
-                    </div>
-                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={openAlignmentTools}>
-                        Open
                     </button>
                 </div>
 
@@ -285,6 +259,18 @@ const MapSettings: React.FC = () => {
                         ))}
                     </div>
                 )}
+            </div>
+            <div style={rowStyle}>
+                <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Debug Messages</span>
+                        <span style={{ fontSize: '0.65rem', background: 'var(--accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>DEV</span>
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '2px' }}>Show technical client echoes (e.g. mapper coordinates).</div>
+                </div>
+                <button style={toggleStyle(showDebugEchoes)} onClick={() => setShowDebugEchoes(!showDebugEchoes)}>
+                    <div style={knobStyle(showDebugEchoes)} />
+                </button>
             </div>
         </div>
     );

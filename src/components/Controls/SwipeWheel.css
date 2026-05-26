@@ -70,9 +70,9 @@
     transform: translate(-50%, -50%);
     width: 70px;
     height: 70px;
-    background: rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.1);
+    background: color-mix(in srgb, var(--set-accent, var(--accent)) 12%, #08080a);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 50%;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -83,11 +83,10 @@
 }
 
 .swipe-center.active {
-    background: rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.5);
+    background: color-mix(in srgb, var(--set-accent, var(--accent)) 45%, #08080a);
     border-color: var(--set-accent, var(--accent));
-    transform: translate(-50%, -50%) scale(1.15);
-    /* Keep centered while growing */
-    box-shadow: 0 0 30px rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.5), inset 0 0 15px rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 0 25px rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.45), inset 0 0 15px rgba(255, 255, 255, 0.25);
 }
 
 .swipe-center-label {
@@ -131,7 +130,8 @@
     background: #000000;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    border: 1px solid color-mix(in srgb, var(--set-accent, var(--accent)) 38%, rgba(255, 255, 255, 0.12));
+    overflow: hidden;
+    border: 1px solid rgba(212, 170, 0, 0.2);
     box-shadow:
         0 0 32px rgba(0, 0, 0, 0.5),
         0 0 5px var(--set-accent, var(--accent)),
@@ -153,10 +153,10 @@
 
 .swipe-slice {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: -25%;
+    left: -25%;
+    width: 150%;
+    height: 150%;
     transform-origin: center center;
     background: transparent;
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -169,14 +169,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    -webkit-mask-image:
-        conic-gradient(from 67.5deg at 50% 50%, #000 45deg, transparent 45deg),
-        radial-gradient(circle at 50% 50%, transparent 22%, #000 23%);
-    -webkit-mask-composite: source-in;
-    mask-image:
-        conic-gradient(from 67.5deg at 50% 50%, #000 45deg, transparent 45deg),
-        radial-gradient(circle at 50% 50%, transparent 22%, #000 23%);
-    mask-composite: intersect;
+    -webkit-mask-image: conic-gradient(from 67.5deg at 50% 50%, #000 45deg, transparent 45deg);
+    mask-image: conic-gradient(from 67.5deg at 50% 50%, #000 45deg, transparent 45deg);
     background: transparent;
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: -1;
@@ -191,18 +185,18 @@
 .swipe-slice.active::before {
     /* Linear gradient ensures the color doesn't fade out as it approaches the center */
     background: linear-gradient(to left,
-            color-mix(in srgb, var(--set-accent, var(--accent)) 78%, transparent) 0%,
-            color-mix(in srgb, var(--set-accent, var(--accent)) 28%, transparent) 100%);
+            color-mix(in srgb, var(--set-accent, var(--accent)) 45%, transparent) 0%,
+            color-mix(in srgb, var(--set-accent, var(--accent)) 15%, transparent) 100%);
     box-shadow:
-        inset -10px 0 16px color-mix(in srgb, var(--set-accent, var(--accent)) 42%, transparent),
-        0 0 20px var(--set-accent, var(--accent));
+        inset -10px 0 16px color-mix(in srgb, var(--set-accent, var(--accent)) 25%, transparent),
+        0 0 15px color-mix(in srgb, var(--set-accent, var(--accent)) 30%, transparent);
 }
 
 .slice-separator {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 50%;
+    width: 75%;
     height: 2px;
     background: linear-gradient(to right, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.34) 100%);
     transform-origin: left center;
@@ -230,7 +224,7 @@
 .swipe-sq-label.active {
     color: #fff;
     letter-spacing: 1.5px;
-    text-shadow: 0 0 20px var(--set-accent, var(--accent));
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.9);
 }
 
 .swipe-sq-label[data-dir="up"] {

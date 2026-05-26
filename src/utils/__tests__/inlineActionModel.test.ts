@@ -24,20 +24,21 @@ describe('getInlineGlowColor', () => {
         expect(getInlineGlowColor('cat-ally', overrides, { player: '#4173e6' })).toBe('#123456');
     });
 
-    it('derives a darker display color for light mode without changing dark mode defaults', () => {
-        expect(getInlineGlowColor('cat-target', [], {}, 'dark')).toBe('#facc15');
-        expect(getInlineGlowColor('cat-target', [], {}, 'light')).toBe('#9b7d03');
+    it('does not resolve target as an inline action category', () => {
+        expect(getInlineGlowColor('cat-target', [], {}, 'dark')).toBeNull();
+        expect(getInlineGlowColor('target', [], {}, 'light')).toBeNull();
     });
 });
 
 describe('getTraitsForCategory', () => {
     it('correctly maps cat-container-item to trait-get-container-item', () => {
         const traits = getTraitsForCategory('cat-container-item');
-        expect(traits).toHaveLength(1);
-        expect(traits[0]).toMatchObject({
+        expect(traits).toEqual(expect.arrayContaining([
+            expect.objectContaining({
             id: 'trait-get-container-item',
             label: 'Get Container Item',
             buttonIds: ['btn-container-get-item']
-        });
+            })
+        ]));
     });
 });

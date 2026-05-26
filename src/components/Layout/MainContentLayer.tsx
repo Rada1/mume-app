@@ -12,6 +12,7 @@ import { TokenRenderer } from '../Messages/TokenRenderer';
 import { Embers } from '../Atmosphere/Embers';
 import { ShopPanel } from '../Shop/ShopPanel';
 import { TimerExpiryToast } from '../Timers/TimerExpiryToast';
+import { QuickButtonBar } from '../HUD/QuickButtonBar';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -45,7 +46,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const { setStats, activePrompt, target } = useVitals() as any;
     const {
         env,
-        bgImage,
         input,
         setInput,
         triggerHaptic,
@@ -216,6 +216,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         onPointerUp={handleLogPointerUp}
                     />
                     <TimerExpiryToast />
+                    {gameState !== 'account' && <QuickButtonBar />}
                 </div>
 
 
