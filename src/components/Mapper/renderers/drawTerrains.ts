@@ -1348,8 +1348,8 @@ export const drawTerrains = (
                 contentCtx.fillStyle = pr.color;
                 contentCtx.fillRect(0, 0, s, s);
 
-                // Draw terrain icon if zoom > 0.3
-                if (rCtx.camera.zoom > 0.3) {
+                // Draw terrain icon when the renderer's zoom LOD allows it.
+                if (rCtx.showTerrainIcons) {
                     const gridX = Math.round(pr.tx / s), gridY = Math.round(pr.ty / s);
                     const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
                     drawTerrainTileIcon(contentCtx, 0, 0, s, pr.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather);
@@ -1488,7 +1488,7 @@ export const drawTerrains = (
     ctx.restore();
 
     // 3. Draw Icons for fully explored rooms
-    if (rCtx.camera.zoom > 0.3) {
+    if (rCtx.showTerrainIcons) {
         for (const color in exploredBatches) {
             const rooms = exploredBatches[color];
             for (let i = 0; i < rooms.length; i++) {
@@ -1530,7 +1530,7 @@ export const drawTerrains = (
     }
 
     // 3b. Draw Icons for ring-1 revealed rooms: grayscale, dim (made a tad bit darker by reducing opacity to 0.3)
-    if (rCtx.camera.zoom > 0.3 && ring1Revealed.size > 0) {
+    if (rCtx.showTerrainIcons && ring1Revealed.size > 0) {
         ctx.save();
         ctx.filter = 'grayscale(1)';
         ctx.globalAlpha = 0.3;
@@ -1547,7 +1547,7 @@ export const drawTerrains = (
     }
 
     // Draw Icons for animating ring-1 revealed rooms: grayscale, dim, wipe reveal
-    if (rCtx.camera.zoom > 0.3 && ring1Animating.length > 0) {
+    if (rCtx.showTerrainIcons && ring1Animating.length > 0) {
         ctx.save();
         ctx.filter = 'grayscale(1)';
         for (let i = 0; i < ring1Animating.length; i++) {
@@ -1611,7 +1611,7 @@ export const drawTerrains = (
             }
         }
 
-        if (rCtx.camera.zoom > 0.3) {
+        if (rCtx.showTerrainIcons) {
             for (const color in revealedBatches) {
                 const rooms = revealedBatches[color];
                 for (let i = 0; i < rooms.length; i++) {
@@ -1672,7 +1672,7 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
     // Correctly restore once AFTER the loop
     ctx.restore();
 
-    if (rCtx.camera.zoom > 0.3) {
+    if (rCtx.showTerrainIcons) {
         for (let i = 0; i < localRooms.length; i++) {
             const room = localRooms[i];
             if (room.id.startsWith('m_')) continue;

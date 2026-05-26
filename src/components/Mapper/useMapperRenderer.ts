@@ -19,6 +19,13 @@ const LIGHTING_COLORS: Record<string, [number, number, number, number]> = {
     normal:     [0,   0,   0,   0],
 };
 const LIGHTING_TRANSITION_MS = 1500;
+const ZOOM_SETTLE_MS = 180;
+const ICONS_ZOOM_IN = 0.36;
+const ICONS_ZOOM_OUT = 0.22;
+const ICONS_FORCE_OFF_ZOOM = 0.16;
+const LABELS_ZOOM_IN = 0.42;
+const LABELS_ZOOM_OUT = 0.28;
+const LABELS_FORCE_OFF_ZOOM = 0.2;
 
 const didLayoutChange = (oldRooms: Record<string, any>, newRooms: Record<string, any>): boolean => {
     const oldKeys = Object.keys(oldRooms);
@@ -155,6 +162,12 @@ export const useMapperRenderer = ({
     const lastZoneFiltersRef = useRef<Record<string, ZoneFilterConfig> | null>(null);
     const fullExploredRef = useRef<{ count: number, set: Set<string> }>({ count: 0, set: new Set() });
     const emptyExploredAtRef = useRef<Record<string, number>>({});
+    const zoomLodRef = useRef({
+        lastZoom: 0,
+        lastZoomActivity: 0,
+        showTerrainIcons: true,
+        showDoorLabels: true
+    });
     const filterCacheRef = useRef<{
         key: string;
         matchedRoomIds: Set<string>;
@@ -187,6 +200,29 @@ export const useMapperRenderer = ({
         const camera = cameraRef.current;
         const invZoom = 1 / camera.zoom;
         const ANIM_DUR = 300;
+        const zoomLod = zoomLodRef.current;
+        if (zoomLod.lastZoom === 0) {
+            zoomLod.lastZoom = camera.zoom;
+            zoomLod.showTerrainIcons = camera.zoom > ICONS_ZOOM_OUT;
+            zoomLod.showDoorLabels = camera.zoom > LABELS_ZOOM_OUT;
+        } else if (Math.abs(Math.log2(camera.zoom / zoomLod.lastZoom)) > 0.01) {
+            zoomLod.lastZoom = camera.zoom;
+            zoomLod.lastZoomActivity = now;
+        }
+        const isZoomSettling = now - zoomLod.lastZoomActivity < ZOOM_SETTLE_MS;
+        const isViewportInteracting = isDragging || isZoomSettling;
+        if (!isViewportInteracting) {
+            if (camera.zoom > ICONS_ZOOM_IN) zoomLod.showTerrainIcons = true;
+            else if (camera.zoom < ICONS_ZOOM_OUT) zoomLod.showTerrainIcons = false;
+
+            if (camera.zoom > LABELS_ZOOM_IN) zoomLod.showDoorLabels = true;
+            else if (camera.zoom < LABELS_ZOOM_OUT) zoomLod.showDoorLabels = false;
+        } else {
+            if (camera.zoom < ICONS_FORCE_OFF_ZOOM) zoomLod.showTerrainIcons = false;
+            if (camera.zoom > ICONS_ZOOM_IN) zoomLod.showTerrainIcons = true;
+            if (camera.zoom < LABELS_FORCE_OFF_ZOOM) zoomLod.showDoorLabels = false;
+            if (camera.zoom > LABELS_ZOOM_IN) zoomLod.showDoorLabels = true;
+        }
         
         const allRooms = stableRoomsRef.current;
         const preloaded = preloadedCoordsRef.current;
@@ -321,8 +357,8 @@ export const useMapperRenderer = ({
         // constantly, letting the GPU stretch/scale the cached canvas smoothly.
         // Once the interaction ends, thresholds drop back to standard levels,
         // triggering a crisp cache rebuild instantly.
-        const zoomThreshold = isDragging ? 0.65 : 0.28;
-        const moveThreshold = isDragging ? baseW * 0.75 : baseW * 0.4;
+        const zoomThreshold = isViewportInteracting ? 0.85 : 0.28;
+        const moveThreshold = isViewportInteracting ? baseW * 0.75 : baseW * 0.4;
 
         const lastExplored = effectiveFirstExploredAtRef.current['_latest'] || 0;
         const isExplorationAnimating = (now - lastExplored) < 1000;
@@ -337,8 +373,10 @@ export const useMapperRenderer = ({
             lastMapTileOpacityRef.current = mapTileOpacity;
         }
 
+        const lodParams = `${zoomLod.showTerrainIcons}_${zoomLod.showDoorLabels}`;
+        const lodChanged = (cache as any).lastLodParams !== lodParams;
         const baseParams = `${curZInt}_${isDarkMode}_${roomsVersionRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}_${weather}`;
-        const needsRebuild = cache.lastParams !== baseParams || zoomDiff > zoomThreshold || moveDist > moveThreshold || isExplorationAnimating || visualsChanged;
+        const needsRebuild = cache.lastParams !== baseParams || (!isViewportInteracting && lodChanged) || zoomDiff > zoomThreshold || moveDist > moveThreshold || isExplorationAnimating || visualsChanged;
 
         if (needsRebuild) {
             const offCtx = cache.ctx;
@@ -423,7 +461,9 @@ export const useMapperRenderer = ({
                 zoneFilters,
                 weather,
                 inCombat,
-                isDragging
+                isDragging,
+                showTerrainIcons: zoomLod.showTerrainIcons,
+                showDoorLabels: zoomLod.showDoorLabels
             };
 
             if (floorIndex) drawTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
@@ -433,7 +473,7 @@ export const useMapperRenderer = ({
             if (camera.zoom > 0.05) {
                 if (floorIndex) drawFeatures(rCtx, bX1, bY1, bX2, bY2, floorIndex);
                 drawLocalFeatures(rCtx, localVisible);
-                if (floorIndex && camera.zoom > 0.35) drawDoorLabels(rCtx, bX1, bY1, bX2, bY2, floorIndex);
+                if (floorIndex && zoomLod.showDoorLabels) drawDoorLabels(rCtx, bX1, bY1, bX2, bY2, floorIndex);
             }
             
             offCtx.restore();
@@ -444,6 +484,7 @@ export const useMapperRenderer = ({
             (cache as any).lastBuildY = camera.y;
             (cache as any).buildCamX = buildCamX;
             (cache as any).buildCamY = buildCamY;
+            (cache as any).lastLodParams = lodParams;
             (cache as any).roomAtCoord = roomAtCoord;
             (cache as any).visitedAtCoord = visitedAtCoord;
         }
@@ -480,7 +521,9 @@ export const useMapperRenderer = ({
             opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
             activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
             inCombat,
-            isDragging
+            isDragging,
+            showTerrainIcons: zoomLod.showTerrainIcons,
+            showDoorLabels: zoomLod.showDoorLabels
         };
 
         drawGroupMembers(rCtx);

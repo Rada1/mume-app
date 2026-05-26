@@ -1,10 +1,28 @@
+/**
+ * @file useViewport.ts
+ * @description Viewport, scroll, and terminal font sizing behavior.
+ */
+
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+
+// --- Constants ---
+
+const DESKTOP_BASE_LOG_FONT_SIZE_PX = 15;
+
+// --- Helpers ---
+
+const readHorizontalPadding = (element: HTMLElement) => {
+    const style = window.getComputedStyle(element);
+    const left = parseFloat(style.paddingLeft) || 0;
+    const right = parseFloat(style.paddingRight) || 0;
+    return left + right;
+};
 
 export function useViewport(
     uiMode: import('../types').UiMode = 'auto',
     disableSmoothScroll: boolean = false,
     isImmersionMode: boolean = true,
-    fontFamily: string = "'Anonymous Pro', monospace",
+    fontFamily: string = "'Roboto Mono', monospace",
     isTimestampEnabled: boolean = false,
     isNewbieMode: boolean = false
 ) {
@@ -102,8 +120,8 @@ export function useViewport(
         return () => resizeObserver.disconnect();
     }, [scrollToBottom]);
 
-    // logFontSize is a MULTIPLIER on top of the precision-calculated 80-column base size.
-    // 1.0 = exactly 80 columns; > 1.0 = zoomed in; < 1.0 = zoomed out.
+    // logFontSize is a MULTIPLIER on top of the platform base size.
+    // Desktop uses a fixed 15px base. Mobile still auto-fits game text to 80 columns.
     const [logFontSize, setLogFontSize] = useState(() => {
         const saved = localStorage.getItem('logFontSizeMultiplier');
         const v = saved ? parseFloat(saved) : 1.0;
@@ -202,24 +220,17 @@ export function useViewport(
             const timestampWidth = isTimestampEnabled ? 12 : 0; 
             const targetCols = baseCols + timestampWidth;
 
-            // Calculate total horizontal padding
-            let totalPadding = 12; // Standard .message padding: 6px left + 6px right
-
-            if (isMobile && !isLandscape) {
-                // Mobile portrait .message-log padding: 8px left + 8px right (overrides newbie padding in CSS)
-                totalPadding += 16; 
-            } else if (isNewbieMode) {
-                // .message-log padding: 10px left + 10px right
-                totalPadding += 20; 
-            }
+            const totalPadding = readHorizontalPadding(messageLog);
 
             // Sub-pixel buffer: use a small buffer to prevent rounding-induced wrapping across different browsers.
             // Mobile portrait targets "barely fits 80 cols" so we skip the buffer there.
             const safetyBuffer = (isMobile && !isLandscape) ? 0 : 2;
             const usableWidth = Math.max(0, width - totalPadding - safetyBuffer); 
 
-            // Calculate font size for perfect 80-column fit using the actual measured ratio.
-            let calculatedFontSize = usableWidth / (targetCols * charWidthRatio);
+            // Mobile keeps the 80-column fit. Desktop uses a predictable terminal size.
+            let calculatedFontSize = isMobile
+                ? usableWidth / (targetCols * charWidthRatio)
+                : DESKTOP_BASE_LOG_FONT_SIZE_PX;
 
             // Apply user zoom multiplier
             calculatedFontSize *= logFontSize;

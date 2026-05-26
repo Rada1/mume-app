@@ -1,7 +1,15 @@
+/**
+ * @file GeneralSettings.tsx
+ * @description General settings panel for connection, display, and client behavior.
+ */
+
 import React from 'react';
 import { Wifi, WifiOff, Upload } from 'lucide-react';
 import { DEFAULT_BG } from '../../constants';
 import { useModeStore } from '../../stores/useModeStore';
+import FontSizeSetting from './FontSizeSetting';
+
+// --- Interface ---
 
 interface GeneralSettingsProps {
     connectionUrl: string;
@@ -40,6 +48,7 @@ interface GeneralSettingsProps {
     fontFamily: string;
     setFontFamily: (val: string) => void;
     logFontSize: number;
+    logFontSizePx: number;
     setLogFontSize: (v: number | ((prev: number) => number)) => void;
     autoSaveSessions: boolean;
     setAutoSaveSessions: (val: boolean) => void;
@@ -50,6 +59,8 @@ interface GeneralSettingsProps {
     showBlockHeaders: boolean;
     setShowBlockHeaders: (val: boolean) => void;
 }
+
+// --- Component ---
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     connectionUrl,
@@ -87,6 +98,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     fontFamily,
     setFontFamily,
     logFontSize,
+    logFontSizePx,
     setLogFontSize,
     autoSaveSessions,
     setAutoSaveSessions,
@@ -425,36 +437,11 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </div>
             </div>
 
-            <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Font Size</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Auto-sizes to fit 80 chars. Adjust to taste.</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <button
-                            className="btn-secondary"
-                            style={{ padding: '2px 10px', fontSize: '1rem', lineHeight: 1, margin: 0 }}
-                            onClick={() => setLogFontSize(prev => Math.max(0.5, Math.round((prev - 0.05) * 100) / 100))}
-                        >−</button>
-                        <span style={{ minWidth: '42px', textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-primary)', fontFamily: 'monospace' }}>
-                            {Math.round(logFontSize * 100)}%
-                        </span>
-                        <button
-                            className="btn-secondary"
-                            style={{ padding: '2px 10px', fontSize: '1rem', lineHeight: 1, margin: 0 }}
-                            onClick={() => setLogFontSize(prev => Math.min(2.5, Math.round((prev + 0.05) * 100) / 100))}
-                        >+</button>
-                        {logFontSize !== 1.0 && (
-                            <button
-                                className="btn-secondary"
-                                style={{ padding: '2px 8px', fontSize: '0.7rem', margin: 0 }}
-                                onClick={() => setLogFontSize(1.0)}
-                            >Reset</button>
-                        )}
-                    </div>
-                </div>
-            </div>
+            <FontSizeSetting
+                logFontSize={logFontSize}
+                logFontSizePx={logFontSizePx}
+                setLogFontSize={setLogFontSize}
+            />
 
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

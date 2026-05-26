@@ -1,3 +1,8 @@
+/**
+ * @file SettingsModal.tsx
+ * @description Tabbed settings modal for configuring the MUME client.
+ */
+
 import React from 'react';
 import { X, Music, Cog, Activity, HelpCircle, Map } from 'lucide-react';
 import { useGame, useUI } from '../../context/GameContext';
@@ -9,6 +14,8 @@ import ButtonSettings from '../Settings/ButtonSettings';
 import MapSettings from '../Settings/MapSettings';
 import HelpGuides from '../Settings/HelpGuides';
 import { SoundTrigger, UiMode } from '../../types';
+
+// --- Interface ---
 
 interface SettingsModalProps {
     connectionUrl: string;
@@ -70,6 +77,8 @@ interface SettingsModalProps {
     createButton: () => void;
     setIsSetManagerOpen: (val: boolean) => void;
 }
+
+// --- Component ---
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
     connectionUrl, setConnectionUrl, bgImage, setBgImage, bgImageBottom, setBgImageBottom, handleFileUpload, handleBottomFileUpload,
@@ -177,6 +186,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 fontFamily={fontFamily}
                                 setFontFamily={setFontFamily}
                                 logFontSize={viewport.logFontSize}
+                                logFontSizePx={viewport.logFontSizePx}
                                 setLogFontSize={viewport.setLogFontSize}
                                 autoSaveSessions={autoSaveSessions ?? false}
                                 setAutoSaveSessions={setAutoSaveSessions ?? (() => {})}
