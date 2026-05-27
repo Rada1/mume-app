@@ -194,15 +194,13 @@ export const AccountDrawer: React.FC = () => {
     }
     if (selectedMenuCommand === 'time' || selectedMenuCommand === 'link' || selectedMenuCommand === 'lag') return renderDataPanel(selectedMenuCommand);
 
-    const menuCommands = ['play', 'create', 'list', 'time', 'link', 'lag', 'password', 'help', 'menu', 'quit'];
     return (
         <div className="char-select-panel" style={{ padding: 12, gap: 10 }}>
-            <div className="account-menu-buttons-list" style={{ width: '100%', maxHeight: 'none', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                {menuCommands.map(command => <button key={command} className="account-menu-btn" onClick={() => selectMenuCommand(command)}>{command}</button>)}
-            </div>
-            <div className="cmd-play-char-list">
-                {accountState.characters.map((entry: CharacterEntry) => <CharacterButton key={entry.name} entry={entry} onClick={() => selectCharacter(entry)} />)}
-            </div>
+            {accountState.characters.length > 0 && (
+                <div className="cmd-play-char-list">
+                    {accountState.characters.map((entry: CharacterEntry) => <CharacterButton key={entry.name} entry={entry} onClick={() => selectCharacter(entry)} />)}
+                </div>
+            )}
         </div>
     );
 };
