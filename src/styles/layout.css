@@ -1190,7 +1190,7 @@
 }
 
 .login-prompt-text {
-    font-family: var(--font-serif);
+    font-family: 'Iosevka', monospace;
     font-size: 0.95rem;
     color: var(--text-primary);
     text-align: center;
@@ -1218,7 +1218,7 @@
     border: none;
     outline: none;
     color: #fff;
-    font-family: var(--font-serif);
+    font-family: 'Iosevka', monospace;
     font-size: 1rem;
     resize: none;
     padding: 0;
