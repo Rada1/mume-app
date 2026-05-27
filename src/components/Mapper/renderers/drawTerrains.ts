@@ -5,6 +5,7 @@ import { getZoneVisuals } from '../zoneFilters';
 const TERRAIN_TILE_INSET = 0;
 const FAR_ZOOM_TERRAIN_LOD = 0.22;
 const OVERVIEW_TERRAIN_ZOOM = 0.15;
+const OUTDOOR_TERRAINS = new Set(['City', 'Field', 'Grasslands', 'Forest', 'Hills', 'Mountains', 'Road', 'Brush', 'Water', 'Shallows', 'Rapids']);
 
 let tempContentCanvas: HTMLCanvasElement | null = null;
 let tempContentCtx: CanvasRenderingContext2D | null = null;
@@ -288,6 +289,7 @@ const drawOutskirtTrees = (
 ) => {
     const tName = getTerrainName(terrain);
     if (tName === 'Forest') return;
+    if (!OUTDOOR_TERRAINS.has(tName)) return;
 
     const rData = preloaded[vnum];
     if (!rData || !rData[4]) return;
@@ -402,6 +404,32 @@ export const getRoomWalls = (
     const wallW = !getGateState(room, exits, 'w', allRooms, preloaded).hasExit || (!unveilMap && exitW && !isExplored(exitW.target));
 
     return { n: wallN, s: wallS, e: wallE, w: wallW };
+};
+
+const getOutdoorSpillWalls = (
+    terrain: any,
+    exits: any,
+    preloaded: any,
+    walls: { n: boolean; s: boolean; e: boolean; w: boolean }
+) => {
+    const tName = getTerrainName(terrain);
+    if (tName !== 'Forest' && tName !== 'Mountains') return walls;
+
+    const blocksNonOutdoor = (dir: 'n' | 's' | 'e' | 'w') => {
+        const target = exits?.[dir]?.target;
+        if (!target) return true;
+        const targetData = preloaded[String(target)];
+        if (!targetData) return true;
+        const targetTerrain = getTerrainName(targetData[3]);
+        return !OUTDOOR_TERRAINS.has(targetTerrain);
+    };
+
+    return {
+        n: walls.n || blocksNonOutdoor('n'),
+        s: walls.s || blocksNonOutdoor('s'),
+        e: walls.e || blocksNonOutdoor('e'),
+        w: walls.w || blocksNonOutdoor('w'),
+    };
 };
 
 const drawTerrainTileIcon = (
@@ -1111,8 +1139,13 @@ export const drawTerrainIcon = (
              // Deterministic pseudo-random offset between -12% and +12% of tile size s
              const s1 = Math.abs(Math.sin(variant * 17.3) * 43758.5453) % 1;
              const s2 = Math.abs(Math.sin(variant * 29.7) * 43758.5453) % 1;
-             offsetX += (s1 - 0.5) * s * 0.24;
-             offsetY += (s2 - 0.5) * s * 0.16; // slightly less vertical jitter
+             offsetX += (s1 - 0.5) * s * 0.34;
+             offsetY += (s2 - 0.5) * s * 0.30;
+         } else if (tName === 'Mountains') {
+             const s1 = Math.abs(Math.sin(variant * 29.7) * 43758.5453) % 1;
+             const s2 = Math.abs(Math.sin(variant * 17.3) * 43758.5453) % 1;
+             offsetX += (s2 - 0.5) * s * 0.24;
+             offsetY += (s1 - 0.5) * s * 0.42;
          }
 
          let clipped = false;
@@ -1572,7 +1605,7 @@ export const drawTerrains = (
                 
                 const exits = preloaded[r.vnum]?.[4];
                 const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
-                const walls = getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap);
+                const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap));
 
                 drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects, tFloor, walls);
                 drawOutskirtTrees(ctx, r.x, r.y, r.vnum, s, r.terrain, preloaded, isDarkMode, tileOpacity, explored);
@@ -1595,7 +1628,7 @@ export const drawTerrains = (
                 
                 const exits = preloaded[r.vnum]?.[4];
                 const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
-                const walls = getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap);
+                const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap));
 
                 drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls);
             }
@@ -1635,7 +1668,7 @@ export const drawTerrains = (
             
             const exits = preloaded[r.vnum]?.[4];
             const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
-            const walls = getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap);
+            const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap));
 
             drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls);
             ctx.restore();
@@ -1688,7 +1721,7 @@ export const drawTerrains = (
                     
                     const exits = preloaded[r.vnum]?.[4];
                     const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
-                    const walls = getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap);
+                    const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap));
 
                     drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects3, tFloor3, walls);
                     drawOutskirtTrees(ctx, r.x, r.y, r.vnum, s, r.terrain, preloaded, isDarkMode, tileOpacity, explored);
@@ -1764,7 +1797,7 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
             
             const rId = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;
             const exits = preloaded[rId]?.[4];
-            const walls = getRoomWalls(room, exits, allRooms, preloaded, rCtx.explored, rCtx.unveilMap);
+            const walls = getOutdoorSpillWalls(room.terrain, exits, preloaded, getRoomWalls(room, exits, allRooms, preloaded, rCtx.explored, rCtx.unveilMap));
 
             drawTerrainTileIcon(ctx, rx, ry, s, room.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnectsLocal, tFloorLocal, walls);
             ctx.restore();
