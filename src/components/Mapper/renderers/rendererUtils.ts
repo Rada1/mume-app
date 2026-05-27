@@ -49,6 +49,7 @@ export interface RenderContext {
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     selectedRoomIds: Set<string>;
     activeId: string | null;
+    activeZone?: string | null;
     walkTargetId?: string | null;
     walkPath?: string[];
     baseMapExitsRef: React.MutableRefObject<Record<string, any>>;

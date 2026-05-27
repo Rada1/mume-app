@@ -8,6 +8,7 @@ import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
 import { drawDoorLabels } from './renderers/drawDoorLabels';
 import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee, drawDoorHighlights, drawFilterHighlights } from './renderers/drawEntities';
 import { drawRegionLabels } from './renderers/drawRegionLabels';
+import { drawZoneFocusOverlay } from './renderers/zoneFocusOverlay';
 import { ZoneFilterConfig } from './zoneFilters';
 import { buildLocalSpatialIndex, didLocalLayoutChange } from './mapLayoutIndex';
 
@@ -193,6 +194,10 @@ export const useMapperRenderer = ({
                 if (pData) baseZ = pData[2] || 0;
             }
         }
+        const activeRoom = activeId ? stableRoomsRef.current[activeId] : null;
+        const activeRawId = activeId?.startsWith('m_') ? activeId.substring(2) : activeId;
+        const activePreloadedData = activeRawId ? preloadedCoordsRef.current[activeRawId] : null;
+        const activeZone = activeRoom?.zone || activePreloadedData?.[9] || null;
         const currentZ = viewZ !== null && viewZ !== undefined ? viewZ : baseZ;
         const camera = cameraRef.current;
         const invZoom = 1 / camera.zoom;
@@ -419,7 +424,7 @@ export const useMapperRenderer = ({
 
         const lodParams = `${showTerrainIcons}_${showDoorLabels}_${lowEffects}`;
         const lodChanged = cache.lastLodParams !== lodParams;
-        const baseParams = `${curZInt}_${isDarkMode}_${roomsVersionRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}_${weather}`;
+        const baseParams = `${curZInt}_${isDarkMode}_${roomsVersionRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}_${weather}_${activeZone || ''}`;
         const needsRebuild = cache.lastParams !== baseParams || (!isViewportInteracting && lodChanged) || zoomDiff > zoomThreshold || moveDist > moveThreshold || finalExplorationBakeDue || visualsChanged;
 
         if (needsRebuild) {
@@ -495,6 +500,7 @@ export const useMapperRenderer = ({
                 ctx: terrainCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
                 imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
                 allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
+                activeZone,
                 triggerRender, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName, opponentId,
                 activeInlineEntityId, selectedObjectIds,
                 activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
@@ -520,6 +526,7 @@ export const useMapperRenderer = ({
             if (floorIndex) drawTerrains(terrainRCtx, bX1, bY1, bX2, bY2, floorIndex);
             drawLocalTerrains(terrainRCtx, localVisible);
             drawGrid(terrainRCtx, gX1, gY1, gX2, gY2);
+            if (floorIndex) drawZoneFocusOverlay(terrainRCtx, bX1, bY1, bX2, bY2, floorIndex, localVisible, true);
 
             terrainCtx.restore();
 
@@ -532,6 +539,7 @@ export const useMapperRenderer = ({
                 if (floorIndex) drawFeatures(featureRCtx, bX1, bY1, bX2, bY2, floorIndex);
                 drawLocalFeatures(featureRCtx, localVisible);
                 if (floorIndex && showDoorLabels) drawDoorLabels(featureRCtx, bX1, bY1, bX2, bY2, floorIndex);
+                if (floorIndex) drawZoneFocusOverlay(featureRCtx, bX1, bY1, bX2, bY2, floorIndex, localVisible);
 
                 featureCtx.restore();
             }
@@ -572,6 +580,7 @@ export const useMapperRenderer = ({
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
             allRooms, roomAtCoord: cache.roomAtCoord || {}, visitedAtCoord: cache.visitedAtCoord || {},
             preloaded: preloadedCoordsRef.current, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef,
+            activeZone,
             groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName,
             opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
             activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,

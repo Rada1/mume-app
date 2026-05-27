@@ -2,6 +2,7 @@ import { RenderContext, drawLine, drawInkyLine } from './rendererUtils';
 import { getZoneVisuals } from '../zoneFilters';
 import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, WALL_COLOR, LONG_CONNECTION_COLOR } from '../mapperUtils';
 import { drawTerrainIcon, getTerrainTileInset, getRoomWalls } from './drawTerrains';
+import { DETAIL_GRAYSCALE_FILTER, getRoomZone, isOutsideActiveZone } from './zoneFocusOverlay';
 
 const hexToRgba = (hex: string, alpha: number): string => {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -1227,6 +1228,9 @@ export const drawFeatures = (
                         const gridX = Math.round(rx), gridY = Math.round(ry);
                         const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
                         ctx.save();
+                        if (rCtx.camera.zoom >= 0.3 && isOutsideActiveZone(getRoomZone(localRoom, rData), rCtx.activeZone)) {
+                            ctx.filter = DETAIL_GRAYSCALE_FILTER;
+                        }
                         ctx.globalAlpha = isExplored ? exploredAlphaMul : 0.35;
                         const inset = getTerrainTileInset(s);
                         const isSnow = localRoom?.isPermanentSnow || rCtx.weather === 'snow';
