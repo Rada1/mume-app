@@ -89,7 +89,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
     const canvasRef = (ref as React.RefObject<HTMLCanvasElement>) || internalRef;
     const combatPulsesRef = useRef<CombatPulse[]>([]);
 
-    const getDPR = useCallback(() => Math.min(props.isMobile ? 2.0 : 2.5, window.devicePixelRatio || 1), [props.isMobile]);
+    const getDPR = useCallback(() => Math.min(props.isMobile ? 1.5 : 2.5, window.devicePixelRatio || 1), [props.isMobile]);
 
     const {
         rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
@@ -110,7 +110,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
 
     // Zone filters are drawn directly onto elements in the canvas rather than using CSS filters
 
-    const { drawMap } = useMapperRenderer({
+    const { drawMap, filterFitRef } = useMapperRenderer({
         rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
         cameraRef: camera, isDarkMode, isMobile, imagesRef, characterName,
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
@@ -170,9 +170,11 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         walkTargetId: props.walkTargetId,
         walkPath: props.walkPath,
         activeMapFilter: props.activeMapFilter,
+        mapSearchQuery: props.mapSearchQuery,
         combatAnimationActive,
         isMobile,
-        isLandscape
+        isLandscape,
+        filterFitRef
     });
 
     // Parallax: update when mapper state wakes instead of running a permanent RAF loop.
@@ -182,6 +184,9 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         if (!container) return;
         container.style.setProperty('--parallax-x', `${-props.camera.current.x * FACTOR}px`);
         container.style.setProperty('--parallax-y', `${-props.camera.current.y * FACTOR}px`);
+        const zoom = props.camera.current.zoom;
+        const bgScale = 1 + (zoom - 1) * 0.05;
+        container.style.setProperty('--parallax-scale', `${bgScale}`);
     }, [canvasRef, props.camera, props.renderVersion]);
 
     useEffect(() => {

@@ -3,7 +3,7 @@ import { GRID_SIZE, normalizeTerrain, checkRoomFilter, findClosestMatchingRoomPa
 import { RenderContext } from './renderers/rendererUtils';
 import type { CombatPulse } from './renderers/rendererUtils';
 import { CompactMapExit, MapperPrediction, RegionLabel } from './mapperTypes';
-import { drawTerrains, drawLocalTerrains } from './renderers/drawTerrains';
+import { drawTerrains, drawLocalTerrains, drawExplorationRevealOverlay, RING_REVEAL_BAKE_MS, RING_REVEAL_TOTAL_MS } from './renderers/drawTerrains';
 import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
 import { drawDoorLabels } from './renderers/drawDoorLabels';
 import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee, drawDoorHighlights, drawFilterHighlights } from './renderers/drawEntities';
@@ -28,7 +28,7 @@ const VIGNETTE_EDGE_ALPHA: Record<string, number> = {
     normal: 0.38,
 };
 const LIGHTING_TRANSITION_MS = 1500;
-const EXPLORATION_CACHE_FRAME_MS = 120;
+const EXPLORATION_CACHE_FRAME_MS = RING_REVEAL_BAKE_MS;
 const ZOOM_SETTLE_MS = 180;
 const ICONS_ZOOM_IN = 0.38;
 const ICONS_ZOOM_OUT = 0.30;
@@ -103,6 +103,23 @@ interface RendererProps {
     selectedRegionLabelId?: string | null;
 }
 
+interface MapperLayerCache {
+    terrainCanvas: HTMLCanvasElement;
+    terrainCtx: CanvasRenderingContext2D;
+    featureCanvas: HTMLCanvasElement;
+    featureCtx: CanvasRenderingContext2D;
+    lastParams: string;
+    lastLodParams?: string;
+    lastBuildZoom?: number;
+    lastBuildX?: number;
+    lastBuildY?: number;
+    buildCamX?: number;
+    buildCamY?: number;
+    roomAtCoord?: Record<string, any>;
+    visitedAtCoord?: Record<string, boolean>;
+    lastExplorationBakeFor?: number;
+}
+
 export const useMapperRenderer = ({
     rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
     cameraRef, isDarkMode, isMobile, imagesRef, characterName,
@@ -130,7 +147,7 @@ export const useMapperRenderer = ({
         lastLighting: string;
     }>({ from: [0,0,0,0], to: [0,0,0,0], startTime: 0, lastLighting: lighting });
 
-    const offscreenCacheRef = useRef<{ canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, lastParams: string } | null>(null);
+    const layerCacheRef = useRef<MapperLayerCache | null>(null);
     const vignetteCacheRef = useRef<{ canvas: HTMLCanvasElement, w: number, h: number, edgeAlpha: number } | null>(null);
     const localSpatialIndexRef = useRef<Record<number, Record<string, string[]>>>({});
     const lastRoomsRef = useRef<Record<string, any>>({});
@@ -160,6 +177,7 @@ export const useMapperRenderer = ({
         filterPathIds: [],
         filterPathDistance: 0
     });
+    const filterFitRef = useRef<{ zoom: number, camX: number, camY: number } | null>(null);
 
     const drawMap = useCallback((ctx: CanvasRenderingContext2D, dpr: number, canvasWidth: number, canvasHeight: number, marquee: { start: { x: number, y: number }, end: { x: number, y: number } } | null, isDragging: boolean = false) => {
         const now = Date.now();
@@ -202,12 +220,16 @@ export const useMapperRenderer = ({
             if (camera.zoom < LABELS_FORCE_OFF_ZOOM) zoomLod.showDoorLabels = false;
             if (camera.zoom > LABELS_ZOOM_IN) zoomLod.showDoorLabels = true;
         }
+        const lowEffects = isMobile && isViewportInteracting;
+        const showTerrainIcons = !lowEffects && zoomLod.showTerrainIcons;
+        const showDoorLabels = !lowEffects && zoomLod.showDoorLabels;
         
         const allRooms = stableRoomsRef.current;
         const preloaded = preloadedCoordsRef.current;
 
+        const revealAll = !!(treatMapAsExplored || unveilMap);
         const explored = (() => {
-            if (!treatMapAsExplored) return exploredRef.current;
+            if (!revealAll) return exploredRef.current;
             const keys = Object.keys(preloaded);
             if (fullExploredRef.current.count !== keys.length) {
                 fullExploredRef.current = { count: keys.length, set: new Set(keys) };
@@ -235,15 +257,22 @@ export const useMapperRenderer = ({
         let closestRoomId = filterCacheRef.current.closestRoomId;
         let filterPathIds = filterCacheRef.current.filterPathIds;
         let filterPathDistance = filterCacheRef.current.filterPathDistance;
+        const stableCurrentRoomId = stableRoomIdRef.current;
         const filterKey = [
             activeMapFilter || '',
             (mapSearchQuery || '').trim().toLowerCase(),
-            currentRoomId || '',
+            stableCurrentRoomId || '',
             roomsVersionRef.current,
-            Object.keys(preloaded).length
+            Object.keys(preloaded).length,
+            revealAll ? 'all' : 'explored',
+            explored.size
         ].join('|');
 
-        if (!activeMapFilter) {
+        const effectiveFilter = activeMapFilter || '';
+        const effectiveQuery = (mapSearchQuery || '').trim().toLowerCase();
+        const filterActive = !!(effectiveFilter || effectiveQuery);
+
+        if (!filterActive) {
             if (filterCacheRef.current.key !== '') {
                 filterCacheRef.current = {
                     key: '',
@@ -259,21 +288,30 @@ export const useMapperRenderer = ({
             filterPathDistance = 0;
         } else if (filterCacheRef.current.key !== filterKey) {
             const nextMatchedRoomIds = new Set<string>();
+            // Custom/local rooms always count as candidates
             Object.keys(allRooms).forEach(rid => {
                 const rawId = rid.startsWith('m_') ? rid.substring(2) : rid;
-                if (checkRoomFilter(rid, allRooms[rid], preloaded[rawId], activeMapFilter, mapSearchQuery || '')) {
+                if (checkRoomFilter(rid, allRooms[rid], preloaded[rawId], effectiveFilter, effectiveQuery)) {
                     nextMatchedRoomIds.add(rid);
                 }
             });
-            Object.keys(preloaded).forEach(vnum => {
+            // Preloaded rooms: only the explored set in normal mode; the `explored` set already
+            // contains every preloaded key when reveal-all is on.
+            explored.forEach(vnum => {
                 const rid = `m_${vnum}`;
-                if (!nextMatchedRoomIds.has(rid) && checkRoomFilter(rid, allRooms[rid], preloaded[vnum], activeMapFilter, mapSearchQuery || '')) {
+                if (nextMatchedRoomIds.has(rid)) return;
+                const pData = preloaded[vnum];
+                if (!pData) return;
+                if (checkRoomFilter(rid, allRooms[rid], pData, effectiveFilter, effectiveQuery)) {
                     nextMatchedRoomIds.add(rid);
                 }
             });
 
-            const closestPath = currentRoomId
-                ? findClosestMatchingRoomPath(currentRoomId, allRooms, preloaded, activeMapFilter, mapSearchQuery || '')
+            const closestPath = stableCurrentRoomId
+                ? findClosestMatchingRoomPath(stableCurrentRoomId, allRooms, preloaded, effectiveFilter, effectiveQuery, {
+                    treatMapAsExplored: revealAll,
+                    explored
+                })
                 : null;
             filterCacheRef.current = {
                 key: filterKey,
@@ -288,23 +326,54 @@ export const useMapperRenderer = ({
             filterPathDistance = filterCacheRef.current.filterPathDistance;
         }
 
-        const curZInt = Math.round(currentZ);
-
-        // 2. Static Cache Management (Oversized 2x Buffer)
-        if (!offscreenCacheRef.current) {
-            const canvas = document.createElement('canvas');
-            const offCtx = canvas.getContext('2d', { alpha: true })!;
-            offscreenCacheRef.current = { canvas, ctx: offCtx, lastParams: "" };
+        // Compute fit-camera state so the animation hook can zoom to show player + target
+        if (filterActive && closestRoomId && playerPosRef.current) {
+            const normId = closestRoomId.startsWith('m_') ? closestRoomId.substring(2) : closestRoomId;
+            const targetData = preloaded[normId];
+            if (targetData) {
+                const PADDING = GRID_SIZE * 4;
+                const pWX = playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2;
+                const pWY = playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2;
+                const tWX = targetData[0] * GRID_SIZE + GRID_SIZE / 2;
+                const tWY = targetData[1] * GRID_SIZE + GRID_SIZE / 2;
+                const bbW = Math.abs(tWX - pWX) + PADDING * 2;
+                const bbH = Math.abs(tWY - pWY) + PADDING * 2;
+                const targetZoom = Math.max(0.002, Math.min(0.8, Math.min(canvasWidth / bbW, canvasHeight / bbH)));
+                const ctrX = (pWX + tWX) / 2;
+                const ctrY = (pWY + tWY) / 2;
+                filterFitRef.current = {
+                    zoom: targetZoom,
+                    camX: ctrX - canvasWidth / (2 * targetZoom),
+                    camY: ctrY - canvasHeight / (2 * targetZoom),
+                };
+            } else {
+                filterFitRef.current = null;
+            }
+        } else {
+            filterFitRef.current = null;
         }
 
-        const cache = offscreenCacheRef.current;
+        const curZInt = Math.round(currentZ);
+
+        // 2. Static Layer Cache Management (Oversized 2x Buffer)
+        if (!layerCacheRef.current) {
+            const terrainCanvas = document.createElement('canvas');
+            const featureCanvas = document.createElement('canvas');
+            const terrainCtx = terrainCanvas.getContext('2d', { alpha: true })!;
+            const featureCtx = featureCanvas.getContext('2d', { alpha: true })!;
+            layerCacheRef.current = { terrainCanvas, terrainCtx, featureCanvas, featureCtx, lastParams: "" };
+        }
+
+        const cache = layerCacheRef.current;
         const baseW = ctx.canvas.width, baseH = ctx.canvas.height;
         // We make the cache 2x larger than the screen to allow for smooth panning
         const cacheW = baseW * 2, cacheH = baseH * 2;
         
-        if (cache.canvas.width !== cacheW || cache.canvas.height !== cacheH) {
-            cache.canvas.width = cacheW; 
-            cache.canvas.height = cacheH;
+        if (cache.terrainCanvas.width !== cacheW || cache.terrainCanvas.height !== cacheH) {
+            cache.terrainCanvas.width = cacheW;
+            cache.terrainCanvas.height = cacheH;
+            cache.featureCanvas.width = cacheW;
+            cache.featureCanvas.height = cacheH;
             cache.lastParams = ""; // Force rebuild
         }
 
@@ -313,10 +382,10 @@ export const useMapperRenderer = ({
         // 1. Core params changed (Dark Mode, Rooms, Explored set)
         // 2. Zoom changed significantly (> 20%)
         // 3. Viewport moved too close to the buffer edges
-        const lastBuildZoom = (cache as any).lastBuildZoom ?? 0;
+        const lastBuildZoom = cache.lastBuildZoom ?? 0;
         const zoomDiff = Math.abs(Math.log2(camera.zoom / lastBuildZoom));
-        const lastBuildX = (cache as any).lastBuildX ?? 0;
-        const lastBuildY = (cache as any).lastBuildY ?? 0;
+        const lastBuildX = cache.lastBuildX ?? 0;
+        const lastBuildY = cache.lastBuildY ?? 0;
         
         // Distance from center of cache in world units
         const moveDist = Math.hypot(camera.x - lastBuildX, camera.y - lastBuildY) * camera.zoom * dpr;
@@ -330,9 +399,13 @@ export const useMapperRenderer = ({
         const moveThreshold = isViewportInteracting ? baseW * 0.75 : baseW * 0.4;
 
         const lastExplored = effectiveFirstExploredAtRef.current['_latest'] || 0;
-        const isExplorationAnimating = (now - lastExplored) < 1000;
-        const lastExplorationBuild = (cache as any).lastExplorationBuild ?? 0;
-        const explorationFrameDue = isExplorationAnimating && (now - lastExplorationBuild) > EXPLORATION_CACHE_FRAME_MS;
+        const explorationAge = lastExplored ? now - lastExplored : Number.POSITIVE_INFINITY;
+        const isExplorationAnimating = explorationAge < RING_REVEAL_TOTAL_MS;
+        const isExplorationBaked = cache.lastExplorationBakeFor === lastExplored;
+        const isExplorationOverlayActive = !!lastExplored && (explorationAge < RING_REVEAL_BAKE_MS || !isExplorationBaked);
+        const finalExplorationBakeDue = !!lastExplored
+            && explorationAge >= EXPLORATION_CACHE_FRAME_MS
+            && !isExplorationBaked;
 
         const zoneFiltersChanged = zoneFilters !== lastZoneFiltersRef.current;
         if (zoneFiltersChanged) {
@@ -344,29 +417,26 @@ export const useMapperRenderer = ({
             lastMapTileOpacityRef.current = mapTileOpacity;
         }
 
-        const lodParams = `${zoomLod.showTerrainIcons}_${zoomLod.showDoorLabels}`;
-        const lodChanged = (cache as any).lastLodParams !== lodParams;
+        const lodParams = `${showTerrainIcons}_${showDoorLabels}_${lowEffects}`;
+        const lodChanged = cache.lastLodParams !== lodParams;
         const baseParams = `${curZInt}_${isDarkMode}_${roomsVersionRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}_${weather}`;
-        const needsRebuild = cache.lastParams !== baseParams || (!isViewportInteracting && lodChanged) || zoomDiff > zoomThreshold || moveDist > moveThreshold || explorationFrameDue || visualsChanged;
+        const needsRebuild = cache.lastParams !== baseParams || (!isViewportInteracting && lodChanged) || zoomDiff > zoomThreshold || moveDist > moveThreshold || finalExplorationBakeDue || visualsChanged;
 
         if (needsRebuild) {
-            const offCtx = cache.ctx;
-            offCtx.setTransform(1, 0, 0, 1, 0, 0);
-            offCtx.clearRect(0, 0, cacheW, cacheH);
-            offCtx.fillStyle = isDarkMode ? 'rgba(0,0,0,0)' : '#f2f2f7';
-            offCtx.fillRect(0, 0, cacheW, cacheH);
-
-            offCtx.save();
-            offCtx.imageSmoothingEnabled = false; 
-            offCtx.scale(dpr * camera.zoom, dpr * camera.zoom);
+            const terrainCtx = cache.terrainCtx;
+            const featureCtx = cache.featureCtx;
+            terrainCtx.setTransform(1, 0, 0, 1, 0, 0);
+            featureCtx.setTransform(1, 0, 0, 1, 0, 0);
+            terrainCtx.clearRect(0, 0, cacheW, cacheH);
+            featureCtx.clearRect(0, 0, cacheW, cacheH);
+            terrainCtx.fillStyle = isDarkMode ? 'rgba(0,0,0,0)' : '#f2f2f7';
+            terrainCtx.fillRect(0, 0, cacheW, cacheH);
             
             // Center the cache on the camera
             // Visible world extent: baseW / (zoom * dpr) wide, baseH / (zoom * dpr) tall
             // Cache is 2x screen → 0.5 screens of buffer on each side
             const buildCamX = camera.x - (baseW / (camera.zoom * dpr)) * 0.5;
             const buildCamY = camera.y - (baseH / (camera.zoom * dpr)) * 0.5;
-            
-            offCtx.translate(-buildCamX, -buildCamY);
 
             const vX1 = buildCamX, vY1 = buildCamY;
             const vX2 = buildCamX + (cacheW / (camera.zoom * dpr)), vY2 = buildCamY + (cacheH / (camera.zoom * dpr));
@@ -421,8 +491,8 @@ export const useMapperRenderer = ({
                 }
             }
 
-            const rCtx: RenderContext = {
-                ctx: offCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
+            const terrainRCtx: RenderContext = {
+                ctx: terrainCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
                 imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
                 allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
                 triggerRender, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName, opponentId,
@@ -434,33 +504,49 @@ export const useMapperRenderer = ({
                 weather,
                 inCombat,
                 isDragging,
-                showTerrainIcons: zoomLod.showTerrainIcons,
-                showDoorLabels: zoomLod.showDoorLabels
+                lowEffects,
+                suppressExplorationAnimation: isExplorationOverlayActive && !finalExplorationBakeDue,
+                showTerrainIcons,
+                showDoorLabels
             };
 
-            if (floorIndex) drawTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
-            drawLocalTerrains(rCtx, localVisible);
-            drawGrid(rCtx, gX1, gY1, gX2, gY2);
+            const featureRCtx: RenderContext = { ...terrainRCtx, ctx: featureCtx };
+
+            terrainCtx.save();
+            terrainCtx.imageSmoothingEnabled = false;
+            terrainCtx.scale(dpr * camera.zoom, dpr * camera.zoom);
+            terrainCtx.translate(-buildCamX, -buildCamY);
+
+            if (floorIndex) drawTerrains(terrainRCtx, bX1, bY1, bX2, bY2, floorIndex);
+            drawLocalTerrains(terrainRCtx, localVisible);
+            drawGrid(terrainRCtx, gX1, gY1, gX2, gY2);
+
+            terrainCtx.restore();
 
             if (camera.zoom > 0.05) {
-                if (floorIndex) drawFeatures(rCtx, bX1, bY1, bX2, bY2, floorIndex);
-                drawLocalFeatures(rCtx, localVisible);
-                if (floorIndex && zoomLod.showDoorLabels) drawDoorLabels(rCtx, bX1, bY1, bX2, bY2, floorIndex);
+                featureCtx.save();
+                featureCtx.imageSmoothingEnabled = false;
+                featureCtx.scale(dpr * camera.zoom, dpr * camera.zoom);
+                featureCtx.translate(-buildCamX, -buildCamY);
+
+                if (floorIndex) drawFeatures(featureRCtx, bX1, bY1, bX2, bY2, floorIndex);
+                drawLocalFeatures(featureRCtx, localVisible);
+                if (floorIndex && showDoorLabels) drawDoorLabels(featureRCtx, bX1, bY1, bX2, bY2, floorIndex);
+
+                featureCtx.restore();
             }
-            
-            offCtx.restore();
 
             cache.lastParams = baseParams;
-            (cache as any).lastBuildZoom = camera.zoom;
-            (cache as any).lastBuildX = camera.x;
-            (cache as any).lastBuildY = camera.y;
-            (cache as any).buildCamX = buildCamX;
-            (cache as any).buildCamY = buildCamY;
-            (cache as any).lastLodParams = lodParams;
-            (cache as any).roomAtCoord = roomAtCoord;
-            (cache as any).visitedAtCoord = visitedAtCoord;
-            if (isExplorationAnimating) {
-                (cache as any).lastExplorationBuild = now;
+            cache.lastBuildZoom = camera.zoom;
+            cache.lastBuildX = camera.x;
+            cache.lastBuildY = camera.y;
+            cache.buildCamX = buildCamX;
+            cache.buildCamY = buildCamY;
+            cache.lastLodParams = lodParams;
+            cache.roomAtCoord = roomAtCoord;
+            cache.visitedAtCoord = visitedAtCoord;
+            if (finalExplorationBakeDue) {
+                cache.lastExplorationBakeFor = lastExplored;
             }
         }
 
@@ -469,9 +555,9 @@ export const useMapperRenderer = ({
 
         // Project the cached canvas onto the screen
         // Cache is centered at [buildCamX, buildCamY] with zoom [lastBuildZoom]
-        const bZoom = (cache as any).lastBuildZoom;
-        const bX = (cache as any).buildCamX;
-        const bY = (cache as any).buildCamY;
+        const bZoom = cache.lastBuildZoom || camera.zoom;
+        const bX = cache.buildCamX ?? camera.x;
+        const bY = cache.buildCamY ?? camera.y;
         
         // Calculate the rectangle of the cache that is visible on screen
         const sX = (camera.x - bX) * bZoom * dpr;
@@ -479,18 +565,12 @@ export const useMapperRenderer = ({
         const sW = baseW * (bZoom / camera.zoom);
         const sH = baseH * (bZoom / camera.zoom);
         
-        ctx.drawImage(cache.canvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
+        ctx.drawImage(cache.terrainCanvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
 
-        // 4. Overlay Dynamic Entities (Player, Trails, Markers)
-        ctx.save();
-        ctx.imageSmoothingEnabled = false;
-        ctx.scale(dpr * camera.zoom, dpr * camera.zoom);
-        ctx.translate(-camera.x, -camera.y);
-
-        const rCtx: RenderContext = {
+        const baseDynamicRCtx: RenderContext = {
             ctx, dpr, canvasWidth: baseW, canvasHeight: baseH, camera, isDarkMode, isMobile,
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
-            allRooms, roomAtCoord: (cache as any).roomAtCoord, visitedAtCoord: (cache as any).visitedAtCoord,
+            allRooms, roomAtCoord: cache.roomAtCoord || {}, visitedAtCoord: cache.visitedAtCoord || {},
             preloaded: preloadedCoordsRef.current, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef,
             groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName,
             opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
@@ -498,10 +578,43 @@ export const useMapperRenderer = ({
             lighting,
             inCombat,
             isDragging,
-            showTerrainIcons: zoomLod.showTerrainIcons,
-            showDoorLabels: zoomLod.showDoorLabels
+            lowEffects,
+            showTerrainIcons,
+            showDoorLabels
         };
 
+        const overlayFloorIndex = spatialIndexRef.current[curZInt];
+        if (overlayFloorIndex && isExplorationOverlayActive) {
+            ctx.save();
+            ctx.imageSmoothingEnabled = false;
+            ctx.scale(dpr * camera.zoom, dpr * camera.zoom);
+            ctx.translate(-camera.x, -camera.y);
+            const visibleWorldWidth = baseW / (dpr * camera.zoom);
+            const visibleWorldHeight = baseH / (dpr * camera.zoom);
+            const ogX1 = Math.floor(camera.x / GRID_SIZE) - 1;
+            const ogY1 = Math.floor(camera.y / GRID_SIZE) - 1;
+            const ogX2 = Math.ceil((camera.x + visibleWorldWidth) / GRID_SIZE) + 1;
+            const ogY2 = Math.ceil((camera.y + visibleWorldHeight) / GRID_SIZE) + 1;
+            drawExplorationRevealOverlay(
+                baseDynamicRCtx,
+                Math.floor(ogX1 / 5) - 1,
+                Math.floor(ogY1 / 5) - 1,
+                Math.floor(ogX2 / 5) + 1,
+                Math.floor(ogY2 / 5) + 1,
+                overlayFloorIndex
+            );
+            ctx.restore();
+        }
+
+        ctx.drawImage(cache.featureCanvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
+
+        // 4. Overlay Dynamic Entities (Player, Trails, Markers)
+        ctx.save();
+        ctx.imageSmoothingEnabled = false;
+        ctx.scale(dpr * camera.zoom, dpr * camera.zoom);
+        ctx.translate(-camera.x, -camera.y);
+
+        const rCtx = baseDynamicRCtx;
         drawGroupMembers(rCtx);
         drawDeathIndicator(rCtx);
         drawFilterHighlights(rCtx, playerPosRef);
@@ -564,5 +677,5 @@ export const useMapperRenderer = ({
 
     }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, activeMapFilter, mapSearchQuery, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, regionLabelEditMode, selectedRegionLabelId, inCombat]);
 
-    return { drawMap };
+    return { drawMap, filterFitRef };
 };

@@ -189,6 +189,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         }
         cameraRef.current.y = targetY;
         cameraRef.current.zoom = zoom;
+        (cameraRef.current as any).targetZoom = zoom;
     }, [playerPosRef, canvasRef, cameraRef, isMobile, isLandscape]);
 
     useEffect(() => {

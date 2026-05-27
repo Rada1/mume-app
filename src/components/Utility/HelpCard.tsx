@@ -15,10 +15,11 @@ interface HelpCardProps {
     onClose: () => void;
     popoverRef?: React.RefObject<HTMLDivElement>;
     executeCommand?: (cmd: string, silent?: boolean, isSystem?: boolean) => void;
+    triggerHaptic?: (ms: number) => void;
 }
 
 export const HelpCard: React.FC<HelpCardProps> = ({ 
-    helpData, onClose, popoverRef, executeCommand 
+    helpData, onClose, popoverRef, executeCommand, triggerHaptic 
 }) => {
     const { isMobile, isLandscape } = useViewport();
     const isPortrait = isMobile && !isLandscape;
@@ -47,14 +48,17 @@ export const HelpCard: React.FC<HelpCardProps> = ({
         return `<span class="help-topic-btn" data-cmd="${word}" style="color: #ffcc00; cursor: pointer; font-weight: bold; padding: 1px 4px; background: rgba(255, 204, 0, 0.1); border: 1px solid rgba(255, 204, 0, 0.25); border-radius: 4px; display: inline-block; margin: 1px 0;">${word}</span>`;
     });
 
+    const openHelpTopic = (topic: string) => {
+        if (isMobile) triggerHaptic?.(20);
+        executeCommand?.(topic.toLowerCase() === 'help' ? 'help' : `help ${topic}`);
+    };
+
     const handleContentClick = (e: React.MouseEvent) => {
         const target = e.target as HTMLElement;
         const btn = target.closest('.help-topic-btn') as HTMLElement;
         if (btn) {
             const topic = btn.getAttribute('data-cmd');
-            if (topic && executeCommand) {
-                executeCommand(topic.toLowerCase() === 'help' ? 'help' : `help ${topic}`);
-            }
+            if (topic) openHelpTopic(topic);
         }
     };
 
@@ -186,7 +190,7 @@ export const HelpCard: React.FC<HelpCardProps> = ({
                                     <span 
                                         key={kw}
                                         className="inline-btn"
-                                        onClick={() => executeCommand?.(kw.toLowerCase() === 'help' ? 'help' : `help ${kw}`)}
+                                        onClick={() => openHelpTopic(kw)}
                                         style={{
                                             color: '#ffcc00',
                                             textDecoration: 'none',

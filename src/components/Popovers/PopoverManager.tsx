@@ -72,12 +72,30 @@ const formatDialCategoryLabel = (category?: string | null): string => {
 };
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
-    popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, customTraits, setCustomTraits, favorites, setFavorites, parley, setParley, whoList,
+    popoverState: parentPopoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, customTraits, setCustomTraits, favorites, setFavorites, parley, setParley, whoList,
     isMendingMode, setIsMendingMode, setMendingTarget, handleTabClick, setGearTab, setPlayersTab, setCharTab, refreshLogHighlights, practice, openKeywordEdit,
     entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides, accountCharacters, accountState, setAccountState,
     playerColor, npcColor, objectColor, roomColor, characterInfo
 }) => {
     const theme = useSettingsStore(state => state.theme);
+    const [localState, setLocalState] = React.useState<any | null>(null);
+    const [isClosing, setIsClosing] = React.useState(false);
+
+    React.useEffect(() => {
+        if (parentPopoverState) {
+            setLocalState(parentPopoverState);
+            setIsClosing(false);
+        } else if (localState) {
+            setIsClosing(true);
+            const timer = setTimeout(() => {
+                setLocalState(null);
+                setIsClosing(false);
+            }, 200);
+            return () => clearTimeout(timer);
+        }
+    }, [parentPopoverState]);
+
+    const popoverState = localState;
     useLayoutEffect(() => {
         document.querySelectorAll('.inline-btn.menu-active').forEach(el => el.classList.remove('menu-active'));
         const entityId = popoverState?.entityId;
@@ -108,15 +126,24 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             const winH = window.innerHeight, winW = window.innerWidth;
             let top = popoverState.y, left = popoverState.x;
 
-            if (popoverState.menuDisplay !== 'dial') {
-                top = (winH / 2) - (rect.height / 2);
-                left = (winW / 2) - (rect.width / 2);
+            if (popoverState.type === 'select-parley-target' || popoverState.type === 'select-parley-command') {
+                left = popoverState.x - (rect.width / 2);
+                el.style.bottom = `${winH - popoverState.y + 8}px`;
+                el.style.top = 'auto';
+            } else {
+                el.style.bottom = 'auto';
+                if (popoverState.menuDisplay !== 'dial') {
+                    top = (winH / 2) - (rect.height / 2);
+                    left = (winW / 2) - (rect.width / 2);
+                }
+                if (top < 10) top = 10;
+                if (top + rect.height > winH - 10) top = Math.max(10, winH - rect.height - 10);
+                el.style.top = `${top}px`;
             }
-            if (top < 10) top = 10;
-            if (top + rect.height > winH - 10) top = Math.max(10, winH - rect.height - 10);
+
             if (left < 10) left = 10;
             if (left + rect.width > winW - 10) left = Math.max(10, winW - rect.width - 10);
-            el.style.top = `${top}px`; el.style.left = `${left}px`;
+            el.style.left = `${left}px`;
         }
     }, [popoverState, popoverRef]);
 
@@ -354,12 +381,15 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 onClose={() => setPopoverState(null)}
                 popoverRef={popoverRef}
                 executeCommand={executeCommand}
+                triggerHaptic={triggerHaptic}
             />
         );
     }
 
+    const isParleyType = popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target';
+
     return (
-        <div className="popover-menu" ref={popoverRef} style={{
+        <div className={`popover-menu${isParleyType ? ' parley-dropdown' : ''}${isClosing ? ' closing' : ''}`} ref={popoverRef} style={{
             position: 'fixed',
             left: popoverState.x,
             top: popoverState.y,

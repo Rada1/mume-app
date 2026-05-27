@@ -74,6 +74,8 @@ export interface RenderContext {
     lighting?: string;
     weather?: string;
     isDragging?: boolean;
+    lowEffects?: boolean;
+    suppressExplorationAnimation?: boolean;
     showTerrainIcons?: boolean;
     showDoorLabels?: boolean;
 }

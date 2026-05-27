@@ -287,6 +287,24 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             serverIdIndexRef.current = sIndex;
             baseMapExitsRef.current = baseMapExits;
 
+            try {
+                const markerRes = await fetch('/mume_map_markers.json?v=' + Date.now());
+                if (markerRes.ok) {
+                    const bundledMarkers = await markerRes.json() as Record<string, MapperMarker>;
+                    const markerIds = Object.keys(bundledMarkers);
+                    if (markerIds.length > 0) {
+                        setMarkers(prev => ({ ...bundledMarkers, ...prev }));
+                        setExploredMarkers(prev => {
+                            const next = new Set(prev);
+                            markerIds.forEach(id => next.add(id));
+                            return next;
+                        });
+                    }
+                }
+            } catch (markerErr) {
+                console.warn("[Mapper] Could not load bundled map markers:", markerErr);
+            }
+
             if (showDebugEchoesRef.current) {
                 addMessageRef.current?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
             }
@@ -295,7 +313,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             console.warn("[Mapper] Could not load master map data:", err);
             hasStartedLoadingRef.current = false; // Allow retry if failed
         }
-    }, [preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef, baseMapExitsRef]);
+    }, [preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef, baseMapExitsRef, setMarkers, setExploredMarkers]);
 
     useEffect(() => { loadMasterMap(); }, [loadMasterMap]);
 

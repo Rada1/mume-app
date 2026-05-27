@@ -5,6 +5,10 @@ import { getZoneVisuals } from '../zoneFilters';
 const TERRAIN_TILE_INSET = 0;
 const FAR_ZOOM_TERRAIN_LOD = 0.22;
 const OVERVIEW_TERRAIN_ZOOM = 0.15;
+export const RING_REVEAL_MS = 360;
+export const RING_REVEAL_TOTAL_MS = RING_REVEAL_MS * 2;
+export const RING_REVEAL_BAKE_MS = RING_REVEAL_TOTAL_MS + 40;
+const RING_REVEAL_OVERLAY_GRACE_MS = 120;
 const OUTDOOR_TERRAINS = new Set(['City', 'Field', 'Grasslands', 'Forest', 'Hills', 'Mountains', 'Road', 'Brush', 'Water', 'Shallows', 'Rapids']);
 
 let tempContentCanvas: HTMLCanvasElement | null = null;
@@ -1243,6 +1247,186 @@ export const applyRoomShading = (ctx: CanvasRenderingContext2D, r: any, s: numbe
     }
 };
 
+const buildRevealRings = (
+    rCtx: RenderContext,
+    bX1: number, bY1: number, bX2: number, bY2: number,
+    floorIndex: Record<string, string[]>
+) => {
+    const { explored, preloaded, unveilMap } = rCtx;
+    const ring1Revealed = new Set<string>();
+    const ring2Peeked = new Set<string>();
+    if (unveilMap) return { ring1Revealed, ring2Peeked };
+
+    for (let bx = bX1; bx <= bX2; bx++) {
+        for (let by = bY1; by <= bY2; by++) {
+            const bucket = floorIndex[`${bx},${by}`];
+            if (!bucket) continue;
+            for (let i = 0; i < bucket.length; i++) {
+                const vnum = bucket[i];
+                if (explored.has(vnum)) continue;
+                const rData = preloaded[vnum];
+                if (!rData?.[4]) continue;
+                for (const dir of ['n', 's', 'e', 'w']) {
+                    const exit = rData[4][dir];
+                    if (exit && explored.has(String(exit.target))) {
+                        ring1Revealed.add(vnum);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    for (let bx = bX1; bx <= bX2; bx++) {
+        for (let by = bY1; by <= bY2; by++) {
+            const bucket = floorIndex[`${bx},${by}`];
+            if (!bucket) continue;
+            for (let i = 0; i < bucket.length; i++) {
+                const vnum = bucket[i];
+                if (explored.has(vnum) || ring1Revealed.has(vnum)) continue;
+                const rData = preloaded[vnum];
+                if (!rData?.[4]) continue;
+                for (const dir of ['n', 's', 'e', 'w']) {
+                    const exit = rData[4][dir];
+                    if (exit && ring1Revealed.has(String(exit.target))) {
+                        ring2Peeked.add(vnum);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    return { ring1Revealed, ring2Peeked };
+};
+
+export const drawExplorationRevealOverlay = (
+    rCtx: RenderContext,
+    bX1: number, bY1: number, bX2: number, bY2: number,
+    floorIndex: Record<string, string[]>
+) => {
+    if (!floorIndex || rCtx.unveilMap) return;
+    const latest = rCtx.firstExploredAtRef.current['_latest'] || 0;
+    if (!latest || rCtx.now - latest > RING_REVEAL_TOTAL_MS + RING_REVEAL_OVERLAY_GRACE_MS) return;
+
+    const { ctx, preloaded, lighting, isDarkMode, allRooms, explored, unveilMap, imagesRef } = rCtx;
+    const s = GRID_SIZE;
+    const ringRevealGray = lighting === 'dark'
+        ? (isDarkMode ? '#2e2e2e' : '#767676')
+        : (isDarkMode ? '#202020' : '#5c5c5c');
+    const { ring1Revealed, ring2Peeked } = buildRevealRings(rCtx, bX1, bY1, bX2, bY2, floorIndex);
+
+    ctx.save();
+    ctx.fillStyle = ringRevealGray;
+    for (const vnum of ring1Revealed) {
+        const revealInfo = getRevealSource(vnum, rCtx);
+        if (!revealInfo) continue;
+        const elapsed = rCtx.now - revealInfo.time;
+        if (elapsed < 0) continue;
+        const rData = preloaded[vnum];
+        if (!rData) continue;
+        const tx = Math.round(rData[0]) * s;
+        const ty = Math.round(rData[1]) * s;
+        const alphaMul = elapsed >= RING_REVEAL_MS
+            ? 1
+            : Math.max(0, Math.min(1, elapsed / RING_REVEAL_MS));
+        if (elapsed >= RING_REVEAL_MS) {
+            ctx.globalAlpha = 1;
+            fillTerrainTile(ctx, tx, ty, s);
+        } else {
+            ctx.globalAlpha = alphaMul;
+            fillAnimatedTerrainTile(ctx, tx, ty, s, revealInfo.dir, alphaMul);
+            rCtx.triggerRender?.();
+        }
+
+        if ((rCtx.showTerrainIcons || rCtx.lowEffects) && rCtx.camera.zoom > 0.30) {
+            const terrain = allRooms[`m_${vnum}`]?.terrain || allRooms[vnum]?.terrain || rData[3];
+            const gridX = Math.round(tx / s), gridY = Math.round(ty / s);
+            const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
+            const exits = rData[4];
+            const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
+            const walls = getOutdoorSpillWalls(terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap));
+
+            ctx.save();
+            ctx.filter = 'grayscale(1)';
+            ctx.globalAlpha = alphaMul;
+            if (elapsed < RING_REVEAL_MS) {
+                ctx.beginPath();
+                const inset = getTerrainTileInset(s);
+                const ix = tx + inset;
+                const iy = ty + inset;
+                const is = s - inset * 2;
+                if (revealInfo.dir === 'n') ctx.rect(ix, iy, is, is * alphaMul);
+                else if (revealInfo.dir === 's') ctx.rect(ix, iy + is * (1 - alphaMul), is, is * alphaMul);
+                else if (revealInfo.dir === 'w') ctx.rect(ix, iy, is * alphaMul, is);
+                else if (revealInfo.dir === 'e') ctx.rect(ix + is * (1 - alphaMul), iy, is * alphaMul, is);
+                else ctx.rect(ix, iy, is, is);
+                ctx.clip();
+            }
+            drawTerrainTileIcon(ctx, tx, ty, s, terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls);
+            ctx.restore();
+        }
+    }
+    ctx.restore();
+
+    const canvases = getTempCanvases(s);
+    if (!canvases) return;
+    const { contentCanvas, contentCtx, maskCanvas, maskCtx } = canvases;
+    for (const vnum of ring2Peeked) {
+        const rData = preloaded[vnum];
+        if (!rData?.[4]) continue;
+
+        const peekDirs: { dir: string, alpha: number }[] = [];
+        for (const dir of ['n', 's', 'e', 'w']) {
+            const exit = rData[4][dir];
+            if (exit && ring1Revealed.has(String(exit.target))) {
+                const revealInfo = getRevealSource(String(exit.target), rCtx);
+                const revealStart = revealInfo ? revealInfo.time + RING_REVEAL_MS : 0;
+                const alpha = Math.max(0, Math.min(1, (rCtx.now - revealStart) / RING_REVEAL_MS));
+                if (alpha > 0) peekDirs.push({ dir, alpha });
+                if (alpha > 0 && alpha < 1) rCtx.triggerRender?.();
+            }
+        }
+        if (peekDirs.length === 0) continue;
+
+        contentCtx.clearRect(0, 0, s, s);
+        contentCtx.fillStyle = ringRevealGray;
+        contentCtx.fillRect(0, 0, s, s);
+
+        maskCtx.clearRect(0, 0, s, s);
+        const peekDepth = 0.65;
+        for (const peek of peekDirs) {
+            let grad: CanvasGradient;
+            if (peek.dir === 'n') {
+                grad = maskCtx.createLinearGradient(0, 0, 0, s * peekDepth);
+            } else if (peek.dir === 's') {
+                grad = maskCtx.createLinearGradient(0, s, 0, s - s * peekDepth);
+            } else if (peek.dir === 'e') {
+                grad = maskCtx.createLinearGradient(s, 0, s - s * peekDepth, 0);
+            } else {
+                grad = maskCtx.createLinearGradient(0, 0, s * peekDepth, 0);
+            }
+            grad.addColorStop(0, `rgba(0,0,0,${peek.alpha})`);
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            maskCtx.fillStyle = grad;
+            if (peek.dir === 'n') maskCtx.fillRect(0, 0, s, s * peekDepth);
+            else if (peek.dir === 's') maskCtx.fillRect(0, s - s * peekDepth, s, s * peekDepth);
+            else if (peek.dir === 'e') maskCtx.fillRect(s - s * peekDepth, 0, s * peekDepth, s);
+            else maskCtx.fillRect(0, 0, s * peekDepth, s);
+        }
+
+        contentCtx.save();
+        contentCtx.globalCompositeOperation = 'destination-in';
+        contentCtx.drawImage(maskCanvas, 0, 0);
+        contentCtx.restore();
+
+        ctx.save();
+        ctx.globalAlpha = rCtx.mapTileOpacity ?? 1;
+        ctx.drawImage(contentCanvas, Math.round(rData[0]) * s, Math.round(rData[1]) * s);
+        ctx.restore();
+    }
+};
+
 export const drawTerrains = (
     rCtx: RenderContext,
     bX1: number, bY1: number, bX2: number, bY2: number,
@@ -1264,7 +1448,7 @@ export const drawTerrains = (
     const revealedBatches: Record<string, { x: number, y: number, terrain: string, vnum: string, light?: number, sundeath?: number, isPermanentSnow?: boolean }[]> = {};
     const peekedRooms: { tx: number, ty: number, terrain: string, color: string, vnum: string }[] = [];
     const ring1Animating: { x: number, y: number, terrain: string, vnum: string, revealInfo: { time: number, dir: string } }[] = [];
-    const ringRevealMs = 200;
+    const ringRevealMs = RING_REVEAL_MS;
     if (!floorIndex) return;
 
     // Compute ring-1 revealed rooms: adjacent to explored, not explored themselves
@@ -1385,7 +1569,7 @@ export const drawTerrains = (
     }
 
     // Draw animating ring-1 revealed rooms: flat medium-dark gray tile, wipe reveal
-    if (ring1Animating.length > 0) {
+    if (!rCtx.suppressExplorationAnimation && ring1Animating.length > 0) {
         const ring1Gray = ringRevealGray;
         ctx.save();
         ctx.fillStyle = ring1Gray;
@@ -1403,7 +1587,7 @@ export const drawTerrains = (
     }
 
     // Draw ring-2 peaked rooms: 25% terrain grayscale, fading to black (opacity 0)
-    if (peekedRooms.length > 0) {
+    if (!rCtx.suppressExplorationAnimation && peekedRooms.length > 0) {
         const canvases = getTempCanvases(s);
         if (canvases) {
             const { contentCanvas, contentCtx, maskCanvas, maskCtx } = canvases;

@@ -1,4 +1,4 @@
-﻿@keyframes chip-pulse-glow {
+@keyframes chip-pulse-glow {
     0%   { box-shadow: 0 0 0px rgba(212, 170, 0, 0),    inset 0 0 0px rgba(212, 170, 0, 0); }
     25%  { box-shadow: 0 0 7px rgba(212, 170, 0, 0.45), inset 0 0 5px rgba(212, 170, 0, 0.08); }
     50%  { box-shadow: 0 0 0px rgba(212, 170, 0, 0),    inset 0 0 0px rgba(212, 170, 0, 0); }
@@ -396,5 +396,91 @@ body.has-popover .popover-menu,
 body.has-popover .dial-menu-overlay {
     pointer-events: auto !important;
     opacity: 1;
+}
+
+@keyframes parley-slide-up {
+    0% {
+        opacity: 0;
+        transform: translateY(12px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Minimal chip-style dropdown for parley system */
+.popover-menu.parley-dropdown {
+    min-width: 150px;
+    max-width: 240px;
+    padding: 6px;
+    background: rgba(18, 18, 20, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    gap: 4px;
+    transform-origin: bottom center;
+    animation: parley-slide-up 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.parley-dropdown .popover-item {
+    background: transparent;
+    min-height: 28px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: var(--text-primary, #fff);
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.parley-dropdown .popover-item:hover,
+.parley-dropdown .popover-item.active-drag {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--accent, #ffd700);
+}
+
+.parley-dropdown .popover-empty {
+    padding: 8px;
+    text-align: center;
+    font-size: 0.75rem;
+    opacity: 0.5;
+    color: var(--text-dim);
+}
+
+.parley-dropdown .favorite-star {
+    font-size: 1rem !important;
+    padding: 4px 8px !important;
+    margin: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Glow & color style for parley list names to match WHO list */
+.parley-target-name,
+.parley-target-name span {
+    color: var(--color-player, #89CFF0) !important;
+    font-weight: bold !important;
+    text-shadow:
+        0 0 6px var(--color-player, #89CFF0),
+        0 0 14px color-mix(in srgb, var(--color-player, #89CFF0), transparent 55%),
+        1px 1px 4px rgba(0, 0, 0, 0.5) !important;
+}
+
+.parley-dropdown .popover-item:hover .parley-target-name,
+.parley-dropdown .popover-item.active-drag .parley-target-name,
+.parley-dropdown .popover-item:hover .parley-target-name span,
+.parley-dropdown .popover-item.active-drag .parley-target-name span {
+    color: #ffffff !important;
+    text-shadow:
+        0 0 6px #ffffff,
+        0 0 14px rgba(255, 255, 255, 0.4),
+        1px 1px 4px rgba(0, 0, 0, 0.5) !important;
 }
 

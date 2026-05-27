@@ -113,7 +113,7 @@ export const drawZoomBeacon = (
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = alpha;
 
-    const glowCanvas = getBeaconGlowCanvas(color);
+    const glowCanvas = rCtx.lowEffects ? null : getBeaconGlowCanvas(color);
     if (glowCanvas) {
         const r = metrics.outerRadius;
         ctx.drawImage(glowCanvas, px - r, py - r, r * 2, r * 2);
@@ -121,8 +121,10 @@ export const drawZoomBeacon = (
 
     ctx.strokeStyle = color;
     ctx.lineWidth = metrics.lineWidth;
-    ctx.shadowColor = color;
-    ctx.shadowBlur = (18 * sizeScale) / camera.zoom;
+    if (!rCtx.lowEffects) {
+        ctx.shadowColor = color;
+        ctx.shadowBlur = (18 * sizeScale) / camera.zoom;
+    }
     ctx.beginPath();
     ctx.arc(px, py, tickRadius, 0, Math.PI * 2);
     ctx.stroke();
@@ -140,7 +142,7 @@ export const drawZoomBeacon = (
     ctx.stroke();
 
     ctx.fillStyle = '#ffffff';
-    ctx.shadowBlur = (10 * sizeScale) / camera.zoom;
+    if (!rCtx.lowEffects) ctx.shadowBlur = (10 * sizeScale) / camera.zoom;
     ctx.beginPath();
     ctx.arc(px, py, metrics.innerRadius, 0, Math.PI * 2);
     ctx.fill();

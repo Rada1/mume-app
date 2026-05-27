@@ -245,11 +245,43 @@ export const getTerrainDepth = (vnum: string, allRooms: Record<string, any>, pre
     return 3;
 };
 
+// Category → flag mappings (authoritative source for checkRoomFilter and BFS)
+const CATEGORY_MOB_FLAGS: Record<string, string[]> = {
+    shops:    ['SHOP', 'WEAPON_SHOP', 'ARMOUR_SHOP', 'FOOD_SHOP', 'PET_SHOP'],
+    guilds:   ['GUILD', 'SCOUT_GUILD', 'MAGE_GUILD', 'CLERIC_GUILD', 'WARRIOR_GUILD', 'RANGER_GUILD'],
+    services: ['RENT'],
+    danger:   ['AGGRESSIVE_MOB'],
+    mobs:     ['AGGRESSIVE_MOB', 'ELITE_MOB', 'SUPER_MOB'],
+    quests:   ['QUEST_MOB'],
+};
+
+const CATEGORY_LOAD_FLAGS: Record<string, string[]> = {
+    mounts:    ['HORSE', 'MULE', 'PACK_HORSE', 'TRAINED_HORSE', 'ROHIRRIM', 'WARG', 'STABLE'],
+    travel:    ['BOAT', 'FERRY', 'COACH'],
+    resources: ['HERB', 'WATER', 'FOOD'],
+    services:  ['MAIL'],
+    danger:    ['DEATHTRAP'],
+};
+
+const ALL_MOB_FLAG_SET = new Set([
+    'RENT', 'SHOP', 'WEAPON_SHOP', 'ARMOUR_SHOP', 'FOOD_SHOP', 'PET_SHOP',
+    'GUILD', 'SCOUT_GUILD', 'MAGE_GUILD', 'CLERIC_GUILD', 'WARRIOR_GUILD', 'RANGER_GUILD',
+    'AGGRESSIVE_MOB', 'QUEST_MOB', 'PASSIVE_MOB', 'ELITE_MOB', 'SUPER_MOB', 'MILKABLE', 'RATTLESNAKE',
+]);
+
+const ALL_LOAD_FLAG_SET = new Set([
+    'TREASURE', 'ARMOUR', 'WEAPON', 'WATER', 'FOOD', 'HERB', 'KEY',
+    'MULE', 'HORSE', 'PACK_HORSE', 'TRAINED_HORSE', 'ROHIRRIM', 'WARG',
+    'BOAT', 'ATTENTION', 'TOWER', 'CLOCK', 'MAIL', 'STABLE',
+    'WHITE_WORD', 'DARK_WORD', 'EQUIPMENT', 'COACH', 'FERRY', 'DEATHTRAP',
+]);
+
 /**
- * Checks if a room matches the selected filter category and optional search query.
+ * Checks if a room matches the selected filter (category name or specific flag) and optional notes query.
+ * When filter is empty and query is set, matches rooms whose notes contain the query string.
  */
 export const checkRoomFilter = (
-    roomId: string,
+    _roomId: string,
     localRoom: any,
     preloadedData: any,
     filter: string,
@@ -257,57 +289,47 @@ export const checkRoomFilter = (
 ): boolean => {
     const mobFlags = (localRoom?.mobFlags || preloadedData?.[7] || []) as string[];
     const loadFlags = (localRoom?.loadFlags || preloadedData?.[8] || []) as string[];
-    const questFlags = (localRoom?.roomQuestFlags || preloadedData?.[9] || []) as string[];
+    
     const notes = (localRoom?.notes || preloadedData?.[15] || '') as string;
-    const contents = (localRoom?.contents || preloadedData?.[16] || '') as string;
-    const terrain = (localRoom?.terrain || preloadedData?.[3] || '') as string;
+    const name = (localRoom?.name || preloadedData?.[5] || '') as string;
+    const desc = (localRoom?.desc || preloadedData?.[17] || '') as string;
 
-    const allText = [
-        ...mobFlags,
-        ...loadFlags,
-        ...questFlags,
-        notes,
-        contents,
-        terrain
-    ].join(' ').toLowerCase();
+    const searchableText = `${name} ${desc} ${notes}`.toLowerCase();
 
-    if (filter === 'herb') {
-        if (!query) {
-            return allText.includes('herb');
-        }
-        return allText.includes(query.toLowerCase());
+    // Search query check (no filter active)
+    if (!filter) {
+        if (!query) return false;
+        return searchableText.includes(query.toLowerCase());
     }
 
-    if (filter === 'stable') {
-        return /stable|horse|mule|pack_horse|trained_horse|warg/i.test(allText);
+    // Category filter
+    const catMob = CATEGORY_MOB_FLAGS[filter];
+    const catLoad = CATEGORY_LOAD_FLAGS[filter];
+    let flagMatch: boolean;
+
+    if (catMob || catLoad) {
+        flagMatch = (catMob ? mobFlags.some(f => catMob.includes(f)) : false)
+            || (catLoad ? loadFlags.some(f => catLoad.includes(f)) : false);
+    } else if (ALL_MOB_FLAG_SET.has(filter)) {
+        flagMatch = mobFlags.includes(filter);
+    } else if (ALL_LOAD_FLAG_SET.has(filter)) {
+        flagMatch = loadFlags.includes(filter);
+    } else {
+        return false;
     }
 
-    if (filter === 'quest') {
-        return questFlags.length > 0 || /quest|mission/i.test(allText);
-    }
+    if (!flagMatch) return false;
 
-    if (filter === 'shop') {
-        return /shop|store/i.test(allText);
-    }
+    // Narrow by search query when both filter and query are set
+    if (query) return searchableText.includes(query.toLowerCase());
 
-    if (filter === 'guild') {
-        return /guild|office/i.test(allText);
-    }
-
-    if (filter === 'inn') {
-        return /rent|inn/i.test(allText);
-    }
-
-    if (filter === 'danger') {
-        return /aggressive|death|danger/i.test(allText);
-    }
-
-    if (filter === 'water') {
-        return /water|pond|well|fountain|river|stream/i.test(allText);
-    }
-
-    return false;
+    return true;
 };
+
+export interface FindMatchOptions {
+    treatMapAsExplored?: boolean;
+    explored?: Set<string>;
+}
 
 /**
  * Performs a BFS search starting from startId to find the closest room matching the filter and query.
@@ -317,22 +339,32 @@ export const findClosestMatchingRoom = (
     rooms: Record<string, any>,
     preloadedCoords: Record<string, any>,
     filter: string,
-    query: string
+    query: string,
+    options?: FindMatchOptions
 ): string | null => {
-    return findClosestMatchingRoomPath(startId, rooms, preloadedCoords, filter, query)?.targetId || null;
+    return findClosestMatchingRoomPath(startId, rooms, preloadedCoords, filter, query, options)?.targetId || null;
 };
 
 /**
  * Performs a BFS search and returns the closest matching room plus the route to it.
+ *
+ * Mode semantics:
+ *  - treatMapAsExplored=true: pathfind across the full preloaded map using ghost exits (entire Arda known).
+ *  - treatMapAsExplored=false: pathfind only through rooms the player has actually explored (vnums in `explored`)
+ *    or custom local rooms, using ghost exit topology but rejecting any neighbor not yet explored.
  */
 export const findClosestMatchingRoomPath = (
     startId: string | null,
     rooms: Record<string, any>,
     preloadedCoords: Record<string, any>,
     filter: string,
-    query: string
+    query: string,
+    options?: FindMatchOptions
 ): { targetId: string, pathIds: string[], distance: number } | null => {
     if (!startId) return null;
+
+    const treatAsExplored = options?.treatMapAsExplored ?? false;
+    const explored = options?.explored;
 
     const normalizeId = (id: string | null) => {
         if (!id) return '';
@@ -343,26 +375,50 @@ export const findClosestMatchingRoomPath = (
 
     const normStart = normalizeId(startId);
 
+    // In normal mode, only step through rooms the player has explored or rooms they created.
+    const isTraversable = (id: string): boolean => {
+        if (treatAsExplored) return true;
+        if (!explored) return true;
+        const normId = normalizeId(id);
+        if (explored.has(normId)) return true;
+        if (rooms[id] || rooms[`m_${normId}`] || rooms[normId]) return true;
+        return false;
+    };
+
+    // Ghost exits are the authoritative topology of the world. Local exits are useful only
+    // as additions for purely-custom rooms (no preloaded entry). Mixing partial local exits
+    // into the BFS was the source of the phantom-teleport / dead-end-line bug.
     const getExits = (id: string) => {
         const normId = normalizeId(id);
-        const local = rooms[id] || rooms[`m_${normId}`] || rooms[normId];
-        if (local && local.exits && Object.keys(local.exits).length > 0) {
-            return local.exits;
-        }
         const ghost = preloadedCoords[normId];
+        const combined: Record<string, { target: string }> = {};
+
         if (ghost && ghost[4]) {
             const ghostExits = ghost[4] as Record<string, { target: string }>;
-            const formatted: Record<string, any> = {};
             for (const [dir, ex] of Object.entries(ghostExits)) {
+                if (!ex || !ex.target) continue;
                 const targetVnum = String(ex.target);
-                formatted[dir] = { 
-                    target: targetVnum.startsWith('m_') ? targetVnum : `m_${targetVnum}`, 
-                    closed: false 
-                };
+                const formattedTarget = targetVnum.startsWith('m_') ? targetVnum : `m_${targetVnum}`;
+                if (isTraversable(formattedTarget)) {
+                    combined[dir] = { target: formattedTarget };
+                }
             }
-            return formatted;
         }
-        return null;
+
+        // Pull in exits from custom local rooms that don't exist in preloaded data
+        const local = rooms[id] || rooms[`m_${normId}`] || rooms[normId];
+        if (local && local.exits) {
+            for (const dir in local.exits) {
+                if (combined[dir]) continue;
+                const ex = local.exits[dir];
+                if (!ex || !ex.target) continue;
+                if (isTraversable(ex.target)) {
+                    combined[dir] = { target: ex.target };
+                }
+            }
+        }
+
+        return Object.keys(combined).length > 0 ? combined : null;
     };
 
     const startLocal = rooms[startId] || rooms[`m_${normStart}`] || rooms[normStart];
@@ -374,7 +430,7 @@ export const findClosestMatchingRoomPath = (
     const queue: { id: string, pathIds: string[] }[] = [{ id: startId, pathIds: [startId] }];
     const visited = new Set<string>([normStart]);
     let iterations = 0;
-    const MAX_ITERATIONS = 8000;
+    const MAX_ITERATIONS = 50000;
 
     while (queue.length > 0 && iterations < MAX_ITERATIONS) {
         iterations++;
@@ -383,7 +439,7 @@ export const findClosestMatchingRoomPath = (
         if (!exits) continue;
 
         for (const exit of Object.values(exits) as any[]) {
-            if (!exit.target || exit.closed) continue;
+            if (!exit.target) continue;
 
             const targetId = String(exit.target);
             const normNext = normalizeId(targetId);

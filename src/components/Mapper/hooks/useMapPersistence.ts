@@ -50,7 +50,10 @@ export const useMapPersistence = ({
                 if (cameraRef && cameraRef.current) {
                     if (camX !== undefined) cameraRef.current.x = camX;
                     if (camY !== undefined) cameraRef.current.y = camY;
-                    if (zoom !== undefined) cameraRef.current.zoom = zoom;
+                    if (zoom !== undefined) {
+                        cameraRef.current.zoom = zoom;
+                        (cameraRef.current as any).targetZoom = zoom;
+                    }
                 }
             } catch (e) { }
         } else {
@@ -59,6 +62,7 @@ export const useMapPersistence = ({
                 cameraRef.current.x = -400; // Offset a bit to show Bree area usually
                 cameraRef.current.y = -400;
                 cameraRef.current.zoom = 1.0;
+                (cameraRef.current as any).targetZoom = 1.0;
             }
         }
     }, [storageKey, markerStorageKey, posStorageKey, setRooms, setMarkers, setCurrentRoomId, currentRoomIdRef, cameraRef]);

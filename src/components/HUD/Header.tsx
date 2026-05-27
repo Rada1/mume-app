@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film } from 'lucide-react';
+import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
+import { useMapper } from '../../context/MapperContext';
 import { formatCompactNumber } from '../../utils/gameUtils';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSessionStore } from '../../stores/useSessionStore';
@@ -22,8 +23,13 @@ const Header: React.FC<HeaderProps> = () => {
         telnet,
         triggerHaptic,
         gameState,
-        clearObjectSelection
-    } = useGame();
+        clearObjectSelection,
+        roomNpcs,
+        executeCommand,
+        addMessage
+    } = useGame() as any;
+
+    const { setActiveMapFilter } = useMapper();
 
     // Get mode state
     const mode = useModeStore();
@@ -76,6 +82,60 @@ const Header: React.FC<HeaderProps> = () => {
 
     const menuRef = useRef<HTMLDivElement>(null);
     const setMenuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                const active = document.activeElement;
+                if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.getAttribute('contenteditable') === 'true')) {
+                    return;
+                }
+                
+                event.preventDefault();
+                event.stopPropagation();
+                
+                setUI((prev: any) => {
+                    const nextOpen = !prev.isMenuOpen;
+                    return {
+                        ...prev,
+                        isMenuOpen: nextOpen,
+                        menuView: nextOpen ? 'main' : prev.menuView
+                    };
+                });
+                triggerHaptic(10);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown, { capture: true });
+        return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
+    }, [setUI, triggerHaptic]);
+
+    const handleExitGame = () => {
+        setIsMenuOpen(false);
+        
+        const hasRentMob = roomNpcs?.some((npc: any) => {
+            const name = npc.name?.toLowerCase() || '';
+            return name.includes('innkeeper') ||
+                   name.includes('barman') ||
+                   name.includes('tender') ||
+                   name.includes('lodging') ||
+                   name.includes('receptionist') ||
+                   name.includes('tavern keeper') ||
+                   name.includes('barliman') ||
+                   name.includes('steward') ||
+                   name.includes('vit') ||
+                   name.includes('vubur');
+        });
+
+        if (hasRentMob) {
+            triggerHaptic(30);
+            executeCommand('rent');
+        } else {
+            triggerHaptic(30);
+            setActiveMapFilter('RENT');
+            addMessage('system', 'You must rent a room at an Inn to keep your equipment safe while you rest. The map is now showing the path to the nearest Inn.');
+        }
+    };
 
     // Close menus when clicking outside
     useEffect(() => {
@@ -492,6 +552,20 @@ const Header: React.FC<HeaderProps> = () => {
                                             <span>{label}</span>
                                         </div>
                                     ))}
+                                    <div style={{ height: '1px', background: 'rgba(255, 255, 255, 0.08)', margin: '4px 0' }} />
+                                    <div
+                                        className="dropdown-item exit-game-item"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleExitGame();
+                                        }}
+                                        style={{ color: '#ef4444' }}
+                                    >
+                                        <div style={{ width: '16px', display: 'flex', justifyContent: 'center', color: '#ef4444' }}>
+                                            <LogOut size={16} />
+                                        </div>
+                                        <span>Exit Game</span>
+                                    </div>
                                 </>
                             ) : (
                                 <div className="menu-group" style={{ padding: '4px' }}>

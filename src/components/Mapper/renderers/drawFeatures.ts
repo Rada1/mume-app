@@ -1267,7 +1267,7 @@ export const drawFeatures = (
                     // Shading is handled in drawTerrains.ts
 
                     // Draw flags for explored rooms, or all rooms in reveal-all mode
-                    if ((isExplored || unveilMap) && (finalMobF.length > 0 || loadF.length > 0 || questF.length > 0)) {
+                    if (!rCtx.lowEffects && (isExplored || unveilMap) && (finalMobF.length > 0 || loadF.length > 0 || questF.length > 0)) {
                         ctx.save();
                         
                         let flagScale = 1.0;
@@ -1297,7 +1297,7 @@ export const drawFeatures = (
                     }
 
                     // Up/down arrows: show for explored, ring-1 revealed, and unveil-all mode
-                    if (ghostExits && (ghostExits.u || ghostExits.d) && (isExplored || isRevealed || unveilMap)) {
+                    if (!rCtx.lowEffects && ghostExits && (ghostExits.u || ghostExits.d) && (isExplored || isRevealed || unveilMap)) {
                         const iconColor = 'rgba(148, 163, 184, 0.8)';
                         const cOff = 12;
                         const arrowSize = 18;

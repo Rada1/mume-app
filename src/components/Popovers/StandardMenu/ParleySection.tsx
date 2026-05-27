@@ -93,6 +93,7 @@ export const ParleySection: React.FC<ParleySectionProps> = ({
                     {entry === null ? label : (
                         <span 
                             style={{ fontFamily: 'monospace', whiteSpace: 'pre', fontSize: '0.85rem' }} 
+                            className="parley-target-name"
                             dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(htmlDisplay!) }}
                         />
                     )}

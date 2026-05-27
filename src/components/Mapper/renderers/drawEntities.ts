@@ -1212,20 +1212,38 @@ export const drawFilterHighlights = (
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>
 ) => {
     const { ctx, activeMapFilter, matchedRoomIds, closestRoomId, allRooms, preloaded, currentZ, now, filterPathIds, filterPathDistance } = rCtx;
-    if (!activeMapFilter || !matchedRoomIds || matchedRoomIds.size === 0) return;
+    if (!matchedRoomIds || matchedRoomIds.size === 0) return;
+    const effectiveFilter = activeMapFilter || 'resources';
+    const zoom = rCtx.camera.zoom;
+    const scaleFactor = zoom < 0.15 ? Math.pow(0.15 / zoom, 0.45) : 1.0;
 
     const getFilterColors = (filter: string): { stroke: string, shadow: string } => {
-        switch (filter) {
-            case 'herb': return { stroke: 'rgba(46, 204, 113, 0.85)', shadow: '#2ecc71' };
-            case 'stable': return { stroke: 'rgba(230, 126, 34, 0.85)', shadow: '#e67e22' };
-            case 'quest': return { stroke: 'rgba(52, 152, 219, 0.85)', shadow: '#3498db' };
-            case 'shop': return { stroke: 'rgba(241, 196, 15, 0.85)', shadow: '#f1c40f' };
-            case 'guild': return { stroke: 'rgba(155, 89, 182, 0.85)', shadow: '#9b59b6' };
-            case 'inn': return { stroke: 'rgba(255, 105, 180, 0.85)', shadow: '#ff69b4' };
-            case 'danger': return { stroke: 'rgba(231, 76, 60, 0.85)', shadow: '#e74c3c' };
-            case 'water': return { stroke: 'rgba(41, 128, 185, 0.85)', shadow: '#2980b9' };
-            default: return { stroke: 'rgba(255, 255, 255, 0.85)', shadow: '#ffffff' };
-        }
+        const CATEGORY_COLORS: Record<string, [string, string]> = {
+            mounts:    ['rgba(230, 126, 34, 0.85)',  '#e67e22'],
+            shops:     ['rgba(241, 196, 15, 0.85)',  '#f1c40f'],
+            guilds:    ['rgba(155, 89, 182, 0.85)',  '#9b59b6'],
+            travel:    ['rgba(41, 128, 185, 0.85)',  '#2980b9'],
+            resources: ['rgba(46, 204, 113, 0.85)',  '#2ecc71'],
+            services:  ['rgba(255, 105, 180, 0.85)', '#ff69b4'],
+            danger:    ['rgba(231, 76, 60, 0.85)',   '#e74c3c'],
+            mobs:      ['rgba(192, 57, 43, 0.85)',   '#c0392b'],
+            quests:    ['rgba(26, 188, 156, 0.85)',  '#1abc9c'],
+        };
+        const FLAG_TO_CATEGORY: Record<string, string> = {
+            HORSE: 'mounts', MULE: 'mounts', PACK_HORSE: 'mounts', TRAINED_HORSE: 'mounts',
+            ROHIRRIM: 'mounts', WARG: 'mounts', STABLE: 'mounts',
+            SHOP: 'shops', WEAPON_SHOP: 'shops', ARMOUR_SHOP: 'shops', FOOD_SHOP: 'shops', PET_SHOP: 'shops',
+            GUILD: 'guilds', WARRIOR_GUILD: 'guilds', CLERIC_GUILD: 'guilds',
+            RANGER_GUILD: 'guilds', MAGE_GUILD: 'guilds', SCOUT_GUILD: 'guilds',
+            BOAT: 'travel', FERRY: 'travel', COACH: 'travel',
+            HERB: 'resources', WATER: 'resources', FOOD: 'resources',
+            RENT: 'services', MAIL: 'services',
+            DEATHTRAP: 'danger',
+            AGGRESSIVE_MOB: 'mobs', ELITE_MOB: 'mobs', SUPER_MOB: 'mobs', QUEST_MOB: 'quests',
+        };
+        const cat = CATEGORY_COLORS[filter] ?? CATEGORY_COLORS[FLAG_TO_CATEGORY[filter] ?? ''];
+        if (cat) return { stroke: cat[0], shadow: cat[1] };
+        return { stroke: 'rgba(255, 255, 255, 0.85)', shadow: '#ffffff' };
     };
 
     const getRoomCoords = (rid: string): { x: number, y: number, z: number } | null => {
@@ -1241,7 +1259,7 @@ export const drawFilterHighlights = (
         return null;
     };
 
-    const colors = getFilterColors(activeMapFilter);
+    const colors = getFilterColors(effectiveFilter);
 
     const getRoomCenter = (rid: string) => {
         const coords = getRoomCoords(rid);
@@ -1266,60 +1284,92 @@ export const drawFilterHighlights = (
 
     // 0. Draw the active filter route from current room to nearest matching flag.
     if (filterPathIds && filterPathIds.length > 1) {
-        const pathPoints = filterPathIds
-            .map(getRoomCenter)
-            .filter((point): point is { x: number, y: number } => point !== null);
+        // Keep null slots so the polyline breaks at unresolvable / off-floor waypoints
+        // instead of drawing a long diagonal teleport through them.
+        const pathCenters = filterPathIds.map(getRoomCenter);
+        const visiblePoints = pathCenters.filter((p): p is { x: number, y: number } => p !== null);
 
-        if (pathPoints.length > 1) {
+        if (visiblePoints.length > 1) {
             const flow = (now % 900) / 900;
-            const dashLength = 8;
-            const gapLength = 7;
+            
+            // Screen-space stable thickness and dashes (guaranteed readable minimum sizes)
+            const innerLineWidth = Math.max(4, (3 * scaleFactor) / zoom);
+            const outerLineWidth = Math.max(8, (6 * scaleFactor) / zoom);
+            const dashLength = Math.max(8, (6 * scaleFactor) / zoom);
+            const gapLength = Math.max(7, (5 * scaleFactor) / zoom);
+
+            const tracePath = () => {
+                ctx.beginPath();
+                let drawing = false;
+                for (const pt of pathCenters) {
+                    if (pt === null) {
+                        drawing = false;
+                        continue;
+                    }
+                    if (!drawing) {
+                        ctx.moveTo(pt.x, pt.y);
+                        drawing = true;
+                    } else {
+                        ctx.lineTo(pt.x, pt.y);
+                    }
+                }
+            };
 
             ctx.save();
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            ctx.shadowBlur = 16;
+            ctx.shadowBlur = zoom < 0.15 ? 2 / zoom : Math.max(16, (12 * scaleFactor) / zoom);
             ctx.shadowColor = colors.shadow;
             ctx.strokeStyle = 'rgba(5, 8, 12, 0.76)';
-            ctx.lineWidth = 8;
-            ctx.beginPath();
-            ctx.moveTo(pathPoints[0].x, pathPoints[0].y);
-            pathPoints.slice(1).forEach(point => ctx.lineTo(point.x, point.y));
+            ctx.lineWidth = outerLineWidth;
+            tracePath();
             ctx.stroke();
             ctx.restore();
 
             ctx.save();
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = zoom < 0.15 ? 1 / zoom : Math.max(10, (7 * scaleFactor) / zoom);
             ctx.shadowColor = colors.shadow;
             ctx.strokeStyle = colors.stroke;
-            ctx.lineWidth = 4;
+            ctx.lineWidth = innerLineWidth;
             ctx.setLineDash([dashLength, gapLength]);
             ctx.lineDashOffset = -flow * (dashLength + gapLength);
-            ctx.beginPath();
-            ctx.moveTo(pathPoints[0].x, pathPoints[0].y);
-            pathPoints.slice(1).forEach(point => ctx.lineTo(point.x, point.y));
+            tracePath();
             ctx.stroke();
             ctx.restore();
 
-            pathPoints.forEach((point, index) => {
+            visiblePoints.forEach((point, index) => {
                 if (index === 0) return;
-                const isDestination = index === pathPoints.length - 1;
+                const isDestination = index === visiblePoints.length - 1;
+                
+                // Skip intermediate dots when zoomed out to prevent crunched overlaps
+                if (!isDestination && zoom < 0.15) return;
+
+                const dotR = isDestination 
+                    ? Math.max(6, (5 * scaleFactor) / zoom) 
+                    : Math.max(3.6, (3 * scaleFactor) / zoom);
+                const dotLineWidth = isDestination 
+                    ? Math.max(2.4, (1.8 * scaleFactor) / zoom) 
+                    : Math.max(1.6, (1.2 * scaleFactor) / zoom);
+                const dotShadowBlur = zoom < 0.15 
+                    ? (isDestination ? 4 / zoom : 0) 
+                    : (isDestination ? Math.max(14, (10 * scaleFactor) / zoom) : Math.max(7, (5 * scaleFactor) / zoom));
+
                 ctx.save();
                 ctx.fillStyle = isDestination ? '#ffffff' : colors.shadow;
                 ctx.strokeStyle = isDestination ? colors.stroke : 'rgba(5, 8, 12, 0.72)';
-                ctx.lineWidth = isDestination ? 2.4 : 1.6;
-                ctx.shadowBlur = isDestination ? 14 : 7;
+                ctx.lineWidth = dotLineWidth;
+                ctx.shadowBlur = dotShadowBlur;
                 ctx.shadowColor = colors.shadow;
                 ctx.beginPath();
-                ctx.arc(point.x, point.y, isDestination ? 6 : 3.6, 0, Math.PI * 2);
+                ctx.arc(point.x, point.y, dotR, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.stroke();
                 ctx.restore();
             });
 
-            const labelPoint = pathPoints[Math.max(0, Math.floor(pathPoints.length / 2) - 1)];
+            const labelPoint = visiblePoints[Math.max(0, Math.floor(visiblePoints.length / 2) - 1)];
             const roomsAway = filterPathDistance || Math.max(0, filterPathIds.length - 1);
             const label = `${roomsAway} ${roomsAway === 1 ? 'room' : 'rooms'}`;
 
@@ -1348,8 +1398,13 @@ export const drawFilterHighlights = (
         }
     }
 
-    // 1. Draw pulsing glowing circles around all matched rooms on current floor
+    // 1. Draw small static beacons for all matched rooms on current floor
+    // Beacons scale dynamically to stay prominent at very far zoom levels.
+    const beaconR = (4 * scaleFactor) / zoom;       // outer ring radius in world units
+    const beaconDotR = (2 * scaleFactor) / zoom;    // filled dot radius
+
     matchedRoomIds.forEach(rid => {
+        if (rid === closestRoomId) return; // closest room drawn separately below
         const coords = getRoomCoords(rid);
         if (!coords || Math.abs(coords.z - currentZ) >= 0.5) return;
 
@@ -1357,20 +1412,22 @@ export const drawFilterHighlights = (
         const cy = coords.y * GRID_SIZE + GRID_SIZE / 2;
         if (!isVisiblePoint(cx, cy)) return;
 
-        const phaseSeed = rid.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
-        const pulse = (Math.sin((now + phaseSeed * 23) / 360) + 1) / 2;
-        const radius = GRID_SIZE * (0.42 + pulse * 0.1);
-        const alpha = 0.55 + pulse * 0.35;
-
         ctx.save();
-        ctx.globalAlpha = alpha;
-        ctx.shadowBlur = 7 + pulse * 12;
+        ctx.globalAlpha = 0.38;
+        // Turn off static beacon shadows when zoomed out to prevent blowout clouds
+        ctx.shadowBlur = zoom < 0.15 ? 0 : (4 * scaleFactor) / zoom;
         ctx.shadowColor = colors.shadow;
+        // Outer ring
         ctx.strokeStyle = colors.stroke;
-        ctx.lineWidth = 2 + pulse * 1.4;
+        ctx.lineWidth = (1.2 * scaleFactor) / zoom;
         ctx.beginPath();
-        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.arc(cx, cy, beaconR, 0, Math.PI * 2);
         ctx.stroke();
+        // Inner dot
+        ctx.fillStyle = colors.shadow;
+        ctx.beginPath();
+        ctx.arc(cx, cy, beaconDotR, 0, Math.PI * 2);
+        ctx.fill();
         ctx.restore();
     });
 
@@ -1385,8 +1442,9 @@ export const drawFilterHighlights = (
             const progress1 = (now % pulsePeriod) / pulsePeriod;
             const progress2 = ((now + pulsePeriod / 2) % pulsePeriod) / pulsePeriod;
 
-            const minRadius = GRID_SIZE * 0.45;
-            const maxRadius = GRID_SIZE * 1.5;
+            // Pulse wave radii are screen-space stable
+            const minRadius = Math.max(GRID_SIZE * 0.45, (12 * scaleFactor) / zoom);
+            const maxRadius = Math.max(GRID_SIZE * 1.5, (36 * scaleFactor) / zoom);
 
             const drawWave = (progress: number) => {
                 const radius = minRadius + (maxRadius - minRadius) * progress;
@@ -1394,8 +1452,9 @@ export const drawFilterHighlights = (
 
                 ctx.save();
                 ctx.strokeStyle = colors.stroke.replace('0.85', String(alpha * 0.9));
-                ctx.lineWidth = 3;
-                ctx.shadowBlur = 12;
+                ctx.lineWidth = Math.max(3, (2.2 * scaleFactor) / zoom);
+                // Clamp pulsing wave shadow to prevent blowing out when zoomed out
+                ctx.shadowBlur = zoom < 0.15 ? 2 / zoom : Math.max(12, (9 * scaleFactor) / zoom);
                 ctx.shadowColor = colors.shadow;
                 ctx.beginPath();
                 ctx.arc(cx, cy, radius, 0, Math.PI * 2);
@@ -1414,9 +1473,10 @@ export const drawFilterHighlights = (
 
                 ctx.save();
                 ctx.strokeStyle = colors.stroke;
-                ctx.lineWidth = 1.8;
-                ctx.setLineDash([4, 4]);
-                ctx.shadowBlur = 4;
+                ctx.lineWidth = Math.max(1.8, (1.5 * scaleFactor) / zoom);
+                ctx.setLineDash([Math.max(4, 3 / zoom), Math.max(4, 3 / zoom)]);
+                // Turn off connector shadow blur when zoomed out
+                ctx.shadowBlur = zoom < 0.15 ? 0 : Math.max(4, 3 / zoom);
                 ctx.shadowColor = colors.shadow;
                 ctx.beginPath();
                 ctx.moveTo(px, py);

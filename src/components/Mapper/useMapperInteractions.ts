@@ -324,20 +324,18 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         }
 
         // --- Standard Zooming ---
-        // console.log(`[MapperInteractions] Wheel: deltaX=${e.deltaX} deltaY=${e.deltaY}`);
-        const cam = cameraRef.current;
-        const oldZoom = cam.zoom;
+        const cam = cameraRef.current as any;
         const delta = -e.deltaY;
-        const scaleFactor = Math.pow(1.1, delta / 100);
-        const newZoom = Math.max(0.05, Math.min(5, cam.zoom * scaleFactor));
+        const scaleFactor = Math.pow(1.15, delta / 120);
+        
+        if (cam.targetZoom === undefined) {
+            cam.targetZoom = cam.zoom;
+        }
+        cam.targetZoom = Math.max(0.05, Math.min(5, cam.targetZoom * scaleFactor));
 
         const rect = canvasRef.current!.getBoundingClientRect();
-        const mx = e.clientX - rect.left;
-        const my = e.clientY - rect.top;
-
-        cam.x += (mx / oldZoom) - (mx / newZoom);
-        cam.y += (my / oldZoom) - (my / newZoom);
-        cam.zoom = newZoom;
+        cam.zoomAnchorX = e.clientX - rect.left;
+        cam.zoomAnchorY = e.clientY - rect.top;
 
         depsRef.current.setAutoCenter(false);
         wakeCameraRender();
@@ -644,6 +642,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         cam.x += (mx / oldZoom) - (mx / newZoom);
                         cam.y += (my / oldZoom) - (my / newZoom);
                         cam.zoom = newZoom;
+                        (cam as any).targetZoom = newZoom;
                     }
 
                     const dx = currentMid.x - lastMid.x;
