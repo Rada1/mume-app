@@ -473,7 +473,7 @@ const Header: React.FC<HeaderProps> = () => {
                                             { tab: 'buttons',  label: 'Buttons',     icon: <Settings size={16} /> },
                                             { tab: 'map',      label: 'Map',         icon: <MapIcon size={16} /> },
                                             { tab: 'replays',  label: 'Replays',     icon: <Film size={16} /> },
-                                            // { tab: 'help',     label: 'Help',        icon: <HelpCircle size={16} /> },
+                                            { tab: 'help',     label: 'Help',        icon: <HelpCircle size={16} /> },
                                         ] as const
                                     ).map(({ tab, label, icon }) => (
                                         <div
