@@ -5,7 +5,8 @@ import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { DrawerType, GameContextType, UIContextType } from '../../../context/GameContext/types';
 import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock } from 'lucide-react';
-
+import { useMapper } from '../../../context/useMapper';
+import { MapFilterBar } from '../../Mapper/MapFilterBar';
 
 import { useMumeTime } from '../../../hooks/useMumeTime';
 import InputArea from '../../Controls/InputArea';
@@ -64,6 +65,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     const { isKeyboardOpen } = viewport;
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const isDarkMode = useSettingsStore(s => s.theme) === 'dark';
+    const { viewZ, currentRoomId, rooms, activeMapFilter, mapSearchQuery, setActiveMapFilter, setMapSearchQuery } = useMapper();
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
     const setLoginName = useSettingsStore(s => s.setLoginName);
     const setLoginPassword = useSettingsStore(s => s.setLoginPassword);
@@ -744,20 +746,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     alignItems: 'center'
                                 }}
                             >
-                            {isLoginStage && (
-                                <div style={{ 
-                                    color: 'rgba(255,255,255,0.4)', 
-                                    fontSize: '11px', 
-                                    fontWeight: 900, 
-                                    textTransform: 'uppercase', 
-                                    letterSpacing: '1.5px', 
-                                    marginBottom: '8px', 
-                                    width: '100%', 
-                                    textAlign: 'center'
-                                }}>
-                                    {isPasswordPrompt ? 'Enter Password' : 'Log In'}
-                                </div>
-                            )}
                             <InputArea
                                 input={input}
                                 setInput={setInput}
@@ -853,7 +841,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     position: 'relative',
                     flex: 1,
                     minHeight: 0,
-                    overflow: 'hidden'
+                    overflow: isShown ? 'visible' : 'hidden'
                 }}
             >
                 <div
@@ -884,12 +872,13 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
                     {/* Map slide (right half) */}
                     <div
-                        className="mobile-mapper-touch-surface gutter-panel-card"
+                        className="mobile-mapper-touch-surface gutter-panel-card map-under-command-bar"
                         style={{
                             width: '50%',
-                            height: '100%',
+                            height: 'calc(100% + 124px)',
                             flexShrink: 0,
                             position: 'relative',
+                            marginBottom: '-124px',
                             pointerEvents: isShown ? 'auto' : 'none',
                             touchAction: 'none'
                         }}
@@ -978,7 +967,58 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     marginBottom: '16px' 
                 }}
             >
-                {/* Mobile Portrait Env Indicator - Bottom Left above command bar */}
+                {/* Z-indicator and Find button - bottom-left above command bar */}
+                {isShown && (
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 'calc(100% + 4px)',
+                        left: '12px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '4px',
+                        alignItems: 'flex-start',
+                        zIndex: 2,
+                        pointerEvents: 'none',
+                    }}>
+                        <div className="gutter-map-filter-host" style={{ pointerEvents: 'auto' }}>
+                            <MapFilterBar
+                                activeMapFilter={activeMapFilter}
+                                mapSearchQuery={mapSearchQuery}
+                                setActiveMapFilter={setActiveMapFilter}
+                                setMapSearchQuery={setMapSearchQuery}
+                                triggerHaptic={triggerHaptic}
+                            />
+                        </div>
+                        <div className="map-z-indicator" style={{
+                            position: 'relative',
+                            bottom: 'auto',
+                            left: 'auto',
+                            height: 'auto',
+                            minHeight: 0,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            background: isDarkMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.75)',
+                            backdropFilter: 'blur(4px)',
+                            WebkitBackdropFilter: 'blur(4px)',
+                            border: isDarkMode ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.12)',
+                            color: 'var(--text-faded)',
+                            fontSize: '0.55rem',
+                            fontFamily: 'monospace',
+                            fontWeight: 800,
+                            lineHeight: 1,
+                            opacity: 1,
+                            transform: 'scale(0.9)',
+                            transformOrigin: 'bottom left',
+                            pointerEvents: 'none',
+                        }}>
+                            Z: {viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? (rooms[currentRoomId].z || 0).toFixed(1) : '0.0')}
+                        </div>
+                    </div>
+                )}
+
+                {/* Mobile Portrait Env Indicator - Bottom Right above command bar */}
                 {isShown && (lighting !== 'none' || weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty || currentTime) && (
                     <div className="mobile-portrait-env-indicator" style={{
                         position: 'absolute',

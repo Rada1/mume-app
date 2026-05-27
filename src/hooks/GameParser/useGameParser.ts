@@ -555,7 +555,18 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         if (!isSnoop && deps.gameState === 'account' && isGameplayXmlLine(lineToParse)) {
             deps.accountStageRef.current = 'none' as any;
-            deps.setAccountState(prev => ({ ...prev, stage: 'none', currentPrompt: undefined, creationPrompt: undefined }));
+            deps.setAccountState(prev => ({
+                ...prev,
+                stage: 'none',
+                currentPrompt: undefined,
+                creationPrompt: undefined,
+                selectedMenuCommand: null,
+                selectedCharacter: null,
+                charSelectTab: null,
+                charCapture: null,
+                isGathering: false
+            }));
+            useUIStore.getState().setUI({ drawer: 'none', isDrawerPeeking: false, mapExpanded: true });
             deps.setIsPasswordMode(false);
             deps.setGameState('playing');
         }
@@ -774,6 +785,19 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         if (!isSnoop && deps.gameState === 'account' && promptInfo.isMatch) {
             if (promptInfo.promptPart.trim() !== 'Account>' && !isAccountRelatedStage) {
+                deps.accountStageRef.current = 'none' as any;
+                deps.setAccountState(prev => ({
+                    ...prev,
+                    stage: 'none',
+                    currentPrompt: undefined,
+                    creationPrompt: undefined,
+                    selectedMenuCommand: null,
+                    selectedCharacter: null,
+                    charSelectTab: null,
+                    charCapture: null,
+                    isGathering: false
+                }));
+                useUIStore.getState().setUI({ drawer: 'none', isDrawerPeeking: false, mapExpanded: true });
                 deps.setGameState('playing');
             }
         }

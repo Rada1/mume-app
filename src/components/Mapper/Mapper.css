@@ -613,6 +613,79 @@ canvas.map-canvas {
     }
 }
 
+/* Filter bar hoisted out of the mapper into the gutter overlay — mirrors mobile rules */
+.gutter-map-filter-host {
+    position: relative;
+}
+
+.gutter-map-filter-host .map-filter-bar {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    top: auto !important;
+    z-index: auto !important;
+    width: 70px;
+    max-width: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+}
+
+.gutter-map-filter-host .map-filter-bar.collapsed {
+    width: 52px;
+    padding: 0;
+}
+
+.gutter-map-filter-host .map-filter-bar:not(.collapsed) {
+    width: calc(100vw - 40px);
+    max-width: 520px;
+}
+
+.gutter-map-filter-host .map-filter-bar:not(.collapsed) .map-filter-parent,
+.gutter-map-filter-host .map-filter-bar.collapsed .map-filter-parent {
+    flex: 0 0 70px;
+    width: 70px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: var(--radius-card, 12px);
+}
+
+.gutter-map-filter-host .map-filter-bar.collapsed .map-filter-parent {
+    flex-basis: 52px;
+    width: 52px;
+}
+
+.gutter-map-filter-host .map-filter-buttons {
+    flex: 1 1 auto;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: visible;
+    max-height: none;
+    max-width: 100%;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.gutter-map-filter-host .map-filter-buttons::-webkit-scrollbar {
+    display: none;
+}
+
+.gutter-map-filter-host .map-filter-button {
+    flex: 0 0 auto;
+    width: auto;
+    height: 28px;
+    padding: 0 8px;
+    font-size: 10px;
+}
+
+.gutter-map-filter-host .map-filter-search {
+    flex: 0 0 110px;
+    width: 110px;
+    font-size: 11px;
+}
+
 .map-look-hold-indicator {
     position: absolute;
     left: 50%;

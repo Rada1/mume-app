@@ -184,9 +184,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         cameraRef.current.x = (playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2) - (w / (2 * zoom));
         let targetY = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));
         if (isMobile && !isLandscape) {
-            // Apply the same offset in snapCameraToPlayer
-            const topOverlayHeight = 160;
-            targetY -= (topOverlayHeight / 2) / zoom;
+            const tacticalClearance = 32;
+            targetY -= (tacticalClearance / 2) / zoom;
         }
         cameraRef.current.y = targetY;
         cameraRef.current.zoom = zoom;
@@ -355,7 +354,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 selectedRegionLabelId={selectedRegionLabelId}
             />
 
-            {!effectiveIsMinimized && (
+            {!effectiveIsMinimized && !isMobile && (
                 <MapFilterBar
                     activeMapFilter={activeMapFilter}
                     mapSearchQuery={mapSearchQuery}
@@ -432,7 +431,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 />
             )}
 
-            {!effectiveIsMinimized && (
+            {!effectiveIsMinimized && !isMobile && (
                 <div className="map-z-indicator" style={{
                     position: 'absolute',
                     bottom: '10px',

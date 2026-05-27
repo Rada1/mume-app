@@ -13,9 +13,9 @@
 }
 
 .mri-content {
-    background: #0a0d15;
-    backdrop-filter: blur(24px) saturate(1.2);
-    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    background: rgba(13, 16, 23, 0.62);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 6px 20px 16px; /* Increased bottom padding for better spacing */
     border-radius: var(--radius-card);
@@ -31,7 +31,7 @@
 }
 
 .mapper-room-info-container.expanded .mri-content {
-    background: #0a0d15;
+    background: rgba(13, 16, 23, 0.62);
 }
 
 /* Desktop mode */

@@ -114,10 +114,8 @@ export const useMapAnimation = ({
             let targetCamY = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));
 
             if (isMobile && !isLandscape) {
-                // Offset camera Y upward by half the top overlay height (~160px) in portrait mobile
-                // This shifts the world drawing down, placing the player room centered in the visible area below the tactical buttons.
-                const topOverlayHeight = 160;
-                targetCamY -= (topOverlayHeight / 2) / zoom;
+                const tacticalClearance = 32;
+                targetCamY -= (tacticalClearance / 2) / zoom;
             }
 
             const cdx = targetCamX - camera.current.x;

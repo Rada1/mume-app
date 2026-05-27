@@ -144,8 +144,18 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         if (trimmedLine.includes('Welcome to the land of Middle-earth') || trimmedLine.toLowerCase().includes('reconnecting')) {
             console.log('[AccountParser] Login detected via welcome line');
             setGameState('playing');
-            setAccountState(prev => ({ ...prev, stage: 'none', currentPrompt: undefined }));
-            useUIStore.getState().setUI({ mapExpanded: true });
+            setAccountState(prev => ({
+                ...prev,
+                stage: 'none',
+                currentPrompt: undefined,
+                creationPrompt: undefined,
+                selectedMenuCommand: null,
+                selectedCharacter: null,
+                charSelectTab: null,
+                charCapture: null,
+                isGathering: false
+            }));
+            useUIStore.getState().setUI({ drawer: 'none', isDrawerPeeking: false, mapExpanded: true });
             setIsPasswordMode(false);
             gmcpBus.emit('Session.Start', { characterName: 'Player' });
 
