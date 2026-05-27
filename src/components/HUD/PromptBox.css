@@ -471,25 +471,31 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 4px;
-    color: #fff;
+    background: rgba(201, 151, 56, 0.05);
+    border: 1px solid rgba(201, 151, 56, 0.25);
+    border-radius: 5px;
+    color: rgba(255, 255, 255, 0.75);
     cursor: pointer;
-    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     padding: 0;
 }
 
 .pos-combat-square-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(201, 151, 56, 0.15);
+    border-color: rgba(201, 151, 56, 0.6);
+    color: #ffffff;
+    box-shadow: 0 0 8px rgba(201, 151, 56, 0.25);
 }
 
 .pos-combat-square-btn.active {
-    background: linear-gradient(135deg, #ffd700 0%, #c99738 100%);
-    color: #000;
+    background: rgba(201, 151, 56, 0.25);
+    color: #ffd700;
     border-color: #ffd700;
-    box-shadow: 0 0 10px rgba(201, 151, 56, 0.4);
+    box-shadow: 
+        0 0 12px rgba(201, 151, 56, 0.4),
+        inset 0 0 4px rgba(201, 151, 56, 0.3);
 }
 
 .disposition-square-btn {
@@ -617,9 +623,16 @@
 }
 
 .pos-combat-square-btn.is-fighting {
-    border-color: #ef4444; /* Force red border in combat */
-    box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.4);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.2);
     color: #ef4444;
+}
+
+.pos-combat-square-btn.is-fighting:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.8);
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
 }
 
 .combat-divider-icon {
@@ -720,6 +733,10 @@
 /* --- Prompt box expand/collapse --- */
 .prompt-box-content {
     cursor: pointer;
+}
+
+.prompt-box-content:hover .prompt-expand-chevron {
+    opacity: 0.75 !important;
 }
 
 .prompt-box-content button,

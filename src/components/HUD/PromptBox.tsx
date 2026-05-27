@@ -4,7 +4,7 @@
  */
 
 import React, { memo, FC, useState, useRef, useCallback, useEffect } from 'react';
-import { Swords, Heart, Zap, Footprints, Info, Sliders } from 'lucide-react';
+import { Swords, Heart, Zap, Footprints, Info, Sliders, ChevronUp } from 'lucide-react';
 import './PromptBox.css';
 import { GameStats, CharacterInfo, CombatHealthStatus } from '../../types';
 import { useGame, useUI } from '../../context/GameContext';
@@ -545,12 +545,15 @@ const PromptBox: FC<PromptBoxProps> = ({
                     <div className="vitals-side-container side-left">
                         <div className="player-vitals-stack">
                             <div className="prompt-top-stats-row">
-                                {inCombat && (
-                                    <div className="name-label player-name prompt-inline-name">
-                                        {renderStyledName(characterName || 'YOU')}
-                                    </div>
-                                )}
                                 <PromptCombatStatsLine />
+                                <button
+                                    className={`pos-combat-square-btn disposition-square-btn ${activeSlider === 'disposition' ? 'active' : ''}`}
+                                    onClick={!isSpectateMode ? handleDispositionClick : undefined}
+                                    style={{ cursor: isSpectateMode ? 'default' : 'pointer' }}
+                                    title={`Disposition: ${mood || 'normal'} / ${spellSpeed || 'normal'} / ${alertness || 'normal'}`}
+                                >
+                                    <Sliders size={13} strokeWidth={2.6} />
+                                </button>
                             </div>
                             <div className="player-stats-group">
                                 <Heart size={11} className="vitals-icon hp-icon" strokeWidth={3} />
@@ -604,14 +607,17 @@ const PromptBox: FC<PromptBoxProps> = ({
 
                     {/* Center Anchor */}
                     <div className="vitals-center-anchor" style={{ position: 'relative' }}>
-                        <button
-                            className={`pos-combat-square-btn disposition-square-btn ${activeSlider === 'disposition' ? 'active' : ''}`}
-                            onClick={!isSpectateMode ? handleDispositionClick : undefined}
-                            style={{ cursor: isSpectateMode ? 'default' : 'pointer' }}
-                            title={`Disposition: ${mood || 'normal'} / ${spellSpeed || 'normal'} / ${alertness || 'normal'}`}
-                        >
-                            <Sliders size={13} strokeWidth={2.6} />
-                        </button>
+                        <ChevronUp 
+                            size={11} 
+                            className={`prompt-expand-chevron ${isExpanded ? 'is-expanded' : ''}`} 
+                            style={{ 
+                                opacity: 0.3, 
+                                marginBottom: '1px', 
+                                transition: 'transform 0.2s ease, opacity 0.2s ease', 
+                                transform: isExpanded ? 'rotate(180deg)' : 'none',
+                                pointerEvents: 'none'
+                            }} 
+                        />
                         <button 
                             className={`pos-combat-square-btn ${inCombat ? 'is-fighting' : ''} ${activeSlider === 'pos' ? 'active' : ''}`}
                             onClick={!isSpectateMode ? handlePosClick : undefined}
