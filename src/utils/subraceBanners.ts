@@ -153,6 +153,7 @@ const BANNER_LABELS: Record<string, string> = {
 };
 
 const BANNER_IMAGE_MAP: Record<string, string> = {
+    ainu: `${SUBRACE_BASE_PATH}ainu.png`,
     elves: `${SUBRACE_BASE_PATH}elf.png`,
     'half-elves': `${SUBRACE_BASE_PATH}halfelf.png`,
     hobbits: `${SUBRACE_BASE_PATH}hobbit.png`,

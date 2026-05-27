@@ -13,6 +13,7 @@ import { Embers } from '../Atmosphere/Embers';
 import { ShopPanel } from '../Shop/ShopPanel';
 import { TimerExpiryToast } from '../Timers/TimerExpiryToast';
 import { QuickButtonBar } from '../HUD/QuickButtonBar';
+import { ReplayHUD } from './HUD/ReplayHUD';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -67,6 +68,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         showControls,
         isNewbieMode,
         gameState,
+        sessionMode,
         inCombat,
         accountState
     } = useGame() as any;
@@ -159,6 +161,8 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     const { getLightingIcon, getWeatherIcon } = env;
     const { isMobile, isLandscape } = viewport;
+    const isReplaying = sessionMode === 'replay';
+    const shouldShowAccountInput = gameState === 'account' && !isReplaying;
 
     const { activeView } = useModeStore();
 
@@ -172,6 +176,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             <div className="shop-panel-wrap">
                 <ShopPanel />
             </div>
+            <ReplayHUD />
 
             <div className="message-log-wrapper" style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
                 <div
@@ -227,7 +232,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             </div>
 
             {/* Only render the wrapper if it will contain either the PromptBox or the InputArea */}
-            {((gameState !== 'account') || (gameState === 'account' && (isLandscape || !isMobile)) || (!isMobile && !(viewport as any).isForcePortrait) || isLandscape) && (
+            {(gameState !== 'account' || (shouldShowAccountInput && (isLandscape || !isMobile))) && (
                 <div className="control-card-wrapper">
                     {gameState !== 'account' && (
                         <PromptBox
@@ -239,7 +244,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
                     {/* Render InputArea only on desktop, landscape mobile, or during account phase on those platforms. 
                         On mobile portrait, InputArea is rendered within MapperCluster to occupy the gutter. */}
-                    {((gameState === 'account' && (isLandscape || !isMobile)) || (!isMobile && !(viewport as any).isForcePortrait) || isLandscape) && (
+                    {((shouldShowAccountInput && (isLandscape || !isMobile)) || (gameState !== 'account' && ((!isMobile && !(viewport as any).isForcePortrait) || isLandscape))) && (
                         <InputArea
                             input={input}
                             setInput={setInput}

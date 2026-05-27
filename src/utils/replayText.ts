@@ -1,9 +1,6 @@
-/**
- * @file replayText.ts
- * @description Helpers for turning recorded MUME sessions into readable text logs.
- */
-
 import type { LogEntry, SessionLog } from '../types/session';
+import { ansiConvert } from './ansi';
+import { escapeHtml, sanitizeMumeHtml } from './securityUtils';
 
 const decoder = new TextDecoder();
 
@@ -48,7 +45,12 @@ export const sessionLogToText = (session: SessionLog): string => {
         if (entry.typ === 'rx') {
             if (isUserMessagePayload(entry.d)) continue;
             const text = stripProtocolNoise(decodePayload(entry.d));
-            if (text) content += text;
+            if (text) {
+                content += text;
+                if (!text.endsWith('\n')) {
+                    content += '\n';
+                }
+            }
         } else if (entry.typ === 'tx') {
             const command = decodePayload(entry.d);
             if (command && !shouldHideCommand(command)) content += `\n> ${command}\n`;
@@ -60,3 +62,41 @@ export const sessionLogToText = (session: SessionLog): string => {
 
     return content.trimEnd();
 };
+
+export const sessionLogToHtml = (session: SessionLog): string => {
+    let content = '';
+
+    for (const entry of session.log) {
+        if (entry.typ === 'rx') {
+            if (isUserMessagePayload(entry.d)) continue;
+            
+            let lineHtml = '';
+            if (isRecord(entry.d) && typeof entry.d.html === 'string') {
+                lineHtml = entry.d.html;
+            } else {
+                const text = decodePayload(entry.d);
+                lineHtml = ansiConvert.toHtml(text);
+            }
+            
+            if (lineHtml) {
+                content += lineHtml;
+                if (!lineHtml.endsWith('\n') && !lineHtml.endsWith('<br>') && !lineHtml.endsWith('<br/>') && !lineHtml.endsWith('</div>')) {
+                    content += '\n';
+                }
+            }
+        } else if (entry.typ === 'tx') {
+            const command = decodePayload(entry.d);
+            if (command && !shouldHideCommand(command)) {
+                content += `\n<span style="color: var(--text-dim, #94a3b8)">> ${escapeHtml(command)}</span>\n`;
+            }
+        } else if (entry.typ === 'ui') {
+            const command = getUiCommand(entry);
+            if (command && !shouldHideCommand(command)) {
+                content += `\n<span style="color: var(--text-dim, #94a3b8)">> ${escapeHtml(command)}</span>\n`;
+            }
+        }
+    }
+
+    return sanitizeMumeHtml(content.trimEnd());
+};
+

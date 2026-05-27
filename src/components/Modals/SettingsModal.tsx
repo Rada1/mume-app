@@ -131,9 +131,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     <div className={`modal-tab ${settingsTab === 'replays' ? 'active' : ''}`} onClick={() => setSettingsTab('replays')}>
                         <Film size={16} /> <span>Replays</span>
                     </div>
+                    {/* Hiding Help tab for now
                     <div className={`modal-tab ${settingsTab === 'help' ? 'active' : ''}`} onClick={() => setSettingsTab('help')}>
-                        <HelpCircle size={16} /> <span>Help & Guides</span>
+                        <HelpCircle size={16} /> <span>Help</span>
                     </div>
+                    */}
                 </div>
 
                 <div className={`modal-body settings-modal`}>

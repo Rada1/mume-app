@@ -197,7 +197,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     }
 
     // Account screen: full-height gutter with account drawer, no map or tabs
-    if (gameState === 'account') {
+    if (gameState === 'account' && !isReplaying) {
         const isLoginStage = accountState.stage === 'login';
         const isMenuStage = accountState.stage === 'account-menu';
         const isCreationStage = ['character-creation', 'stat-editing', 'account-confirmation'].includes(accountState.stage);

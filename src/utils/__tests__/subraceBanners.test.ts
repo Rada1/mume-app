@@ -26,8 +26,10 @@ describe('resolveSubraceBanner', () => {
         expect(banner?.fallbackSrc).toBe('/assets/Pictures/Avatars/half-elf.png');
     });
 
-    it('returns null for ainu until art is added', () => {
-        expect(resolveSubraceBanner('Ainu', '')).toBeNull();
+    it('resolves ainu once art is added', () => {
+        const banner = resolveSubraceBanner('Ainu', '');
+        expect(banner?.key).toBe('ainu');
+        expect(banner?.src).toBe('/assets/Pictures/Subraces/ainu.png');
     });
 
     it('uses available race-level image fallbacks until subrace art exists', () => {

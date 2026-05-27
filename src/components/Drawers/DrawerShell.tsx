@@ -29,9 +29,9 @@ const ACCOUNT_TABS = [
 
 export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, children }) => {
     const { ui, setUI, handleTabClick } = useUI();
-    const { triggerHaptic, handleLogClick, handleLogPointerDown, handleLogPointerUp, viewport, currentTerrain, lighting, input, accountState, gameState } = useGame() as any;
+    const { triggerHaptic, handleLogClick, handleLogPointerDown, handleLogPointerUp, viewport, currentTerrain, lighting, input, accountState, gameState, sessionMode } = useGame() as any;
     const isOpen = ui.drawer === id;
-    const tabs = gameState === 'account' ? ACCOUNT_TABS : SIDEBAR_TABS;
+    const tabs = gameState === 'account' && sessionMode !== 'replay' ? ACCOUNT_TABS : SIDEBAR_TABS;
 
     if (!isOpen) return null;
 
@@ -48,7 +48,7 @@ export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, child
                 <span className="drawer-title">
                     {title || id}
                 </span>
-                {viewport.isMobile && (
+                {viewport.isMobile && viewport.isLandscape && (
                     <button
                         className="drawer-close-btn"
                         onClick={handleClose}

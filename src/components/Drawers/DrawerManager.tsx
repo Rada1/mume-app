@@ -43,7 +43,8 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 }) => {
     const {
         characterName, viewport, triggerHaptic, gameState, executeCommand,
-        btn, joystick, handleButtonClick, editor, env, isFoggy, gameTime, roomItems
+        btn, joystick, handleButtonClick, editor, env, isFoggy, gameTime, roomItems,
+        sessionMode
     } = useGame();
     const currentTime = useMumeTime(gameTime);
     const {
@@ -75,12 +76,29 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
     React.useEffect(() => {
         if (viewport.isMobile) return;
+        if (sessionMode === 'replay') {
+            if (ui.drawer === 'account' || ui.drawer === 'none') {
+                setUI(prev => ({ ...prev, drawer: 'status' }));
+            }
+            return;
+        }
         if (gameState === 'account' && ui.drawer !== 'account') {
             setUI(prev => ({ ...prev, drawer: 'account' }));
         } else if (gameState !== 'account' && ui.drawer === 'account') {
             setUI(prev => ({ ...prev, drawer: 'status' }));
         }
-    }, [gameState, setUI, ui.drawer, viewport.isMobile]);
+    }, [gameState, setUI, ui.drawer, viewport.isMobile, sessionMode]);
+
+    // Prevent drawers from closing on desktop or portrait mode
+    React.useEffect(() => {
+        const isDesktop = !viewport.isMobile;
+        const isPortrait = viewport.isMobile && !viewport.isLandscape;
+        
+        if ((isDesktop || isPortrait) && ui.drawer === 'none') {
+            const defaultDrawer = gameState === 'account' && sessionMode !== 'replay' ? 'account' : 'status';
+            setUI(prev => ({ ...prev, drawer: defaultDrawer }));
+        }
+    }, [ui.drawer, viewport.isMobile, viewport.isLandscape, gameState, sessionMode, setUI]);
 
     // Restore saved log width only (drawer widths use auto calc default)
     React.useEffect(() => {
@@ -98,7 +116,12 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             <div
                 className={`drawer-backdrop ${viewport.isMobile && ui.drawer !== 'none' ? 'open' : ''}`}
                 style={{ background: 'rgba(0,0,0,0.2)' }}
-                onClick={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
+                onClick={() => {
+                    const isPortrait = viewport.isMobile && !viewport.isLandscape;
+                    if (!isPortrait) {
+                        setUI(prev => ({ ...prev, drawer: 'none' }));
+                    }
+                }}
             />
 
             {!viewport.isMobile && (
@@ -221,7 +244,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             </DrawerShell>
 
             {/* Unified Gameplay Utility Drawer */}
-            {gameState !== 'account' && ui.drawer !== 'none' && ui.drawer !== 'account' && (
+            {(gameState !== 'account' || sessionMode === 'replay') && ui.drawer !== 'none' && ui.drawer !== 'account' && (
                 <DrawerShell 
                     key="gameplay-utility-drawer"
                     id={ui.drawer} 
@@ -239,7 +262,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             {/* Desktop Side Tabs */}
             {!viewport.isMobile && gameState !== 'disconnected' && ui.drawer === 'none' && (
                 <div className="desktop-drawer-tabs right horizontal-bottom-tabs">
-                    {(gameState === 'account' ? ACCOUNT_TABS : SIDEBAR_TABS).map(({ id, label, Icon }) => (
+                    {((gameState === 'account' && sessionMode !== 'replay') ? ACCOUNT_TABS : SIDEBAR_TABS).map(({ id, label, Icon }) => (
                         <div
                             key={id}
                             className={`desktop-edge-tab right ${ui.drawer === id ? 'active' : ''}`}

@@ -6,7 +6,7 @@
 import React, { useMemo } from 'react';
 import { Copy, Play, X } from 'lucide-react';
 import type { StoredSession } from '../../utils/storage/sessionDb';
-import { sessionLogToText } from '../../utils/replayText';
+import { sessionLogToText, sessionLogToHtml } from '../../utils/replayText';
 
 interface ReplayTextLogModalProps {
     session: StoredSession;
@@ -30,6 +30,7 @@ const buttonStyle: React.CSSProperties = {
 // --- Logic Section ---
 const ReplayTextLogModal: React.FC<ReplayTextLogModalProps> = ({ session, onClose, onWatch }) => {
     const textLog = useMemo(() => sessionLogToText(session), [session]);
+    const textLogHtml = useMemo(() => sessionLogToHtml(session), [session]);
     const title = session.metadata.character || 'Unknown Scout';
 
     const handleCopy = async () => {
@@ -76,9 +77,8 @@ const ReplayTextLogModal: React.FC<ReplayTextLogModalProps> = ({ session, onClos
                         whiteSpace: 'pre-wrap',
                         userSelect: 'text',
                     }}
-                >
-                    {textLog || 'No readable text entries found in this replay.'}
-                </pre>
+                    dangerouslySetInnerHTML={{ __html: textLogHtml || 'No readable text entries found in this replay.' }}
+                />
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '12px' }}>
                     <button onClick={handleCopy} style={buttonStyle}>

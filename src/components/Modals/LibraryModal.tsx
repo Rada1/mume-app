@@ -7,6 +7,65 @@ import React, { useEffect, useState } from 'react';
 import { Play, Download, Trash2, Calendar, User, FileText, ChevronRight, X, Clock } from 'lucide-react';
 import { getAllSessionsFromDb, deleteSessionFromDb, StoredSession, deleteLibrary, getStorageUsage } from '../../utils/storage/sessionDb';
 import { useGame, useUI } from '../../context/GameContext';
+import { resolveSubraceBanner } from '../../utils/subraceBanners';
+
+// --- Helper Functions ---
+const getSessionRaceAndSubrace = (session: StoredSession): { race?: string; subrace?: string } => {
+    if (session.metadata?.race || session.metadata?.subrace) {
+        return { race: session.metadata.race, subrace: session.metadata.subrace };
+    }
+    for (const entry of session.log) {
+        if (entry.typ === 'gmcp' && entry.d) {
+            const { pkg, data } = entry.d;
+            if (pkg === 'Char.Info' || pkg === 'Char.Status' || pkg === 'Char.Vitals') {
+                try {
+                    const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+                    if (parsed && (parsed.race || parsed.subrace)) {
+                        return { race: parsed.race, subrace: parsed.subrace };
+                    }
+                } catch (_) {}
+            }
+        }
+    }
+    return {};
+};
+
+const SessionAvatar: React.FC<{ session: StoredSession; size?: number }> = ({ session, size = 18 }) => {
+    const { race, subrace } = getSessionRaceAndSubrace(session);
+    const asset = resolveSubraceBanner(race, subrace);
+    const [imgSrc, setImgSrc] = useState<string | null>(asset?.src || null);
+
+    useEffect(() => {
+        setImgSrc(asset?.src || null);
+    }, [asset]);
+
+    const handleError = () => {
+        if (asset && imgSrc === asset.src && asset.fallbackSrc) {
+            setImgSrc(asset.fallbackSrc);
+        } else {
+            setImgSrc(null);
+        }
+    };
+
+    if (imgSrc) {
+        return (
+            <img
+                src={imgSrc}
+                alt={asset?.label || 'Emblem'}
+                onError={handleError}
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    display: 'block',
+                }}
+            />
+        );
+    }
+
+    return <User size={size} />;
+};
 
 interface LibraryModalProps {
     isOpen: boolean;
@@ -188,9 +247,11 @@ export const LibraryModal: React.FC<LibraryModalProps> = ({ isOpen, onClose }) =
                                                 display: 'flex', 
                                                 alignItems: 'center', 
                                                 justifyContent: 'center',
-                                                color: 'var(--accent)'
+                                                color: 'var(--accent)',
+                                                overflow: 'hidden',
+                                                flexShrink: 0
                                             }}>
-                                                <User size={18} />
+                                                <SessionAvatar session={session} size={18} />
                                             </div>
                                             <div>
                                                 <div style={{ color: '#fff', fontWeight: 'bold', fontSize: '1rem' }}>

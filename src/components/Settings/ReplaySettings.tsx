@@ -8,6 +8,65 @@ import { Calendar, ChevronRight, Clock, Download, FileText, FolderOpen, Trash2, 
 import { useGame, useUI } from '../../context/GameContext';
 import { deleteLibrary, deleteSessionFromDb, getAllSessionsFromDb, getStorageUsage, StoredSession } from '../../utils/storage/sessionDb';
 import ReplayTextLogModal from './ReplayTextLogModal';
+import { resolveSubraceBanner } from '../../utils/subraceBanners';
+
+// --- Helper Functions ---
+const getSessionRaceAndSubrace = (session: StoredSession): { race?: string; subrace?: string } => {
+    if (session.metadata?.race || session.metadata?.subrace) {
+        return { race: session.metadata.race, subrace: session.metadata.subrace };
+    }
+    for (const entry of session.log) {
+        if (entry.typ === 'gmcp' && entry.d) {
+            const { pkg, data } = entry.d;
+            if (pkg === 'Char.Info' || pkg === 'Char.Status' || pkg === 'Char.Vitals') {
+                try {
+                    const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+                    if (parsed && (parsed.race || parsed.subrace)) {
+                        return { race: parsed.race, subrace: parsed.subrace };
+                    }
+                } catch (_) {}
+            }
+        }
+    }
+    return {};
+};
+
+const SessionAvatar: React.FC<{ session: StoredSession }> = ({ session }) => {
+    const { race, subrace } = getSessionRaceAndSubrace(session);
+    const asset = resolveSubraceBanner(race, subrace);
+    const [imgSrc, setImgSrc] = useState<string | null>(asset?.src || null);
+
+    useEffect(() => {
+        setImgSrc(asset?.src || null);
+    }, [asset]);
+
+    const handleError = () => {
+        if (asset && imgSrc === asset.src && asset.fallbackSrc) {
+            setImgSrc(asset.fallbackSrc);
+        } else {
+            setImgSrc(null);
+        }
+    };
+
+    if (imgSrc) {
+        return (
+            <img
+                src={imgSrc}
+                alt={asset?.label || 'Emblem'}
+                onError={handleError}
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    display: 'block',
+                }}
+            />
+        );
+    }
+
+    return <User size={16} />;
+};
 
 const ReplaySettings: React.FC = () => {
     const { triggerHaptic } = useGame();
@@ -212,8 +271,10 @@ const ReplaySettings: React.FC = () => {
                                                 background: 'rgba(var(--accent-rgb), 0.1)',
                                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                 color: 'var(--accent)',
+                                                overflow: 'hidden',
+                                                flexShrink: 0,
                                             }}>
-                                                <User size={16} />
+                                                <SessionAvatar session={session} />
                                             </div>
                                             <div>
                                                 <div style={{ color: '#fff', fontWeight: 'bold', fontSize: '0.95rem' }}>

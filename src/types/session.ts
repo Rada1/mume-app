@@ -31,5 +31,7 @@ export interface SessionLog {
         character?: string;
         type: 'user' | 'spectate';
         spectatedCharacter?: string;
+        race?: string;
+        subrace?: string;
     };
 }

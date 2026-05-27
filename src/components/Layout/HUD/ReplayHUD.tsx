@@ -6,13 +6,17 @@
 import React, { useState, useMemo } from 'react';
 import { useUI } from '../../../context/GameContext';
 import {
-    Play, Pause, Square, FastForward, Rewind, Download, Video, X, Eye, EyeOff,
-    Search, ChevronLeft, ChevronRight, FileText, Scissors
+    Play, Pause, Square, FastForward, Rewind, Download, Eye, EyeOff,
+    Search, ChevronLeft, ChevronRight, Scissors, ChevronUp, ChevronDown
 } from 'lucide-react';
 
+import { useViewport } from '../../../hooks/useViewport';
+import { useSessionStore } from '../../../stores/useSessionStore';
+
 export const ReplayHUD: React.FC = () => {
-    const { replayer, setIsLibraryOpen } = useUI();
-    const { log, state, play, pause, seek, setSpeed, setPrivacyMode, startExport, exportAsText, stopExport, performSearch, setTrimRange } = replayer;
+    const { replayer } = useUI();
+    const { log, state, play, pause, seek, setSpeed, setPrivacyMode, startExport, stopExport, performSearch, setTrimRange } = replayer;
+    const { isMobile } = useViewport();
 
     const flagMarkers = useMemo(() => {
         if (!log?.log) return [];
@@ -34,7 +38,51 @@ export const ReplayHUD: React.FC = () => {
     const [isHovered, setIsHovered] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [isTrimMode, setIsTrimMode] = useState(false);
-    const [showExportMenu, setShowExportMenu] = useState(false);
+    
+    const isMinimized = useSessionStore(state => state.isReplayHUDMinimized);
+    const setIsMinimized = useSessionStore(state => state.setIsReplayHUDMinimized);
+
+    // Draggable position logic
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [isDragging, setIsDragging] = useState(false);
+    const dragStartRef = React.useRef<{ startX: number; startY: number; posX: number; posY: number } | null>(null);
+
+    const handlePointerDown = (e: React.PointerEvent) => {
+        const target = e.target as HTMLElement;
+        if (
+            target.closest('button') || 
+            target.closest('input') || 
+            target.closest('.replay-scrubber-track') || 
+            target.closest('.death-flag-marker')
+        ) {
+            return;
+        }
+        e.currentTarget.setPointerCapture(e.pointerId);
+        setIsDragging(true);
+        dragStartRef.current = {
+            startX: e.clientX,
+            startY: e.clientY,
+            posX: position.x,
+            posY: position.y
+        };
+    };
+
+    const handlePointerMove = (e: React.PointerEvent) => {
+        if (!dragStartRef.current) return;
+        const dx = e.clientX - dragStartRef.current.startX;
+        const dy = e.clientY - dragStartRef.current.startY;
+        setPosition({
+            x: dragStartRef.current.posX + dx,
+            y: dragStartRef.current.posY + dy
+        });
+    };
+
+    const handlePointerUp = (e: React.PointerEvent) => {
+        if (!dragStartRef.current) return;
+        e.currentTarget.releasePointerCapture(e.pointerId);
+        dragStartRef.current = null;
+        setIsDragging(false);
+    };
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
@@ -80,30 +128,236 @@ export const ReplayHUD: React.FC = () => {
 
     const progress = (state.currentTime / state.duration) * 100;
 
+    if (isMinimized) {
+        return (
+            <div 
+                className="replay-hud minimized"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                style={{
+                    position: 'absolute',
+                    top: 'calc(var(--shop-panel-top, 64px) - 6px)',
+                    left: 0,
+                    right: 0,
+                    backgroundColor: 'rgba(13, 16, 23, 0.62)',
+                    border: '1px solid rgba(255, 255, 255, 0.07)',
+                    borderTop: 'none',
+                    borderRadius: '0 0 12px 12px',
+                    padding: '28px 16px 12px 16px',
+                    zIndex: 9400,
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    transition: 'opacity 0.3s ease',
+                    opacity: isHovered || !state.isPlaying ? 1 : 0.6,
+                    touchAction: 'none'
+                }}
+            >
+                {/* Play/Pause Button */}
+                <button 
+                    onClick={() => state.isPlaying ? pause() : play()}
+                    style={{ 
+                        background: '#4a90e2', border: 'none', borderRadius: '50%', 
+                        width: '28px', height: '28px', display: 'flex', 
+                        alignItems: 'center', justifyContent: 'center', color: '#fff', 
+                        cursor: 'pointer', boxShadow: '0 2px 6px rgba(74,144,226,0.3)',
+                        flexShrink: 0
+                    }}
+                >
+                    {state.isPlaying ? <Pause size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" style={{ marginLeft: '1px' }} />}
+                </button>
+
+                {/* Scrubber */}
+                <div className="replay-scrubber-track"
+                     style={{ position: 'relative', height: '8px', flex: 1, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '4px', cursor: 'pointer', minWidth: '80px' }}
+                     onClick={(e) => {
+                         const rect = e.currentTarget.getBoundingClientRect();
+                         const x = e.clientX - rect.left;
+                         const pct = x / rect.width;
+                         seek(pct * state.duration);
+                     }}
+                >
+                    {/* Background Full Track */}
+                    <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '100%', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '4px' }} />
+                    
+                    {/* Trimmed Selection Highlight */}
+                    {isTrimMode && state.trimRange[0] !== null && state.trimRange[1] !== null && (
+                        <div style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: `${(state.trimRange[0] / state.duration) * 100}%`,
+                            width: `${((state.trimRange[1] - state.trimRange[0]) / state.duration) * 100}%`,
+                            height: '100%',
+                            backgroundColor: 'rgba(74, 144, 226, 0.3)',
+                            borderLeft: '1px solid #4a90e2',
+                            borderRight: '1px solid #4a90e2',
+                            zIndex: 1
+                        }} />
+                    )}
+
+                    {/* Progress Fill */}
+                    <div style={{ 
+                        position: 'absolute', top: 0, left: 0, height: '100%', 
+                        width: `${progress}%`, backgroundColor: '#4a90e2', 
+                        borderRadius: '4px', boxShadow: '0 0 8px rgba(74, 144, 226, 0.5)',
+                        opacity: 0.6,
+                        zIndex: 2
+                    }} />
+                    
+                    {/* Search Markers */}
+                    {state.searchResults?.map((t, idx) => (
+                        <div
+                            key={idx}
+                            style={{
+                                position: 'absolute',
+                                left: `${(t / state.duration) * 100}%`,
+                                top: '-2px',
+                                width: '2px',
+                                height: '12px',
+                                backgroundColor: '#fff',
+                                boxShadow: '0 0 4px #4a90e2',
+                                pointerEvents: 'none',
+                                zIndex: 3
+                            }}
+                        />
+                    ))}
+
+                    {/* Death Flag Markers */}
+                    {flagMarkers.map((f, idx) => (
+                        <div
+                            key={`flag-${idx}`}
+                            className="death-flag-marker"
+                            title={f.kind === 'death_self' ? 'You died here' : `${f.name ?? 'Enemy player'} died here`}
+                            onClick={(e) => { e.stopPropagation(); seek(f.t); }}
+                            style={{
+                                position: 'absolute',
+                                left: `${(f.t / state.duration) * 100}%`,
+                                top: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                width: '8px',
+                                height: '8px',
+                                borderRadius: '50%',
+                                backgroundColor: f.kind === 'death_self' ? '#ff4444' : '#ffd700',
+                                boxShadow: f.kind === 'death_self'
+                                    ? '0 0 4px rgba(255,68,68,0.8)'
+                                    : '0 0 4px rgba(255,215,0,0.8)',
+                                cursor: 'pointer',
+                                zIndex: 3
+                            }}
+                        />
+                    ))}
+
+                    {/* Main Playhead */}
+                    <div style={{
+                        position: 'absolute', top: '50%', left: `${progress}%`,
+                        width: '10px', height: '10px', backgroundColor: '#fff',
+                        borderRadius: '50%', transform: 'translate(-50%, -50%)',
+                        boxShadow: '0 0 6px rgba(0,0,0,0.8)',
+                        zIndex: 4
+                    }} />
+                </div>
+
+                {/* Compact Search Row */}
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'center', flexShrink: 0 }}>
+                    <div style={{ position: 'relative', width: '100px' }}>
+                        <Search size={12} style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)' }} />
+                        <input 
+                            type="text"
+                            placeholder="Search..."
+                            value={searchQuery}
+                            onChange={handleSearch}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    pause();
+                                    jumpToResult('next');
+                                }
+                            }}
+                            style={{
+                                width: '100%',
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '6px',
+                                padding: '4px 6px 4px 24px',
+                                color: '#fff',
+                                fontSize: '0.75rem',
+                                outline: 'none'
+                            }}
+                        />
+                    </div>
+                    {state.searchResults?.length > 0 && (
+                        <div style={{ display: 'flex', gap: '2px', alignItems: 'center', background: 'rgba(74, 144, 226, 0.1)', borderRadius: '6px', padding: '2px' }}>
+                            <button onClick={() => jumpToResult('prev')} style={{ background: 'none', border: 'none', color: '#4a90e2', cursor: 'pointer', padding: '1px', display: 'flex' }}><ChevronLeft size={12} /></button>
+                            <span style={{ fontSize: '0.65rem', color: '#4a90e2', fontWeight: 'bold', minWidth: '24px', textAlign: 'center' }}>
+                                {state.searchResults.filter(t => t <= state.currentTime).length}/{state.searchResults.length}
+                            </span>
+                            <button onClick={() => jumpToResult('next')} style={{ background: 'none', border: 'none', color: '#4a90e2', cursor: 'pointer', padding: '1px', display: 'flex' }}><ChevronRight size={12} /></button>
+                        </div>
+                    )}
+                </div>
+
+
+                {/* Center Maximize/ChevronDown Button */}
+                <button
+                    onClick={() => setIsMinimized(false)}
+                    title="Maximize Replay Controls"
+                    style={{
+                        position: 'absolute',
+                        bottom: '-6px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'rgba(255, 255, 255, 0.4)',
+                        cursor: 'pointer',
+                        padding: '4px',
+                        zIndex: 9605,
+                        transition: 'all 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.color = '#4a90e2';
+                        e.currentTarget.style.transform = 'translateX(-50%) scale(1.25)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)';
+                        e.currentTarget.style.transform = 'translateX(-50%)';
+                    }}
+                >
+                    <ChevronDown size={18} />
+                </button>
+            </div>
+        );
+    }
+
     return (
         <div 
             className="replay-hud"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             style={{
-                position: 'fixed',
-                bottom: '100px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '90%',
-                maxWidth: '600px',
-                backgroundColor: 'rgba(20, 25, 35, 0.95)',
-                border: '1px solid rgba(74, 144, 226, 0.4)',
-                borderRadius: '16px',
-                padding: '12px 20px',
-                zIndex: 9000,
-                backdropFilter: 'blur(12px)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                position: 'absolute',
+                top: 'calc(var(--shop-panel-top, 64px) - 6px)',
+                left: 0,
+                right: 0,
+                backgroundColor: 'rgba(13, 16, 23, 0.62)',
+                border: '1px solid rgba(255, 255, 255, 0.07)',
+                borderTop: 'none',
+                borderRadius: '0 0 12px 12px',
+                padding: '28px 20px 16px 20px',
+                zIndex: 9400,
+                backdropFilter: 'blur(10px)',
+                boxShadow: 'none',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '12px',
                 transition: 'opacity 0.3s ease',
-                opacity: isHovered || !state.isPlaying ? 1 : 0.6
+                opacity: isHovered || !state.isPlaying ? 1 : 0.6,
+                touchAction: 'none'
             }}
         >
             {/* Top Row: Info & Close */}
@@ -119,25 +373,6 @@ export const ReplayHUD: React.FC = () => {
                     <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>
                         {formatTime(state.currentTime)} / {formatTime(state.duration)}
                     </span>
-                </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                    <button 
-                        onClick={() => setIsLibraryOpen(true)}
-                        style={{ 
-                            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', 
-                            color: '#fff', padding: '4px 8px', borderRadius: '6px', cursor: 'pointer',
-                            display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem'
-                        }}
-                    >
-                        <FileText size={16} />
-                        ARCHIVE
-                    </button>
-                    <button 
-                        onClick={() => { replayer.setIsVisible(false); }}
-                        style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}
-                    >
-                        <X size={18} />
-                    </button>
                 </div>
             </div>
 
@@ -190,7 +425,8 @@ export const ReplayHUD: React.FC = () => {
             </div>
 
             {/* Scrubber */}
-            <div style={{ position: 'relative', height: '10px', width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '5px', cursor: 'pointer' }}
+            <div className="replay-scrubber-track"
+                 style={{ position: 'relative', height: '10px', width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '5px', cursor: 'pointer' }}
                  onClick={(e) => {
                      const rect = e.currentTarget.getBoundingClientRect();
                      const x = e.clientX - rect.left;
@@ -247,6 +483,7 @@ export const ReplayHUD: React.FC = () => {
                 {flagMarkers.map((f, idx) => (
                     <div
                         key={`flag-${idx}`}
+                        className="death-flag-marker"
                         title={f.kind === 'death_self' ? 'You died here' : `${f.name ?? 'Enemy player'} died here`}
                         onClick={(e) => { e.stopPropagation(); seek(f.t); }}
                         style={{
@@ -370,50 +607,12 @@ export const ReplayHUD: React.FC = () => {
                         <span style={{ fontSize: '0.75rem' }}>PRIVACY</span>
                     </button>
 
-                    <div style={{ position: 'relative' }} onMouseEnter={() => setShowExportMenu(true)} onMouseLeave={() => setShowExportMenu(false)}>
-                        {showExportMenu && !state.isExporting && (
-                            <div style={{ 
-                                position: 'absolute', bottom: '100%', right: 0, marginBottom: '8px',
-                                background: 'rgba(20, 25, 35, 0.95)', border: '1px solid rgba(74, 144, 226, 0.4)',
-                                borderRadius: '12px', padding: '6px', display: 'flex', flexDirection: 'column', gap: '4px',
-                                backdropFilter: 'blur(12px)', boxShadow: '0 -4px 16px rgba(0,0,0,0.5)', zIndex: 10001,
-                                width: '120px'
-                            }}>
-                                <button 
-                                    onClick={() => { exportAsText(); setShowExportMenu(false); }}
-                                    style={{ 
-                                        background: 'none', border: 'none', color: '#fff', borderRadius: '6px',
-                                        padding: '8px 10px', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', 
-                                        alignItems: 'center', gap: '8px', transition: 'background 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(74, 144, 226, 0.1)'}
-                                    onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-                                >
-                                    <FileText size={16} color="#4a90e2" />
-                                    TEXT
-                                </button>
-                                <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '2px 4px' }} />
-                                <button 
-                                    onClick={() => { startExport(); setShowExportMenu(false); }}
-                                    style={{ 
-                                        background: 'none', border: 'none', color: '#fff', borderRadius: '6px',
-                                        padding: '8px 10px', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', 
-                                        alignItems: 'center', gap: '8px', transition: 'background 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(74, 144, 226, 0.1)'}
-                                    onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-                                >
-                                    <Video size={16} color="#4a90e2" />
-                                    VIDEO
-                                </button>
-                            </div>
-                        )}
-                        
+                    <div style={{ position: 'relative' }}>
                         <button 
-                            title={state.isExporting ? "Stop Export" : "Choose Export Type"}
+                            title={state.isExporting ? "Stop Export" : "Export Video"}
                             onClick={() => {
                                 if (state.isExporting) stopExport();
-                                else setShowExportMenu(!showExportMenu);
+                                else startExport();
                             }}
                             style={{ 
                                 background: state.isExporting ? 'rgba(255, 68, 68, 0.2)' : 'rgba(255,255,255,0.05)', 
@@ -439,6 +638,37 @@ export const ReplayHUD: React.FC = () => {
                     </div>
                 </div>
             </div>
+            {/* Center Minimize/ChevronUp Button */}
+            <button
+                onClick={() => setIsMinimized(true)}
+                title="Minimize Replay Controls"
+                style={{
+                    position: 'absolute',
+                    bottom: '-6px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'rgba(255, 255, 255, 0.4)',
+                    cursor: 'pointer',
+                    padding: '4px',
+                    zIndex: 9605,
+                    transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.color = '#4a90e2';
+                    e.currentTarget.style.transform = 'translateX(-50%) scale(1.25)';
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)';
+                    e.currentTarget.style.transform = 'translateX(-50%)';
+                }}
+            >
+                <ChevronUp size={18} />
+            </button>
         </div>
     );
 };

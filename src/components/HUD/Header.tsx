@@ -4,6 +4,7 @@ import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, C
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { formatCompactNumber } from '../../utils/gameUtils';
 import { useModeStore } from '../../stores/useModeStore';
+import { useSessionStore } from '../../stores/useSessionStore';
 import XpTicker from '../Combat/XpTicker';
 
 interface HeaderProps {
@@ -33,6 +34,9 @@ const Header: React.FC<HeaderProps> = () => {
         ui, setUI, setIsSettingsOpen, setPopoverState,
         setSettingsTab, replayer
     } = useUI();
+
+    const isReplayHUDMinimized = useSessionStore(state => state.isReplayHUDMinimized);
+    const setIsReplayHUDMinimized = useSessionStore(state => state.setIsReplayHUDMinimized);
 
     const [isEnteringTarget, setIsEnteringTarget] = useState(false);
     const [manualTargetInput, setManualTargetInput] = useState('');
@@ -162,27 +166,30 @@ const Header: React.FC<HeaderProps> = () => {
 
             {/* Theater Mode Banner */}
             {replayer.state.isVisible && replayer.log && (
-                <div style={{
-                    display: 'flex', alignItems: 'center', gap: 6,
-                    padding: '3px 10px', borderRadius: 6,
-                    background: 'rgba(255,180,0,0.12)',
-                    border: '1px solid rgba(255,180,0,0.5)',
-                    color: '#ffb400',
-                    fontWeight: 700, fontSize: 11, letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    boxShadow: '0 0 8px rgba(255,180,0,0.25)',
-                    animation: 'theaterPulse 2s ease-in-out infinite',
-                    flexShrink: 0,
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                }}>
+                <div 
+                    onClick={() => setIsReplayHUDMinimized(!isReplayHUDMinimized)}
+                    style={{
+                        display: 'flex', alignItems: 'center', gap: 5,
+                        padding: '3px 10px', borderRadius: 6,
+                        background: 'rgba(212,170,0,0.12)',
+                        border: '1px solid rgba(212,170,0,0.5)',
+                        color: '#ffb400',
+                        fontWeight: 700, fontSize: 11, letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
+                        boxShadow: '0 0 8px rgba(255,180,0,0.25)',
+                        animation: 'theaterPulse 2s ease-in-out infinite',
+                        flexShrink: 0,
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                    }}
+                >
                     <span style={{ fontSize: 8, color: '#ffb400' }}>⏺</span>
-                    THEATER MODE
-                    <button onClick={() => replayer.clearLog()} style={{
+                    REPLAY MODE
+                    <button onClick={(e) => { e.stopPropagation(); replayer.clearLog(); }} style={{
                         background: 'none', border: 'none', color: '#ffb400',
                         cursor: 'pointer', padding: '0 0 0 4px', fontSize: 12, lineHeight: 1,
                         opacity: 0.7
-                    }} title="Exit Theater Mode">✕</button>
+                    }} title="Exit Replay Mode">✕</button>
                 </div>
             )}
 
@@ -466,7 +473,7 @@ const Header: React.FC<HeaderProps> = () => {
                                             { tab: 'buttons',  label: 'Buttons',     icon: <Settings size={16} /> },
                                             { tab: 'map',      label: 'Map',         icon: <MapIcon size={16} /> },
                                             { tab: 'replays',  label: 'Replays',     icon: <Film size={16} /> },
-                                            { tab: 'help',     label: 'Help & Guides', icon: <HelpCircle size={16} /> },
+                                            // { tab: 'help',     label: 'Help',        icon: <HelpCircle size={16} /> },
                                         ] as const
                                     ).map(({ tab, label, icon }) => (
                                         <div

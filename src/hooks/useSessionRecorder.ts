@@ -6,6 +6,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { saveSessionToDb } from '../utils/storage/sessionDb';
 import type { LogEntryType, LogEntry, FlagEntry, FlagKind, SessionLog } from '../types/session';
+import { useVitalsStore } from '../stores/useVitalsStore';
 
 export type { LogEntryType, LogEntry, FlagEntry, FlagKind, SessionLog };
 
@@ -86,6 +87,9 @@ export const useSessionRecorder = () => {
     setIsRecording(false);
     if (timerRef.current) clearInterval(timerRef.current);
 
+    const vitalsState = useVitalsStore.getState();
+    const charInfo = vitalsState.characterInfo;
+
     const log: SessionLog = {
       version: 1,
       startTime: new Date(startTimeRef.current).toISOString(),
@@ -96,6 +100,8 @@ export const useSessionRecorder = () => {
         version: '1.0.0',
         type: sessionTypeRef.current,
         spectatedCharacter: spectatedCharacterRef.current || undefined,
+        race: charInfo?.race || undefined,
+        subrace: charInfo?.subrace || undefined,
       }
     };
 

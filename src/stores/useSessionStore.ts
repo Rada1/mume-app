@@ -25,6 +25,7 @@ interface SessionState {
     sessionMode: SessionMode;
     replayHUDState: ReplayHUDState;
     isSilentReplay: boolean;
+    isReplayHUDMinimized: boolean;
     
     // Replayer Controls
     isPlaying: boolean;
@@ -39,6 +40,7 @@ interface SessionState {
     setSessionMode: (mode: SessionMode) => void;
     setReplayHUDState: (state: Partial<ReplayHUDState>) => void;
     setIsSilentReplay: (isSilent: boolean) => void;
+    setIsReplayHUDMinimized: (minimized: boolean) => void;
     
     setIsPlaying: (playing: boolean) => void;
     setCurrentTime: (time: number) => void;
@@ -47,8 +49,7 @@ interface SessionState {
     setCurrentIndex: (index: number) => void;
     setSearchResults: (results: number[]) => void;
     setTrimRange: (range: [number | null, number | null]) => void;
-    setReplayerState: (state: Partial<Pick<SessionState, 'isPlaying' | 'currentTime' | 'duration' | 'playbackSpeed' | 'currentIndex' | 'searchResults' | 'trimRange'>>) => void;
-    
+    setReplayerState: (state: Partial<Pick<SessionState, 'isPlaying' | 'currentTime' | 'duration' | 'playbackSpeed' | 'currentIndex' | 'searchResults' | 'trimRange' | 'isReplayHUDMinimized'>>) => void;
 }
 
 const initialReplayHUDState: ReplayHUDState = {
@@ -70,6 +71,7 @@ export const useSessionStore = create<SessionState>((set) => ({
     sessionMode: 'live',
     replayHUDState: initialReplayHUDState,
     isSilentReplay: false,
+    isReplayHUDMinimized: false,
 
     isPlaying: false,
     currentTime: 0,
@@ -84,6 +86,7 @@ export const useSessionStore = create<SessionState>((set) => ({
         replayHUDState: { ...prev.replayHUDState, ...state } 
     })),
     setIsSilentReplay: (isSilentReplay) => set({ isSilentReplay }),
+    setIsReplayHUDMinimized: (isReplayHUDMinimized) => set({ isReplayHUDMinimized }),
 
     setIsPlaying: (isPlaying) => set({ isPlaying }),
     setCurrentTime: (currentTime) => set({ currentTime }),
