@@ -263,10 +263,12 @@ export const inlineConfigToTrait = (config: InlineActionConfigRecord): TraitConf
     const customButtonIds = (config as CustomTraitConfig).buttonIds;
     const known = getTraitConfig(config.id);
     if (known) {
+        const explicitKeywords = 'keywords' in config && (config.keywords || []).length > 0;
         return {
             ...known,
             keywords: 'keywords' in config ? config.keywords || known.keywords : known.keywords,
             buttonIds: customButtonIds || known.buttonIds,
+            categoryIds: explicitKeywords ? undefined : known.categoryIds,
         };
     }
 

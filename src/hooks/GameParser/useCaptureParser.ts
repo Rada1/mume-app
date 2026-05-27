@@ -8,6 +8,7 @@ import { CaptureType, CaptureSession } from '../../types/capture';
 import { DrawerLine } from '../../types';
 import { Tokenizer } from '../../services/parser/Tokenizer';
 import { buildPlayerLineTokens } from './playerLineTokens';
+import { parseAffectedByLines } from '../../utils/affectUtils';
 
 export interface CaptureParserDeps {
     captureSession: CaptureSession | null;
@@ -23,6 +24,7 @@ export interface CaptureParserDeps {
     setInfoLines: (lines: DrawerLine[]) => void;
     setQuestLines: (lines: DrawerLine[]) => void;
     setAchievementLines: (lines: DrawerLine[]) => void;
+    setCharacterInfo?: (info: Partial<import('../../types').CharacterInfo>) => void;
     setContainerContents?: React.Dispatch<React.SetStateAction<Record<string, DrawerLine[]>>>;
     practiceHandler?: {
         parsePracticeLine: (text: string) => unknown;
@@ -39,7 +41,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         setInventoryLines, setEqLines, setStatsLines, setPracticeLines,
         setWhoLines, setWhoList, setScoreLines, setInfoLines, setQuestLines, setAchievementLines, registerEntity,
         practiceHandler,
-        ansiConvert, captureStage, setContainerContents
+        ansiConvert, captureStage, setContainerContents, setCharacterInfo
     } = deps;
     
     // We use a local ref to ensure synchronous updates while useGameParser 
@@ -250,6 +252,10 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     setScoreLines(lines);
                     break;
                 case 'info':
+                    {
+                        const affectedBy = parseAffectedByLines(lines);
+                        if (affectedBy) setCharacterInfo?.({ affectedBy });
+                    }
                     setInfoLines(lines);
                     break;
                 case 'practice':
@@ -281,7 +287,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         sessionRef.current = null;
         setCaptureSession(null);
         captureStage.current = 'none';
-    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setWhoList, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setAchievementLines, setCaptureSession, captureStage, practiceHandler, setContainerContents]);
+    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setWhoList, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setAchievementLines, setCaptureSession, captureStage, practiceHandler, setContainerContents, setCharacterInfo]);
 
     const hasSession = useCallback(() => sessionRef.current !== null, [sessionRef]);
     const isSilent = useCallback(() => sessionRef.current?.isSilent || false, [sessionRef]);

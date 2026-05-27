@@ -11,6 +11,7 @@ import { GroupTableView } from './GroupTableView';
 import { NearbyWhereView } from './NearbyWhereView';
 import { UnifiedView } from './Views/UnifiedView';
 import { StatusDrawer } from './StatusDrawer';
+import { AccountDrawer } from './AccountDrawer';
 import { DrawerHoldCommandButton } from './DrawerHoldCommandButton';
 import { DrawerTabBar } from './DrawerTabBar';
 import { buildPracticeDrawerLines } from '../../utils/practiceDrawerLines';

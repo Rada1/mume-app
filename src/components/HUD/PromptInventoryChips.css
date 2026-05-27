@@ -146,6 +146,41 @@
     box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.65), 0 0 10px rgba(250, 204, 21, 0.24);
 }
 
+.prompt-affect-chip {
+    color: rgba(125, 211, 252, 0.95);
+    border-color: rgba(125, 211, 252, 0.18);
+    background: rgba(14, 165, 233, 0.08);
+    cursor: default;
+    user-select: none;
+}
+
+.prompt-affect-chip.is-magic {
+    color: rgba(216, 180, 254, 0.96);
+    border-color: rgba(168, 85, 247, 0.28);
+    background: rgba(126, 34, 206, 0.16);
+}
+
+.prompt-affect-chip.is-herblore {
+    color: rgba(134, 239, 172, 0.96);
+    border-color: rgba(34, 197, 94, 0.24);
+    background: rgba(22, 163, 74, 0.12);
+}
+
+.prompt-affect-chip.is-poison {
+    color: rgba(252, 165, 165, 0.98);
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(185, 28, 28, 0.15);
+}
+
+.prompt-affect-chip-row {
+    pointer-events: auto;
+}
+
+.prompt-affect-chip:hover {
+    border-color: rgba(125, 211, 252, 0.24);
+    background: rgba(14, 165, 233, 0.1);
+}
+
 .object-chip-dragging .prompt-inventory-chip:hover {
     transform: translateY(-1px);
 }

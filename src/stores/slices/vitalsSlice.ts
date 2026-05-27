@@ -24,6 +24,7 @@ export interface CharacterInfo {
     gold: number;
     description?: string;
     whois?: string;
+    affectedBy?: string[];
 }
 
 export interface VitalsState {
@@ -123,7 +124,8 @@ export const initialVitalsState = {
         subrace: '',
         subclass: '',
         class: '',
-        gold: 0
+        gold: 0,
+        affectedBy: []
     },
     target: null,
     activePrompt: null,

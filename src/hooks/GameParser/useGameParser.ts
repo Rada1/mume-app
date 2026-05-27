@@ -284,7 +284,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         practiceHandler: deps.practiceHandler,
         registerEntity,
         ansiConvert: deps.ansiConvert,
-        captureStage: deps.captureStage
+        captureStage: deps.captureStage,
+        setCharacterInfo
     });
 
     const { parseLogGmcp, resetSpectateContext } = useLogGmcpParser({

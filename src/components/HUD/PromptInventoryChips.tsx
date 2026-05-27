@@ -13,10 +13,15 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 import { audioManager } from '../../services/audio/AudioManager';
 import { useObjectDragCommands } from '../../hooks/useObjectDragCommands';
 import { targetTextMatchesEntity } from '../../utils/selectionUtils';
+import { getAffectChipTone } from '../../utils/affectUtils';
 import './PromptInventoryChips.css';
 
 
 type GearChipKind = 'worn' | 'inventory';
+
+interface PromptInventoryChipsProps {
+    affects?: string[];
+}
 
 interface GearChip {
     entityId: string;
@@ -180,7 +185,7 @@ const isChipTargeted = (chip: GearChip, selectedTargetId: string | undefined, ta
     selectedTargetId === chip.menuEntityId || targetTextMatchesEntity(target, chip.context, chip.label)
 );
 
-export const PromptInventoryChips: React.FC = () => {
+export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affects = [] }) => {
     const {
         triggerHaptic,
         expandedContainers,
@@ -218,12 +223,16 @@ export const PromptInventoryChips: React.FC = () => {
             .filter((chip): chip is GearChip => !!chip)
     ), [displayInventoryLines]);
 
+    const affectChips = useMemo(() => Array.from(new Set(
+        affects.map(affect => affect.trim()).filter(Boolean)
+    )), [affects]);
+
     const rows = [
         { id: 'worn', label: 'worn:', chips: wornChips },
         { id: 'inventory', label: 'inventory', chips: inventoryChips }
     ].filter(row => row.chips.length > 0);
 
-    if (rows.length === 0) return null;
+    if (rows.length === 0 && affectChips.length === 0) return null;
 
     const selectChip = (event: React.MouseEvent<HTMLButtonElement>, chip: GearChip) => {
         event.stopPropagation();
@@ -406,6 +415,22 @@ export const PromptInventoryChips: React.FC = () => {
                     </React.Fragment>
                 );
             })}
+            {affectChips.length > 0 && (
+                <div className="prompt-inventory-chip-row prompt-affect-chip-row" onClick={event => event.stopPropagation()}>
+                    <span className="prompt-inventory-chip-label">affects</span>
+                    <div className="prompt-inventory-chip-list">
+                        {affectChips.map(affect => (
+                            <span
+                                key={affect}
+                                className={`prompt-inventory-chip prompt-affect-chip is-${getAffectChipTone(affect)}`}
+                                title={affect}
+                            >
+                                {affect}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

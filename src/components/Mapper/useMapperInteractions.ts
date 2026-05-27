@@ -460,35 +460,26 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         setMarqueeEnd({ x: e.clientX, y: e.clientY });
                     }
                 } else {
-                    // Play mode: Start long-press timer for "Look Modifier"
-                    if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
-                    longPressTimerRef.current = setTimeout(() => {
-                        const { triggerHaptic, setHeldButton, joystick } = depsRef.current;
-                        if (mapLookActivatedRef.current) return;
-                        mapLookActivatedRef.current = true;
-                        triggerHaptic(40);
-                        contextMenuTriggeredRef.current = true;
-                        joystick?.stopRepeatTimer?.();
-                        joystick?.handleJoystickCancel?.();
-                        joystick?.setIsJoystickConsumed?.(false);
+                    if (e.pointerType === 'touch') {
+                        if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+                        const startX = e.clientX;
+                        const startY = e.clientY;
+                        longPressTimerRef.current = setTimeout(() => {
+                            const { screenToWorld, getRoomAt } = hitTestRef.current;
+                            const world = screenToWorld(startX, startY);
+                            const roomId = getRoomAt(world.x, world.y);
+                            if (!roomId || mapLookActivatedRef.current) return;
 
-                        // --- Map Long-Press: Enter look-targeting mode ---
-                        // Sets heldButton so the app gains tactical-targeting-active CSS class,
-                        // giving targeting borders to all inline log buttons, map occupants,
-                        // and door buttons. Tapping any of those fires 'look <target>'.
-                        // Releasing over empty space fires plain 'look' (handled in onUp).
-                        if (setHeldButton) {
-                            setHeldButton({
-                                id: 'map-long-press',
-                                baseCommand: 'look',
-                                modifiers: [],
-                                dx: 0,
-                                dy: 0,
-                                didFire: false,
-                                commandPrefixes: []
-                            });
-                        }
-                    }, 500);
+                            mapLookActivatedRef.current = true;
+                            contextMenuTriggeredRef.current = true;
+                            depsRef.current.joystick?.stopRepeatTimer?.();
+                            depsRef.current.joystick?.handleJoystickCancel?.();
+                            depsRef.current.joystick?.setIsJoystickConsumed?.(false);
+                            depsRef.current.setInfoRoomId(roomId);
+                            depsRef.current.playClickSound?.();
+                            depsRef.current.triggerHaptic(40);
+                        }, 500);
+                    }
 
                     // Only use joystick/trackpad mode on touch devices; mouse always pans
                     if (e.pointerType === 'touch') {
@@ -762,6 +753,21 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     dragTypeRef.current = null;
                     setIsDragging(false);
                     triggerRender();
+                    return;
+                }
+
+                if (wasLongPress && mode === 'play') {
+                    if (dragTypeRef.current === 'joystick' && depsRef.current.joystick?.handleJoystickCancel) {
+                        depsRef.current.joystick.handleJoystickCancel(e as any);
+                    }
+                    if (depsRef.current.setIsTrackpadModifierActive) {
+                        depsRef.current.setIsTrackpadModifierActive(false);
+                    }
+                    isDraggingInternalRef.current = false;
+                    dragTypeRef.current = null;
+                    setIsDragging(false);
+                    setMarqueeStart(null);
+                    setMarqueeEnd(null);
                     return;
                 }
 

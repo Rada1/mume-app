@@ -293,6 +293,7 @@ const PromptBox: FC<PromptBoxProps> = ({
     const manaStatus = activeVitals.gmcpVitals.manaStatus;
     const moveStatus = activeVitals.gmcpVitals.moveStatus;
     const wimpy = activeVitals.wimpy;
+    const affects = activeVitals.characterInfo?.affectedBy ?? [];
     const position = activeVitals.position;
     const inCombat = position === 'fighting';
 
@@ -310,6 +311,7 @@ const PromptBox: FC<PromptBoxProps> = ({
     const [activeButtonRect, setActiveButtonRect] = useState<DOMRect | null>(null);
     const [showNumbers, setShowNumbers] = useState(false);
     const numbersTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const lastAffectsRefreshRef = useRef(0);
     const [isExpanded, setIsExpanded] = useState(false);
 
     // Dynamic scaling linked directly to the authoritative log font size
@@ -420,8 +422,16 @@ const PromptBox: FC<PromptBoxProps> = ({
     const handleBoxToggle = useCallback((e: React.MouseEvent) => {
         if ((e.target as HTMLElement).closest('button')) return;
         triggerHaptic(10);
-        setIsExpanded(prev => !prev);
-    }, [triggerHaptic]);
+        setIsExpanded(prev => {
+            const nextExpanded = !prev;
+            const now = Date.now();
+            if (nextExpanded && !isSpectateMode && now - lastAffectsRefreshRef.current > 5000) {
+                lastAffectsRefreshRef.current = now;
+                executeCommand('info %f', true, true, true, true);
+            }
+            return nextExpanded;
+        });
+    }, [executeCommand, isSpectateMode, triggerHaptic]);
 
     const handleDispositionSelect = useCallback((id: DispositionSliderConfig['id'], val: string) => {
         if (id === 'mood') {
@@ -660,7 +670,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                     </div>
                 </div>
 
-                {isExpanded && <PromptInventoryChips />}
+                {isExpanded && <PromptInventoryChips affects={affects} />}
 
                 {activeSlider === 'pos' && activeButtonRect && (
                     <CombatSliderPopout 

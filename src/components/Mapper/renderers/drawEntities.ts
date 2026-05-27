@@ -207,16 +207,16 @@ const drawOccupantDot = (
     ctx.fill();
 
     // 2. Border — keep glow only for target/combatant (high-signal cases)
-    const borderColor = isTarget ? targetColor : isCombatant ? '#ef4444' : isGroupMember ? GROUP_DOT_BORDER : (isHeldActive || isActive) ? color : 'rgba(255, 255, 255, 0.2)';
-    ctx.globalAlpha = isTarget ? alpha : isCombatant ? alpha : isHeldActive ? alpha * 0.7 : isActive ? alpha * 0.55 : alpha;
+    const borderColor = isCombatant ? '#ef4444' : isTarget ? targetColor : isGroupMember ? GROUP_DOT_BORDER : (isHeldActive || isActive) ? color : 'rgba(255, 255, 255, 0.2)';
+    ctx.globalAlpha = isCombatant ? alpha : isTarget ? alpha : isHeldActive ? alpha * 0.7 : isActive ? alpha * 0.55 : alpha;
     ctx.strokeStyle = borderColor;
-    ctx.lineWidth = isTarget ? Math.max(0.8, 1.2 / camera.zoom) : isCombatant ? Math.max(1.1, 1.7 / camera.zoom) : isGroupMember ? Math.max(0.55, 0.9 / camera.zoom) : (isHeldActive || isActive) ? Math.max(0.55, 0.9 / camera.zoom) : 0.5;
-    if (isTarget) {
-        ctx.shadowColor = borderColor;
-        ctx.shadowBlur = (radius * 0.8) + extraGlow;
-    } else if (isCombatant) {
+    ctx.lineWidth = isCombatant ? Math.max(1.1, 1.7 / camera.zoom) : isTarget ? Math.max(0.8, 1.2 / camera.zoom) : isGroupMember ? Math.max(0.55, 0.9 / camera.zoom) : (isHeldActive || isActive) ? Math.max(0.55, 0.9 / camera.zoom) : 0.5;
+    if (isCombatant) {
         ctx.shadowColor = borderColor;
         ctx.shadowBlur = (radius * (1.05 + combatPulse * 0.7)) + extraGlow;
+    } else if (isTarget) {
+        ctx.shadowColor = borderColor;
+        ctx.shadowBlur = (radius * 0.8) + extraGlow;
     }
     ctx.stroke();
     ctx.restore();
@@ -411,7 +411,7 @@ export const drawRoomOccupants = (
             const isSelectedTarget = targetTextMatchesEntity(rCtx.targetName, occ.commandTarget, occ.name);
             const isCombatant = isOpponent || (occ.id != null && combatantIds.has(String(occ.id)));
             const isGroupOcc = occ.ring === 'inner';
-            drawDot(orbX, orbY, occ.color, alpha, occ.name, occ.radius, anim, isOpponent || isSelectedTarget, isOccupantActive(occ), isCombatant, isGroupOcc);
+            drawDot(orbX, orbY, occ.color, alpha, occ.name, occ.radius, anim, isSelectedTarget, isOccupantActive(occ), isCombatant, isGroupOcc);
 
             // Opponent tether. Name fallback is allowed only when it resolves to
             // exactly one visible occupant; duplicate names require GMCP ID.
@@ -910,10 +910,10 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
         });
 
         const anim = occupantAnims.get(memberKey);
-        const isTarget = isOpponentOccupant(member, groupMembers, rCtx.opponentId, rCtx.opponentName);
+        const isOpponent = isOpponentOccupant(member, groupMembers, rCtx.opponentId, rCtx.opponentName);
         const isHeldActive = !!(rCtx.heldButton && !rCtx.heldButton.didFire && !rCtx.heldButton.id?.startsWith('log-inline-'));
 
-        drawOccupantDot(rCtx, px, py, MEMBER_COLOR, alpha * 0.92, memberName, ORB_RADIUS, anim, isTarget, false, false, true, isHeldActive);
+        drawOccupantDot(rCtx, px, py, MEMBER_COLOR, alpha * 0.92, memberName, ORB_RADIUS, anim, false, false, !!rCtx.inCombat && isOpponent, true, isHeldActive);
 
         const isSameRoom = prx !== undefined && prx === rx && pry === ry && prz === rz;
         if (!isSameRoom) {

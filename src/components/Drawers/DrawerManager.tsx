@@ -94,11 +94,11 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         const isDesktop = !viewport.isMobile;
         const isPortrait = viewport.isMobile && !viewport.isLandscape;
         
-        if ((isDesktop || isPortrait) && ui.drawer === 'none') {
+        if ((isDesktop || isPortrait) && ui.drawer === 'none' && !ui.mapExpanded) {
             const defaultDrawer = gameState === 'account' && sessionMode !== 'replay' ? 'account' : 'status';
             setUI(prev => ({ ...prev, drawer: defaultDrawer }));
         }
-    }, [ui.drawer, viewport.isMobile, viewport.isLandscape, gameState, sessionMode, setUI]);
+    }, [ui.drawer, ui.mapExpanded, viewport.isMobile, viewport.isLandscape, gameState, sessionMode, setUI]);
 
     // Restore saved log width only (drawer widths use auto calc default)
     React.useEffect(() => {

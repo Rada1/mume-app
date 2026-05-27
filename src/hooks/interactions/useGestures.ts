@@ -24,12 +24,13 @@ export const useGestures = (deps: InteractionDeps) => {
             if (ui.mapExpanded) {
                 setIsMapExpanded(false);
             } else {
-                console.log('[Gestures] Triggering CHARACTER sequence (info %O %D %k %A, score, info %m, quest, practice)');
+                console.log('[Gestures] Triggering CHARACTER sequence (info %O %D %k %A, score, info %m, info %f, quest, practice)');
                 executeCommand('info %O %D %k %A', true, true, true, true);
                 setTimeout(() => executeCommand('score', true, true, true, true), 100);
                 setTimeout(() => executeCommand('info %m', true, true, true, true), 200);
-                setTimeout(() => executeCommand('quest', true, true, true, true), 300);
-                setTimeout(() => executeCommand('practice', true, true, true, true), 400);
+                setTimeout(() => executeCommand('info %f', true, true, true, true), 300);
+                setTimeout(() => executeCommand('quest', true, true, true, true), 400);
+                setTimeout(() => executeCommand('practice', true, true, true, true), 500);
                 handleTabClick('character');
             }
         } else if (dir === 'sw') {
@@ -38,10 +39,11 @@ export const useGestures = (deps: InteractionDeps) => {
             handleTabClick('equipment');
             setGearTab('inv');
         } else if (dir === 'right') {
-            console.log('[Gestures] Triggering STAT sequence (info %O %D %k %A, score, info %m)');
+            console.log('[Gestures] Triggering STAT sequence (info %O %D %k %A, score, info %m, info %f)');
             executeCommand('info %O %D %k %A', true, true, true, true);
             setTimeout(() => executeCommand('score', true, true, true, true), 100);
             setTimeout(() => executeCommand('info %m', true, true, true, true), 200);
+            setTimeout(() => executeCommand('info %f', true, true, true, true), 300);
             handleTabClick('character');
             setCharTab('info');
         } else if (dir === 'left') {
