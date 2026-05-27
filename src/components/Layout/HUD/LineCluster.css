@@ -165,10 +165,12 @@
     transition: opacity 0.3s ease;
 }
 
-.tactical-line-wrapper .line-cluster-action-menu {
+.tactical-line-wrapper .line-cluster-action-menu,
+.tactical-line-wrapper .line-cluster-action-menu.is-disabled {
     position: relative;
     animation: none !important;
     color: rgba(255, 255, 255, 0.72) !important;
+    border: 0.75px solid rgba(232, 176, 32, 0.2) !important;
 }
 
 .tactical-line-wrapper.is-targeting .line-btn::after,
