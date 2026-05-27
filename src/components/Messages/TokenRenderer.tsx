@@ -49,6 +49,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
         objectColor: s.objectColor,
         roomColor: s.roomColor,
         theme: s.theme,
+        isTextRevealEnabled: s.isTextRevealEnabled,
     })));
     const { inlineCategories, selectedObjectIds, inCombat } = useBaseGame();
     const { popoverState } = useUI();
@@ -66,9 +67,10 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     return (
                         <>
                             <span className="first-word-static">{firstPart}</span>
-                            {secondPart && (
+                            {secondPart && settings.isTextRevealEnabled && (
                                 <span className="remaining-reveal-animated">{secondPart}</span>
                             )}
+                            {secondPart && !settings.isTextRevealEnabled && secondPart}
                         </>
                     );
                 } else {
@@ -420,9 +422,10 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
         return (
             <>
                 <span className="first-word-static">{firstWordNodes}</span>
-                {remainingNodes.length > 0 && (
+                {remainingNodes.length > 0 && settings.isTextRevealEnabled && (
                     <span className="remaining-reveal-animated">{remainingNodes}</span>
                 )}
+                {remainingNodes.length > 0 && !settings.isTextRevealEnabled && remainingNodes}
             </>
         );
     }

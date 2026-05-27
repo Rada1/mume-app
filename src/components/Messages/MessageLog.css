@@ -128,8 +128,6 @@
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
-
-
 .newbie-mode .message {
     animation: none !important;
     transition: none !important;
@@ -756,6 +754,66 @@
     line-height: 1.5;
     margin-right: 8px;
     max-width: 85%;
+    position: relative;
+    z-index: 0;
+    isolation: isolate;
+}
+
+.user-command-bubble.awaiting-response {
+    border-color: rgba(var(--accent-rgb, 212, 170, 0), 0.28);
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.5),
+        0 0 10px rgba(var(--accent-rgb, 212, 170, 0), 0.12);
+}
+
+.user-command-bubble.bloom-active::after,
+.user-command-bubble.bloom-exiting::after {
+    content: "";
+    position: absolute;
+    inset: -18px;
+    border-radius: 34px 34px 20px 34px;
+    pointer-events: none;
+    z-index: -1;
+    background:
+        radial-gradient(
+            closest-side,
+            rgba(var(--accent-rgb, 212, 170, 0), 0.44),
+            rgba(var(--accent-rgb, 212, 170, 0), 0.2) 54%,
+            transparent 100%
+        );
+    filter: blur(14px);
+}
+
+.user-command-bubble.bloom-active::after {
+    animation: command-bloom-in 120ms ease-out both;
+}
+
+.user-command-bubble.bloom-exiting::after {
+    animation: command-bloom-out 220ms ease-out both;
+}
+
+@keyframes command-bloom-in {
+    from {
+        opacity: 0;
+        transform: scale(0.82);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes command-bloom-out {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(1.18);
+    }
 }
 
 .snoop-command-bubble {
@@ -788,6 +846,15 @@
     opacity: 0.5;
     font-weight: normal;
     font-size: 0.75em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .user-command-bubble.bloom-active::after,
+    .user-command-bubble.bloom-exiting::after {
+        animation: none !important;
+        opacity: 0.35;
+        transform: none;
+    }
 }
 
 .message.system {

@@ -325,7 +325,7 @@ export function useCommandController(deps: CommandControllerDeps) {
             }
         }
 
-        executeCommand(finalCmd);
+        executeCommand(finalCmd, false, false, false, false, { shouldFocus: true });
 
     }, [input, executeCommand, viewport, setInput, deps.mapperRef, deps.parley]);
 

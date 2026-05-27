@@ -65,6 +65,8 @@ const MessageItem = React.memo(({
     input,
     setInput,
     viewport,
+    isTextRevealEnabled,
+    isAwaitingResponse,
     batchOffset = 0,
     targetName,
     inlineCategories,
@@ -85,6 +87,8 @@ const MessageItem = React.memo(({
     input?: string,
     setInput?: (val: string) => void;
     viewport: any;
+    isTextRevealEnabled: boolean;
+    isAwaitingResponse?: boolean;
     batchOffset?: number;
     targetName?: string | null;
     inlineCategories?: any[];
@@ -107,9 +111,23 @@ const MessageItem = React.memo(({
     const [isRecent] = React.useState(() => Date.now() - msg.timestamp < 2000);
     const isLatestBatch = msg.batchId === undefined || msg.batchId === maxBatchId;
     const isOldBatchDim = brightBatchFloor !== undefined && (msg.batchId === undefined || msg.batchId < brightBatchFloor);
+    const [commandBloomPhase, setCommandBloomPhase] = React.useState<'off' | 'active' | 'exiting'>(isAwaitingResponse ? 'active' : 'off');
     
     // local state to handle the cleanup of the hit sheen animation
     const [sheenActive, setSheenActive] = React.useState(!!(msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage));
+
+    React.useEffect(() => {
+        if (msg.type !== 'user') return;
+        if (isAwaitingResponse) {
+            setCommandBloomPhase('active');
+            return;
+        }
+        setCommandBloomPhase(phase => phase === 'active' ? 'exiting' : phase);
+        const timer = setTimeout(() => {
+            setCommandBloomPhase('off');
+        }, 220);
+        return () => clearTimeout(timer);
+    }, [isAwaitingResponse, msg.type]);
 
     React.useEffect(() => {
         if (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage) {
@@ -181,7 +199,7 @@ const MessageItem = React.memo(({
             )}
             {msg.type === 'user' || msg.type === 'snoop-command' ? (
                 <div 
-                    className={msg.type === 'user' ? "user-command-bubble" : "snoop-command-bubble"}
+                    className={msg.type === 'user' ? `user-command-bubble${isAwaitingResponse ? ' awaiting-response' : ''}${commandBloomPhase !== 'off' ? ` bloom-${commandBloomPhase}` : ''}` : "snoop-command-bubble"}
                 >
                     <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />
                 </div>
@@ -211,7 +229,7 @@ const MessageItem = React.memo(({
                                     <span className="comm-action" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
                                 </>
                             )}
-                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} splitFirstWord={true} wordReveal={isRecent} /></span>
+                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} splitFirstWord={true} wordReveal={isTextRevealEnabled && isRecent} /></span>
                         </div>
                         <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                     </div>
@@ -247,7 +265,7 @@ const MessageItem = React.memo(({
                                     tokens={msg.tokens}
                                     fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
                                     splitFirstWord={true}
-                                    wordReveal={isRecent && !msg.isRoomName}
+                                    wordReveal={isTextRevealEnabled && isRecent && !msg.isRoomName}
                                     metadata={msg.isRoomName ? {
                                         id: `room:${(currentRoomName || msg.textRaw || '').toLowerCase()}`,
                                         context: currentRoomName || msg.textRaw || '',
@@ -356,7 +374,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const inlineCategories = useBaseGame().inlineCategories;
     const {
         targetColor, playerColor, enemyColor, neutralColor, npcColor, objectColor, roomColor,
-        hidePrompt, showBlockHeaders
+        hidePrompt, showBlockHeaders, isTextRevealEnabled
     } = useSettingsStore();
 
     const colors = useMemo(() => ({
@@ -463,6 +481,15 @@ const MessageLog: React.FC<MessageLogProps> = ({
             if (displayMessages[i].type === 'user') return i;
         }
         return -1;
+    }, [displayMessages]);
+
+    const awaitingResponseUserId = useMemo(() => {
+        for (let i = displayMessages.length - 1; i >= 0; i--) {
+            const message = displayMessages[i];
+            if (message.type === 'user') return message.id;
+            if (message.type !== 'snoop-command') return null;
+        }
+        return null;
     }, [displayMessages]);
 
     const brightBatchFloor = useMemo(() => {
@@ -719,6 +746,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     input={input}
                                     setInput={setInput}
                                     viewport={viewport}
+                                    isTextRevealEnabled={isTextRevealEnabled}
+                                    isAwaitingResponse={msg.type === 'user' && msg.id === awaitingResponseUserId}
                                     batchOffset={batchOffset}
                                     targetName={target}
                                     inlineCategories={inlineCategories}
