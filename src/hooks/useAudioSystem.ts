@@ -1,4 +1,5 @@
 import { useEffect, useCallback, useRef } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { audioManager } from '../services/audio/AudioManager';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { useActiveRoom, useActiveVitals } from '../stores/useActiveGameState';
@@ -24,6 +25,11 @@ export const useAmbientController = (accountStage: string = 'none') => {
 
     const inCombat = activeVitals.position === 'fighting';
 
+    // Refs to avoid stale closures in the zone-ended listener
+    const normalizedZoneRef = useRef<string | null>(null);
+    const inCombatRef = useRef<boolean>(false);
+    const dynamicUrlsRef = useRef<string[] | undefined>(undefined);
+
     useEffect(() => {
         if (!isSoundEnabled) return;
         const isDay = lighting === 'sun';
@@ -44,6 +50,10 @@ export const useAmbientController = (accountStage: string = 'none') => {
 
         // Account mode overrides standard zone music
         if (accountStage !== 'none') {
+            normalizedZoneRef.current = 'account';
+            inCombatRef.current = false;
+            dynamicUrlsRef.current = ['/assets/Sounds/Account/accountmusic.mp3'];
+
             audioManager.setAmbient('zone', { 
                 key: 'account', 
                 dynamicUrls: ['/assets/Sounds/Account/accountmusic.mp3'],
@@ -66,6 +76,11 @@ export const useAmbientController = (accountStage: string = 'none') => {
         ) : null;
         const dynamicUrls = mapping ? (Array.isArray(mapping.url) ? mapping.url : [mapping.url]) : undefined;
 
+        // Update refs for replay loop
+        normalizedZoneRef.current = normalizedZone;
+        inCombatRef.current = inCombat;
+        dynamicUrlsRef.current = dynamicUrls;
+
         audioManager.setAmbient('zone', { key: normalizedZone, inCombat, dynamicUrls });
     }, [roomZone, inCombat, isSoundEnabled, zoneMusic, mode, isSpectating, activeView, accountStage]);
 
@@ -79,11 +94,18 @@ export const useAmbientController = (accountStage: string = 'none') => {
     useEffect(() => {
         const handleZoneEnded = (key: string) => {
             console.log(`[useAmbientController] Zone audio ended: ${key}`);
-            // Logic to potentially pick a new random track could go here
+            if (isSoundEnabled && normalizedZoneRef.current === key) {
+                console.log(`[useAmbientController] Re-triggering zone music for key: ${key}`);
+                audioManager.setAmbient('zone', {
+                    key: normalizedZoneRef.current,
+                    inCombat: inCombatRef.current,
+                    dynamicUrls: dynamicUrlsRef.current
+                });
+            }
         };
         audioManager.addZoneEndedListener(handleZoneEnded);
         return () => audioManager.removeZoneEndedListener(handleZoneEnded);
-    }, []);
+    }, [isSoundEnabled]);
 };
 
 export const useAudioEffects = () => {

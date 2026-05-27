@@ -67,7 +67,9 @@ const getTagText = (line: string, tagName: string) => {
 };
 
 const getAttr = (attrs: string, name: string) => {
-    return attrs.match(new RegExp(`\\b${name}=["']?([^"'\\s>/]*)`, 'i'))?.[1];
+    const match = attrs.match(new RegExp(`\\b${name}=(?:"([^"]*)"|'([^']*)'|([^\\s>]*))`, 'i'));
+    if (!match) return undefined;
+    return match[1] || match[2] || match[3];
 };
 
 export const extractXmlMovementDir = (line: string): string | null => {
