@@ -788,7 +788,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setCharTab: ui.setCharTab,
         handleTabClick: (drawer: 'none' | 'account' | 'character' | 'players' | 'equipment' | 'status') => {
             if (drawer === 'none') {
-                ui.setDrawer('none');
+                const defaultDrawer = gameState === 'account' && s.userSession.mode !== 'replay' ? 'account' : 'status';
+                ui.setDrawer(viewport.isMobile ? 'none' : defaultDrawer);
                 return;
             }
             if (ui.drawer === drawer) {
@@ -819,6 +820,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         toggleMap: () => {
             if (viewport.isMobile && ui.drawer !== 'none') {
                 ui.setDrawer('none');
+                ui.setMapExpanded(true);
+            } else if (!viewport.isMobile) {
                 ui.setMapExpanded(true);
             } else {
                 ui.setMapExpanded(!ui.mapExpanded);

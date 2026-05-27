@@ -566,7 +566,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 charCapture: null,
                 isGathering: false
             }));
-            useUIStore.getState().setUI({ drawer: 'none', isDrawerPeeking: false, mapExpanded: true });
+            useUIStore.getState().setUI({ drawer: !deps.isMobile ? 'status' : 'none', isDrawerPeeking: false, mapExpanded: true });
             deps.setIsPasswordMode(false);
             deps.setGameState('playing');
         }
@@ -797,7 +797,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                     charCapture: null,
                     isGathering: false
                 }));
-                useUIStore.getState().setUI({ drawer: 'none', isDrawerPeeking: false, mapExpanded: true });
+                useUIStore.getState().setUI({ drawer: !deps.isMobile ? 'status' : 'none', isDrawerPeeking: false, mapExpanded: true });
                 deps.setGameState('playing');
             }
         }

@@ -155,7 +155,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 charCapture: null,
                 isGathering: false
             }));
-            useUIStore.getState().setUI({ drawer: 'none', isDrawerPeeking: false, mapExpanded: true });
+            useUIStore.getState().setUI({ drawer: !isMobileRef.current ? 'status' : 'none', isDrawerPeeking: false, mapExpanded: true });
             setIsPasswordMode(false);
             gmcpBus.emit('Session.Start', { characterName: 'Player' });
 

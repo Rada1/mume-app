@@ -11,22 +11,10 @@ import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
 import { RoomChipRows } from '../Mapper/RoomChipRows';
 import { useMumeTime } from '../../hooks/useMumeTime';
 import { LineCluster } from '../Layout/HUD/LineCluster';
-import { User, Shield, Users, Map as MapIcon, Activity, UtensilsCrossed, Droplets, CloudFog, Clock, X, LogIn } from 'lucide-react';
-import { StatusDrawer } from './StatusDrawer';
+import { Map as MapIcon, UtensilsCrossed, Droplets, CloudFog, Clock } from 'lucide-react';
 import { DrawerResizeHandle } from './DrawerResizeHandle';
 import { AccountDrawer } from './AccountDrawer';
 import { DrawerUnifiedPanel } from './DrawerUnifiedPanel';
-
-const SIDEBAR_TABS = [
-    { id: 'status',    label: 'Status',  Icon: Activity },
-    { id: 'character', label: 'Char',    Icon: User },
-    { id: 'players',   label: 'Players', Icon: Users },
-    { id: 'equipment', label: 'Gear',    Icon: Shield },
-];
-
-const ACCOUNT_TABS = [
-    { id: 'account', label: 'Account', Icon: LogIn },
-];
 
 interface DrawerManagerProps {
     heldButton: any;
@@ -48,17 +36,22 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     } = useGame();
     const currentTime = useMumeTime(gameTime);
     const {
-        ui, setUI, handleTabClick,
+        ui, setUI,
         setPopoverState,
         displayInventoryLines, displayEqLines,
 
         infoLines, questLines, achievementLines, practiceLines,
         whoLines, whereLines,
         setWhoLines, setWhereLines,
-        gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab,
-        toggleMap
+        gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab
     } = useUI();
     const { groupMembers, target, activePrompt, stats } = useVitals();
+    const activeDesktopDrawer =
+        ui.drawer !== 'none'
+            ? ui.drawer
+            : gameState === 'account' && sessionMode !== 'replay'
+                ? 'account'
+                : 'status';
     const drawerData = {
         gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab,
         displayInventoryLines, displayEqLines, roomItems, whoLines, whereLines,
@@ -69,10 +62,12 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     // Body classes for desktop layout
     React.useEffect(() => {
         if (!viewport.isMobile) {
-            document.body.classList.toggle('map-drawer-open', ui.mapExpanded);
-            document.body.classList.toggle('utility-drawer-open', ui.drawer !== 'none');
+            document.body.classList.add('map-drawer-open', 'utility-drawer-open');
+            return;
         }
-    }, [ui.mapExpanded, ui.drawer, viewport.isMobile]);
+
+        document.body.classList.remove('map-drawer-open', 'utility-drawer-open');
+    }, [viewport.isMobile]);
 
     React.useEffect(() => {
         if (viewport.isMobile) return;
@@ -89,12 +84,22 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         }
     }, [gameState, setUI, ui.drawer, viewport.isMobile, sessionMode]);
 
-    // Prevent drawers from closing on desktop or portrait mode
+    // Keep desktop drawers persistent; mobile portrait still switches between map and utility.
     React.useEffect(() => {
         const isDesktop = !viewport.isMobile;
         const isPortrait = viewport.isMobile && !viewport.isLandscape;
-        
-        if ((isDesktop || isPortrait) && ui.drawer === 'none' && !ui.mapExpanded) {
+
+        if (isDesktop && (!ui.mapExpanded || ui.drawer === 'none')) {
+            const defaultDrawer = gameState === 'account' && sessionMode !== 'replay' ? 'account' : 'status';
+            setUI(prev => ({
+                ...prev,
+                drawer: prev.drawer === 'none' ? defaultDrawer : prev.drawer,
+                mapExpanded: true
+            }));
+            return;
+        }
+
+        if (isPortrait && ui.drawer === 'none' && !ui.mapExpanded) {
             const defaultDrawer = gameState === 'account' && sessionMode !== 'replay' ? 'account' : 'status';
             setUI(prev => ({ ...prev, drawer: defaultDrawer }));
         }
@@ -125,7 +130,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             />
 
             {!viewport.isMobile && (
-                <div className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}>
+                <div className="map-drawer-desktop open">
                     <DrawerResizeHandle side="right" cssVar="--desktop-map-width" />
                     <div className="drawer-header">
                         <span className="drawer-title">
@@ -228,8 +233,8 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                     </div>
                     <div className="desktop-drawer-tabs-in-shell left-shell-tabs">
                         <div
-                            className={`desktop-edge-tab left ${ui.mapExpanded ? 'active' : ''}`}
-                            onClick={(e) => { e.stopPropagation(); triggerHaptic(15); setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded })); }}
+                            className="desktop-edge-tab left active"
+                            onClick={(e) => { e.stopPropagation(); triggerHaptic(15); setUI(prev => ({ ...prev, mapExpanded: true })); }}
                         >
                             <MapIcon className="tab-icon" />
                             <span className="tab-text">Map</span>
@@ -244,47 +249,19 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             </DrawerShell>
 
             {/* Unified Gameplay Utility Drawer */}
-            {(gameState !== 'account' || sessionMode === 'replay') && ui.drawer !== 'none' && ui.drawer !== 'account' && (
+            {(gameState !== 'account' || sessionMode === 'replay') && activeDesktopDrawer !== 'account' && (
                 <DrawerShell 
                     key="gameplay-utility-drawer"
-                    id={ui.drawer} 
+                    id={activeDesktopDrawer} 
                     side="right" 
                     title={
-                        ui.drawer === 'status' ? 'Status' :
-                        ui.drawer === 'character' ? 'Character' :
-                        ui.drawer === 'players' ? 'Players' : 'Gear'
+                        activeDesktopDrawer === 'status' ? 'Status' :
+                        activeDesktopDrawer === 'character' ? 'Character' :
+                        activeDesktopDrawer === 'players' ? 'Players' : 'Gear'
                     }
                 >
-                    <DrawerUnifiedPanel drawer={ui.drawer} drawerData={drawerData} />
+                    <DrawerUnifiedPanel drawer={activeDesktopDrawer} drawerData={drawerData} />
                 </DrawerShell>
-            )}
-
-            {/* Desktop Side Tabs */}
-            {!viewport.isMobile && gameState !== 'disconnected' && ui.drawer === 'none' && (
-                <div className="desktop-drawer-tabs right horizontal-bottom-tabs">
-                    {((gameState === 'account' && sessionMode !== 'replay') ? ACCOUNT_TABS : SIDEBAR_TABS).map(({ id, label, Icon }) => (
-                        <div
-                            key={id}
-                            className={`desktop-edge-tab right ${ui.drawer === id ? 'active' : ''}`}
-                            onClick={(e) => { e.stopPropagation(); triggerHaptic(15); handleTabClick(id as any); }}
-                        >
-                            <Icon className="tab-icon" />
-                            <span className="tab-text">{label}</span>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {!viewport.isMobile && !ui.mapExpanded && (
-                <div className="desktop-drawer-tabs left horizontal-bottom-tabs">
-                    <div
-                        className={`desktop-edge-tab left ${ui.mapExpanded ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); triggerHaptic(15); setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded })); }}
-                    >
-                        <MapIcon className="tab-icon" />
-                        <span className="tab-text">Map</span>
-                    </div>
-                </div>
             )}
         </>
     );
