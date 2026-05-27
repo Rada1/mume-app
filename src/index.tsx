@@ -32,6 +32,7 @@ import { useSettingsStore } from './stores/useSettingsStore';
 import { useDisplayMode } from './hooks/useDisplayMode';
 import { normalizeTerrain } from './utils/terrainUtils';
 import { toThemeLinkedColor } from './utils/themeLinkedColors';
+import { Analytics } from '@vercel/analytics/react';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
@@ -383,6 +384,7 @@ root.render(
     <GameProvider>
         <MapperProvider>
             <MudClient />
+            <Analytics />
         </MapperProvider>
     </GameProvider>
 );
