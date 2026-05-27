@@ -50,6 +50,7 @@ export interface RenderContext {
     selectedRoomIds: Set<string>;
     activeId: string | null;
     activeZone?: string | null;
+    activeZonePreloaded?: string | null;
     walkTargetId?: string | null;
     walkPath?: string[];
     baseMapExitsRef: React.MutableRefObject<Record<string, any>>;

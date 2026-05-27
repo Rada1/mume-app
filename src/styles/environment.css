@@ -306,7 +306,7 @@
     mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
     -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
     opacity: 0.3;
-    animation: cloud-pulse 10s ease-in-out infinite alternate, cloud-drift 80s linear infinite;
+    animation: cloud-pulse 10s ease-in-out infinite alternate, cloud-drift 40s linear infinite;
     z-index: 2;
     filter: blur(1px) brightness(0.9) grayscale(0.6) contrast(1.6);
 }

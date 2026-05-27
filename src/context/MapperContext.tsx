@@ -47,6 +47,7 @@ interface MapperContextType {
     handleMoveConfirmed: (e?: any) => void;
     handleMoveFailure: () => void;
     preMoveRef: React.MutableRefObject<{ dir: string, targetId: string, time: number } | null>;
+    playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>;
     clientPredictionsRef: React.MutableRefObject<MapperPrediction[]>;
     spatialIndexRef: React.MutableRefObject<any>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
@@ -123,10 +124,36 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     // High-performance state/ref sync for character position
     const [currentRoomId, setCurrentRoomIdState] = useState<string | null>(null);
+    const playerPosRef = useRef<{ x: number, y: number, z: number } | null>(null);
     const setCurrentRoomId = useCallback((id: string | null) => {
         setCurrentRoomIdState(id);
         currentRoomIdRef.current = id;
-    }, [currentRoomIdRef]);
+        // Snap the player position synchronously so it stays in sync with the prediction
+        // queue (which is reconciled synchronously in handleRoomInfo's clearPrediction).
+        // Otherwise the rAF render loop can fire between this call and React's commit,
+        // drawing the player at the previous room while the queue has already advanced —
+        // visible as a 1-tile gap between the player and the nearest prediction panel.
+        if (!id) {
+            playerPosRef.current = null;
+            return;
+        }
+        const room = roomsRef.current[id];
+        let coords: { x: number, y: number, z: number } | null = null;
+        if (room) {
+            coords = { x: room.x, y: room.y, z: room.z || 0 };
+        } else {
+            const rawId = id.startsWith('m_') ? id.substring(2) : id;
+            const pData = preloadedCoordsRef.current[rawId];
+            if (pData) coords = { x: pData[0], y: pData[1], z: pData[2] || 0 };
+        }
+        if (!coords) return;
+        if (!playerPosRef.current) playerPosRef.current = coords;
+        else {
+            playerPosRef.current.x = coords.x;
+            playerPosRef.current.y = coords.y;
+            playerPosRef.current.z = coords.z;
+        }
+    }, [currentRoomIdRef, roomsRef, preloadedCoordsRef]);
 
     // Unified UI State
     const [selectedRoomIds, setSelectedRoomIds] = useState<Set<string>>(new Set());
@@ -636,6 +663,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         handleTerrain: masterHandlers.handleTerrain,
         handleAddRoom, handleDeleteRoom, pushPendingMove,
         handleMoveConfirmed, handleMoveFailure, preMoveRef, clientPredictionsRef,
+        playerPosRef,
         triggerRender, renderVersion,
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,

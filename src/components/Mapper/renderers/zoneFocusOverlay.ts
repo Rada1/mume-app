@@ -19,10 +19,18 @@ export const getRoomZone = (room: any, preloadedData?: any): string => {
     return room?.zone || preloadedData?.[9] || '';
 };
 
-export const isOutsideActiveZone = (zone: string, activeZone: string | null | undefined): boolean => {
+export const isOutsideActiveZone = (
+    zone: string,
+    activeZone: string | null | undefined,
+    ...extraActiveZones: (string | null | undefined)[]
+): boolean => {
     const normalizedZone = normalizeZoneName(zone);
-    const normalizedActiveZone = normalizeZoneName(activeZone);
-    return !!normalizedZone && !!normalizedActiveZone && normalizedZone !== normalizedActiveZone;
+    if (!normalizedZone) return false;
+    const candidates = [activeZone, ...extraActiveZones]
+        .map(normalizeZoneName)
+        .filter(Boolean);
+    if (candidates.length === 0) return false;
+    return !candidates.includes(normalizedZone);
 };
 
 const fillGrayRoomTile = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
@@ -57,8 +65,8 @@ export const drawZoneFocusOverlay = (
     localRooms: any[],
     grayTerrain: boolean = false
 ) => {
-    const { activeZone, allRooms, ctx, currentZ, explored, isDarkMode, preloaded, treatMapAsExplored, unveilMap } = rCtx;
-    if (!activeZone || !grayTerrain) return;
+    const { activeZone, activeZonePreloaded, allRooms, ctx, currentZ, explored, isDarkMode, preloaded, treatMapAsExplored, unveilMap } = rCtx;
+    if ((!activeZone && !activeZonePreloaded) || !grayTerrain) return;
 
     const revealAll = !!(unveilMap || treatMapAsExplored);
     const useDetailFilter = rCtx.camera.zoom >= DETAIL_FILTER_MIN_ZOOM;
@@ -76,7 +84,12 @@ export const drawZoneFocusOverlay = (
                     const rData = preloaded[vnum];
                     if (!rData || Math.abs((rData[2] || 0) - currentZ) > 0.5) continue;
                     const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
-                    if (!isOutsideActiveZone(getRoomZone(localRoom, rData), activeZone)) continue;
+                    // Compare BOTH the room's GMCP zone and its preloaded zone against BOTH
+                    // the active GMCP zone and the active preloaded zone. The MUME map's
+                    // baked zone names don't always match what GMCP reports, so we only
+                    // consider a room "outside" when none of the four pairings match.
+                    if (!isOutsideActiveZone(localRoom?.zone || rData[9] || '', activeZone, activeZonePreloaded)) continue;
+                    if (!isOutsideActiveZone(rData[9] || '', activeZone, activeZonePreloaded)) continue;
                     applyZoneTerrainTone(ctx, rData[0], rData[1], useDetailFilter);
                 }
             }
@@ -87,7 +100,7 @@ export const drawZoneFocusOverlay = (
         const room = localRooms[i];
         if (room.id?.startsWith('m_')) continue;
         if (Math.abs((room.z || 0) - currentZ) > 1.5) continue;
-        if (!isOutsideActiveZone(getRoomZone(room), activeZone)) continue;
+        if (!isOutsideActiveZone(getRoomZone(room), activeZone, activeZonePreloaded)) continue;
         applyZoneTerrainTone(ctx, room.x, room.y, useDetailFilter);
     }
 

@@ -205,7 +205,9 @@ const MapVisualSettings: React.FC = () => {
         setMapBackgroundVisuals,
         setZoneFilter,
         resetZoneFilters,
-        resetMapVisuals
+        resetMapVisuals,
+        zoneFocusGrayscale,
+        setZoneFocusGrayscale
     } = useSettingsStore();
 
     const mapperContext = useContext(MapperContext);
@@ -326,6 +328,27 @@ const MapVisualSettings: React.FC = () => {
                         <RotateCcw size={15} /> Reset
                     </button>
                 </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', padding: '8px 0', borderTop: '1px solid var(--border-modal)' }}>
+                <div>
+                    <label className="setting-label" style={{ margin: 0 }}>Gray Out Other Zones</label>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Dim rooms outside the zone you're currently in to highlight the active zone.</div>
+                </div>
+                <button
+                    className={`setting-toggle ${zoneFocusGrayscale ? 'active' : ''}`}
+                    onClick={() => setZoneFocusGrayscale(!zoneFocusGrayscale)}
+                    style={{
+                        height: '24px', width: '45px', position: 'relative', border: 'none',
+                        backgroundColor: zoneFocusGrayscale ? 'var(--accent)' : 'var(--input-bg)',
+                        borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s', flexShrink: 0
+                    }}
+                >
+                    <div style={{
+                        width: '20px', height: '20px', background: '#fff', borderRadius: '50%',
+                        position: 'absolute', top: '2px', left: zoneFocusGrayscale ? '22px' : '2px', transition: 'all 0.3s'
+                    }} />
+                </button>
             </div>
 
             <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: '8px 0', display: 'block' }}>MUME Tiles</label>

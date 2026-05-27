@@ -1,4 +1,4 @@
-import { useEffect, useCallback, MutableRefObject } from 'react';
+import { useLayoutEffect, useCallback, MutableRefObject } from 'react';
 
 export const useMapperPlayerTracking = (
     currentRoomId: string | null,
@@ -15,7 +15,11 @@ export const useMapperPlayerTracking = (
     preloadedCoordsRef: MutableRefObject<Record<string, any>>
 ) => {
     // Handle Player Position & Trail
-    useEffect(() => {
+    // useLayoutEffect runs synchronously after React commit, before the next rAF/paint.
+    // This is required so playerPosRef is updated before the next canvas draw — otherwise
+    // the prediction queue (reconciled synchronously in handleRoomInfo) can race ahead of
+    // the visible player, leaving a gap between the player and the first prediction tile.
+    useLayoutEffect(() => {
         let r = currentRoomId ? rooms[currentRoomId] : null;
         if (!r && currentRoomId) {
             const rawId = currentRoomId.startsWith('m_') ? currentRoomId.substring(2) : currentRoomId;

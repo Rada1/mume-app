@@ -104,6 +104,7 @@ interface SettingsState {
     musicVolume: number;
     allowMapPersistence: boolean;
     unveilMap: boolean;
+    zoneFocusGrayscale: boolean;
     showMapperToolbar: boolean;
     isTextRevealEnabled: boolean;
     showBackgroundImage: boolean;
@@ -156,6 +157,7 @@ interface SettingsState {
     setMusicVolume: (val: number) => void;
     setAllowMapPersistence: (val: boolean) => void;
     setUnveilMap: (val: boolean) => void;
+    setZoneFocusGrayscale: (val: boolean) => void;
     setShowMapperToolbar: (val: boolean) => void;
     setIsTextRevealEnabled: (val: boolean) => void;
     setShowBackgroundImage: (val: boolean) => void;
@@ -287,6 +289,7 @@ export const useSettingsStore = create<SettingsState>()(
 
             allowMapPersistence: true,
             unveilMap: true,
+            zoneFocusGrayscale: true,
             showMapperToolbar: false,
             isTextRevealEnabled: true,
             showBackgroundImage: true,
@@ -375,6 +378,7 @@ export const useSettingsStore = create<SettingsState>()(
             setMusicVolume: (musicVolume) => set({ musicVolume }),
             setAllowMapPersistence: (allowMapPersistence) => set({ allowMapPersistence }),
             setUnveilMap: (unveilMap) => set({ unveilMap }),
+            setZoneFocusGrayscale: (zoneFocusGrayscale) => set({ zoneFocusGrayscale }),
             setShowMapperToolbar: (showMapperToolbar) => set({ showMapperToolbar }),
             setIsTextRevealEnabled: (isTextRevealEnabled) => set({ isTextRevealEnabled }),
             setShowBackgroundImage: (showBackgroundImage) => set({ showBackgroundImage }),

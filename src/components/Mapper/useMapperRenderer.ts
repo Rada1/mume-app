@@ -11,6 +11,7 @@ import { drawRegionLabels } from './renderers/drawRegionLabels';
 import { drawZoneFocusOverlay } from './renderers/zoneFocusOverlay';
 import { ZoneFilterConfig } from './zoneFilters';
 import { buildLocalSpatialIndex, didLocalLayoutChange } from './mapLayoutIndex';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 
 const LIGHTING_COLORS: Record<string, [number, number, number, number]> = {
     sun:        [255, 248, 200, 0.09],
@@ -62,7 +63,7 @@ interface RendererProps {
     exploredMarkers: Set<string>;
     renderVersion: number;
     firstExploredAtRef: MutableRefObject<Record<string, number>>;
-    preloadedCoordsRef: MutableRefObject<Record<string, [number, number, number, number, Record<string, CompactMapExit>, string, string, string[], string[]]>>;
+    preloadedCoordsRef: MutableRefObject<Record<string, [number, number, number, number, Record<string, CompactMapExit>, string, string, string[], string[], string?, number?, number?]>>;
     spatialIndexRef: MutableRefObject<Record<number, Record<string, string[]>>>;
     baseMapExitsRef: MutableRefObject<Record<string, any>>;
     walkTargetId?: string | null;
@@ -148,6 +149,8 @@ export const useMapperRenderer = ({
         lastLighting: string;
     }>({ from: [0,0,0,0], to: [0,0,0,0], startTime: 0, lastLighting: lighting });
 
+    const zoneFocusGrayscale = useSettingsStore(s => s.zoneFocusGrayscale);
+
     const layerCacheRef = useRef<MapperLayerCache | null>(null);
     const vignetteCacheRef = useRef<{ canvas: HTMLCanvasElement, w: number, h: number, edgeAlpha: number } | null>(null);
     const localSpatialIndexRef = useRef<Record<number, Record<string, string[]>>>({});
@@ -197,7 +200,8 @@ export const useMapperRenderer = ({
         const activeRoom = activeId ? stableRoomsRef.current[activeId] : null;
         const activeRawId = activeId?.startsWith('m_') ? activeId.substring(2) : activeId;
         const activePreloadedData = activeRawId ? preloadedCoordsRef.current[activeRawId] : null;
-        const activeZone = activeRoom?.zone || activePreloadedData?.[9] || null;
+        const activeZone = zoneFocusGrayscale ? (activeRoom?.zone || activePreloadedData?.[9] || null) : null;
+        const activeZonePreloaded = zoneFocusGrayscale ? (activePreloadedData?.[9] || null) : null;
         const currentZ = viewZ !== null && viewZ !== undefined ? viewZ : baseZ;
         const camera = cameraRef.current;
         const invZoom = 1 / camera.zoom;
@@ -250,8 +254,12 @@ export const useMapperRenderer = ({
         if (allRooms !== lastRoomsRef.current) {
             const layoutChanged = didLocalLayoutChange(lastRoomsRef.current, allRooms);
             lastRoomsRef.current = allRooms;
+            // Any rooms-state change invalidates the cache (e.g. door open/close on a
+            // preloaded room, which didLocalLayoutChange ignores because the room id
+            // starts with 'm_'). The spatial index rebuild stays gated on real layout
+            // changes — that's the only part that's actually expensive.
+            roomsVersionRef.current += 1;
             if (layoutChanged) {
-                roomsVersionRef.current += 1;
                 localSpatialIndexRef.current = buildLocalSpatialIndex(allRooms);
             }
         }
@@ -424,7 +432,7 @@ export const useMapperRenderer = ({
 
         const lodParams = `${showTerrainIcons}_${showDoorLabels}_${lowEffects}`;
         const lodChanged = cache.lastLodParams !== lodParams;
-        const baseParams = `${curZInt}_${isDarkMode}_${roomsVersionRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}_${weather}_${activeZone || ''}`;
+        const baseParams = `${curZInt}_${isDarkMode}_${roomsVersionRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}_${weather}_${activeZone || ''}_${activeZonePreloaded || ''}`;
         const needsRebuild = cache.lastParams !== baseParams || (!isViewportInteracting && lodChanged) || zoomDiff > zoomThreshold || moveDist > moveThreshold || finalExplorationBakeDue || visualsChanged;
 
         if (needsRebuild) {
@@ -501,6 +509,7 @@ export const useMapperRenderer = ({
                 imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
                 allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
                 activeZone,
+                activeZonePreloaded,
                 triggerRender, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName, opponentId,
                 activeInlineEntityId, selectedObjectIds,
                 activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,

@@ -62,7 +62,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const cardRef = useRef<HTMLDivElement>(null);
     const imagesRef = useRef<Record<string, HTMLImageElement>>({});
     useMapAssets(imagesRef);
-    const playerPosRef = useRef<{ x: number, y: number, z: number } | null>(null);
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
 
@@ -98,7 +97,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
         renderVersion, triggerRender, activeMapFilter, setActiveMapFilter,
         mapSearchQuery, setMapSearchQuery,
-        regionLabels, regionLabelEditMode, setExploredMarkers
+        regionLabels, regionLabelEditMode, setExploredMarkers,
+        playerPosRef
     } = context;
     const [selectedRegionLabelId, setSelectedRegionLabelId] = useState<string | null>(null);
 

@@ -168,7 +168,8 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
     const { handleUpdateExits } = useUpdateExitsHandler({
         setRooms: props.setRooms,
         currentRoomIdRef: props.currentRoomIdRef,
-        preloadedCoordsRef: props.preloadedCoordsRef
+        preloadedCoordsRef: props.preloadedCoordsRef,
+        triggerRender: props.triggerRender
     });
 
     const { handleTerrain } = useTerrainHandler({

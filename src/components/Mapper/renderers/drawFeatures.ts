@@ -1228,7 +1228,9 @@ export const drawFeatures = (
                         const gridX = Math.round(rx), gridY = Math.round(ry);
                         const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
                         ctx.save();
-                        if (rCtx.camera.zoom >= 0.3 && isOutsideActiveZone(getRoomZone(localRoom, rData), rCtx.activeZone)) {
+                        if (rCtx.camera.zoom >= 0.3
+                            && isOutsideActiveZone(getRoomZone(localRoom, rData), rCtx.activeZone, rCtx.activeZonePreloaded)
+                            && isOutsideActiveZone(rData[9] || '', rCtx.activeZone, rCtx.activeZonePreloaded)) {
                             ctx.filter = DETAIL_GRAYSCALE_FILTER;
                         }
                         ctx.globalAlpha = isExplored ? exploredAlphaMul : 0.35;

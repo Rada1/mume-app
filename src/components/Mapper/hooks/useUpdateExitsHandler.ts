@@ -6,9 +6,10 @@ interface UpdateExitsProps {
     setRooms: React.Dispatch<React.SetStateAction<Record<string, MapperRoom>>>;
     currentRoomIdRef: React.MutableRefObject<string | null>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
+    triggerRender?: () => void;
 }
 
-export const useUpdateExitsHandler = ({ setRooms, currentRoomIdRef, preloadedCoordsRef }: UpdateExitsProps) => {
+export const useUpdateExitsHandler = ({ setRooms, currentRoomIdRef, preloadedCoordsRef, triggerRender }: UpdateExitsProps) => {
     const handleUpdateExits = useCallback((data: any) => {
         const activeId = currentRoomIdRef.current;
         if (!activeId) return;
@@ -77,7 +78,8 @@ export const useUpdateExitsHandler = ({ setRooms, currentRoomIdRef, preloadedCoo
             nextRooms[activeId] = { ...activeRoom, exits: newExits };
             return nextRooms;
         });
-    }, [currentRoomIdRef, setRooms, preloadedCoordsRef]);
+        triggerRender?.();
+    }, [currentRoomIdRef, setRooms, preloadedCoordsRef, triggerRender]);
 
     return { handleUpdateExits };
 };
