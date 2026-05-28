@@ -68,9 +68,22 @@ export const buildPracticeDrawerLines = (
     const guildmasterList = isGuildmasterList(practiceData);
     const teacherLine = findTeacherLine(capturedLines);
     const sessionsLine = findSessionsLine(capturedLines);
-    const lines: DrawerLine[] = sessionsLine
-        ? [{ ...sessionsLine, id: 'practice-sessions-left' }]
-        : [makeLine('practice-sessions-left', `You have ${practiceData.sessionsLeft} practice sessions left.`)];
+    let finalSessionsLine: DrawerLine;
+    if (sessionsLine) {
+        const updatedText = sessionsLine.text.replace(/(\byou have\s+)\d+(\s+(?:practice\s+)?sessions?)/i, `$1${practiceData.sessionsLeft}$2`);
+        const updatedHtml = sessionsLine.html ? sessionsLine.html.replace(/(\byou have\s+)\d+(\s+(?:practice\s+)?sessions?)/i, `$1${practiceData.sessionsLeft}$2`) : updatedText;
+        const updatedRawText = sessionsLine.rawText ? sessionsLine.rawText.replace(/(\byou have\s+)\d+(\s+(?:practice\s+)?sessions?)/i, `$1${practiceData.sessionsLeft}$2`) : updatedText;
+        finalSessionsLine = {
+            ...sessionsLine,
+            id: 'practice-sessions-left',
+            text: updatedText,
+            html: updatedHtml,
+            rawText: updatedRawText
+        };
+    } else {
+        finalSessionsLine = makeLine('practice-sessions-left', `You have ${practiceData.sessionsLeft} practice sessions left.`);
+    }
+    const lines: DrawerLine[] = [finalSessionsLine];
 
     if (teacherLine) {
         lines.push({

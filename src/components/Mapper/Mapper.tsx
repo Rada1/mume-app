@@ -86,6 +86,33 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const [backgroundAlignMode, setBackgroundAlignMode] = useState(false);
     const [isCtrlAlignHeld, setIsCtrlAlignHeld] = useState(false);
 
+    const entitiesRef = useRef({
+        roomChars,
+        roomPlayers,
+        roomNpcs,
+        roomItems,
+        groupMembers,
+        inCombat,
+        opponentName,
+        opponentId,
+        target
+    });
+
+    useEffect(() => {
+        entitiesRef.current = {
+            roomChars,
+            roomPlayers,
+            roomNpcs,
+            roomItems,
+            groupMembers,
+            inCombat,
+            opponentName,
+            opponentId,
+            target
+        };
+        window.dispatchEvent(new CustomEvent('mume-mapper-wake'));
+    }, [roomChars, roomPlayers, roomNpcs, roomItems, groupMembers, inCombat, opponentName, opponentId, target]);
+
     // Use shared state from MapperContext
     const context = useMapper();
     const {
@@ -135,29 +162,9 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const { walkTargetId, walkPath, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage);
     const mode = ui.mapMode || 'play';
 
-    const roomEntitySignature = useMemo(() => {
-        const summarize = (items: import('../../types').GmcpOccupant[] = []) => items
-            .map(item => `${item.id ?? ''}:${item.name ?? item.short ?? item.keyword ?? ''}:${item.type ?? ''}`)
-            .join('|');
-        const summarizeChars = (chars: Record<number, import('../../types').GmcpOccupant> = {}) => Object.values(chars)
-            .map(item => `${item.id ?? ''}:${item.name ?? item.short ?? item.keyword ?? ''}:${item.type ?? ''}:${item.pc ?? ''}:${item.status ?? ''}:${item.hp ?? ''}`)
-            .join('|');
-        const summarizeGroup = (items: import('../../types').GroupMember[] = []) => items
-            .map(item => `${item.id ?? ''}:${item.name ?? item.label ?? ''}:${item.type ?? ''}:${item.mapid ?? ''}:${item.room ?? ''}`)
-            .join('|');
-
-        return [
-            summarizeChars(roomChars),
-            summarize(roomPlayers),
-            summarize(roomNpcs),
-            summarize(roomItems),
-            summarizeGroup(groupMembers)
-        ].join('::');
-    }, [roomChars, roomPlayers, roomNpcs, roomItems, groupMembers]);
-
     useEffect(() => {
         triggerRender();
-    }, [roomEntitySignature, popoverState?.entityId, selectedObjectIds, target, triggerRender]);
+    }, [popoverState?.entityId, selectedObjectIds, triggerRender]);
 
     const controllerOptions = useMemo(() => ({
         onRecenter: handleCenterOnPlayer,
@@ -242,10 +249,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         setActiveSet: btn.setActiveSet,
         playClickSound,
         characterName: characterName ?? null,
-        roomChars,
-        roomPlayers,
-        roomNpcs,
-        groupMembers,
+        entitiesRef,
         inlineCategories,
         playerColor: displayPlayerColor,
         npcColor: displayNpcColor,
@@ -323,22 +327,14 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 walkTargetId={walkTargetId}
                 walkPath={walkPath}
                 baseMapExitsRef={context.baseMapExitsRef}
-                groupMembers={groupMembers}
+                entitiesRef={entitiesRef}
                 serverIdIndexRef={context.serverIdIndexRef}
-                roomChars={roomChars}
-                roomPlayers={roomPlayers}
-                roomNpcs={roomNpcs}
-                roomItems={roomItems}
                 inlineCategories={inlineCategories}
                 playerColor={displayPlayerColor}
                 npcColor={displayNpcColor}
                 enemyColor={displayEnemyColor}
                 objectColor={displayObjectColor}
                 targetColor={displayTargetColor}
-                targetName={target}
-                opponentName={opponentName}
-                opponentId={opponentId}
-                inCombat={inCombat}
                 activeInlineEntityId={popoverState?.entityId || null}
                 selectedObjectIds={selectedObjectIds}
                 deathRoomId={deathRoomId}

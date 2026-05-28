@@ -50,22 +50,14 @@ interface MapCanvasProps {
     walkPath?: string[];
     baseMapExitsRef: React.MutableRefObject<Record<string, any>>;
     clientPredictionsRef?: React.MutableRefObject<MapperPrediction[]>;
-    groupMembers?: import('../../types').GroupMember[];
+    entitiesRef: React.MutableRefObject<any>;
     serverIdIndexRef?: React.MutableRefObject<Record<string, string>>;
-    roomChars?: Record<number, import('../../types').GmcpOccupant>;
-    roomPlayers?: import('../../types').GmcpOccupant[];
-    roomNpcs?: import('../../types').GmcpOccupant[];
-    roomItems?: import('../../types').GmcpOccupant[];
     inlineCategories?: import('../../types').InlineCategoryConfig[];
     playerColor?: string;
     npcColor?: string;
     enemyColor?: string;
     objectColor?: string;
     targetColor?: string;
-    targetName?: string | null;
-    opponentName?: string | null;
-    opponentId?: string | null;
-    inCombat?: boolean;
     activeInlineEntityId?: string | null;
     selectedObjectIds?: Set<string>;
     deathRoomId?: string | null;
@@ -97,9 +89,9 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
-        baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName,
-        opponentName, opponentId, inCombat, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
+        baseMapExitsRef, triggerRender, clientPredictionsRef, entitiesRef, serverIdIndexRef,
+        inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
+        activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
         activeMapFilter, mapSearchQuery, mapTileOpacity, lighting,
         regionLabels, regionLabelEditMode, selectedRegionLabelId
     } = props;
@@ -116,9 +108,9 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
-        baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName,
-        opponentName, opponentId, inCombat, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
+        baseMapExitsRef, triggerRender, clientPredictionsRef, entitiesRef, serverIdIndexRef,
+        inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
+        activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
         activeMapFilter, mapSearchQuery, combatPulsesRef, zoneFilters,
         mapTileVisuals,
         mapTileOpacity,
@@ -137,14 +129,6 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         ].slice(-6);
         triggerRender?.();
     }), [triggerRender]);
-
-    const combatAnimationActive = useMemo(() => {
-        if (opponentId || opponentName) return true;
-        return Object.values(roomChars || {}).some(char => {
-            const fighting = char.fighting == null ? '' : String(char.fighting);
-            return fighting !== '' && fighting.toLowerCase() !== 'you' && fighting !== 'Someone';
-        });
-    }, [opponentId, opponentName, roomChars]);
 
     useMapAnimation({
         drawMap,
@@ -171,7 +155,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         walkPath: props.walkPath,
         activeMapFilter: props.activeMapFilter,
         mapSearchQuery: props.mapSearchQuery,
-        combatAnimationActive,
+        entitiesRef,
         isMobile,
         isLandscape,
         filterFitRef

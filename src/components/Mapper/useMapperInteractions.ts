@@ -56,10 +56,7 @@ export interface InteractionDeps {
     setActiveSet: (setId: string) => void;
     playClickSound?: () => void;
     characterName?: string | null;
-    roomChars?: Record<number, GmcpOccupant>;
-    roomPlayers?: GmcpOccupant[];
-    roomNpcs?: GmcpOccupant[];
-    groupMembers?: GroupMember[];
+    entitiesRef: React.MutableRefObject<any>;
     inlineCategories?: InlineCategoryConfig[];
     playerColor?: string;
     npcColor?: string;
@@ -90,10 +87,18 @@ export interface InteractionDeps {
 
 export const useMapperInteractions = (deps: InteractionDeps) => {
     const { canvasRef, cameraRef, triggerRender, rooms, markers, setRooms, setMarkers, setViewZ, onRoomClick } = deps;
-    const roomCharsRef = useRef(deps.roomChars || {});
-    const roomPlayersRef = useRef(deps.roomPlayers || []);
-    const roomNpcsRef = useRef(deps.roomNpcs || []);
-    const groupMembersRef = useRef(deps.groupMembers || []);
+    const roomCharsRef = {
+        get current() { return deps.entitiesRef?.current.roomChars || {}; }
+    };
+    const roomPlayersRef = {
+        get current() { return deps.entitiesRef?.current.roomPlayers || []; }
+    };
+    const roomNpcsRef = {
+        get current() { return deps.entitiesRef?.current.roomNpcs || []; }
+    };
+    const groupMembersRef = {
+        get current() { return deps.entitiesRef?.current.groupMembers || []; }
+    };
     const inlineCategoriesRef = useRef(deps.inlineCategories || []);
     const characterNameRef = useRef(deps.characterName || null);
     const playerColorRef = useRef(deps.playerColor);
@@ -262,10 +267,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
     const currentRoomIdRef = useRef(deps.currentRoomId);
     useEffect(() => { currentRoomIdRef.current = deps.currentRoomId; }, [deps.currentRoomId]);
 
-    useEffect(() => { roomCharsRef.current = deps.roomChars || {}; }, [deps.roomChars]);
-    useEffect(() => { roomPlayersRef.current = deps.roomPlayers || []; }, [deps.roomPlayers]);
-    useEffect(() => { roomNpcsRef.current = deps.roomNpcs || []; }, [deps.roomNpcs]);
-    useEffect(() => { groupMembersRef.current = deps.groupMembers || []; }, [deps.groupMembers]);
+
     useEffect(() => { inlineCategoriesRef.current = deps.inlineCategories || []; }, [deps.inlineCategories]);
     useEffect(() => { characterNameRef.current = deps.characterName || null; }, [deps.characterName]);
     useEffect(() => { playerColorRef.current = deps.playerColor; }, [deps.playerColor]);

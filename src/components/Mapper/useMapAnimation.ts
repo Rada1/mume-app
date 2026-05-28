@@ -36,7 +36,7 @@ interface AnimationProps {
     walkPath?: string[];
     activeMapFilter?: string | null;
     mapSearchQuery?: string;
-    combatAnimationActive?: boolean;
+    entitiesRef: React.MutableRefObject<any>;
     isMobile?: boolean;
     isLandscape?: boolean;
     filterFitRef?: { current: { zoom: number, camX: number, camY: number } | null };
@@ -47,7 +47,7 @@ export const useMapAnimation = ({
     canvasRef, camera, playerPosRef, playerTrailRef, getDPR, marquee, autoCenter,
     stableRoomsRef, stableRoomIdRef, stableMarkersRef, firstExploredAtRef, preloadedCoordsRef,
     preMoveRef, walkTargetId, walkPath, isDraggingRef, activeMapFilter, mapSearchQuery,
-    combatAnimationActive, isMobile, isLandscape, filterFitRef
+    entitiesRef, isMobile, isLandscape, filterFitRef
 }: AnimationProps) => {
     const requestRef = useRef<number | null>(null);
     const tickRef = useRef<(() => boolean) | null>(null);
@@ -88,6 +88,11 @@ export const useMapAnimation = ({
         const now = performance.now();
         const deltaTime = now - lastFrameTimeRef.current;
         
+        const { opponentId, opponentName, roomChars } = entitiesRef.current;
+        const combatAnimationActive = !!(opponentId || opponentName || (roomChars && Object.values(roomChars).some((char: any) => {
+            const fighting = char.fighting == null ? '' : String(char.fighting);
+            return fighting !== '' && fighting.toLowerCase() !== 'you' && fighting !== 'Someone';
+        })));
         const effectiveIsDragging = isDragging || isDraggingRef?.current;
         const hasLiveOverlayAnimation = !!(activeMapFilter || mapSearchQuery?.trim() || combatAnimationActive || walkTargetId);
         const idleFrameBudget = isMobile ? MOBILE_PLAYER_PULSE_FRAME_MS : PLAYER_PULSE_FRAME_MS;
@@ -108,7 +113,7 @@ export const useMapAnimation = ({
         const w = cvs.width / dpr;
         const h = cvs.height / dpr;
 
-        let needsNextFrame = effectiveIsDragging || hasLiveOverlayAnimation;
+        let needsNextFrame = true; // Keep animating continuously to prevent beacons and room glows from freezing when idle
 
         // Player position is snapped immediately in useMapperPlayerTracking — no queue/lerp needed here.
         // Camera centering still lerps smoothly toward playerPosRef.current.
@@ -173,9 +178,33 @@ export const useMapAnimation = ({
                 }
             }
         } else {
-            // Smooth zoom interpolation toward targetZoom
             const cam = camera.current as any;
-            if (cam.targetZoom !== undefined && Math.abs(cam.targetZoom - cam.zoom) > 0.001) {
+            if (effectiveIsDragging && cam.zoomTransition) {
+                delete cam.zoomTransition;
+            }
+
+            if (cam.zoomTransition) {
+                const elapsed = Date.now() - cam.zoomTransition.startTime;
+                const progress = Math.min(1, elapsed / cam.zoomTransition.duration);
+                
+                // Smooth power curve (progress^6): starts extremely slow and accelerates continuously to zoom in rapidly at the end
+                const t = Math.pow(progress, 6);
+
+                const oldZoom = cam.zoom;
+                cam.zoom = cam.zoomTransition.startZoom + (cam.zoomTransition.endZoom - cam.zoomTransition.startZoom) * t;
+                const newZoom = cam.zoom;
+
+                const mx = cam.zoomAnchorX || 0;
+                const my = cam.zoomAnchorY || 0;
+                cam.x += (mx / oldZoom) - (mx / newZoom);
+                cam.y += (my / oldZoom) - (my / newZoom);
+
+                if (progress >= 1) {
+                    cam.targetZoom = cam.zoomTransition.endZoom;
+                    delete cam.zoomTransition;
+                }
+                needsNextFrame = true;
+            } else if (cam.targetZoom !== undefined && Math.abs(cam.targetZoom - cam.zoom) > 0.001) {
                 const oldZoom = cam.zoom;
                 const zoomLerp = 1 - Math.pow(0.82, frameScale);
                 cam.zoom += (cam.targetZoom - cam.zoom) * zoomLerp;
@@ -316,14 +345,19 @@ export const useMapAnimation = ({
     }, [isDraggingRef]);
 
     useEffect(() => {
-        window.addEventListener('mume-mapper-camera-change', triggerAnimation);
-        return () => window.removeEventListener('mume-mapper-camera-change', triggerAnimation);
+        const wake = () => triggerAnimation();
+        window.addEventListener('mume-mapper-camera-change', wake);
+        window.addEventListener('mume-mapper-wake', wake);
+        return () => {
+            window.removeEventListener('mume-mapper-camera-change', wake);
+            window.removeEventListener('mume-mapper-wake', wake);
+        };
     }, [triggerAnimation]);
 
     useEffect(() => {
         ctxRef.current = null; // Reset context when dimensions or render dependencies change
         triggerAnimation();
-    }, [triggerAnimation, drawMap, renderVersion, currentRoomId, walkTargetId, activeMapFilter, combatAnimationActive]);
+    }, [triggerAnimation, drawMap, renderVersion, currentRoomId, walkTargetId, activeMapFilter]);
 
     useEffect(() => {
         return () => {

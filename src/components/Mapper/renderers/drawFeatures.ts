@@ -852,7 +852,7 @@ export const drawFeatures = (
                     }
                 }
 
-                if (ghostExits && Object.keys(ghostExits).length > 0 && (camera.zoom >= (useOverviewRoutes ? 0.05 : 0.15) || unveilMap)) {
+                if (ghostExits && Object.keys(ghostExits).length > 0 && camera.zoom < 3.0 && (camera.zoom >= (useOverviewRoutes ? 0.03 : 0.15) || unveilMap)) {
                     const currentRoomObj = localRoom || { terrain: tSector, exits: {} };
                     const isCurrentRoad = normalizeTerrain(currentRoomObj.terrain) === 'Road';
                     const currentName = String(localRoom?.name || rData[5] || '').toLowerCase();

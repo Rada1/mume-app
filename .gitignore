@@ -34,3 +34,6 @@ test-results/
 *.rej
 *.orig
 
+# Diagnostics / Traces
+diagnostics/
+

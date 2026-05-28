@@ -56,22 +56,46 @@ export const useMapperPlayerTracking = (
             // Whenever the room changes, enable auto-center so the animation loop
             // in useMapAnimation.ts can glide the camera smoothly to the new target.
             if (hasChanged) {
+                const isInitialLogin = lastRoomIdRef.current === null;
                 lastRoomIdRef.current = currentRoomId;
                 setAutoCenter(true);
                 setViewZ(null);
 
-                // Snap camera for large jumps (initial load, teleport, reconnect).
-                // Adjacent room steps are <= ~70 units; anything beyond 4 rooms snaps.
                 const cvs = canvasRef.current;
-                const zoom = cameraRef.current.zoom || 1;
                 const w = cvs ? cvs.clientWidth : 400;
                 const h = cvs ? cvs.clientHeight : 400;
-                const targetX = (r.x * GRID_SIZE + GRID_SIZE / 2) - w / (2 * zoom);
-                const targetY = (r.y * GRID_SIZE + GRID_SIZE / 2) - h / (2 * zoom);
-                const dist = Math.hypot(targetX - cameraRef.current.x, targetY - cameraRef.current.y);
-                if (dist > GRID_SIZE * 4) {
-                    cameraRef.current.x = targetX;
-                    cameraRef.current.y = targetY;
+
+                if (isInitialLogin) {
+                    const startZoom = 0.12; // Far zoomed out for orientation
+                    const finalZoom = cameraRef.current.zoom || 1.0;
+
+                    // Instantly snap camera position to zoomed-out state
+                    cameraRef.current.zoom = startZoom;
+                    cameraRef.current.x = (r.x * GRID_SIZE + GRID_SIZE / 2) - w / (2 * startZoom);
+                    cameraRef.current.y = (r.y * GRID_SIZE + GRID_SIZE / 2) - h / (2 * startZoom);
+
+                    // Set anchor to canvas center so the zoom-in keeps the player centered
+                    (cameraRef.current as any).zoomAnchorX = w / 2;
+                    (cameraRef.current as any).zoomAnchorY = h / 2;
+
+                    // Setup the zoom transition parameters for the animation loop
+                    (cameraRef.current as any).zoomTransition = {
+                        startTime: Date.now(),
+                        duration: 2500, // 2.5s total animation duration
+                        startZoom: startZoom,
+                        endZoom: finalZoom
+                    };
+                } else {
+                    // Snap camera for large jumps (teleport, reconnect).
+                    // Adjacent room steps are <= ~70 units; anything beyond 4 rooms snaps.
+                    const zoom = cameraRef.current.zoom || 1;
+                    const targetX = (r.x * GRID_SIZE + GRID_SIZE / 2) - w / (2 * zoom);
+                    const targetY = (r.y * GRID_SIZE + GRID_SIZE / 2) - h / (2 * zoom);
+                    const dist = Math.hypot(targetX - cameraRef.current.x, targetY - cameraRef.current.y);
+                    if (dist > GRID_SIZE * 4) {
+                        cameraRef.current.x = targetX;
+                        cameraRef.current.y = targetY;
+                    }
                 }
             }
 

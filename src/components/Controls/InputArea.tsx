@@ -46,13 +46,10 @@ const InputArea: React.FC<InputAreaProps> = ({
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const modeMenuBtnRef = useRef<HTMLButtonElement>(null);
-    const [modeMenuPos, setModeMenuPos] = useState<{ top: number; left: number } | null>(null);
     const glowRafRef = useRef<number | null>(null);
     const startPos = useRef<{ x: number, y: number } | null>(null);
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const isSwiping = useRef(false);
-    const [isModeMenuOpen, setIsModeMenuOpen] = useState(false);
 
     // Global listeners to catch fast swipes that leave the element bounds
     React.useEffect(() => {
@@ -134,14 +131,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         }
     }, [input]);
 
-    React.useEffect(() => {
-        if (!isModeMenuOpen) return;
-        const handleOutsideClick = () => {
-            setIsModeMenuOpen(false);
-        };
-        window.addEventListener('click', handleOutsideClick);
-        return () => window.removeEventListener('click', handleOutsideClick);
-    }, [isModeMenuOpen]);
+
     const isHelpCardOpen = popoverState?.type === 'help-card';
 
     // Auto set to help mode when help card is open, and restore to command when closed
@@ -250,27 +240,12 @@ const InputArea: React.FC<InputAreaProps> = ({
         initAudio?.();
         if (isSoundEnabled) playClickSound?.();
         triggerHaptic(20);
-        setIsModeMenuOpen(prev => {
-            if (!prev && modeMenuBtnRef.current) {
-                const rect = modeMenuBtnRef.current.getBoundingClientRect();
-                setModeMenuPos({ top: rect.top, left: rect.left });
-            }
-            return !prev;
-        });
-    };
-
-    const selectMode = (mode: 'command' | 'parley' | 'help') => {
-        initAudio?.();
-        if (isSoundEnabled) playClickSound?.();
-        triggerHaptic(20);
-        setIsModeMenuOpen(false);
-        if (mode === 'command') {
+        
+        const currentMode = parley.mode || (parley.active ? 'parley' : 'command');
+        if (currentMode === 'parley') {
             setParley({ ...parley, active: false, mode: 'command' });
-        } else if (mode === 'parley') {
+        } else {
             setParley({ ...parley, active: true, mode: 'parley' });
-            requestAnimationFrame(() => inputRef.current?.focus());
-        } else if (mode === 'help') {
-            setParley({ ...parley, active: false, mode: 'help' });
             requestAnimationFrame(() => inputRef.current?.focus());
         }
     };
@@ -284,6 +259,22 @@ const InputArea: React.FC<InputAreaProps> = ({
         accountState?.currentPrompt?.toLowerCase().includes('password') ||
         accountState?.currentPrompt?.toLowerCase().includes('verify')
     );
+
+    // Keep command/login input focused on desktop during login, stage, or state transitions
+    useEffect(() => {
+        if (!isMobile && inputRef.current) {
+            const activeEl = document.activeElement;
+            const isInputActive = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+            const isSelfFocused = activeEl === inputRef.current;
+            
+            // If another input is focused (e.g. settings search, target box), do not steal focus
+            if (isInputActive && !isSelfFocused) {
+                return;
+            }
+            
+            inputRef.current.focus();
+        }
+    }, [isLoginStage, isMobile, gameState, accountState?.stage]);
 
     const handleSubmit = useCallback((e?: React.FormEvent) => {
         if (isLoginStage && rememberLogin && input.trim()) {
@@ -372,7 +363,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     return (
         <div 
             className={`input-area ${terrainClass} input-container`}
-            style={isHelpCardOpen ? { zIndex: 31000 } : (isModeMenuOpen ? { zIndex: 10005 } : undefined)}
+            style={isHelpCardOpen ? { zIndex: 31000 } : undefined}
         >
             {isLoginStage && (
                 <label className="remember-login-toggle">
@@ -405,7 +396,6 @@ const InputArea: React.FC<InputAreaProps> = ({
                             <div className={`parley-pill${isPillActive ? ' parley-pill-active' : ''}`} style={{ position: 'relative' }}>
                                 <button
                                     type="button"
-                                    ref={modeMenuBtnRef}
                                     className={`cmd-prompt-btn${isPillActive ? ' parley-active' : ''}`}
                                     onPointerDown={(e) => e.stopPropagation()}
                                     onClick={handleModeMenuToggle}
@@ -413,105 +403,6 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 >
                                     {currentMode === 'parley' ? <MessageCircle size={16} /> : currentMode === 'help' ? <HelpCircle size={16} /> : '>'}
                                 </button>
-
-                                {isModeMenuOpen && modeMenuPos && ReactDOM.createPortal(
-                                    <div
-                                        className="mode-dropdown-menu"
-                                        style={{
-                                            position: 'fixed',
-                                            top: modeMenuPos.top - 8,
-                                            left: modeMenuPos.left,
-                                            transform: 'translateY(-100%)',
-                                            background: '#121214',
-                                            border: '1px solid rgba(255, 255, 255, 0.15)',
-                                            borderRadius: '8px',
-                                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-                                            zIndex: 10000,
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            padding: '4px 0',
-                                            minWidth: '130px'
-                                        }}
-                                        onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                        onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                        onTouchStart={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                        onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                    >
-                                        <button
-                                            type="button"
-                                            onClick={(e) => { e.stopPropagation(); selectMode('command'); }}
-                                            onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                            onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                            onTouchStart={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                            style={{
-                                                background: 'transparent',
-                                                border: 'none',
-                                                color: currentMode === 'command' ? 'var(--accent)' : 'var(--text-primary, #ffffff)',
-                                                padding: '8px 12px',
-                                                textAlign: 'left',
-                                                fontSize: '0.8rem',
-                                                fontWeight: currentMode === 'command' ? '700' : '500',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '8px',
-                                                width: '100%'
-                                            }}
-                                        >
-                                            <span style={{ width: '14px', display: 'inline-block', textAlign: 'center', fontSize: '14px', fontWeight: 'bold' }}>&gt;</span>
-                                            Command
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={(e) => { e.stopPropagation(); selectMode('parley'); }}
-                                            onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                            onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                            onTouchStart={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                            style={{
-                                                background: 'transparent',
-                                                border: 'none',
-                                                color: currentMode === 'parley' ? 'var(--accent)' : 'var(--text-primary, #ffffff)',
-                                                padding: '8px 12px',
-                                                textAlign: 'left',
-                                                fontSize: '0.8rem',
-                                                fontWeight: currentMode === 'parley' ? '700' : '500',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '8px',
-                                                width: '100%'
-                                            }}
-                                        >
-                                            <MessageCircle size={14} />
-                                            Parley
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={(e) => { e.stopPropagation(); selectMode('help'); }}
-                                            onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                            onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                            onTouchStart={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                                            style={{
-                                                background: 'transparent',
-                                                border: 'none',
-                                                color: currentMode === 'help' ? 'var(--accent)' : 'var(--text-primary, #ffffff)',
-                                                padding: '8px 12px',
-                                                textAlign: 'left',
-                                                fontSize: '0.8rem',
-                                                fontWeight: currentMode === 'help' ? '700' : '500',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '8px',
-                                                width: '100%'
-                                            }}
-                                        >
-                                            <HelpCircle size={14} />
-                                            Help
-                                        </button>
-                                    </div>,
-                                    document.body
-                                )}
 
                                 {currentMode === 'parley' && (<>
                                     <div

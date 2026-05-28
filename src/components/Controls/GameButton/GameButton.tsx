@@ -146,7 +146,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     }, [activeDir, button, heldButton, joystick, target, executeCommand, triggerHaptic,
         setHeldButton, setActiveDir, setActiveSet, setPopoverState, handleButtonClick, buttonRef]);
 
-    React.useLayoutEffect(() => {
+    React.useEffect(() => {
         if (buttonRef.current && needsCircularVitals) {
             const el = buttonRef.current;
             const update = () => {
@@ -157,7 +157,6 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     radius: parseFloat(styles.borderRadius) || 0
                 });
             };
-            update();
             const observer = new ResizeObserver(update);
             observer.observe(el);
             return () => observer.disconnect();
@@ -238,14 +237,16 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     isOuter={true}
                 />
             )}
-            <ButtonSwipeOverlay
-                button={button}
-                activeDir={activeDir}
-                isCancelling={isCancelling}
-                buttonRect={buttonRef.current?.getBoundingClientRect()}
-                rayParams={rayParams}
-                onSwap={handleSwap}
-            />
+            {!!(activeDir || isCancelling) && (
+                <ButtonSwipeOverlay
+                    button={button}
+                    activeDir={activeDir}
+                    isCancelling={isCancelling}
+                    buttonRect={buttonRef.current?.getBoundingClientRect()}
+                    rayParams={rayParams}
+                    onSwap={handleSwap}
+                />
+            )}
             <ButtonLabel button={button} />
 
             {isEditMode && button.setId !== 'Tactical' && (

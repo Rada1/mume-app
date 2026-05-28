@@ -3,7 +3,7 @@ import { GRID_SIZE, getTerrainColor, getTerrainName, getGateState } from '../map
 import { getZoneVisuals } from '../zoneFilters';
 
 const TERRAIN_TILE_INSET = 0;
-const FAR_ZOOM_TERRAIN_LOD = 0.22;
+const FAR_ZOOM_TERRAIN_LOD = 0.04;
 const OVERVIEW_TERRAIN_ZOOM = 0.15;
 export const RING_REVEAL_MS = 360;
 export const RING_REVEAL_TOTAL_MS = RING_REVEAL_MS * 2;
@@ -291,6 +291,10 @@ const drawOutskirtTrees = (
     tileOpacity: number,
     explored: Set<string>
 ) => {
+    const transform = ctx.getTransform();
+    const physicalSize = s * transform.a;
+    if (physicalSize < 18) return;
+
     const tName = getTerrainName(terrain);
     if (tName === 'Forest') return;
     if (!OUTDOOR_TERRAINS.has(tName)) return;
@@ -476,7 +480,7 @@ export const drawTerrainIcon = (
     ctx: CanvasRenderingContext2D,
     x: number,
     y: number,
-    s: number,
+    s_orig: number,
     terrain: any,
     isDarkMode: boolean,
     processedIconsRef: React.MutableRefObject<Record<string, HTMLCanvasElement>>,
@@ -491,6 +495,17 @@ export const drawTerrainIcon = (
     tileS?: number
 ) => {
     const tName = getTerrainName(terrain);
+    const transform = ctx.getTransform();
+    const physicalSize = s_orig * transform.a;
+
+    let lodScale = 1.0;
+    if (physicalSize < 10) {
+        lodScale = 0.33; // 8x8 icon resolution
+    } else if (physicalSize < 18) {
+        lodScale = 0.5;  // 12x12 icon resolution
+    }
+
+    const s = Math.max(4, Math.round(s_orig * lodScale));
     const variantSpecificTerrains = ['Hills', 'Forest', 'Brush', 'Mountains', 'Field', 'Cavern', 'Tunnel', 'Water', 'Shallows', 'Rapids', 'City', 'Underwater', 'Building', 'Road'];
     const iconSize = Math.round(s);
 
@@ -1134,44 +1149,46 @@ export const drawTerrainIcon = (
         processedIconsRef.current[key] = iconCanvas;
     }
 
-     const cachedIcon = processedIconsRef.current[key];
-     if (cachedIcon) {
-         let offsetX = x - (cachedIcon.width - s) / 2;
-         let offsetY = y - (cachedIcon.height - s);
+      const cachedIcon = processedIconsRef.current[key];
+      if (cachedIcon) {
+          const drawW = cachedIcon.width / lodScale;
+          const drawH = cachedIcon.height / lodScale;
+          let offsetX = x - (drawW - s_orig) / 2;
+          let offsetY = y - (drawH - s_orig);
 
-         if (tName === 'Hills') {
-             // Deterministic pseudo-random offset between -12% and +12% of tile size s
-             const s1 = Math.abs(Math.sin(variant * 17.3) * 43758.5453) % 1;
-             const s2 = Math.abs(Math.sin(variant * 29.7) * 43758.5453) % 1;
-             offsetX += (s1 - 0.5) * s * 0.34;
-             offsetY += (s2 - 0.5) * s * 0.30;
-         } else if (tName === 'Mountains') {
-             const s1 = Math.abs(Math.sin(variant * 29.7) * 43758.5453) % 1;
-             const s2 = Math.abs(Math.sin(variant * 17.3) * 43758.5453) % 1;
-             offsetX += (s2 - 0.5) * s * 0.24;
-             offsetY += (s1 - 0.5) * s * 0.42;
-         }
+          if (tName === 'Hills') {
+              // Deterministic pseudo-random offset between -12% and +12% of tile size s_orig
+              const s1 = Math.abs(Math.sin(variant * 17.3) * 43758.5453) % 1;
+              const s2 = Math.abs(Math.sin(variant * 29.7) * 43758.5453) % 1;
+              offsetX += (s1 - 0.5) * s_orig * 0.34;
+              offsetY += (s2 - 0.5) * s_orig * 0.30;
+          } else if (tName === 'Mountains') {
+              const s1 = Math.abs(Math.sin(variant * 29.7) * 43758.5453) % 1;
+              const s2 = Math.abs(Math.sin(variant * 17.3) * 43758.5453) % 1;
+              offsetX += (s2 - 0.5) * s_orig * 0.24;
+              offsetY += (s1 - 0.5) * s_orig * 0.42;
+          }
 
-         let clipped = false;
-         if (walls && tileX !== undefined && tileY !== undefined && tileS !== undefined) {
-             const clipLeft = walls.w ? tileX : tileX - tileS * 1.5;
-             const clipRight = walls.e ? tileX + tileS : tileX + tileS * 2.5;
-             const clipTop = walls.n ? tileY : tileY - tileS * 1.5;
-             const clipBottom = walls.s ? tileY + tileS : tileY + tileS * 2.5;
+          let clipped = false;
+          if (lodScale === 1.0 && walls && tileX !== undefined && tileY !== undefined && tileS !== undefined) {
+              const clipLeft = walls.w ? tileX : tileX - tileS * 1.5;
+              const clipRight = walls.e ? tileX + tileS : tileX + tileS * 2.5;
+              const clipTop = walls.n ? tileY : tileY - tileS * 1.5;
+              const clipBottom = walls.s ? tileY + tileS : tileY + tileS * 2.5;
 
-             ctx.save();
-             ctx.beginPath();
-             ctx.rect(clipLeft, clipTop, clipRight - clipLeft, clipBottom - clipTop);
-             ctx.clip();
-             clipped = true;
-         }
+              ctx.save();
+              ctx.beginPath();
+              ctx.rect(clipLeft, clipTop, clipRight - clipLeft, clipBottom - clipTop);
+              ctx.clip();
+              clipped = true;
+          }
 
-         ctx.drawImage(cachedIcon, offsetX, offsetY);
+          ctx.drawImage(cachedIcon, offsetX, offsetY, drawW, drawH);
 
-         if (clipped) {
-             ctx.restore();
-         }
-     }
+          if (clipped) {
+              ctx.restore();
+          }
+      }
 };
 
 const getSourceDirection = (vnum: string, rCtx: RenderContext): string | null => {
@@ -1339,7 +1356,7 @@ export const drawExplorationRevealOverlay = (
             rCtx.triggerRender?.();
         }
 
-        if ((rCtx.showTerrainIcons || rCtx.lowEffects) && rCtx.camera.zoom > 0.30) {
+        if ((rCtx.showTerrainIcons || rCtx.lowEffects) && rCtx.camera.zoom > 0.05) {
             const terrain = allRooms[`m_${vnum}`]?.terrain || allRooms[vnum]?.terrain || rData[3];
             const gridX = Math.round(tx / s), gridY = Math.round(ty / s);
             const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);

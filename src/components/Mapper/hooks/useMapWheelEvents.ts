@@ -33,6 +33,9 @@ export const useMapWheelEvents = ({
         const rect = cvs.getBoundingClientRect();
         const mx = e.clientX - rect.left, my = e.clientY - rect.top;
         const cam = cameraRef.current, oldZoom = cam.zoom;
+        if ((cam as any).zoomTransition) {
+            delete (cam as any).zoomTransition;
+        }
         const factor = Math.pow(1.05, -e.deltaY / 120);
         const newZoom = Math.max(0.01, Math.min(oldZoom * factor, 5));
         if (Math.abs(newZoom - oldZoom) < 0.001) return;
