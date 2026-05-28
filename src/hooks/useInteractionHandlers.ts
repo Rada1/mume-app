@@ -2,7 +2,6 @@ import { CaptureStage, CustomButton, MessageType, AccountState } from '../types'
 
 export interface InteractionDeps {
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
-    input: string;
     setInput: (val: string) => void;
     setTarget: (val: string | null) => void;
     addMessage: (type: MessageType, text: string) => void;

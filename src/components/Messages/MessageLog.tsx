@@ -15,6 +15,8 @@ import PracticeHeaderCard from '../Practice/PracticeHeaderCard';
 import PracticeClassHeaderCard from '../Practice/PracticeClassHeaderCard';
 import PracticeColumnHeaderCard from '../Practice/PracticeColumnHeaderCard';
 import { useBaseGame, useVitals, useLog, useUI } from '../../context/GameContext';
+import { useInputStore } from '../../stores/useInputStore';
+import { useMessageStore } from '../../stores/useMessageStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { decodeCommandEntities } from '../../utils/commandTextUtils';
@@ -326,15 +328,19 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onWheel
 }) => {
     const { 
-        inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, 
-        triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled, 
-        isNewbieMode, showSpectatePromptInLog, input, setInput, sessionMode,
+        inCombat, inCombatRef, roomName, viewport, executeCommand, setParley,
+        triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled,
+        isNewbieMode, showSpectatePromptInLog, sessionMode,
         accountState
     } = useBaseGame() as any;
+    const input = useInputStore(s => s.input);
+    const setInput = useInputStore(s => s.setInput);
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const activeView = useModeStore(s => s.activeView);
     const { replayer, spectateBuffer } = useUI() as any;
-    const { messages } = useLog();
+    const userMessages = useMessageStore(s => s.user);
+    const spectateMessages = useMessageStore(s => s.spectate);
+    const messages = (isSpectateMode && activeView === 'target') ? spectateMessages : userMessages;
     const { target, setTarget, opponentName, opponentHealthStatus } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom, isLockedToBottomRef } = viewport;
 

@@ -1,5 +1,6 @@
-import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { useCallback, useRef, useEffect, useMemo } from 'react';
 import { MessageType, Message } from '../types';
+import { useMessageStore } from '../stores/useMessageStore';
 import { ansiConvert } from '../utils/ansi';
 
 // ---------------------------------------------------------------------------
@@ -38,8 +39,13 @@ export function useMessageLog(
     playCommMessageSound?: () => void,
     isSpectateSession?: boolean
 ) {
-    const [messages, setMessages] = useState<Message[]>([]);
     const messageLimit = isSpectateSession ? SPECTATE_LOG_MESSAGE_LIMIT : USER_LOG_MESSAGE_LIMIT;
+    const setMessages = isSpectateSession
+        ? useMessageStore.getState().setSpectateMessages
+        : useMessageStore.getState().setUserMessages;
+    const clearStoreMessages = isSpectateSession
+        ? useMessageStore.getState().clearSpectateMessages
+        : useMessageStore.getState().clearUserMessages;
     const lastMessageRef = useRef<Message | null>(null);
     const messageBufferRef = useRef<Message[]>([]);
     const flushTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -451,8 +457,8 @@ export function useMessageLog(
             cancelAnimationFrame(flushTimeoutRef.current as unknown as number);
             flushTimeoutRef.current = null;
         }
-        setMessages([]);
-    }, []);
+        clearStoreMessages();
+    }, [clearStoreMessages]);
 
     const addSystemMessage = useCallback((text: string) => {
         const msg: Message = {
@@ -469,15 +475,13 @@ export function useMessageLog(
         });
     }, [setMessages, messageLimit]);
 
-    return useMemo(() => ({ 
-        messages, 
-        setMessages, 
-        addMessage, 
-        addSystemMessage, 
-        flushMessages, 
-        isCombatLine, 
-        clearLog 
+    return useMemo(() => ({
+        addMessage,
+        addSystemMessage,
+        flushMessages,
+        isCombatLine,
+        clearLog
     }), [
-        messages, setMessages, addMessage, addSystemMessage, flushMessages, isCombatLine, clearLog
+        addMessage, addSystemMessage, flushMessages, isCombatLine, clearLog
     ]);
 }

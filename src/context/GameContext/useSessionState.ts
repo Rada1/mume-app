@@ -350,7 +350,11 @@ export const useSessionState = (
             setContainerContents
         },
         log: {
-            ...log,
+            addMessage: log.addMessage,
+            addSystemMessage: log.addSystemMessage,
+            flushMessages: log.flushMessages,
+            isCombatLine: log.isCombatLine,
+            clearLog: log.clearLog,
             selectedObjectIds: ui.selectedObjectIds,
             toggleObjectSelection: ui.toggleObjectSelection,
             clearObjectSelection: ui.clearObjectSelection,
@@ -370,7 +374,7 @@ export const useSessionState = (
         infoLines, scoreLines, questLines, achievementLines, practiceLines, whoLines, whereLines,
         eqLines, abilities, characterClass, actions, mood, spellSpeed, alertness,
         level, currentName, setCurrentName, registry, quests,
-        lightningEnabled, rStore.whoList, setWhoList, whereList, setWhereList, log, ui.selectedObjectIds,
+        lightningEnabled, rStore.whoList, setWhoList, whereList, setWhereList, ui.selectedObjectIds,
         ui.toggleObjectSelection, ui.clearObjectSelection, recorder, discoveredItems,
         gameTime, setGameTime, rStore.roomNum, rStore.chars, captureSession,
         expandedContainers, containerContents

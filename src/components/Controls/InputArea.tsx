@@ -5,12 +5,11 @@ import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../../types';
 import { useUI, useBaseGame, useVitals, useGame } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { useInputStore } from '../../stores/useInputStore';
 
 
 
 interface InputAreaProps {
-    input: string;
-    setInput: (val: string) => void;
     onSend: (e?: React.FormEvent) => void;
     terrain?: string;
     onSwipe?: (dir: string) => void;
@@ -31,9 +30,11 @@ interface InputAreaProps {
 import { normalizeTerrain } from '../../utils/terrainUtils';
 
 const InputArea: React.FC<InputAreaProps> = ({
-    input, setInput, onSend, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
+    onSend, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
     spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState, parley, setParley, whoList, gameState
 }) => {
+    const input = useInputStore(s => s.input);
+    const setInput = useInputStore(s => s.setInput);
     const { ui, setUI } = useUI();
     const { viewport } = useBaseGame();
     const { stats } = useVitals();

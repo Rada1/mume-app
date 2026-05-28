@@ -47,8 +47,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const { setStats, activePrompt, target } = useVitals() as any;
     const {
         env,
-        input,
-        setInput,
         triggerHaptic,
         btn,
         joystick,
@@ -246,8 +244,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         On mobile portrait, InputArea is rendered within MapperCluster to occupy the gutter. */}
                     {((shouldShowAccountInput && (isLandscape || !isMobile)) || (gameState !== 'account' && ((!isMobile && !(viewport as any).isForcePortrait) || isLandscape))) && (
                         <InputArea
-                            input={input}
-                            setInput={setInput}
                             onSend={handleSend}
                             onSwipe={handleInputSwipe}
                             isMobile={isMobile}

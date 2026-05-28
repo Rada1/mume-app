@@ -1,6 +1,6 @@
 import React from 'react';
 import CombatVitals from '../../Combat/CombatVitals';
-import { useGame } from '../../../context/GameContext';
+import { useGame, useVitals } from '../../../context/GameContext';
 
 import { UiPositions } from '../../../types';
 
@@ -16,7 +16,8 @@ interface StatsClusterProps {
 export const StatsCluster: React.FC<StatsClusterProps> = ({
     uiPositions, isEditMode, dragState, handleDragStart, isLandscape, isMobile
 }) => {
-    const { inCombat, executeCommand, mood, stats } = useGame();
+    const { inCombat, executeCommand, mood } = useGame();
+    const { stats } = useVitals();
 
     const pos = uiPositions.stats || {};
     const isDefault = pos.x === undefined && pos.y === undefined;

@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { useGame } from '../../context/GameContext';
+import { useGame, useVitals } from '../../context/GameContext';
 import { useUIStore } from '../../stores/useUIStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { audioManager } from '../../services/audio/AudioManager';
@@ -115,8 +115,9 @@ const withDuplicateOrdinals = (chips: RoomChip[]): RoomChip[] => {
 export const RoomChipRows: React.FC = () => {
     const {
         characterName, roomChars, roomPlayers, roomNpcs, roomItems,
-        triggerHaptic, setTarget, target, inCombat, opponentId, opponentName, executeCommand
+        triggerHaptic, inCombat, executeCommand
     } = useGame();
+    const { target, setTarget, opponentId, opponentName } = useVitals();
     const selectedTarget = useUIStore(s => s.selectedTarget);
     const toggleObjectSelection = useUIStore(s => s.toggleObjectSelection);
     const objectDragState = useUIStore(s => s.objectDragState);

@@ -605,7 +605,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         cam.x -= dx / cam.zoom;
                         cam.y -= dy / cam.zoom;
                         setAutoCenter(false);
-                        triggerRender();
+                        wakeCameraRender();
                     } else if (dragTypeRef.current === 'marquee') {
                         setMarqueeEnd({ x: p.x, y: p.y });
                         triggerRender(); // Still needed for marquee as it's not a camera change

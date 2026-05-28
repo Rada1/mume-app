@@ -71,8 +71,6 @@ const MudClient = () => {
         isImmersionMode,
         inCombat,
         isNewbieMode,
-        input,
-        setInput,
         commandPreview,
         setCommandPreview,
         gameState,
@@ -81,7 +79,7 @@ const MudClient = () => {
 
     const { rumble, setTarget, heldButton, heldButtonRef, setHeldButton } = useVitals();
     const { setIsSetManagerOpen, popoverState, setUI, ui, setManagerSelectedSet } = useUI();
-    const { messages, addMessage } = useLog();
+    const { addMessage } = useLog();
 
     const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
     const displayMode = useDisplayMode();
@@ -91,7 +89,7 @@ const MudClient = () => {
 
     const { handleDragStart, wasDraggingRef } = editor;
 
-    const { spatButtons, setSpatButtons } = useSpatButtons(messages, scrollContainerRef, triggerHaptic);
+    const { spatButtons, setSpatButtons } = useSpatButtons(scrollContainerRef, triggerHaptic);
 
     // --- Global Mobile Focus Fix ---
     // This is the most aggressive way to prevent the "stuck focus" keyboard pop-up bug.
@@ -324,8 +322,6 @@ const MudClient = () => {
                         setHeldButton={setHeldButton}
                         btnGlow={btnGlow}
                         setBtnGlow={setBtnGlow}
-                        input={input}
-                        setInput={setInput}
                         handleSend={handleSendCallback}
                         handleInputSwipe={handleInputSwipe}
                     />

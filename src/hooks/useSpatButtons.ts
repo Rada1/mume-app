@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Message, SpatButton } from '../types';
+import { SpatButton } from '../types';
+import { useMessageStore } from '../stores/useMessageStore';
 
 export const useSpatButtons = (
-    messages: Message[],
     scrollContainerRef: React.RefObject<HTMLDivElement>,
     triggerHaptic: (ms: number) => void
 ) => {
@@ -133,9 +133,8 @@ export const useSpatButtons = (
     }, [triggerHaptic]);
 
     useEffect(() => {
-        if (messages.length === 0) {
+        if (useMessageStore.getState().user.length === 0) {
             firedTriggerOccurrencesRef.current.clear();
-            return;
         }
 
         if (!scrollContainerRef.current) return;
@@ -181,19 +180,20 @@ export const useSpatButtons = (
         });
 
         return () => observer.disconnect();
-    }, [triggerSpit, scrollContainerRef, messages.length === 0]);
+    }, [triggerSpit, scrollContainerRef]);
 
     // Secondary cleanup: remove spat buttons whose parent message has scrolled out of the buffer
     useEffect(() => {
-        if (messages.length === 0 || spatButtons.length === 0) return;
-
-        const messageIds = new Set(messages.map(m => m.id));
+        if (spatButtons.length === 0) return;
+        const msgs = useMessageStore.getState().user;
+        if (msgs.length === 0) return;
+        const messageIds = new Set(msgs.map(m => m.id));
         setSpatButtons(prev => {
             const filtered = prev.filter(sb => !sb.mid || messageIds.has(sb.mid));
             if (filtered.length !== prev.length) return filtered;
             return prev;
         });
-    }, [messages]);
+    }, [spatButtons]);
 
     return {
         spatButtons,

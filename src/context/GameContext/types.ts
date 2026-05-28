@@ -82,8 +82,8 @@ export interface VitalsContextType {
 }
 
 export interface LogData {
-    messages: Message[];
-    setMessages: Dispatch<SetStateAction<Message[]>>;
+    messages?: Message[];
+    setMessages?: Dispatch<SetStateAction<Message[]>>;
     addMessage: (type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string, html?: string, tokens?: any[] }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: import('../../types').Token[], commTextTokens?: import('../../types').Token[], providedCombatSide?: 'player' | 'opponent' | 'groupmate', providedIsHitImpact?: boolean, providedIsDamageImpact?: boolean, providedIsAvoidDamageImpact?: boolean, providedIsMissImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => void;
     addSystemMessage: (text: string) => void;
     isCombatLine: (text: string) => boolean;
@@ -294,7 +294,7 @@ export interface SessionContextType {
     recorder: ReturnType<typeof useSessionRecorder>;
 }
 
-export interface GameContextType extends Omit<SessionContextType['vitals'], 'stats' | 'target' | 'pendingMove' | 'setPendingMove'>, Omit<SessionContextType['game'], 'inCombat' | 'roomName' | 'roomDesc' | 'characterName' | 'setCharacterName' | 'mood' | 'setMood' | 'spellSpeed' | 'setSpellSpeed' | 'alertness' | 'setAlertness' | 'whoList' | 'whereList' | 'setWhereList' | 'lightningEnabled' | 'setLightningEnabled' | 'abilities' | 'setAbilities' | 'actions' | 'setActions' | 'characterClass' | 'setCharacterClass' | 'quests' | 'setQuests' | 'roomNameRef' | 'roomDescRef'>, LogContextType {
+export interface GameContextType extends Omit<SessionContextType['vitals'], 'stats' | 'target' | 'activePrompt' | 'setActivePrompt' | 'pendingMove' | 'setPendingMove'>, Omit<SessionContextType['game'], 'inCombat' | 'roomName' | 'roomDesc' | 'characterName' | 'setCharacterName' | 'mood' | 'setMood' | 'spellSpeed' | 'setSpellSpeed' | 'alertness' | 'setAlertness' | 'whoList' | 'whereList' | 'setWhereList' | 'lightningEnabled' | 'setLightningEnabled' | 'abilities' | 'setAbilities' | 'actions' | 'setActions' | 'characterClass' | 'setCharacterClass' | 'quests' | 'setQuests' | 'roomNameRef' | 'roomDescRef'>, LogContextType {
     // Session Management
     activeSession: SessionSlot;
     setActiveSession: (slot: SessionSlot) => void;
@@ -303,8 +303,7 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     active: SessionContextType;
 
     // The "Effective" state (active session)
-    stats: GameStats;
-    target: string | null;
+    // stats and target are intentionally absent — use useVitals() for those
     inCombat: boolean;
     roomName: string | null;
     roomDesc: string | null;

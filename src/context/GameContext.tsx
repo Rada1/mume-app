@@ -177,7 +177,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     }, [s.userSession.log, s.spectateSession.log, s.bumpActivity, mode.isSpectating]);
 
-    const { messages, setMessages, addSystemMessage, flushMessages, clearLog } = activeLog;
+    const { addSystemMessage, flushMessages, clearLog } = activeLog;
     const addMessage = routedAddMessage; // Use the router for the parser
 
     // 5. Networking
@@ -520,7 +520,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [s.isPasswordMode]);
 
     // 6. Final Controller & Parser
-    const { spatButtons, setSpatButtons, triggerSpitManual } = useSpatButtons(messages, useRef<HTMLDivElement>(null), triggerHaptic);
+    const { spatButtons, setSpatButtons, triggerSpitManual } = useSpatButtons(useRef<HTMLDivElement>(null), triggerHaptic);
     const practice = usePracticeHandler(s.setAbilities, s.setPracticeLines);
     const btn = useButtons({
         abilities: s.abilities,
@@ -842,7 +842,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         captureStage,
         setInventoryLines: s.setInventoryLines, setStatsLines: s.setStatsLines,
         setInfoLines: s.setInfoLines, setAchievementLines: s.setAchievementLines, setScoreLines: s.setScoreLines, setEqLines: s.setEqLines,
-        setCommandPreview: s.setCommandPreview, input: s.input, setInput: s.setInput, isNewbieMode: s.isNewbieMode,
+        setCommandPreview: s.setCommandPreview, setInput: s.setInput, isNewbieMode: s.isNewbieMode,
         status: s.status, target: v.target, setTarget: v.setTarget, setPendingMove: v.setPendingMove,
         activePrompt: v.activePrompt?.text || '', finalizeCapture: parser.finalizeCapture, popoverState: s.popoverState,
         setPendingFlags: parser.setPendingFlags,
@@ -933,9 +933,29 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     }), [activeLog, replayMsg.messages, refreshLogHighlights, controller.handleLogPointerDown, controller.handleLogPointerUp, v.target, s.roomPlayers, s.roomNpcs, v.groupMembers, s.roomItems, s.inventoryLines, s.eqLines, s.discoveredItems, s.inlineCategories, settingsStore.npcColor, settingsStore.playerColor, settingsStore.objectColor, settingsStore.roomColor, btn.buttons, s.selectedObjectIds, s.userSession.game.whoList]);
 
+    // Stable vitals snapshot — excludes hot-path fields so combat HP/prompt updates
+    // don't rebuild the GameContext value and re-render all 50 consumers.
+    // Components needing stats, target, or activePrompt must use useVitals() instead.
+    const vStable = useMemo(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { stats: _s, target: _t, activePrompt: _ap, setActivePrompt: _sap, ...rest } = v;
+        return rest;
+    }, [
+        v.rumble, v.deathRoomId, v.heldButton, v.heldButtonRef,
+        v.isMendingMode, v.mendingTarget, v.bufferName, v.playerHealthStatus,
+        v.opponentName, v.opponentId, v.opponentHealthStatus, v.bufferHealthStatus,
+        v.characterInfo, v.groupMembers, v.pendingMove,
+        v.xpHistory, v.xpEvent, v.gameTime, v.roomName, v.characterName,
+        v.setStats, v.setTarget, v.setRumble, v.setDeathRoomId, v.setHeldButton,
+        v.setIsMendingMode, v.setMendingTarget, v.setBufferName, v.setPlayerHealthStatus,
+        v.setOpponentId, v.setOpponentName, v.setOpponentHealthStatus, v.setBufferHealthStatus,
+        v.setCharacterInfo, v.setGroupMembers, v.setPendingMove,
+        v.triggerXpTicker, v.setGameTime
+    ]);
+
     const value: GameContextType = useMemo(() => ({
         ...s,
-        ...v,
+        ...vStable,
         telnet,
         parser,
         ...controller,
@@ -987,7 +1007,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         rotateQueue: parser.rotateQueue,
         removeFromQueue: parser.removeFromQueue
     }), [
-        s, v, telnet, parser, controller, btn, joystick, editor, replayer,
+        s, vStable, telnet, parser, controller, btn, joystick, editor, replayer,
         viewport, env, audioCtxRef, initAudio, spatButtons, ui.diagnosticLogs,
         practice, help, quests, keywordOverrides,
         s.userSession.recorder, mapperRef, sessionMode, setSessionMode

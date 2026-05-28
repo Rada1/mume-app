@@ -6,6 +6,7 @@
 import React, { ReactNode } from 'react';
 import { X, User, Shield, Users, Activity, LogIn } from 'lucide-react';
 import { useUI, useGame } from '../../context/GameContext';
+import { useInputStore } from '../../stores/useInputStore';
 import { EnvironmentGlow } from '../Atmosphere/EnvironmentGlow';
 import { DrawerResizeHandle } from './DrawerResizeHandle';
 
@@ -29,7 +30,8 @@ const ACCOUNT_TABS = [
 
 export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, children }) => {
     const { ui, setUI, handleTabClick } = useUI();
-    const { triggerHaptic, handleLogClick, handleLogPointerDown, handleLogPointerUp, viewport, currentTerrain, lighting, input, accountState, gameState, sessionMode } = useGame() as any;
+    const { triggerHaptic, handleLogClick, handleLogPointerDown, handleLogPointerUp, viewport, currentTerrain, lighting, accountState, gameState, sessionMode } = useGame() as any;
+    const input = useInputStore(s => s.input);
     const isOpen = ui.drawer === id;
     const tabs = gameState === 'account' && sessionMode !== 'replay' ? ACCOUNT_TABS : SIDEBAR_TABS;
 

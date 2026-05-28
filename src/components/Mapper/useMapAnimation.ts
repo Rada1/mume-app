@@ -91,7 +91,7 @@ export const useMapAnimation = ({
         const effectiveIsDragging = isDragging || isDraggingRef?.current;
         const hasLiveOverlayAnimation = !!(activeMapFilter || mapSearchQuery?.trim() || combatAnimationActive || walkTargetId);
         const idleFrameBudget = isMobile ? MOBILE_PLAYER_PULSE_FRAME_MS : PLAYER_PULSE_FRAME_MS;
-        const frameBudget = effectiveIsDragging || hasLiveOverlayAnimation ? 16 : idleFrameBudget;
+        const frameBudget = effectiveIsDragging || hasLiveOverlayAnimation || isJoystickActiveRef.current ? 16 : idleFrameBudget;
         if (deltaTime < frameBudget) return true;
         
         // Calculate a normalized factor for lerping based on time (aiming for 60fps base)

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
+import { useInputStore } from '../../../stores/useInputStore';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { DrawerType, GameContextType, UIContextType } from '../../../context/GameContext/types';
 import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock } from 'lucide-react';
@@ -38,8 +39,6 @@ interface MapperClusterProps {
     heldButtonRef?: React.MutableRefObject<any>;
     setHeldButton: React.Dispatch<React.SetStateAction<any>>;
     setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
-    input: string;
-    setInput: (val: string) => void;
     handleSend: (e?: React.FormEvent) => void;
     handleInputSwipe: (dir: SwipeDirection) => void;
 }
@@ -47,7 +46,7 @@ interface MapperClusterProps {
 export const MapperCluster: React.FC<MapperClusterProps> = ({
     uiPositions, isEditMode, handleDragStart, characterName, isMobile, mapperRef,
     dragState, isLandscape, wasDraggingRef, heldButton, setHeldButton, setCommandPreview,
-    input, setInput, handleSend, handleInputSwipe
+    handleSend, handleInputSwipe
 }) => {
     const {
         triggerHaptic, viewport, btn, handleButtonClick, executeCommand, joystick,
@@ -209,9 +208,10 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             accountState.currentPrompt?.toLowerCase().includes('verify')
         );
         const loginHandleSend = (e?: React.FormEvent) => {
-            if (isLoginStage && rememberLogin && input.trim()) {
-                if (isPasswordPrompt) setLoginPassword(input.trim());
-                else setLoginName(input.trim());
+            const inputVal = useInputStore.getState().input;
+            if (isLoginStage && rememberLogin && inputVal.trim()) {
+                if (isPasswordPrompt) setLoginPassword(inputVal.trim());
+                else setLoginName(inputVal.trim());
             }
             handleSend(e);
         };
@@ -747,8 +747,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                 }}
                             >
                             <InputArea
-                                input={input}
-                                setInput={setInput}
                                 onSend={loginHandleSend}
                                 onSwipe={handleInputSwipe}
                                 isMobile={isMobile}
@@ -1067,8 +1065,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 )}
 
                 <InputArea
-                    input={input}
-                    setInput={setInput}
                     onSend={handleSend}
                     onSwipe={handleInputSwipe}
                     isMobile={isMobile}

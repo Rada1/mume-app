@@ -109,10 +109,9 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         viewport,
         fontFamily,
         setFontFamily,
-        characterInfo,
     } = useGame() as any;
 
-    const { setTarget } = useVitals();
+    const { setTarget, characterInfo } = useVitals();
 
     const {
         isSettingsOpen,

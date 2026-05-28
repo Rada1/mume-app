@@ -2,7 +2,7 @@ import React from 'react';
 import { LightingType, WeatherType } from '../../types';
 import Rain from './Rain';
 import { Embers } from './Embers';
-import { useGame } from '../../context/GameContext';
+import { useInputStore } from '../../stores/useInputStore';
 import { EnvironmentGlow } from './EnvironmentGlow';
 import { CloudWave } from './CloudWave';
 
@@ -31,7 +31,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     bgImage,
     terrain
 }) => {
-    const { input } = useGame();
+    const input = useInputStore(s => s.input);
 
     const isWater = React.useMemo(() => {
         if (!bgImage) return false;

@@ -5,7 +5,7 @@
 
 import React, { useMemo } from 'react';
 import { ChevronRight } from 'lucide-react';
-import { useGame, useUI } from '../../context/GameContext';
+import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useUIStore } from '../../stores/useUIStore';
 import type { DrawerLine } from '../../types';
 import { extractMumeKeyword, isItemContainer } from '../../utils/gameUtils';
@@ -193,11 +193,10 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
         containerContents,
         executeCommand,
         parser,
-        setTarget,
-        target,
         setPopoverState,
         popoverState
     } = useGame();
+    const { target, setTarget } = useVitals();
     const { displayEqLines, displayInventoryLines } = useUI();
     const selectedTarget = useUIStore(s => s.selectedTarget);
     const toggleObjectSelection = useUIStore(s => s.toggleObjectSelection);

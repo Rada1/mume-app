@@ -6,6 +6,7 @@ import { useNumpadControls } from './useNumpadControls';
 import { useFKeyControls } from './useFKeyControls';
 import { getGateState } from '../components/Mapper/mapperUtils';
 import { CaptureStage } from '../types';
+import { useInputStore } from '../stores/useInputStore';
 // import { useAtmosphereStore } from '../stores/useAtmosphereStore';
 
 const findCommandInput = (): HTMLTextAreaElement | HTMLInputElement | null => {
@@ -43,7 +44,6 @@ export interface CommandControllerDeps {
     setScoreLines: (val: any) => void;
     setEqLines: (val: any) => void;
     setCommandPreview: (val: string | null) => void;
-    input: string;
     setInput: (val: string) => void;
     isNewbieMode: boolean;
     status: 'connected' | 'disconnected' | 'connecting';
@@ -130,7 +130,7 @@ export interface CommandControllerDeps {
 
 
 export function useCommandController(deps: CommandControllerDeps) {
-    const { input, setInput, isNewbieMode, viewport, triggerHaptic, setTarget, setPendingMove, addMessage, waiting } = deps;
+    const { setInput, isNewbieMode, viewport, triggerHaptic, setTarget, setPendingMove, addMessage, waiting } = deps;
 
     const executor = useCommandExecutor(deps);
     const depsRef = useRef(deps);
@@ -283,7 +283,7 @@ export function useCommandController(deps: CommandControllerDeps) {
     useFKeyControls(deps.btn?.buttonsRef, executeCommand);
 
     const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp } = useInteractionHandlers({
-        ...deps, executeCommand, input, ui: deps.ui, parley: deps.parley, setParley: deps.setParley,
+        ...deps, executeCommand, ui: deps.ui, parley: deps.parley, setParley: deps.setParley,
         isTrackpadModifierActive: deps.isTrackpadModifierActive,
         handleTabClick: deps.handleTabClick,
         keywordOverrides: deps.keywordOverrides,
@@ -306,8 +306,8 @@ export function useCommandController(deps: CommandControllerDeps) {
 
     const handleSend = useCallback((e?: React.FormEvent) => {
         e?.preventDefault();
-        const cmd = input.trim();
-        setInput('');
+        const cmd = useInputStore.getState().input.trim();
+        useInputStore.getState().setInput('');
 
         let finalCmd = cmd;
         const currentMode = deps.parley.mode || (deps.parley.active ? 'parley' : 'command');
@@ -327,7 +327,7 @@ export function useCommandController(deps: CommandControllerDeps) {
 
         executeCommand(finalCmd, false, false, false, false, { shouldFocus: true });
 
-    }, [input, executeCommand, viewport, setInput, deps.mapperRef, deps.parley]);
+    }, [executeCommand, deps.mapperRef, deps.parley]);
 
     return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp };
 }

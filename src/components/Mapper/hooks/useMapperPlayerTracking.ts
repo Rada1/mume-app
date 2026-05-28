@@ -1,4 +1,5 @@
 import { useLayoutEffect, useCallback, MutableRefObject } from 'react';
+import { GRID_SIZE } from '../mapperUtils';
 
 export const useMapperPlayerTracking = (
     currentRoomId: string | null,
@@ -58,6 +59,20 @@ export const useMapperPlayerTracking = (
                 lastRoomIdRef.current = currentRoomId;
                 setAutoCenter(true);
                 setViewZ(null);
+
+                // Snap camera for large jumps (initial load, teleport, reconnect).
+                // Adjacent room steps are <= ~70 units; anything beyond 4 rooms snaps.
+                const cvs = canvasRef.current;
+                const zoom = cameraRef.current.zoom || 1;
+                const w = cvs ? cvs.clientWidth : 400;
+                const h = cvs ? cvs.clientHeight : 400;
+                const targetX = (r.x * GRID_SIZE + GRID_SIZE / 2) - w / (2 * zoom);
+                const targetY = (r.y * GRID_SIZE + GRID_SIZE / 2) - h / (2 * zoom);
+                const dist = Math.hypot(targetX - cameraRef.current.x, targetY - cameraRef.current.y);
+                if (dist > GRID_SIZE * 4) {
+                    cameraRef.current.x = targetX;
+                    cameraRef.current.y = targetY;
+                }
             }
 
             // Always allow triggerRender to fire, otherwise stationary map updates

@@ -13,6 +13,7 @@ import { extractNoun, extractColorTaggedKeyword, sanitizeGameTarget } from '../.
 import { useEntityRegistry } from '../../hooks/useEntityRegistry';
 import { useSessionState } from './useSessionState';
 import { useUIStore } from '../../stores/useUIStore';
+import { useInputStore } from '../../stores/useInputStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSpectateLiveVitalsStore } from '../../stores/spectate/useSpectateLiveVitalsStore';
@@ -51,7 +52,7 @@ export const useGameProviderState = (audioTriggers?: {
     const [parley, setParley] = useState<ParleyState>({ active: false, mode: 'command', command: 'tell', target: null, message: '' });
     const [mumeEditState, setMumeEditState] = [uiStore.mumeEditState, uiStore.setMumeEditState] as const;
 
-    const [input, setInput] = useState("");
+    const setInput = useInputStore(s => s.setInput);
     const [commandPreview, setCommandPreview] = useState<string | null>(null);
 
     const [accountState, setAccountState] = useState<import('../../types').AccountState>({
@@ -192,7 +193,7 @@ export const useGameProviderState = (audioTriggers?: {
         selectedObjectIds: active.log.selectedObjectIds,
         toggleObjectSelection: active.log.toggleObjectSelection,
         clearObjectSelection: active.log.clearObjectSelection,
-        input, setInput,
+        setInput,
         commandPreview, setCommandPreview,
         diagnosticLogs: uiStore.diagnosticLogs,
         addDiagnosticLog: uiStore.addDiagnosticLog,
