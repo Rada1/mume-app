@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import { MessageCircle, Reply, Repeat, XCircle, HelpCircle } from 'lucide-react';
 import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../../types';
@@ -44,6 +45,8 @@ const InputArea: React.FC<InputAreaProps> = ({
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const modeMenuBtnRef = useRef<HTMLButtonElement>(null);
+    const [modeMenuPos, setModeMenuPos] = useState<{ top: number; left: number } | null>(null);
     const glowRafRef = useRef<number | null>(null);
     const startPos = useRef<{ x: number, y: number } | null>(null);
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
@@ -246,7 +249,13 @@ const InputArea: React.FC<InputAreaProps> = ({
         initAudio?.();
         if (isSoundEnabled) playClickSound?.();
         triggerHaptic(20);
-        setIsModeMenuOpen(prev => !prev);
+        setIsModeMenuOpen(prev => {
+            if (!prev && modeMenuBtnRef.current) {
+                const rect = modeMenuBtnRef.current.getBoundingClientRect();
+                setModeMenuPos({ top: rect.top, left: rect.left });
+            }
+            return !prev;
+        });
     };
 
     const selectMode = (mode: 'command' | 'parley' | 'help') => {
@@ -395,6 +404,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                             <div className={`parley-pill${isPillActive ? ' parley-pill-active' : ''}`} style={{ position: 'relative' }}>
                                 <button
                                     type="button"
+                                    ref={modeMenuBtnRef}
                                     className={`cmd-prompt-btn${isPillActive ? ' parley-active' : ''}`}
                                     onPointerDown={(e) => e.stopPropagation()}
                                     onClick={handleModeMenuToggle}
@@ -403,13 +413,14 @@ const InputArea: React.FC<InputAreaProps> = ({
                                     {currentMode === 'parley' ? <MessageCircle size={16} /> : currentMode === 'help' ? <HelpCircle size={16} /> : '>'}
                                 </button>
 
-                                {isModeMenuOpen && (
+                                {isModeMenuOpen && modeMenuPos && ReactDOM.createPortal(
                                     <div
                                         className="mode-dropdown-menu"
                                         style={{
-                                            position: 'absolute',
-                                            bottom: 'calc(100% + 8px)',
-                                            left: '4px',
+                                            position: 'fixed',
+                                            top: modeMenuPos.top - 8,
+                                            left: modeMenuPos.left,
+                                            transform: 'translateY(-100%)',
                                             background: '#121214',
                                             border: '1px solid rgba(255, 255, 255, 0.15)',
                                             borderRadius: '8px',
@@ -497,7 +508,8 @@ const InputArea: React.FC<InputAreaProps> = ({
                                             <HelpCircle size={14} />
                                             Help
                                         </button>
-                                    </div>
+                                    </div>,
+                                    document.body
                                 )}
 
                                 {currentMode === 'parley' && (<>
