@@ -45,6 +45,13 @@ export interface TelnetConfig {
 
 export function useTelnet(config: TelnetConfig) {
     const { isConnected, lastError, sendBytes, connect, disconnect } = useTelnetSocket();
+
+    const sendGmcp = React.useCallback((pkg: string, data?: any) => {
+        const json = data ? JSON.stringify(data) : '';
+        const bytes = [IAC, SB, TELNET_GMCP, ...Array.from(new TextEncoder().encode(`${pkg} ${json}`)), IAC, SE];
+        sendBytes(new Uint8Array(bytes));
+    }, [sendBytes]);
+
     const configRef = React.useRef(config);
     const bufferRef = React.useRef("");
     const lastProcessedPromptRef = React.useRef("");
@@ -78,6 +85,8 @@ export function useTelnet(config: TelnetConfig) {
             onCharRide: (val) => configRef.current.handlers.onCharRide?.(val),
             onComm: (s, c, m) => configRef.current.handlers.onComm?.(s, c, m),
             onEvent: (pkg, val) => configRef.current.handlers.onEvent?.(pkg, val),
+            onCorePing: () => sendGmcp('Core.Ping'),
+            onCoreGoodbye: () => {},
         } as any);
     }
     const protocolHandler = React.useRef<ProtocolHandler | null>(null);
@@ -89,6 +98,12 @@ export function useTelnet(config: TelnetConfig) {
     React.useEffect(() => {
         configRef.current.handlers.setStatus(isConnected ? 'connected' : 'disconnected');
     }, [isConnected]);
+
+    React.useEffect(() => {
+        if (!isConnected) return;
+        const id = window.setInterval(() => sendGmcp('Core.KeepAlive'), 30_000);
+        return () => window.clearInterval(id);
+    }, [isConnected, sendGmcp]);
 
     const processText = (text: string) => {
         bufferRef.current += text;
@@ -475,11 +490,7 @@ export function useTelnet(config: TelnetConfig) {
             addMessage: (type, text, combat, mid, isRoom, precalc) => configRef.current.handlers.addMessage(type, text, combat, mid, isRoom, precalc),
             handleSubnegotiation: (buffer) => handleSubnegotiation(buffer),
             processText: (text) => processText(text),
-            sendGMCP: (pkg, data) => {
-                const json = data ? JSON.stringify(data) : '';
-                const bytes = [IAC, SB, TELNET_GMCP, ...Array.from(new TextEncoder().encode(`${pkg} ${json}`)), IAC, SE];
-                sendBytes(new Uint8Array(bytes));
-            },
+            sendGMCP: (pkg, data) => sendGmcp(pkg, data),
             onEchoChange: (visible) => configRef.current.handlers.onEchoChange?.(visible)
         });
     }
@@ -498,10 +509,6 @@ export function useTelnet(config: TelnetConfig) {
         disconnect, 
         send: (text: string) => sendBytes(new TextEncoder().encode(text + '\n')),
         sendCommand: (text: string) => sendBytes(new TextEncoder().encode(text + '\n')),
-        sendGMCP: (pkg: string, data: any) => {
-            const json = data ? JSON.stringify(data) : '';
-            const bytes = [IAC, SB, TELNET_GMCP, ...Array.from(new TextEncoder().encode(`${pkg} ${json}`)), IAC, SE];
-            sendBytes(new Uint8Array(bytes));
-        }
+        sendGMCP: sendGmcp
     };
 }
