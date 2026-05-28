@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Vite Dev Server",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "MUME Bridge",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["mume-bridge.js"],
+      "port": 8081
+    },
+    {
+      "name": "MMapper Bridge",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["mmapper-bridge.js"],
+      "port": 8080
+    },
+    {
+      "name": "MUME Sim",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["mume-sim.js"],
+      "port": 8081
+    }
+  ]
+}
