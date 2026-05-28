@@ -33,6 +33,7 @@ import { useDisplayMode } from './hooks/useDisplayMode';
 import { normalizeTerrain } from './utils/terrainUtils';
 import { toThemeLinkedColor } from './utils/themeLinkedColors';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
@@ -381,6 +382,7 @@ root.render(
         <MapperProvider>
             <MudClient />
             <Analytics />
+            <SpeedInsights />
         </MapperProvider>
     </GameProvider>
 );
