@@ -517,10 +517,6 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             // IGNORE all internal map interactions if a window/cluster drag is in progress
             if (document.body.classList.contains('global-dragging')) return;
 
-            // Prevent browser scroll during map interaction
-            if (e.cancelable) e.preventDefault();
-            e.stopPropagation();
-
             activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
             
             const { setAutoCenter, setIsDragging } = depsRef.current;
@@ -1139,7 +1135,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         };
 
         cvs.addEventListener('pointerdown', onDown, { passive: false });
-        window.addEventListener('pointermove', onMove, { passive: false });
+        window.addEventListener('pointermove', onMove, { passive: true });
         window.addEventListener('pointerup', onUp, { passive: false });
         window.addEventListener('pointercancel', onCancel, { passive: false });
         cvs.addEventListener('wheel', onWheel, { passive: false });
