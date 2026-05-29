@@ -17,7 +17,6 @@ import { useSettingsStore } from '../stores/useSettingsStore';
 import { useModeStore } from '../stores/useModeStore';
 import { gmcpBus } from '../events/gmcpBus';
 import { useAudioEffects } from '../hooks/useAudioSystem';
-import { reconcilePredictions } from '../components/Mapper/mapperPredictionQueue';
 
 interface MapperContextType {
     rooms: Record<string, MapperRoom>;
@@ -187,8 +186,6 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const pendingMovesRef = useRef<{ dir: string, time: number, resolved?: boolean }[]>([]);
     const preMoveRef = useRef<{ dir: string, targetId: string, time: number } | null>(null);
     const clientPredictionsRef = useRef<MapperPrediction[]>([]);
-    const predictionSeqRef = useRef(0);
-    const recentlyReconciledRef = useRef<Set<string>>(new Set());
     const lastDetectedTerrainRef = useRef<string | null>(null);
     const discoverySourceRef = useRef<string | null>(null);
     const firstExploredAtRef = useRef<Record<string, number>>({});
@@ -396,59 +393,31 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         unveilMap
     });
 
-    const resolvePredictionCoords = useCallback((targetId: string) => {
-        const targetRoom = roomsRef.current[targetId];
-        if (targetRoom) return { x: targetRoom.x, y: targetRoom.y, z: targetRoom.z || 0 };
-
-        const rawVnum = targetId.startsWith('m_') ? targetId.substring(2) : targetId;
-        const coords = preloadedCoordsRef.current[rawVnum];
-        return coords ? { x: coords[0], y: coords[1], z: coords[2] || 0 } : null;
-    }, [preloadedCoordsRef, roomsRef]);
-
-    const clearPrediction = useCallback((confirmedRoomId?: string | null) => {
-        // Idempotency guard: tracks every room ID consumed from the prediction queue.
-        // This blocks both duplicate same-event calls (move-confirmed + room-info for the
-        // same move) AND out-of-order late GMCP packets that arrive after the queue has
-        // already advanced past that room — the previous single-ID guard only blocked
-        // the most-recently reconciled room, so a late GMCP for room B would slip through
-        // once room C had been reconciled, incorrectly dropping the queue head.
-        const normalizedConfirmed = confirmedRoomId ? String(confirmedRoomId).replace(/^m_/, '') : null;
-        if (normalizedConfirmed && recentlyReconciledRef.current.has(normalizedConfirmed)) {
-            return;
+    // MMapper-style reconcile: each confirmed room arrival consumes one queued
+    // direction from the head. The line itself is graph-walked from the confirmed
+    // room at render time, so we only need to keep the queue length in sync with
+    // how many sent moves are still in flight — no coordinate matching required.
+    const clearPrediction = useCallback((_confirmedRoomId?: string | null) => {
+        const queue = clientPredictionsRef.current;
+        if (queue.length === 0) return;
+        // pendingMovesRef is the authoritative count of moves SENT but not yet
+        // confirmed: the room-info handler maintains it with full direction-matching
+        // and stale-purging, and it is already updated by the time we run here. We
+        // mirror its length instead of dequeuing per confirmed room id, because a
+        // single physical move is often confirmed through TWO channels (GMCP room-info
+        // AND XML/text dead-reckon) that report DIFFERENT room ids — an id-based dedup
+        // can't catch that and double-dequeues, draining the line at 2x speed.
+        // Confirmations consume the OLDEST moves first, so we keep the newest `target`
+        // entries (the tail) — which is also exactly what the render walk needs, since
+        // it re-anchors at the now-current room and follows the remaining dirs.
+        const target = pendingMovesRef.current.length;
+        if (queue.length <= target) return;
+        clientPredictionsRef.current = queue.slice(queue.length - target);
+        if (showDebugEchoesRef.current) {
+            addMessageRef.current?.('system', `[MapperPredict] sync to pending=${target} (remaining ${clientPredictionsRef.current.length})`);
         }
-
-        const confirmedCoords = confirmedRoomId ? resolvePredictionCoords(confirmedRoomId) : null;
-        const prevQueue = clientPredictionsRef.current;
-        const result = reconcilePredictions(prevQueue, confirmedRoomId, confirmedCoords);
-
-        if (result.changed) {
-            // Add every room consumed from the queue head to the guard set so that
-            // late duplicates for any of those rooms are suppressed.
-            const consumedCount = prevQueue.length - result.predictions.length;
-            for (let i = 0; i < consumedCount; i++) {
-                const id = String(prevQueue[i].toId || '').replace(/^m_/, '');
-                if (id) recentlyReconciledRef.current.add(id);
-            }
-        } else if (normalizedConfirmed) {
-            recentlyReconciledRef.current.add(normalizedConfirmed);
-        }
-
-        if (!result.changed) {
-            // Only clear preMoveRef when the queue is truly empty — not when reconciliation
-            // was a no-op because no ID/coords were provided (text-based move-confirmed
-            // before GMCP arrives). Clearing it prematurely kills the ghost animation
-            // while predictions are still waiting.
-            if (prevQueue.length === 0) preMoveRef.current = null;
-            return;
-        }
-
-        clientPredictionsRef.current = result.predictions;
-        const nextPrediction = result.predictions[0];
-        preMoveRef.current = nextPrediction
-            ? { dir: nextPrediction.dir, targetId: nextPrediction.toId, time: nextPrediction.createdAt }
-            : null;
         triggerRender();
-    }, [triggerRender, resolvePredictionCoords]);
+    }, [triggerRender]);
 
     const onRoomInfoProcessed = useCallback((confirmedRoomId?: string | null) => {
         clearPrediction(confirmedRoomId);
@@ -489,15 +458,10 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const handleMoveFailure = useCallback(() => {
         pendingMovesRef.current.shift();
-        // Drop only the failed head prediction; trailing predictions may still be valid
-        // (the user's next move could be in a different direction, but if they're spamming
-        // the same dir the next reconcile will catch up via id/coord matching).
+        // The failed move never happened — drop its queued direction from the head.
         const queue = clientPredictionsRef.current;
         clientPredictionsRef.current = queue.length > 0 ? queue.slice(1) : queue;
-        const nextPrediction = clientPredictionsRef.current[0];
-        preMoveRef.current = nextPrediction
-            ? { dir: nextPrediction.dir, targetId: nextPrediction.toId, time: nextPrediction.createdAt }
-            : null;
+        if (clientPredictionsRef.current.length === 0) preMoveRef.current = null;
         triggerRender();
     }, [triggerRender]);
 
@@ -512,8 +476,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const dir = e.detail;
             pushPendingMove(dir);
 
-            const predictionTail = clientPredictionsRef.current[clientPredictionsRef.current.length - 1];
-            const currentRoomId = predictionTail?.toId || currentRoomIdRef.current;
+            const currentRoomId = currentRoomIdRef.current;
             const rooms = roomsRef.current;
             const preloaded = preloadedCoordsRef.current;
             if (!currentRoomId || !rooms || !preloaded) return;
@@ -525,52 +488,37 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             if (showDebugEchoesRef.current) {
                 addMessageRef.current?.('system', `[MapperPredict] push ${dir}: room=${currentRoomId} exit=${hasExit ? 'yes' : 'no'} door=${hasDoor ? (isClosed ? 'closed' : 'open') : 'no'}`);
             }
-            // Predict optimistically: only bail when there's no exit at all. Door state defaults
-            // to "closed" for unobserved doors, but the player may have autoopen or the door may
-            // actually be open — let the failure handler trim if the move bounces.
+            // Predict optimistically: only bail when there's no exit at all. Door state
+            // defaults to "closed" for unobserved doors, but the player may have autoopen
+            // or the door may actually be open — the failure handler trims if it bounces.
             if (!hasExit) return;
 
-            const exA = room?.exits?.[dir] || wEx;
-            const targetId = getExitTargetId(exA);
-            if (!targetId) return;
+            // Resolve the immediate next room ONLY to seed the ghost-camera preMoveRef.
+            // The prediction LINE stores no coords — it is graph-walked at render time.
+            const wasQueueEmpty = clientPredictionsRef.current.length === 0;
+            if (wasQueueEmpty) {
+                const exA = room?.exits?.[dir] || wEx;
+                const targetId = getExitTargetId(exA);
+                if (targetId) {
+                    const targetKey = String(targetId).replace(/^m_/, '');
+                    const internalTargetId = serverIdIndexRef.current[targetKey] || targetKey;
+                    const finalTargetId = String(internalTargetId).startsWith('m_') ? String(internalTargetId) : `m_${internalTargetId}`;
+                    preMoveRef.current = { dir, targetId: finalTargetId, time: Date.now() };
+                }
+            }
 
-            const targetKey = String(targetId).replace(/^m_/, '');
-            const internalTargetId = serverIdIndexRef.current[targetKey] || targetKey;
-            const finalTargetId = String(internalTargetId).startsWith('m_') ? String(internalTargetId) : `m_${internalTargetId}`;
-            onPre({ detail: { dir, targetId: finalTargetId } });
+            onPre({ detail: { dir } });
         };
         const onConfirm = (e: any) => handleMoveConfirmed(e);
         const onFail    = ()       => handleMoveFailure();
+        // Append a sent move's direction to the prespammed-path queue (capped). The
+        // line is rebuilt from the live map graph each frame, so we keep dirs only.
         const onPre     = (e: any) => {
-            const { dir, targetId } = e.detail;
-            const createdAt = Date.now();
-            const seq = predictionSeqRef.current + 1;
-            predictionSeqRef.current = seq;
-            const wasQueueEmpty = clientPredictionsRef.current.length === 0;
-            if (wasQueueEmpty) {
-                preMoveRef.current = { dir, targetId, time: createdAt };
-                // Fresh journey — clear the dedup guard so rooms visited on a previous
-                // run through this area aren't accidentally suppressed if revisited.
-                recentlyReconciledRef.current.clear();
-            }
+            const { dir } = e.detail;
             if (showDebugEchoesRef.current) {
-                addMessageRef.current?.('system', `[MapperPredict] received ${dir} -> ${targetId}`);
+                addMessageRef.current?.('system', `[MapperPredict] queued ${dir} (depth ${clientPredictionsRef.current.length + 1})`);
             }
-
-            const coords = resolvePredictionCoords(targetId);
-            if (coords) {
-                const prediction = { dir, toId: targetId, toX: coords.x, toY: coords.y, toZ: coords.z, createdAt, seq };
-                const existingTail = clientPredictionsRef.current[clientPredictionsRef.current.length - 1];
-                clientPredictionsRef.current = existingTail?.toId === targetId
-                    ? [...clientPredictionsRef.current.slice(0, -1), prediction]
-                    : [...clientPredictionsRef.current, prediction].slice(-8);
-                if (showDebugEchoesRef.current) {
-                    addMessageRef.current?.('system', `[MapperPredict] stored queued coords ${coords.x},${coords.y},${coords.z || 0}`);
-                }
-            } else if (showDebugEchoesRef.current) {
-                addMessageRef.current?.('system', `[MapperPredict] no coords for ${targetId}`);
-            }
-
+            clientPredictionsRef.current = [...clientPredictionsRef.current, { dir }].slice(-8);
             triggerRender();
         };
 
@@ -591,7 +539,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             window.removeEventListener('mume-mapper-move-failed', onFail);
             window.removeEventListener('mume-mapper-push-pre-move', onPre);
         };
-    }, [masterHandlers, pushPendingMove, handleMoveConfirmed, handleMoveFailure, resolvePredictionCoords, triggerRender]);
+    }, [masterHandlers, pushPendingMove, handleMoveConfirmed, handleMoveFailure, triggerRender]);
 
     const applyActiveMapId = useCallback((mapid: string | number, isSnooped: boolean) => {
         const shouldApply = (isSnooped && activeView === 'target') || (!isSnooped && activeView === 'self');

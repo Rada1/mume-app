@@ -27,6 +27,10 @@ interface RoomInfoProps {
     deathRoomId?: string | null;
     setDeathRoomId?: (val: string | null) => void;
     baseMapExitsRef?: React.MutableRefObject<Record<string, any>>;
+    // Timestamp of the last move GMCP authoritatively consumed from the pending queue.
+    // The XML/text move-confirmed handler reads this to skip a redundant SECOND consume
+    // for the same physical move (lit rooms fire BOTH a GMCP room-info and an XML move).
+    lastGmcpMoveTimeRef?: React.MutableRefObject<number>;
     activeView: string;
 }
 
@@ -34,7 +38,7 @@ export const useRoomInfoHandler = ({
     roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
     nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef,
     firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, addMessage, showDebugEchoes, preMoveRef,
-    deathRoomId, setDeathRoomId, baseMapExitsRef, activeView
+    deathRoomId, setDeathRoomId, baseMapExitsRef, lastGmcpMoveTimeRef, activeView
 }: RoomInfoProps) => {
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
@@ -119,6 +123,7 @@ export const useRoomInfoHandler = ({
             // Early queue peek: what direction are we trying to move?
             // We don't shift it yet, we just peek at it for Arda fallback.
             const intentDir = pendingMovesRef.current.length > 0 ? pendingMovesRef.current[0].dir : null;
+            const pendingLenBeforeConsume = pendingMovesRef.current.length;
 
             // AUTHORITATIVE DIRECTION DETECTION
             const gmcpIdStr = String(gmcpId);
@@ -198,6 +203,13 @@ export const useRoomInfoHandler = ({
                         dirUsed = nextMove.dir;
                     }
                 }
+            }
+
+            // If GMCP just claimed one or more queued moves, stamp the time so the
+            // XML/text move-confirmed handler knows this physical move is already
+            // accounted for and won't consume a second pending entry for it.
+            if (lastGmcpMoveTimeRef && pendingMovesRef.current.length < pendingLenBeforeConsume) {
+                lastGmcpMoveTimeRef.current = Date.now();
             }
 
             // --- MATCHING HIERARCHY (Only if it's a move) ---

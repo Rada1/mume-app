@@ -2,7 +2,7 @@
  * @file Draws player, NPC, object, and trail entities on the mapper canvas.
  */
 import { RenderContext, getSeed } from './rendererUtils';
-import { GRID_SIZE, DIRS, WALL_COLOR, getGateState } from '../mapperUtils';
+import { GRID_SIZE, DIRS, WALL_COLOR, getGateState, getExitTargetId } from '../mapperUtils';
 import { getMemberColor } from '../../../utils/groupUtils';
 import { COLOR_NPC, COLOR_PLAYER, COLOR_OBJ } from '../../../utils/categorizationUtils';
 import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
@@ -607,24 +607,84 @@ export const drawEntities = (
         ctx.stroke();
         ctx.restore();
 
-        // 3. Client-side movement predictions (Target Room Glow)
-        const predictions = rCtx.clientPredictionsRef?.current;
-        if (predictions && predictions.length > 0) {
-            for (let i = 0; i < predictions.length; i++) {
-                const pred = predictions[i];
-                if (Math.abs(pred.toZ - currentZ) >= 1.0) continue;
-                const toX = pred.toX * GRID_SIZE + GRID_SIZE / 2;
-                const toY = pred.toY * GRID_SIZE + GRID_SIZE / 2;
+        // 3. Client-side movement predictions ("prespammed path", MMapper-style).
+        // The queue holds only the directions of moves sent but not yet confirmed.
+        // We rebuild the line every frame by walking the live map graph from the
+        // confirmed current room: for each queued direction, follow the actual exit
+        // to its single connected room. We stop at the first exit that is missing or
+        // whose target we can't resolve — so the chain can never gap or point at a
+        // stale tile (the failure modes of the old coordinate-queue approach).
+        const predictionDirs = rCtx.clientPredictionsRef?.current;
+        if (predictionDirs && predictionDirs.length > 0 && activeId) {
+            // Normalize a direction (long or short) to the short form the exit maps use.
+            const dirShortNames: Record<string, string> = {
+                north: 'n', south: 's', east: 'e', west: 'w',
+                up: 'u', down: 'd', northeast: 'ne', northwest: 'nw',
+                southeast: 'se', southwest: 'sw'
+            };
+            const shortDir = (dir: string): string => {
+                const d = String(dir).trim().toLowerCase();
+                return dirShortNames[d] ?? d;
+            };
+            // Build a merged exits map for a room using the proven useSmartWalk logic:
+            // parse preloaded exits (long->short dir names, target m_-prefix) as the base,
+            // then overlay richer local exits. This guarantees the walk can resolve each
+            // hop even from freshly-entered rooms, so the line never collapses on a move.
+            const getMergedExits = (fromId: string): Record<string, any> | null => {
+                const rawId = getRawRoomId(fromId);
+                const rawExits = preloaded[rawId]?.[4];
+                let preloadedExits: Record<string, any> | null = null;
+                if (rawExits) {
+                    preloadedExits = {};
+                    for (const [dir, ex] of Object.entries(rawExits)) {
+                        const sd = shortDir(dir);
+                        const rawDest = getExitTargetId(ex);
+                        if (!rawDest) continue;
+                        preloadedExits[sd] = String(rawDest).startsWith('m_') ? rawDest : `m_${rawDest}`;
+                    }
+                }
+                const local = allRooms[fromId] || allRooms[`m_${rawId}`] || allRooms[rawId];
+                if (local?.exits && Object.keys(local.exits).length > 0) {
+                    return preloadedExits ? { ...preloadedExits, ...local.exits } : local.exits;
+                }
+                return preloadedExits;
+            };
+            const resolveNextRoomId = (fromId: string, dir: string): string | null => {
+                const exits = getMergedExits(fromId);
+                if (!exits) return null;
+                const exA = exits[shortDir(dir)];
+                const targetRaw = getExitTargetId(exA);
+                if (!targetRaw) return null;
+                const targetKey = String(targetRaw).replace(/^m_/, '');
+                const internalId = rCtx.serverIdIndexRef?.current?.[targetKey] || targetKey;
+                return String(internalId).startsWith('m_') ? String(internalId) : `m_${internalId}`;
+            };
+            const resolveCoords = (id: string): { x: number; y: number; z: number } | null => {
+                const room = allRooms[id] || allRooms[`m_${getRawRoomId(id)}`];
+                if (room) return { x: room.x, y: room.y, z: room.z || 0 };
+                const pd = preloaded[getRawRoomId(id)];
+                return pd ? { x: pd[0], y: pd[1], z: pd[2] || 0 } : null;
+            };
+
+            let curId: string = activeId;
+            for (let i = 0; i < predictionDirs.length; i++) {
+                const nextId = resolveNextRoomId(curId, predictionDirs[i].dir);
+                if (!nextId) break;
+                const coords = resolveCoords(nextId);
+                if (!coords) break;
+                curId = nextId;
+
+                if (Math.abs(coords.z - currentZ) >= 1.0) continue;
+                const toX = coords.x * GRID_SIZE + GRID_SIZE / 2;
+                const toY = coords.y * GRID_SIZE + GRID_SIZE / 2;
                 const alpha = Math.max(0.25, 0.85 - i * 0.18);
 
-                // 1. Target Room Glow (White highlight)
                 ctx.save();
                 ctx.globalAlpha = alpha * 0.45;
                 ctx.shadowBlur = 20 * (rCtx.camera.zoom > 1 ? 1 : rCtx.camera.zoom);
                 ctx.shadowColor = '#ffffff';
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-                
-                // Draw a slightly inset rectangle for the room glow
+
                 const inset = 1;
                 ctx.beginPath();
                 if (typeof (ctx as any).roundRect === 'function') {

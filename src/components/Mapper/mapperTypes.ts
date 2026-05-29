@@ -76,14 +76,12 @@ export interface RegionLabel {
     createdAt: number;
 }
 
+// MMapper-style "prespammed path": the queue stores only the direction of each
+// move the user has sent but the server hasn't confirmed yet. The prediction line
+// is recomputed every frame by walking the live map graph from the confirmed
+// current room (see drawEntities), so it can never gap or point at a stale tile.
 export interface MapperPrediction {
     dir: string;
-    toId: string;
-    toX: number;
-    toY: number;
-    toZ: number;
-    createdAt: number;
-    seq: number;
 }
 
 export interface MapperRef {

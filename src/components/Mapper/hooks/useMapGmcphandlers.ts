@@ -36,6 +36,10 @@ interface UseMapGmcphandlersProps {
 
 export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
     const lastXmlMovementRef = useRef<{ dir: string | null; time: number } | null>(null);
+    // Set by the GMCP room-info handler whenever it authoritatively consumes a queued
+    // move. The XML/text move-confirmed handler checks this to avoid a redundant second
+    // consume of the same physical move (lit rooms fire BOTH a GMCP and an XML event).
+    const lastGmcpMoveTimeRef = useRef<number>(0);
 
     const pushPendingMove = (dir: string) => {
         props.pendingMovesRef.current.push({ dir, time: Date.now() });
@@ -55,7 +59,28 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
             lastXmlMovementRef.current = { dir: xmlDir, time: now };
         }
 
+        // Lit rooms fire BOTH a GMCP room-info AND this XML/text move event for the same
+        // physical step. If GMCP just authoritatively consumed a queued move (within a
+        // short window), this XML event is that same move's redundant second confirmation
+        // — bail so we don't consume a second pending entry (which drained the prediction
+        // line at 2x speed) or dead-reckon a room GMCP already resolved exactly.
+        if (isXmlMovement && now - lastGmcpMoveTimeRef.current < 400) {
+            return;
+        }
+
         const pendingIndex = xmlDir ? pending.findIndex(move => move.dir === xmlDir) : 0;
+
+        // A move already consumed by the authoritative GMCP room-info handler is no
+        // longer in the pending queue. If we then get an XML/text movement event for
+        // that same direction, it's a redundant SECOND confirmation of one physical
+        // move. Bail: otherwise we'd (a) dead-reckon a possibly-conflicting room over
+        // GMCP's exact match, and (b) blindly shift the wrong, still-pending move below
+        // (findIndex === -1 fell through to the `else if` shift), draining the
+        // prediction line at 2x speed.
+        if (xmlDir && pendingIndex === -1) {
+            return;
+        }
+
         const nextMove = pending[pendingIndex >= 0 ? pendingIndex : 0];
         const confirmedDir = xmlDir || nextMove?.dir || null;
 
@@ -162,6 +187,7 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         preMoveRef: props.preMoveRef,
         deathRoomId: props.deathRoomId,
         setDeathRoomId: props.setDeathRoomId,
+        lastGmcpMoveTimeRef,
         activeView: props.activeView
     });
 
