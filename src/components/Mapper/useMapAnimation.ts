@@ -241,7 +241,7 @@ export const useMapAnimation = ({
             }
 
             // Camera Centering logic (Allow auto-center even if dragging IF it's a joystick pulse)
-            const shouldBlockAutoCenter = isFilterFitActive && lastPlayerPosRef.current !== null;
+            const shouldBlockAutoCenter = (isFilterFitActive && lastPlayerPosRef.current !== null) || !!cam.zoomTransition;
             if (!shouldBlockAutoCenter && (autoCenter || walkTargetId) && playerPosRef.current && (!effectiveIsDragging || isJoystickActiveRef.current)) {
                 if (!(tickRef as any)._autoCenterActive) {
                     (tickRef as any)._autoCenterActive = true;

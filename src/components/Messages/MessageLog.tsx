@@ -355,7 +355,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             document.head.appendChild(styleEl);
         }
         styleEl.textContent = selectedCharName
-            ? `.account-char-name[data-context="${CSS.escape(selectedCharName)}"] { border-left: 3px solid var(--accent, #b48230); background: rgba(var(--accent-rgb, 180, 130, 60), 0.16) !important; color: #fff; padding-left: 6px; }`
+            ? `.account-char-name[data-context="${CSS.escape(selectedCharName)}"] { border-left: 1.5px solid var(--accent, #b48230); border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; background: rgba(var(--accent-rgb, 180, 130, 60), 0.16) !important; color: #fff; padding-left: 6px; }`
             : '';
         return () => { if (styleEl) styleEl.textContent = ''; };
     }, [selectedCharName]);
@@ -371,7 +371,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             document.head.appendChild(styleEl);
         }
         styleEl.textContent = selectedMenuCommand
-            ? `.account-menu-cmd[data-context="${CSS.escape(selectedMenuCommand)}"] { border-left: 3px solid var(--accent, #b48230); background: rgba(var(--accent-rgb, 180, 130, 60), 0.16) !important; color: #fff; padding-left: 6px; }`
+            ? `.account-menu-cmd[data-context="${CSS.escape(selectedMenuCommand)}"] { border-left: 1.5px solid var(--accent, #b48230); border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; background: rgba(var(--accent-rgb, 180, 130, 60), 0.16) !important; color: #fff; padding-left: 6px; }`
             : '';
         return () => { if (styleEl) styleEl.textContent = ''; };
     }, [selectedMenuCommand]);

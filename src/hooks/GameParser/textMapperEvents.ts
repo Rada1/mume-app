@@ -107,14 +107,17 @@ const finalize = (state: TextMapperState): TextMapperResult => {
     if (!room?.name) return {};
 
     const desc = state.descLines.map(stripTags).filter(Boolean).join(' ');
-    const exits = parseExitLines(state.exitLines);
+    const parsedTextExits = parseExitLines(state.exitLines) || {};
+    const exits = { ...room.exits, ...parsedTextExits };
+    const hasAnyExits = Object.keys(exits).length > 0;
+
     const event: TextMapperRoomEvent = {
         num: room.num || 0,
         name: room.name,
         desc: desc || room.desc,
         area: room.area,
         terrain: room.terrain,
-        exits,
+        exits: hasAnyExits ? exits : undefined,
         source: 'text'
     };
 
@@ -124,7 +127,7 @@ const finalize = (state: TextMapperState): TextMapperResult => {
         roomDesc: event.desc,
         roomZone: event.area,
         terrain: event.terrain,
-        exits: exits ? Object.keys(exits) : undefined
+        exits: hasAnyExits ? Object.keys(exits) : undefined
     };
 };
 
@@ -162,6 +165,26 @@ export const consumeTextMapperLine = (
 
     const exits = getTagText(line, 'exits');
     if (exits) state.exitLines.push(exits);
+
+    // Parse individual <exit dir="..." to="..."> tags
+    const exitMatch = line.match(/<exit\b([^>]*)\/?>/i);
+    if (exitMatch) {
+        const attrs = exitMatch[1];
+        const dirAttr = getAttr(attrs, 'dir');
+        if (dirAttr) {
+            const dir = dirMap[dirAttr.toLowerCase()] || dirAttr.toLowerCase();
+            if (dir) {
+                if (!state.room) state.room = {};
+                if (!state.room.exits) state.room.exits = {};
+                const toVnum = getAttr(attrs, 'to') || getAttr(attrs, 'to_vnum') || getAttr(attrs, 'dest');
+                state.room.exits[dir] = { 
+                    name: dirAttr,
+                    to_vnum: toVnum ? Number(toVnum) : undefined,
+                    id: toVnum ? Number(toVnum) : undefined
+                };
+            }
+        }
+    }
 
     if (state.inRoom && /^(?:North|South|East|West|Up|Down|Northeast|Northwest|Southeast|Southwest)\s+-\s+/i.test(stripTags(line))) {
         state.exitLines.push(line);

@@ -62,8 +62,8 @@ export const useMapperPlayerTracking = (
                 setViewZ(null);
 
                 const cvs = canvasRef.current;
-                const w = cvs ? cvs.clientWidth : 400;
-                const h = cvs ? cvs.clientHeight : 400;
+                let w = cvs ? (cvs.clientWidth || cvs.parentElement?.clientWidth || 400) : 400;
+                let h = cvs ? (cvs.clientHeight || cvs.parentElement?.clientHeight || 400) : 400;
 
                 if (isInitialLogin) {
                     const startZoom = 0.12; // Far zoomed out for orientation

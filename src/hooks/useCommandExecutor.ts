@@ -58,6 +58,8 @@ export interface ExecutorDeps {
     setActions: (val: GameAction[] | ((prev: GameAction[]) => GameAction[])) => void;
     activePrompt: string;
     isPasswordMode: boolean;
+    gameState: import('../types').GameState;
+    viewport: any;
     practice?: {
         setLastPracticedSkill: (skill: string | null) => void;
         setIsUiRequested?: (val: boolean) => void;
@@ -152,7 +154,8 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         }
 
         // --- 7. Echo to Log ---
-        if (!silent) {
+        const isTimeSilence = normalizedFinalCmd === 'time' && d.gameState === 'account' && d.viewport?.isMobile;
+        if (!silent && !isTimeSilence) {
             const promptPrefix = activePrompt || '';
             const logText = d.isPasswordMode ? '********' : finalCmd;
             

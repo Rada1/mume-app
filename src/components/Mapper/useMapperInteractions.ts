@@ -534,7 +534,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     const totalDy = p.y - startMouseRef.current.y;
                     if (Math.sqrt(totalDx * totalDx + totalDy * totalDy) > 5) {
                         hasDraggedRef.current = true;
-                        setIsDragging(true);
+                        if (dragTypeRef.current !== 'joystick') {
+                            setIsDragging(true);
+                        }
                         depsRef.current.triggerRender();
                         if (longPressTimerRef.current) {
                             clearTimeout(longPressTimerRef.current);
