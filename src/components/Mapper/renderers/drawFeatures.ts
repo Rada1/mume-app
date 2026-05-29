@@ -11,6 +11,41 @@ const hexToRgba = (hex: string, alpha: number): string => {
     return `rgba(${r},${g},${b},${alpha})`;
 };
 
+const getSquareIntersection = (x1: number, y1: number, x2: number, y2: number, w: number) => {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const theta = Math.atan2(dy, dx);
+    const absCos = Math.abs(Math.cos(theta));
+    const absSin = Math.abs(Math.sin(theta));
+    
+    let ox = 0;
+    let oy = 0;
+    if (absCos > 0.0001 && (absSin === 0 || w / absCos < w / absSin)) {
+        ox = Math.sign(Math.cos(theta)) * w;
+        oy = ox * Math.tan(theta);
+    } else if (absSin > 0.0001) {
+        oy = Math.sign(Math.sin(theta)) * w;
+        ox = oy / Math.tan(theta);
+    }
+    return { x: x1 + ox, y: y1 + oy };
+};
+
+const drawArrowhead = (ctx: CanvasRenderingContext2D, x: number, y: number, angle: number, size: number, color: string) => {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(-size, -size * 0.5);
+    ctx.lineTo(-size * 0.7, 0);
+    ctx.lineTo(-size, size * 0.5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+};
+
+
 // Pre-render common indicators for performance
 const indicatorIcons: Record<string, HTMLCanvasElement> = {};
 export const getIndicatorIcon = (
@@ -1104,6 +1139,67 @@ export const drawFeatures = (
                     }
                 }
 
+                // 1.2. Long-Distance Exit Connections (Cardinals & Intercardinals, Zoom > 0.3)
+                if (ghostExits && Object.keys(ghostExits).length > 0 && camera.zoom > 0.3) {
+                    for (const dir in ghostExits) {
+                        if (dir === 'u' || dir === 'd') continue;
+                        const exObj = ghostExits[dir]; if (!exObj) continue;
+                        const targetVnum = String(exObj.target), targetData = preloaded[targetVnum];
+                        if (targetData && (Math.abs(targetData[2] - currentZ) <= 0.5)) {
+                            const isTargetExplored = explored.has(targetVnum);
+                            const isTargetRevealed = ring1Revealed.has(targetVnum);
+
+                            if (!unveilMap && !isExplored && !isRevealed && !isTargetExplored && !isTargetRevealed) continue;
+
+                            const dx = Math.abs(rx - targetData[0]);
+                            const dy = Math.abs(ry - targetData[1]);
+                            if (dx > 1.1 || dy > 1.1) {
+                                // Long-distance connection!
+                                const oppDir = DIRS[dir]?.opp || '';
+                                const targetExits = targetData[4];
+                                const pointsBack = targetExits?.[oppDir] &&
+                                    String(targetExits[oppDir].target).replace(/^m_/, '') === String(vnum).replace(/^m_/, '');
+
+                                // De-duplicate bidirectional connections (draw only once)
+                                if (pointsBack && vnum >= targetVnum) continue;
+
+                                const arrowColor = 'rgba(148, 163, 184, 0.8)';
+                                const arrowheadColor = 'rgba(148, 163, 184, 0.8)';
+
+                                const centerA = { x: anchorX, y: anchorY };
+                                const centerB = { x: targetData[0] * s + s / 2, y: targetData[1] * s + s / 2 };
+
+                                const pStart = getSquareIntersection(centerA.x, centerA.y, centerB.x, centerB.y, s / 2);
+                                const pEnd = getSquareIntersection(centerB.x, centerB.y, centerA.x, centerA.y, s / 2);
+
+                                ctx.save();
+                                if (unveilMap) ctx.globalAlpha = 1.0;
+                                else if (!isExplored && !isRevealed) ctx.globalAlpha = 0.15;
+                                else if (isRevealed) ctx.globalAlpha = 0.3;
+                                else ctx.globalAlpha = exploredAlphaMul * 0.5;
+
+                                // Draw the connection line (dashed, thickness 1.5)
+                                drawLine(ctx, pStart.x, pStart.y, pEnd.x, pEnd.y, arrowColor, 1.5, dpr, invZoom, true);
+
+                                // Draw arrowheads
+                                const angle = Math.atan2(pEnd.y - pStart.y, pEnd.x - pStart.x);
+                                const arrowSize = Math.max(6, 8 * invZoom);
+
+                                // Always draw arrowhead at the target end
+                                drawArrowhead(ctx, pEnd.x, pEnd.y, angle, arrowSize, arrowheadColor);
+
+                                // If bidirectional, also draw arrowhead at the source end pointing back
+                                if (pointsBack) {
+                                    drawArrowhead(ctx, pStart.x, pStart.y, angle + Math.PI, arrowSize, arrowheadColor);
+                                }
+
+                                ctx.restore();
+                            }
+                        }
+                    }
+                }
+
+
                 // 1.5. Water edge shadows: heavy inward gradient on sides not touching another water room
                 if (isExplored || unveilMap) {
                     const currentTerrain = localRoom ? localRoom.terrain : tSector;
@@ -1395,7 +1491,34 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 const n = allRooms[nId] || allRooms[tV] || (preloaded[tV] ? { x: preloaded[tV][0], y: preloaded[tV][1], z: preloaded[tV][2] } : null);
                 if (n && (Math.abs((n.z || 0) - currentZ) <= 0.5)) {
                     const dx = Math.abs(room.x - n.x), dy = Math.abs(room.y - n.y);
-                    if (dx > 1.1 || dy > 1.1 || d === 'u' || d === 'd') {
+                    if ((dx > 1.1 || dy > 1.1) && d !== 'u' && d !== 'd') {
+                        const tpx = n.x * s + s / 2, tpy = n.y * s + s / 2;
+                        const oppDir = DIRS[d]?.opp || '';
+                        const pointsBack = n?.exits?.[oppDir] && 
+                            String(n.exits[oppDir].target || n.exits[oppDir].gmcpDestId || "").replace(/^m_/, '') === String(room.id).replace(/^m_/, '');
+
+                        // De-duplicate bidirectional connections (draw only once)
+                        if (!pointsBack || String(room.id) < String(tV)) {
+                            const arrowColor = 'rgba(148, 163, 184, 0.8)';
+                            const arrowheadColor = 'rgba(148, 163, 184, 0.8)';
+
+                            const pStart = getSquareIntersection(cX, cY, tpx, tpy, s / 2);
+                            const pEnd = getSquareIntersection(tpx, tpy, cX, cY, s / 2);
+
+                            ctx.save();
+                            ctx.globalAlpha = 0.5;
+                            drawLine(ctx, pStart.x, pStart.y, pEnd.x, pEnd.y, arrowColor, 1.5, dpr, invZoom, true);
+
+                            const angle = Math.atan2(pEnd.y - pStart.y, pEnd.x - pStart.x);
+                            const arrowSize = Math.max(6, 8 * invZoom);
+
+                            drawArrowhead(ctx, pEnd.x, pEnd.y, angle, arrowSize, arrowheadColor);
+                            if (pointsBack) {
+                                drawArrowhead(ctx, pStart.x, pStart.y, angle + Math.PI, arrowSize, arrowheadColor);
+                            }
+                            ctx.restore();
+                        }
+                    } else if (dx > 1.1 || dy > 1.1 || d === 'u' || d === 'd') {
                         const tpx = n.x * s + s / 2, tpy = n.y * s + s / 2;
                         drawLine(ctx, cX, cY, tpx, tpy, LONG_CONNECTION_COLOR, 2, dpr, invZoom);
 

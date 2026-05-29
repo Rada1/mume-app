@@ -68,7 +68,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const {
         triggerHaptic, executeCommand, theme, btn, joystick, playClickSound,
         setIsTrackpadModifierActive, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode,
-        selectedObjectIds, lighting, inCombat, viewport
+        selectedObjectIds, lighting, inCombat, viewport, gameState
     } = useGame();
     const { isLandscape } = viewport;
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
@@ -278,7 +278,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     }, [setMarkers, setExploredMarkers]);
 
     return (
-        <div className={`mapper-container lighting-state-${lighting || 'none'} ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''} ${!showBackgroundImage ? 'no-bg-image' : ''}`} style={{ 
+        <div className={`mapper-container lighting-state-${gameState === 'account' ? 'moon' : (lighting || 'none')} ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''} ${!showBackgroundImage ? 'no-bg-image' : ''}`} style={{ 
             position: 'relative', 
             width: '100%', 
             height: '100%', 
@@ -287,6 +287,10 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             touchAction: 'none',
             zIndex: infoRoomId ? 2900 : undefined
         }}>
+            <div className="mapper-overlay mapper-sun-overlay" />
+            <div className="mapper-overlay mapper-moon-overlay" />
+            <div className="mapper-overlay mapper-artificial-overlay" />
+            <div className="mapper-overlay mapper-dark-overlay" />
             <div className="mapper-overlay mapper-fog-overlay" />
             <MapCanvas
                 ref={canvasRef}
@@ -313,7 +317,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 stableMarkersRef={markersRef}
                 preloadedCoordsRef={preloadedCoordsRef}
                 spatialIndexRef={context.spatialIndexRef}
-                lighting={lighting}
+                lighting={gameState === 'account' ? 'moon' : lighting}
                 exploredVnums={context.exploredRef.current}
                 exploredRef={context.exploredRef}
                 exploredMarkers={context.exploredMarkers}

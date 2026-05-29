@@ -621,9 +621,15 @@ export const useMapperRenderer = ({
 
             const tStart = performance.now();
             const deadline = tStart + budgetMs;
+            // Scale by the PINNED build zoom (pb.zoom), never the live camera.zoom. The
+            // chunked build spans several frames; during an active zoom the live zoom
+            // drifts between frames, so using it would draw later columns (and the tail
+            // grid/zone layers) at a different scale than earlier ones — the terrain/wall
+            // misalignment seen while zooming. The finished cache is reprojected to the
+            // live camera at draw time via bZoom = lastBuildZoom = pb.zoom.
             terrainCtx.save();
             terrainCtx.imageSmoothingEnabled = false;
-            terrainCtx.scale(dpr * camera.zoom, dpr * camera.zoom);
+            terrainCtx.scale(dpr * pb.zoom, dpr * pb.zoom);
             terrainCtx.translate(-pb.buildCamX, -pb.buildCamY);
 
             if (floorIndex) {
@@ -642,7 +648,7 @@ export const useMapperRenderer = ({
                 // Tail layers, drawn once after all terrain columns are down.
                 terrainCtx.save();
                 terrainCtx.imageSmoothingEnabled = false;
-                terrainCtx.scale(dpr * camera.zoom, dpr * camera.zoom);
+                terrainCtx.scale(dpr * pb.zoom, dpr * pb.zoom);
                 terrainCtx.translate(-pb.buildCamX, -pb.buildCamY);
                 const tl0 = performance.now();
                 drawLocalTerrains(rCtx, pb.localVisible);
@@ -661,7 +667,8 @@ export const useMapperRenderer = ({
         // Phase 2: draw the feature layer into featureCtx using the gathered data.
         const runFeaturePhase = (
             featureCtx: CanvasRenderingContext2D, buildCamX: number, buildCamY: number,
-            roomAtCoord: Record<string, any>, visitedAtCoord: Record<string, boolean>, localVisible: any[]
+            roomAtCoord: Record<string, any>, visitedAtCoord: Record<string, boolean>, localVisible: any[],
+            buildZoom: number
         ) => {
             featureCtx.setTransform(1, 0, 0, 1, 0, 0);
             featureCtx.clearRect(0, 0, cacheW, cacheH);
@@ -670,10 +677,13 @@ export const useMapperRenderer = ({
             const featureRCtx = makeRCtx(featureCtx, buildCamX, buildCamY, roomAtCoord, visitedAtCoord);
 
             const tFeatureStart = performance.now();
-            if (camera.zoom > 0.05) {
+            // Use the pinned build zoom (not live camera.zoom) so features stay locked to
+            // the terrain layer built in the same pass; the cache is reprojected to the
+            // live camera at draw time.
+            if (buildZoom > 0.05) {
                 featureCtx.save();
                 featureCtx.imageSmoothingEnabled = false;
-                featureCtx.scale(dpr * camera.zoom, dpr * camera.zoom);
+                featureCtx.scale(dpr * buildZoom, dpr * buildZoom);
                 featureCtx.translate(-buildCamX, -buildCamY);
 
                 if (floorIndex) drawFeatures(featureRCtx, bX1, bY1, bX2, bY2, floorIndex);
@@ -731,7 +741,7 @@ export const useMapperRenderer = ({
                 runTerrainChunk(pb, TERRAIN_CHUNK_BUDGET_MS);
                 triggerRender?.();
             } else {
-                const featureMs = runFeaturePhase(cache.featureBackCtx!, pb.buildCamX, pb.buildCamY, pb.roomAtCoord, pb.visitedAtCoord, pb.localVisible);
+                const featureMs = runFeaturePhase(cache.featureBackCtx!, pb.buildCamX, pb.buildCamY, pb.roomAtCoord, pb.visitedAtCoord, pb.localVisible, pb.zoom);
                 finalizeBuild(pb, featureMs);
                 triggerRender?.();
             }
@@ -754,7 +764,7 @@ export const useMapperRenderer = ({
             if (!cache.lastParams) {
                 // First paint / post-resize: finish now so we never flash a blank map.
                 runTerrainChunk(pb, Infinity);
-                const featureMs = runFeaturePhase(cache.featureBackCtx!, buildCamX, buildCamY, t.roomAtCoord, t.visitedAtCoord, t.localVisible);
+                const featureMs = runFeaturePhase(cache.featureBackCtx!, buildCamX, buildCamY, t.roomAtCoord, t.visitedAtCoord, t.localVisible, pb.zoom);
                 finalizeBuild(pb, featureMs);
             } else {
                 cache.pendingBuild = pb;
