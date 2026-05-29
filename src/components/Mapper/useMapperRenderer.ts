@@ -4,7 +4,7 @@ import { RenderContext } from './renderers/rendererUtils';
 import type { CombatPulse } from './renderers/rendererUtils';
 import { CompactMapExit, MapperPrediction, RegionLabel } from './mapperTypes';
 import { drawTerrains, drawLocalTerrains, drawExplorationRevealOverlay, RING_REVEAL_BAKE_MS, RING_REVEAL_TOTAL_MS } from './renderers/drawTerrains';
-import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
+import { drawFeatures, drawLocalFeatures, drawAnimatingFlags } from './renderers/drawFeatures';
 import { drawDoorLabels } from './renderers/drawDoorLabels';
 import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee, drawDoorHighlights, drawFilterHighlights } from './renderers/drawEntities';
 import { drawRegionLabels } from './renderers/drawRegionLabels';
@@ -17,7 +17,7 @@ import { perfMonitor } from '../../utils/perfMonitor';
 const LIGHTING_COLORS: Record<string, [number, number, number, number]> = {
     sun:        [255, 248, 200, 0.09],
     moon:       [80,  130, 255, 0.08],
-    artificial: [180, 255, 200, 0.06],
+    artificial: [139, 0, 0, 0.15],
     dark:       [0,   0,   0,   0],
     none:       [0,   0,   0,   0],
     normal:     [0,   0,   0,   0],
@@ -39,6 +39,54 @@ const ICONS_FORCE_OFF_ZOOM = 0.04;
 const LABELS_ZOOM_IN = 0.42;
 const LABELS_ZOOM_OUT = 0.28;
 const LABELS_FORCE_OFF_ZOOM = 0.2;
+
+const computeRevealRings = (
+    bX1: number, bY1: number, bX2: number, bY2: number,
+    floorIndex: Record<string, string[]>,
+    explored: Set<string>,
+    preloaded: Record<string, any>
+) => {
+    const ring1Revealed = new Set<string>();
+    const ring2Peeked = new Set<string>();
+
+    const floorVnums = new Set<string>();
+    for (const key in floorIndex) {
+        const bucket = floorIndex[key];
+        if (bucket) {
+            for (let i = 0; i < bucket.length; i++) {
+                floorVnums.add(bucket[i]);
+            }
+        }
+    }
+
+    for (const vnum of floorVnums) {
+        if (explored.has(vnum)) continue;
+        const rData = preloaded[vnum];
+        if (!rData?.[4]) continue;
+        for (const dir of ['n', 's', 'e', 'w']) {
+            const exit = rData[4][dir];
+            if (exit && explored.has(String(exit.target))) {
+                ring1Revealed.add(vnum);
+                break;
+            }
+        }
+    }
+
+    for (const vnum of floorVnums) {
+        if (explored.has(vnum) || ring1Revealed.has(vnum)) continue;
+        const rData = preloaded[vnum];
+        if (!rData?.[4]) continue;
+        for (const dir of ['n', 's', 'e', 'w']) {
+            const exit = rData[4][dir];
+            if (exit && ring1Revealed.has(String(exit.target))) {
+                ring2Peeked.add(vnum);
+                break;
+            }
+        }
+    }
+
+    return { ring1Revealed, ring2Peeked };
+};
 
 interface RendererProps {
     rooms: Record<string, any>;
@@ -92,6 +140,7 @@ interface RendererProps {
     mapTileVisuals?: any;
     zoneFilters?: Record<string, ZoneFilterConfig>;
     lighting?: string;
+    isImmersionMode?: boolean;
     weather?: string;
     regionLabels?: Record<string, RegionLabel>;
     regionLabelEditMode?: boolean;
@@ -124,6 +173,8 @@ interface PendingBuild {
     terrainDone: boolean;
     // Tail-layer sub-phase timings, recorded once when the last column finishes.
     localMs: number; gridMs: number; zoneMs: number;
+    ring1Revealed?: Set<string>;
+    ring2Peeked?: Set<string>;
 }
 
 interface MapperLayerCache {
@@ -162,6 +213,7 @@ export const useMapperRenderer = ({
     activeMapFilter, mapSearchQuery, combatPulsesRef,
     mapTileVisuals, mapTileOpacity, zoneFilters,
     lighting = 'none',
+    isImmersionMode = true,
     weather = 'none',
     regionLabels = {},
     regionLabelEditMode = false,
@@ -526,7 +578,8 @@ export const useMapperRenderer = ({
 
         const makeRCtx = (
             targetCtx: CanvasRenderingContext2D, buildCamX: number, buildCamY: number,
-            roomAtCoord: Record<string, any>, visitedAtCoord: Record<string, boolean>
+            roomAtCoord: Record<string, any>, visitedAtCoord: Record<string, boolean>,
+            ring1Revealed?: Set<string>, ring2Peeked?: Set<string>
         ): RenderContext => ({
             ctx: targetCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
@@ -545,7 +598,10 @@ export const useMapperRenderer = ({
             lowEffects,
             suppressExplorationAnimation: isExplorationOverlayActive && !finalExplorationBakeDue,
             showTerrainIcons,
-            showDoorLabels
+            showDoorLabels,
+            isExplorationBaked,
+            ring1Revealed,
+            ring2Peeked
         });
 
         // Phase 1a: clear the back terrain buffer + gather visible rooms. Cheap
@@ -605,7 +661,9 @@ export const useMapperRenderer = ({
             const gatherMs = performance.now() - tGatherStart;
             perfMonitor.resetIconSplit();
 
-            return { roomAtCoord, visitedAtCoord, localVisible, gatherMs, geo };
+            const rings = computeRevealRings(bX1, bY1, bX2, bY2, floorIndex || {}, explored, preloaded);
+
+            return { roomAtCoord, visitedAtCoord, localVisible, gatherMs, geo, ring1Revealed: rings.ring1Revealed, ring2Peeked: rings.ring2Peeked };
         };
 
         // Phase 1b: draw terrain columns into the back buffer within a time
@@ -617,7 +675,7 @@ export const useMapperRenderer = ({
         const runTerrainChunk = (pb: PendingBuild, budgetMs: number) => {
             const terrainCtx = cache.terrainBackCtx!;
             const floorIndex = spatialIndexRef.current[curZInt];
-            const rCtx = makeRCtx(terrainCtx, pb.buildCamX, pb.buildCamY, pb.roomAtCoord, pb.visitedAtCoord);
+            const rCtx = makeRCtx(terrainCtx, pb.buildCamX, pb.buildCamY, pb.roomAtCoord, pb.visitedAtCoord, pb.ring1Revealed, pb.ring2Peeked);
 
             const tStart = performance.now();
             const deadline = tStart + budgetMs;
@@ -668,13 +726,13 @@ export const useMapperRenderer = ({
         const runFeaturePhase = (
             featureCtx: CanvasRenderingContext2D, buildCamX: number, buildCamY: number,
             roomAtCoord: Record<string, any>, visitedAtCoord: Record<string, boolean>, localVisible: any[],
-            buildZoom: number
+            buildZoom: number, ring1Revealed?: Set<string>, ring2Peeked?: Set<string>
         ) => {
             featureCtx.setTransform(1, 0, 0, 1, 0, 0);
             featureCtx.clearRect(0, 0, cacheW, cacheH);
             const floorIndex = spatialIndexRef.current[curZInt];
             const { bX1, bY1, bX2, bY2 } = computeBuildGeometry(buildCamX, buildCamY);
-            const featureRCtx = makeRCtx(featureCtx, buildCamX, buildCamY, roomAtCoord, visitedAtCoord);
+            const featureRCtx = makeRCtx(featureCtx, buildCamX, buildCamY, roomAtCoord, visitedAtCoord, ring1Revealed, ring2Peeked);
 
             const tFeatureStart = performance.now();
             // Use the pinned build zoom (not live camera.zoom) so features stay locked to
@@ -741,7 +799,7 @@ export const useMapperRenderer = ({
                 runTerrainChunk(pb, TERRAIN_CHUNK_BUDGET_MS);
                 triggerRender?.();
             } else {
-                const featureMs = runFeaturePhase(cache.featureBackCtx!, pb.buildCamX, pb.buildCamY, pb.roomAtCoord, pb.visitedAtCoord, pb.localVisible, pb.zoom);
+                const featureMs = runFeaturePhase(cache.featureBackCtx!, pb.buildCamX, pb.buildCamY, pb.roomAtCoord, pb.visitedAtCoord, pb.localVisible, pb.zoom, pb.ring1Revealed, pb.ring2Peeked);
                 finalizeBuild(pb, featureMs);
                 triggerRender?.();
             }
@@ -760,11 +818,13 @@ export const useMapperRenderer = ({
                 gX1: t.geo.gX1, gY1: t.geo.gY1, gX2: t.geo.gX2, gY2: t.geo.gY2,
                 terrainNextBx: t.geo.bX1, terrainDone: false,
                 localMs: 0, gridMs: 0, zoneMs: 0,
+                ring1Revealed: t.ring1Revealed,
+                ring2Peeked: t.ring2Peeked,
             };
             if (!cache.lastParams) {
                 // First paint / post-resize: finish now so we never flash a blank map.
                 runTerrainChunk(pb, Infinity);
-                const featureMs = runFeaturePhase(cache.featureBackCtx!, buildCamX, buildCamY, t.roomAtCoord, t.visitedAtCoord, t.localVisible, pb.zoom);
+                const featureMs = runFeaturePhase(cache.featureBackCtx!, buildCamX, buildCamY, t.roomAtCoord, t.visitedAtCoord, t.localVisible, pb.zoom, pb.ring1Revealed, pb.ring2Peeked);
                 finalizeBuild(pb, featureMs);
             } else {
                 cache.pendingBuild = pb;
@@ -789,6 +849,9 @@ export const useMapperRenderer = ({
         
         ctx.drawImage(cache.terrainCanvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
 
+        const screenGeo = computeBuildGeometry(camera.x - (baseW / (camera.zoom * dpr)) * 0.5, camera.y - (baseH / (camera.zoom * dpr)) * 0.5);
+        const screenRings = computeRevealRings(screenGeo.bX1, screenGeo.bY1, screenGeo.bX2, screenGeo.bY2, spatialIndexRef.current[curZInt] || {}, explored, preloaded);
+
         const baseDynamicRCtx: RenderContext = {
             ctx, dpr, canvasWidth: baseW, canvasHeight: baseH, camera, isDarkMode, isMobile,
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
@@ -798,12 +861,18 @@ export const useMapperRenderer = ({
             groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName,
             opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
             activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
+            mapTileVisuals, mapTileOpacity,
+            zoneFilters,
             lighting,
+            weather,
             inCombat,
             isDragging,
             lowEffects,
             showTerrainIcons,
-            showDoorLabels
+            showDoorLabels,
+            isExplorationBaked,
+            ring1Revealed: screenRings.ring1Revealed,
+            ring2Peeked: screenRings.ring2Peeked
         };
 
         const overlayFloorIndex = spatialIndexRef.current[curZInt];
@@ -845,6 +914,7 @@ export const useMapperRenderer = ({
         drawDoorHighlights(rCtx, playerPosRef);
         drawMarkers(rCtx, stableMarkersRef, selectedMarkerId, camera.x, camera.y, camera.x + baseW/camera.zoom, camera.y + baseH/camera.zoom);
         drawRegionLabels(rCtx, regionLabels, selectedRegionLabelId, regionLabelEditMode);
+        drawAnimatingFlags(rCtx);
 
         ctx.restore();
         drawMarquee(rCtx, marquee);
@@ -874,7 +944,7 @@ export const useMapperRenderer = ({
         if (t < 1) triggerRender?.();
 
         // Vignette overlay (screen space) - on top. Cached: only rebuild when size or lighting changes.
-        const vigEdgeAlpha = VIGNETTE_EDGE_ALPHA[lighting] ?? VIGNETTE_EDGE_ALPHA.none;
+        const vigEdgeAlpha = isImmersionMode ? (VIGNETTE_EDGE_ALPHA[lighting] ?? VIGNETTE_EDGE_ALPHA.none) : 0;
         if (vigEdgeAlpha > 0.001) {
             let vc = vignetteCacheRef.current;
             if (!vc || vc.w !== baseW || vc.h !== baseH || vc.edgeAlpha !== vigEdgeAlpha) {

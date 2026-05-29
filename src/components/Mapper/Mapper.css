@@ -87,8 +87,8 @@
 .mapper-artificial-overlay {
     z-index: 7;
     background: radial-gradient(circle at center,
-        rgba(180, 255, 200, 0.28) 0%,
-        rgba(160, 230, 180, 0.08) 45%,
+        rgba(139, 0, 0, 0.28) 0%,
+        rgba(90, 0, 0, 0.08) 45%,
         transparent 85%
     );
     mix-blend-mode: screen;
@@ -129,6 +129,10 @@
 /* Darkness stays ON when pitch black */
 .lighting-state-dark .mapper-dark-overlay {
     opacity: 0.85;
+}
+
+.lighting-state-none .mapper-dark-overlay {
+    opacity: 0;
 }
 
 /* --- Fog --- */

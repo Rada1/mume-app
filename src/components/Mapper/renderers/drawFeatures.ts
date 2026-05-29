@@ -648,7 +648,8 @@ export const drawRoomFlagsOptimized = (
     mobF: string[],
     loadF: string[],
     questF: string[],
-    scale: number = 1.0
+    scale: number = 1.0,
+    loadScale: number = scale
 ) => {
     type Indicator = { regex: RegExp, sym: string, color: string, size: number, glowStrength?: number, noBlackBg?: boolean };
 
@@ -779,7 +780,7 @@ export const drawRoomFlagsOptimized = (
             
             ctx.save();
             ctx.translate(anchorX + ox, anchorY + oy);
-            ctx.scale(scale, scale);
+            ctx.scale(loadScale, loadScale);
             ctx.drawImage(icon, -icon.width / 2, -icon.height / 2);
             
             ctx.restore();
@@ -1377,16 +1378,8 @@ export const drawFeatures = (
                             const delay = 100;   // 100ms delay
                             const animDur = 450; // duration of bounce
                             
-                            if (elapsed < delay) {
+                            if (elapsed < delay + animDur) {
                                 flagScale = 0.0;
-                                rCtx.triggerRender?.(); // keep rendering loop active
-                            } else if (elapsed < delay + animDur) {
-                                const t = (elapsed - delay) / animDur;
-                                // Ease out back (bouncy ease out)
-                                const c1 = 1.70158;
-                                const c3 = c1 + 1;
-                                flagScale = 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
-                                rCtx.triggerRender?.(); // keep rendering loop active
                             }
                         }
                         
@@ -1673,6 +1666,63 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 ctx.drawImage(icon, wx + s - icon.width + 2, wy - 2);
                 ctx.restore();
             }
+        }
+    }
+};
+
+export const drawAnimatingFlags = (rCtx: RenderContext) => {
+    const { ctx, explored, preloaded, unveilMap, allRooms, firstExploredAtRef, camera } = rCtx;
+    if (unveilMap || camera.zoom <= 0.3) return;
+    const s = GRID_SIZE;
+    const delay = 100;   // 100ms delay
+    const animDur = 450; // duration of bounce
+
+    for (const vnum of explored) {
+        const exploredAt = firstExploredAtRef.current[vnum];
+        if (!exploredAt) continue;
+        const elapsed = rCtx.now - exploredAt;
+        const isBaked = !!rCtx.isExplorationBaked;
+        if (elapsed >= delay + animDur && isBaked) continue; // Animation completed AND baked
+
+        const rData = preloaded[vnum];
+        if (!rData) continue;
+
+        const rx = rData[0], ry = rData[1];
+        const anchorX = rx * s + s / 2, anchorY = ry * s + s / 2;
+        const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
+        
+        const hasLiveMob = localRoom?.mobFlags && localRoom.mobFlags.length > 0;
+        const hasLiveLoad = localRoom?.loadFlags && localRoom.loadFlags.length > 0;
+        const mobF = hasLiveMob ? localRoom.mobFlags! : (rData[7] || []);
+        const loadF = hasLiveLoad ? localRoom.loadFlags! : (rData[8] || []);
+        const questF = localRoom?.roomQuestFlags || [];
+
+        const finalMobF = [...mobF];
+
+        if (finalMobF.length > 0 || loadF.length > 0 || questF.length > 0) {
+            ctx.save();
+            let flagScale = 1.0;
+            let loadScale = 1.0;
+            if (elapsed < delay + animDur) {
+                flagScale = 0.0;
+                loadScale = 0.0;
+                if (elapsed >= delay) {
+                    const t = (elapsed - delay) / animDur;
+                    // Ease out back (bouncy ease out)
+                    const c1 = 1.70158;
+                    const c3 = c1 + 1;
+                    flagScale = 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+                    // Swell load flags to double size at the peak, then settle back to 1.0
+                    loadScale = flagScale * (1.0 + Math.sin(t * Math.PI) * 1.0);
+                }
+            }
+            if (flagScale > 0.0) {
+                drawRoomFlagsOptimized(ctx, anchorX, anchorY, camera.zoom, finalMobF, loadF, questF, flagScale, loadScale);
+            }
+            if (elapsed < delay + animDur || !isBaked) {
+                rCtx.triggerRender?.(); // keep rendering loop active
+            }
+            ctx.restore();
         }
     }
 };

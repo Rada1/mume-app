@@ -8,6 +8,7 @@ import { useModeStore } from '../stores/useModeStore';
 
 export const useAmbientController = (accountStage: string = 'none') => {
     const isSoundEnabled = useSettingsStore(state => state.isSoundEnabled);
+    const isImmersionMode = useSettingsStore(state => state.isImmersionMode);
     const zoneMusic = useSettingsStore(state => state.zoneMusic);
     const mode = useModeStore(state => state.mode);
     const isSpectating = useModeStore(state => state.isSpectating);
@@ -30,23 +31,34 @@ export const useAmbientController = (accountStage: string = 'none') => {
     const inCombatRef = useRef<boolean>(false);
     const dynamicUrlsRef = useRef<string[] | undefined>(undefined);
 
-    useEffect(() => {
-        if (!isSoundEnabled) return;
-        const isDay = lighting === 'sun';
-        audioManager.setAmbient('terrain', { key: terrain, isDay });
-    }, [terrain, lighting, isSoundEnabled, mode, isSpectating, activeView]);
+    const isAmbientActive = isSoundEnabled && isImmersionMode;
 
     useEffect(() => {
-        if (!isSoundEnabled) return;
+        if (!isAmbientActive) {
+            audioManager.setAmbient('terrain', { key: null });
+            return;
+        }
+        const isDay = lighting === 'sun';
+        audioManager.setAmbient('terrain', { key: terrain, isDay });
+    }, [terrain, lighting, isAmbientActive, mode, isSpectating, activeView]);
+
+    useEffect(() => {
+        if (!isAmbientActive) {
+            audioManager.setAmbient('weather', { key: null });
+            return;
+        }
         if (weather === 'none' || weather === 'clear') {
             audioManager.setAmbient('weather', { key: null });
         } else {
             audioManager.setAmbient('weather', { key: weather });
         }
-    }, [weather, isSoundEnabled, mode, isSpectating, activeView]);
+    }, [weather, isAmbientActive, mode, isSpectating, activeView]);
 
     useEffect(() => {
-        if (!isSoundEnabled) return;
+        if (!isAmbientActive) {
+            audioManager.setAmbient('zone', { key: null });
+            return;
+        }
 
         // Account mode overrides standard zone music
         if (accountStage !== 'none') {
@@ -82,19 +94,22 @@ export const useAmbientController = (accountStage: string = 'none') => {
         dynamicUrlsRef.current = dynamicUrls;
 
         audioManager.setAmbient('zone', { key: normalizedZone, inCombat, dynamicUrls });
-    }, [roomZone, inCombat, isSoundEnabled, zoneMusic, mode, isSpectating, activeView, accountStage]);
+    }, [roomZone, inCombat, isAmbientActive, zoneMusic, mode, isSpectating, activeView, accountStage]);
 
     // Handle drum loop
     useEffect(() => {
-        if (!isSoundEnabled) return;
+        if (!isAmbientActive) {
+            audioManager.updateDrumLayer(false, null);
+            return;
+        }
         audioManager.updateDrumLayer(inCombat, roomZone);
-    }, [inCombat, roomZone, isSoundEnabled, mode, isSpectating, activeView]);
+    }, [inCombat, roomZone, isAmbientActive, mode, isSpectating, activeView]);
 
     // Simple listener for zone ended to trigger re-evaluation if needed
     useEffect(() => {
         const handleZoneEnded = (key: string) => {
             console.log(`[useAmbientController] Zone audio ended: ${key}`);
-            if (isSoundEnabled && normalizedZoneRef.current === key) {
+            if (isAmbientActive && normalizedZoneRef.current === key) {
                 console.log(`[useAmbientController] Re-triggering zone music for key: ${key}`);
                 audioManager.setAmbient('zone', {
                     key: normalizedZoneRef.current,
@@ -105,7 +120,7 @@ export const useAmbientController = (accountStage: string = 'none') => {
         };
         audioManager.addZoneEndedListener(handleZoneEnded);
         return () => audioManager.removeZoneEndedListener(handleZoneEnded);
-    }, [isSoundEnabled]);
+    }, [isAmbientActive]);
 };
 
 export const useAudioEffects = () => {

@@ -32,7 +32,7 @@ export const AUDIO_MANIFEST = {
             'CAVE': { url: '/assets/Sounds/TerrainSounds/cave_tunnel.mp3', volume: 0.25 },
             'RAPIDS': { url: '/assets/Sounds/TerrainSounds/rapids.wav', volume: 0.25 },
             'UNDERWATER': { url: '/assets/Sounds/TerrainSounds/underwater.mp3', volume: 0.25 },
-            'SHALLOWS': { url: '/assets/Sounds/TerrainSounds/shallows.wav', volume: 0.8 },
+
             'WATER': { url: '/assets/Sounds/TerrainSounds/shallows.wav', volume: 0.8 },
         } as Record<string, AmbientConfig>,
         weather: {
@@ -120,6 +120,8 @@ export const AUDIO_MANIFEST = {
         'bash': { path: '/assets/Sounds/SoundEffects/bash.mp3' },
         'cleave': { path: '/assets/Sounds/SoundEffects/cleave.mp3' },
         'click': { path: '/assets/Sounds/SoundEffects/click.mp3' },
+        'enter': { path: '/assets/Sounds/UI/enter.mp3', defaultVolume: 0.5 },
+        'exit': { path: '/assets/Sounds/UI/exit.mp3', defaultVolume: 0.5 },
         'drawertab': { path: '/assets/Sounds/UI/drawertab.mp3', defaultVolume: 0.06 },
         'actionmenu': { path: '/assets/Sounds/UI/actionmenu.mp3', defaultVolume: 0.1 },
         'commbubble': { path: '/assets/Sounds/SoundEffects/commbubble.mp3' },

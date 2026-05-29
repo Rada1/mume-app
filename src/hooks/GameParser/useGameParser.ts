@@ -120,8 +120,8 @@ const isGameplayXmlLine = (text: string): boolean => {
     if (clean.endsWith('account>')) return false;
     if (clean.includes('by what name do you wish') || clean.includes('account password:') || clean === 'password:') return false;
 
-    return /<\/?(?:room|name|description|character|player|object|exit|prompt|movement|header|status|enemy)\b/i.test(text) ||
-        /&lt;\/?(?:room|name|description|character|player|object|exit|prompt|movement|header|status|enemy)\b/i.test(text);
+    return /<\/?(?:room|name|description|character|player|object|exit|prompt|movement|header|status|enemy|movein|moveout|move_in|move_out)\b/i.test(text) ||
+        /&lt;\/?(?:room|name|description|character|player|object|exit|prompt|movement|header|status|enemy|movein|moveout|move_in|move_out)\b/i.test(text);
 };
 
 const isWhereTableLine = (text: string): boolean => {
@@ -580,6 +580,23 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             }
             gmcpBus.emit('Room.Info', { ...snoopedRoomInfo, spectating: true } as any);
         }
+        
+        // --- Enter/Exit Sound Triggers ---
+        // MUME does not send <movein>/<moveout> wrapper tags.
+        // Movement messages arrive as: "A <character>Name</character> leaves east."
+        // or: "A <character>Name</character> has arrived from the north."
+        // We detect these by the presence of a <character> tag plus movement verb patterns.
+        {
+            const lowerLine = lineToParse.toLowerCase();
+            const hasCharTag = /<character>|&lt;character/i.test(lineToParse);
+            if (hasCharTag) {
+                if (lowerLine.includes(' arrived from ') || lowerLine.includes(' arrives from ')) {
+                    deps.playEffect?.('enter', { skipJitter: true });
+                } else if (/\bleaves\b/.test(lowerLine) || lowerLine.includes(' flees ') || lowerLine.includes(' fled ')) {
+                    deps.playEffect?.('exit', { skipJitter: true });
+                }
+            }
+        }
 
         if (!isSnoop) {
             const xmlMoveDir = extractXmlMovementDir(lineToParse);
@@ -900,6 +917,16 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         actionTracker.trackAction(lineToParse, textOnly, lower);
         router.detectItemsInRoom(textOnly, lineToParse, false);
         router.trackRoomItemAction(textOnly, lineToParse, false);
+
+        // Play buy/sell sound on buy/sell notifications
+        if (!isSnoop && (
+            lower.includes('you now have a') ||
+            lower.includes('you now have an') ||
+            lower.includes('you sell a') ||
+            lower.includes('you sell an')
+        )) {
+            deps.playBuySellSound?.();
+        }
         
         // --- Capture Boundary Handling ---
         // Prompt lines end list-style captures and should never be stored as

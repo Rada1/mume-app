@@ -86,11 +86,11 @@
 }
 
 .lighting-state-artificial .overlay-layer {
-    /* Grey ambient wash — top-heavy darkness fading out toward the warm bottom */
+    /* Very dark red ambient wash — top-heavy darkness fading out toward a dark red bottom */
     background: linear-gradient(to bottom,
-        rgba(10, 15, 25, 0.45) 0%,
-        rgba(12, 12, 18, 0.5) 45%,
-        rgba(18, 12, 10, 0.1) 80%,
+        rgba(15, 5, 5, 0.55) 0%,
+        rgba(12, 4, 4, 0.6) 45%,
+        rgba(40, 10, 10, 0.25) 80%,
         transparent 100%
     );
 }
@@ -185,7 +185,7 @@
     /* Anchor the command pulse to the bottom-center flame glow source */
     background: radial-gradient(
         ellipse 80% 65% at 50% 100%,
-        rgba(255, 140, 40, 0.14) 0%,
+        rgba(139, 0, 0, 0.14) 0%,
         transparent 80%
     );
 }
@@ -253,10 +253,10 @@
     transform: translateX(-50%);
     width: 200vw;
     height: 100%;
-    /* Dual-tone: bottom-half flame glow (amber core fading to orange/red), top-half greyish ambient light like darkness */
+    /* Dual-tone: bottom-half dark red fire glow, top-half very dark red ambient light */
     background: 
-        radial-gradient(ellipse min(680px, 75vw) 60vh at 50% 112%, rgba(255, 175, 45, 0.38) 0%, rgba(255, 95, 25, 0.18) 45%, rgba(220, 40, 15, 0.08) 80%, transparent 100%),
-        radial-gradient(ellipse 100vw 45vh at 50% 15%, rgba(200, 200, 200, 0.12) 0%, transparent 80%);
+        radial-gradient(ellipse min(680px, 75vw) 60vh at 50% 112%, rgba(139, 0, 0, 0.35) 0%, rgba(90, 0, 0, 0.18) 45%, rgba(50, 0, 0, 0.08) 80%, transparent 100%),
+        radial-gradient(ellipse 100vw 45vh at 50% 15%, rgba(80, 20, 20, 0.12) 0%, transparent 80%);
 }
 
 .lighting-dark .lighting-inner {

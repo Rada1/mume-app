@@ -133,6 +133,9 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         // happens after the send is in flight.
         if (status === 'connected') {
             telnet.sendCommand(finalCmd);
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('mume-command-sent', { detail: { cmd: finalCmd, silent, isSystem } }));
+            }
         } else if (!silent) {
             addMessage('error', 'Not connected.');
         }

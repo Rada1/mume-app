@@ -277,8 +277,10 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         setExploredMarkers(prev => new Set([...prev, id]));
     }, [setMarkers, setExploredMarkers]);
 
+    const effectiveLighting = isImmersionMode ? (gameState === 'account' ? 'moon' : (lighting || 'none')) : 'none';
+
     return (
-        <div className={`mapper-container lighting-state-${gameState === 'account' ? 'moon' : (lighting || 'none')} ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''} ${!showBackgroundImage ? 'no-bg-image' : ''}`} style={{ 
+        <div className={`mapper-container lighting-state-${effectiveLighting} ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''} ${!showBackgroundImage ? 'no-bg-image' : ''}`} style={{ 
             position: 'relative', 
             width: '100%', 
             height: '100%', 
@@ -317,7 +319,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 stableMarkersRef={markersRef}
                 preloadedCoordsRef={preloadedCoordsRef}
                 spatialIndexRef={context.spatialIndexRef}
-                lighting={gameState === 'account' ? 'moon' : lighting}
+                lighting={effectiveLighting}
+                isImmersionMode={isImmersionMode}
                 exploredVnums={context.exploredRef.current}
                 exploredRef={context.exploredRef}
                 exploredMarkers={context.exploredMarkers}

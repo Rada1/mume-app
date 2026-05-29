@@ -253,6 +253,19 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
         }
     }, [input]);
 
+    // Detect command execution spikes
+    useEffect(() => {
+        const handleCommandSent = (e: Event) => {
+            const customEvent = e as CustomEvent;
+            if (customEvent.detail && !customEvent.detail.silent) {
+                // Boost typing activity significantly for command execution
+                typingActivityTarget.current = Math.min(1.0, typingActivityTarget.current + 0.65);
+            }
+        };
+        window.addEventListener('mume-command-sent', handleCommandSent);
+        return () => window.removeEventListener('mume-command-sent', handleCommandSent);
+    }, []);
+
     // Canvas animation loop
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -395,7 +408,9 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
             };
 
             // Single terrain-colored wave. leftY < rightY produces the top-left → bottom-right slope.
-            drawWave(Math.PI * 0.6, 1.4, 0.6, 0.72, 0.88, cur.c1);
+            const leftY = isMobile ? 0.64 : 0.72;
+            const rightY = isMobile ? 0.80 : 0.88;
+            drawWave(Math.PI * 0.6, 1.4, 0.6, leftY, rightY, cur.c1);
 
             frameId = requestAnimationFrame(render);
         };
@@ -414,8 +429,8 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
     if (!isImmersionMode) {
         const bgStyle = {
             background: `linear-gradient(180deg, 
-                transparent 60%, 
-                hsl(${targetColors.color1.h}, ${targetColors.color1.s}%, ${targetColors.color1.l}%) 82%, 
+                transparent ${isMobile ? 52 : 60}%, 
+                hsl(${targetColors.color1.h}, ${targetColors.color1.s}%, ${targetColors.color1.l}%) ${isMobile ? 74 : 82}%, 
                 hsl(${targetColors.color2.h}, ${targetColors.color2.s}%, ${targetColors.color2.l}%) 100%)`,
         };
         return (

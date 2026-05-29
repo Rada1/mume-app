@@ -67,6 +67,7 @@ interface MapCanvasProps {
     mapTileOpacity?: number;
     mapTileVisuals?: import('./mapperTypes').MapTileVisualAdjustments;
     lighting?: string;
+    isImmersionMode?: boolean;
     calibration?: any;
     vectors?: any;
     isTracingMode?: boolean;
@@ -92,7 +93,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         baseMapExitsRef, triggerRender, clientPredictionsRef, entitiesRef, serverIdIndexRef,
         inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
         activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
-        activeMapFilter, mapSearchQuery, mapTileOpacity, lighting,
+        activeMapFilter, mapSearchQuery, mapTileOpacity, lighting, isImmersionMode,
         regionLabels, regionLabelEditMode, selectedRegionLabelId
     } = props;
 
@@ -115,6 +116,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         mapTileVisuals,
         mapTileOpacity,
         lighting,
+        isImmersionMode,
         weather,
         regionLabels,
         regionLabelEditMode,

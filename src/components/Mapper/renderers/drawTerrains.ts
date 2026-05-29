@@ -6,7 +6,7 @@ import { perfMonitor } from '../../../utils/perfMonitor';
 const TERRAIN_TILE_INSET = 0;
 const FAR_ZOOM_TERRAIN_LOD = 0.04;
 const OVERVIEW_TERRAIN_ZOOM = 0.15;
-export const RING_REVEAL_MS = 360;
+export const RING_REVEAL_MS = 280;
 export const RING_REVEAL_TOTAL_MS = RING_REVEAL_MS * 2;
 export const RING_REVEAL_BAKE_MS = RING_REVEAL_TOTAL_MS + 40;
 const RING_REVEAL_OVERLAY_GRACE_MS = 120;
@@ -1275,42 +1275,38 @@ const buildRevealRings = (
     const ring2Peeked = new Set<string>();
     if (unveilMap) return { ring1Revealed, ring2Peeked };
 
-    for (let bx = bX1; bx <= bX2; bx++) {
-        for (let by = bY1; by <= bY2; by++) {
-            const bucket = floorIndex[`${bx},${by}`];
-            if (!bucket) continue;
+    const floorVnums = new Set<string>();
+    for (const key in floorIndex) {
+        const bucket = floorIndex[key];
+        if (bucket) {
             for (let i = 0; i < bucket.length; i++) {
-                const vnum = bucket[i];
-                if (explored.has(vnum)) continue;
-                const rData = preloaded[vnum];
-                if (!rData?.[4]) continue;
-                for (const dir of ['n', 's', 'e', 'w']) {
-                    const exit = rData[4][dir];
-                    if (exit && explored.has(String(exit.target))) {
-                        ring1Revealed.add(vnum);
-                        break;
-                    }
-                }
+                floorVnums.add(bucket[i]);
             }
         }
     }
 
-    for (let bx = bX1; bx <= bX2; bx++) {
-        for (let by = bY1; by <= bY2; by++) {
-            const bucket = floorIndex[`${bx},${by}`];
-            if (!bucket) continue;
-            for (let i = 0; i < bucket.length; i++) {
-                const vnum = bucket[i];
-                if (explored.has(vnum) || ring1Revealed.has(vnum)) continue;
-                const rData = preloaded[vnum];
-                if (!rData?.[4]) continue;
-                for (const dir of ['n', 's', 'e', 'w']) {
-                    const exit = rData[4][dir];
-                    if (exit && ring1Revealed.has(String(exit.target))) {
-                        ring2Peeked.add(vnum);
-                        break;
-                    }
-                }
+    for (const vnum of floorVnums) {
+        if (explored.has(vnum)) continue;
+        const rData = preloaded[vnum];
+        if (!rData?.[4]) continue;
+        for (const dir of ['n', 's', 'e', 'w']) {
+            const exit = rData[4][dir];
+            if (exit && explored.has(String(exit.target))) {
+                ring1Revealed.add(vnum);
+                break;
+            }
+        }
+    }
+
+    for (const vnum of floorVnums) {
+        if (explored.has(vnum) || ring1Revealed.has(vnum)) continue;
+        const rData = preloaded[vnum];
+        if (!rData?.[4]) continue;
+        for (const dir of ['n', 's', 'e', 'w']) {
+            const exit = rData[4][dir];
+            if (exit && ring1Revealed.has(String(exit.target))) {
+                ring2Peeked.add(vnum);
+                break;
             }
         }
     }
@@ -1325,14 +1321,15 @@ export const drawExplorationRevealOverlay = (
 ) => {
     if (!floorIndex || rCtx.unveilMap) return;
     const latest = rCtx.firstExploredAtRef.current['_latest'] || 0;
-    if (!latest || rCtx.now - latest > RING_REVEAL_TOTAL_MS + RING_REVEAL_OVERLAY_GRACE_MS) return;
+    if (!latest) return;
 
     const { ctx, preloaded, lighting, isDarkMode, allRooms, explored, unveilMap, imagesRef } = rCtx;
     const s = GRID_SIZE;
     const ringRevealGray = lighting === 'dark'
         ? (isDarkMode ? '#2e2e2e' : '#767676')
         : (isDarkMode ? '#202020' : '#5c5c5c');
-    const { ring1Revealed, ring2Peeked } = buildRevealRings(rCtx, bX1, bY1, bX2, bY2, floorIndex);
+    const ring1Revealed = rCtx.ring1Revealed || buildRevealRings(rCtx, bX1, bY1, bX2, bY2, floorIndex).ring1Revealed;
+    const ring2Peeked = rCtx.ring2Peeked || buildRevealRings(rCtx, bX1, bY1, bX2, bY2, floorIndex).ring2Peeked;
 
     ctx.save();
     ctx.fillStyle = ringRevealGray;
@@ -1470,9 +1467,9 @@ export const drawTerrains = (
     if (!floorIndex) return;
 
     // Compute ring-1 revealed rooms: adjacent to explored, not explored themselves
-    const ring1Revealed = new Set<string>();
-    const ring2Peeked = new Set<string>();
-    if (!unveilMap) {
+    const ring1Revealed = rCtx.ring1Revealed || new Set<string>();
+    const ring2Peeked = rCtx.ring2Peeked || new Set<string>();
+    if (!rCtx.ring1Revealed && !unveilMap) {
         for (let bx = bX1; bx <= bX2; bx++) {
             for (let by = bY1; by <= bY2; by++) {
                 const bucket = floorIndex[`${bx},${by}`];
@@ -1690,81 +1687,28 @@ export const drawTerrains = (
         const rooms = exploredBatches[color];
         for (let i = 0; i < rooms.length; i++) {
             const r = rooms[i];
-            let alphaMul = 1.0;
-            const exploredAt = r.vnum ? rCtx.firstExploredAtRef.current[r.vnum] : 0;
-            if (exploredAt && !rCtx.unveilMap) {
-                const elapsed = rCtx.now - exploredAt;
-                const animDur = 60;
-                if (elapsed < animDur) {
-                    alphaMul = elapsed / animDur;
-                    rCtx.triggerRender?.(); // Keep animating
-
-                    const sourceDir = getSourceDirection(r.vnum, rCtx);
-                    if (sourceDir) {
-                        ctx.save();
-                        if (sourceDir === 'n' || sourceDir === 's' || sourceDir === 'w' || sourceDir === 'e') {
-                            // 1. Tile backing
-                            ctx.fillStyle = tileBacking;
-                            ctx.globalAlpha = tileBackingAlpha;
-                            fillAnimatedTerrainTile(ctx, r.x, r.y, s, sourceDir, alphaMul);
-
-                            // 2. Terrain color
-                            ctx.fillStyle = color;
-                            ctx.globalAlpha = tileOpacity;
-                            fillAnimatedTerrainTile(ctx, r.x, r.y, s, sourceDir, alphaMul);
-
-                            // 3. Snow overlay
-                            if (r.isPermanentSnow || (rCtx.weather === 'snow' && Number(r.sundeath) !== 0)) {
-                                ctx.fillStyle = 'rgba(245, 250, 255, 0.45)';
-                                ctx.globalAlpha = tileOpacity;
-                                fillAnimatedTerrainTile(ctx, r.x, r.y, s, sourceDir, alphaMul);
-                            }
-                        } else {
-                            // 1. Tile backing
-                            ctx.fillStyle = tileBacking;
-                            ctx.globalAlpha = alphaMul;
-                            fillTerrainTile(ctx, r.x, r.y, s);
-
-                            // 2. Terrain color
-                            ctx.fillStyle = color;
-                            ctx.globalAlpha = alphaMul * tileOpacity;
-                            fillTerrainTile(ctx, r.x, r.y, s);
-
-                            // 3. Snow overlay
-                            if (r.isPermanentSnow || (rCtx.weather === 'snow' && Number(r.sundeath) !== 0)) {
-                                ctx.fillStyle = 'rgba(245, 250, 255, 0.45)';
-                                ctx.globalAlpha = alphaMul * tileOpacity;
-                                fillTerrainTile(ctx, r.x, r.y, s);
-                            }
-                        }
-                        ctx.restore();
-                        applyRoomShading(ctx, r, s, alphaMul, rCtx);
-                        continue;
-                    }
-                }
-            }
             
             // Draw base terrain
             ctx.save();
             // 1. Tile backing
             ctx.fillStyle = tileBacking;
-            ctx.globalAlpha = tileBackingAlpha * alphaMul;
+            ctx.globalAlpha = tileBackingAlpha;
             fillTerrainTile(ctx, r.x, r.y, s);
 
             // 2. Terrain color
             ctx.fillStyle = color;
-            ctx.globalAlpha = alphaMul * tileOpacity;
+            ctx.globalAlpha = tileOpacity;
             fillTerrainTile(ctx, r.x, r.y, s);
 
             // 3. Snow overlay
             if (r.isPermanentSnow || (rCtx.weather === 'snow' && Number(r.sundeath) !== 0)) {
                 ctx.fillStyle = 'rgba(245, 250, 255, 0.45)';
-                ctx.globalAlpha = alphaMul * tileOpacity;
+                ctx.globalAlpha = tileOpacity;
                 fillTerrainTile(ctx, r.x, r.y, s);
             }
             ctx.restore();
             
-            applyRoomShading(ctx, r, s, alphaMul, rCtx);
+            applyRoomShading(ctx, r, s, 1.0, rCtx);
         }
     }
     ctx.restore();
@@ -1779,27 +1723,6 @@ export const drawTerrains = (
                 const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
                 
                 ctx.save();
-                const exploredAt = r.vnum ? rCtx.firstExploredAtRef.current[r.vnum] : 0;
-                if (exploredAt && !rCtx.unveilMap) {
-                    const elapsed = rCtx.now - exploredAt;
-                    const animDur = 60;
-                    if (elapsed < animDur) {
-                        const alphaMul = elapsed / animDur;
-                        ctx.globalAlpha = alphaMul * tileOpacity;
-                        rCtx.triggerRender?.();
-                        
-                        const sourceDir = getSourceDirection(r.vnum, rCtx);
-                        if (sourceDir) {
-                            ctx.beginPath();
-                            if (sourceDir === 'n') ctx.rect(r.x, r.y, s, s * alphaMul);
-                            else if (sourceDir === 's') ctx.rect(r.x, r.y + s * (1 - alphaMul), s, s * alphaMul);
-                            else if (sourceDir === 'w') ctx.rect(r.x, r.y, s * alphaMul, s);
-                            else if (sourceDir === 'e') ctx.rect(r.x + s * (1 - alphaMul), r.y, s * alphaMul, s);
-                            else ctx.rect(r.x, r.y, s, s);
-                            ctx.clip();
-                        }
-                    }
-                }
                 ctx.globalAlpha = tileOpacity;
                 const isSnow = r.isPermanentSnow || rCtx.weather === 'snow';
                 const tWallStart = perfMonitor.enabled ? performance.now() : 0;

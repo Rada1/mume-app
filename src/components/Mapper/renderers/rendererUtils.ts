@@ -58,6 +58,8 @@ export interface RenderContext {
     clientPredictionsRef?: React.MutableRefObject<MapperPrediction[]>;
     /** Maps MUME internal server vnum -> local preloaded vnum string (for resolving group member mapid) */
     serverIdIndexRef?: React.MutableRefObject<Record<string, string>>;
+    ring1Revealed?: Set<string>;
+    ring2Peeked?: Set<string>;
     /** Group members received from GMCP — used to render green friend-orbs on the map */
     groupMembers?: import('../../../types').GroupMember[];
     deathRoomId?: string | null;
@@ -80,6 +82,7 @@ export interface RenderContext {
     suppressExplorationAnimation?: boolean;
     showTerrainIcons?: boolean;
     showDoorLabels?: boolean;
+    isExplorationBaked?: boolean;
 }
 
 export const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);

@@ -219,13 +219,17 @@ export class AudioManager {
         this.init();
         if (!this.audioCtx) return;
 
+        const settings = useSettingsStore.getState();
         const config = AUDIO_MANIFEST.effects[key];
         if (!config) {
             console.warn(`[AudioManager] Effect not found in manifest: ${key}`);
             return;
         }
 
-        let buffer = await this.loadBuffer(config.path);
+        const customPath = settings.customSoundEffects?.[key];
+        const effectPath = customPath || config.path;
+
+        let buffer = await this.loadBuffer(effectPath);
         if (!buffer) return;
 
         const ctx = this.audioCtx;

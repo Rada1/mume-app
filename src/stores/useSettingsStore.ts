@@ -111,6 +111,62 @@ interface SettingsState {
     mapTileVisuals: MapTileVisualAdjustments;
     mapBackgroundVisuals: MapBackgroundVisualAdjustments;
     zoneFilters: Record<string, ZoneFilterConfig>;
+    customSoundEffects: Record<string, string>;
+    setCustomSoundEffect: (key: string, url: string) => void;
+    removeCustomSoundEffect: (key: string) => void;
+    setConnectionUrl: (val: string) => void;
+    setLoginName: (val: string) => void;
+    setLoginPassword: (val: string) => void;
+    setRememberLogin: (val: boolean) => void;
+    setAutoConnect: (val: boolean) => void;
+    setTheme: (val: 'dark' | 'light') => void;
+    setIsImmersionMode: (val: boolean) => void;
+    setAccentColor: (val: string) => void;
+    setBgImage: (val: string | null) => void;
+    setBgImageBottom: (val: string | null) => void;
+    setFontFamily: (val: string) => void;
+    setUiMode: (val: UiMode) => void;
+    setIsBloomEnabled: (val: boolean) => void;
+    setIsHighlighterEnabled: (val: boolean) => void;
+    setDisableSmoothScroll: (val: boolean) => void;
+    setObjectColor: (val: string) => void;
+    setPlayerColor: (val: string) => void;
+    setNpcColor: (val: string) => void;
+    setEnemyColor: (val: string) => void;
+    setNeutralColor: (val: string) => void;
+    setTargetColor: (val: string) => void;
+    setRoomColor: (val: string) => void;
+    setIsTimestampEnabled: (val: boolean) => void;
+    setShowDebugEchoes: (val: boolean) => void;
+    setShowLegacyButtons: (val: boolean) => void;
+    setShowSpectatePromptInLog: (val: boolean) => void;
+    setShowControls: (val: boolean) => void;
+    setShowOrganicTerrain: (val: boolean) => void;
+    setHidePrompt: (val: boolean) => void;
+    setShowBlockHeaders: (val: boolean) => void;
+    setIsSoundEnabled: (val: boolean) => void;
+    setIsNewbieMode: (val: boolean) => void;
+    setAutoSaveSessions: (val: boolean) => void;
+    setSoundTriggers: (val: import('../types').SoundTrigger[]) => void;
+    setTeleportTargets: (val: TeleportTarget[] | ((prev: TeleportTarget[]) => TeleportTarget[])) => void;
+    setCurrentCharacter: (name: string | null) => void;
+    setCategoryOverrides: (val: CategoryOverride[] | ((prev: CategoryOverride[]) => CategoryOverride[])) => void;
+    setCustomTraits: (val: CustomTraitConfig[] | ((prev: CustomTraitConfig[]) => CustomTraitConfig[])) => void;
+    setInlineCategories: (val: InlineCategoryConfig[] | ((prev: InlineCategoryConfig[]) => InlineCategoryConfig[])) => void;
+    setFavorites: (val: string[] | ((prev: string[]) => string[])) => void;
+    setZoneMusic: (val: ZoneMusicMapping[]) => void;
+    setMasterVolume: (val: number) => void;
+    setSfxVolume: (val: number) => void;
+    setMusicVolume: (val: number) => void;
+    setAllowMapPersistence: (val: boolean) => void;
+    setUnveilMap: (val: boolean) => void;
+    setZoneFocusGrayscale: (val: boolean) => void;
+    showMapperToolbar: boolean;
+    isTextRevealEnabled: boolean;
+    showBackgroundImage: boolean;
+    mapTileVisuals: MapTileVisualAdjustments;
+    mapBackgroundVisuals: MapBackgroundVisualAdjustments;
+    zoneFilters: Record<string, ZoneFilterConfig>;
     setConnectionUrl: (val: string) => void;
     setLoginName: (val: string) => void;
     setLoginPassword: (val: string) => void;
@@ -286,6 +342,7 @@ export const useSettingsStore = create<SettingsState>()(
             masterVolume: 1.0,
             sfxVolume: 0.5,
             musicVolume: 0.5,
+            customSoundEffects: {},
 
             allowMapPersistence: true,
             unveilMap: true,
@@ -298,6 +355,14 @@ export const useSettingsStore = create<SettingsState>()(
             zoneFilters: ZONE_FILTERS,
 
             // Setters
+            setCustomSoundEffect: (key, url) => set((state) => ({
+                customSoundEffects: { ...state.customSoundEffects, [key]: url }
+            })),
+            removeCustomSoundEffect: (key) => set((state) => {
+                const next = { ...state.customSoundEffects };
+                delete next[key];
+                return { customSoundEffects: next };
+            }),
             setConnectionUrl: (connectionUrl) => set({ connectionUrl }),
             setLoginName: (loginName) => set({ loginName }),
             setLoginPassword: (loginPassword) => set({ loginPassword }),

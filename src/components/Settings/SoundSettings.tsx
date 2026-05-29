@@ -1,8 +1,15 @@
+/**
+ * @file SoundSettings.tsx
+ * @description Component for customizing audio levels, zone music mappings, and sound triggers, including defaults.
+ */
+
 import React, { useState } from 'react';
-import { Upload, Trash2, Volume2, Plus, Music, Sliders } from 'lucide-react';
+import { Upload, Trash2, Volume2, Plus, Music, Sliders, RotateCcw, Play } from 'lucide-react';
 import { SoundTrigger } from '../../types';
 import { useGame } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { AUDIO_MANIFEST } from '../../constants/audioManifest';
+import { audioManager } from '../../services/audio/AudioManager';
 
 interface SoundSettingsProps {
     isSoundEnabled: boolean;
@@ -31,8 +38,10 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
     const { 
         masterVolume, setMasterVolume, 
         sfxVolume, setSfxVolume, 
-        musicVolume, setMusicVolume 
+        musicVolume, setMusicVolume,
+        customSoundEffects, setCustomSoundEffect, removeCustomSoundEffect
     } = useSettingsStore();
+
     const [newZoneName, setNewZoneName] = useState('');
     const [newZoneUrl, setNewZoneUrl] = useState('');
 
@@ -59,8 +68,28 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
         setZoneMusic(prev => prev.filter(m => m.zone !== zone));
     };
 
+    const handleOverrideUpload = (key: string, e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            setCustomSoundEffect(key, url);
+        }
+    };
+
+    const handleZoneOverrideUpload = (zone: string, e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            setZoneMusic(prev => {
+                const filtered = prev.filter(m => m.zone.toLowerCase() !== zone.toLowerCase());
+                return [...filtered, { zone, url }];
+            });
+        }
+    };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {/* Enable Sound Toggle */}
             <div className="setting-group" style={{ border: '1px solid rgba(212, 170, 0, 0.3)', background: 'rgba(10, 13, 21, 0.6)', padding: '15px', borderRadius: '8px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
@@ -96,7 +125,7 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                 </div>
             </div>
 
-            {/* Volume Levels Section */}
+            {/* Volume Levels */}
             <div className="setting-group" style={{ 
                 opacity: isSoundEnabled ? 1 : 0.5, 
                 pointerEvents: isSoundEnabled ? 'auto' : 'none', 
@@ -108,9 +137,7 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                 <label className="setting-label" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
                     <Sliders size={16} /> Volume Levels
                 </label>
-
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {/* Master Volume */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span style={{ fontSize: '0.8rem', color: 'var(--text-primary, #fff)' }}>Master Volume</span>
@@ -123,8 +150,6 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                             style={{ width: '100%', cursor: 'pointer', accentColor: 'var(--accent)' }}
                         />
                     </div>
-
-                    {/* SFX Volume */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span style={{ fontSize: '0.8rem', color: 'var(--text-primary, #fff)' }}>Sound Effects (Combat, UI)</span>
@@ -137,8 +162,6 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                             style={{ width: '100%', cursor: 'pointer', accentColor: 'var(--accent)' }}
                         />
                     </div>
-
-                    {/* Music Volume */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span style={{ fontSize: '0.8rem', color: 'var(--text-primary, #fff)' }}>Atmosphere & Music</span>
@@ -154,13 +177,69 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                 </div>
             </div>
 
+            {/* Default Sound Effects List */}
+            <div className="setting-group" style={{ opacity: isSoundEnabled ? 1 : 0.5, pointerEvents: isSoundEnabled ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
+                <label className="setting-label" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Volume2 size={16} /> Default Sound Effects
+                </label>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginBottom: '12px' }}>
+                    Preview default game sound effects or upload custom overrides.
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '300px', overflowY: 'auto', paddingRight: '4px' }}>
+                    {Object.entries(AUDIO_MANIFEST.effects).map(([key, config]) => {
+                        const hasOverride = !!customSoundEffects[key];
+                        return (
+                            <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-panel, rgba(255,255,255,0.03))', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                                <div style={{ overflow: 'hidden' }}>
+                                    <div style={{ color: 'var(--text-primary, #fff)', fontWeight: '500', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        {key}
+                                        {hasOverride && <span style={{ color: 'var(--accent)', fontSize: '0.7rem', border: '1px solid var(--accent)', padding: '1px 4px', borderRadius: '3px' }}>Custom Override</span>}
+                                    </div>
+                                    <div style={{ color: 'var(--text-dim, #aaa)', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {hasOverride ? 'Custom blob URL' : config.path}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <button 
+                                        onClick={() => audioManager.playEffect(key, { skipJitter: true })}
+                                        style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+                                        title="Preview sound"
+                                    >
+                                        <Play size={16} />
+                                    </button>
+                                    <input
+                                        type="file"
+                                        id={`override-${key}`}
+                                        hidden
+                                        onChange={(e) => handleOverrideUpload(key, e)}
+                                        accept="audio/*"
+                                    />
+                                    <label htmlFor={`override-${key}`} style={{ cursor: 'pointer', color: 'var(--text-dim, #aaa)', display: 'flex', alignItems: 'center' }} title="Upload custom sound">
+                                        <Upload size={14} />
+                                    </label>
+                                    {hasOverride && (
+                                        <button 
+                                            onClick={() => removeCustomSoundEffect(key)}
+                                            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+                                            title="Restore default"
+                                        >
+                                            <RotateCcw size={14} />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
             {/* Zone Music Section */}
             <div className="setting-group" style={{ opacity: isSoundEnabled ? 1 : 0.5, pointerEvents: isSoundEnabled ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
                 <label className="setting-label" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Music size={16} /> Zone Music Mappings
                 </label>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginBottom: '12px' }}>
-                    Assign background music to game zones. Adding multiple URLs to one zone will pick one at random.
+                    Configure background music for game zones. Show/override default zones or add custom mappings.
                 </div>
                 
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
@@ -188,19 +267,65 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                     </button>
                 </div>
 
-                <div className="trigger-list" style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {(!Array.isArray(zoneMusic) || zoneMusic.length === 0) && <div style={{ color: 'var(--text-dim, #64748b)', fontStyle: 'italic', padding: '10px', textAlign: 'center' }}>No zone music defined.</div>}
-                    {Array.isArray(zoneMusic) && zoneMusic.map((m, idx) => {
-                        const urls = Array.isArray(m.url) ? m.url : [m.url];
+                <div className="trigger-list" style={{ maxHeight: '250px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {/* Render active customizations first, followed by default zones */}
+                    {Object.entries(AUDIO_MANIFEST.ambient.zones).map(([zoneName, defaultMapping]) => {
+                        const custom = zoneMusic.find(m => m.zone.toLowerCase() === zoneName.toLowerCase());
+                        const isOverridden = !!custom;
+                        const urls = isOverridden 
+                            ? (Array.isArray(custom.url) ? custom.url : [custom.url])
+                            : (Array.isArray(defaultMapping.url) ? defaultMapping.url : [defaultMapping.url]);
+
                         return (
-                            <div key={`${m.zone}-${idx}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-panel, rgba(255,255,255,0.05))', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-color, rgba(255,255,255,0.1))' }}>
+                            <div key={`default-zone-${zoneName}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-panel, rgba(255,255,255,0.03))', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
                                 <div style={{ overflow: 'hidden' }}>
-                                    <div style={{ color: 'var(--text-primary, #fff)', fontWeight: '500', fontSize: '0.85rem' }}>
-                                        {m.zone} 
-                                        {urls.length > 1 && <span style={{ color: 'var(--accent)', fontSize: '0.7rem', marginLeft: '8px' }}>({urls.length} variations)</span>}
+                                    <div style={{ color: 'var(--text-primary, #fff)', fontWeight: '500', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        {zoneName}
+                                        <span style={{ fontSize: '0.7rem', color: isOverridden ? 'var(--accent)' : 'var(--text-dim, #777)', border: `1px solid ${isOverridden ? 'var(--accent)' : '#444'}`, padding: '1px 4px', borderRadius: '3px' }}>
+                                            {isOverridden ? 'Overridden' : 'Default'}
+                                        </span>
                                     </div>
                                     <div style={{ color: 'var(--text-dim, #aaa)', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                        {urls.length === 1 ? urls[0] : `${urls.length} files configured`}
+                                        {urls.join(', ')}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <input
+                                        type="file"
+                                        id={`zone-override-${zoneName}`}
+                                        hidden
+                                        onChange={(e) => handleZoneOverrideUpload(zoneName, e)}
+                                        accept="audio/*"
+                                    />
+                                    <label htmlFor={`zone-override-${zoneName}`} style={{ cursor: 'pointer', color: 'var(--text-dim, #aaa)', display: 'flex', alignItems: 'center' }} title="Upload custom track">
+                                        <Upload size={14} />
+                                    </label>
+                                    {isOverridden && (
+                                        <button
+                                            onClick={() => removeZoneMusic(custom.zone)}
+                                            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                                            title="Restore default music"
+                                        >
+                                            <RotateCcw size={14} />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
+
+                    {/* Custom user zones that do not overlap with defaults */}
+                    {zoneMusic.filter(m => !AUDIO_MANIFEST.ambient.zones[m.zone.toLowerCase()]).map((m, idx) => {
+                        const urls = Array.isArray(m.url) ? m.url : [m.url];
+                        return (
+                            <div key={`custom-zone-${m.zone}-${idx}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-panel, rgba(255,255,255,0.05))', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-color, rgba(255,255,255,0.1))' }}>
+                                <div style={{ overflow: 'hidden' }}>
+                                    <div style={{ color: 'var(--text-primary, #fff)', fontWeight: '500', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        {m.zone}
+                                        <span style={{ fontSize: '0.7rem', color: '#10b981', border: '1px solid #10b981', padding: '1px 4px', borderRadius: '3px' }}>Custom Mapping</span>
+                                    </div>
+                                    <div style={{ color: 'var(--text-dim, #aaa)', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {urls.join(', ')}
                                     </div>
                                 </div>
                                 <button
@@ -215,6 +340,7 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                 </div>
             </div>
 
+            {/* Custom Sound Triggers Section */}
             <div className="setting-group" style={{ opacity: isSoundEnabled ? 1 : 0.5, pointerEvents: isSoundEnabled ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
                 <label className="setting-label">Add Sound Trigger</label>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginBottom: '12px' }}>

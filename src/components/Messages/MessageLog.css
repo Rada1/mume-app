@@ -570,10 +570,7 @@
     word-break: break-word;
     font-family: var(--font-mono, var(--font-main));
     font-size: 0.95em;
-    display: inline-flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 0;
+    display: block;
     margin-left: 4px;
     animation: none !important;
     transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
