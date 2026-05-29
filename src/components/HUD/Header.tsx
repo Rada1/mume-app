@@ -60,6 +60,16 @@ const Header: React.FC<HeaderProps> = () => {
     }, [isEnteringTarget]);
 
     useEffect(() => {
+        const handleTrigger = () => {
+            setIsEnteringTarget(true);
+            setManualTargetInput('');
+            triggerHaptic?.(10);
+        };
+        window.addEventListener('mume-trigger-target-input', handleTrigger);
+        return () => window.removeEventListener('mume-trigger-target-input', handleTrigger);
+    }, [triggerHaptic]);
+
+    useEffect(() => {
         if (characterInfo.name) {
             console.log('[Header] Character Info detected:', characterInfo);
         }
@@ -354,11 +364,19 @@ const Header: React.FC<HeaderProps> = () => {
                                     if (e.key === 'Enter') {
                                         if (manualTargetInput.trim()) {
                                             setTarget(manualTargetInput.trim());
-                                            triggerHaptic(15);
+                                            triggerHaptic?.(15);
                                         }
                                         setIsEnteringTarget(false);
+                                        setTimeout(() => {
+                                            const mudInput = document.getElementById('mud-input');
+                                            if (mudInput) (mudInput as HTMLElement).focus();
+                                        }, 30);
                                     } else if (e.key === 'Escape') {
                                         setIsEnteringTarget(false);
+                                        setTimeout(() => {
+                                            const mudInput = document.getElementById('mud-input');
+                                            if (mudInput) (mudInput as HTMLElement).focus();
+                                        }, 30);
                                     }
                                 }}
                                 onBlur={() => {

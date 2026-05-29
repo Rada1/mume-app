@@ -491,6 +491,9 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();
                                     handleSubmit();
+                                } else if (e.key === 'Tab' && !viewport.isMobile) {
+                                    e.preventDefault();
+                                    window.dispatchEvent(new CustomEvent('mume-trigger-target-input'));
                                 }
                             }}
                             onFocus={(e) => {
