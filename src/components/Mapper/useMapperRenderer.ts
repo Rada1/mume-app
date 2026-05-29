@@ -16,7 +16,7 @@ import { perfMonitor } from '../../utils/perfMonitor';
 
 const LIGHTING_COLORS: Record<string, [number, number, number, number]> = {
     sun:        [255, 248, 200, 0.09],
-    moon:       [130, 170, 255, 0.06],
+    moon:       [80,  130, 255, 0.08],
     artificial: [180, 255, 200, 0.06],
     dark:       [0,   0,   0,   0],
     none:       [0,   0,   0,   0],

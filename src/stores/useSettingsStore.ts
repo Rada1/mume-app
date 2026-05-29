@@ -289,7 +289,7 @@ export const useSettingsStore = create<SettingsState>()(
 
             allowMapPersistence: true,
             unveilMap: true,
-            zoneFocusGrayscale: true,
+            zoneFocusGrayscale: false,
             showMapperToolbar: false,
             isTextRevealEnabled: true,
             showBackgroundImage: true,

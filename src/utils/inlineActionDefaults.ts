@@ -11,7 +11,7 @@ export const DEFAULT_CATEGORY_CONFIGS: CategoryConfig[] = [
     { id: 'cat-ally', label: 'Ally', color: '#55a5e2', isGmcpCategory: true, legacyIds: ['inline-ally', 'player', 'ally'], defaultTraitIds: ['trait-group', 'trait-social', 'trait-identify', 'trait-examine', 'trait-consider', 'trait-observable'] },
     { id: 'cat-enemy', label: 'Enemy', color: '#ef4444', isGmcpCategory: true, legacyIds: ['inline-enemy', 'enemy'], defaultTraitIds: ['trait-identify', 'trait-examine', 'trait-consider', 'trait-observable'] },
     { id: 'cat-neutral', label: 'Neutral', color: '#eab308', isGmcpCategory: true, legacyIds: ['inline-neutral', 'neutral'], defaultTraitIds: ['trait-social', 'trait-identify', 'trait-examine', 'trait-consider', 'trait-observable'] },
-    { id: 'cat-ally-remote', label: 'Remote Ally', color: '#55a5e2', isLocationCategory: true, legacyIds: ['inline-ally-remote', 'ally-remote'], defaultTraitIds: ['trait-identify', 'trait-converse', 'trait-observable'] },
+    { id: 'cat-ally-remote', label: 'Remote Ally', color: '#55a5e2', isLocationCategory: true, legacyIds: ['inline-ally-remote', 'ally-remote'], defaultTraitIds: ['trait-identify', 'trait-converse'] },
     { id: 'cat-npc', label: 'NPC', isGmcpCategory: true, legacyIds: ['inline-npc', 'npc'], defaultTraitIds: ['trait-group', 'trait-examine', 'trait-consider', 'trait-observable'] },
     { id: 'cat-room-object', label: 'Room Object', isLocationCategory: true, legacyIds: ['inline-in-room-obj', 'object-room', 'obj-room'], defaultTraitIds: ['trait-room-object', 'trait-observable'] },
     { id: 'cat-inventory-object', label: 'Inventory Object', isLocationCategory: true, legacyIds: ['inline-inventory', 'inventory', 'obj-char'], defaultTraitIds: ['trait-inventory-object', 'trait-observable'] },

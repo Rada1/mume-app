@@ -270,7 +270,7 @@ export const getIndicatorIcon = (
     const drawContent = (c: CanvasRenderingContext2D, stroke: boolean) => {
         if (isMob) {
             if (mobType === 'passive') {
-                drawStickFigure(c, center, center, size * 0.80, stroke);
+                drawCrossedSwords(c, center, center, size * 0.38, stroke, 1.3);
             } else if (mobType === 'aggressive') {
                 // Thinner lines and smaller size for regular aggressive
                 drawCrossedSwords(c, center, center, size * 0.38, stroke, 1.3);
@@ -284,18 +284,16 @@ export const getIndicatorIcon = (
                 drawCrossedSwords(c, center - size * 0.18, center + size * 0.16, size * 0.50, stroke, 2.8);
                 drawCrossedSwords(c, center + size * 0.18, center + size * 0.16, size * 0.50, stroke, 2.8);
             } else if (mobType === 'quest') {
-                // Base yellow exclamation point
+                // Blue question mark
                 c.font = `bold ${size * 0.90}px "Inter", sans-serif`;
-                c.fillStyle = '#f9e2af';
-                c.strokeStyle = '#f9e2af';
-                const baseQuestY = center - size * 0.15;
+                c.fillStyle = color;
+                c.strokeStyle = color;
+                const baseQuestY = center + size * 0.05;
                 if (stroke) {
-                    c.strokeText('!', center, baseQuestY);
+                    c.strokeText('?', center, baseQuestY);
                 } else {
-                    c.fillText('!', center, baseQuestY);
+                    c.fillText('?', center, baseQuestY);
                 }
-                // Small red X underneath
-                drawCrossedSwords(c, center, center + size * 0.32, size * 0.35, stroke);
             } else if (mobType === 'rattlesnake') {
                 // Centered red vector snake icon
                 drawSnakeIcon(c, center, center, size * 0.85, stroke);
@@ -663,14 +661,14 @@ export const drawRoomFlagsOptimized = (
         { regex: /ELITE_MOB/i,                                          sym: 'mob:elite', color: '#9c1010', size: 26, glowStrength: 12, noBlackBg: true },
         { regex: /RATTLESNAKE/i,                                        sym: 'mob:rattlesnake', color: '#800c0c', size: 26, glowStrength: 12, noBlackBg: true },
         // --- Quest / mission ---
-        { regex: /QUEST/i,                                              sym: 'mob:quest', color: '#f9e2af', size: 26, glowStrength: 12, noBlackBg: true },
+        { regex: /QUEST/i,                                              sym: 'mob:quest', color: '#89b4fa', size: 26, glowStrength: 12, noBlackBg: true },
         // --- Mob services ---
         { regex: /RENT/i,                                               sym: 'R', color: '#89b4fa', size: 15 },
-        { regex: /WEAPON_SHOP/i,                                        sym: 'S^⚔', color: '#a6e3a1', size: 15 },
-        { regex: /ARMOUR_SHOP/i,                                        sym: 'S^🛡', color: '#a6e3a1', size: 15 },
-        { regex: /FOOD_SHOP/i,                                          sym: 'S^F', color: '#a6e3a1', size: 15 },
-        { regex: /PET_SHOP/i,                                           sym: 'S^P', color: '#a6e3a1', size: 15 },
-        { regex: /SHOP/i,                                               sym: 'S', color: '#a6e3a1', size: 15 },
+        { regex: /WEAPON_SHOP/i,                                        sym: '$^⚔', color: '#a6e3a1', size: 15 },
+        { regex: /ARMOUR_SHOP/i,                                        sym: '$^🛡', color: '#a6e3a1', size: 15 },
+        { regex: /FOOD_SHOP/i,                                          sym: '$^F', color: '#a6e3a1', size: 15 },
+        { regex: /PET_SHOP/i,                                           sym: '$^P', color: '#a6e3a1', size: 15 },
+        { regex: /SHOP/i,                                               sym: '$', color: '#a6e3a1', size: 15 },
         { regex: /MAGE_GUILD/i,                                         sym: 'G^M', color: '#89b4fa', size: 15 },
         { regex: /CLERIC_GUILD/i,                                       sym: 'G^C', color: '#89b4fa', size: 15 },
         { regex: /WARRIOR_GUILD/i,                                      sym: 'G^W', color: '#89b4fa', size: 15 },
@@ -678,16 +676,16 @@ export const drawRoomFlagsOptimized = (
         { regex: /SCOUT_GUILD/i,                                        sym: 'G^S', color: '#89b4fa', size: 15 },
         { regex: /GUILD/i,                                              sym: 'G', color: '#89b4fa', size: 15 },
         { regex: /MILKABLE/i,                                           sym: '🐄', color: '#e8d5c0', size: 13 },
-        { regex: /PASSIVE_MOB/i,                                        sym: 'mob:passive', color: '#800c0c', size: 26, glowStrength: 12, noBlackBg: true },
+        { regex: /PASSIVE_MOB/i,                                        sym: 'mob:passive', color: '#f9e2af', size: 26, glowStrength: 12, noBlackBg: true },
         // --- Valuables ---
         { regex: /TREASURE/i,                                           sym: '💎', color: '#ffd700', size: 14 },
-        { regex: /WEAPON(?!_SHOP)/i,                                    sym: '🗡', color: '#bac2de', size: 15 },
-        { regex: /ARMOUR(?!_SHOP)/i,                                    sym: '🛡', color: '#9399b2', size: 13 },
-        { regex: /EQUIPMENT/i,                                          sym: '⚙', color: '#9399b2', size: 13 },
+        { regex: /WEAPON(?!_SHOP)/i,                                    sym: '🗡', color: '#89b4fa', size: 15 },
+        { regex: /ARMOUR(?!_SHOP)/i,                                    sym: '🛡', color: '#89b4fa', size: 13 },
+        { regex: /EQUIPMENT/i,                                          sym: '⚙', color: '#89b4fa', size: 13 },
         { regex: /KEY/i,                                                sym: '🔑', color: '#f9e2af', size: 13 },
         // --- Resources ---
-        { regex: /HERB/i,                                               sym: '♣', color: '#a6e3a1', size: 15 },
-        { regex: /WATER|POND|WELL|FOUNTAIN/i,                           sym: '≈', color: '#89b4fa', size: 15 },
+        { regex: /HERB/i,                                               sym: '♣', color: '#a6e3a1', size: 18 },
+        { regex: /WATER|POND|WELL|FOUNTAIN/i,                           sym: '≈', color: '#89b4fa', size: 19 },
         { regex: /FOOD(?!_SHOP)/i,                                      sym: '🍖', color: '#fab387', size: 13 },
         // --- Mounts / transport ---
         { regex: /STABLE/i,                                             sym: '⌂', color: '#fab387', size: 15 },
@@ -1128,10 +1126,10 @@ export const drawFeatures = (
                                 const endY = targetData[1] * s + s / 2 + (dir === 'u' ? cOff : -cOff);
 
                                 ctx.save();
-                                if (unveilMap) ctx.globalAlpha = 1.0;
-                                else if (!isExplored && !isRevealed) ctx.globalAlpha = 0.15;
-                                else if (isRevealed) ctx.globalAlpha = 0.3;
-                                else ctx.globalAlpha = exploredAlphaMul * 0.5;
+                                if (unveilMap) ctx.globalAlpha = 0.5;
+                                else if (!isExplored && !isRevealed) ctx.globalAlpha = 0.08;
+                                else if (isRevealed) ctx.globalAlpha = 0.15;
+                                else ctx.globalAlpha = exploredAlphaMul * 0.25;
                                 drawLine(ctx, startX, startY, endX, endY, iconColor, 1.5, dpr, invZoom, true);
                                 ctx.restore();
                             }
@@ -1173,10 +1171,10 @@ export const drawFeatures = (
                                 const pEnd = getSquareIntersection(centerB.x, centerB.y, centerA.x, centerA.y, s / 2);
 
                                 ctx.save();
-                                if (unveilMap) ctx.globalAlpha = 1.0;
-                                else if (!isExplored && !isRevealed) ctx.globalAlpha = 0.15;
-                                else if (isRevealed) ctx.globalAlpha = 0.3;
-                                else ctx.globalAlpha = exploredAlphaMul * 0.5;
+                                if (unveilMap) ctx.globalAlpha = 0.5;
+                                else if (!isExplored && !isRevealed) ctx.globalAlpha = 0.08;
+                                else if (isRevealed) ctx.globalAlpha = 0.15;
+                                else ctx.globalAlpha = exploredAlphaMul * 0.25;
 
                                 // Draw the connection line (dashed, thickness 1.5)
                                 drawLine(ctx, pStart.x, pStart.y, pEnd.x, pEnd.y, arrowColor, 1.5, dpr, invZoom, true);
@@ -1506,7 +1504,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                             const pEnd = getSquareIntersection(tpx, tpy, cX, cY, s / 2);
 
                             ctx.save();
-                            ctx.globalAlpha = 0.5;
+                            ctx.globalAlpha = 0.25;
                             drawLine(ctx, pStart.x, pStart.y, pEnd.x, pEnd.y, arrowColor, 1.5, dpr, invZoom, true);
 
                             const angle = Math.atan2(pEnd.y - pStart.y, pEnd.x - pStart.x);
@@ -1537,7 +1535,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                                 const endY = tpy + (d === 'u' ? cOff : -cOff);
                                 
                                 ctx.save();
-                                ctx.globalAlpha = 0.5;
+                                ctx.globalAlpha = 0.25;
                                 drawLine(ctx, startX, startY, endX, endY, iconColor, 1.5, dpr, invZoom, true);
                                 ctx.restore();
                             }

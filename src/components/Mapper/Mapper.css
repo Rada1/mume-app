@@ -72,15 +72,15 @@
 .mapper-moon-overlay {
     z-index: 7; /* Move ABOVE the dark overlay */
     background: radial-gradient(circle at center,
-        rgba(180, 210, 255, 0.35) 0%,
-        rgba(100, 130, 255, 0.1) 45%,
+        rgba(90, 140, 255, 0.24) 0%,
+        rgba(40, 90, 255, 0.12) 45%,
         transparent 85%
     );
     mix-blend-mode: screen;
-    backdrop-filter: brightness(1.1) saturate(1.1);
+    backdrop-filter: brightness(1.1) saturate(1.15);
 }
 .lighting-state-moon .mapper-moon-overlay {
-    opacity: 0.7;
+    opacity: 0.75;
 }
 
 /* --- Artificial --- */

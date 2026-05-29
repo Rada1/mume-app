@@ -1090,6 +1090,8 @@ export const drawMarkers = (
             ctx.save();
             ctx.globalAlpha = 1.0;
             ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+            ctx.lineWidth = Math.max(1 * sizeScale, 0.5);
 
             const r = 4 * sizeScale;
             ctx.beginPath();
@@ -1104,6 +1106,7 @@ export const drawMarkers = (
             ctx.quadraticCurveTo(rectX, rectY, rectX + r, rectY);
             ctx.closePath();
             ctx.fill();
+            ctx.stroke();
             ctx.restore();
 
             ctx.globalAlpha = 1.0;
