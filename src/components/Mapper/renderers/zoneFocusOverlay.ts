@@ -37,21 +37,41 @@ const fillGrayRoomTile = (ctx: CanvasRenderingContext2D, x: number, y: number) =
     ctx.fillRect(Math.round(x) * GRID_SIZE, Math.round(y) * GRID_SIZE, GRID_SIZE, GRID_SIZE);
 };
 
-const filterGrayRoomTile = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
+// Replays all collected out-of-zone tile rects as a single clipped, filtered
+// self-blit. Applying the grayscale filter once over the clipped union is far
+// cheaper than one filtered drawImage per tile (which was the dominant cost in
+// the terrain phase — hundreds of separate shader passes near a zone edge).
+const flushDetailGray = (ctx: CanvasRenderingContext2D, rects: number[]) => {
+    if (!rects.length) return;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.beginPath();
+    for (let i = 0; i < rects.length; i += 3) {
+        const sx = rects[i], sy = rects[i + 1], size = rects[i + 2];
+        ctx.rect(sx, sy, size, size);
+        if (sx < minX) minX = sx;
+        if (sy < minY) minY = sy;
+        if (sx + size > maxX) maxX = sx + size;
+        if (sy + size > maxY) maxY = sy + size;
+    }
+    ctx.clip();
+    ctx.filter = DETAIL_GRAYSCALE_FILTER;
+    const bw = maxX - minX, bh = maxY - minY;
+    ctx.drawImage(ctx.canvas, minX, minY, bw, bh, minX, minY, bw, bh);
+    ctx.restore();
+};
+
+const collectDetailRect = (ctx: CanvasRenderingContext2D, x: number, y: number, rects: number[]) => {
     const transform = ctx.getTransform();
     const sx = Math.floor(Math.round(x) * GRID_SIZE * transform.a + transform.e);
     const sy = Math.floor(Math.round(y) * GRID_SIZE * transform.d + transform.f);
     const size = Math.ceil(GRID_SIZE * transform.a);
-
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.filter = DETAIL_GRAYSCALE_FILTER;
-    ctx.drawImage(ctx.canvas, sx, sy, size, size, sx, sy, size, size);
-    ctx.restore();
+    rects.push(sx, sy, size);
 };
 
-const applyZoneTerrainTone = (ctx: CanvasRenderingContext2D, x: number, y: number, useDetailFilter: boolean) => {
-    if (useDetailFilter) filterGrayRoomTile(ctx, x, y);
+const applyZoneTerrainTone = (ctx: CanvasRenderingContext2D, x: number, y: number, useDetailFilter: boolean, detailRects: number[]) => {
+    if (useDetailFilter) collectDetailRect(ctx, x, y, detailRects);
     else fillGrayRoomTile(ctx, x, y);
 };
 
@@ -70,6 +90,7 @@ export const drawZoneFocusOverlay = (
 
     const revealAll = !!(unveilMap || treatMapAsExplored);
     const useDetailFilter = rCtx.camera.zoom >= DETAIL_FILTER_MIN_ZOOM;
+    const detailRects: number[] = [];
     ctx.save();
     ctx.fillStyle = isDarkMode ? ZONE_GRAY_DARK : ZONE_GRAY_LIGHT;
 
@@ -90,7 +111,7 @@ export const drawZoneFocusOverlay = (
                     // consider a room "outside" when none of the four pairings match.
                     if (!isOutsideActiveZone(localRoom?.zone || rData[9] || '', activeZone, activeZonePreloaded)) continue;
                     if (!isOutsideActiveZone(rData[9] || '', activeZone, activeZonePreloaded)) continue;
-                    applyZoneTerrainTone(ctx, rData[0], rData[1], useDetailFilter);
+                    applyZoneTerrainTone(ctx, rData[0], rData[1], useDetailFilter, detailRects);
                 }
             }
         }
@@ -101,8 +122,10 @@ export const drawZoneFocusOverlay = (
         if (room.id?.startsWith('m_')) continue;
         if (Math.abs((room.z || 0) - currentZ) > 1.5) continue;
         if (!isOutsideActiveZone(getRoomZone(room), activeZone, activeZonePreloaded)) continue;
-        applyZoneTerrainTone(ctx, room.x, room.y, useDetailFilter);
+        applyZoneTerrainTone(ctx, room.x, room.y, useDetailFilter, detailRects);
     }
+
+    if (useDetailFilter) flushDetailGray(ctx, detailRects);
 
     ctx.restore();
 };

@@ -178,8 +178,14 @@ export const useGmcpRoom = ({
                 const oldExits = lastExitsRef.current;
 
                 // Track total visible/open exits
+                const isClosed = (v: any) =>
+                    typeof v === 'object' && Array.isArray(v.flags) &&
+                    v.flags.some((f: string) => {
+                        const lf = f.toLowerCase();
+                        return lf === 'closed' || lf === 'locked';
+                    });
                 const getVisibleCount = (ex: Record<string, any>) =>
-                    Object.values(ex).filter(v => v !== false && (typeof v !== 'object' || !v.flags?.includes('closed'))).length;
+                    Object.values(ex).filter(v => v !== false && !isClosed(v)).length;
 
                 const oldVisibleCount = getVisibleCount(oldExits);
                 const newVisibleCount = getVisibleCount(mergedExits);

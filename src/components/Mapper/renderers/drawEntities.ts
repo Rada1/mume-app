@@ -562,7 +562,7 @@ export const drawEntities = (
 
         drawPlayerZoomBeacon(rCtx, anchor, alpha);
 
-        // 1. Current Room Highlight
+        // 1. Current Room Highlight (Corners only)
         ctx.save();
 
         const breath = (Math.sin(now / 350) + 1) / 2; // Breathing pulse
@@ -575,13 +575,35 @@ export const drawEntities = (
         ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
         ctx.shadowBlur = (4 + breath * 8) / rCtx.camera.zoom;
 
-        const inset = 1;
+        const inset = 3;
+        const x1 = px - GRID_SIZE / 2 + inset;
+        const y1 = py - GRID_SIZE / 2 + inset;
+        const w = GRID_SIZE - inset * 2;
+        const h = GRID_SIZE - inset * 2;
+        const r = 3;
+        const cornerLen = GRID_SIZE * 0.22; // length of each corner leg
+
         ctx.beginPath();
-        if (typeof (ctx as any).roundRect === 'function') {
-            (ctx as any).roundRect(px - GRID_SIZE/2 + inset, py - GRID_SIZE/2 + inset, GRID_SIZE - inset*2, GRID_SIZE - inset*2, 4);
-        } else {
-            ctx.rect(px - GRID_SIZE/2 + inset, py - GRID_SIZE/2 + inset, GRID_SIZE - inset*2, GRID_SIZE - inset*2);
-        }
+        // Top-Left Corner
+        ctx.moveTo(x1 + cornerLen, y1);
+        ctx.arcTo(x1, y1, x1, y1 + cornerLen, r);
+        ctx.lineTo(x1, y1 + cornerLen);
+
+        // Top-Right Corner
+        ctx.moveTo(x1 + w - cornerLen, y1);
+        ctx.arcTo(x1 + w, y1, x1 + w, y1 + cornerLen, r);
+        ctx.lineTo(x1 + w, y1 + cornerLen);
+
+        // Bottom-Left Corner
+        ctx.moveTo(x1 + cornerLen, y1 + h);
+        ctx.arcTo(x1, y1 + h, x1, y1 + h - cornerLen, r);
+        ctx.lineTo(x1, y1 + h - cornerLen);
+
+        // Bottom-Right Corner
+        ctx.moveTo(x1 + w - cornerLen, y1 + h);
+        ctx.arcTo(x1 + w, y1 + h, x1 + w, y1 + h - cornerLen, r);
+        ctx.lineTo(x1 + w, y1 + h - cornerLen);
+
         ctx.stroke();
         ctx.restore();
 

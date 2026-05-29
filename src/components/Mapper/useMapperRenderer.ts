@@ -10,8 +10,9 @@ import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarke
 import { drawRegionLabels } from './renderers/drawRegionLabels';
 import { drawZoneFocusOverlay } from './renderers/zoneFocusOverlay';
 import { ZoneFilterConfig } from './zoneFilters';
-import { buildLocalSpatialIndex, didLocalLayoutChange } from './mapLayoutIndex';
+import { buildLocalSpatialIndex, didLocalLayoutChange, didCacheRelevantChange } from './mapLayoutIndex';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { perfMonitor } from '../../utils/perfMonitor';
 
 const LIGHTING_COLORS: Record<string, [number, number, number, number]> = {
     sun:        [255, 248, 200, 0.09],
@@ -97,11 +98,46 @@ interface RendererProps {
     selectedRegionLabelId?: string | null;
 }
 
+interface PendingBuild {
+    params: string;
+    lodParams: string;
+    buildCamX: number;
+    buildCamY: number;
+    zoom: number;
+    camX: number;
+    camY: number;
+    roomAtCoord: Record<string, any>;
+    visitedAtCoord: Record<string, boolean>;
+    localVisible: any[];
+    rebuildStart: number;
+    gatherMs: number;
+    terrainMs: number;
+    bakeFor: number | null;
+    reason: string;
+    // Bucket/grid geometry for the build, captured at gather time so terrain
+    // columns can be drawn across multiple frames.
+    bX1: number; bY1: number; bX2: number; bY2: number;
+    gX1: number; gY1: number; gX2: number; gY2: number;
+    // Chunked-terrain cursor: next bucket column to draw, and whether the
+    // terrain layer (all columns + tail layers) has finished.
+    terrainNextBx: number;
+    terrainDone: boolean;
+    // Tail-layer sub-phase timings, recorded once when the last column finishes.
+    localMs: number; gridMs: number; zoneMs: number;
+}
+
 interface MapperLayerCache {
     terrainCanvas: HTMLCanvasElement;
     terrainCtx: CanvasRenderingContext2D;
     featureCanvas: HTMLCanvasElement;
     featureCtx: CanvasRenderingContext2D;
+    // Back buffers for chunked (off-frame) rebuilds — drawn into across frames,
+    // then swapped with the front canvases when the build completes.
+    terrainBackCanvas?: HTMLCanvasElement;
+    terrainBackCtx?: CanvasRenderingContext2D;
+    featureBackCanvas?: HTMLCanvasElement;
+    featureBackCtx?: CanvasRenderingContext2D;
+    pendingBuild?: PendingBuild | null;
     lastParams: string;
     lastLodParams?: string;
     lastBuildZoom?: number;
@@ -149,6 +185,7 @@ export const useMapperRenderer = ({
     const lastRoomsRef = useRef<Record<string, any>>({});
     const processedIconsRef = useRef<Record<string, HTMLCanvasElement>>({});
     const roomsVersionRef = useRef(0);
+    const cacheGeometryVersionRef = useRef(0);
     const lastMapTileVisualsRef = useRef<any>(null);
     const lastMapTileOpacityRef = useRef<number>(1);
     const lastZoneFiltersRef = useRef<Record<string, ZoneFilterConfig> | null>(null);
@@ -256,11 +293,15 @@ export const useMapperRenderer = ({
         // 1. Update Local Spatial Index if rooms changed
         if (allRooms !== lastRoomsRef.current) {
             const layoutChanged = didLocalLayoutChange(lastRoomsRef.current, allRooms);
+            // The static-layer cache only invalidates on terrain-relevant changes
+            // (position, terrain, light/sundeath, zone, snow, exits/doors — including
+            // door open/close on preloaded `m_` rooms). Transient room churn (visit
+            // flags, re-received data) bumps roomsVersion for the filter cache but no
+            // longer forces a full cache rebuild on every step.
+            if (didCacheRelevantChange(lastRoomsRef.current, allRooms)) {
+                cacheGeometryVersionRef.current += 1;
+            }
             lastRoomsRef.current = allRooms;
-            // Any rooms-state change invalidates the cache (e.g. door open/close on a
-            // preloaded room, which didLocalLayoutChange ignores because the room id
-            // starts with 'm_'). The spatial index rebuild stays gated on real layout
-            // changes — that's the only part that's actually expensive.
             roomsVersionRef.current += 1;
             if (layoutChanged) {
                 localSpatialIndexRef.current = buildLocalSpatialIndex(allRooms);
@@ -385,11 +426,23 @@ export const useMapperRenderer = ({
         // We make the cache 2x larger than the screen to allow for smooth panning
         const cacheW = baseW * 2, cacheH = baseH * 2;
         
+        if (!cache.terrainBackCanvas) {
+            cache.terrainBackCanvas = document.createElement('canvas');
+            cache.featureBackCanvas = document.createElement('canvas');
+            cache.terrainBackCtx = cache.terrainBackCanvas.getContext('2d', { alpha: true })!;
+            cache.featureBackCtx = cache.featureBackCanvas.getContext('2d', { alpha: true })!;
+        }
+
         if (cache.terrainCanvas.width !== cacheW || cache.terrainCanvas.height !== cacheH) {
             cache.terrainCanvas.width = cacheW;
             cache.terrainCanvas.height = cacheH;
             cache.featureCanvas.width = cacheW;
             cache.featureCanvas.height = cacheH;
+            cache.terrainBackCanvas!.width = cacheW;
+            cache.terrainBackCanvas!.height = cacheH;
+            cache.featureBackCanvas!.width = cacheW;
+            cache.featureBackCanvas!.height = cacheH;
+            cache.pendingBuild = null; // Abandon any in-flight chunked build
             cache.lastParams = ""; // Force rebuild
         }
 
@@ -435,40 +488,83 @@ export const useMapperRenderer = ({
 
         const lodParams = `${showTerrainIcons}_${showDoorLabels}_${lowEffects}`;
         const lodChanged = cache.lastLodParams !== lodParams;
-        const baseParams = `${curZInt}_${isDarkMode}_${roomsVersionRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}_${weather}_${activeZone || ''}_${activeZonePreloaded || ''}`;
+        const paramParts: [string, string | number | boolean][] = [
+            ['z', curZInt], ['dark', isDarkMode], ['roomsV', cacheGeometryVersionRef.current],
+            ['explored', explored.size], ['unveil', unveilMap], ['treatExpl', treatMapAsExplored],
+            ['weather', weather], ['zone', activeZone || ''], ['zonePre', activeZonePreloaded || ''],
+        ];
+        const baseParams = paramParts.map(p => p[1]).join('_');
         const needsRebuild = cache.lastParams !== baseParams || (!isViewportInteracting && lodChanged) || zoomDiff > zoomThreshold || moveDist > moveThreshold || finalExplorationBakeDue || visualsChanged;
 
-        if (needsRebuild) {
-            const terrainCtx = cache.terrainCtx;
-            const featureCtx = cache.featureCtx;
+        let rebuildReason = '';
+        if (perfMonitor.enabled && needsRebuild) {
+            if (cache.lastParams !== baseParams) {
+                // Name which baseParams field changed (cache.lastParams is the prior join).
+                const prevParts = String(cache.lastParams).split('_');
+                const changed = paramParts
+                    .filter((p, i) => String(p[1]) !== prevParts[i])
+                    .map(p => p[0]);
+                rebuildReason = changed.length ? changed.join('+') : 'params';
+            } else if (visualsChanged) rebuildReason = 'visuals';
+            else if (zoomDiff > zoomThreshold) rebuildReason = 'zoom';
+            else if (moveDist > moveThreshold) rebuildReason = 'move';
+            else if (finalExplorationBakeDue) rebuildReason = 'bake';
+            else if (lodChanged) rebuildReason = 'lod';
+        }
+
+        // Cache is centered on the camera. Visible world extent is
+        // baseW/(zoom*dpr) wide; the cache is 2x screen → 0.5 screens of buffer
+        // on each side. Geometry is recomputed per phase from the build anchor.
+        const computeBuildGeometry = (buildCamX: number, buildCamY: number) => {
+            const vX2 = buildCamX + (cacheW / (camera.zoom * dpr)), vY2 = buildCamY + (cacheH / (camera.zoom * dpr));
+            const gX1 = Math.floor(buildCamX / GRID_SIZE) - 1, gY1 = Math.floor(buildCamY / GRID_SIZE) - 1;
+            const gX2 = Math.ceil(vX2 / GRID_SIZE) + 1, gY2 = Math.ceil(vY2 / GRID_SIZE) + 1;
+            const bX1 = Math.floor(gX1 / 5) - 2, bY1 = Math.floor(gY1 / 5) - 2;
+            const bX2 = Math.floor(gX2 / 5) + 2, bY2 = Math.floor(gY2 / 5) + 2;
+            return { gX1, gY1, gX2, gY2, bX1, bY1, bX2, bY2 };
+        };
+
+        const makeRCtx = (
+            targetCtx: CanvasRenderingContext2D, buildCamX: number, buildCamY: number,
+            roomAtCoord: Record<string, any>, visitedAtCoord: Record<string, boolean>
+        ): RenderContext => ({
+            ctx: targetCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
+            imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
+            allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
+            activeZone,
+            activeZonePreloaded,
+            triggerRender, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName, opponentId,
+            activeInlineEntityId, selectedObjectIds,
+            activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
+            mapTileVisuals, mapTileOpacity,
+            zoneFilters,
+            lighting,
+            weather,
+            inCombat,
+            isDragging,
+            lowEffects,
+            suppressExplorationAnimation: isExplorationOverlayActive && !finalExplorationBakeDue,
+            showTerrainIcons,
+            showDoorLabels
+        });
+
+        // Phase 1a: clear the back terrain buffer + gather visible rooms. Cheap
+        // (~6ms) and runs in the frame the rebuild is triggered. The actual
+        // terrain draw is deferred to runTerrainChunk across subsequent frames.
+        const gatherTerrainData = (terrainCtx: CanvasRenderingContext2D, buildCamX: number, buildCamY: number) => {
             terrainCtx.setTransform(1, 0, 0, 1, 0, 0);
-            featureCtx.setTransform(1, 0, 0, 1, 0, 0);
             terrainCtx.clearRect(0, 0, cacheW, cacheH);
-            featureCtx.clearRect(0, 0, cacheW, cacheH);
             terrainCtx.fillStyle = isDarkMode ? 'rgba(0,0,0,0)' : '#f2f2f7';
             terrainCtx.fillRect(0, 0, cacheW, cacheH);
-            
-            // Center the cache on the camera
-            // Visible world extent: baseW / (zoom * dpr) wide, baseH / (zoom * dpr) tall
-            // Cache is 2x screen → 0.5 screens of buffer on each side
-            const buildCamX = camera.x - (baseW / (camera.zoom * dpr)) * 0.5;
-            const buildCamY = camera.y - (baseH / (camera.zoom * dpr)) * 0.5;
 
-            const vX1 = buildCamX, vY1 = buildCamY;
-            const vX2 = buildCamX + (cacheW / (camera.zoom * dpr)), vY2 = buildCamY + (cacheH / (camera.zoom * dpr));
-            const gX1 = Math.floor(vX1 / GRID_SIZE) - 1, gY1 = Math.floor(vY1 / GRID_SIZE) - 1;
-            const gX2 = Math.ceil(vX2 / GRID_SIZE) + 1, gY2 = Math.ceil(vY2 / GRID_SIZE) + 1;
-
+            const geo = computeBuildGeometry(buildCamX, buildCamY);
+            const { bX1, bY1, bX2, bY2 } = geo;
             const roomAtCoord: Record<string, any> = {};
             const visitedAtCoord: Record<string, boolean> = {};
             const localVisible: any[] = [];
             const floorIndex = spatialIndexRef.current[curZInt];
-            
-            // Spatially gather visible elements for the enlarged buffer
-            const lookSpan = 15; // Increased buffer
-            const bX1 = Math.floor(gX1 / 5) - 2, bY1 = Math.floor(gY1 / 5) - 2;
-            const bX2 = Math.floor(gX2 / 5) + 2, bY2 = Math.floor(gY2 / 5) + 2;
 
+            const tGatherStart = performance.now();
             if (floorIndex) {
                 for (let bx = bX1; bx <= bX2; bx++) {
                     for (let by = bY1; by <= bY2; by++) {
@@ -506,42 +602,74 @@ export const useMapperRenderer = ({
                     }
                 }
             }
+            const gatherMs = performance.now() - tGatherStart;
+            perfMonitor.resetIconSplit();
 
-            const terrainRCtx: RenderContext = {
-                ctx: terrainCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
-                imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
-                allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
-                activeZone,
-                activeZonePreloaded,
-                triggerRender, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName, opponentId,
-                activeInlineEntityId, selectedObjectIds,
-                activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
-                mapTileVisuals, mapTileOpacity,
-                zoneFilters,
-                lighting,
-                weather,
-                inCombat,
-                isDragging,
-                lowEffects,
-                suppressExplorationAnimation: isExplorationOverlayActive && !finalExplorationBakeDue,
-                showTerrainIcons,
-                showDoorLabels
-            };
+            return { roomAtCoord, visitedAtCoord, localVisible, gatherMs, geo };
+        };
 
-            const featureRCtx: RenderContext = { ...terrainRCtx, ctx: featureCtx };
+        // Phase 1b: draw terrain columns into the back buffer within a time
+        // budget, advancing pb.terrainNextBx. When the last column is drawn, the
+        // tail layers (local terrain, grid, zone overlay) run in the same frame
+        // and pb.terrainDone flips true. budgetMs = Infinity runs it all at once
+        // (first paint / post-resize) to avoid flashing a blank map.
+        const TERRAIN_CHUNK_BUDGET_MS = 8;
+        const runTerrainChunk = (pb: PendingBuild, budgetMs: number) => {
+            const terrainCtx = cache.terrainBackCtx!;
+            const floorIndex = spatialIndexRef.current[curZInt];
+            const rCtx = makeRCtx(terrainCtx, pb.buildCamX, pb.buildCamY, pb.roomAtCoord, pb.visitedAtCoord);
 
+            const tStart = performance.now();
+            const deadline = tStart + budgetMs;
             terrainCtx.save();
             terrainCtx.imageSmoothingEnabled = false;
             terrainCtx.scale(dpr * camera.zoom, dpr * camera.zoom);
-            terrainCtx.translate(-buildCamX, -buildCamY);
+            terrainCtx.translate(-pb.buildCamX, -pb.buildCamY);
 
-            if (floorIndex) drawTerrains(terrainRCtx, bX1, bY1, bX2, bY2, floorIndex);
-            drawLocalTerrains(terrainRCtx, localVisible);
-            drawGrid(terrainRCtx, gX1, gY1, gX2, gY2);
-            if (floorIndex) drawZoneFocusOverlay(terrainRCtx, bX1, bY1, bX2, bY2, floorIndex, localVisible, true);
-
+            if (floorIndex) {
+                // Always draw at least one column so a build can't stall.
+                do {
+                    drawTerrains(rCtx, pb.terrainNextBx, pb.bY1, pb.terrainNextBx, pb.bY2, floorIndex);
+                    pb.terrainNextBx++;
+                } while (pb.terrainNextBx <= pb.bX2 && performance.now() < deadline);
+            } else {
+                pb.terrainNextBx = pb.bX2 + 1;
+            }
             terrainCtx.restore();
+            pb.terrainMs += performance.now() - tStart;
 
+            if (pb.terrainNextBx > pb.bX2) {
+                // Tail layers, drawn once after all terrain columns are down.
+                terrainCtx.save();
+                terrainCtx.imageSmoothingEnabled = false;
+                terrainCtx.scale(dpr * camera.zoom, dpr * camera.zoom);
+                terrainCtx.translate(-pb.buildCamX, -pb.buildCamY);
+                const tl0 = performance.now();
+                drawLocalTerrains(rCtx, pb.localVisible);
+                const tl1 = performance.now();
+                drawGrid(rCtx, pb.gX1, pb.gY1, pb.gX2, pb.gY2);
+                const tl2 = performance.now();
+                if (floorIndex) drawZoneFocusOverlay(rCtx, pb.bX1, pb.bY1, pb.bX2, pb.bY2, floorIndex, pb.localVisible, true);
+                const tl3 = performance.now();
+                terrainCtx.restore();
+                pb.localMs = tl1 - tl0; pb.gridMs = tl2 - tl1; pb.zoneMs = tl3 - tl2;
+                pb.terrainDone = true;
+                perfMonitor.setTerrainSplit({ terrains: pb.terrainMs, local: pb.localMs, grid: pb.gridMs, zone: pb.zoneMs });
+            }
+        };
+
+        // Phase 2: draw the feature layer into featureCtx using the gathered data.
+        const runFeaturePhase = (
+            featureCtx: CanvasRenderingContext2D, buildCamX: number, buildCamY: number,
+            roomAtCoord: Record<string, any>, visitedAtCoord: Record<string, boolean>, localVisible: any[]
+        ) => {
+            featureCtx.setTransform(1, 0, 0, 1, 0, 0);
+            featureCtx.clearRect(0, 0, cacheW, cacheH);
+            const floorIndex = spatialIndexRef.current[curZInt];
+            const { bX1, bY1, bX2, bY2 } = computeBuildGeometry(buildCamX, buildCamY);
+            const featureRCtx = makeRCtx(featureCtx, buildCamX, buildCamY, roomAtCoord, visitedAtCoord);
+
+            const tFeatureStart = performance.now();
             if (camera.zoom > 0.05) {
                 featureCtx.save();
                 featureCtx.imageSmoothingEnabled = false;
@@ -555,18 +683,82 @@ export const useMapperRenderer = ({
 
                 featureCtx.restore();
             }
+            return performance.now() - tFeatureStart;
+        };
 
-            cache.lastParams = baseParams;
-            cache.lastBuildZoom = camera.zoom;
-            cache.lastBuildX = camera.x;
-            cache.lastBuildY = camera.y;
-            cache.buildCamX = buildCamX;
-            cache.buildCamY = buildCamY;
-            cache.lastLodParams = lodParams;
-            cache.roomAtCoord = roomAtCoord;
-            cache.visitedAtCoord = visitedAtCoord;
-            if (finalExplorationBakeDue) {
-                cache.lastExplorationBakeFor = lastExplored;
+        const swapBuffers = () => {
+            const tc = cache.terrainCanvas, tcx = cache.terrainCtx;
+            cache.terrainCanvas = cache.terrainBackCanvas!; cache.terrainCtx = cache.terrainBackCtx!;
+            cache.terrainBackCanvas = tc; cache.terrainBackCtx = tcx;
+            const fc = cache.featureCanvas, fcx = cache.featureCtx;
+            cache.featureCanvas = cache.featureBackCanvas!; cache.featureCtx = cache.featureBackCtx!;
+            cache.featureBackCanvas = fc; cache.featureBackCtx = fcx;
+        };
+
+        const finalizeBuild = (pb: PendingBuild, featureMs: number) => {
+            swapBuffers();
+            cache.lastParams = pb.params;
+            cache.lastBuildZoom = pb.zoom;
+            cache.lastBuildX = pb.camX;
+            cache.lastBuildY = pb.camY;
+            cache.buildCamX = pb.buildCamX;
+            cache.buildCamY = pb.buildCamY;
+            cache.lastLodParams = pb.lodParams;
+            cache.roomAtCoord = pb.roomAtCoord;
+            cache.visitedAtCoord = pb.visitedAtCoord;
+            if (pb.bakeFor != null) cache.lastExplorationBakeFor = pb.bakeFor;
+            perfMonitor.recordRebuild({
+                total: performance.now() - pb.rebuildStart,
+                gather: pb.gatherMs,
+                terrain: pb.terrainMs,
+                feature: featureMs,
+                tiles: Object.keys(pb.visitedAtCoord).length,
+                reason: pb.reason,
+            });
+            cache.pendingBuild = null;
+        };
+
+        // Chunked rebuild state machine. A rebuild spans several frames:
+        //  gather frame — clear + collect visible rooms into the BACK terrain buffer
+        //  terrain frames — drawTerrains in time-budgeted column bands until done
+        //  feature frame — features into the BACK canvas, then swap front<->back
+        // atomically. This keeps any single frame under ~16ms even when zoomed out
+        // over thousands of tiles. The front canvas stays visible the whole time.
+        // First paint (lastParams === "") finishes synchronously to avoid a blank map.
+        if (cache.pendingBuild) {
+            const pb = cache.pendingBuild;
+            if (!pb.terrainDone) {
+                runTerrainChunk(pb, TERRAIN_CHUNK_BUDGET_MS);
+                triggerRender?.();
+            } else {
+                const featureMs = runFeaturePhase(cache.featureBackCtx!, pb.buildCamX, pb.buildCamY, pb.roomAtCoord, pb.visitedAtCoord, pb.localVisible);
+                finalizeBuild(pb, featureMs);
+                triggerRender?.();
+            }
+        } else if (needsRebuild) {
+            const rebuildStart = performance.now();
+            const buildCamX = camera.x - (baseW / (camera.zoom * dpr)) * 0.5;
+            const buildCamY = camera.y - (baseH / (camera.zoom * dpr)) * 0.5;
+            const t = gatherTerrainData(cache.terrainBackCtx!, buildCamX, buildCamY);
+            const pb: PendingBuild = {
+                params: baseParams, lodParams, buildCamX, buildCamY, zoom: camera.zoom,
+                camX: camera.x, camY: camera.y,
+                roomAtCoord: t.roomAtCoord, visitedAtCoord: t.visitedAtCoord, localVisible: t.localVisible,
+                rebuildStart, gatherMs: t.gatherMs, terrainMs: 0,
+                bakeFor: finalExplorationBakeDue ? lastExplored : null, reason: rebuildReason,
+                bX1: t.geo.bX1, bY1: t.geo.bY1, bX2: t.geo.bX2, bY2: t.geo.bY2,
+                gX1: t.geo.gX1, gY1: t.geo.gY1, gX2: t.geo.gX2, gY2: t.geo.gY2,
+                terrainNextBx: t.geo.bX1, terrainDone: false,
+                localMs: 0, gridMs: 0, zoneMs: 0,
+            };
+            if (!cache.lastParams) {
+                // First paint / post-resize: finish now so we never flash a blank map.
+                runTerrainChunk(pb, Infinity);
+                const featureMs = runFeaturePhase(cache.featureBackCtx!, buildCamX, buildCamY, t.roomAtCoord, t.visitedAtCoord, t.localVisible);
+                finalizeBuild(pb, featureMs);
+            } else {
+                cache.pendingBuild = pb;
+                triggerRender?.();
             }
         }
 

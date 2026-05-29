@@ -127,7 +127,13 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             if (now - lastBtnClickRef.current < doubleTapThreshold) {
                 lastBtnClickRef.current = 0;
             }
-            if (isSoundEnabled) playClickSound();
+            if (isSoundEnabled) {
+                const isTargetableInline = targetEl.getAttribute('data-targetable') !== 'false';
+                const action = targetEl.getAttribute('data-action');
+                if (!(isTargetableInline && action === 'menu')) {
+                    playClickSound();
+                }
+            }
             lastBtnClickRef.current = now;
         } else {
             if (isLogBlankTapTarget(e.target)) {
@@ -322,6 +328,9 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 parentNoun,
             });
             setTarget(contextStr || null);
+            if (isSoundEnabled) {
+                audioManager.playEffect('target', { skipJitter: true });
+            }
             if (popoverState && popoverState.entityId !== entityId) {
                 setPopoverState(null);
             }

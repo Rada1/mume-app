@@ -43,8 +43,23 @@ export const TERRAIN_MAP: Record<string, string> = {
 
 export const generateId = () => Math.random().toString(36).substr(2, 9);
 
+// Pure over a tiny set of distinct terrain inputs, but called many times per tile
+// during a cache rebuild (thousands of tiles × several calls each). Memoize so each
+// distinct input pays the string-scan cost once.
+const normalizeTerrainCache = new Map<string | number, string>();
+
 export const normalizeTerrain = (t: string | number | null): string => {
     if (t === null || t === undefined) return 'Field';
+
+    const cached = normalizeTerrainCache.get(t);
+    if (cached !== undefined) return cached;
+
+    const result = computeNormalizeTerrain(t);
+    normalizeTerrainCache.set(t, result);
+    return result;
+};
+
+const computeNormalizeTerrain = (t: string | number): string => {
     const tStr = typeof t === 'number' ? TERRAIN_MAP[String(t)] || String(t) : t;
 
     const low = tStr.toLowerCase().trim();

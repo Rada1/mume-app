@@ -28,6 +28,7 @@ import { useSpatButtons } from './hooks/useSpatButtons';
 import SwipeFeedbackOverlay from './components/Overlay/SwipeFeedbackOverlay';
 import ObjectDragOverlay from './components/Overlay/ObjectDragOverlay';
 import { AgentHUD } from './components/Utility/AgentHUD';
+import { PerfHUD } from './components/Utility/PerfHUD';
 import { useSettingsStore } from './stores/useSettingsStore';
 import { useDisplayMode } from './hooks/useDisplayMode';
 import { normalizeTerrain } from './utils/terrainUtils';
@@ -107,7 +108,9 @@ const MudClient = () => {
                 target.classList.contains('cmd-prompt') || 
                 target.closest('.input-form') ||
                 target.closest('.inline-btn') ||
-                target.closest('.popover-item')
+                target.closest('.popover-item') ||
+                target.closest('.message-log') ||
+                target.closest('.message-log-container')
             ) {
                 return;
             }
@@ -371,6 +374,7 @@ const MudClient = () => {
             )}
 
             <AgentHUD />
+            <PerfHUD />
         </div>
     );
 };

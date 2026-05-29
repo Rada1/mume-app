@@ -1,6 +1,7 @@
 import { RenderContext } from './rendererUtils';
 import { GRID_SIZE, getTerrainColor, getTerrainName, getGateState } from '../mapperUtils';
 import { getZoneVisuals } from '../zoneFilters';
+import { perfMonitor } from '../../../utils/perfMonitor';
 
 const TERRAIN_TILE_INSET = 0;
 const FAR_ZOOM_TERRAIN_LOD = 0.04;
@@ -1801,15 +1802,19 @@ export const drawTerrains = (
                 }
                 ctx.globalAlpha = tileOpacity;
                 const isSnow = r.isPermanentSnow || rCtx.weather === 'snow';
+                const tWallStart = perfMonitor.enabled ? performance.now() : 0;
                 const tConnects = (() => { const t = getTerrainName(r.terrain); return (t === 'Tunnel' || t === 'Cavern') ? getCaveConnects(r.vnum, preloaded) : 0; })();
                 const tFloor = (getTerrainName(r.terrain) === 'Tunnel' || getTerrainName(r.terrain) === 'Cavern') ? color : undefined;
-                
+
                 const exits = preloaded[r.vnum]?.[4];
                 const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
                 const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap));
+                if (perfMonitor.enabled) perfMonitor.addWallMs(performance.now() - tWallStart);
 
+                const tIconStart = perfMonitor.enabled ? performance.now() : 0;
                 drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects, tFloor, walls);
                 drawOutskirtTrees(ctx, r.x, r.y, r.vnum, s, r.terrain, preloaded, isDarkMode, tileOpacity, explored);
+                if (perfMonitor.enabled) perfMonitor.addIconMs(performance.now() - tIconStart);
                 ctx.restore();
             }
         }

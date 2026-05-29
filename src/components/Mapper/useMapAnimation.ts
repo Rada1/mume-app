@@ -5,6 +5,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { GRID_SIZE } from './mapperUtils';
+import { perfMonitor } from '../../utils/perfMonitor';
 
 const PLAYER_PULSE_FRAME_MS = 33;
 const MOBILE_PLAYER_PULSE_FRAME_MS = 50;
@@ -320,7 +321,9 @@ export const useMapAnimation = ({
             container.style.setProperty('--parallax-scale', `${1 + (camera.current.zoom - 1) * 0.05}`);
         }
 
+        const drawStart = performance.now();
         drawMap(ctx, dpr, w, h, marquee, effectiveIsDragging);
+        perfMonitor.recordFrame(performance.now() - drawStart);
         return needsNextFrame;
     };
 

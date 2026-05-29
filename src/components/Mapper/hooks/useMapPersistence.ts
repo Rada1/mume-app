@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { MapperRoom, MapperMarker } from '../mapperTypes';
+import { perfMonitor } from '../../../utils/perfMonitor';
 
 interface UseMapPersistenceProps {
     characterName: string | null;
@@ -73,11 +74,14 @@ export const useMapPersistence = ({
 
         const saveFullData = () => {
             try {
-                localStorage.setItem(storageKey, JSON.stringify(rooms));
+                const t0 = performance.now();
+                const roomsJson = JSON.stringify(rooms);
+                localStorage.setItem(storageKey, roomsJson);
                 localStorage.setItem(markerStorageKey, JSON.stringify(markers));
                 localStorage.setItem('mume_mapper_explored', JSON.stringify(Array.from(exploredVnums)));
                 localStorage.setItem('mume_mapper_explored_markers', JSON.stringify(Array.from(exploredMarkers)));
                 localStorage.setItem('mume_mapper_unveil', String(unveilMap));
+                perfMonitor.recordSave('full', performance.now() - t0, roomsJson.length, Object.keys(rooms).length);
             } catch (e) {
                 console.warn('[MapperPersistence] Failed to save full map data (likely storage full):', e);
             }
@@ -85,6 +89,7 @@ export const useMapPersistence = ({
 
         const savePosData = () => {
             try {
+                const t0 = performance.now();
                 const posData = JSON.stringify({
                     roomId: currentRoomId,
                     camX: cameraRef?.current?.x,
@@ -94,6 +99,7 @@ export const useMapPersistence = ({
                 localStorage.setItem(posStorageKey, posData);
                 // Save to a global key for auto-loading before character login
                 localStorage.setItem('mume_mapper_last_pos_global', posData);
+                perfMonitor.recordSave('pos', performance.now() - t0, posData.length, Object.keys(rooms).length);
             } catch (e) {
                 // Ignore position save failures
             }

@@ -58,9 +58,6 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
         window.addEventListener('pointerup', handleGlobalUp);
         window.addEventListener('pointercancel', handleGlobalUp);
 
-        if (targetEl && targetEl.getAttribute('data-targetable') !== 'false') {
-            audioManager.playEffect('target', { skipJitter: true });
-        }
 
         if (viewport.isMobile && targetEl && targetEl.getAttribute('data-targetable') !== 'false') {
             if (heldButton && !heldButton.id.startsWith('log-inline-')) {
