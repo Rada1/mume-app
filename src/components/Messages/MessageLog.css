@@ -63,6 +63,14 @@
     cursor: default;
     min-height: 0;
     /* transform-style: preserve-3d; — removed: forces GPU compositing of every item during scroll, expensive on mobile */
+
+    /* Promote ONLY the scroll container (not each item) to its own composited layer.
+       The atmospheric blend overlays (weather soft-light, lighting screen) sit over the
+       log; without this, scrolling repaints every text-shadow under the blend each frame.
+       With a cached layer the GPU just re-composites a texture — blend look is unchanged.
+       contain: paint clips painting to the box so it can be cached cleanly. */
+    transform: translateZ(0);
+    contain: paint;
 }
 
 .newbie-mode .message-log {
@@ -121,7 +129,9 @@
     transition: none !important;
     transform: none !important;
 
-    /* Contain layout/style so internal changes don't force full-list reflow */
+    /* Contain layout/style so internal changes don't force full-list reflow.
+       NOT paint — the combat hit-sheen bloom and target-pulse box-shadows
+       intentionally overflow the line box and would be clipped. */
     contain: layout style;
 
     /* Hover effect: Subtle dark shadow for depth against the background */
@@ -361,14 +371,33 @@
     border-radius: 3px;
     padding: 0 1px;
     font-weight: bold !important;
-    animation: target-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    /* The combat target is highlighted on EVERY occurrence in the log — often many
+       at once during combat. A STATIC ring + soft glow keeps it unmistakable without
+       spawning N infinite compositor animations (each a will-change layer + blurred
+       box-shadow), which exhausts the GPU layer budget on mobile and causes the
+       choppiness. Only the single deliberately-selected button pulses (below). */
+    box-shadow:
+        0 0 0 1.5px var(--color-target),
+        0 0 10px color-mix(in srgb, var(--color-target), transparent 55%);
     z-index: 1;
 }
 
-@keyframes target-pulse {
-    0%   { box-shadow: 0 0 0 1.5px var(--color-target), 0 0 6px color-mix(in srgb, var(--color-target), transparent 80%); }
-    50%  { box-shadow: 0 0 0 1.5px var(--color-target), 0 0 18px color-mix(in srgb, var(--color-target), transparent 45%), 0 0 36px color-mix(in srgb, var(--color-target), transparent 72%); }
-    100% { box-shadow: 0 0 0 1.5px var(--color-target), 0 0 6px color-mix(in srgb, var(--color-target), transparent 80%); }
+/* Pulse only the deliberately-clicked button (bounded count, so it stays cheap).
+   Opacity on a pseudo-element is composited — no per-frame repaint, no will-change. */
+.inline-btn.selected::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 14px color-mix(in srgb, var(--color-target), transparent 50%);
+    animation: target-glow-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes target-glow-pulse {
+    0%   { opacity: 0.35; }
+    50%  { opacity: 1; }
+    100% { opacity: 0.35; }
 }
 
 /* Force standard color application */
@@ -1381,7 +1410,9 @@ span.inline-btn {
 
 .inline-btn.selected {
     border-radius: 3px;
-    animation: target-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    /* Static ring; pulsing glow handled by the shared ::after rule above. */
+    box-shadow: 0 0 0 1.5px var(--color-target);
     transform: none !important;
     z-index: 10;
 }

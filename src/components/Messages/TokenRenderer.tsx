@@ -1,6 +1,6 @@
 import React from 'react';
 import { Token, EntityToken, AnsiToken } from '../../types';
-import { useVitals, useBaseGame, useUI } from '../../context/GameContext';
+import { useTokenHighlight, useBaseGame, useUI } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useShallow } from 'zustand/react/shallow';
 import { getInlineGlowColor } from '../../utils/inlineActionModel';
@@ -40,7 +40,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
     wordReveal = false,
     metadata: propMetadata
 }) => {
-    const { target, opponentId, opponentName } = useVitals();
+    const { target, opponentId, opponentName } = useTokenHighlight();
     const settings = useSettingsStore(useShallow(s => ({
         playerColor: s.playerColor,
         enemyColor: s.enemyColor,

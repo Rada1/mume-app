@@ -51,6 +51,23 @@ export const VitalsContext = createContext<VitalsContextType | undefined>(undefi
 export const LogContext = createContext<LogContextType | undefined>(undefined);
 export const UIContext = createContext<UIContextType | undefined>(undefined);
 
+// Narrow context for inline-token highlighting. Carries ONLY the slow-changing fields
+// that every visible log token subscribes to (target + current opponent). Kept separate
+// from VitalsContext — which rebuilds on every prompt (HP/mana) — so that TokenRenderer,
+// rendered hundreds of times across the log, does NOT re-render on each combat tick.
+// Sourced from the same mode-resolved vitals object, so spectate/replay still work.
+export interface TokenHighlightValue {
+    target: string | null;
+    opponentId: number | null;
+    opponentName: string | null;
+}
+export const TokenHighlightContext = createContext<TokenHighlightValue | undefined>(undefined);
+export const useTokenHighlight = (): TokenHighlightValue => {
+    const context = useContext(TokenHighlightContext);
+    if (!context) throw new Error('useTokenHighlight must be used within a GameProvider');
+    return context;
+};
+
 export const useBaseGame = () => {
     const context = useContext(GameContext);
     if (!context) throw new Error('useBaseGame must be used within a GameProvider');
@@ -953,6 +970,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         v.triggerXpTicker, v.setGameTime
     ]);
 
+    // Highlight-only vitals projection: identity changes ONLY when target/opponent change,
+    // not on HP/prompt ticks. Lets every TokenRenderer skip combat-tick re-renders.
+    const tokenHighlightValue = useMemo<TokenHighlightValue>(() => ({
+        target: v.target,
+        opponentId: v.opponentId,
+        opponentName: v.opponentName,
+    }), [v.target, v.opponentId, v.opponentName]);
+
     const value: GameContextType = useMemo(() => ({
         ...s,
         ...vStable,
@@ -1016,11 +1041,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return (
         <GameContext.Provider value={value}>
             <VitalsContext.Provider value={v as any}>
-                <UIContext.Provider value={uiValue}>
-                    <LogContext.Provider value={logValue}>
-                        {children}
-                    </LogContext.Provider>
-                </UIContext.Provider>
+                <TokenHighlightContext.Provider value={tokenHighlightValue}>
+                    <UIContext.Provider value={uiValue}>
+                        <LogContext.Provider value={logValue}>
+                            {children}
+                        </LogContext.Provider>
+                    </UIContext.Provider>
+                </TokenHighlightContext.Provider>
             </VitalsContext.Provider>
         </GameContext.Provider>
     );

@@ -21,7 +21,11 @@ export const CloudWave: React.FC<CloudWaveProps> = ({ storm, lightning }) => {
 
         let frameId = 0;
         let phase = 0;
-        const SPEED = 0.008;
+        let lastFrameTime = 0;
+        // Clouds drift slowly; 30fps is visually identical to 60 here and halves
+        // the per-frame canvas re-upload to the GPU compositor.
+        const FRAME_MS = 1000 / 30;
+        const SPEED = 0.008 * (60 / 30); // compensate phase step for the lower frame rate
         const AMPLITUDE = 14;
         const WAVELENGTHS = 2.5;
 
@@ -37,7 +41,13 @@ export const CloudWave: React.FC<CloudWaveProps> = ({ storm, lightning }) => {
         const observer = new ResizeObserver(resize);
         observer.observe(canvas);
 
-        const render = () => {
+        const render = (timestamp: number) => {
+            if (timestamp - lastFrameTime < FRAME_MS) {
+                frameId = requestAnimationFrame(render);
+                return;
+            }
+            lastFrameTime = timestamp;
+
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
 

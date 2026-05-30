@@ -308,7 +308,11 @@
     opacity: 0.3;
     animation: cloud-pulse 10s ease-in-out infinite alternate, cloud-drift 40s linear infinite;
     z-index: 2;
-    filter: blur(1px) brightness(0.9) grayscale(0.6) contrast(1.6);
+    /* Dropped blur(1px): animating a filter:blur() on a continuously-drifting element
+       forces a per-frame neighborhood-sampling blur pass, one of the most expensive
+       compositor ops on mobile. The soft radial gradients already read as fuzzy.
+       Cheap per-pixel color filters are kept so the cloud tone is unchanged. */
+    filter: brightness(0.9) grayscale(0.6) contrast(1.6);
 }
 
 .weather-cloud.storm-clouds {
@@ -321,12 +325,16 @@
 }
 
 .weather-cloud.storm-clouds::after {
-    filter: blur(2px) brightness(0.4) grayscale(0.9) contrast(2);
+    /* Blur dropped from the persistent storm state (always-animating = constant blur passes).
+       Heavier contrast/grayscale keeps the dense storm look. */
+    filter: brightness(0.4) grayscale(0.9) contrast(2);
     opacity: 0.9;
     transition: filter 0.05s ease-out;
 }
 
 .weather-cloud.lightning-active::after {
+    /* Lightning is a brief transient flash, not a sustained animation — a small blur
+       here is cheap and adds to the flash, so it's kept. */
     filter: blur(2px) brightness(4) grayscale(0.5) contrast(1.5);
     transition: filter 0.05s ease-out;
 }

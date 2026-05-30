@@ -20,9 +20,10 @@ export const Embers: React.FC<EmbersProps> = ({ count }) => {
     const { messageActivity, isImmersionMode, env } = useGame();
     const { lighting } = env;
     
-    // Use prop count or determine from lighting
-    // Optimize particle counts: limit maximum particles to significantly reduce rendering strain (higher cap of 30 for desktop)
-    const emberCount = count ? Math.min(count, 30) : (lighting === 'artificial' ? 12 : 6);
+    // Use prop count or determine from lighting.
+    // Each ember is a mix-blend-mode: screen layer, so particle count drives compositor
+    // cost directly. Cap at 18 — visually near-identical to 30 but ~40% fewer blend layers.
+    const emberCount = count ? Math.min(count, 18) : (lighting === 'artificial' ? 12 : 6);
     
     const activityMultiplier = 1 + (messageActivity * 4); // 1x to 5x speed
     const containerRef = React.useRef<HTMLDivElement>(null);
