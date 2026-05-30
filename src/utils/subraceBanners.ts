@@ -55,6 +55,8 @@ const SUBRACE_KEY_ALIASES: Record<string, string> = {
     'stoor-hobbits': 'stoor',
     beorning: 'beorning',
     beornings: 'beorning',
+    rohir: 'rohirrim',
+    rohirs: 'rohirrim',
     rohirrim: 'rohirrim',
     rohirrims: 'rohirrim',
     eriadorian: 'eriadorian',

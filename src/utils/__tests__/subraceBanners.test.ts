@@ -42,6 +42,7 @@ describe('resolveSubraceBanner', () => {
         expect(resolveSubraceBanner('Elf', 'Sindar')?.src).toBe('/assets/Pictures/Subraces/elf.png');
         expect(resolveSubraceBanner('Man', 'Dunadan')?.src).toBe('/assets/Pictures/Subraces/dunadain.png');
         expect(resolveSubraceBanner('Man', 'Rohirrim')?.src).toBe('/assets/Pictures/Subraces/rohirrim.png');
+        expect(resolveSubraceBanner('Man', 'Rohir')?.src).toBe('/assets/Pictures/Subraces/rohirrim.png');
         expect(resolveSubraceBanner('Man', 'Black Numenorean')?.src).toBe('/assets/Pictures/Subraces/blacknumenorean.png');
         expect(resolveSubraceBanner('Orc', 'Zaugurz')?.src).toBe('/assets/Pictures/Subraces/zaugurz.png');
         expect(resolveSubraceBanner('Orc', 'Tarkhnarb')?.src).toBe('/assets/Pictures/Subraces/tarkmorruhk.png');
@@ -50,6 +51,7 @@ describe('resolveSubraceBanner', () => {
     it('supports the custom banner groups for men and orcs', () => {
         expect(resolveSubraceBanner('Man', 'Dunadan')?.key).toBe('dunedain');
         expect(resolveSubraceBanner('Man', 'Rohirrim')?.key).toBe('rohirrim');
+        expect(resolveSubraceBanner('Man', 'Rohir')?.key).toBe('rohirrim');
         expect(resolveSubraceBanner('Man', 'Beorning')?.key).toBe('beornings');
         expect(resolveSubraceBanner('Man', 'Eriadorian')?.key).toBe('eriadorians');
         expect(resolveSubraceBanner('Man', 'Black Numenorean')?.key).toBe('black-numenoreans');

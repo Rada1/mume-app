@@ -431,13 +431,15 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const handleFirstVisitLoadFlag = useCallback((roomId: string) => {
         // Synchronize sound trigger with the 100ms bouncy animation delay
-        setTimeout(() => {
-            playLoadFlagSound();
-        }, 100);
+        if (!unveilMap) {
+            setTimeout(() => {
+                playLoadFlagSound();
+            }, 100);
+        }
         setNewlyExploredRoomId(roomId);
         if (newlyExploredTimerRef.current) clearTimeout(newlyExploredTimerRef.current);
         newlyExploredTimerRef.current = setTimeout(() => setNewlyExploredRoomId(null), 2000);
-    }, [playLoadFlagSound]);
+    }, [playLoadFlagSound, unveilMap]);
 
     const masterHandlers = useMapGmcphandlers({
         roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,

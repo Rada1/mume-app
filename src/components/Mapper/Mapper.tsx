@@ -20,7 +20,6 @@ import { useSmartWalk } from './hooks/useSmartWalk';
 import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
 import { DpadCluster } from './DpadCluster';
 import { GRID_SIZE } from './mapperUtils';
-import { toThemeLinkedColor } from '../../utils/themeLinkedColors';
 import { useMapperTracing } from './hooks/useMapperTracing';
 import { TracingHUD } from './TracingHUD';
 import { useMapAssets } from './hooks/useMapAssets';
@@ -66,7 +65,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const lastRoomIdRef = useRef<string | null>(null);
 
     const {
-        triggerHaptic, executeCommand, theme, btn, joystick, playClickSound,
+        triggerHaptic, executeCommand, btn, joystick, playClickSound,
         setIsTrackpadModifierActive, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode,
         selectedObjectIds, lighting, inCombat, viewport, gameState
     } = useGame();
@@ -75,12 +74,13 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const { addMessage } = useLog();
     const { setPopoverState, popoverState, ui } = useUI();
     const { playerColor, npcColor, enemyColor, objectColor, targetColor, showBackgroundImage } = useSettingsStore();
-    const isDarkMode = theme === 'dark';
-    const displayPlayerColor = toThemeLinkedColor(playerColor, theme) || playerColor;
-    const displayNpcColor = toThemeLinkedColor(npcColor, theme) || npcColor;
-    const displayEnemyColor = toThemeLinkedColor(enemyColor, theme) || enemyColor;
-    const displayObjectColor = toThemeLinkedColor(objectColor, theme) || objectColor;
-    const displayTargetColor = toThemeLinkedColor(targetColor, theme) || targetColor;
+    // The map is always rendered in dark mode regardless of the global app theme.
+    const isDarkMode = true;
+    const displayPlayerColor = playerColor;
+    const displayNpcColor = npcColor;
+    const displayEnemyColor = enemyColor;
+    const displayObjectColor = objectColor;
+    const displayTargetColor = targetColor;
     const treatMapAsExplored = useModeStore(state => state.isSpectating && state.activeView === 'target');
     const isMapLookHeld = heldButton?.id === 'map-long-press' && !heldButton.didFire;
     const [backgroundAlignMode, setBackgroundAlignMode] = useState(false);
