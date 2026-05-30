@@ -65,6 +65,7 @@ import { getButtonIdsForTraits, getInlineGlowColor, getResolvedTraitSections, to
 import { getInlineCategoryLabel, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { audioManager } from '../../services/audio/AudioManager';
 
 const formatDialCategoryLabel = (category?: string | null): string => {
     if (!category) return '';
@@ -85,6 +86,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         if (parentPopoverState) {
             setLocalState(parentPopoverState);
             setIsClosing(false);
+            audioManager.playEffect('actionmenu');
         } else if (localState) {
             setIsClosing(true);
             const timer = setTimeout(() => {

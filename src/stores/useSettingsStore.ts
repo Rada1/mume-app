@@ -301,7 +301,7 @@ export const useSettingsStore = create<SettingsState>()(
             rememberLogin: true,
             
             theme: 'dark',
-            isImmersionMode: true,
+            isImmersionMode: isDesktopViewport(),
             accentColor: '#d4aa00',
             bgImage: null,
             bgImageBottom: null,

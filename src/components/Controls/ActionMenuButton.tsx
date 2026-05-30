@@ -1,5 +1,6 @@
 import React from 'react';
 import { useUIStore } from '../../stores/useUIStore';
+import { audioManager } from '../../services/audio/AudioManager';
 import './ActionMenuButton.css';
 
 interface ActionMenuButtonProps {
@@ -38,6 +39,7 @@ export const ActionMenuButton: React.FC<ActionMenuButtonProps> = ({ triggerHapti
             menuDisplay: selectedTarget.menuDisplay,
             parentNoun: selectedTarget.parentNoun,
         });
+        audioManager.playEffect('actionmenu');
         triggerHaptic?.(20);
     };
 

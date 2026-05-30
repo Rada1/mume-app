@@ -14,8 +14,7 @@ import PracticeSkillCard from '../Practice/PracticeSkillCard';
 import PracticeHeaderCard from '../Practice/PracticeHeaderCard';
 import PracticeClassHeaderCard from '../Practice/PracticeClassHeaderCard';
 import PracticeColumnHeaderCard from '../Practice/PracticeColumnHeaderCard';
-import { useBaseGame, useVitals, useLog, useUI } from '../../context/GameContext';
-import { useInputStore } from '../../stores/useInputStore';
+import { useBaseGame, useLog, useUI } from '../../context/GameContext';
 import { useMessageStore } from '../../stores/useMessageStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -64,14 +63,10 @@ const MessageItem = React.memo(({
     isTimestampEnabled,
     isNewbieMode,
     currentRoomName,
-    input,
-    setInput,
     viewport,
     isTextRevealEnabled,
     isAwaitingResponse,
     batchOffset = 0,
-    targetName,
-    inlineCategories,
     colors,
     maxBatchId = -1,
 }: {
@@ -86,14 +81,10 @@ const MessageItem = React.memo(({
     isTimestampEnabled?: boolean;
     isNewbieMode?: boolean;
     currentRoomName?: string | null,
-    input?: string,
-    setInput?: (val: string) => void;
     viewport: any;
     isTextRevealEnabled: boolean;
     isAwaitingResponse?: boolean;
     batchOffset?: number;
-    targetName?: string | null;
-    inlineCategories?: any[];
     colors?: {
         targetColor?: string;
         playerColor?: string;
@@ -333,15 +324,16 @@ const MessageLog: React.FC<MessageLogProps> = ({
         isNewbieMode, showSpectatePromptInLog, sessionMode,
         accountState
     } = useBaseGame() as any;
-    const input = useInputStore(s => s.input);
-    const setInput = useInputStore(s => s.setInput);
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const activeView = useModeStore(s => s.activeView);
     const { replayer, spectateBuffer } = useUI() as any;
     const userMessages = useMessageStore(s => s.user);
     const spectateMessages = useMessageStore(s => s.spectate);
     const messages = (isSpectateMode && activeView === 'target') ? spectateMessages : userMessages;
-    const { target, setTarget, opponentName, opponentHealthStatus } = useVitals();
+    // NOTE: MessageLog intentionally does NOT subscribe to vitals (target/opponent) or the
+    // input field. Target highlighting is handled inside TokenRenderer via TokenHighlightContext,
+    // and the input box is independent — subscribing here forced a full virtual-list re-map on
+    // every prompt tick and every keystroke.
     const { scrollContainerRef, messagesEndRef, scrollToBottom, isLockedToBottomRef } = viewport;
 
     // Highlight the selected character line in the log via a dynamic <style> rule.
@@ -376,8 +368,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
         return () => { if (styleEl) styleEl.textContent = ''; };
     }, [selectedMenuCommand]);
 
-    // Extracted colors and inlineCategories to pass down directly
-    const inlineCategories = useBaseGame().inlineCategories;
     const {
         targetColor, playerColor, enemyColor, neutralColor, npcColor, objectColor, roomColor,
         hidePrompt, showBlockHeaders, isTextRevealEnabled
@@ -749,14 +739,10 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     isTimestampEnabled={isTimestampEnabled}
                                     isNewbieMode={isNewbieMode}
                                     currentRoomName={roomName}
-                                    input={input}
-                                    setInput={setInput}
                                     viewport={viewport}
                                     isTextRevealEnabled={isTextRevealEnabled}
                                     isAwaitingResponse={msg.type === 'user' && msg.id === awaitingResponseUserId}
                                     batchOffset={batchOffset}
-                                    targetName={target}
-                                    inlineCategories={inlineCategories}
                                     colors={colors}
                                     maxBatchId={maxBatchId}
                                 />
