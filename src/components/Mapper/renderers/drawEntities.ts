@@ -438,35 +438,7 @@ export const drawRoomOccupants = (
         drawCombatTether(occ.x, occ.y, target.x, target.y, 0.78);
     });
 
-    // 4.5 Draw room items as squares in a line at the bottom
-    if (roomItems && roomItems.length > 0) {
-        const itemSize = 4 / camera.zoom;
-        const itemGap = 2 / camera.zoom;
-        const totalWidth = roomItems.length * (itemSize + itemGap) - itemGap;
-        let startX = px - totalWidth / 2;
-        const itemY = py + (GRID_SIZE / 2) - 2;
 
-        roomItems.forEach(item => {
-            const itemId = item.id != null ? `roomitems:${item.id}` : `roomitems:${getRoomItemTargetText(item)}`;
-            const isItemTargeted = targetTextMatchesEntity(rCtx.targetName, getRoomItemTargetText(item));
-            const isItemActive = isItemTargeted || isObjectSelected(activeEntityIds, itemId, 'cat-room-object');
-            ctx.save();
-            ctx.fillStyle = objectColor || COLOR_OBJ;
-            ctx.shadowBlur = 4 + pulse * 2;
-            ctx.shadowColor = objectColor || COLOR_OBJ;
-            ctx.fillRect(startX, itemY, itemSize, itemSize);
-            if (isItemActive) {
-                const activeColor = isItemTargeted ? (rCtx.targetColor || '#facc15') : (objectColor || COLOR_OBJ);
-                ctx.strokeStyle = activeColor;
-                ctx.lineWidth = Math.max(0.7, 1.2 / camera.zoom);
-                ctx.shadowBlur = 6 + pulse * 3;
-                ctx.shadowColor = activeColor;
-                ctx.strokeRect(startX - 1 / camera.zoom, itemY - 1 / camera.zoom, itemSize + 2 / camera.zoom, itemSize + 2 / camera.zoom);
-            }
-            ctx.restore();
-            startX += itemSize + itemGap;
-        });
-    }
 
     // 5. Draw exit-animating occupants
     for (const { key } of exitAnims) {
