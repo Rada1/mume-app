@@ -12,8 +12,10 @@ interface UseMapActionsProps {
     setExploredMarkers: React.Dispatch<React.SetStateAction<Set<string>>>;
     setCurrentRoomId: React.Dispatch<React.SetStateAction<string | null>>;
     currentRoomIdRef: React.MutableRefObject<string | null>;
-    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, CompactMapExit>, string, string, string[], string[]]>>;
+    preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
+    nameIndexRef: React.MutableRefObject<Record<string, string[]>>;
+    serverIdIndexRef: React.MutableRefObject<Record<string, string>>;
     baseMapExitsRef: React.MutableRefObject<Record<string, any>>;
     markersRef: React.MutableRefObject<Record<string, MapperMarker>>;
     addMessage?: (type: string, msg: string) => void;
@@ -28,6 +30,8 @@ export const useMapActions = ({
     setCurrentRoomId, currentRoomIdRef,
     preloadedCoordsRef,
     spatialIndexRef,
+    nameIndexRef,
+    serverIdIndexRef,
     baseMapExitsRef,
     addMessage,
     lastDetectedTerrainRef,
@@ -112,32 +116,96 @@ export const useMapActions = ({
         addMessage?.('system', `[Mapper] Synced current room location to ghost map.`);
     }, [addMessage, currentRoomIdRef, setRooms, preloadedCoordsRef]);
 
-    const loadImportedMapData = useCallback((data: Record<string, [number, number, number, number, Record<string, CompactMapExit>, string, string, string[], string[]]>) => {
-        const merged = { ...preloadedCoordsRef.current };
-        for (const vnum in data) {
-            const newData = data[vnum];
-            if (merged[vnum]) {
-                const oldData = merged[vnum];
-                merged[vnum] = [
-                    newData[0], newData[1], newData[2],
-                    newData[3] || oldData[3],
-                    (Object.keys(newData[4] || {}).length > 0) ? newData[4] : oldData[4],
-                    (newData[5] && !newData[5].startsWith('Room ')) ? newData[5] : oldData[5],
-                    newData[6] || oldData[6],
-                    newData[7] || oldData[7],
-                    newData[8] || oldData[8]
-                ];
-            } else {
-                merged[vnum] = newData;
+    const loadImportedMapData = useCallback((data: Record<string, any>) => {
+        // 1. Clear existing dynamic map and exploration state
+        setRooms({});
+        setMarkers({});
+        setExploredVnums(new Set());
+        setExploredMarkers(new Set());
+        setCurrentRoomId(null);
+        currentRoomIdRef.current = null;
+
+        // 2. Reset last detected terrain
+        if (lastDetectedTerrainRef) {
+            lastDetectedTerrainRef.current = null;
+        }
+
+        // 3. Clone imported map rooms data
+        const baseMap = { ...data };
+
+        // 4. Run zone propagation/fallbacks to ensure zone-filtering works on the imported map
+        const queue: string[] = [];
+        for (const vnum in baseMap) {
+            const zone = baseMap[vnum][9];
+            if (zone && typeof zone === 'string' && zone.trim() !== '') {
+                queue.push(vnum);
             }
         }
-        preloadedCoordsRef.current = merged;
 
+        let head = 0;
+        while (head < queue.length) {
+            const curr = queue[head++];
+            const currZone = baseMap[curr][9];
+            const exits = baseMap[curr][4];
+            if (!exits) continue;
+            for (const dir in exits) {
+                const exitObj = exits[dir];
+                const target = exitObj && exitObj.target ? String(exitObj.target) : null;
+                if (target && baseMap[target]) {
+                    const targetZone = baseMap[target][9];
+                    if (!targetZone || typeof targetZone !== 'string' || targetZone.trim() === '') {
+                        baseMap[target][9] = currZone;
+                        queue.push(target);
+                    }
+                }
+            }
+        }
+
+        const knownRooms: { x: number; y: number; z: number; zone: string }[] = [];
+        for (const vnum in baseMap) {
+            const r = baseMap[vnum];
+            if (r[9] && typeof r[9] === 'string' && r[9].trim() !== '') {
+                knownRooms.push({ x: r[0], y: r[1], z: r[2] || 0, zone: r[9] });
+            }
+        }
+
+        for (const vnum in baseMap) {
+            const r = baseMap[vnum];
+            if (!r[9] || typeof r[9] !== 'string' || r[9].trim() === '') {
+                let minD = Infinity;
+                let bestZone = '';
+                const rx = r[0], ry = r[1], rz = r[2] || 0;
+                for (let i = 0; i < knownRooms.length; i++) {
+                    const kr = knownRooms[i];
+                    const dx = kr.x - rx;
+                    const dy = kr.y - ry;
+                    const dz = kr.z - rz;
+                    const dist = dx * dx + dy * dy + dz * dz;
+                    if (dist < minD) {
+                        minD = dist;
+                        bestZone = kr.zone;
+                    }
+                }
+                if (minD < 900) {
+                    r[9] = bestZone;
+                } else {
+                    r[9] = 'Unknown Zone';
+                }
+            }
+        }
+
+        // 5. Store the new base map template
+        preloadedCoordsRef.current = baseMap;
+
+        // 6. Rebuild all indexes for rendering and GMCP mapping
         const index: Record<number, Record<string, string[]>> = {};
-        const allVnums = new Set<string>();
+        const nIndex: Record<string, string[]> = {};
+        const sIndex: Record<string, string> = {};
+        const baseMapExits: Record<string, any> = {};
 
-        for (const vnum in merged) {
-            const [x, y, z] = merged[vnum];
+        for (const vnum in baseMap) {
+            const rData = baseMap[vnum], [x, y, z] = rData;
+            const rName = rData[5];
             const floor = Math.round(z);
             if (!index[floor]) index[floor] = {};
 
@@ -147,18 +215,47 @@ export const useMapActions = ({
             if (!index[floor][key]) index[floor][key] = [];
             index[floor][key].push(vnum);
 
-            allVnums.add(vnum);
+            if (rName && typeof rName === 'string') {
+                if (!nIndex[rName]) nIndex[rName] = [];
+                nIndex[rName].push(vnum);
+            }
+            sIndex[String(vnum)] = vnum;
+            baseMapExits[String(vnum)] = rData;
+
+            const rServerId = rData[6];
+            if (rServerId) {
+                baseMapExits[String(rServerId)] = rData;
+            }
         }
+
+        for (const vnum in baseMap) {
+            const rServerId = baseMap[vnum][6];
+            if (rServerId && String(rServerId) !== String(vnum)) {
+                sIndex[String(rServerId)] = vnum;
+            }
+        }
+
         spatialIndexRef.current = index;
+        if (nameIndexRef) nameIndexRef.current = nIndex;
+        if (serverIdIndexRef) serverIdIndexRef.current = sIndex;
+        baseMapExitsRef.current = baseMapExits;
 
-        setExploredVnums(prev => {
-            const next = new Set(prev);
-            allVnums.forEach(v => next.add(v));
-            return next;
-        });
-
-        addMessage?.('system', `[Mapper] Imported MMapper Data: ${Object.keys(data).length} rooms merged into master map.`);
-    }, [addMessage, preloadedCoordsRef, spatialIndexRef, setExploredVnums]);
+        addMessage?.('system', `[Mapper] Loaded new MMapper base template: ${Object.keys(baseMap).length} rooms. Base map cleared.`);
+    }, [
+        addMessage,
+        preloadedCoordsRef,
+        spatialIndexRef,
+        nameIndexRef,
+        serverIdIndexRef,
+        baseMapExitsRef,
+        setRooms,
+        setMarkers,
+        setExploredVnums,
+        setExploredMarkers,
+        setCurrentRoomId,
+        currentRoomIdRef,
+        lastDetectedTerrainRef
+    ]);
 
     return {
         handleAddRoom,

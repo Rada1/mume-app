@@ -345,7 +345,7 @@ export const useSettingsStore = create<SettingsState>()(
             customSoundEffects: {},
 
             allowMapPersistence: true,
-            unveilMap: true,
+            unveilMap: false,
             zoneFocusGrayscale: false,
             showMapperToolbar: false,
             isTextRevealEnabled: true,

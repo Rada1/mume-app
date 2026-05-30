@@ -373,7 +373,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Actions
     const { handleAddRoom, handleDeleteRoom, handleClearMap, handleSyncLocation, handleResetAndSync, loadImportedMapData } = useMapActions({
         rooms, setRooms, roomsRef, markers, setMarkers, markersRef, setExploredVnums, setExploredMarkers, setCurrentRoomId, currentRoomIdRef,
-        preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, addMessage, lastDetectedTerrainRef, loadMasterMap
+        preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef, baseMapExitsRef, addMessage, lastDetectedTerrainRef, loadMasterMap
     });
 
     useMapPersistence({
