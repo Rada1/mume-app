@@ -14,6 +14,10 @@ import { ZONE_FILTERS } from '../components/Mapper/zoneFilters';
 import type { ZoneFilterConfig, ZoneVisualConfig } from '../components/Mapper/zoneFilters';
 import { DEFAULT_TERRAIN_COLORS, ROAD_COLOR_LIGHT, PATH_COLOR_LIGHT } from '../components/Mapper/mapperUtils';
 
+// Immersion mode defaults on for desktop-sized viewports. Mirrors the helper in
+// useUIStore (kept local to avoid a store-to-store import cycle).
+const isDesktopViewport = () => typeof window !== 'undefined' && window.innerWidth >= 1024;
+
 export const DEFAULT_MAP_TILE_VISUALS: MapTileVisualAdjustments = {
     terrainColors: {
         Forest: '#334e2d',

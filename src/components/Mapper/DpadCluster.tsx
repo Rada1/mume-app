@@ -26,6 +26,13 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
         currentDir
     } = joystick || {};
 
+    // While a directional swipe gesture is active, let the atmosphere overlays step aside
+    // (see environment.css) so the swipe wheel and map stay responsive in immersion mode.
+    React.useEffect(() => {
+        document.body.classList.toggle('ui-gesturing', !!joystick?.joystickActive);
+        return () => { document.body.classList.remove('ui-gesturing'); };
+    }, [joystick?.joystickActive]);
+
     const onPointerDown = useCallback((e: React.PointerEvent) => {
         if (handleJoystickStart) handleJoystickStart(e, executeCommand);
     }, [handleJoystickStart, executeCommand]);

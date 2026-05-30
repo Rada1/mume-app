@@ -372,13 +372,13 @@
     padding: 0 1px;
     font-weight: bold !important;
     /* The combat target is highlighted on EVERY occurrence in the log — often many
-       at once during combat. A STATIC ring + soft glow keeps it unmistakable without
-       spawning N infinite compositor animations (each a will-change layer + blurred
-       box-shadow), which exhausts the GPU layer budget on mobile and causes the
-       choppiness. Only the single deliberately-selected button pulses (below). */
-    box-shadow:
-        0 0 0 1.5px var(--color-target),
-        0 0 10px color-mix(in srgb, var(--color-target), transparent 55%);
+       at once. Use a crisp ring + faint fill instead of a blurred glow: a blurred
+       box-shadow is repainted for each row as it scrolls into view (N occurrences =
+       N blurred repaints per frame during a fling), which is what made scrolling
+       choppy while a target was set. A ring + flat tint paints almost for free and
+       reads as clearly (or more so). The single selected button keeps its pulse below. */
+    box-shadow: 0 0 0 1.5px var(--color-target);
+    background: color-mix(in srgb, var(--color-target), transparent 88%);
     z-index: 1;
 }
 

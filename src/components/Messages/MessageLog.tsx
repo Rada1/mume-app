@@ -535,8 +535,13 @@ const MessageLog: React.FC<MessageLogProps> = ({
         }
 
         isUserScrollingRef.current = true;
+        // Flag active scrolling so the atmosphere overlays can step aside (see environment.css).
+        document.body.classList.add('ui-scrolling');
         if (userScrollTimerRef.current) clearTimeout(userScrollTimerRef.current);
-        userScrollTimerRef.current = setTimeout(() => { isUserScrollingRef.current = false; }, 150);
+        userScrollTimerRef.current = setTimeout(() => {
+            isUserScrollingRef.current = false;
+            document.body.classList.remove('ui-scrolling');
+        }, 150);
 
         // Increased threshold to be more forgiving of sub-pixel drift or rapid growth
         const threshold = 80; 
@@ -558,6 +563,10 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
     const onWheelRef = useRef(onWheel);
     useEffect(() => { onWheelRef.current = onWheel; }, [onWheel]);
+
+    // Safety: clear the scroll flag if the log unmounts mid-scroll so the atmosphere
+    // overlays can't get stuck hidden.
+    useEffect(() => () => { document.body.classList.remove('ui-scrolling'); }, []);
 
     useEffect(() => {
         const container = scrollContainerRef.current;
