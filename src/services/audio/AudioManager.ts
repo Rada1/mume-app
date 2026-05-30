@@ -184,7 +184,7 @@ export class AudioManager {
         const settings = useSettingsStore.getState();
         const master = settings.masterVolume;
         const subVolume = isMusic ? settings.musicVolume : settings.sfxVolume;
-        return baseVolume * master * subVolume * 3.0;
+        return baseVolume * master * subVolume * (isMusic ? 0.8 : 3.0);
     }
 
     private normalizeTerrainKey(key: string): string {
