@@ -391,13 +391,6 @@
     border-radius: inherit;
     pointer-events: none;
     box-shadow: 0 0 14px color-mix(in srgb, var(--color-target), transparent 50%);
-    animation: target-glow-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes target-glow-pulse {
-    0%   { opacity: 0.35; }
-    50%  { opacity: 1; }
-    100% { opacity: 0.35; }
 }
 
 /* Force standard color application */
