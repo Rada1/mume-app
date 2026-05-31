@@ -234,7 +234,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 >
                     {/* Character Select panel removed per user request */}
 
-                    <div className="account-gutter-content">
+                    <div className="account-gutter-inner">
                         {(isMenuStage || isCreationStage) && <div className="account-centered-interactive-zone">
     
 

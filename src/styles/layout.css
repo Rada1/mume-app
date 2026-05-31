@@ -539,6 +539,15 @@
         box-sizing: border-box !important;
     }
 
+    .account-gutter-inner {
+        display: flex !important;
+        flex-direction: column !important;
+        flex: 1 !important;
+        width: 100% !important;
+        min-height: 0 !important;
+        position: relative !important;
+    }
+
     .account-centered-interactive-zone {
         flex: 1;
         display: flex;
