@@ -15,7 +15,7 @@ const MOBILE_PLAYER_PULSE_FRAME_MS = 50;
 const IDLE_PULSE_FRAME_MS = 80;
 const MOBILE_IDLE_PULSE_FRAME_MS = 120;
 const WAKE_ANIMATION_MS = 1500;
-const EXPLORATION_WAKE_MS = 850;
+const EXPLORATION_WAKE_MS = 0;
 
 interface AnimationProps {
     drawMap: (ctx: CanvasRenderingContext2D, dpr: number, w: number, h: number, marquee: any, isDragging?: boolean) => void;

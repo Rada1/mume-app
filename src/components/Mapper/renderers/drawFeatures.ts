@@ -811,10 +811,10 @@ export const drawFeatures = (
     // Fast return if no buckets
     if (!floorIndex) return;
 
-    // Compute two-ring fog-of-war visibility sets
-    const ring1Revealed = new Set<string>(); // adjacent to explored → grayscale terrain, no flags
-    const ring2Peeked = new Set<string>();   // adjacent to ring-1 → faint wall hints only
-    if (!unveilMap) {
+    // Compute ring-1 fog-of-war visibility. Ring 2 is intentionally disabled.
+    const ring1Revealed = rCtx.ring1Revealed || new Set<string>(); // adjacent to explored -> grayscale terrain, no flags
+    const ring2Peeked = rCtx.ring2Peeked || new Set<string>();
+    if (!rCtx.ring1Revealed && !unveilMap) {
         for (let bx = bX1; bx <= bX2; bx++) {
             for (let by = bY1; by <= bY2; by++) {
                 const bucket = floorIndex[`${bx},${by}`];
@@ -827,22 +827,6 @@ export const drawFeatures = (
                     for (const dir of ['n', 's', 'e', 'w']) {
                         const exit = rData[4][dir];
                         if (exit && explored.has(String(exit.target))) { ring1Revealed.add(vnum); break; }
-                    }
-                }
-            }
-        }
-        for (let bx = bX1; bx <= bX2; bx++) {
-            for (let by = bY1; by <= bY2; by++) {
-                const bucket = floorIndex[`${bx},${by}`];
-                if (!bucket) continue;
-                for (let i = 0; i < bucket.length; i++) {
-                    const vnum = bucket[i];
-                    if (explored.has(vnum) || ring1Revealed.has(vnum)) continue;
-                    const rData = preloaded[vnum];
-                    if (!rData?.[4]) continue;
-                    for (const dir of ['n', 's', 'e', 'w']) {
-                        const exit = rData[4][dir];
-                        if (exit && ring1Revealed.has(String(exit.target))) { ring2Peeked.add(vnum); break; }
                     }
                 }
             }

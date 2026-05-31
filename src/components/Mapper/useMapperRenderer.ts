@@ -49,38 +49,22 @@ const computeRevealRings = (
     const ring1Revealed = new Set<string>();
     const ring2Peeked = new Set<string>();
 
-    const floorVnums = new Set<string>();
-    for (const key in floorIndex) {
-        const bucket = floorIndex[key];
-        if (bucket) {
+    for (let bx = bX1; bx <= bX2; bx++) {
+        for (let by = bY1; by <= bY2; by++) {
+            const bucket = floorIndex[`${bx},${by}`];
+            if (!bucket) continue;
             for (let i = 0; i < bucket.length; i++) {
-                floorVnums.add(bucket[i]);
-            }
-        }
-    }
-
-    for (const vnum of floorVnums) {
-        if (explored.has(vnum)) continue;
-        const rData = preloaded[vnum];
-        if (!rData?.[4]) continue;
-        for (const dir of ['n', 's', 'e', 'w']) {
-            const exit = rData[4][dir];
-            if (exit && explored.has(String(exit.target))) {
-                ring1Revealed.add(vnum);
-                break;
-            }
-        }
-    }
-
-    for (const vnum of floorVnums) {
-        if (explored.has(vnum) || ring1Revealed.has(vnum)) continue;
-        const rData = preloaded[vnum];
-        if (!rData?.[4]) continue;
-        for (const dir of ['n', 's', 'e', 'w']) {
-            const exit = rData[4][dir];
-            if (exit && ring1Revealed.has(String(exit.target))) {
-                ring2Peeked.add(vnum);
-                break;
+                const vnum = bucket[i];
+                if (explored.has(vnum)) continue;
+                const rData = preloaded[vnum];
+                if (!rData?.[4]) continue;
+                for (const dir of ['n', 's', 'e', 'w']) {
+                    const exit = rData[4][dir];
+                    if (exit && explored.has(String(exit.target))) {
+                        ring1Revealed.add(vnum);
+                        break;
+                    }
+                }
             }
         }
     }
@@ -785,8 +769,14 @@ export const useMapperRenderer = ({
         
         ctx.drawImage(cache.terrainCanvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
 
-        const screenGeo = computeBuildGeometry(camera.x - (baseW / (camera.zoom * dpr)) * 0.5, camera.y - (baseH / (camera.zoom * dpr)) * 0.5);
-        const screenRings = computeRevealRings(screenGeo.bX1, screenGeo.bY1, screenGeo.bX2, screenGeo.bY2, spatialIndexRef.current[curZInt] || {}, explored, preloaded);
+        const overlayFloorIndex = spatialIndexRef.current[curZInt];
+        const screenRings = (() => {
+            if (!overlayFloorIndex || !isExplorationOverlayActive) {
+                return { ring1Revealed: new Set<string>(), ring2Peeked: new Set<string>() };
+            }
+            const screenGeo = computeBuildGeometry(camera.x - (baseW / (camera.zoom * dpr)) * 0.5, camera.y - (baseH / (camera.zoom * dpr)) * 0.5);
+            return computeRevealRings(screenGeo.bX1, screenGeo.bY1, screenGeo.bX2, screenGeo.bY2, overlayFloorIndex, explored, preloaded);
+        })();
 
         const baseDynamicRCtx: RenderContext = {
             ctx, dpr, canvasWidth: baseW, canvasHeight: baseH, camera, isDarkMode, isMobile,
@@ -812,7 +802,6 @@ export const useMapperRenderer = ({
             joystickActive
         };
 
-        const overlayFloorIndex = spatialIndexRef.current[curZInt];
         if (overlayFloorIndex && isExplorationOverlayActive) {
             ctx.save();
             ctx.imageSmoothingEnabled = false;

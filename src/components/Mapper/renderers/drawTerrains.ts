@@ -6,10 +6,10 @@ import { perfMonitor } from '../../../utils/perfMonitor';
 const TERRAIN_TILE_INSET = 0;
 const FAR_ZOOM_TERRAIN_LOD = 0.04;
 const OVERVIEW_TERRAIN_ZOOM = 0.15;
-export const RING_REVEAL_MS = 280;
+export const RING_REVEAL_MS = 0;
 export const RING_REVEAL_TOTAL_MS = RING_REVEAL_MS * 2;
-export const RING_REVEAL_BAKE_MS = RING_REVEAL_TOTAL_MS + 40;
-const RING_REVEAL_OVERLAY_GRACE_MS = 120;
+export const RING_REVEAL_BAKE_MS = RING_REVEAL_TOTAL_MS;
+const RING_REVEAL_OVERLAY_GRACE_MS = 0;
 const OUTDOOR_TERRAINS = new Set(['City', 'Field', 'Grasslands', 'Forest', 'Hills', 'Mountains', 'Road', 'Brush', 'Water', 'Shallows', 'Rapids']);
 
 let tempContentCanvas: HTMLCanvasElement | null = null;
@@ -1275,38 +1275,22 @@ const buildRevealRings = (
     const ring2Peeked = new Set<string>();
     if (unveilMap) return { ring1Revealed, ring2Peeked };
 
-    const floorVnums = new Set<string>();
-    for (const key in floorIndex) {
-        const bucket = floorIndex[key];
-        if (bucket) {
+    for (let bx = bX1; bx <= bX2; bx++) {
+        for (let by = bY1; by <= bY2; by++) {
+            const bucket = floorIndex[`${bx},${by}`];
+            if (!bucket) continue;
             for (let i = 0; i < bucket.length; i++) {
-                floorVnums.add(bucket[i]);
-            }
-        }
-    }
-
-    for (const vnum of floorVnums) {
-        if (explored.has(vnum)) continue;
-        const rData = preloaded[vnum];
-        if (!rData?.[4]) continue;
-        for (const dir of ['n', 's', 'e', 'w']) {
-            const exit = rData[4][dir];
-            if (exit && explored.has(String(exit.target))) {
-                ring1Revealed.add(vnum);
-                break;
-            }
-        }
-    }
-
-    for (const vnum of floorVnums) {
-        if (explored.has(vnum) || ring1Revealed.has(vnum)) continue;
-        const rData = preloaded[vnum];
-        if (!rData?.[4]) continue;
-        for (const dir of ['n', 's', 'e', 'w']) {
-            const exit = rData[4][dir];
-            if (exit && ring1Revealed.has(String(exit.target))) {
-                ring2Peeked.add(vnum);
-                break;
+                const vnum = bucket[i];
+                if (explored.has(vnum)) continue;
+                const rData = preloaded[vnum];
+                if (!rData?.[4]) continue;
+                for (const dir of ['n', 's', 'e', 'w']) {
+                    const exit = rData[4][dir];
+                    if (exit && explored.has(String(exit.target))) {
+                        ring1Revealed.add(vnum);
+                        break;
+                    }
+                }
             }
         }
     }
@@ -1342,17 +1326,9 @@ export const drawExplorationRevealOverlay = (
         if (!rData) continue;
         const tx = Math.round(rData[0]) * s;
         const ty = Math.round(rData[1]) * s;
-        const alphaMul = elapsed >= RING_REVEAL_MS
-            ? 1
-            : Math.max(0, Math.min(1, elapsed / RING_REVEAL_MS));
-        if (elapsed >= RING_REVEAL_MS) {
-            ctx.globalAlpha = 1;
-            fillTerrainTile(ctx, tx, ty, s);
-        } else {
-            ctx.globalAlpha = alphaMul;
-            fillAnimatedTerrainTile(ctx, tx, ty, s, revealInfo.dir, alphaMul);
-            rCtx.triggerRender?.();
-        }
+        const alphaMul = 1;
+        ctx.globalAlpha = 1;
+        fillTerrainTile(ctx, tx, ty, s);
 
         if ((rCtx.showTerrainIcons || rCtx.lowEffects) && rCtx.camera.zoom > 0.05) {
             const terrain = allRooms[`m_${vnum}`]?.terrain || allRooms[vnum]?.terrain || rData[3];
@@ -1365,19 +1341,6 @@ export const drawExplorationRevealOverlay = (
             ctx.save();
             ctx.filter = 'grayscale(1)';
             ctx.globalAlpha = alphaMul;
-            if (elapsed < RING_REVEAL_MS) {
-                ctx.beginPath();
-                const inset = getTerrainTileInset(s);
-                const ix = tx + inset;
-                const iy = ty + inset;
-                const is = s - inset * 2;
-                if (revealInfo.dir === 'n') ctx.rect(ix, iy, is, is * alphaMul);
-                else if (revealInfo.dir === 's') ctx.rect(ix, iy + is * (1 - alphaMul), is, is * alphaMul);
-                else if (revealInfo.dir === 'w') ctx.rect(ix, iy, is * alphaMul, is);
-                else if (revealInfo.dir === 'e') ctx.rect(ix + is * (1 - alphaMul), iy, is * alphaMul, is);
-                else ctx.rect(ix, iy, is, is);
-                ctx.clip();
-            }
             drawTerrainTileIcon(ctx, tx, ty, s, terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls);
             ctx.restore();
         }
@@ -1396,10 +1359,8 @@ export const drawExplorationRevealOverlay = (
             const exit = rData[4][dir];
             if (exit && ring1Revealed.has(String(exit.target))) {
                 const revealInfo = getRevealSource(String(exit.target), rCtx);
-                const revealStart = revealInfo ? revealInfo.time + RING_REVEAL_MS : 0;
-                const alpha = Math.max(0, Math.min(1, (rCtx.now - revealStart) / RING_REVEAL_MS));
-                if (alpha > 0) peekDirs.push({ dir, alpha });
-                if (alpha > 0 && alpha < 1) rCtx.triggerRender?.();
+                const alpha = 1;
+                if (revealInfo || ring1Revealed.has(String(exit.target))) peekDirs.push({ dir, alpha });
             }
         }
         if (peekDirs.length === 0) continue;
@@ -1486,22 +1447,6 @@ export const drawTerrains = (
                 }
             }
         }
-        for (let bx = bX1; bx <= bX2; bx++) {
-            for (let by = bY1; by <= bY2; by++) {
-                const bucket = floorIndex[`${bx},${by}`];
-                if (!bucket) continue;
-                for (let i = 0; i < bucket.length; i++) {
-                    const vnum = bucket[i];
-                    if (explored.has(vnum) || ring1Revealed.has(vnum)) continue;
-                    const rData = preloaded[vnum];
-                    if (!rData?.[4]) continue;
-                    for (const dir of ['n', 's', 'e', 'w']) {
-                        const exit = rData[4][dir];
-                        if (exit && ring1Revealed.has(String(exit.target))) { ring2Peeked.add(vnum); break; }
-                    }
-                }
-            }
-        }
     }
 
     for (let bx = bX1; bx <= bX2; bx++) {
@@ -1540,7 +1485,7 @@ export const drawTerrains = (
                      exploredBatches[color].push({ x: tx, y: ty, terrain, vnum, light: l, sundeath: sd, isPermanentSnow });
                 } else if (ring1Revealed.has(vnum)) {
                      const revealInfo = getRevealSource(vnum, rCtx);
-                     if (revealInfo && (rCtx.now - revealInfo.time < ringRevealMs)) {
+                     if (ringRevealMs > 0 && revealInfo && (rCtx.now - revealInfo.time < ringRevealMs)) {
                          ring1Animating.push({ x: tx, y: ty, terrain, vnum, revealInfo });
                      } else {
                          if (!ring1Batches[color]) ring1Batches[color] = [];
@@ -1618,10 +1563,11 @@ export const drawTerrains = (
                     const exit = ghostExits[dir];
                     if (exit && ring1Revealed.has(String(exit.target))) {
                         const revealInfo = getRevealSource(String(exit.target), rCtx);
-                        const revealStart = revealInfo ? revealInfo.time + ringRevealMs : 0;
-                        const alpha = Math.max(0, Math.min(1, (rCtx.now - revealStart) / ringRevealMs));
+                        const alpha = ringRevealMs > 0 && revealInfo
+                            ? Math.max(0, Math.min(1, (rCtx.now - (revealInfo.time + ringRevealMs)) / ringRevealMs))
+                            : 1;
                         if (alpha > 0) peekDirs.push({ dir, alpha });
-                        if (alpha < 1) rCtx.triggerRender?.();
+                        if (ringRevealMs > 0 && alpha < 1) rCtx.triggerRender?.();
                     }
                 }
                 if (peekDirs.length === 0) continue;
