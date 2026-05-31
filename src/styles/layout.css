@@ -868,6 +868,32 @@
     padding-right: 32px;
 }
 
+.cmd-action-title-stack {
+    flex: 1;
+    min-width: 0;
+    padding-right: 42px;
+    text-align: center;
+}
+
+.cmd-action-title-stack .cmd-action-title {
+    display: block;
+    padding-right: 0;
+}
+
+.cmd-action-subtitle {
+    display: block;
+    margin-top: 2px;
+    color: rgba(255,255,255,0.5);
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .cmd-action-body {
     display: flex;
     flex-direction: column;
@@ -940,6 +966,52 @@
     box-shadow: 0 0 8px rgba(212, 170, 0, 0.4);
 }
 
+.cmd-play-action-row {
+    display: grid;
+    grid-template-columns: minmax(68px, 0.7fr) minmax(0, 1.6fr) minmax(68px, 0.7fr);
+    gap: 8px;
+    align-items: stretch;
+}
+
+.cmd-play-action-row .char-play-btn,
+.cmd-play-action-row .char-secondary-btn {
+    min-width: 0;
+    height: 44px;
+    padding: 0 8px;
+}
+
+.char-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    color: rgba(255,255,255,0.72);
+    cursor: pointer;
+    font-family: var(--font-title);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+}
+
+.char-secondary-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255, 215, 0, 0.45);
+    color: #ffd700;
+}
+
+.char-secondary-btn:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.char-secondary-btn:disabled {
+    color: rgba(255,255,255,0.18);
+    cursor: not-allowed;
+}
+
 /* Character detail view */
 .char-detail-panel {
     display: flex;
@@ -960,11 +1032,10 @@
 }
 
 .char-back-btn {
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.09);
+    border: 1px solid rgba(255,255,255,0.16);
     border-radius: 8px;
-    color: rgba(255,255,255,0.7);
-    font-size: 16px;
+    color: rgba(255,255,255,0.82);
     width: 32px;
     height: 32px;
     display: flex;
@@ -972,7 +1043,13 @@
     justify-content: center;
     cursor: pointer;
     flex-shrink: 0;
+    line-height: 1;
+    padding: 0;
     transition: background 0.15s;
+}
+
+.char-back-btn svg {
+    display: block;
 }
 
 .char-back-btn:active {
@@ -983,8 +1060,8 @@
     color: #fff;
     font-size: 17px;
     font-weight: 800;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: 0.02em;
+    font-family: var(--font-title);
+    letter-spacing: 1px;
     flex: 1;
     text-align: center;
     padding-right: 32px; /* balance the back button */
@@ -999,15 +1076,18 @@
 
 .char-tab-btn {
     flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 8px;
     color: rgba(255,255,255,0.55);
     font-size: 12px;
     font-weight: 700;
-    font-family: 'Inter', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    font-family: var(--font-title);
+    letter-spacing: 1px;
     padding: 8px 0;
     cursor: pointer;
     transition: background 0.15s, color 0.15s, border-color 0.15s;

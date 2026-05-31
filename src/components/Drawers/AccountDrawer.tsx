@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { ArrowLeft, BookOpen, Info } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import type { GameContextType } from '../../context/GameContext/types';
 import type { AccountState, CharacterEntry } from '../../types';
@@ -26,10 +27,13 @@ const DATA_LINES: Record<'time' | 'link' | 'lag', keyof AccountState> = {
     lag: 'lagLines',
 };
 
-const AccountHeader: React.FC<{ title: string; onBack?: () => void }> = ({ title, onBack }) => (
+const AccountHeader: React.FC<{ title: string; subtitle?: string; onBack?: () => void }> = ({ title, subtitle, onBack }) => (
     <div className="cmd-action-header">
-        {onBack && <button className="char-back-btn" onClick={onBack}>{'<'}</button>}
-        <span className="cmd-action-title">{title}</span>
+        {onBack && <button className="char-back-btn" onClick={onBack}><ArrowLeft size={18} strokeWidth={2.8} /></button>}
+        <div className="cmd-action-title-stack">
+            <span className="cmd-action-title">{title}</span>
+            {subtitle && <span className="cmd-action-subtitle">{subtitle}</span>}
+        </div>
     </div>
 );
 
@@ -122,6 +126,28 @@ export const AccountDrawer: React.FC = () => {
         executeCommand(`play ${name}`);
     };
 
+    const requestCharacterData = (mode: 'info' | 'practice') => {
+        const name = playNameInput.trim() || accountState.selectedCharacter?.name;
+        if (!name) return;
+        const character = accountState.characters.find(char => char.name.toLowerCase() === name.toLowerCase()) ?? {
+            name,
+            race: '',
+            level: '',
+            logon: '',
+            area: '',
+            rent: '',
+        };
+        triggerHaptic(10);
+        setAccountState((prev: AccountState) => ({
+            ...prev,
+            selectedCharacter: character,
+            charSelectTab: mode,
+            charCapture: { type: mode },
+            ...(mode === 'info' ? { charInfoLines: [] } : { charPracticeLines: [] }),
+        }));
+        executeCommand(`${mode === 'info' ? 'info' : 'practice'} ${name}`, true);
+    };
+
     const renderDataPanel = (command: 'time' | 'link' | 'lag') => {
         const lines = (accountState[DATA_LINES[command]] ?? []) as string[];
         return (
@@ -152,13 +178,13 @@ export const AccountDrawer: React.FC = () => {
             <div className="char-detail-panel">
                 <AccountHeader title={selected.name} onBack={() => setAccountState((prev: AccountState) => ({ ...prev, selectedCharacter: null }))} />
                 <div className="char-detail-tabs">
-                    <button className={`char-tab-btn${accountState.charSelectTab === 'info' ? ' active' : ''}`} onClick={() => { setAccountState((prev: AccountState) => ({ ...prev, charSelectTab: 'info', charCapture: { type: 'info' }, charInfoLines: [] })); executeCommand(`info ${selected.name}`, true); }}>Info</button>
-                    <button className={`char-tab-btn${accountState.charSelectTab === 'practice' ? ' active' : ''}`} onClick={() => { setAccountState((prev: AccountState) => ({ ...prev, charSelectTab: 'practice', charCapture: { type: 'practice' }, charPracticeLines: [] })); executeCommand(`practice ${selected.name}`, true); }}>Practice</button>
+                    <button className={`char-tab-btn${accountState.charSelectTab === 'info' ? ' active' : ''}`} onClick={() => { setAccountState((prev: AccountState) => ({ ...prev, charSelectTab: 'info', charCapture: { type: 'info' }, charInfoLines: [] })); executeCommand(`info ${selected.name}`, true); }}><Info size={16} /><span>Info</span></button>
+                    <button className={`char-tab-btn${accountState.charSelectTab === 'practice' ? ' active' : ''}`} onClick={() => { setAccountState((prev: AccountState) => ({ ...prev, charSelectTab: 'practice', charCapture: { type: 'practice' }, charPracticeLines: [] })); executeCommand(`practice ${selected.name}`, true); }}><BookOpen size={16} /><span>Skills</span></button>
                 </div>
                 <div className="char-detail-content">
                     {accountState.charSelectTab
                         ? <div className="char-data-lines">{activeLines.length ? activeLines.map((line, i) => <AccountAnsiLine key={i} line={line} />) : <div className="char-data-loading">Loading...</div>}</div>
-                        : <div className="char-detail-hint">Select Info or Practice to view details</div>}
+                        : <div className="char-detail-hint">Select Info or Skills to view details</div>}
                 </div>
                 <div className="char-detail-play"><button className="char-play-btn" onClick={() => executeCommand(`play ${selected.name}`)}>Play {capitalize(selected.name)}</button></div>
             </div>
@@ -172,7 +198,7 @@ export const AccountDrawer: React.FC = () => {
     if (selectedMenuCommand === 'play') {
         return (
             <div className="cmd-action-panel">
-                <AccountHeader title="Play Character" onBack={goBack} />
+                <AccountHeader title="Play Character" subtitle="Name / Rce / Sub / Lvl / Logon area / Rent / Delete" onBack={goBack} />
                 <div className="cmd-play-char-list">
                     {accountState.characters.length
                         ? accountState.characters.map((entry: CharacterEntry) => <CharacterButton key={entry.name} entry={entry} selected={playNameInput === entry.name} onClick={() => selectCharacter(entry)} />)
@@ -180,7 +206,11 @@ export const AccountDrawer: React.FC = () => {
                 </div>
                 <div className="cmd-action-body">
                     <input className="cmd-name-input" value={playNameInput} onChange={e => setPlayNameInput(e.target.value)} placeholder="Character name..." onKeyDown={e => { if (e.key === 'Enter') playSelectedName(); }} />
-                    <button className="char-play-btn" disabled={!playNameInput.trim()} onClick={playSelectedName}>Play {playNameInput.trim() ? capitalize(playNameInput.trim()) : '...'}</button>
+                    <div className="cmd-play-action-row">
+                        <button className="char-secondary-btn" disabled={!playNameInput.trim()} onClick={() => requestCharacterData('info')} aria-label="Show character info" title="Info"><Info size={16} /><span>Info</span></button>
+                        <button className="char-play-btn" disabled={!playNameInput.trim()} onClick={playSelectedName}>Play {playNameInput.trim() ? capitalize(playNameInput.trim()) : '...'}</button>
+                        <button className="char-secondary-btn" disabled={!playNameInput.trim()} onClick={() => requestCharacterData('practice')} aria-label="Show character skills and spells" title="Skills and spells"><BookOpen size={16} /><span>Skills</span></button>
+                    </div>
                 </div>
             </div>
         );

@@ -5,7 +5,7 @@ import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useInputStore } from '../../../stores/useInputStore';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { DrawerType, GameContextType, UIContextType } from '../../../context/GameContext/types';
-import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock, Menu, ChevronLeft, HelpCircle } from 'lucide-react';
+import { ArrowLeft, BookOpen, CloudFog, Info, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock, Menu, ChevronLeft, HelpCircle } from 'lucide-react';
 import { useMapper } from '../../../context/useMapper';
 import { MapFilterBar } from '../../Mapper/MapFilterBar';
 
@@ -122,6 +122,29 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
     const [playNameInput, setPlayNameInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
+    const selectedPlayName = playNameInput.trim();
+
+    const requestCharacterData = (mode: 'info' | 'practice') => {
+        const name = selectedPlayName || accountState.selectedCharacter?.name;
+        if (!name) return;
+        const character = accountState.characters.find(char => char.name.toLowerCase() === name.toLowerCase()) ?? {
+            name,
+            race: '',
+            level: '',
+            logon: '',
+            area: '',
+            rent: '',
+        };
+        triggerHaptic(10);
+        setAccountState(prev => ({
+            ...prev,
+            selectedCharacter: character,
+            charSelectTab: mode,
+            charCapture: { type: mode },
+            ...(mode === 'info' ? { charInfoLines: [] } : { charPracticeLines: [] }),
+        }));
+        executeCommand(`${mode === 'info' ? 'info' : 'practice'} ${name}`, true);
+    };
 
     // Long-press drag-to-select on character lines:
     // - Normal swipe → cancels timer, scrolls as usual
@@ -266,7 +289,10 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                         <div className="cmd-action-panel">
                                             <div className="cmd-action-header">
                                                 <button className="char-back-btn" onClick={() => { triggerHaptic(10); setPlayNameInput(''); setAccountState(prev => ({ ...prev, selectedMenuCommand: null, characters: [] })); executeCommand('menu'); }}><Menu size={16} /></button>
-                                                <span className="cmd-action-title">Play Character</span>
+                                                <div className="cmd-action-title-stack">
+                                                    <span className="cmd-action-title">Play Character</span>
+                                                    <span className="cmd-action-subtitle">Name / Rce / Sub / Lvl / Logon area / Rent / Delete</span>
+                                                </div>
                                             </div>
                                             <div className="cmd-play-char-list">
                                                 {accountState.characters.length === 0 ? (
@@ -294,13 +320,35 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                     autoCapitalize="words"
                                                     spellCheck={false}
                                                 />
-                                                <button
-                                                    className="char-play-btn"
-                                                    disabled={!playNameInput.trim()}
-                                                    onClick={() => { if (!playNameInput.trim()) return; triggerHaptic(30); executeCommand('play ' + playNameInput.trim()); setPlayNameInput(''); }}
-                                                >
-                                                    Play {playNameInput.trim() ? capitalize(playNameInput.trim()) : '…'}
-                                                </button>
+                                                <div className="cmd-play-action-row">
+                                                    <button
+                                                        className="char-secondary-btn"
+                                                        disabled={!selectedPlayName}
+                                                        onClick={() => requestCharacterData('info')}
+                                                        aria-label="Show character info"
+                                                        title="Info"
+                                                    >
+                                                        <Info size={16} />
+                                                        <span>Info</span>
+                                                    </button>
+                                                    <button
+                                                        className="char-play-btn"
+                                                        disabled={!selectedPlayName}
+                                                        onClick={() => { if (!selectedPlayName) return; triggerHaptic(30); executeCommand('play ' + selectedPlayName); setPlayNameInput(''); }}
+                                                    >
+                                                        Play {selectedPlayName ? capitalize(selectedPlayName) : '...'}
+                                                    </button>
+                                                    <button
+                                                        className="char-secondary-btn"
+                                                        disabled={!selectedPlayName}
+                                                        onClick={() => requestCharacterData('practice')}
+                                                        aria-label="Show character skills and spells"
+                                                        title="Skills and spells"
+                                                    >
+                                                        <BookOpen size={16} />
+                                                        <span>Skills</span>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     ) : selectedMenuCommand === 'time' ? (
@@ -406,7 +454,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                     setAccountState(prev => ({ ...prev, selectedCharacter: null }));
                                                 }}
                                             >
-                                                ←
+                                                <ArrowLeft size={18} strokeWidth={2.8} />
                                             </button>
                                             <span className="char-detail-name">{accountState.selectedCharacter.name}</span>
                                         </div>
@@ -421,7 +469,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                     executeCommand('info ' + name, true);
                                                 }}
                                             >
-                                                Info
+                                                <Info size={16} />
+                                                <span>Info</span>
                                             </button>
                                             <button
                                                 className={`char-tab-btn${accountState.charSelectTab === 'practice' ? ' active' : ''}`}
@@ -432,7 +481,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                     executeCommand('practice ' + name, true);
                                                 }}
                                             >
-                                                Practice
+                                                <BookOpen size={16} />
+                                                <span>Skills</span>
                                             </button>
                                         </div>
 
@@ -460,7 +510,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                     }
                                                 </div>
                                             ) : (
-                                                <div className="char-detail-hint">Select Info or Practice to view details</div>
+                                                <div className="char-detail-hint">Select Info or Skills to view details</div>
                                             )}
                                         </div>
 
