@@ -76,6 +76,10 @@ interface MapCanvasProps {
     regionLabelEditMode?: boolean;
     selectedRegionLabelId?: string | null;
     joystickActive?: boolean;
+    closestRoomId?: string | null;
+    filterPathIds?: string[];
+    filterPathDistance?: number;
+    matchedRoomIds?: Set<string>;
 }
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
@@ -95,7 +99,8 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
         activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
         activeMapFilter, mapSearchQuery, mapTileOpacity, lighting, isImmersionMode,
-        regionLabels, regionLabelEditMode, selectedRegionLabelId, joystickActive
+        regionLabels, regionLabelEditMode, selectedRegionLabelId, joystickActive,
+        closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     } = props;
 
     const zoneFilters = useSettingsStore(state => state.zoneFilters);
@@ -114,6 +119,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
         activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
         activeMapFilter, mapSearchQuery, combatPulsesRef, zoneFilters,
+        closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds,
         mapTileVisuals,
         mapTileOpacity,
         lighting,

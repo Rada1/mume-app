@@ -64,7 +64,8 @@
       "Bash(Get-ChildItem -Recurse -Directory -Name)",
       "Bash(not exist *)",
       "Bash(mkdir -p \"C:\\\\Users\\\\pwetz\\\\Downloads\\\\mume app\\\\.claude\")",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "Bash(echo \"=== TOTAL: $\\(npx tsc --noEmit 2>&1)"
     ]
   }
 }

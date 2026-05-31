@@ -119,13 +119,14 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         rooms, setRooms, markers, setMarkers, currentRoomId,
         handleAddRoom, handleDeleteRoom, roomsRef,
         currentRoomIdRef, markersRef, preloadedCoordsRef,
-        unveilMap, handleSyncLocation,
+        unveilMap, exploredVnums, handleSyncLocation,
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
         renderVersion, triggerRender, activeMapFilter, setActiveMapFilter,
         mapSearchQuery, setMapSearchQuery,
         regionLabels, regionLabelEditMode, setExploredMarkers,
-        playerPosRef
+        playerPosRef,
+        closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     } = context;
     const [selectedRegionLabelId, setSelectedRegionLabelId] = useState<string | null>(null);
 
@@ -159,7 +160,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     }, [isTracingMode]);
 
     const { handleCenterOnPlayer } = useMapperPlayerTracking(currentRoomId, rooms, autoCenter, setAutoCenter, cameraRef, canvasRef, playerPosRef, playerTrailRef, lastRoomIdRef, triggerRender, setViewZ, preloadedCoordsRef);
-    const { walkTargetId, walkPath, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage);
+    const revealAll = !!(unveilMap || treatMapAsExplored);
+    const { isWalking, walkTargetId, walkPath, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage, revealAll, exploredVnums);
     const mode = ui.mapMode || 'play';
 
     useEffect(() => {
@@ -348,6 +350,10 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 heldButton={heldButton}
                 activeMapFilter={activeMapFilter}
                 mapSearchQuery={mapSearchQuery}
+                closestRoomId={closestRoomId}
+                filterPathIds={filterPathIds}
+                filterPathDistance={filterPathDistance}
+                matchedRoomIds={matchedRoomIds}
                 calibration={calibration}
                 vectors={vectors}
                 isTracingMode={isTracingMode}
@@ -358,6 +364,24 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 selectedRegionLabelId={selectedRegionLabelId}
                 joystickActive={joystick?.joystickActive}
             />
+
+            {!isWalking && filterPathIds && filterPathIds.length > 1 && closestRoomId && (
+                <div 
+                    className="map-go-there-popup"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                >
+                    <div className="map-go-there-info">
+                        Shortest Path: {filterPathDistance} {filterPathDistance === 1 ? 'room' : 'rooms'}
+                    </div>
+                    <button 
+                        className="map-go-there-btn"
+                        onClick={() => startWalking(closestRoomId, filterPathIds)}
+                    >
+                        Go there
+                    </button>
+                </div>
+            )}
 
             {!effectiveIsMinimized && !isMobile && (
                 <MapFilterBar

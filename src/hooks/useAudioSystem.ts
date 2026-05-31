@@ -151,7 +151,7 @@ export const useAudioEffects = () => {
     const playEventMoveSound = useCallback(() => playEffect('event-move'), [playEffect]);
     const playWearSound = useCallback(() => playEffect('wear'), [playEffect]);
     const playRemoveSound = useCallback(() => playEffect('remove'), [playEffect]);
-    const playLoadFlagSound = useCallback(() => playEffect('loadflag', { pitch: 1.0, volume: 0.5, skipJitter: true }), [playEffect]);
+    const playLoadFlagSound = useCallback(() => playEffect('loadflag', { pitch: 1.0, volume: 0.2, skipJitter: true }), [playEffect]);
     const playRideSound = useCallback(() => playEffect('ride'), [playEffect]);
     const playStopRidingSound = useCallback(() => playEffect('stopriding'), [playEffect]);
 

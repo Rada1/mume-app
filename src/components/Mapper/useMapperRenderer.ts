@@ -1,5 +1,5 @@
 import { useCallback, useRef, MutableRefObject } from 'react';
-import { GRID_SIZE, normalizeTerrain, checkRoomFilter, findClosestMatchingRoomPath } from './mapperUtils';
+import { GRID_SIZE, normalizeTerrain } from './mapperUtils';
 import { RenderContext } from './renderers/rendererUtils';
 import type { CombatPulse } from './renderers/rendererUtils';
 import { CompactMapExit, MapperPrediction, RegionLabel } from './mapperTypes';
@@ -135,6 +135,12 @@ interface RendererProps {
     heldButton?: any | null;
     activeMapFilter?: string | null;
     mapSearchQuery?: string;
+    // Filter results computed upstream (MapperContext) and passed in, so the expensive
+    // match scan + BFS path no longer run inside the render loop.
+    closestRoomId?: string | null;
+    filterPathIds?: string[];
+    filterPathDistance?: number;
+    matchedRoomIds?: Set<string>;
     combatPulsesRef?: MutableRefObject<CombatPulse[]>;
     mapTileOpacity?: number;
     mapTileVisuals?: any;
@@ -212,6 +218,7 @@ export const useMapperRenderer = ({
     inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
     activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
     activeMapFilter, mapSearchQuery, combatPulsesRef,
+    closestRoomId = null, filterPathIds = [], filterPathDistance = 0, matchedRoomIds = new Set(),
     mapTileVisuals, mapTileOpacity, zoneFilters,
     lighting = 'none',
     isImmersionMode = true,
@@ -251,19 +258,6 @@ export const useMapperRenderer = ({
         lastZoomActivity: 0,
         showTerrainIcons: true,
         showDoorLabels: true
-    });
-    const filterCacheRef = useRef<{
-        key: string;
-        matchedRoomIds: Set<string>;
-        closestRoomId: string | null;
-        filterPathIds: string[];
-        filterPathDistance: number;
-    }>({
-        key: '',
-        matchedRoomIds: new Set(),
-        closestRoomId: null,
-        filterPathIds: [],
-        filterPathDistance: 0
     });
     const filterFitRef = useRef<{ zoom: number, camX: number, camY: number } | null>(null);
 
@@ -363,80 +357,13 @@ export const useMapperRenderer = ({
             }
         }
 
-        // Filter scans and BFS are expensive on the full Arda map, so cache them
-        // between animation frames. Pulses can keep animating without re-running BFS.
-        let matchedRoomIds = filterCacheRef.current.matchedRoomIds;
-        let closestRoomId = filterCacheRef.current.closestRoomId;
-        let filterPathIds = filterCacheRef.current.filterPathIds;
-        let filterPathDistance = filterCacheRef.current.filterPathDistance;
-        const stableCurrentRoomId = stableRoomIdRef.current;
-        const filterKey = [
-            activeMapFilter || '',
-            (mapSearchQuery || '').trim().toLowerCase(),
-            stableCurrentRoomId || '',
-            roomsVersionRef.current,
-            Object.keys(preloaded).length,
-            revealAll ? 'all' : 'explored',
-            explored.size
-        ].join('|');
-
+        // Filter matches + BFS path are computed upstream (MapperContext) and arrive as
+        // props (matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance). The
+        // renderer just consumes them, keeping that expensive scan out of the draw loop.
         const effectiveFilter = activeMapFilter || '';
         const effectiveQuery = (mapSearchQuery || '').trim().toLowerCase();
         const filterActive = !!(effectiveFilter || effectiveQuery);
-
-        if (!filterActive) {
-            if (filterCacheRef.current.key !== '') {
-                filterCacheRef.current = {
-                    key: '',
-                    matchedRoomIds: new Set(),
-                    closestRoomId: null,
-                    filterPathIds: [],
-                    filterPathDistance: 0
-                };
-            }
-            matchedRoomIds = filterCacheRef.current.matchedRoomIds;
-            closestRoomId = null;
-            filterPathIds = [];
-            filterPathDistance = 0;
-        } else if (filterCacheRef.current.key !== filterKey) {
-            const nextMatchedRoomIds = new Set<string>();
-            // Custom/local rooms always count as candidates
-            Object.keys(allRooms).forEach(rid => {
-                const rawId = rid.startsWith('m_') ? rid.substring(2) : rid;
-                if (checkRoomFilter(rid, allRooms[rid], preloaded[rawId], effectiveFilter, effectiveQuery)) {
-                    nextMatchedRoomIds.add(rid);
-                }
-            });
-            // Preloaded rooms: only the explored set in normal mode; the `explored` set already
-            // contains every preloaded key when reveal-all is on.
-            explored.forEach(vnum => {
-                const rid = `m_${vnum}`;
-                if (nextMatchedRoomIds.has(rid)) return;
-                const pData = preloaded[vnum];
-                if (!pData) return;
-                if (checkRoomFilter(rid, allRooms[rid], pData, effectiveFilter, effectiveQuery)) {
-                    nextMatchedRoomIds.add(rid);
-                }
-            });
-
-            const closestPath = stableCurrentRoomId
-                ? findClosestMatchingRoomPath(stableCurrentRoomId, allRooms, preloaded, effectiveFilter, effectiveQuery, {
-                    treatMapAsExplored: revealAll,
-                    explored
-                })
-                : null;
-            filterCacheRef.current = {
-                key: filterKey,
-                matchedRoomIds: nextMatchedRoomIds,
-                closestRoomId: closestPath?.targetId || null,
-                filterPathIds: closestPath?.pathIds || [],
-                filterPathDistance: closestPath?.distance || 0
-            };
-            matchedRoomIds = filterCacheRef.current.matchedRoomIds;
-            closestRoomId = filterCacheRef.current.closestRoomId;
-            filterPathIds = filterCacheRef.current.filterPathIds;
-            filterPathDistance = filterCacheRef.current.filterPathDistance;
-        }
+        void filterPathDistance;
 
         // Compute fit-camera state so the animation hook can zoom to show player + target
         if (filterActive && closestRoomId && playerPosRef.current) {
@@ -545,7 +472,12 @@ export const useMapperRenderer = ({
         const lodChanged = cache.lastLodParams !== lodParams;
         const paramParts: [string, string | number | boolean][] = [
             ['z', curZInt], ['dark', isDarkMode], ['roomsV', cacheGeometryVersionRef.current],
-            ['explored', explored.size], ['unveil', unveilMap], ['treatExpl', treatMapAsExplored],
+            // explored.size intentionally omitted: including it forced a full static-cache
+            // rebuild on every room discovered (one per step while walking) — the discovery
+            // lag. Freshly discovered rooms appear via the screen-space reveal overlay, then
+            // fold into the cache once via the deferred bake (finalExplorationBakeDue) after
+            // movement settles. Makes discovery behave like reveal-all.
+            ['unveil', unveilMap], ['treatExpl', treatMapAsExplored],
             ['weather', weather], ['zone', activeZone || ''], ['zonePre', activeZonePreloaded || ''],
         ];
         const baseParams = paramParts.map(p => p[1]).join('_');
@@ -975,7 +907,7 @@ export const useMapperRenderer = ({
             ctx.drawImage(vc.canvas, 0, 0);
         }
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, entitiesRef, serverIdIndexRef, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, activeMapFilter, mapSearchQuery, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, regionLabelEditMode, selectedRegionLabelId]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, entitiesRef, serverIdIndexRef, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, walkTargetId, walkPath, activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, regionLabelEditMode, selectedRegionLabelId]);
 
     return { drawMap, filterFitRef };
 };

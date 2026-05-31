@@ -10,7 +10,7 @@ import { useMapData } from '../components/Mapper/hooks/useMapData';
 import { useMapPersistence } from '../components/Mapper/hooks/useMapPersistence';
 import { useMapActions } from '../components/Mapper/hooks/useMapActions';
 import { useMapGmcphandlers } from '../components/Mapper/hooks/useMapGmcphandlers';
-import { DIRS, getExitTargetId, getGateState } from '../components/Mapper/mapperUtils';
+import { DIRS, getExitTargetId, getGateState, checkRoomFilter, findClosestMatchingRoomPath } from '../components/Mapper/mapperUtils';
 import { MapperPrediction, MapperRoom, MapperMarker, RegionLabel } from '../components/Mapper/mapperTypes';
 import { useRegionLabels } from '../components/Mapper/hooks/useRegionLabels';
 import { useSettingsStore } from '../stores/useSettingsStore';
@@ -67,6 +67,7 @@ interface MapperContextType {
     setInfoRoomId: React.Dispatch<React.SetStateAction<string | null>>;
     markersRef: React.MutableRefObject<Record<string, MapperMarker>>;
     exploredRef: React.MutableRefObject<Set<string>>;
+    explored: Set<string>;
     exploredVnums: Set<string>;
     exploredMarkers: Set<string>;
     setExploredMarkers: React.Dispatch<React.SetStateAction<Set<string>>>;
@@ -76,6 +77,10 @@ interface MapperContextType {
     setActiveMapFilter: React.Dispatch<React.SetStateAction<string | null>>;
     mapSearchQuery: string;
     setMapSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+    closestRoomId: string | null;
+    filterPathIds: string[];
+    filterPathDistance: number;
+    matchedRoomIds: Set<string>;
 
     // Region Labels (global, LOTR-style large text)
     regionLabels: Record<string, RegionLabel>;
@@ -164,6 +169,14 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Filtering & Navigation State
     const [activeMapFilter, setActiveMapFilter] = useState<string | null>(null);
     const [mapSearchQuery, setMapSearchQuery] = useState<string>('');
+    const [closestRoomId, setClosestRoomId] = useState<string | null>(null);
+    const [filterPathIds, setFilterPathIds] = useState<string[]>([]);
+    const [filterPathDistance, setFilterPathDistance] = useState<number>(0);
+    const [matchedRoomIds, setMatchedRoomIds] = useState<Set<string>>(new Set());
+
+    // Stable empty sentinels — avoid creating new Set()/[] on every inactive render
+    const EMPTY_SET = useRef(new Set<string>()).current;
+    const EMPTY_PATH = useRef<string[]>([]).current;
 
     // Region Labels (global, LOTR-style large text overlays)
     const {
@@ -172,15 +185,110 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         regionLabelEditMode, setRegionLabelEditMode
     } = useRegionLabels();
 
-    useEffect(() => {
-        triggerRender();
-    }, [activeMapFilter, mapSearchQuery, triggerRender]);
-
     // Settings from Zustand
     const allowPersistence = useSettingsStore(s => s.allowMapPersistence);
     const setAllowPersistence = useSettingsStore(s => s.setAllowMapPersistence);
     const unveilMap = useSettingsStore(s => s.unveilMap);
     const setUnveilMap = useSettingsStore(s => s.setUnveilMap);
+
+    const { activeView, isSpectating } = useModeStore();
+    const treatMapAsExplored = isSpectating && activeView === 'target';
+
+    const explored = useMemo(() => {
+        const revealAll = treatMapAsExplored || unveilMap;
+        if (revealAll) {
+            return new Set(Object.keys(preloadedCoordsRef.current));
+        }
+        return exploredVnums;
+    }, [treatMapAsExplored, unveilMap, exploredVnums]);
+
+    // --- Debounced BFS pathfinding ---
+    // When only currentRoomId changes (player moving), debounce the expensive
+    // BFS so rapid room transitions don't each trigger a full 50K-iteration
+    // graph search. Filter/query changes fire immediately.
+    const bfsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const lastFilterKeyRef = useRef('');
+    const filterPathIdsRef = useRef<string[]>([]);
+    useEffect(() => { filterPathIdsRef.current = filterPathIds; }, [filterPathIds]);
+
+    useEffect(() => {
+        const preloaded = preloadedCoordsRef.current;
+        const effectiveFilter = activeMapFilter || '';
+        const effectiveQuery = (mapSearchQuery || '').trim().toLowerCase();
+        const filterActive = !!(effectiveFilter || effectiveQuery);
+
+        if (!filterActive) {
+            if (bfsTimerRef.current) { clearTimeout(bfsTimerRef.current); bfsTimerRef.current = null; }
+            lastFilterKeyRef.current = '';
+            setMatchedRoomIds(EMPTY_SET);
+            setClosestRoomId(null);
+            setFilterPathIds(EMPTY_PATH);
+            setFilterPathDistance(0);
+            return;
+        }
+
+        // Determine if only the player position changed (same filter/query)
+        const filterKey = `${effectiveFilter}|${effectiveQuery}`;
+        const isFilterChange = filterKey !== lastFilterKeyRef.current;
+        lastFilterKeyRef.current = filterKey;
+
+        const runBfs = () => {
+            const nextMatchedRoomIds = new Set<string>();
+            // Custom/local rooms
+            Object.keys(rooms).forEach(rid => {
+                const rawId = rid.startsWith('m_') ? rid.substring(2) : rid;
+                if (checkRoomFilter(rid, rooms[rid], preloaded[rawId], effectiveFilter, effectiveQuery)) {
+                    nextMatchedRoomIds.add(rid);
+                }
+            });
+            // Preloaded/explored rooms
+            explored.forEach(vnum => {
+                const rid = `m_${vnum}`;
+                if (nextMatchedRoomIds.has(rid)) return;
+                const pData = preloaded[vnum];
+                if (!pData) return;
+                if (checkRoomFilter(rid, rooms[rid], pData, effectiveFilter, effectiveQuery)) {
+                    nextMatchedRoomIds.add(rid);
+                }
+            });
+
+            const revealAll = !!(treatMapAsExplored || unveilMap);
+            const closestPath = currentRoomId
+                ? findClosestMatchingRoomPath(currentRoomId, rooms, preloaded, effectiveFilter, effectiveQuery, {
+                    treatMapAsExplored: revealAll,
+                    explored
+                })
+                : null;
+
+            setMatchedRoomIds(nextMatchedRoomIds);
+            setClosestRoomId(closestPath?.targetId || null);
+            setFilterPathIds(closestPath?.pathIds || EMPTY_PATH);
+            setFilterPathDistance(closestPath?.distance || 0);
+
+            triggerRender();
+        };
+
+        // Clear any pending debounce
+        if (bfsTimerRef.current) { clearTimeout(bfsTimerRef.current); bfsTimerRef.current = null; }
+
+        const currentRawId = currentRoomId?.replace(/^m_/, '') || '';
+        const currentIsOnPath = !!currentRawId && filterPathIdsRef.current.some(pathId => pathId.replace(/^m_/, '') === currentRawId);
+
+        if (isFilterChange || currentIsOnPath) {
+            // Filter/query changed — run immediately for responsive UI
+            runBfs();
+        } else {
+            // Only currentRoomId changed (player moved) — debounce to avoid
+            // running expensive BFS on every rapid room transition
+            bfsTimerRef.current = setTimeout(runBfs, 150);
+        }
+
+        return () => {
+            if (bfsTimerRef.current) { clearTimeout(bfsTimerRef.current); bfsTimerRef.current = null; }
+        };
+    // NOTE: renderVersion intentionally excluded — including it created a
+    // feedback loop since this effect calls triggerRender() which increments it.
+    }, [currentRoomId, activeMapFilter, mapSearchQuery, rooms, explored, treatMapAsExplored, unveilMap, triggerRender, EMPTY_SET, EMPTY_PATH]);
 
     // Refs
     const pendingMovesRef = useRef<{ dir: string, time: number, resolved?: boolean }[]>([]);
@@ -423,7 +531,6 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         clearPrediction(confirmedRoomId);
     }, [clearPrediction]);
 
-    const { activeView } = useModeStore();
     const { playLoadFlagSound } = useAudioEffects();
 
     const [newlyExploredRoomId, setNewlyExploredRoomId] = useState<string | null>(null);
@@ -617,11 +724,12 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         triggerRender, renderVersion,
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
-        markersRef, exploredRef, exploredVnums, exploredMarkers, setExploredMarkers, spatialIndexRef, firstExploredAtRef,
+        markersRef, exploredRef, explored, exploredVnums, exploredMarkers, setExploredMarkers, spatialIndexRef, firstExploredAtRef,
         serverIdIndexRef,
         activeMapFilter, setActiveMapFilter, mapSearchQuery, setMapSearchQuery,
         regionLabels, regionLabelsRef, addRegionLabel, updateRegionLabel, deleteRegionLabel,
-        regionLabelEditMode, setRegionLabelEditMode
+        regionLabelEditMode, setRegionLabelEditMode,
+        closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     }), [
         rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId, newlyExploredRoomId,
         currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef,
@@ -631,11 +739,12 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         handleMoveConfirmed, handleMoveFailure, renderVersion,
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
-        markersRef, exploredRef, exploredVnums, exploredMarkers, setExploredMarkers, spatialIndexRef, firstExploredAtRef,
+        markersRef, exploredRef, explored, exploredVnums, exploredMarkers, setExploredMarkers, spatialIndexRef, firstExploredAtRef,
         serverIdIndexRef,
         activeMapFilter, setActiveMapFilter, mapSearchQuery, setMapSearchQuery,
         regionLabels, regionLabelsRef, addRegionLabel, updateRegionLabel, deleteRegionLabel,
-        regionLabelEditMode, setRegionLabelEditMode
+        regionLabelEditMode, setRegionLabelEditMode,
+        closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     ]);
 
     // --- Proximity Reveal for Markers ---

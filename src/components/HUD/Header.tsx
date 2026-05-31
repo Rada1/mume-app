@@ -143,6 +143,11 @@ const Header: React.FC<HeaderProps> = () => {
         } else {
             triggerHaptic(30);
             setActiveMapFilter('RENT');
+            setUI(prev => ({
+                ...prev,
+                mapExpanded: true,
+                drawer: 'none'
+            }));
             addMessage('system', 'You must rent a room at an Inn to keep your equipment safe while you rest. The map is now showing the path to the nearest Inn.');
         }
     };

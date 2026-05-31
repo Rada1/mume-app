@@ -147,7 +147,7 @@ export const AUDIO_MANIFEST = {
         'event-move': { path: '/assets/Sounds/UI/move.mp3', defaultVolume: 0.4 },
         'wear': { path: '/assets/Sounds/UI/wear.mp3', defaultVolume: 0.8 },
         'remove': { path: '/assets/Sounds/UI/remove.mp3', defaultVolume: 0.8 },
-        'loadflag': { path: '/assets/Sounds/UI/loadflag.mp3', defaultVolume: 0.8 },
+        'loadflag': { path: '/assets/Sounds/UI/loadflag.mp3', defaultVolume: 0.3 },
         'ride': { path: '/assets/Sounds/UI/ride.mp3', defaultVolume: 0.8 },
         'stopriding': { path: '/assets/Sounds/UI/stopriding.mp3', defaultVolume: 0.8 },
         'target': { path: '/assets/Sounds/UI/target.mp3', defaultVolume: 0.07 },

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { GmcpRoomInfo, MapperRoom } from '../mapperTypes';
 import { generateId, normalizeTerrain, DIRS, getExitTargetId } from '../mapperUtils';
 import { findBestTextRoomMatch } from '../textRoomMatcher';
@@ -40,6 +40,12 @@ export const useRoomInfoHandler = ({
     firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, addMessage, showDebugEchoes, preMoveRef,
     deathRoomId, setDeathRoomId, baseMapExitsRef, lastGmcpMoveTimeRef, activeView
 }: RoomInfoProps) => {
+
+    // Debounce for syncing the explored Set into React state / persistence. The hot
+    // discovery path mutates exploredRef.current in place (O(1)); this collapses a
+    // walking burst into a single Set clone after the player settles, instead of one
+    // clone per room (which was O(n) per step → O(n²) over a session).
+    const exploredSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
         let gmcpId = data.num !== undefined ? data.num : (data.vnum !== undefined ? data.vnum : data.id);
@@ -395,17 +401,29 @@ export const useRoomInfoHandler = ({
         if (targetId && targetId.startsWith('m_')) {
             const vnum = targetId.substring(2);
             if (!exploredRef.current.has(vnum)) {
-                const nextExplored = new Set(exploredRef.current);
-                nextExplored.add(vnum);
-                exploredRef.current = nextExplored;
+                // Mutate in place (O(1)) instead of cloning the whole set every step.
+                // The renderer reads exploredRef.current directly, so triggerRender()
+                // surfaces the new room immediately; React state + persistence only need
+                // the change eventually, so we debounce a single cloned sync per burst.
+                exploredRef.current.add(vnum);
                 if (firstExploredAtRef.current[vnum] === undefined) {
                     firstExploredAtRef.current[vnum] = now;
                     firstExploredAtRef.current['_latest'] = now;
                 }
-                setExploredVnums(nextExplored);
                 triggerRender?.();
+                if (exploredSyncTimerRef.current !== null) {
+                    clearTimeout(exploredSyncTimerRef.current);
+                }
+                exploredSyncTimerRef.current = setTimeout(() => {
+                    exploredSyncTimerRef.current = null;
+                    // One clone hands React/persistence a fresh reference to observe.
+                    setExploredVnums(new Set(exploredRef.current));
+                }, 1000);
                 const roomLoadFlags = preloadedCoordsRef.current[vnum]?.[8] as string[] | undefined;
-                if (roomLoadFlags && roomLoadFlags.length > 0) {
+                const roomMobFlags = preloadedCoordsRef.current[vnum]?.[7] as string[] | undefined;
+                const hasLoadFlags = roomLoadFlags && roomLoadFlags.length > 0;
+                const hasMobFlags = roomMobFlags && roomMobFlags.length > 0;
+                if (hasLoadFlags || hasMobFlags) {
                     onFirstVisitLoadFlag?.(targetId!);
                 }
             }

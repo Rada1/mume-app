@@ -388,7 +388,9 @@ export const useMapAnimation = ({
     useEffect(() => {
         ctxRef.current = null; // Reset context when dimensions or render dependencies change
         triggerAnimation();
-    }, [triggerAnimation, drawMap, renderVersion, currentRoomId, walkTargetId, activeMapFilter]);
+    // NOTE: currentRoomId intentionally excluded — room changes are handled by
+    // the wake key system (wakeUntilRef) without needing to restart the loop.
+    }, [triggerAnimation, drawMap, renderVersion, walkTargetId, activeMapFilter]);
 
     useEffect(() => {
         return () => {

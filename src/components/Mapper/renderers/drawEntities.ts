@@ -482,17 +482,14 @@ const updateExitSwipeHintCoordinates = (
     const parent = ctx.canvas.parentElement;
     if (!parent) return;
 
-    if (joystickActive || camera.zoom < 0.6) {
-        parent.style.setProperty('--player-cx', '-9999px');
-        parent.style.setProperty('--player-cy', '-9999px');
-        return;
-    }
-
     const screenX = (px - camera.x) * camera.zoom;
     const screenY = (py - camera.y) * camera.zoom;
     parent.style.setProperty('--player-cx', `${screenX}px`);
     parent.style.setProperty('--player-cy', `${screenY}px`);
     parent.style.setProperty('--player-zoom', `${camera.zoom}`);
+
+    const showHints = !joystickActive && camera.zoom >= 0.6;
+    parent.style.setProperty('--swipe-hints-opacity', showHints ? '1' : '0');
 };
 
 export const drawEntities = (
@@ -732,8 +729,14 @@ export const drawEntities = (
                 ctx.setLineDash([5 / rCtx.camera.zoom, 5 / rCtx.camera.zoom]);
                 
                 if (rCtx.walkPath && rCtx.walkPath.length > 0) {
+                    const activeRawId = rCtx.activeId ? getRawRoomId(rCtx.activeId) : '';
+                    const activePathIndex = rCtx.walkPath.findIndex(stepId => getRawRoomId(stepId) === activeRawId);
+                    const visibleWalkPath = activePathIndex >= 0
+                        ? rCtx.walkPath.slice(activePathIndex + 1)
+                        : rCtx.walkPath;
+
                     ctx.moveTo(px, py);
-                    rCtx.walkPath.forEach((stepId) => {
+                    visibleWalkPath.forEach((stepId) => {
                         const sRoom = allRooms[stepId] || allRooms[`m_${stepId}`];
                         let sx, sy;
                         if (sRoom) {
@@ -1370,9 +1373,16 @@ export const drawFilterHighlights = (
 
     // 0. Draw the active filter route from current room to nearest matching flag.
     if (filterPathIds && filterPathIds.length > 1) {
+        const activeRawId = rCtx.activeId ? getRawRoomId(rCtx.activeId) : '';
+        const activePathIndex = filterPathIds.findIndex(stepId => getRawRoomId(stepId) === activeRawId);
+        const visibleFilterPathIds = activePathIndex >= 0
+            ? filterPathIds.slice(activePathIndex)
+            : filterPathIds;
+        if (visibleFilterPathIds.length <= 1) return;
+
         // Keep null slots so the polyline breaks at unresolvable / off-floor waypoints
         // instead of drawing a long diagonal teleport through them.
-        const pathCenters = filterPathIds.map(getRoomCenter);
+        const pathCenters = visibleFilterPathIds.map(getRoomCenter);
         const visiblePoints = pathCenters.filter((p): p is { x: number, y: number } => p !== null);
 
         if (visiblePoints.length > 1) {
@@ -1456,7 +1466,7 @@ export const drawFilterHighlights = (
             });
 
             const labelPoint = visiblePoints[Math.max(0, Math.floor(visiblePoints.length / 2) - 1)];
-            const roomsAway = filterPathDistance || Math.max(0, filterPathIds.length - 1);
+            const roomsAway = Math.max(0, visibleFilterPathIds.length - 1);
             const label = `${roomsAway} ${roomsAway === 1 ? 'room' : 'rooms'}`;
 
             ctx.save();
