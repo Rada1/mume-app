@@ -74,7 +74,10 @@ export interface VitalsContextType {
     setOpponentName: (val: string | null) => void;
     xpHistory: { old: number; new: number };
     xpEvent: number;
-    triggerXpTicker: () => void;
+    triggerXpTicker: (xp?: number) => void;
+    tpHistory: { old: number; new: number };
+    tpEvent: number;
+    triggerTpTicker: (tp?: number) => void;
     gameTime: import('../../types').MumeTime | null;
     setGameTime: Dispatch<SetStateAction<import('../../types').MumeTime | null>>;
     roomName: string | null;

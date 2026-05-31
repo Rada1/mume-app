@@ -162,6 +162,8 @@ export const useSessionState = (
 
     const [xpHistory, _setXpHistory] = useState({ old: 0, new: 0 });
     const [xpEvent, _setXpEvent] = useState(0);
+    const [tpHistory, _setTpHistory] = useState({ old: 0, new: 0 });
+    const [tpEvent, _setTpEvent] = useState(0);
     const triggerXpTicker = useCallback((xp?: number) => {
         if (xp !== undefined) {
             _setXpHistory(prev => {
@@ -171,14 +173,29 @@ export const useSessionState = (
         }
         _setXpEvent(prev => prev + 1);
     }, []);
+    const triggerTpTicker = useCallback((tp?: number) => {
+        if (tp !== undefined) {
+            _setTpHistory(prev => {
+                if (prev.new === tp) return prev;
+                return { old: prev.new, new: tp };
+            });
+        }
+        _setTpEvent(prev => prev + 1);
+    }, []);
 
-    // Sync XP changes from the store (GMCP) to the ticker state
+    // Sync XP/TP changes from the store (GMCP) to the ticker state
     useEffect(() => {
         const currentXp = vStore.characterInfo.xp;
         if (currentXp !== undefined && currentXp !== xpHistory.new) {
             triggerXpTicker(currentXp);
         }
     }, [vStore.characterInfo.xp, xpHistory.new, triggerXpTicker]);
+    useEffect(() => {
+        const currentTp = vStore.characterInfo.tp;
+        if (currentTp !== undefined && currentTp !== tpHistory.new) {
+            triggerTpTicker(currentTp);
+        }
+    }, [vStore.characterInfo.tp, tpHistory.new, triggerTpTicker]);
 
     useEffect(() => { roomNameRef.current = roomName; }, [roomName]);
 
@@ -280,6 +297,7 @@ export const useSessionState = (
         bufferName, setBufferName, playerHealthStatus, setPlayerHealthStatus, opponentName, opponentId,
         setOpponentId, opponentHealthStatus, bufferHealthStatus, characterInfo: vStore.characterInfo,
         setCharacterInfo, groupMembers, setGroupMembers, xpHistory, xpEvent, triggerXpTicker,
+        tpHistory, tpEvent, triggerTpTicker,
         gameTime, setGameTime,
         pendingMove: null, setPendingMove: () => {},
         setOpponentHealthStatus, setBufferHealthStatus, setOpponentName,
@@ -290,7 +308,7 @@ export const useSessionState = (
     } as VitalsContextType), [
         stats, target, activePrompt, rumble, deathRoomId, heldButton, setHeldButton, bufferName, playerHealthStatus,
         opponentName, opponentId, opponentHealthStatus, bufferHealthStatus, groupMembers,
-        xpHistory, xpEvent, gameTime, roomName, currentName, vStore.characterInfo, setCharacterInfo
+        xpHistory, xpEvent, tpHistory, tpEvent, gameTime, roomName, currentName, vStore.characterInfo, setCharacterInfo
     ]);
 
     return useMemo(() => ({

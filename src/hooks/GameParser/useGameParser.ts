@@ -348,6 +348,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setOpponentHealthStatus,
         setOpponentName,
         triggerXpTicker: deps.triggerXpTicker,
+        triggerTpTicker: deps.triggerTpTicker,
         setSpectateInCombat: deps.setSpectateInCombat,
         setSpectateOpponentName: deps.setSpectateOpponentName,
         setSpectateOpponentStatus: deps.setSpectateOpponentStatus

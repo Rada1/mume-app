@@ -78,6 +78,7 @@ export interface UseGameParserDeps {
     sessionMode: SessionMode;
     inCombatRef: MutableRefObject<boolean>;
     triggerXpTicker: (xp?: number) => void;
+    triggerTpTicker: (tp?: number) => void;
     groupMembers: GroupMember[];
     activeGroupMembers: GroupMember[];
     setDeathRoomId: (id: string | null) => void;

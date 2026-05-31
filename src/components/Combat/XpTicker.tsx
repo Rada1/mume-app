@@ -5,11 +5,35 @@ interface XpTickerProps {
     isLandscape?: boolean;
     align?: 'center' | 'right' | 'left';
     variant?: 'floating' | 'header';
+    kind?: 'xp' | 'tp';
 }
 
-const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center', variant = 'floating' }) => {
-    const { xpHistory, xpEvent } = useVitals();
-    
+const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center', variant = 'floating', kind = 'xp' }) => {
+    const { xpHistory, xpEvent, tpHistory, tpEvent } = useVitals();
+    const history = kind === 'tp' ? tpHistory : xpHistory;
+    const event = kind === 'tp' ? tpEvent : xpEvent;
+    const label = kind.toUpperCase();
+    const colors = kind === 'tp'
+        ? {
+            headerBg: 'rgba(14, 165, 233, 0.1)',
+            headerBorder: 'rgba(14, 165, 233, 0.3)',
+            headerColor: '#38bdf8',
+            headerGlow: 'rgba(56, 189, 248, 0.2)',
+            floatingColor: '#38bdf8',
+            floatingBorder: '#38bdf8',
+            floatingGlow: 'rgba(56, 189, 248, 0.4)',
+            floatingSoftGlow: 'rgba(56, 189, 248, 0.1)'
+        }
+        : {
+            headerBg: 'rgba(34, 197, 94, 0.1)',
+            headerBorder: 'rgba(34, 197, 94, 0.3)',
+            headerColor: '#4ade80',
+            headerGlow: 'rgba(74, 222, 128, 0.2)',
+            floatingColor: '#22ff55',
+            floatingBorder: '#22ff55',
+            floatingGlow: 'rgba(34, 255, 85, 0.4)',
+            floatingSoftGlow: 'rgba(34, 255, 85, 0.1)'
+        };
 
     const [isVisible, setIsVisible] = useState(false);
     const [displayDelta, setDisplayDelta] = useState(0);
@@ -20,20 +44,20 @@ const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center', vari
     const sessionActiveRef = useRef<boolean>(false);
     
     const totalAccumulatedRef = useRef<number>(0);
-    const lastTotalXpRef = useRef<number>(xpHistory.new);
+    const lastTotalRef = useRef<number>(history.new);
     const currentDisplayRef = useRef<number>(0);
 
     // Track the absolute total to detect jumps
     useEffect(() => {
         // Initialization: if we were at 0 and now have a real value, 
         // just set the baseline without showing a jump.
-        if (lastTotalXpRef.current === 0 && xpHistory.new > 0) {
-            lastTotalXpRef.current = xpHistory.new;
+        if (lastTotalRef.current === 0 && history.new > 0) {
+            lastTotalRef.current = history.new;
             return;
         }
 
-        const jump = xpHistory.new - lastTotalXpRef.current;
-        lastTotalXpRef.current = xpHistory.new;
+        const jump = history.new - lastTotalRef.current;
+        lastTotalRef.current = history.new;
 
 
         // If no positive change in total XP, do nothing
@@ -67,7 +91,7 @@ const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center', vari
         // Start/Update counting animation
         startAnimation(currentDisplayRef.current, totalAccumulatedRef.current);
 
-    }, [xpHistory.new, xpEvent]);
+    }, [history.new, event]);
 
     const startAnimation = (from: number, to: number) => {
         if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
@@ -148,18 +172,18 @@ const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center', vari
     };
 
     const cardStyle: React.CSSProperties = isHeader ? {
-        backgroundColor: isLandscape ? 'rgba(34, 197, 94, 0.1)' : 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: isLandscape ? colors.headerBg : 'rgba(0, 0, 0, 0.5)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        border: isLandscape ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(255, 255, 255, 0.15)',
+        border: isLandscape ? `1px solid ${colors.headerBorder}` : '1px solid rgba(255, 255, 255, 0.15)',
         borderRadius: '6px',
         padding: isLandscape ? '4px 10px' : '4px 8px',
-        color: '#4ade80',
+        color: colors.headerColor,
         fontWeight: '800',
         fontSize: isLandscape ? '0.75rem' : '0.75rem',
         fontVariantNumeric: 'tabular-nums',
         boxShadow: isBumping 
-            ? '0 0 15px rgba(74, 222, 128, 0.2), 0 4px 12px rgba(0, 0, 0, 0.2)' 
+            ? `0 0 15px ${colors.headerGlow}, 0 4px 12px rgba(0, 0, 0, 0.2)` 
             : '0 4px 12px rgba(0, 0, 0, 0.1)',
         whiteSpace: 'nowrap',
         transition: 'all 0.2s ease',
@@ -171,17 +195,17 @@ const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center', vari
         backgroundColor: 'rgba(15, 23, 42, 0.85)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        border: isBumping ? '1px solid #22ff55' : '1px solid rgba(255, 255, 255, 0.12)',
+        border: isBumping ? `1px solid ${colors.floatingBorder}` : '1px solid rgba(255, 255, 255, 0.12)',
         borderRadius: '2px',
         padding: '2px 8px',
-        color: '#22ff55', 
+        color: colors.floatingColor, 
         fontWeight: '900',
         fontSize: isLandscape ? '0.8rem' : '0.9rem',
         fontVariantNumeric: 'tabular-nums',
         transform: 'skewX(-20deg)',
         boxShadow: isBumping 
-            ? '0 0 15px rgba(34, 255, 85, 0.4), 0 4px 12px rgba(0, 0, 0, 0.5)' 
-            : '0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(34, 255, 85, 0.1)',
+            ? `0 0 15px ${colors.floatingGlow}, 0 4px 12px rgba(0, 0, 0, 0.5)` 
+            : `0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px ${colors.floatingSoftGlow}`,
         whiteSpace: 'nowrap',
         transition: 'all 0.2s ease'
     };
@@ -191,7 +215,7 @@ const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center', vari
             <div style={cardStyle}>
                 <div style={isHeader ? {} : { transform: 'skewX(20deg)' }}>
                     {isHeader && isLandscape && <span style={{ opacity: 0.7, fontSize: '0.65rem' }}>GAIN</span>}
-                    +{displayDelta.toLocaleString()} XP
+                    +{displayDelta.toLocaleString()} {label}
                 </div>
             </div>
         </div>

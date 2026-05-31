@@ -607,6 +607,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playStopRidingSound,
         triggerHaptic,
         triggerXpTicker: v.triggerXpTicker,
+        triggerTpTicker: v.triggerTpTicker,
 
         // State Refs
         sessionMode: session.sessionMode,
@@ -962,12 +963,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         v.isMendingMode, v.mendingTarget, v.bufferName, v.playerHealthStatus,
         v.opponentName, v.opponentId, v.opponentHealthStatus, v.bufferHealthStatus,
         v.characterInfo, v.groupMembers, v.pendingMove,
-        v.xpHistory, v.xpEvent, v.gameTime, v.roomName, v.characterName,
+        v.xpHistory, v.xpEvent, v.tpHistory, v.tpEvent, v.gameTime, v.roomName, v.characterName,
         v.setStats, v.setTarget, v.setRumble, v.setDeathRoomId, v.setHeldButton,
         v.setIsMendingMode, v.setMendingTarget, v.setBufferName, v.setPlayerHealthStatus,
         v.setOpponentId, v.setOpponentName, v.setOpponentHealthStatus, v.setBufferHealthStatus,
         v.setCharacterInfo, v.setGroupMembers, v.setPendingMove,
-        v.triggerXpTicker, v.setGameTime
+        v.triggerXpTicker, v.triggerTpTicker, v.setGameTime
     ]);
 
     // Highlight-only vitals projection: identity changes ONLY when target/opponent change,

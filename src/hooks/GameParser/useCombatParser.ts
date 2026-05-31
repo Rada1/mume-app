@@ -11,7 +11,8 @@ export interface CombatParserDeps {
     setOpponentHealthStatus: (val: CombatHealthStatus | null) => void;
     setOpponentName: (val: string | null) => void;
     setCharacterInfo: (val: CharacterInfo | ((prev: CharacterInfo) => CharacterInfo)) => void;
-    triggerXpTicker?: () => void;
+    triggerXpTicker?: (xp?: number) => void;
+    triggerTpTicker?: (tp?: number) => void;
     groupMembers: GroupMember[];
     mapperRef?: React.RefObject<any>;
     setDeathRoomId?: (val: string | null) => void;
@@ -43,6 +44,7 @@ export function useCombatParser(deps: CombatParserDeps) {
         setOpponentName,
         setCharacterInfo,
         triggerXpTicker,
+        triggerTpTicker,
         groupMembers,
         mapperRef,
         setDeathRoomId,
@@ -162,6 +164,7 @@ export function useCombatParser(deps: CombatParserDeps) {
 
     const handleXpTicker = useCallback((lower: string, isSnoop: boolean = false) => {
         const xpTextMatch = lower.match(/you receive (\d+) experience/i);
+        const tpTextMatch = lower.match(/you (?:receive|gain) (\d+) (?:tp|tps|travel points?)/i);
 
         if (xpTextMatch) {
             const delta = parseInt(xpTextMatch[1], 10);
@@ -170,6 +173,20 @@ export function useCombatParser(deps: CombatParserDeps) {
                     ...prev, 
                     xp: prev.xp + delta 
                 }));
+            }
+            return true;
+        } else if (tpTextMatch) {
+            const delta = parseInt(tpTextMatch[1], 10);
+            if (delta > 0 && !isSnoop) {
+                setCharacterInfo(prev => {
+                    const nextTp = prev.tp + delta;
+                    triggerTpTicker?.(nextTp);
+                    return {
+                        ...prev,
+                        tp: nextTp,
+                        tpnl: Math.max(0, prev.tpnl - delta)
+                    };
+                });
             }
             return true;
         } else if (/you receive your share of experience/i.test(lower)) {
@@ -182,7 +199,7 @@ export function useCombatParser(deps: CombatParserDeps) {
             return true;
         }
         return false;
-    }, [setCharacterInfo, triggerXpTicker, playLevelSound]);
+    }, [setCharacterInfo, triggerXpTicker, triggerTpTicker, playLevelSound]);
 
     const parseCombatLine = useCallback((textOnly: string, cleanLine: string, isSnoop: boolean = false): any => {
         const lower = textOnly.toLowerCase();

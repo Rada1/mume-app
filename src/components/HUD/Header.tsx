@@ -226,10 +226,14 @@ const Header: React.FC<HeaderProps> = () => {
                         left: viewport.isMobile && !viewport.isLandscape ? 'calc(100% + 8px)' : 'auto',
                         top: viewport.isMobile && !viewport.isLandscape ? '50%' : 'auto',
                         transform: viewport.isMobile && !viewport.isLandscape ? 'translateY(-50%)' : 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
                         zIndex: 9999,
                         pointerEvents: 'none'
                     }}>
                         <XpTicker variant="header" isLandscape={viewport.isLandscape} />
+                        <XpTicker variant="header" isLandscape={viewport.isLandscape} kind="tp" />
                     </div>
                 )}
             </div>
