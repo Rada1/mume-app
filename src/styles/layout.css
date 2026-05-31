@@ -16,10 +16,12 @@
 
 .app-container.is-map-expanded,
 .app-container.has-drawer-open {
+    --mobile-gutter-height: 50vh;
     --mobile-gutter-height: 50dvh;
 }
 
 .app-container.state-account.is-mobile:not(.is-landscape) {
+    --mobile-gutter-height: 50vh;
     --mobile-gutter-height: 50dvh;
 }
 
@@ -510,7 +512,8 @@
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
-        overflow: visible !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
     }
 
     .account-gutter::before {
@@ -525,13 +528,14 @@
 
     .account-gutter-content {
         width: 100% !important;
-        height: 100% !important;
+        height: auto !important;
+        min-height: 100% !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
         gap: 0;
-        padding: calc(env(safe-area-inset-top, 0px) + 20px) 12px env(safe-area-inset-bottom, 0px) 12px !important;
+        padding: calc(env(safe-area-inset-top, 0px) + 20px) 12px calc(var(--mobile-bottom-reserved-space, 0px) + 20px) 12px !important;
         box-sizing: border-box !important;
     }
 
@@ -615,6 +619,47 @@
     @keyframes account-glow-pulse {
         0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
         50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    /* Keyboard open state adjustments to keep the login card visible and scrollable */
+    .app-container.kb-open .mobile-bottom-gutter.account-gutter {
+        height: 100% !important;
+        border-radius: 0;
+        z-index: var(--z-hud-interactive);
+        overflow-y: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .app-container.kb-open .mobile-bottom-gutter.account-gutter .account-gutter-content {
+        height: auto !important;
+        min-height: 100% !important;
+        overflow-y: visible !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        padding: 12px !important;
+    }
+
+    .app-container.kb-open .mobile-bottom-gutter.account-gutter .account-login-glow {
+        min-height: 0 !important;
+        flex: 1 1 auto !important;
+        padding-top: 0 !important;
+        justify-content: center !important;
+    }
+
+    .app-container.kb-open .mobile-bottom-gutter.account-gutter .login-card-container {
+        margin: 8px auto !important;
+    }
+
+    .app-container.kb-open .mobile-bottom-gutter.account-gutter .login-card {
+        min-height: 0 !important;
+        padding: 16px !important;
+    }
+
+    .app-container.kb-open .mobile-bottom-gutter.account-gutter .login-prompt-text {
+        min-height: 0 !important;
+        margin-bottom: 8px !important;
     }
 }
 

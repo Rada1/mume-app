@@ -76,6 +76,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         const trimmedLine = cleanLine.trim();
 
         if (!trimmedLine) {
+            if (isSilentListingRef.current) return true;
             // Surgically suppress empty lines ONLY during stat editing to prevent layout 'shifting'.
             // For all other account stages, preserve them to maintain intended terminal spacing.
             return accountStageRef.current === 'stat-editing';
@@ -84,6 +85,75 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         // Sync silent listing ref with state
         if (accountState.isGathering) {
             isSilentListingRef.current = true;
+        }
+
+        // --- Silent Listing Mode Fast-Path ---
+        if (isSilentListingRef.current) {
+            // 1. Detect Paginator (needs auto-advance)
+            const isPaginator = trimmedLine.includes('Return: continue') ||
+                                trimmedLine.includes('*** [Hit Return') ||
+                                (trimmedLine.startsWith('***') && trimmedLine.toLowerCase().includes('continue')) ||
+                                (trimmedLine.includes('(') && trimmedLine.includes('%)') && trimmedLine.includes('continue'));
+            if (isPaginator) {
+                queueMicrotask(() => sendCommand(''));
+                return true;
+            }
+
+            // 2. Detect Ending Prompt Account>
+            if (trimmedLine.endsWith('Account>') || trimmedLine === 'Account>') {
+                console.log('[AccountParser] Silent listing finished');
+                isSilentListingRef.current = false;
+                setAccountState(prev => ({ 
+                    ...prev, 
+                    isGathering: false, 
+                    stage: 'account-menu',
+                    currentPrompt: undefined,
+                    creationPrompt: undefined,
+                    pointsLeft: undefined,
+                    stats: undefined
+                }));
+                setGameState('account');
+                captureStage.current = 'none';
+                setIsPasswordMode(false);
+                return true;
+            }
+
+            // 3. Detect Character Entries (to populate characters array in state)
+            const isSelectStage = accountStageRef.current === 'account-menu';
+            const charMatch = trimmedLine.match(/^\s*(\d+)\)\s+([a-zA-Z]+)\s+(\d+)\s+([a-zA-Z\-]+)\s+(.*?)\s+(Yesterday|Today|[\d\w\s]+ago|Never)\s+(.*)$/i);
+            if (isSelectStage && charMatch) {
+                const [_, index, name, level, race, sublevel, logon, rent] = charMatch;
+                const newChar: CharacterEntry = { index: parseInt(index), name, level: parseInt(level), race, sublevel, logon, rent, area: '', rawLine: cleanLine };
+                setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
+                return true;
+            }
+
+            const logonRegex = /(\d+\s+(?:days?|yrs?|wks?|weeks?|months?|mths?|hours?|hrs?|mins?|secs?|ago|years?)|Yesterday|Today|Never|\bnew\b|\bPlaying\b|\bno link\b|\bRetired\b|\bDead\b)/i;
+            const logonMatchLine = trimmedLine.match(logonRegex);
+            if (isSelectStage && logonMatchLine && logonMatchLine.index !== undefined && logonMatchLine.index > 20) {
+                const cleanName = trimmedLine.split(/\s+/)[0];
+                const exclusions = ['play', 'create', 'new', 'time', 'list', 'move', 'password', 'add', 'info', 'practice', 'link', 'lag', 'help', 'menu', 'quit', 'where'];
+                const lowerName = cleanName.toLowerCase();
+                
+                if (/^[a-zA-Z\u00C0-\u00FF\-]{2,15}$/.test(cleanName) && !exclusions.includes(lowerName)) {
+                    const name = cleanLine.substring(0, 14).trim() || cleanName;
+                    const newChar: CharacterEntry = {
+                        name,
+                        race: cleanLine.substring(14, 18).trim(),
+                        sublevel: cleanLine.substring(18, 22).trim(),
+                        level: (logonMatchLine.index > 22) ? cleanLine.substring(22, logonMatchLine.index).trim() : '',
+                        logon: logonMatchLine[1].trim(),
+                        area: trimmedLine.substring(logonMatchLine.index + logonMatchLine[0].length).trim().split(/\s+/)[0] || '',
+                        rent: trimmedLine.substring(logonMatchLine.index + logonMatchLine[0].length).trim().split(/\s+/)[1] || '',
+                        rawLine: cleanLine,
+                    };
+                    setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
+                    return true;
+                }
+            }
+
+            // Suppress every other line during silent listing from both screen logging and side-effects
+            return true;
         }
 
         // --- 0. Global Prompt Detection: Account> ---

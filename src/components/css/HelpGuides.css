@@ -3,6 +3,7 @@
 .help-guides-container {
     display: flex;
     flex-direction: column;
+    height: min(70vh, 720px);
     height: min(70dvh, 720px);
     min-height: 460px;
     background: var(--bg-app);
@@ -91,6 +92,7 @@
 
 @media (max-width: 600px) {
     .help-guides-container {
+        height: calc(100vh - 140px);
         height: calc(100dvh - 140px);
         min-height: 0;
     }
