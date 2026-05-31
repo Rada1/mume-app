@@ -67,6 +67,9 @@ export interface GmcpCharVitals {
     xp?: number;
     xp_max?: number;
     'next-level-xp'?: number;
+    tp?: number;
+    tp_max?: number;
+    'next-level-tp'?: number;
     alertness?: string | null;
     'spell-effort'?: string | null;
     carrying?: string | null;

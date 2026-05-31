@@ -39,7 +39,7 @@ describe('findBestTextRoomMatch', () => {
         const preloaded = {
             100: preloadedRoom(0, 0, 'Current Room', { n: { target: '101' } }),
             101: preloadedRoom(0, -1, 'Hidden Spring in the Grass', {}, 'A clear spring bubbles as cool water')
-        } as Parameters<typeof findBestTextRoomMatch>[4];
+        } as unknown as Parameters<typeof findBestTextRoomMatch>[4];
 
         const match = findBestTextRoomMatch({
             name: 'Hidden Spring in the Grass',
@@ -57,7 +57,7 @@ describe('findBestTextRoomMatch', () => {
         const preloaded = {
             100: preloadedRoom(0, 0, 'Current Room', { n: { target: '101' } }),
             101: preloadedRoom(0, -1, 'Hidden Spring in the Grass')
-        } as Parameters<typeof findBestTextRoomMatch>[4];
+        } as unknown as Parameters<typeof findBestTextRoomMatch>[4];
 
         const match = findBestTextRoomMatch({
             name: 'A Tree in the Grass'

@@ -372,7 +372,7 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                                                         className="prompt-inventory-chip-main"
                                                         onClick={event => selectChip(event, chip)}
                                                         onPointerDown={event => startObjectDrag(event, {
-                                                            row: row.id,
+                                                            row: row.id as 'worn' | 'inventory',
                                                             noun: getChipCommandNoun(chip),
                                                             label: chip.label
                                                         })}
@@ -396,7 +396,7 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                                                     className={`prompt-inventory-chip${isChipTargeted(chip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
                                                     onClick={event => selectChip(event, chip)}
                                                     onPointerDown={event => startObjectDrag(event, {
-                                                        row: row.id,
+                                                        row: row.id as 'worn' | 'inventory',
                                                         noun: getChipCommandNoun(chip),
                                                         label: chip.label
                                                     })}

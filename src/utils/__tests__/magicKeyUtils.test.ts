@@ -18,6 +18,7 @@ const makeTarget = (overrides: Partial<TeleportTarget> = {}): TeleportTarget => 
     label: 'house',
     customName: 'house',
     expiresAt: Date.now() + 60_000,
+    command: "cast 'teleport' skiszeoxvi",
     ...overrides
 });
 

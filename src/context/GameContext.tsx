@@ -805,7 +805,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setCharTab: ui.setCharTab,
         handleTabClick: (drawer: 'none' | 'account' | 'character' | 'players' | 'equipment' | 'status') => {
             if (drawer === 'none') {
-                const defaultDrawer = gameState === 'account' && s.userSession.mode !== 'replay' ? 'account' : 'status';
+                const defaultDrawer = s.gameState === 'account' && s.userSession.mode !== 'replay' ? 'account' : 'status';
                 ui.setDrawer(viewport.isMobile ? 'none' : defaultDrawer);
                 return;
             }

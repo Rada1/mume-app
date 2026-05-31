@@ -27,7 +27,7 @@ const isSnooped = (data: unknown) =>
 
 // --- Logic Section ---
 
-gmcpBus.on('Char.Opponent', (data) => {
+gmcpBus.on('Char.Opponent', (data: any) => {
     if (!isSnooped(data)) return;
     const value = data.data;
     if (typeof value === 'string') {
@@ -37,7 +37,7 @@ gmcpBus.on('Char.Opponent', (data) => {
     }
 });
 
-gmcpBus.on('Char.Buffer', (data) => {
+gmcpBus.on('Char.Buffer', (data: any) => {
     if (!isSnooped(data)) return;
     const value = data.data;
     if (typeof value === 'string') {

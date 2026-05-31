@@ -4,12 +4,6 @@
  */
 
 import { GameEntity } from '../types';
-/**
- * @file keywordUtils.ts
- * @description Unified utility for MUME keyword extraction, sanitization, and overrides.
- */
-
-import { GameEntity } from '../types';
 
 /**
  * Hardcoded keyword exceptions for specific MUME items where heuristic parsing fails.

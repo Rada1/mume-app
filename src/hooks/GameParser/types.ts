@@ -186,4 +186,5 @@ export interface UseGameParserDeps {
     actionsRef: RefObject<GameAction[]>;
     gameTime: MumeTime | null;
     setPopoverState?: (state: PopoverState | null) => void;
+    help: any;
 }

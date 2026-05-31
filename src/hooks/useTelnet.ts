@@ -379,7 +379,7 @@ export function useTelnet(config: TelnetConfig) {
                             configRef.current.processLine(line, tokens);
                         }
                     );
-                }, 0);
+                });
             }
         }
     };
