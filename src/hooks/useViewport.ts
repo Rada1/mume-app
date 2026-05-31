@@ -301,20 +301,27 @@ export function useViewport(
 
         // --- Robust Base Height Detection ---
         const widthChanged = Math.abs(currentWidth - lastWidthRef.current) > 50;
+        const isFocusableActive = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
 
-        if (offsetTop === 0 || baseHeightRef.current === 0 || widthChanged) {
+        if (!isFocusableActive || baseHeightRef.current === 0 || widthChanged) {
             if (currentHeight > 500 || widthChanged || baseHeightRef.current === 0) {
-                if (widthChanged || currentHeight > baseHeightRef.current) {
-                    baseHeightRef.current = currentHeight;
-                    lastWidthRef.current = currentWidth;
+                const screenHeight = window.screen.height;
+                const isProbablyKeyboardOpenAtMount = isFocusableActive && currentHeight < screenHeight * 0.7;
+
+                if (isProbablyKeyboardOpenAtMount) {
+                    baseHeightRef.current = screenHeight - 100;
+                } else {
+                    if (widthChanged || currentHeight > baseHeightRef.current) {
+                        baseHeightRef.current = currentHeight;
+                    }
                 }
+                lastWidthRef.current = currentWidth;
             }
         }
 
-        const isFocusableActive = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
         const heightDrop = baseHeightRef.current - currentHeight;
         const threshold = isLandscape ? 40 : 60;
-        const isKeyboardPhysicallyPresent = heightDrop > threshold || (baseHeightRef.current > 0 && currentHeight < baseHeightRef.current * 0.8);
+        const isKeyboardPhysicallyPresent = heightDrop > threshold || (baseHeightRef.current > 0 && currentHeight < baseHeightRef.current * 0.8) || (isFocusableActive && currentHeight < window.screen.height * 0.65);
 
         const targetState = isKeyboardPhysicallyPresent;
 
@@ -380,6 +387,8 @@ export function useViewport(
 
         window.addEventListener('resize', updateHeight);
         window.addEventListener('orientationchange', updateHeight);
+        window.addEventListener('focusin', updateHeight);
+        window.addEventListener('focusout', updateHeight);
         updateHeight();
 
         return () => {
@@ -389,6 +398,8 @@ export function useViewport(
             }
             window.removeEventListener('resize', updateHeight);
             window.removeEventListener('orientationchange', updateHeight);
+            window.removeEventListener('focusin', updateHeight);
+            window.removeEventListener('focusout', updateHeight);
         };
     }, [updateHeight]);
 

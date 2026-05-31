@@ -154,8 +154,8 @@
         display: none !important;
     }
 
-    /* Shrink gutter to just the input bar when keyboard is open */
-    .kb-open .mobile-bottom-gutter {
+    /* Shrink gutter to just the input bar when keyboard is open (excluding account stages) */
+    .kb-open .mobile-bottom-gutter:not(.account-gutter) {
         height: 70px !important;
         border-radius: 0;
         z-index: var(--z-hud-interactive);

@@ -506,7 +506,7 @@
     box-shadow: 0 0 12px rgba(239, 68, 68, 0.65), inset 0 0 8px rgba(239, 68, 68, 0.35);
 }
 
-@media (max-width: 1024px) and (orientation: portrait) {
+@media (max-width: 1024px) {
     /* Account Mode Mobile Centering */
     .account-gutter {
         background: transparent !important;
@@ -638,6 +638,7 @@
         display: flex !important;
         flex-direction: column !important;
         justify-content: center !important;
+        justify-content: safe center !important;
         padding: 12px !important;
     }
 
@@ -646,10 +647,11 @@
         flex: 1 1 auto !important;
         padding-top: 0 !important;
         justify-content: center !important;
+        justify-content: safe center !important;
     }
 
     .app-container.kb-open .mobile-bottom-gutter.account-gutter .login-card-container {
-        margin: 8px auto !important;
+        margin: auto !important;
     }
 
     .app-container.kb-open .mobile-bottom-gutter.account-gutter .login-card {
