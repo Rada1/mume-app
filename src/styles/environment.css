@@ -20,17 +20,21 @@
 
 .environment-root.front {
     z-index: 4500;
+}
+
+.environment-root.front > * {
     transition: opacity 0.22s ease;
 }
 
-/* Motion relief: the front atmosphere overlays (clouds, fog, rain, embers) are
+/* Motion relief: the front atmosphere overlays (clouds, fog, rain) are
    full-screen blend layers sitting above the log/map. While the log is scrolling or a
    directional swipe gesture is active, they must re-composite over the moving content
    every frame — the main source of immersion-mode choppiness. Fade them out during
    active interaction and back in the moment it stops; the scene is static while reading,
-   so full quality is preserved exactly when it's visible. */
-body.ui-scrolling .environment-root.front,
-body.ui-gesturing .environment-root.front {
+   so full quality is preserved exactly when it's visible. Keep embers visible so they
+   can respond to commands and accelerate into a flurry without disappearing/reappearing. */
+body.ui-scrolling .environment-root.front > :not(.embers-container),
+body.ui-gesturing .environment-root.front > :not(.embers-container) {
     opacity: 0;
 }
 
@@ -585,13 +589,19 @@ body.ui-gesturing .environment-root.front {
     overflow: hidden;
 }
 
+.is-desktop .embers-container {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: var(--log-max-width);
+}
+
 .ember-particle {
     position: absolute;
     top: var(--start-y);
     left: var(--start-x);
     border-radius: 50%;
     will-change: transform, opacity;
-    animation: ember-drift linear infinite;
     mix-blend-mode: screen;
 }
 

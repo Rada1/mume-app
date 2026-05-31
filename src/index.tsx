@@ -69,6 +69,7 @@ const MudClient = () => {
         setMumeEditState,
         isBloomEnabled,
         isImmersionMode,
+        isPerformanceMode,
         inCombat,
         isNewbieMode,
         commandPreview,
@@ -214,14 +215,8 @@ const MudClient = () => {
         handleSend(e);
     }, [handleSend]);
 
-    const heldButtonActionType = typeof heldButton?.id === 'string'
-        ? btn.buttons.find((button: any) => button.id === heldButton.id)?.actionType
-        : undefined;
-    const isTacticalTargetingActive = !!heldButton
-        && !heldButton.didFire
-        && typeof heldButton.id === 'string'
-        && (heldButton.id.startsWith('tactical-') || heldButton.id === 'map-long-press')
-        && heldButtonActionType !== 'modifier';
+    // Tactical-targeting is now scoped to the message-log container (see MainContentLayer)
+    // rather than the root .app-container, to bound style recalc to the log subtree.
     const isDrawerTargetingActive = !!heldButton
         && !heldButton.didFire
         && typeof heldButton.id === 'string'
@@ -229,7 +224,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container state-${gameState} stage-${accountState?.stage || 'none'} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isTacticalTargetingActive ? 'tactical-targeting-active' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
+            className={`app-container state-${gameState} stage-${accountState?.stage || 'none'} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isPerformanceMode ? 'performance-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();

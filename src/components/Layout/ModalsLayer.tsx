@@ -91,6 +91,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setHidePrompt,
         showBlockHeaders,
         setShowBlockHeaders,
+        isPerformanceMode,
+        setIsPerformanceMode,
         autoSaveSessions,
         setAutoSaveSessions,
         parley,
@@ -206,6 +208,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setHidePrompt={setHidePrompt}
                     showBlockHeaders={showBlockHeaders}
                     setShowBlockHeaders={setShowBlockHeaders}
+                    isPerformanceMode={isPerformanceMode}
+                    setIsPerformanceMode={setIsPerformanceMode}
                     autoSaveSessions={autoSaveSessions}
                     setAutoSaveSessions={setAutoSaveSessions}
                     fontFamily={fontFamily}

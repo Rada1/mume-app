@@ -5,6 +5,7 @@
 
 import React, { useEffect, useLayoutEffect, useRef, useMemo, useState } from 'react';
 import { useGame } from '../../context/GameContext';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import { normalizeTerrain } from '../../utils/terrainUtils';
 import './EnvironmentGlow.css';
 
@@ -135,7 +136,10 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
     lighting = 'none',
     input,
 }) => {
-    const { isImmersionMode, theme, viewport } = useGame() as any;
+    const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
+    const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
+    const theme = useSettingsStore(s => s.theme);
+    const { viewport, gameState } = useGame() as any;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [visibleHeight, setVisibleHeight] = useState<number | null>(null);
@@ -269,7 +273,7 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
     // Canvas animation loop
     useEffect(() => {
         const canvas = canvasRef.current;
-        if (!canvas || !isImmersionMode) return;
+        if (!canvas || !isImmersionMode || isPerformanceMode) return;
 
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
@@ -376,19 +380,12 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
                 // wave line across the whole width (a purely vertical gradient would clip
                 // whichever side rises higher).
                 const leftCenterY = h * leftYPercent;
-                const rightCenterY = h * rightYPercent;
-                const dy = rightCenterY - leftCenterY;
-                const segLen = Math.hypot(w, dy) || 1;
-                const nx = -dy / segLen;
-                const ny = w / segLen;
-                const above = finalAmp * 1.3;
-                const below = finalAmp * 0.5;
                 const grad = ctx.createLinearGradient(
-                    -nx * above, leftCenterY - ny * above,
-                    nx * below, leftCenterY + ny * below,
+                    0, leftCenterY - finalAmp * 2,
+                    0, h
                 );
                 grad.addColorStop(0, `hsla(${color.h}, ${s}%, ${l}%, 0)`);
-                grad.addColorStop(0.55, `hsla(${color.h}, ${s}%, ${l}%, 1)`);
+                grad.addColorStop(0.5, `hsla(${color.h}, ${s}%, ${l}%, ${alpha})`);
                 grad.addColorStop(1, `hsla(${color.h}, ${s}%, ${l}%, 1)`);
 
                 ctx.fillStyle = grad;
@@ -407,9 +404,15 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
                 ctx.restore();
             };
 
-            // Single terrain-colored wave. leftY < rightY produces the top-left → bottom-right slope.
+            // Two waves are layered — a larger lighting-colored wave behind, and a smaller
+            // terrain-colored wave in front — so both colors stay visible side by side.
             const leftY = isMobile ? 0.64 : 0.72;
             const rightY = isMobile ? 0.80 : 0.88;
+            
+            // 1. Lighting-colored wave (larger, behind)
+            drawWave(0, 0.9, 0.35, leftY - 0.08, rightY - 0.08, cur.cL);
+            
+            // 2. Terrain-colored wave (smaller, in front)
             drawWave(Math.PI * 0.6, 1.4, 0.6, leftY, rightY, cur.c1);
 
             frameId = requestAnimationFrame(render);
@@ -421,12 +424,12 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
             cancelAnimationFrame(frameId);
             observer.disconnect();
         };
-        // Only depend on isImmersionMode — color/lighting changes are read via refs so
+        // Only depend on isImmersionMode and isPerformanceMode — color/lighting changes are read via refs so
         // the animation loop persists and `currentColors` lerps smoothly across rooms.
-    }, [isImmersionMode]);
+    }, [isImmersionMode, isPerformanceMode]);
 
-    // Render static fallback gradient if immersion mode is disabled
-    if (!isImmersionMode) {
+    // Render static fallback gradient if immersion mode is disabled or performance mode is active
+    if (!isImmersionMode || isPerformanceMode) {
         const bgStyle = {
             background: `linear-gradient(180deg, 
                 transparent ${isMobile ? 52 : 60}%, 

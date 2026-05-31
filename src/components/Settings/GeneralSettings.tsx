@@ -44,6 +44,8 @@ interface GeneralSettingsProps {
     setHidePrompt: (val: boolean) => void;
     showBlockHeaders: boolean;
     setShowBlockHeaders: (val: boolean) => void;
+    isPerformanceMode: boolean;
+    setIsPerformanceMode: (val: boolean) => void;
 }
 
 // --- Helpers ---
@@ -113,6 +115,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setHidePrompt,
     showBlockHeaders,
     setShowBlockHeaders,
+    isPerformanceMode,
+    setIsPerformanceMode,
 }) => {
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const setIsSpectateMode = useModeStore(s => s.setIsSpectating);
@@ -396,6 +400,14 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     description="Enable lighting, weather, fog, embers, and scene backgrounds."
                     value={isImmersionMode}
                     onToggle={() => setIsImmersionMode(!isImmersionMode)}
+                />
+
+                {/* Performance Mode */}
+                <ToggleRow
+                    label="Performance Mode"
+                    description="Disable blurs, shadows, animations, transitions, and weather for smoother performance."
+                    value={isPerformanceMode}
+                    onToggle={() => setIsPerformanceMode(!isPerformanceMode)}
                 />
             </div>
 

@@ -1008,3 +1008,91 @@ canvas.map-canvas {
 .mobile-mini-map.expanded::after {
     opacity: 0;
 }
+
+/* --- GPU-Accelerated Map Swipe Hints Overlay --- */
+.map-swipe-hints-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.map-swipe-hint {
+    position: absolute;
+    left: var(--player-cx, -9999px);
+    top: var(--player-cy, -9999px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    pointer-events: none;
+    will-change: transform, opacity;
+    visibility: hidden;
+}
+
+.map-swipe-hint.active {
+    visibility: visible;
+}
+
+.map-swipe-hint .hint-chevron {
+    opacity: 0.22;
+    animation: swipe-hint-pulse 3.2s infinite ease-in-out;
+    display: block;
+}
+
+.map-swipe-hint .hint-chevron.nw-stair {
+    animation: swipe-hint-pulse-nw 3.2s infinite ease-in-out;
+}
+
+.map-swipe-hint .hint-chevron.se-stair {
+    animation: swipe-hint-pulse-se 3.2s infinite ease-in-out;
+}
+
+.map-swipe-hint.n {
+    margin-top: calc(-48px * var(--player-zoom, 1));
+    transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.map-swipe-hint.e {
+    margin-left: calc(48px * var(--player-zoom, 1));
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.map-swipe-hint.s {
+    margin-top: calc(48px * var(--player-zoom, 1));
+    transform: translate(-50%, -50%) rotate(180deg);
+}
+
+.map-swipe-hint.w {
+    margin-left: calc(-48px * var(--player-zoom, 1));
+    transform: translate(-50%, -50%) rotate(270deg);
+}
+
+.map-swipe-hint.up {
+    margin-top: calc(-33px * var(--player-zoom, 1));
+    margin-left: calc(-33px * var(--player-zoom, 1));
+    transform: translate(-50%, -50%);
+}
+
+.map-swipe-hint.down {
+    margin-top: calc(33px * var(--player-zoom, 1));
+    margin-left: calc(33px * var(--player-zoom, 1));
+    transform: translate(-50%, -50%);
+}
+
+@keyframes swipe-hint-pulse {
+    0%, 100% { transform: translateY(1.5px); }
+    50% { transform: translateY(-3px); }
+}
+
+@keyframes swipe-hint-pulse-nw {
+    0%, 100% { transform: translate(1px, 1px); }
+    50% { transform: translate(-2px, -2px); }
+}
+
+@keyframes swipe-hint-pulse-se {
+    0%, 100% { transform: translate(-1px, -1px); }
+    50% { transform: translate(2px, 2px); }
+}
+
+

@@ -57,6 +57,8 @@ interface SettingsModalProps {
     setHidePrompt: (val: boolean) => void;
     showBlockHeaders: boolean;
     setShowBlockHeaders: (val: boolean) => void;
+    isPerformanceMode: boolean;
+    setIsPerformanceMode: (val: boolean) => void;
 
     // Button specific props
     isEditMode: boolean;
@@ -81,6 +83,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     isTextRevealEnabled, setIsTextRevealEnabled,
     hidePrompt, setHidePrompt,
     showBlockHeaders, setShowBlockHeaders,
+    isPerformanceMode, setIsPerformanceMode,
     isEditMode, setIsEditMode, isGridEnabled, setIsGridEnabled, createButton,
     setIsSetManagerOpen,
 }) => {
@@ -173,6 +176,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setHidePrompt={setHidePrompt}
                                 showBlockHeaders={showBlockHeaders}
                                 setShowBlockHeaders={setShowBlockHeaders}
+                                isPerformanceMode={isPerformanceMode}
+                                setIsPerformanceMode={setIsPerformanceMode}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

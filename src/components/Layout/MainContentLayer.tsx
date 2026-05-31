@@ -164,6 +164,18 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     const { activeView } = useModeStore();
 
+    // Tactical-targeting flag, scoped to the log container instead of the root
+    // .app-container. Toggling a class on the root invalidates style matching for the
+    // entire tree; scoping it here bounds the recalc to the message log subtree.
+    const heldBtnActionType = typeof heldButton?.id === 'string'
+        ? btn.buttons.find((b: any) => b.id === heldButton.id)?.actionType
+        : undefined;
+    const isTacticalTargetingActive = !!heldButton
+        && !heldButton.didFire
+        && typeof heldButton.id === 'string'
+        && (heldButton.id.startsWith('tactical-') || heldButton.id === 'map-long-press')
+        && heldBtnActionType !== 'modifier';
+
     return (
         <div className={`content-layer view-mode-${activeView}`}>
             <Header
@@ -178,7 +190,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
             <div className="message-log-wrapper" style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
                 <div
-                    className="message-log-container"
+                    className={`message-log-container${isTacticalTargetingActive ? ' tactical-targeting-active' : ''}`}
                     ref={logContainerRef}
                     style={{
                         flex: 1,

@@ -145,6 +145,7 @@ interface RendererProps {
     regionLabels?: Record<string, RegionLabel>;
     regionLabelEditMode?: boolean;
     selectedRegionLabelId?: string | null;
+    joystickActive?: boolean;
 }
 
 interface PendingBuild {
@@ -218,6 +219,7 @@ export const useMapperRenderer = ({
     regionLabels = {},
     regionLabelEditMode = false,
     selectedRegionLabelId = null,
+    joystickActive = false,
     showOrganicTerrain = true
 }: RendererProps) => {
 
@@ -230,6 +232,7 @@ export const useMapperRenderer = ({
     }>({ from: [0,0,0,0], to: [0,0,0,0], startTime: 0, lastLighting: lighting });
 
     const zoneFocusGrayscale = useSettingsStore(s => s.zoneFocusGrayscale);
+    const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
 
     const layerCacheRef = useRef<MapperLayerCache | null>(null);
     const vignetteCacheRef = useRef<{ canvas: HTMLCanvasElement, w: number, h: number, edgeAlpha: number } | null>(null);
@@ -321,7 +324,7 @@ export const useMapperRenderer = ({
             if (camera.zoom < LABELS_FORCE_OFF_ZOOM) zoomLod.showDoorLabels = false;
             if (camera.zoom > LABELS_ZOOM_IN) zoomLod.showDoorLabels = true;
         }
-        const lowEffects = isMobile && isViewportInteracting;
+        const lowEffects = isPerformanceMode || (isMobile && isViewportInteracting);
         const showTerrainIcons = !lowEffects && zoomLod.showTerrainIcons;
         const showDoorLabels = !lowEffects && zoomLod.showDoorLabels;
         
@@ -523,7 +526,7 @@ export const useMapperRenderer = ({
         const explorationAge = lastExplored ? now - lastExplored : Number.POSITIVE_INFINITY;
         const isExplorationAnimating = explorationAge < RING_REVEAL_TOTAL_MS;
         const isExplorationBaked = cache.lastExplorationBakeFor === lastExplored;
-        const isExplorationOverlayActive = !!lastExplored && (explorationAge < RING_REVEAL_BAKE_MS || !isExplorationBaked);
+        const isExplorationOverlayActive = !isPerformanceMode && !!lastExplored && (explorationAge < RING_REVEAL_BAKE_MS || !isExplorationBaked);
         const finalExplorationBakeDue = !!lastExplored
             && explorationAge >= EXPLORATION_CACHE_FRAME_MS
             && !isExplorationBaked;
@@ -601,7 +604,8 @@ export const useMapperRenderer = ({
             showDoorLabels,
             isExplorationBaked,
             ring1Revealed,
-            ring2Peeked
+            ring2Peeked,
+            joystickActive
         });
 
         // Phase 1a: clear the back terrain buffer + gather visible rooms. Cheap
@@ -872,7 +876,8 @@ export const useMapperRenderer = ({
             showDoorLabels,
             isExplorationBaked,
             ring1Revealed: screenRings.ring1Revealed,
-            ring2Peeked: screenRings.ring2Peeked
+            ring2Peeked: screenRings.ring2Peeked,
+            joystickActive
         };
 
         const overlayFloorIndex = spatialIndexRef.current[curZInt];
@@ -914,7 +919,9 @@ export const useMapperRenderer = ({
         drawDoorHighlights(rCtx, playerPosRef);
         drawMarkers(rCtx, stableMarkersRef, selectedMarkerId, camera.x, camera.y, camera.x + baseW/camera.zoom, camera.y + baseH/camera.zoom);
         drawRegionLabels(rCtx, regionLabels, selectedRegionLabelId, regionLabelEditMode);
-        drawAnimatingFlags(rCtx);
+        if (!isPerformanceMode) {
+            drawAnimatingFlags(rCtx);
+        }
 
         ctx.restore();
         drawMarquee(rCtx, marquee);

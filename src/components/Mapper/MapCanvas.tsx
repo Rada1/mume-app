@@ -75,6 +75,7 @@ interface MapCanvasProps {
     regionLabels?: any;
     regionLabelEditMode?: boolean;
     selectedRegionLabelId?: string | null;
+    joystickActive?: boolean;
 }
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
@@ -94,7 +95,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
         activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
         activeMapFilter, mapSearchQuery, mapTileOpacity, lighting, isImmersionMode,
-        regionLabels, regionLabelEditMode, selectedRegionLabelId
+        regionLabels, regionLabelEditMode, selectedRegionLabelId, joystickActive
     } = props;
 
     const zoneFilters = useSettingsStore(state => state.zoneFilters);
@@ -120,7 +121,8 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         weather,
         regionLabels,
         regionLabelEditMode,
-        selectedRegionLabelId
+        selectedRegionLabelId,
+        joystickActive
     });
 
     useEffect(() => gmcpBus.on('Game.CombatPulse', pulse => {

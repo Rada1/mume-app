@@ -174,8 +174,9 @@
     border-radius: 4px;
     outline: 1px solid rgba(255, 255, 255, 0.3);
     outline-offset: 2px;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4),
-        0 0 14px rgba(255, 255, 255, 0.35) !important;
+    /* Crisp ring only — the outline above already supplies the visible halo, so the
+       blurred 14px shadow was pure paint cost repeated across every drawer button. */
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4) !important;
     padding: 0 3px !important;
     background: rgba(255, 255, 255, 0.1) !important;
 }

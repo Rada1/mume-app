@@ -344,16 +344,18 @@
 .message-content .room-name-inline span {
     font-weight: bold !important;
     pointer-events: auto !important;
+    /* Single tight glow layer + depth shadow. The previous wide second layer
+       (0 0 14px) was a per-element CPU paint re-rasterized on every scroll and on
+       every targeting repaint, for every button — dropping it roughly halves the
+       log's text-shadow paint cost with little visible change. */
     text-shadow:
         0 0 6px var(--glow-color, rgba(255, 255, 255, 0.3)),
-        0 0 14px color-mix(in srgb, var(--glow-color, rgba(255, 255, 255, 0.2)), transparent 55%),
         1px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .message-content .inline-btn {
     text-shadow:
         0 0 4px color-mix(in srgb, var(--glow-color, rgba(255, 255, 255, 0.25)), transparent 25%),
-        0 0 9px color-mix(in srgb, var(--glow-color, rgba(255, 255, 255, 0.18)), transparent 68%),
         1px 1px 3px rgba(0, 0, 0, 0.48);
 }
 
@@ -1422,11 +1424,15 @@ span.inline-btn {
     z-index: 10;
 }
 
-.app-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
+.message-log-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
     background-color: rgba(255, 255, 255, 0.1) !important;
     border-color: color-mix(in srgb, var(--glow-color, #ffffff), #ffffff 18%) !important;
+    /* Crisp double ring instead of a blurred glow. A blurred box-shadow is a per-element
+       CPU paint, and this rule matches EVERY inline button in the (non-virtualized) log,
+       so the blur turned target-selection into a full-log paint storm. A spread-only ring
+       paints almost for free. (Same trade-off already made for .target-highlighter above.) */
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18),
-        0 0 9px color-mix(in srgb, var(--glow-color, #ffffff), transparent 62%) !important;
+        0 0 0 2px color-mix(in srgb, var(--glow-color, #ffffff), transparent 55%) !important;
     color: var(--glow-color, #ffffff) !important;
 }
 

@@ -19,7 +19,11 @@ const Rain = React.memo(({ heavy }: RainProps) => {
         canvas.width = width;
         canvas.height = height;
 
-        const dropCount = heavy ? 400 : 100;
+        // Thin out the rain on mobile so it stays visible without overwhelming the
+        // smaller screen (and lighter on the GPU). ~60% of the desktop drop count.
+        const isMobile = Math.min(window.innerWidth, window.innerHeight) <= 820;
+        const mobileScale = isMobile ? 0.6 : 1;
+        const dropCount = Math.round((heavy ? 400 : 100) * mobileScale);
         const drops: { x: number; y: number; l: number; v: number; o: number }[] = [];
 
         for (let i = 0; i < dropCount; i++) {

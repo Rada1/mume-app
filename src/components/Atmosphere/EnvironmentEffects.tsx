@@ -4,7 +4,6 @@ import Rain from './Rain';
 import { Embers } from './Embers';
 import { useInputStore } from '../../stores/useInputStore';
 import { EnvironmentGlow } from './EnvironmentGlow';
-import { CloudWave } from './CloudWave';
 
 interface EnvironmentEffectsProps {
     lighting: LightingType;
@@ -64,13 +63,15 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         <div
                             className={`weather-layer weather-cloud ${(weather === 'rain' || weather === 'heavy-rain') ? 'storm-clouds' : ''} ${lightning ? 'lightning-active' : ''}`}
                             style={{ opacity: (weather === 'cloud' || weather === 'rain' || weather === 'heavy-rain') ? 1 : 0 }}
-                        >
-                            <CloudWave storm={weather === 'rain' || weather === 'heavy-rain'} lightning={lightning} />
-                        </div>
+                        />
                         {lightning && <div className="lightning-glow-drop" />}
-                        {!isMobile && (weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
+                        {(weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
                         {weather === 'snow' && <div className="weather-layer weather-snow" />}
-                        {!isMobile && <Embers count={lighting === 'artificial' ? 60 : 30} />}
+                        {/* Stable count, independent of lighting. Tying the count to
+                           `lighting` regenerated the whole ember array (and restarted every
+                           animation from opacity:0) each time lighting flipped between rooms,
+                           causing the flicker when spamming commands. */}
+                        {!isMobile && <Embers count={12} />}
                     </>
                 )}
                 {isImmersionMode && <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} />}

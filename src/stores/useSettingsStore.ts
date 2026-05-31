@@ -68,6 +68,7 @@ interface SettingsState {
     rememberLogin: boolean;
     theme: 'dark' | 'light';
     isImmersionMode: boolean;
+    isPerformanceMode: boolean;
     accentColor: string;
     bgImage: string | null;
     bgImageBottom: string | null;
@@ -125,6 +126,7 @@ interface SettingsState {
     setAutoConnect: (val: boolean) => void;
     setTheme: (val: 'dark' | 'light') => void;
     setIsImmersionMode: (val: boolean) => void;
+    setIsPerformanceMode: (val: boolean) => void;
     setAccentColor: (val: string) => void;
     setBgImage: (val: string | null) => void;
     setBgImageBottom: (val: string | null) => void;
@@ -252,7 +254,8 @@ export const useSettingsStore = create<SettingsState>()(
             rememberLogin: true,
             
             theme: 'dark',
-            isImmersionMode: isDesktopViewport(),
+            isImmersionMode: true,
+            isPerformanceMode: false,
             accentColor: '#d4aa00',
             bgImage: null,
             bgImageBottom: null,
@@ -321,6 +324,7 @@ export const useSettingsStore = create<SettingsState>()(
             setAutoConnect: (autoConnect) => set({ autoConnect }),
             setTheme: (theme) => set({ theme }),
             setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
+            setIsPerformanceMode: (isPerformanceMode) => set({ isPerformanceMode }),
             setAccentColor: (accentColor) => set({ accentColor }),
             setBgImage: (bgImage) => set({ bgImage }),
             setBgImageBottom: (bgImageBottom) => set({ bgImageBottom }),

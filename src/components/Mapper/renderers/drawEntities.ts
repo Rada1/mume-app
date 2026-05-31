@@ -471,6 +471,30 @@ export const drawRoomOccupants = (
     }
 };
 
+const updateExitSwipeHintCoordinates = (
+    ctx: CanvasRenderingContext2D,
+    px: number,
+    py: number,
+    camera: { x: number, y: number, zoom: number },
+    isMobile: boolean,
+    joystickActive: boolean
+) => {
+    const parent = ctx.canvas.parentElement;
+    if (!parent) return;
+
+    if (joystickActive || camera.zoom < 0.6) {
+        parent.style.setProperty('--player-cx', '-9999px');
+        parent.style.setProperty('--player-cy', '-9999px');
+        return;
+    }
+
+    const screenX = (px - camera.x) * camera.zoom;
+    const screenY = (py - camera.y) * camera.zoom;
+    parent.style.setProperty('--player-cx', `${screenX}px`);
+    parent.style.setProperty('--player-cy', `${screenY}px`);
+    parent.style.setProperty('--player-zoom', `${camera.zoom}`);
+};
+
 export const drawEntities = (
     rCtx: RenderContext,
     playerTrailRef: React.MutableRefObject<{ x: number, y: number, z: number, alpha: number }[]>,
@@ -534,18 +558,23 @@ export const drawEntities = (
 
         drawPlayerZoomBeacon(rCtx, anchor, alpha);
 
+        // Update exit swipe hint coordinates for mobile overlay
+        updateExitSwipeHintCoordinates(
+            ctx,
+            px,
+            py,
+            rCtx.camera,
+            !!rCtx.isMobile,
+            !!rCtx.joystickActive
+        );
+
         // 1. Current Room Highlight (Corners only)
         ctx.save();
 
-        const breath = (Math.sin(now / 350) + 1) / 2; // Breathing pulse
-
         ctx.globalCompositeOperation = 'source-over';
-        ctx.globalAlpha = alpha * (0.45 + breath * 0.5);
+        ctx.globalAlpha = alpha * 0.85;
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
         ctx.lineWidth = Math.max(0.8, 1.5 / rCtx.camera.zoom);
-        
-        ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
-        ctx.shadowBlur = (4 + breath * 8) / rCtx.camera.zoom;
 
         const inset = 3;
         const x1 = px - GRID_SIZE / 2 + inset;

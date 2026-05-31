@@ -201,10 +201,12 @@ export function useCommandController(deps: CommandControllerDeps) {
         if (d.gameState === 'account' && !isSystem) {
             const stage = d.accountStageRef?.current;
             if (stage && ['character-creation', 'stat-editing'].includes(stage)) {
-                d.setAccountState?.(prev => ({
-                    ...prev,
-                    creationPrompt: prev.creationPrompt ? { ...prev.creationPrompt, options: [] } : undefined
-                }));
+                if (cmd.trim() !== '?') {
+                    d.setAccountState?.(prev => ({
+                        ...prev,
+                        creationPrompt: prev.creationPrompt ? { ...prev.creationPrompt, options: [] } : undefined
+                    }));
+                }
             }
         }
 

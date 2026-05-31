@@ -83,6 +83,7 @@ export interface RenderContext {
     showTerrainIcons?: boolean;
     showDoorLabels?: boolean;
     isExplorationBaked?: boolean;
+    joystickActive?: boolean;
 }
 
 export const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);

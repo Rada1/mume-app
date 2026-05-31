@@ -5,7 +5,7 @@ import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useInputStore } from '../../../stores/useInputStore';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { DrawerType, GameContextType, UIContextType } from '../../../context/GameContext/types';
-import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock, Menu } from 'lucide-react';
+import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock, Menu, ChevronLeft, HelpCircle } from 'lucide-react';
 import { useMapper } from '../../../context/useMapper';
 import { MapFilterBar } from '../../Mapper/MapFilterBar';
 
@@ -785,15 +785,16 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                 bottom: 0
                             }}>
                                 <button 
-                                    className="account-menu-btn"
-                                    style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
+                                    className="account-menu-btn no-arrow"
+                                    style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
                                     onClick={() => { triggerHaptic(20); executeCommand('back'); }}
                                 >
+                                    <ChevronLeft size={14} />
                                     Back
                                 </button>
                                 <button
-                                    className="account-menu-btn"
-                                    style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
+                                    className="account-menu-btn no-arrow"
+                                    style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
                                     onClick={() => {
                                         triggerHaptic(20);
                                         executeCommand('');
@@ -801,14 +802,16 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                         executeCommand('menu');
                                     }}
                                 >
-                                    Main Menu
+                                    <Menu size={14} />
+                                    Menu
                                 </button>
                                 <button
-                                    className="account-menu-btn"
-                                    style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
+                                    className="account-menu-btn no-arrow"
+                                    style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
                                     onClick={() => { triggerHaptic(20); executeCommand('?'); }}
                                 >
-                                    ?
+                                    <HelpCircle size={14} />
+                                    Help
                                 </button>
                             </div>
                         )}

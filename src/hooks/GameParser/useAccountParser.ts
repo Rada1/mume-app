@@ -373,7 +373,6 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 ...prev, 
                 stage: 'stat-editing', 
                 currentPrompt: undefined,
-                characters: [], // Clear characters when entering stat editing
                 creationPrompt: {
                     title: 'Stat Editing',
                     description: trimmedLine,
@@ -416,8 +415,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 ...prev, 
                 stage: 'character-creation', 
                 currentPrompt: undefined,
-                selectedMenuCommand: null,
-                characters: [] // Clear characters when entering creation
+                selectedMenuCommand: null
             }));
             captureStage.current = 'none';
             setGameState('account');
@@ -533,10 +531,9 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             }
         }
 
-        // --- 0c. Detect Stat Summary Disclaimer ---
         if (trimmedLine.includes('review the following statistics') || trimmedLine.includes('provided values, as stats have a major impact')) {
             accountStageRef.current = 'character-creation';
-            setAccountState(prev => ({ ...prev, stage: 'character-creation', currentPrompt: undefined, characters: [] }));
+            setAccountState(prev => ({ ...prev, stage: 'character-creation', currentPrompt: undefined }));
         }
 
         const isSelectionLine = /^\s*\(\d{1,2}\)/.test(trimmedLine);
@@ -668,7 +665,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         const isIntroLine = lowerClean.includes('type new to create') || lowerClean.includes('? for help');
 
         if (isMenuStage && matchedKeyword) {
-            const mobileHidden = ['move', 'add', 'info', 'practice', 'quit'];
+            const mobileHidden = ['move', 'add', 'info', 'practice', 'quit', 'link', 'lag', 'help', 'menu'];
             if (isMobileRef.current && mobileHidden.includes(matchedKeyword)) return true;
             const lineHtml = `<span class="inline-btn account-menu-cmd" data-context="${matchedKeyword}">${escapeHtml(trimmedLine)}</span>`;
             addMessage?.('account-menu-item', trimmedLine, false, undefined, false, { textOnly: trimmedLine, lower: lowerClean, html: lineHtml });

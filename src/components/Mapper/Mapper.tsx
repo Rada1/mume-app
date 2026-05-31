@@ -5,7 +5,7 @@
  */
 
 import React, { useRef, useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
-import { Eye } from 'lucide-react';
+import { Eye, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useGame, useLog, useVitals, useUI } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useModeStore } from '../../stores/useModeStore';
@@ -356,6 +356,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 regionLabels={regionLabels}
                 regionLabelEditMode={regionLabelEditMode}
                 selectedRegionLabelId={selectedRegionLabelId}
+                joystickActive={joystick?.joystickActive}
             />
 
             {!effectiveIsMinimized && !isMobile && (
@@ -396,9 +397,58 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 </button>
             )}
 
-            {isMobile && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (
-                <DpadCluster heldButton={heldButton} setHeldButton={setHeldButton} />
-            )}
+            {(() => {
+                if (!currentRoomId) return null;
+                const currentRoom = rooms[currentRoomId] || rooms[`m_${currentRoomId}`];
+                const rawId = String(currentRoomId).replace(/^m_/, '');
+                const preloadedRoom = preloadedCoordsRef.current[rawId];
+                if (!currentRoom && !preloadedRoom) return null;
+
+                const preloadedExits = preloadedRoom?.[4] || {};
+                const localExits = currentRoom?.exits || {};
+                const exits = { ...preloadedExits, ...localExits };
+
+                const hasNorth = !!exits['n'] || !!exits['north'];
+                const hasSouth = !!exits['s'] || !!exits['south'];
+                const hasEast = !!exits['e'] || !!exits['east'];
+                const hasWest = !!exits['w'] || !!exits['west'];
+                const hasUp = !!exits['u'] || !!exits['up'];
+                const hasDown = !!exits['d'] || !!exits['down'];
+
+                return (
+                    <>
+                        {!joystick?.joystickActive && (
+                            <div className="map-swipe-hints-container">
+                                <div className={`map-swipe-hint n ${hasNorth ? 'active' : ''}`}>
+                                    <ChevronUp className="hint-chevron" size={16} strokeWidth={2.8} />
+                                </div>
+                                <div className={`map-swipe-hint s ${hasSouth ? 'active' : ''}`}>
+                                    <ChevronUp className="hint-chevron" size={16} strokeWidth={2.8} />
+                                </div>
+                                <div className={`map-swipe-hint e ${hasEast ? 'active' : ''}`}>
+                                    <ChevronUp className="hint-chevron" size={16} strokeWidth={2.8} />
+                                </div>
+                                <div className={`map-swipe-hint w ${hasWest ? 'active' : ''}`}>
+                                    <ChevronUp className="hint-chevron" size={16} strokeWidth={2.8} />
+                                </div>
+                                <div className={`map-swipe-hint up ${hasUp ? 'active' : ''}`}>
+                                    <svg className="hint-chevron nw-stair" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M19 19h-5v-5h-5v-5h-5" />
+                                        <path d="M4 12V4h8" />
+                                    </svg>
+                                </div>
+                                <div className={`map-swipe-hint down ${hasDown ? 'active' : ''}`}>
+                                    <svg className="hint-chevron se-stair" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M5 5h5v5h5v5h5" />
+                                        <path d="M20 12v8h-8" />
+                                    </svg>
+                                </div>
+                            </div>
+                        )}
+                        {isMobile && <DpadCluster heldButton={heldButton} setHeldButton={setHeldButton} />}
+                    </>
+                );
+            })()}
 
             {localContextMenu && (
                 <MapperContextMenu
