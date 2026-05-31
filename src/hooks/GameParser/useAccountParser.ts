@@ -199,10 +199,15 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             setIsPasswordMode(false);
             setGameState('account');
 
-            if (isMobileRef.current && charsRef.current.length === 0) {
-                isSilentListingRef.current = true;
-                setAccountState(prev => ({ ...prev, selectedMenuCommand: 'play', characters: [], selectedCharacter: null, charSelectTab: null, isGathering: true }));
-                setTimeout(() => executeCommandRef.current?.('list', true), 50);
+            if (isMobileRef.current) {
+                if (charsRef.current.length === 0) {
+                    isSilentListingRef.current = true;
+                    setAccountState(prev => ({ ...prev, selectedMenuCommand: 'play', characters: [], selectedCharacter: null, charSelectTab: null, isGathering: true }));
+                    setTimeout(() => executeCommandRef.current?.('list', true), 50);
+                } else {
+                    isSilentListingRef.current = false;
+                    setAccountState(prev => ({ ...prev, selectedMenuCommand: prev.selectedMenuCommand || 'play' }));
+                }
             } else {
                 isSilentListingRef.current = false;
             }
