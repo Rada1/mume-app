@@ -570,20 +570,24 @@ const Header: React.FC<HeaderProps> = () => {
                                             <span>{label}</span>
                                         </div>
                                     ))}
-                                    <div style={{ height: '1px', background: 'rgba(255, 255, 255, 0.08)', margin: '4px 0' }} />
-                                    <div
-                                        className="dropdown-item exit-game-item"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleExitGame();
-                                        }}
-                                        style={{ color: '#ef4444' }}
-                                    >
-                                        <div style={{ width: '16px', display: 'flex', justifyContent: 'center', color: '#ef4444' }}>
-                                            <LogOut size={16} />
-                                        </div>
-                                        <span>Exit Game</span>
-                                    </div>
+                                    {!isAccountScreen && (
+                                        <>
+                                            <div style={{ height: '1px', background: 'rgba(255, 255, 255, 0.08)', margin: '4px 0' }} />
+                                            <div
+                                                className="dropdown-item exit-game-item"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleExitGame();
+                                                }}
+                                                style={{ color: '#ef4444' }}
+                                            >
+                                                <div style={{ width: '16px', display: 'flex', justifyContent: 'center', color: '#ef4444' }}>
+                                                    <LogOut size={16} />
+                                                </div>
+                                                <span>Exit Game</span>
+                                            </div>
+                                        </>
+                                    )}
                                 </>
                             ) : (
                                 <div className="menu-group" style={{ padding: '4px' }}>

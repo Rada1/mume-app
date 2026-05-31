@@ -43,7 +43,8 @@ const CreationOptionButton: React.FC<{
 );
 
 export const AccountCreationPanel: React.FC<AccountCreationPanelProps> = ({ accountState, executeCommand, triggerHaptic }) => {
-    const liveOptions = accountState.creationPrompt?.options ?? [];
+    const liveOptions = (accountState.creationPrompt?.options ?? [])
+        .filter(opt => opt.id.toLowerCase() !== 'quit' && opt.label.toLowerCase() !== 'quit');
     const stickyOptionsRef = React.useRef<CreationOption[]>([]);
     const [displayedOptions, setDisplayedOptions] = React.useState<CreationOption[]>(liveOptions);
     React.useEffect(() => {

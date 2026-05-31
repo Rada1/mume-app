@@ -5,7 +5,7 @@ import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useInputStore } from '../../../stores/useInputStore';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { DrawerType, GameContextType, UIContextType } from '../../../context/GameContext/types';
-import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock } from 'lucide-react';
+import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock, Menu } from 'lucide-react';
 import { useMapper } from '../../../context/useMapper';
 import { MapFilterBar } from '../../Mapper/MapFilterBar';
 
@@ -90,7 +90,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     const [isTransitioning, setIsTransitioning] = useState(false);
     const transitionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const liveOptions = accountState.creationPrompt?.options ?? EMPTY_CREATION_OPTIONS;
+    const liveOptions = (accountState.creationPrompt?.options ?? EMPTY_CREATION_OPTIONS)
+        .filter(opt => opt.id.toLowerCase() !== 'quit' && opt.label.toLowerCase() !== 'quit');
     const liveOptionsKey = liveOptions.map(opt => `${opt.id}:${opt.label}`).join('|');
 
     useEffect(() => {
@@ -252,7 +253,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     selectedMenuCommand === 'create' ? (
                                         <div className="cmd-action-panel">
                                             <div className="cmd-action-header">
-                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}>←</button>
+                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}><Menu size={16} /></button>
                                                 <span className="cmd-action-title">New Character</span>
                                             </div>
                                             <div className="cmd-action-body">
@@ -264,7 +265,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     ) : selectedMenuCommand === 'play' ? (
                                         <div className="cmd-action-panel">
                                             <div className="cmd-action-header">
-                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setPlayNameInput(''); setAccountState(prev => ({ ...prev, selectedMenuCommand: null, characters: [] })); executeCommand('menu'); }}>←</button>
+                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setPlayNameInput(''); setAccountState(prev => ({ ...prev, selectedMenuCommand: null, characters: [] })); executeCommand('menu'); }}><Menu size={16} /></button>
                                                 <span className="cmd-action-title">Play Character</span>
                                             </div>
                                             <div className="cmd-play-char-list">
@@ -305,7 +306,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     ) : selectedMenuCommand === 'time' ? (
                                         <div className="cmd-action-panel">
                                             <div className="cmd-action-header">
-                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}>←</button>
+                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}><Menu size={16} /></button>
                                                 <span className="cmd-action-title">Game Time</span>
                                             </div>
                                             <div className="char-detail-content">
@@ -322,7 +323,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     ) : selectedMenuCommand === 'link' ? (
                                         <div className="cmd-action-panel">
                                             <div className="cmd-action-header">
-                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}>←</button>
+                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}><Menu size={16} /></button>
                                                 <span className="cmd-action-title">Link Status</span>
                                             </div>
                                             <div className="char-detail-content">
@@ -339,7 +340,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     ) : selectedMenuCommand === 'lag' ? (
                                         <div className="cmd-action-panel">
                                             <div className="cmd-action-header">
-                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}>←</button>
+                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}><Menu size={16} /></button>
                                                 <span className="cmd-action-title">Lag Report</span>
                                             </div>
                                             <div className="char-detail-content">
@@ -356,7 +357,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     ) : selectedMenuCommand === 'password' ? (
                                         <div className="cmd-action-panel">
                                             <div className="cmd-action-header">
-                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setPasswordInput(''); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}>←</button>
+                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setPasswordInput(''); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}><Menu size={16} /></button>
                                                 <span className="cmd-action-title">Change Password</span>
                                             </div>
                                             <div className="cmd-action-body">

@@ -136,7 +136,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 const lowerName = cleanName.toLowerCase();
                 
                 if (/^[a-zA-Z\u00C0-\u00FF\-]{2,15}$/.test(cleanName) && !exclusions.includes(lowerName)) {
-                    const name = cleanLine.substring(0, 14).trim() || cleanName;
+                    const name = cleanName;
                     const newChar: CharacterEntry = {
                         name,
                         race: cleanLine.substring(14, 18).trim(),
@@ -607,7 +607,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             const lowerName = cleanName.toLowerCase();
             
             if (/^[a-zA-Z\u00C0-\u00FF\-]{2,15}$/.test(cleanName) && !exclusions.includes(lowerName)) {
-                const name = cleanLine.substring(0, 14).trim() || cleanName;
+                const name = cleanName;
                 const newChar: CharacterEntry = {
                     name,
                     race: cleanLine.substring(14, 18).trim(),
@@ -668,7 +668,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         const isIntroLine = lowerClean.includes('type new to create') || lowerClean.includes('? for help');
 
         if (isMenuStage && matchedKeyword) {
-            const mobileHidden = ['move', 'add', 'info', 'practice'];
+            const mobileHidden = ['move', 'add', 'info', 'practice', 'quit'];
             if (isMobileRef.current && mobileHidden.includes(matchedKeyword)) return true;
             const lineHtml = `<span class="inline-btn account-menu-cmd" data-context="${matchedKeyword}">${escapeHtml(trimmedLine)}</span>`;
             addMessage?.('account-menu-item', trimmedLine, false, undefined, false, { textOnly: trimmedLine, lower: lowerClean, html: lineHtml });
