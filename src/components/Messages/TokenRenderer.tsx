@@ -166,9 +166,13 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             const defaultContext = e.metadata?.context || extractMumeKeyword(content);
             const tokenCategoryId = propMetadata?.category || e.metadata?.category;
             const categoryAxes = getInlineCategoryAxes(tokenCategoryId);
+            const entityId = propMetadata?.id || e.entityId;
+            const isSelectedEntity = !!entityId && isObjectSelected(selectedObjectIds || new Set(), entityId, tokenCategoryId);
             if (!categoryAxes.isTargetable) isTargetMatch = false;
             
-            if (isTargetMatch) {
+            if (isSelectedEntity) {
+                extraClasses.push('selected');
+            } else if (isTargetMatch) {
                 extraClasses.push('is-target');
                 extraClasses.push('target-highlighter');
             }
@@ -192,10 +196,6 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
 
             const selectedId = props['data-id'];
             if (selectedId) {
-                const isSel = isObjectSelected(selectedObjectIds || new Set(), selectedId, props['data-category']);
-                if (isSel) {
-                    props.className = `${props.className} selected`.trim();
-                }
                 if (popoverState?.entityId) {
                     const popoverSet = new Set<string>([popoverState.entityId]);
                     if (isObjectSelected(popoverSet, selectedId, props['data-category'])) {
@@ -204,7 +204,6 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 }
             }
 
-            const entityId = propMetadata?.id || e.entityId;
             let isOpponentMatch = false;
             if (inCombat) {
                 if (opponentId && entityId && String(opponentId) === String(entityId)) {

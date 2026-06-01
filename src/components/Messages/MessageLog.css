@@ -371,7 +371,7 @@
     display: inline-block;
     vertical-align: baseline;
     border-radius: 3px;
-    padding: 0 1px;
+    padding: 0 3px;
     font-weight: bold !important;
     /* The combat target is highlighted on EVERY occurrence in the log — often many
        at once. Use a crisp ring + faint fill instead of a blurred glow: a blurred
@@ -379,7 +379,9 @@
        N blurred repaints per frame during a fling), which is what made scrolling
        choppy while a target was set. A ring + flat tint paints almost for free and
        reads as clearly (or more so). The single selected button keeps its pulse below. */
-    outline: 1px solid var(--color-target);
+    border-left: 1.5px solid var(--color-target);
+    border-right: 1.5px solid var(--color-target);
+    outline: none;
     box-shadow: none;
     background: color-mix(in srgb, var(--color-target), transparent 88%);
     z-index: 1;
@@ -388,12 +390,7 @@
 /* Pulse only the deliberately-clicked button (bounded count, so it stays cheap).
    Opacity on a pseudo-element is composited — no per-frame repaint, no will-change. */
 .inline-btn.selected::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    box-shadow: 0 0 14px color-mix(in srgb, var(--color-target), transparent 50%);
+    content: none;
 }
 
 /* Force standard color application */
@@ -1369,7 +1366,9 @@ span.inline-btn {
     color: var(--target-color, #facc15) !important;
     background: rgba(255, 255, 255, 0.05) !important;
     border-radius: 4px;
-    box-shadow: 0 0 0 1px var(--target-color, #facc15), 0 0 4px rgba(0, 0, 0, 0.2);
+    border-left: 1.5px solid var(--target-color, #facc15);
+    border-right: 1.5px solid var(--target-color, #facc15);
+    box-shadow: none;
 }
 
 .inline-btn:hover,
@@ -1407,8 +1406,12 @@ span.inline-btn {
 .inline-btn.selected {
     border-radius: 3px;
     position: relative;
-    /* Static ring; pulsing glow handled by the shared ::after rule above. */
-    box-shadow: 0 0 0 1.5px var(--color-target);
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+    border-left: 1.5px solid var(--color-target);
+    border-right: 1.5px solid var(--color-target);
+    background: color-mix(in srgb, var(--color-target), transparent 88%) !important;
+    box-shadow: none;
     transform: none !important;
     z-index: 10;
 }
