@@ -379,11 +379,10 @@
        N blurred repaints per frame during a fling), which is what made scrolling
        choppy while a target was set. A ring + flat tint paints almost for free and
        reads as clearly (or more so). The single selected button keeps its pulse below. */
-    border-left: 1.5px solid var(--color-target);
-    border-right: 1.5px solid var(--color-target);
+    border: 1.5px solid var(--color-target);
     outline: none;
     box-shadow: none;
-    background: color-mix(in srgb, var(--color-target), transparent 88%);
+    background: transparent;
     z-index: 1;
 }
 
@@ -1364,10 +1363,9 @@ span.inline-btn {
 
 .inline-btn.active-target {
     color: var(--target-color, #facc15) !important;
-    background: rgba(255, 255, 255, 0.05) !important;
+    background: transparent !important;
     border-radius: 4px;
-    border-left: 1.5px solid var(--target-color, #facc15);
-    border-right: 1.5px solid var(--target-color, #facc15);
+    border: 1.5px solid var(--target-color, #facc15);
     box-shadow: none;
 }
 
@@ -1408,9 +1406,8 @@ span.inline-btn {
     position: relative;
     padding-left: 3px !important;
     padding-right: 3px !important;
-    border-left: 1.5px solid var(--color-target);
-    border-right: 1.5px solid var(--color-target);
-    background: color-mix(in srgb, var(--color-target), transparent 88%) !important;
+    border: 1.5px solid var(--color-target);
+    background: transparent !important;
     box-shadow: none;
     transform: none !important;
     z-index: 10;
@@ -1426,6 +1423,16 @@ span.inline-btn {
     text-underline-offset: 3px;
     transform: none !important;
     z-index: 10;
+}
+
+/* When the opponent is also the active combat target, restore the full
+   target border (overriding .is-opponent's border:none). No background fill. */
+.inline-btn.is-opponent.target-highlighter.is-target,
+.inline-btn.is-opponent.active-target,
+.inline-btn.is-opponent.selected {
+    border: 1.5px solid var(--color-target) !important;
+    background: transparent !important;
+    box-shadow: none !important;
 }
 
 .message-log-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
