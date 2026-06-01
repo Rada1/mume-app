@@ -73,7 +73,6 @@ interface MapCanvasProps {
     isTracingMode?: boolean;
     activePath?: any;
     regionLabels?: any;
-    regionLabelEditMode?: boolean;
     selectedRegionLabelId?: string | null;
     joystickActive?: boolean;
     closestRoomId?: string | null;
@@ -99,7 +98,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
         activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
         activeMapFilter, mapSearchQuery, mapTileOpacity, lighting, isImmersionMode,
-        regionLabels, regionLabelEditMode, selectedRegionLabelId, joystickActive,
+        regionLabels, selectedRegionLabelId, joystickActive,
         closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     } = props;
 
@@ -126,7 +125,6 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         isImmersionMode,
         weather,
         regionLabels,
-        regionLabelEditMode,
         selectedRegionLabelId,
         joystickActive
     });

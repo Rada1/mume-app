@@ -31,7 +31,13 @@ const VIGNETTE_EDGE_ALPHA: Record<string, number> = {
     normal: 0.38,
 };
 const LIGHTING_TRANSITION_MS = 1500;
-const EXPLORATION_CACHE_FRAME_MS = RING_REVEAL_BAKE_MS;
+// Flag pop-in animation total (drawAnimatingFlags: delay 100 + animDur 450). The static
+// feature cache skips flags while they're still animating (flagScale = 0), so the
+// exploration bake must wait until the animation finishes — otherwise it bakes a flagless
+// room and then marks itself baked, which stops the live animation overlay and leaves a
+// gap until the next unrelated cache rebuild (the load-flag flicker).
+const FLAG_POP_IN_MS = 550;
+const EXPLORATION_CACHE_FRAME_MS = Math.max(RING_REVEAL_BAKE_MS, FLAG_POP_IN_MS);
 const ZOOM_SETTLE_MS = 180;
 const ICONS_ZOOM_IN = 0.22;
 const ICONS_ZOOM_OUT = 0.05;
@@ -133,7 +139,6 @@ interface RendererProps {
     isImmersionMode?: boolean;
     weather?: string;
     regionLabels?: Record<string, RegionLabel>;
-    regionLabelEditMode?: boolean;
     selectedRegionLabelId?: string | null;
     joystickActive?: boolean;
 }
@@ -208,7 +213,6 @@ export const useMapperRenderer = ({
     isImmersionMode = true,
     weather = 'none',
     regionLabels = {},
-    regionLabelEditMode = false,
     selectedRegionLabelId = null,
     joystickActive = false,
     showOrganicTerrain = true
@@ -839,7 +843,7 @@ export const useMapperRenderer = ({
         drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);
         drawDoorHighlights(rCtx, playerPosRef);
         drawMarkers(rCtx, stableMarkersRef, selectedMarkerId, camera.x, camera.y, camera.x + baseW/camera.zoom, camera.y + baseH/camera.zoom);
-        drawRegionLabels(rCtx, regionLabels, selectedRegionLabelId, regionLabelEditMode);
+        drawRegionLabels(rCtx, regionLabels, selectedRegionLabelId);
         if (!isPerformanceMode) {
             drawAnimatingFlags(rCtx);
         }
@@ -896,7 +900,7 @@ export const useMapperRenderer = ({
             ctx.drawImage(vc.canvas, 0, 0);
         }
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, entitiesRef, serverIdIndexRef, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, walkTargetId, walkPath, activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, regionLabelEditMode, selectedRegionLabelId]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, entitiesRef, serverIdIndexRef, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, walkTargetId, walkPath, activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, selectedRegionLabelId]);
 
     return { drawMap, filterFitRef };
 };

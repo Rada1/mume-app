@@ -15,6 +15,7 @@ import { MapperPrediction, MapperRoom, MapperMarker, RegionLabel } from '../comp
 import { useRegionLabels } from '../components/Mapper/hooks/useRegionLabels';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { useModeStore } from '../stores/useModeStore';
+import { useUIStore } from '../stores/useUIStore';
 import { gmcpBus } from '../events/gmcpBus';
 import { useAudioEffects } from '../hooks/useAudioSystem';
 
@@ -88,8 +89,6 @@ interface MapperContextType {
     addRegionLabel: (partial: Partial<RegionLabel> & { text: string; x: number; y: number; z: number }) => string;
     updateRegionLabel: (id: string, patch: Partial<RegionLabel>) => void;
     deleteRegionLabel: (id: string) => void;
-    regionLabelEditMode: boolean;
-    setRegionLabelEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const MapperContext = createContext<MapperContextType | undefined>(undefined);
@@ -181,9 +180,14 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Region Labels (global, LOTR-style large text overlays)
     const {
         regionLabels, regionLabelsRef,
-        addRegionLabel, updateRegionLabel, deleteRegionLabel,
-        regionLabelEditMode, setRegionLabelEditMode
+        addRegionLabel, updateRegionLabel, deleteRegionLabel
     } = useRegionLabels();
+
+    // Map topology edit mode is the global Play/Edit map mode. In "play" the mapper only
+    // TRACKS position against the preloaded base map and never fabricates rooms; in "edit"
+    // unmatched room events may create new rooms/exits for manual mapping. (Same toggle
+    // that already gates room dragging / marquee select in the canvas interactions.)
+    const mapEditMode = useUIStore(s => s.mapMode) === 'edit';
 
     // Settings from Zustand
     const allowPersistence = useSettingsStore(s => s.allowMapPersistence);
@@ -549,12 +553,12 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }, [playLoadFlagSound, unveilMap]);
 
     const masterHandlers = useMapGmcphandlers({
-        roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
+        roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, spatialIndexRef,
         discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage,
         showDebugEchoes, nameIndexRef, serverIdIndexRef, firstExploredAtRef, triggerRender,
         onRoomInfoProcessed, onFirstVisitLoadFlag: handleFirstVisitLoadFlag, preMoveRef, deathRoomId, setDeathRoomId,
         clientPredictionsRef, baseMapExitsRef, characterName: characterName || null, executeCommand,
-        activeView
+        activeView, mapEditMode
     });
 
     const pushPendingMove = useCallback((dir: string) => {
@@ -728,7 +732,6 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         serverIdIndexRef,
         activeMapFilter, setActiveMapFilter, mapSearchQuery, setMapSearchQuery,
         regionLabels, regionLabelsRef, addRegionLabel, updateRegionLabel, deleteRegionLabel,
-        regionLabelEditMode, setRegionLabelEditMode,
         closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     }), [
         rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId, newlyExploredRoomId,
@@ -743,7 +746,6 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         serverIdIndexRef,
         activeMapFilter, setActiveMapFilter, mapSearchQuery, setMapSearchQuery,
         regionLabels, regionLabelsRef, addRegionLabel, updateRegionLabel, deleteRegionLabel,
-        regionLabelEditMode, setRegionLabelEditMode,
         closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     ]);
 

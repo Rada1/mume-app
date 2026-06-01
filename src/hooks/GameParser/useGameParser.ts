@@ -725,11 +725,12 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                                  lowerLine.includes('it is empty.') ||
                                  lowerLine.includes('<header>');
 
-            const locationHint = activeCapture === 'inventory'
+            const objectCaptureContext = activeCapture !== 'none' ? activeCapture : expectedCaptureBeforeTokenize;
+            const locationHint = objectCaptureContext === 'inventory'
                 ? 'carried'
-                : activeCapture === 'equipment'
+                : objectCaptureContext === 'equipment'
                     ? 'worn'
-                    : (activeCapture === 'container' && !isHeaderLine)
+                    : (objectCaptureContext === 'container' && !isHeaderLine)
                         ? 'container'
                         : undefined;
             const effectiveTokens = isSnoop || locationHint ? null : tokens;
@@ -916,7 +917,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         // Action Tracking (for manual inventory updates)
         actionTracker.trackAction(lineToParse, textOnly, lower);
-        router.detectItemsInRoom(textOnly, lineToParse, false);
+        router.detectItemsInRoom(textOnly, lineToParse, false, {
+            isRoomContext: isRoomDescription || /<room\b/i.test(lineToParse),
+            expectedCaptureType: expectedCaptureBeforeTokenize
+        });
         router.trackRoomItemAction(textOnly, lineToParse, false);
 
         // Play buy/sell sound on buy/sell notifications

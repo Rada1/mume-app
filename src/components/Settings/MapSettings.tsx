@@ -57,8 +57,7 @@ const MapSettings: React.FC = () => {
     const {
         rooms, setRooms, markers, setMarkers, allowPersistence, setAllowPersistence,
         unveilMap, setUnveilMap, handleResetAndSync, handleClearMap, setExploredMarkers,
-        regionLabels, addRegionLabel, updateRegionLabel, deleteRegionLabel,
-        regionLabelEditMode, setRegionLabelEditMode
+        regionLabels, addRegionLabel, updateRegionLabel, deleteRegionLabel
     } = mapper;
     const regionLabelList = React.useMemo(
         () => Object.values(regionLabels).sort((a, b) => a.createdAt - b.createdAt),
@@ -89,7 +88,7 @@ const MapSettings: React.FC = () => {
                 <div style={rowStyle}>
                     <div>
                         <label className="setting-label" style={{ margin: 0 }}>Map Mode</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Switch between navigation and mapper editing.</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Play: follow the preloaded map, never add rooms. Edit: drag rooms and map new areas.</div>
                     </div>
                     <div style={{ display: 'flex', backgroundColor: 'var(--input-bg)', borderRadius: '20px', padding: '2px', border: '1px solid var(--border-modal)' }}>
                         <button
@@ -168,16 +167,6 @@ const MapSettings: React.FC = () => {
                         <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Region Labels</label>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>LOTR-style titles for huge areas (e.g. "Eregion", "Mordor"). Global across all characters.</div>
                     </div>
-                </div>
-
-                <div style={rowStyle}>
-                    <div>
-                        <label className="setting-label" style={{ margin: 0 }}>Edit Mode</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Click the map to drop a label. Click an existing label to select it.</div>
-                    </div>
-                    <button className={`setting-toggle ${regionLabelEditMode ? 'active' : ''}`} onClick={() => setRegionLabelEditMode(v => !v)} style={toggleStyle(regionLabelEditMode)}>
-                        <div style={knobStyle(regionLabelEditMode)} />
-                    </button>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 0', borderTop: '1px solid var(--border-modal)' }}>

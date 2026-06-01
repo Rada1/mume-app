@@ -12,6 +12,7 @@ interface UseMapGmcphandlersProps {
     setCurrentRoomId: React.Dispatch<React.SetStateAction<string | null>>;
     pendingMovesRef: React.MutableRefObject<{ dir: string; time: number }[]>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
+    spatialIndexRef?: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     nameIndexRef: React.MutableRefObject<Record<string, string[]>>;
     serverIdIndexRef: React.MutableRefObject<Record<string, string>>;
     discoverySourceRef: React.MutableRefObject<string | null>;
@@ -32,6 +33,7 @@ interface UseMapGmcphandlersProps {
     characterName: string | null;
     executeCommand?: (cmd: string, silent?: boolean) => void;
     activeView: string;
+    mapEditMode?: boolean;
 }
 
 export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
@@ -171,6 +173,7 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         setCurrentRoomId: props.setCurrentRoomId,
         pendingMovesRef: props.pendingMovesRef,
         preloadedCoordsRef: props.preloadedCoordsRef,
+        spatialIndexRef: props.spatialIndexRef,
         baseMapExitsRef: props.baseMapExitsRef,
         nameIndexRef: props.nameIndexRef,
         serverIdIndexRef: props.serverIdIndexRef,
@@ -188,7 +191,8 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         deathRoomId: props.deathRoomId,
         setDeathRoomId: props.setDeathRoomId,
         lastGmcpMoveTimeRef,
-        activeView: props.activeView
+        activeView: props.activeView,
+        mapEditMode: props.mapEditMode
     });
 
     const { handleUpdateExits } = useUpdateExitsHandler({

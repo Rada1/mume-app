@@ -7,6 +7,43 @@ import { useCallback } from 'react';
 import { InlineCategoryConfig, DrawerType } from '../../types';
 import type { GmcpOccupant } from '../../types';
 
+interface RoomItemDetectionOptions {
+    isRoomContext?: boolean;
+    expectedCaptureType?: string;
+}
+
+export const isEquipmentObjectContext = (textOnly: string, cleanLine: string, expectedCaptureType?: string) => {
+    const decodedLine = cleanLine
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>')
+        .replace(/&amp;/gi, '&');
+    const lowerText = textOnly.toLowerCase();
+    const lowerLine = decodedLine.toLowerCase();
+
+    return expectedCaptureType === 'equipment' ||
+        expectedCaptureType === 'inventory' ||
+        expectedCaptureType === 'container' ||
+        /<\s*worn\b[^>]*>/i.test(decodedLine) ||
+        /^<[^>]+>\s*(?:a|an|the|some)?\s*<object\b/i.test(decodedLine) ||
+        lowerText.includes('you are using') ||
+        lowerText.includes('you are equipped with') ||
+        lowerText.includes('you are carrying') ||
+        lowerLine.includes('<header>');
+};
+
+export const shouldDetectRoomItemsFromLine = (
+    textOnly: string,
+    cleanLine: string,
+    options: RoomItemDetectionOptions = {}
+) => {
+    const line = textOnly.trim();
+    const isObjectActionResult = /^(?:You|[A-Z][\w' -]+)\s+(?:drop|drops|get|gets|take|takes|pick up|picks up)\s+/i.test(line);
+    if (isObjectActionResult) return false;
+    if (isEquipmentObjectContext(textOnly, cleanLine, options.expectedCaptureType)) return false;
+    return !!options.isRoomContext ||
+        /\b(?:is|are|lies|lie|rests|rest|sits|sit|has been left|have been left)\s+here\b/i.test(line);
+};
+
 interface MessageRouterDeps {
     capture: import('../../types/capture').CaptureController;
     drawer: DrawerType;
@@ -98,11 +135,9 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
             .trim();
     }, []);
 
-    const detectItemsInRoom = useCallback((textOnly: string, cleanLine: string, isDrawerHiding: boolean) => {
+    const detectItemsInRoom = useCallback((textOnly: string, cleanLine: string, isDrawerHiding: boolean, options: RoomItemDetectionOptions = {}) => {
         if (capture.hasSession() || isDrawerHiding) return;
-        const line = textOnly.trim();
-        const isObjectActionResult = /^(?:You|[A-Z][\w' -]+)\s+(?:drop|drops|get|gets|take|takes|pick up|picks up)\s+/i.test(line);
-        if (isObjectActionResult) return;
+        if (!shouldDetectRoomItemsFromLine(textOnly, cleanLine, options)) return;
 
         const objects: string[] = [];
         const objectMatcher = /<object\b[^>]*>(.*?)<\/object>/gis;
@@ -131,7 +166,10 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         });
 
         return objects;
-    }, [capture, extractNoun, normalizeRoomObjectName, setDiscoveredItems, setRoomItems, registerEntity]);
+    }, [
+        capture, extractNoun, normalizeRoomObjectName,
+        setDiscoveredItems, setRoomItems, registerEntity
+    ]);
 
     const getRoomItemName = useCallback((item: GmcpOccupant) => {
         return normalizeRoomObjectName(item.name || item.short || item.shortdesc || item.keyword || '');

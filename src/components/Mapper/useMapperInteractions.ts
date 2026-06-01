@@ -1,10 +1,9 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { ExecuteCommand } from '../../types';
 
-import { MapperRoom, MapperMarker, RegionLabel } from './mapperTypes';
+import { MapperRoom, MapperMarker } from './mapperTypes';
 import { GRID_SIZE, DRAG_SENSITIVITY, ZOOM_SENSITIVITY, checkRoomFilter } from './mapperUtils';
 import { useMapHitTest } from './hooks/useMapHitTest';
-import { hitTestRegionLabel, hitTestRegionLabelFull } from './renderers/drawRegionLabels';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import { fireHeldCommandAtMapOccupant } from './mapperHeldCommandTarget';
 import { sanitizeGameTarget } from '../../utils/gameUtils';
@@ -78,11 +77,6 @@ export interface InteractionDeps {
     }>>;
     onTraceClick?: (wx: number, wy: number) => void;
     onTraceHover?: (wx: number, wy: number) => void;
-    regionLabels?: Record<string, RegionLabel>;
-    regionLabelEditMode?: boolean;
-    addRegionLabel?: (partial: Partial<RegionLabel> & { text: string; x: number; y: number; z: number }) => string;
-    updateRegionLabel?: (id: string, patch: Partial<RegionLabel>) => void;
-    setSelectedRegionLabelId?: (id: string | null) => void;
 }
 
 export const useMapperInteractions = (deps: InteractionDeps) => {
@@ -136,20 +130,6 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
     const markersRefLocal = useRef(deps.markers);
     useEffect(() => { markersRefLocal.current = deps.markers; }, [deps.markers]);
 
-    const draggedRegionLabelRef = useRef<{
-        id: string;
-        mode: 'move' | 'resize' | 'rotate';
-        // move
-        offsetX: number;
-        offsetY: number;
-        // resize / rotate
-        centerWX: number;          // world px
-        centerWY: number;
-        initialFontSize: number;
-        initialRotation: number;
-        initialAngle: number;      // angle from center to grab point at start (radians)
-        initialDist: number;       // distance center → grab point at start (world px)
-    } | null>(null);
     const isDraggingInternalRef = useRef(false);
     const scrollLockRef = useRef(false);
     const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -398,45 +378,6 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 const roomId = getRoomAt(world.x, world.y);
                 const markerId = getMarkerAt(world.x, world.y);
 
-                // Region-label edit mode: if we hit a label (body OR handle), take over the pointer.
-                // Empty-space clicks fall through to the normal pan/joystick handling so the
-                // map can still be navigated; the onUp handler turns a tap-on-empty into a drop.
-                if (depsRef.current.regionLabelEditMode) {
-                    const labels = depsRef.current.regionLabels || {};
-                    const tileX = world.x / GRID_SIZE;
-                    const tileY = world.y / GRID_SIZE;
-                    const layerZ = depsRef.current.viewZ !== null && depsRef.current.viewZ !== undefined
-                        ? depsRef.current.viewZ
-                        : (depsRef.current.currentRoomId
-                            ? (depsRef.current.rooms[depsRef.current.currentRoomId]?.z || 0)
-                            : 0);
-                    const measureCtx = cvs.getContext('2d');
-                    const invZoom = 1 / cameraRef.current.zoom;
-                    const hit = measureCtx ? hitTestRegionLabelFull(labels, tileX, tileY, layerZ, measureCtx, invZoom, true) : null;
-                    if (hit) {
-                        const label = labels[hit.id];
-                        const grabPx = world.x;
-                        const grabPy = world.y;
-                        const dxw = grabPx - hit.geometry.cx;
-                        const dyw = grabPy - hit.geometry.cy;
-                        draggedRegionLabelRef.current = {
-                            id: hit.id,
-                            mode: hit.mode,
-                            offsetX: label.x - tileX,
-                            offsetY: label.y - tileY,
-                            centerWX: hit.geometry.cx,
-                            centerWY: hit.geometry.cy,
-                            initialFontSize: label.fontSize,
-                            initialRotation: label.rotation || 0,
-                            initialAngle: Math.atan2(dyw, dxw),
-                            initialDist: Math.sqrt(dxw * dxw + dyw * dyw) || 1
-                        };
-                        dragTypeRef.current = 'region-label';
-                        depsRef.current.setSelectedRegionLabelId?.(hit.id);
-                        return;
-                    }
-                }
-
                 if (mode === 'edit') {
                     if (markerId) {
                         const marker = markersRefLocal.current[markerId];
@@ -556,33 +497,6 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                             ...prev,
                             [id]: { ...prev[id], x: tileX + offsetX, y: tileY + offsetY }
                         }));
-                        triggerRender();
-                    } else if (dragTypeRef.current === 'region-label' && draggedRegionLabelRef.current) {
-                        const { screenToWorld } = hitTestRef.current;
-                        const world = screenToWorld(p.x, p.y);
-                        const grab = draggedRegionLabelRef.current;
-                        if (grab.mode === 'move') {
-                            const tileX = world.x / GRID_SIZE;
-                            const tileY = world.y / GRID_SIZE;
-                            depsRef.current.updateRegionLabel?.(grab.id, { x: tileX + grab.offsetX, y: tileY + grab.offsetY });
-                        } else if (grab.mode === 'resize') {
-                            const dxw = world.x - grab.centerWX;
-                            const dyw = world.y - grab.centerWY;
-                            const dist = Math.sqrt(dxw * dxw + dyw * dyw) || 1;
-                            const ratio = dist / grab.initialDist;
-                            const newFontSize = Math.max(10, Math.min(800, grab.initialFontSize * ratio));
-                            depsRef.current.updateRegionLabel?.(grab.id, { fontSize: newFontSize });
-                        } else if (grab.mode === 'rotate') {
-                            const dxw = world.x - grab.centerWX;
-                            const dyw = world.y - grab.centerWY;
-                            const angle = Math.atan2(dyw, dxw);
-                            const deltaAngle = angle - grab.initialAngle;
-                            let newRot = grab.initialRotation + deltaAngle;
-                            // Normalize to [-PI, PI]
-                            while (newRot > Math.PI) newRot -= Math.PI * 2;
-                            while (newRot < -Math.PI) newRot += Math.PI * 2;
-                            depsRef.current.updateRegionLabel?.(grab.id, { rotation: newRot });
-                        }
                         triggerRender();
                     } else if (dragTypeRef.current === 'joystick') {
                         const { joystick, executeCommand, heldButton, setHeldButton, btn, target, triggerHaptic } = depsRef.current;
@@ -717,7 +631,6 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 && !wasLongPress
                 && mode === 'play'
                 && !activeHeldForFastRelease
-                && !depsRef.current.regionLabelEditMode
                 && !depsRef.current.isTracingMode;
 
             if (canFastReleaseJoystick) {
@@ -746,42 +659,6 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 const activeLPHeld = depsRef.current.heldButtonRef?.current || depsRef.current.heldButton;
                 const isMapLongPress = activeLPHeld?.id === 'map-long-press' && wasLongPress;
                 let didHandleMapLongPressRelease = false;
-
-                // Region-label edit mode is handled separately from play/edit logic.
-                // dragTypeRef === 'region-label' is set in onDown whenever edit mode is on.
-                if (dragTypeRef.current === 'region-label') {
-                    const isTap = !hasDraggedRef.current;
-                    if (isTap) {
-                        const { screenToWorld } = hitTestRef.current;
-                        const world = screenToWorld(e.clientX, e.clientY);
-                        const labels = depsRef.current.regionLabels || {};
-                        const tileX = world.x / GRID_SIZE;
-                        const tileY = world.y / GRID_SIZE;
-                        const layerZ = depsRef.current.viewZ !== null && depsRef.current.viewZ !== undefined
-                            ? depsRef.current.viewZ
-                            : (depsRef.current.currentRoomId
-                                ? (depsRef.current.rooms[depsRef.current.currentRoomId]?.z || 0)
-                                : 0);
-                        const measureCtx = cvs.getContext('2d');
-                        const hitId = measureCtx ? hitTestRegionLabel(labels, tileX, tileY, layerZ, measureCtx) : null;
-                        if (hitId) {
-                            depsRef.current.setSelectedRegionLabelId?.(hitId);
-                        } else {
-                            const text = window.prompt('Region label text (e.g. "Mordor"):')?.trim();
-                            if (text && depsRef.current.addRegionLabel) {
-                                const newId = depsRef.current.addRegionLabel({ text, x: tileX, y: tileY, z: layerZ, fontSize: 80 });
-                                depsRef.current.setSelectedRegionLabelId?.(newId);
-                            }
-                        }
-                    }
-                    draggedRegionLabelRef.current = null;
-                    draggedMarkerRef.current = null;
-                    isDraggingInternalRef.current = false;
-                    dragTypeRef.current = null;
-                    setIsDragging(false);
-                    triggerRender();
-                    return;
-                }
 
                 if (wasLongPress && mode === 'play') {
                     if (dragTypeRef.current === 'joystick' && depsRef.current.joystick?.handleJoystickCancel) {
@@ -813,32 +690,6 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
                     const { screenToWorld, getRoomAt, getExitAt, getOccupantAt } = hitTestRef.current;
                     const world = screenToWorld(e.clientX, e.clientY);
-
-                    // Region-label edit mode: tap on empty space drops a new label.
-                    // (Tap on existing label takes the 'region-label' branch above.)
-                    if (isTap && depsRef.current.regionLabelEditMode) {
-                        const tileX = world.x / GRID_SIZE;
-                        const tileY = world.y / GRID_SIZE;
-                        const layerZ = depsRef.current.viewZ !== null && depsRef.current.viewZ !== undefined
-                            ? depsRef.current.viewZ
-                            : (depsRef.current.currentRoomId
-                                ? (depsRef.current.rooms[depsRef.current.currentRoomId]?.z || 0)
-                                : 0);
-                        const text = window.prompt('Region label text (e.g. "Mordor"):')?.trim();
-                        if (text && depsRef.current.addRegionLabel) {
-                            const newId = depsRef.current.addRegionLabel({ text, x: tileX, y: tileY, z: layerZ, fontSize: 80 });
-                            depsRef.current.setSelectedRegionLabelId?.(newId);
-                        }
-                        if (dragTypeRef.current === 'joystick' && depsRef.current.joystick?.handleJoystickCancel) {
-                            depsRef.current.joystick.handleJoystickCancel(e as any);
-                        }
-                        if (depsRef.current.setIsTrackpadModifierActive) depsRef.current.setIsTrackpadModifierActive(false);
-                        isDraggingInternalRef.current = false;
-                        dragTypeRef.current = null;
-                        setIsDragging(false);
-                        triggerRender();
-                        return;
-                    }
 
                     if (isMapLongPress) {
                         didHandleMapLongPressRelease = fireMapLongPressAtLogTarget(e);

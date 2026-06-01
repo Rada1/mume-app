@@ -124,7 +124,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
         renderVersion, triggerRender, activeMapFilter, setActiveMapFilter,
         mapSearchQuery, setMapSearchQuery,
-        regionLabels, regionLabelEditMode, setExploredMarkers,
+        regionLabels, setExploredMarkers,
         playerPosRef,
         closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     } = context;
@@ -262,12 +262,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         calibration,
         setCalibration,
         onTraceClick,
-        onTraceHover,
-        regionLabels,
-        regionLabelEditMode,
-        addRegionLabel: context.addRegionLabel,
-        updateRegionLabel: context.updateRegionLabel,
-        setSelectedRegionLabelId
+        onTraceHover
     });
 
     const handleAddMarker = useCallback((wx: number, wy: number, z: number) => {
@@ -360,7 +355,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 activePath={activePath}
                 mapTileOpacity={isTracingMode && (backgroundAlignMode || isCtrlAlignHeld) ? 0.5 : 1}
                 regionLabels={regionLabels}
-                regionLabelEditMode={regionLabelEditMode}
                 selectedRegionLabelId={selectedRegionLabelId}
                 joystickActive={joystick?.joystickActive}
             />

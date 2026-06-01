@@ -3,6 +3,7 @@ import { GmcpRoomInfo, MapperRoom } from '../mapperTypes';
 import { generateId, normalizeTerrain, DIRS, getExitTargetId } from '../mapperUtils';
 import { findBestTextRoomMatch } from '../textRoomMatcher';
 import { sanitizeTextDerivedDoorExits } from '../mapperExitSanitizer';
+import { findRoomByExitSignature } from '../mapperExitSignature';
 
 interface RoomInfoProps {
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
@@ -11,6 +12,7 @@ interface RoomInfoProps {
     setCurrentRoomId: React.Dispatch<React.SetStateAction<string | null>>;
     pendingMovesRef: React.MutableRefObject<{ dir: string; time: number }[]>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
+    spatialIndexRef?: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     nameIndexRef: React.MutableRefObject<Record<string, string[]>>;
     serverIdIndexRef: React.MutableRefObject<Record<string, string>>;
     discoverySourceRef: React.MutableRefObject<string | null>;
@@ -32,13 +34,17 @@ interface RoomInfoProps {
     // for the same physical move (lit rooms fire BOTH a GMCP room-info and an XML move).
     lastGmcpMoveTimeRef?: React.MutableRefObject<number>;
     activeView: string;
+    // When false (default / "play mode"), the mapper only TRACKS position against the
+    // preloaded base map and never fabricates a brand-new room. When true ("map edit
+    // mode"), unmatched room events may create new rooms/exits for manual mapping.
+    mapEditMode?: boolean;
 }
 
 export const useRoomInfoHandler = ({
-    roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
+    roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, spatialIndexRef,
     nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef,
     firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, addMessage, showDebugEchoes, preMoveRef,
-    deathRoomId, setDeathRoomId, baseMapExitsRef, lastGmcpMoveTimeRef, activeView
+    deathRoomId, setDeathRoomId, baseMapExitsRef, lastGmcpMoveTimeRef, activeView, mapEditMode
 }: RoomInfoProps) => {
 
     // Debounce for syncing the explored Set into React state / persistence. The hot
@@ -274,6 +280,30 @@ export const useRoomInfoHandler = ({
                 }
             }
 
+            // Priority 3.5: Exit-signature confirmation (MMapper compareWeakProps).
+            // For ambiguous/dark moves, disambiguate among the rooms reachable by this
+            // move using the exits the player can actually see. This is what locks
+            // up/down and dark steps onto the right preloaded room instead of a coord
+            // collision — the previous coord-only adjacency couldn't tell stacked rooms apart.
+            if (!matchedInternalId && !targetId && currentActiveRoom && dirUsed && data.exits) {
+                const sigMatch = findRoomByExitSignature({
+                    currentRoom: currentActiveRoom,
+                    dirUsed,
+                    eventExits: data.exits as Record<string, any>,
+                    rooms: roomsRef.current,
+                    preloaded: preloadedCoordsRef.current,
+                    spatialIndex: spatialIndexRef?.current
+                });
+                if (sigMatch) {
+                    targetId = sigMatch.id;
+                    if (sigMatch.vnum && preloadedCoordsRef.current[sigMatch.vnum]) {
+                        matchedInternalId = sigMatch.vnum;
+                        ghostData = preloadedCoordsRef.current[sigMatch.vnum];
+                    }
+                    discoverySource = 'EXIT_SIGNATURE';
+                }
+            }
+
             // Priority 4: Coordinate-Restricted Fingerprinting (Global Search)
             if (!matchedInternalId && !targetId && !isVnumZero) {
                 const candidates = nameIndexRef.current[gmcpName];
@@ -432,6 +462,14 @@ export const useRoomInfoHandler = ({
             onRoomInfoProcessed?.(null);
             return;
         }
+        // Play mode (edit off): we exhausted every way to match this event to a room that
+        // already exists in the preloaded base map. Creating a fresh room here is exactly
+        // what stamped phantom rooms — and full-wall boxes — on top of the Nazgûm map.
+        // Bail and leave the player where they are; only map edit mode may map new rooms.
+        if (!targetId && !mapEditMode) {
+            onRoomInfoProcessed?.(null);
+            return;
+        }
         if (!targetId) targetId = generateId();
 
         // --- Move Echo Logic (Always triggered if move was intended) ---
@@ -495,6 +533,18 @@ export const useRoomInfoHandler = ({
         }
 
         if (!existingRoom) {
+            // Defense in depth for play mode: only ever materialize a room that the preloaded
+            // base map actually knows about (a ghost/Arda hit, or an m_<vnum> that exists in
+            // the preloaded set). Anything else would be a fabricated room — block it unless
+            // the user is explicitly in map edit mode.
+            if (!mapEditMode) {
+                const vnumKey = targetId!.startsWith('m_') ? targetId!.substring(2) : null;
+                const isPreloadedBacked = !!ghostData || (vnumKey != null && !!preloadedCoordsRef.current[vnumKey]);
+                if (!isPreloadedBacked) {
+                    onRoomInfoProcessed?.(null);
+                    return;
+                }
+            }
             topologyChanged = true;
             newRooms = { ...prevRooms };
             let nx = predX, ny = predY, nz = predZ;
@@ -708,7 +758,7 @@ export const useRoomInfoHandler = ({
                 }
             }
         }
-    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, addMessage, showDebugEchoes, preMoveRef, activeView]);
+    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, addMessage, showDebugEchoes, preMoveRef, activeView, mapEditMode]);
 
     return { handleRoomInfo };
 };

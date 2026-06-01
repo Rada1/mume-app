@@ -17,7 +17,6 @@ const loadFromStorage = (): Record<string, RegionLabel> => {
 
 export const useRegionLabels = () => {
     const [regionLabels, setRegionLabels] = useState<Record<string, RegionLabel>>(loadFromStorage);
-    const [regionLabelEditMode, setRegionLabelEditMode] = useState(false);
     const regionLabelsRef = useRef(regionLabels);
 
     useEffect(() => { regionLabelsRef.current = regionLabels; }, [regionLabels]);
@@ -74,8 +73,6 @@ export const useRegionLabels = () => {
         regionLabelsRef,
         addRegionLabel,
         updateRegionLabel,
-        deleteRegionLabel,
-        regionLabelEditMode,
-        setRegionLabelEditMode
+        deleteRegionLabel
     };
 };
