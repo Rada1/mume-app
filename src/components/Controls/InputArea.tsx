@@ -29,6 +29,25 @@ interface InputAreaProps {
 
 import { normalizeTerrain } from '../../utils/terrainUtils';
 
+const EXAMPLE_COMMANDS = [
+    'look',
+    'score',
+    'where',
+    'who',
+    'inventory',
+    'equipment',
+    'cast \'armour\'',
+    'kill orc',
+    'open gate',
+    'skills',
+    'help ranger',
+    'examine chest',
+    'wimpy 30',
+    'get all',
+    'flee'
+];
+
+
 const InputArea: React.FC<InputAreaProps> = ({
     onSend, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
     spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState, parley, setParley, whoList, gameState
@@ -50,6 +69,20 @@ const InputArea: React.FC<InputAreaProps> = ({
     const startPos = useRef<{ x: number, y: number } | null>(null);
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const isSwiping = useRef(false);
+    const [commandIndex, setCommandIndex] = useState(0);
+
+    // Rotate placeholder commands for playing state
+    useEffect(() => {
+        const mode = parley.mode || (parley.active ? 'parley' : 'command');
+        if (gameState !== 'playing' || mode !== 'command' || input) {
+            return;
+        }
+        const interval = setInterval(() => {
+            setCommandIndex(prev => (prev + 1) % EXAMPLE_COMMANDS.length);
+        }, 4000);
+        return () => clearInterval(interval);
+    }, [gameState, parley.mode, parley.active, input]);
+
 
     // Global listeners to catch fast swipes that leave the element bounds
     React.useEffect(() => {
@@ -507,7 +540,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                                     inputRef.current.focus();
                                 }
                             }}
-                            placeholder={isPasswordMode ? "Enter password..." : (gameState === 'account' ? "Enter username..." : (commandPreview ? "" : (currentMode === 'help' ? "Enter help topic..." : "Enter command...")))}
+                            placeholder={isPasswordMode ? "Enter password..." : (gameState === 'account' ? "Enter username..." : (commandPreview ? "" : (currentMode === 'help' ? "Enter help topic..." : `Try: ${EXAMPLE_COMMANDS[commandIndex]}...`)))}
                         />
                     </div>
 

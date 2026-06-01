@@ -59,12 +59,15 @@ interface StandardMenuProps {
     characterInfo?: CharacterInfo;
 }
 
-const NPC_SUBCATEGORIES = ['npc-mount', 'npc-shopkeeper', 'npc-innkeeper', 'npc-guildmaster'];
-
 const formatSetLabel = (id: string): string => {
     const category = getCategoryConfig(id);
     if (category) return category.label;
     return id.replace(/^(inline|cat)-/, '').replace(/-/g, ' ').toUpperCase();
+};
+
+const stripAnsiCodes = (text: string): string => {
+    if (!text) return '';
+    return text.replace(/[\u001b\x1b\u2190]\[[0-9;]*[a-zA-Z]/g, '');
 };
 
 export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
@@ -187,8 +190,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         safeSetId.startsWith('object') ||
         safeSetId.startsWith('npc')
     );
-    const isTargetable = !isTacticalSet && (categoryAxes.isTargetable || ['selection', 'inventorylist', 'equipmentlist', 'npc', 'player', 'object-corpse'].includes(safeSetId) || NPC_SUBCATEGORIES.includes(safeSetId));
     const headerContext = categoryAxes.isCharacter ? targetContext : popoverState.context;
+    const cleanHeaderContext = headerContext ? stripAnsiCodes(headerContext) : null;
     const categoryLabel = isSetManager ? '' : (() => {
         if (categoryAxes.isInlineAction) return getInlineCategoryLabel(categoryId);
         return safeSetId ? formatSetLabel(safeSetId) : '';
@@ -202,7 +205,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                 <div className="popover-header" onPointerDown={(e) => { e.stopPropagation(); }} style={{ cursor: !isSetManager ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', marginBottom: '3px', paddingBottom: '3px', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => { triggerHaptic?.(20); if (!isSetManager) setPopoverState({ ...popoverState, setId: 'setmanager' }); }}>
                     <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {isSetManager ? 'Main Menu' : (headerContext ? headerContext : (popoverState.direction ? `${formatSetLabel(safeSetId).toUpperCase()} (${popoverState.direction.toUpperCase()})` : formatSetLabel(safeSetId).toUpperCase()))}
+                            {isSetManager ? 'Main Menu' : (cleanHeaderContext ? cleanHeaderContext : (popoverState.direction ? `${formatSetLabel(safeSetId).toUpperCase()} (${popoverState.direction.toUpperCase()})` : formatSetLabel(safeSetId).toUpperCase()))}
                         </span>
                         <span style={{ fontSize: '0.6rem', opacity: 0.6, fontWeight: 'normal', marginTop: '1px' }}>{popoverState.executeAndAssign ? 'select action to fire and remap button' : categoryLabel}</span>
                     </div>
@@ -216,10 +219,6 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
 
             {isChoosingCategory && setCustomTraits && (
                 <TraitToggleSection popoverState={popoverState} customTraits={customTraits || []} setCustomTraits={setCustomTraits} activeTraits={resolvedTraitIds} keywordTraits={keywordTraitIds} triggerHaptic={triggerHaptic} addMessage={addMessage} refreshLogHighlights={refreshLogHighlights} characterInfo={characterInfo} />
-            )}
-
-            {isTargetable && !isChoosingCategory && (
-                <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} onClick={() => { triggerHaptic?.(20); setTarget(targetContext); setPopoverState(null); }} style={{ '--set-accent': themeColor || popoverState.accentColor || 'var(--accent)' } as any}>Set as Target</div>
             )}
 
             {isSetManager ? (
@@ -236,7 +235,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                                 <div className="popover-empty" style={{ padding: '8px', textAlign: 'center', opacity: 0.5, fontSize: '0.75rem' }}>No buttons available for this category</div>
                             )}
                             {openKeywordEdit && isInlineMenu && popoverState.context && (
-                                <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} style={{ borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 4, opacity: 0.6, fontSize: '0.82rem' }} onClick={() => { triggerHaptic?.(20); openKeywordEdit(popoverState.context!, popoverState.context!); setPopoverState(null); }}>✏ Edit keyword "{popoverState.context}"</div>
+                                <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} style={{ borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 4, opacity: 0.6, fontSize: '0.82rem' }} onClick={() => { triggerHaptic?.(20); openKeywordEdit(popoverState.context!, popoverState.context!); setPopoverState(null); }}>✏ Edit keyword "{stripAnsiCodes(popoverState.context)}"</div>
                             )}
                         </>
                     ) : (popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target') ? (

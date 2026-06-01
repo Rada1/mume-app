@@ -1,3 +1,8 @@
+/**
+ * @file useMapGmcphandlers.ts
+ * @description Coordinates mapper GMCP, XML movement, and pending move queue handlers.
+ */
+
 import { useRef } from 'react';
 import { MapperPrediction, MapperRoom } from '../mapperTypes';
 import { useRoomInfoHandler } from './useRoomInfoHandler';
@@ -36,6 +41,26 @@ interface UseMapGmcphandlersProps {
     mapEditMode?: boolean;
 }
 
+// --- Logic Section ---
+const dirShortNames: Record<string, string> = {
+    north: 'n',
+    south: 's',
+    east: 'e',
+    west: 'w',
+    up: 'u',
+    down: 'd',
+    northeast: 'ne',
+    northwest: 'nw',
+    southeast: 'se',
+    southwest: 'sw'
+};
+
+const normalizeMoveDir = (dir: string | null | undefined): string | null => {
+    if (!dir) return null;
+    const normalized = dir.trim().toLowerCase();
+    return dirShortNames[normalized] || normalized;
+};
+
 export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
     const lastXmlMovementRef = useRef<{ dir: string | null; time: number } | null>(null);
     // Set by the GMCP room-info handler whenever it authoritatively consumes a queued
@@ -49,16 +74,25 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
 
     const handleMoveConfirmed = (e?: any) => {
         const isDark = e?.detail?.isDark;
-        const xmlDir = typeof e?.detail?.dir === 'string' ? e.detail.dir : null;
+        const eventDir = normalizeMoveDir(typeof e?.detail?.dir === 'string' ? e.detail.dir : null);
         const isXmlMovement = e?.detail?.source === 'xml';
+        const isGmcpMovement = e?.detail?.source === 'gmcp';
+        const hasDirectedMovement = eventDir !== null;
         const pending = props.pendingMovesRef.current;
         const now = Date.now();
 
-        if (!isXmlMovement && !xmlDir && lastXmlMovementRef.current && now - lastXmlMovementRef.current.time < 350) {
+        // MMapper's GMCP Event.Moved only records direction for the following room
+        // payload; it does not dequeue prespam by itself. Room.Info remains the
+        // authoritative GMCP consumer below.
+        if (isGmcpMovement) {
+            return;
+        }
+
+        if (!isXmlMovement && !hasDirectedMovement && lastXmlMovementRef.current && now - lastXmlMovementRef.current.time < 350) {
             return;
         }
         if (isXmlMovement) {
-            lastXmlMovementRef.current = { dir: xmlDir, time: now };
+            lastXmlMovementRef.current = { dir: eventDir, time: now };
         }
 
         // Lit rooms fire BOTH a GMCP room-info AND this XML/text move event for the same
@@ -70,25 +104,22 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
             return;
         }
 
-        const pendingIndex = xmlDir ? pending.findIndex(move => move.dir === xmlDir) : 0;
-
-        // A move already consumed by the authoritative GMCP room-info handler is no
-        // longer in the pending queue. If we then get an XML/text movement event for
-        // that same direction, it's a redundant SECOND confirmation of one physical
-        // move. Bail: otherwise we'd (a) dead-reckon a possibly-conflicting room over
-        // GMCP's exact match, and (b) blindly shift the wrong, still-pending move below
-        // (findIndex === -1 fell through to the `else if` shift), draining the
-        // prediction line at 2x speed.
-        if (xmlDir && pendingIndex === -1) {
+        // MMapper treats its prespammed path as a FIFO command queue: each movement
+        // confirmation consumes the head only. If the confirmed direction differs
+        // from that head, the queue is stale, so clear it rather than preserving a
+        // detached tail that can point the prediction line down the wrong branch.
+        if (hasDirectedMovement && pending.length === 0) {
             return;
         }
 
-        const nextMove = pending[pendingIndex >= 0 ? pendingIndex : 0];
-        const confirmedDir = xmlDir || nextMove?.dir || null;
+        const nextMove = pending[0];
+        const queuedDir = normalizeMoveDir(nextMove?.dir);
+        const confirmedDir = eventDir || queuedDir;
+        const clearQueueAfterConfirm = !!eventDir && !!queuedDir && eventDir !== queuedDir;
 
         let resolvedTargetId: string | null = null;
 
-        if ((isDark || isXmlMovement) && confirmedDir) {
+        if ((isDark || isXmlMovement || hasDirectedMovement) && confirmedDir) {
             const currentId = props.currentRoomIdRef.current;
             if (currentId) {
                 const currentRoom = props.roomsRef.current[currentId];
@@ -142,7 +173,7 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
 
                 if (targetId) {
                     if (props.showDebugEchoes) {
-                        const source = isXmlMovement ? 'XML' : 'dark text';
+                        const source = isXmlMovement ? 'XML' : (hasDirectedMovement ? 'GMCP movement' : 'dark text');
                         props.addMessage?.('system', `[Mapper] ${source} dead-reckoned move ${confirmedDir} to ${targetId}`);
                     }
                     props.setCurrentRoomId(targetId);
@@ -151,8 +182,14 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
             }
         }
 
-        if (pendingIndex > 0) props.pendingMovesRef.current.splice(0, pendingIndex + 1);
-        else if (pending.length > 0) props.pendingMovesRef.current.shift();
+        if (clearQueueAfterConfirm) {
+            props.pendingMovesRef.current = [];
+            if (props.showDebugEchoes) {
+                props.addMessage?.('system', `[Mapper] Movement ${confirmedDir} did not match queued ${queuedDir}; clearing stale prediction queue.`);
+            }
+        } else if (pending.length > 0) {
+            props.pendingMovesRef.current.shift();
+        }
 
         // Pass the dead-reckoned targetId (if any) — NOT currentRoomIdRef.current, which is
         // stale here because setCurrentRoomId above is async and the ref hasn't synced yet.

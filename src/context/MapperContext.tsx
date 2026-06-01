@@ -601,11 +601,6 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             if (showDebugEchoesRef.current) {
                 addMessageRef.current?.('system', `[MapperPredict] push ${dir}: room=${currentRoomId} exit=${hasExit ? 'yes' : 'no'} door=${hasDoor ? (isClosed ? 'closed' : 'open') : 'no'}`);
             }
-            // Predict optimistically: only bail when there's no exit at all. Door state
-            // defaults to "closed" for unobserved doors, but the player may have autoopen
-            // or the door may actually be open — the failure handler trims if it bounces.
-            if (!hasExit) return;
-
             // Resolve the immediate next room ONLY to seed the ghost-camera preMoveRef.
             // The prediction LINE stores no coords — it is graph-walked at render time.
             const wasQueueEmpty = clientPredictionsRef.current.length === 0;

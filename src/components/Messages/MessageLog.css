@@ -397,6 +397,23 @@
     color: var(--glow-color, inherit) !important;
 }
 
+/* Affordance chevron — a small downward caret shown only once a button is
+   selected, signalling it now acts as a tappable menu trigger (mirrors the
+   "Flash ⌄" dropdown style). Skipped for room names. */
+.message-content .inline-btn.selected:not(.room-name-inline)::after {
+    content: '\203A'; /* › single right-pointing angle, rotated to point down */
+    display: inline-block;
+    transform: rotate(90deg);
+    margin-left: 0.22em;
+    font-size: 0.78em;
+    font-weight: bold;
+    line-height: 1;
+    vertical-align: 0.05em;
+    opacity: 0.55;
+    color: var(--glow-color, currentColor);
+    pointer-events: none;
+}
+
 /* Pin inline player buttons to the blue used in the who-list
    and the players drawer, bypassing the brightness filter. */
 .message-content .inline-btn.pc-highlighter,

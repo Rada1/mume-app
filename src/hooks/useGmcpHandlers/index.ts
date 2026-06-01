@@ -1,3 +1,8 @@
+/**
+ * @file index.ts
+ * @description Aggregates GMCP package handlers and routes game events into app state.
+ */
+
 import React, { useRef, useCallback } from 'react';
 import {
     GmcpOccupant,
