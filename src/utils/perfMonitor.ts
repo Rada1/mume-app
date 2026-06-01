@@ -35,6 +35,8 @@ class PerfMonitor {
     private frameStamps: number[] = [];    // timestamps of rendered frames (for FPS)
     private rebuildStamps: number[] = [];  // timestamps of static-cache rebuilds
     private rebuildReasons: { at: number; reason: string }[] = []; // why each rebuild fired
+    private parserWorkerTimes: number[] = [];
+    private parserSyncTimes: number[] = [];
 
     lastFullSave: SaveStat | null = null;
     lastPosSave: SaveStat | null = null;
@@ -106,6 +108,13 @@ class PerfMonitor {
         }
     }
 
+    recordParserTokenize(mode: 'worker' | 'sync', ms: number) {
+        if (!this.enabled) return;
+        const bucket = mode === 'worker' ? this.parserWorkerTimes : this.parserSyncTimes;
+        bucket.push(ms);
+        if (bucket.length > MAX_SAMPLES) bucket.shift();
+    }
+
     resetPeaks() {
         this.peakDrawMs = 0;
         this.peakFullSaveMs = 0;
@@ -145,6 +154,10 @@ class PerfMonitor {
             drawP95Ms: p95(this.drawTimes),
             drawMaxMs: max(this.drawTimes),
             peakDrawMs: this.peakDrawMs,
+            parserWorkerAvgMs: avg(this.parserWorkerTimes),
+            parserWorkerMaxMs: max(this.parserWorkerTimes),
+            parserSyncAvgMs: avg(this.parserSyncTimes),
+            parserSyncMaxMs: max(this.parserSyncTimes),
             intervalAvgMs: avg(this.frameIntervals),
             intervalMaxMs: max(this.frameIntervals),       // longest gap = worst jank
             lastFullSave: this.lastFullSave,

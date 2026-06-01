@@ -9,6 +9,8 @@ import { ProtocolHandler } from '../utils/telnet/ProtocolHandler';
 import { TELNET_GMCP, TELNET_TTYPE, TTYPE_SEND, TTYPE_IS, IAC, SB, SE } from '../constants';
 import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
 import { PipelineOrchestrator } from '../services/parser/PipelineOrchestrator';
+import { parserWorkerClient } from '../services/parser/parserWorkerClient';
+import { TokenizedLine } from '../services/parser/parserWorkerTypes';
 import { getRoom as getActiveRoom } from '../stores/useRoomStore';
 import { getCombat as getActiveCombat } from '../stores/useCombatStore';
 import { getVitals as getActiveVitals } from '../stores/useVitalsStore';
@@ -57,6 +59,7 @@ export function useTelnet(config: TelnetConfig) {
     const lastProcessedPromptRef = React.useRef("");
     const pendingTextLines = React.useRef<(string | { line: string, isPrompt: boolean })[]>([]);
     const processingTimeout = React.useRef<any>(null);
+    const tokenizationChainRef = React.useRef<Promise<void>>(Promise.resolve());
 
     const snoopBlockRef = React.useRef<{ symbol: string; type: string } | null>(null);
     const snoopPrefixRegex = /^(?:&amp;|&|mp;)[A-Za-z](?:\s|$)/;
@@ -339,46 +342,68 @@ export function useTelnet(config: TelnetConfig) {
 
                     if (chunk.length === 0) return;
 
-                    const settings = getSettings();
-                    const isAccountMode = configRef.current.getGameState?.() === 'account';
-                    if (isAccountMode) {
-                        for (const entry of chunk) {
-                            const line = typeof entry === 'string' ? entry : entry.line;
-                            configRef.current.processLine(line, null);
-                        }
-                    } else PipelineOrchestrator.ingestChunk(
-                        chunk,
-                        () => {
-                            const roomStore = getActiveRoom();
-                            const combatStore = getActiveCombat();
-                            const vitalsStore = getActiveVitals();
-                            const buttonStore = useButtonStore.getState();
-                            const uiStore = useUIStore.getState();
+                    const buildTokenizerContext = () => {
+                        const settings = getSettings();
+                        const roomStore = getActiveRoom();
+                        const combatStore = getActiveCombat();
+                        const vitalsStore = getActiveVitals();
+                        const buttonStore = useButtonStore.getState();
+                        const uiStore = useUIStore.getState();
 
-                            // Consolidate online players from who/where lists
-                            const onlinePlayers = (roomStore.whoList || []).map((entry: string) => entry.includes('|') ? entry.split('|')[1] : entry);
-                            
-                            return {
-                                target: vitalsStore.target,
-                                currentOccupants: Object.values(roomStore.chars || {}),
-                                roomNpcs: Object.values(roomStore.chars || {}).filter((c: any) => c.type === 'npc'),
-                                activeGroupMembers: combatStore.groupMembers || [],
-                                roomItems: roomStore.items || [],
-                                discoveredItems: [],
-                                onlinePlayers,
-                                inlineCategories: settings.inlineCategories || [],
-                                npcColor: settings.npcColor,
-                                playerColor: settings.playerColor,
-                                objectColor: settings.objectColor,
-                                roomColor: settings.roomColor,
-                                buttons: buttonStore.rawButtons || [],
-                                selectedObjectIds: (uiStore as any).selectedObjectIds || new Set<string>()
-                            };
-                        },
-                        (line, tokens) => {
-                            configRef.current.processLine(line, tokens);
+                        const onlinePlayers = (roomStore.whoList || []).map((entry: string) => entry.includes('|') ? entry.split('|')[1] : entry);
+
+                        return {
+                            target: vitalsStore.target,
+                            currentOccupants: Object.values(roomStore.chars || {}),
+                            roomNpcs: Object.values(roomStore.chars || {}).filter((c: any) => c.type === 'npc'),
+                            activeGroupMembers: combatStore.groupMembers || [],
+                            roomItems: roomStore.items || [],
+                            discoveredItems: [],
+                            onlinePlayers,
+                            inlineCategories: settings.inlineCategories || [],
+                            npcColor: settings.npcColor,
+                            playerColor: settings.playerColor,
+                            objectColor: settings.objectColor,
+                            roomColor: settings.roomColor,
+                            buttons: buttonStore.rawButtons || [],
+                            selectedObjectIds: (uiStore as any).selectedObjectIds || new Set<string>()
+                        };
+                    };
+
+                    const processTokenizedLines = (lines: TokenizedLine[]) => {
+                        for (const entry of lines) {
+                            if (entry.isPrompt) {
+                                (entry.tokens as any).isPrompt = true;
+                            }
+                            configRef.current.processLine(entry.line, entry.tokens);
                         }
-                    );
+                    };
+
+                    const isAccountMode = configRef.current.getGameState?.() === 'account';
+
+                    const runProcessing = async () => {
+                        if (isAccountMode) {
+                            for (const entry of chunk) {
+                                const line = typeof entry === 'string' ? entry : entry.line;
+                                configRef.current.processLine(line, null);
+                            }
+                            return;
+                        }
+
+                        const context = buildTokenizerContext();
+                        try {
+                            const tokenized = await parserWorkerClient.tokenize(chunk, context);
+                            processTokenizedLines(tokenized);
+                        } catch (_) {
+                            PipelineOrchestrator.ingestChunk(
+                                chunk,
+                                () => context,
+                                (line, tokens) => configRef.current.processLine(line, tokens)
+                            );
+                        }
+                    };
+
+                    tokenizationChainRef.current = tokenizationChainRef.current.then(runProcessing, runProcessing);
                 });
             }
         }

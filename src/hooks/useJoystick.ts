@@ -281,45 +281,51 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
         const wasConsumed = isJoystickConsumed || isTargetModifierActive;
         const initialDir = currentDir || lockedDirRef.current;
-
-        setJoystickActive(false);
-        setIsJoystickConsumed(false);
-        setIsSwipeWheelHidden(false);
-        setIsTargetModifierActive(false);
-        setCurrentDir(null);
-        setSwipeRay({ active: false, angle: 0, dist: 0 });
-        lastHapticDirRef.current = null;
-        lockedDirRef.current = null;
-        activeJoystickPointerRef.current = null;
-
         const dxOriginal = e.clientX - joystickStartPos.current.x, dyOriginal = e.clientY - joystickStartPos.current.y;
         const dist = Math.sqrt(dxOriginal * dxOriginal + dyOriginal * dyOriginal);
         const touchDX = touchStartPos.current ? (e.clientX - touchStartPos.current.x) : 0;
         const touchDY = touchStartPos.current ? (e.clientY - touchStartPos.current.y) : 0;
         const displacement = Math.sqrt(touchDX * touchDX + touchDY * touchDY);
+        const isCenterTap = displacement < 20 && dist < 20;
 
-        if (joystickKnobRef.current) {
-            joystickKnobRef.current.classList.add('resetting');
-            joystickKnobRef.current.style.transform = '';
-            setTimeout(() => { if (joystickKnobRef.current) joystickKnobRef.current.classList.remove('resetting'); }, 500);
-        }
+        const cleanupJoystickEnd = () => {
+            setJoystickActive(false);
+            setIsJoystickConsumed(false);
+            setIsSwipeWheelHidden(false);
+            setIsTargetModifierActive(false);
+            setCurrentDir(null);
+            setSwipeRay({ active: false, angle: 0, dist: 0 });
+            lastHapticDirRef.current = null;
+            lockedDirRef.current = null;
+            activeJoystickPointerRef.current = null;
+            joystickStartPos.current = null;
+            touchStartPos.current = null;
+        };
 
         if (suppressDefault) {
-             const isCenterTap = displacement < 20 && dist < 20;
-             return { isCenterTap, dir: initialDir || null };
+            cleanupJoystickEnd();
+            if (joystickKnobRef.current) {
+                joystickKnobRef.current.classList.add('resetting');
+                joystickKnobRef.current.style.transform = '';
+                setTimeout(() => { if (joystickKnobRef.current) joystickKnobRef.current.classList.remove('resetting'); }, 500);
+            }
+            return { isCenterTap, dir: initialDir || null };
         }
 
         if (!wasConsumed) {
-            // Tap to Look
-            if (displacement < 20 && dist < 20) {
+            if (isCenterTap) {
                 const cmd = target ? `look ${target}` : 'look';
                 executeCommand(cmd, false, false, false, false, { fromUi: true });
+                cleanupJoystickEnd();
                 if (playClickSound) playClickSound();
-                // Removed release haptic for lookout/tap
+                if (joystickKnobRef.current) {
+                    joystickKnobRef.current.classList.add('resetting');
+                    joystickKnobRef.current.style.transform = '';
+                    setTimeout(() => { if (joystickKnobRef.current) joystickKnobRef.current.classList.remove('resetting'); }, 500);
+                }
                 return true;
             }
             
-            // Directional execution
             let threshold = 25;
             if (initialDir === 'nw' && !availableExits.includes('u')) threshold = 60;
             else if (initialDir === 'se' && !availableExits.includes('d')) threshold = 60;
@@ -327,19 +333,27 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             if (dist >= threshold && initialDir) {
                 executeCommand(dirMap[initialDir] || initialDir, false, false, false, false, { fromUi: true });
                 lastSentDirRef.current = initialDir;
+                cleanupJoystickEnd();
                 if (playClickSound) playClickSound();
-
-                
-                // Removed release haptic for move
                 setJoystickGlow(true);
                 setTimeout(() => setJoystickGlow(false), 300);
+                if (joystickKnobRef.current) {
+                    joystickKnobRef.current.classList.add('resetting');
+                    joystickKnobRef.current.style.transform = '';
+                    setTimeout(() => { if (joystickKnobRef.current) joystickKnobRef.current.classList.remove('resetting'); }, 500);
+                }
                 return true;
             }
         }
 
-        joystickStartPos.current = null;
+        cleanupJoystickEnd();
+        if (joystickKnobRef.current) {
+            joystickKnobRef.current.classList.add('resetting');
+            joystickKnobRef.current.style.transform = '';
+            setTimeout(() => { if (joystickKnobRef.current) joystickKnobRef.current.classList.remove('resetting'); }, 500);
+        }
         return false;
-    }, [joystickActive, isJoystickConsumed, isTargetModifierActive, currentDir, triggerHaptic, target]);
+    }, [joystickActive, isJoystickConsumed, isTargetModifierActive, currentDir, target, availableExits, stopRepeatTimer, playClickSound]);
 
     const handleNavStart = useCallback((dir: 'up' | 'down', e: React.PointerEvent) => {
         setIsJoystickConsumed(false);

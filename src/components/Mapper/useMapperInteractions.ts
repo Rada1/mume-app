@@ -710,6 +710,34 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             const remPointers = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b).map(id => ({ id, ...activePointersRef.current.get(id)! }));
             lastPointersRef.current = remPointers;
 
+            const activeHeldForFastRelease = depsRef.current.heldButtonRef?.current || depsRef.current.heldButton;
+            const canFastReleaseJoystick = activePointersRef.current.size === 0
+                && dragTypeRef.current === 'joystick'
+                && hasDraggedRef.current
+                && !wasLongPress
+                && mode === 'play'
+                && !activeHeldForFastRelease
+                && !depsRef.current.regionLabelEditMode
+                && !depsRef.current.isTracingMode;
+
+            if (canFastReleaseJoystick) {
+                joystick.handleJoystickEnd(
+                    e as any,
+                    (cmd: string) => depsRef.current.executeCommand(cmd, false, false, false, false, { fromUi: true }),
+                    triggerHaptic
+                );
+                stopWalking();
+                if (depsRef.current.setIsTrackpadModifierActive) {
+                    depsRef.current.setIsTrackpadModifierActive(false);
+                }
+                isDraggingInternalRef.current = false;
+                dragTypeRef.current = null;
+                setIsDragging(false);
+                setMarqueeStart(null);
+                setMarqueeEnd(null);
+                return;
+            }
+
             if (activePointersRef.current.size === 0) {
                 if (mode === 'play') {
                     stopWalking();

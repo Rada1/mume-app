@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Token, EntityToken, AnsiToken } from '../../types';
 import { useTokenHighlight, useBaseGame, useUI } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -13,6 +13,18 @@ import { MessageType } from '../../types';
 interface TargetHighlightProps {
     className: string;
 }
+
+const TARGET_WORD_PATTERN = '[^a-zA-Z0-9\\u00C0-\\u00FF]';
+const escapeRegex = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const buildTargetMatcher = (target: string | null) => {
+    const normalized = target?.trim().toLowerCase() || null;
+    if (!normalized || normalized.length < 2) return null;
+    return {
+        value: normalized,
+        regex: new RegExp(`(?:^|${TARGET_WORD_PATTERN})(${escapeRegex(normalized)})(?=${TARGET_WORD_PATTERN}|$)`, 'gi')
+    };
+};
 
 export interface TokenRendererProps {
     tokens?: Token[];
@@ -81,7 +93,8 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
         return <span dangerouslySetInnerHTML={{ __html: fallbackHtml }} />;
     }
 
-    const currentTarget = target?.toLowerCase() || null;
+    const targetMatcher = useMemo(() => buildTargetMatcher(target), [target]);
+    const currentTarget = targetMatcher?.value || null;
 
     const propCategoryAxes = propMetadata?.category ? getInlineCategoryAxes(propMetadata.category) : null;
     
@@ -90,19 +103,15 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
     });
 
     const renderTextWithTarget = (text: string, key: string | number) => {
-        if (!currentTarget || !text.toLowerCase().includes(currentTarget)) {
+        if (!targetMatcher || !text.toLowerCase().includes(targetMatcher.value)) {
             return <span key={key}>{text}</span>;
         }
 
-        // Use word boundaries for target matching to avoid over-highlighting
-        const escapedTarget = currentTarget.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const parts = [];
         let lastIndex = 0;
         let match;
-
-        // Safe word boundary matching without lookbehind
-        const pattern = `(?:^|[^a-zA-Z0-9\\u00C0-\\u00FF])(${escapedTarget})(?=[^a-zA-Z0-9\\u00C0-\\u00FF]|$)`;
-        const regex = new RegExp(pattern, 'gi');
+        const regex = targetMatcher.regex;
+        regex.lastIndex = 0;
 
         while ((match = regex.exec(text)) !== null) {
             let matchContent = match[0];
@@ -255,21 +264,21 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     <span 
                         key={idx} 
                         style={a.style}
-                        {...(isTargetMatch && currentTarget ? getTargetHighlightProps() : {})}
+                        {...(isTargetMatch && targetMatcher ? getTargetHighlightProps() : {})}
                     >
-                        {currentTarget && !isTargetMatch ? renderTextWithTarget(content, idx) : content}
+                        {targetMatcher && !isTargetMatch ? renderTextWithTarget(content, idx) : content}
                     </span>
                 );
             
             case 'text':
             default:
-                if (currentTarget && !isTargetMatch) {
+                if (targetMatcher && !isTargetMatch) {
                     return renderTextWithTarget(content, idx);
                 }
                 return (
                     <span 
                         key={idx} 
-                        {...(isTargetMatch && currentTarget ? getTargetHighlightProps() : {})}
+                        {...(isTargetMatch && targetMatcher ? getTargetHighlightProps() : {})}
                     >
                         {content}
                     </span>
@@ -339,7 +348,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     wordNodes.push(<span key={`sp-${i}-${j}`} style={ansiStyle}> </span>);
                     continue;
                 }
-                const wordContent = currentTarget && word.toLowerCase().includes(currentTarget)
+                const wordContent = targetMatcher && word.toLowerCase().includes(targetMatcher.value)
                     ? renderTextWithTarget(word, `${i}-${j}`)
                     : word;
                 wordNodes.push(

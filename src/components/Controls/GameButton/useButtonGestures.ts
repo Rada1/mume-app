@@ -2,7 +2,7 @@
  * @file useButtonGestures.ts
  * @description Hook managing pointer gestures for individual game buttons, including swiping and radial menus.
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { CustomButton, PopoverState, SwipeDirection, ExecuteCommand } from '../../../types';
 
 import { getButtonCommand } from '../../../utils/buttonUtils';
@@ -32,7 +32,7 @@ export interface UseButtonGesturesProps {
     playClickSound: () => void;
     isSoundEnabled: boolean;
     initAudio: () => void;
-    setRayParams: (params: { angle: number, length: number, opacity: number, color?: string }) => void;
+    setRayParams: React.Dispatch<React.SetStateAction<{ angle: number, length: number, opacity: number, color?: string }>>;
     isMobile?: boolean;
 }
 
@@ -64,6 +64,11 @@ export const useButtonGestures = ({
     setRayParams,
     isMobile
 }: UseButtonGesturesProps) => {
+    const rayFrameRef = useRef<number | null>(null);
+    const pendingRayRef = useRef<{ angle: number, length: number, opacity: number, color?: string } | null>(null);
+    const lastPreviewRef = useRef<string | null>(null);
+    const lastActiveDirRef = useRef<SwipeDirection | 'center' | null>(null);
+    const lastCancellingRef = useRef(false);
 
     const getNextCommandPrefixes = useCallback((prev?: { commandPrefixes?: string[] } | null) => {
         const prefixes = prev?.commandPrefixes || [];
@@ -73,14 +78,39 @@ export const useButtonGestures = ({
 
     // Helper to update ray params easily
     const updateRay = useCallback((angle: number, length: number, opacity: number, color?: string) => {
-        setRayParams({ angle, length, opacity, color });
+        pendingRayRef.current = { angle, length, opacity, color };
+        if (rayFrameRef.current !== null) return;
+
+        rayFrameRef.current = requestAnimationFrame(() => {
+            rayFrameRef.current = null;
+            const next = pendingRayRef.current;
+            pendingRayRef.current = null;
+            if (!next) return;
+            setRayParams(prev => (
+                prev.angle === next.angle &&
+                prev.length === next.length &&
+                prev.opacity === next.opacity &&
+                prev.color === next.color
+                    ? prev
+                    : next
+            ));
+        });
     }, [setRayParams]);
+
+    useEffect(() => () => {
+        if (rayFrameRef.current !== null) {
+            cancelAnimationFrame(rayFrameRef.current);
+            rayFrameRef.current = null;
+        }
+    }, []);
 
     // --- Auto-Reset on External Fire ---
     React.useEffect(() => {
         if (!heldButton || (heldButton && (heldButton.id !== button.id || heldButton.didFire))) {
             setActiveDir(null);
+            lastActiveDirRef.current = null;
             setIsCancelling(false);
+            lastCancellingRef.current = false;
             updateRay(0, 0, 0);
             // If it's our button that fired externally, clear the local pointer start
             if (heldButton?.id === button.id && heldButton.didFire) {
@@ -206,7 +236,11 @@ export const useButtonGestures = ({
 
         const isLong = joystick.isTargetModifierActive;
         const preview = getButtonCommand(button, dxVal, dyVal, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
-        setCommandPreview(preview?.cmd || null);
+        const nextPreview = preview?.cmd || null;
+        if (lastPreviewRef.current !== nextPreview) {
+            lastPreviewRef.current = nextPreview;
+            setCommandPreview(nextPreview);
+        }
         if (preview?.cmd) {
             document.documentElement.style.setProperty(
                 '--preview-glow-color',
@@ -240,25 +274,40 @@ export const useButtonGestures = ({
                 triggerHaptic(60);
                 el._wasInCancelZone = true;
             }
-            setIsCancelling(true);
+            if (!lastCancellingRef.current) {
+                lastCancellingRef.current = true;
+                setIsCancelling(true);
+            }
         } else if (preview?.isSwipe) {
             el._wasInCancelZone = false;
             nextActiveDir = preview.dir || null;
             el.style.setProperty('--cancel-opacity', '0');
-            setIsCancelling(false);
+            if (lastCancellingRef.current) {
+                lastCancellingRef.current = false;
+                setIsCancelling(false);
+            }
         } else if (preview && isSwipedOut && distVal < 20) {
             el._wasInCancelZone = false;
             nextActiveDir = 'center';
             el.style.setProperty('--cancel-opacity', '0');
-            setIsCancelling(false);
+            if (lastCancellingRef.current) {
+                lastCancellingRef.current = false;
+                setIsCancelling(false);
+            }
         } else {
             el._wasInCancelZone = false;
             el.style.setProperty('--cancel-opacity', '0');
             el.style.setProperty('--cancel-scale', '0.5');
-            setIsCancelling(false);
+            if (lastCancellingRef.current) {
+                lastCancellingRef.current = false;
+                setIsCancelling(false);
+            }
         }
 
-        setActiveDir(nextActiveDir as any);
+        if (lastActiveDirRef.current !== nextActiveDir) {
+            lastActiveDirRef.current = nextActiveDir;
+            setActiveDir(nextActiveDir as any);
+        }
 
         if (nextActiveDir !== el._lastActiveDir) {
             if (!isCancelZone) {
@@ -309,10 +358,12 @@ export const useButtonGestures = ({
         try { el.releasePointerCapture(e.pointerId); } catch(err) {}
         
         if (isEditMode) return;
-        console.log(`[useButtonGestures] onPointerUp: button=${button.id}, maxDist=${el._maxDist?.toFixed(1)}, heldButtonOwner=${heldButton?.id}`);
 
         if (heldButton?.id === button.id && heldButton.didFire) {
             setHeldButton(null);
+            lastPreviewRef.current = null;
+            lastActiveDirRef.current = null;
+            lastCancellingRef.current = false;
             el._startX = null; el._startY = null; el._startTime = null; el._maxDist = 0;
             return;
         }
@@ -320,9 +371,12 @@ export const useButtonGestures = ({
         if (heldButton?.id === button.id && heldButton.lastTargetFireAt && Date.now() - heldButton.lastTargetFireAt < 1200) {
             setHeldButton(null);
             setCommandPreview(null);
+            lastPreviewRef.current = null;
             document.documentElement.style.removeProperty('--preview-glow-color');
             setActiveDir(null);
+            lastActiveDirRef.current = null;
             setIsCancelling(false);
+            lastCancellingRef.current = false;
             updateRay(0, 0, 0);
             el._startX = null; el._startY = null; el._startTime = null; el._maxDist = 0;
             return;
@@ -357,10 +411,13 @@ export const useButtonGestures = ({
 
         setHeldButton(null);
         setCommandPreview(null);
+        lastPreviewRef.current = null;
         document.documentElement.style.removeProperty('--preview-glow-color');
         setActiveDir(null);
+        lastActiveDirRef.current = null;
         const finalIsCancelling = isCancelling;
         setIsCancelling(false);
+        lastCancellingRef.current = false;
         el.style.setProperty('--cancel-opacity', '0');
         el.style.setProperty('--cancel-scale', '0');
         updateRay(0, 0, 0);
@@ -416,7 +473,6 @@ export const useButtonGestures = ({
             } else if (previewCmd.cmd && previewCmd.cmd.trim() !== '') {
                 executeCommand(previewCmd.cmd, false, false);
                 if (joystick.currentDir) {
-                    console.log(`[useButtonGestures] Combo fired via gesture: hiding swipe wheel`);
                     joystick.setIsJoystickConsumed(true);
                     if (joystick.setIsSwipeWheelHidden) joystick.setIsSwipeWheelHidden(true);
                 }
@@ -475,10 +531,13 @@ export const useButtonGestures = ({
             setHeldButton(null);
         }
         setCommandPreview(null);
+        lastPreviewRef.current = null;
         document.documentElement.style.removeProperty('--preview-glow-color');
         if (!isActiveSwipeHold) {
             setActiveDir(null);
+            lastActiveDirRef.current = null;
         }
+        lastCancellingRef.current = false;
         el._wasInCancelZone = false;
         el.style.setProperty('--ray-opacity', '0');
         el.style.setProperty('--cancel-opacity', '0');

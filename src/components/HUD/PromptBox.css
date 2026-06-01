@@ -86,7 +86,7 @@
 
 .opponent-name .prompt-opponent-inline.is-target {
     border-color: var(--target-color, #facc15) !important;
-    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.65), 0 0 10px rgba(250, 204, 21, 0.24) !important;
+    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.65) !important;
 }
 
 .player-name {

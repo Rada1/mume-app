@@ -379,7 +379,8 @@
        N blurred repaints per frame during a fling), which is what made scrolling
        choppy while a target was set. A ring + flat tint paints almost for free and
        reads as clearly (or more so). The single selected button keeps its pulse below. */
-    box-shadow: 0 0 0 1.5px var(--color-target);
+    outline: 1px solid var(--color-target);
+    box-shadow: none;
     background: color-mix(in srgb, var(--color-target), transparent 88%);
     z-index: 1;
 }

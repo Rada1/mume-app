@@ -76,6 +76,8 @@ export const PerfHUD: React.FC = () => {
             <Row label="FPS" value={snap.fps} warn={snap.fps > 0 && snap.fps < 30} />
             <Row label="draw avg/p95" value={`${fmtMs(snap.drawAvgMs)} / ${fmtMs(snap.drawP95Ms)}`} warn={snap.drawP95Ms > 16} />
             <Row label="draw peak" value={fmtMs(snap.peakDrawMs)} warn={snap.peakDrawMs > 33} />
+            <Row label="parser worker avg/max" value={`${fmtMs(snap.parserWorkerAvgMs)} / ${fmtMs(snap.parserWorkerMaxMs)}`} warn={snap.parserWorkerMaxMs > 50} />
+            <Row label="parser sync avg/max" value={`${fmtMs(snap.parserSyncAvgMs)} / ${fmtMs(snap.parserSyncMaxMs)}`} warn={snap.parserSyncMaxMs > 50} />
             <Row label="worst frame gap" value={fmtMs(snap.intervalMaxMs)} warn={snap.intervalMaxMs > 100} />
             <Row label="cache rebuilds/s" value={snap.rebuildsPerSec} warn={snap.rebuildsPerSec > 4} />
             {snap.rebuildReasons && (

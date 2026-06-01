@@ -93,7 +93,7 @@
 
 .room-chip.is-target {
     border-color: var(--target-color, #facc15);
-    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.65), 0 0 10px rgba(250, 204, 21, 0.24);
+    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.65);
 }
 
 .room-chip.is-drop-target {
@@ -176,15 +176,13 @@
 
 .room-chip.is-opponent {
     border-color: #ef4444 !important;
-    box-shadow:
-        0 0 3px rgba(239, 68, 68, 0.3),
-        0 0 6px rgba(239, 68, 68, 0.5) !important;
-    animation: chip-opponent-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.55) !important;
+    animation: none;
 }
 
 .room-chip.is-opponent.is-target {
     border-color: var(--target-color, #facc15) !important;
-    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.7), 0 0 12px rgba(250, 204, 21, 0.28) !important;
+    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.7) !important;
 }
 
 @keyframes chip-opponent-pulse {

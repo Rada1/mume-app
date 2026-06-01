@@ -141,13 +141,11 @@
 
 @keyframes tactical-line-cascade-glow {
     0%, 100% {
-        opacity: 0.1;
-        box-shadow: 0 0 4px rgba(232, 176, 32, 0.15), 0 0 10px rgba(232, 176, 32, 0.08);
+        opacity: 0.22;
         border-color: rgba(232, 176, 32, 0.22);
     }
     50% {
-        opacity: 1;
-        box-shadow: 0 0 10px rgba(232, 176, 32, 0.55), 0 0 24px rgba(232, 176, 32, 0.35), inset 0 0 4px rgba(232, 176, 32, 0.1);
+        opacity: 0.85;
         border-color: rgba(232, 176, 32, 0.85);
     }
 }
@@ -159,7 +157,7 @@
     inset: -2px;
     border: 1px solid rgba(232, 176, 32, 0.48);
     border-radius: inherit;
-    box-shadow: 0 0 5px rgba(232, 176, 32, 0.22), 0 0 14px rgba(232, 176, 32, 0.18), 0 0 26px rgba(232, 176, 32, 0.1);
+    box-shadow: none;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
@@ -183,10 +181,7 @@
 .tactical-line-wrapper .line-btn {
     border-color: rgba(232, 176, 32, 0.2) !important;
     border-width: 0.75px !important;
-    box-shadow:
-        0 0 3px rgba(232, 176, 32, 0.08),
-        0 0 9px rgba(232, 176, 32, 0.06),
-        0 0 16px rgba(232, 176, 32, 0.035) !important;
+    box-shadow: 0 0 0 1px rgba(232, 176, 32, 0.08) !important;
 }
 
 .tactical-line-wrapper .line-btn:not(.triggered):not(:active):not(.is-swiping) .button-icon,
@@ -209,10 +204,7 @@
 .tactical-line-wrapper .line-btn:active,
 .tactical-line-wrapper .line-btn.is-swiping {
     border-color: rgba(232, 176, 32, 0.52) !important;
-    box-shadow:
-        0 0 6px rgba(232, 176, 32, 0.24),
-        0 0 15px rgba(232, 176, 32, 0.16),
-        0 0 28px rgba(232, 176, 32, 0.08) !important;
+    box-shadow: 0 0 0 1px rgba(232, 176, 32, 0.42) !important;
 }
 
 /* Adjust labels and icons for smaller buttons */

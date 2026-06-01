@@ -7,13 +7,6 @@ import { useEffect, useRef, useCallback } from 'react';
 import { GRID_SIZE } from './mapperUtils';
 import { perfMonitor } from '../../utils/perfMonitor';
 
-const PLAYER_PULSE_FRAME_MS = 33;
-const MOBILE_PLAYER_PULSE_FRAME_MS = 50;
-// When the ONLY thing animating is the perpetual player-beacon/room-glow breath
-// (sine period ~2.6s), the whole-map canvas does NOT need 20–30fps. Redraw it far
-// less often — the slow glow still reads smoothly, and idle CPU/GPU drops sharply.
-const IDLE_PULSE_FRAME_MS = 80;
-const MOBILE_IDLE_PULSE_FRAME_MS = 120;
 const WAKE_ANIMATION_MS = 1500;
 const EXPLORATION_WAKE_MS = 0;
 
@@ -65,11 +58,8 @@ export const useMapAnimation = ({
 
     const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
     const wakeUntilRef = useRef(0);
-    // True when the previous frame had nothing animating except the perpetual breath,
-    // so the next frame can be scheduled on the slow idle-pulse cadence.
-    const pulseOnlyRef = useRef(false);
-
     const lastFrameTimeRef = useRef<number>(0);
+    const lastParallaxRef = useRef<{ x: number; y: number; scale: number } | null>(null);
 
     const isJoystickActiveRef = useRef(false);
     const joystickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -104,14 +94,7 @@ export const useMapAnimation = ({
         })));
         const effectiveIsDragging = isDragging || isDraggingRef?.current;
         const hasLiveOverlayAnimation = !!(activeMapFilter || mapSearchQuery?.trim() || combatAnimationActive || walkTargetId);
-        const idleFrameBudget = isMobile ? MOBILE_PLAYER_PULSE_FRAME_MS : PLAYER_PULSE_FRAME_MS;
-        const idlePulseBudget = isMobile ? MOBILE_IDLE_PULSE_FRAME_MS : IDLE_PULSE_FRAME_MS;
-        // If the prior frame was breath-only, throttle hard. Active interaction (drag/overlay/
-        // joystick) always gets 16ms; transient camera/trail/wake animation gets the normal
-        // idle budget. The slow cadence only applies to a fully-idle, perpetually-breathing map.
-        const frameBudget = effectiveIsDragging || hasLiveOverlayAnimation || isJoystickActiveRef.current
-            ? 16
-            : (pulseOnlyRef.current ? idlePulseBudget : idleFrameBudget);
+        const frameBudget = effectiveIsDragging || hasLiveOverlayAnimation || isJoystickActiveRef.current ? 16 : 50;
         if (deltaTime < frameBudget) return true;
         
         // Calculate a normalized factor for lerping based on time (aiming for 60fps base)
@@ -128,10 +111,8 @@ export const useMapAnimation = ({
         const w = cvs.width / dpr;
         const h = cvs.height / dpr;
 
-        // Start false: real animations (camera, trails, wake, filter, combat) set this to true
-        // below as needed. If nothing does, the keep-alive at the end of tick re-enables it on
-        // a slow cadence purely to keep the player-beacon/room-glow breath alive — without
-        // forcing a full-map redraw 20–30×/sec while standing still.
+        // Start false: real animations (camera, trails, wake, filter, combat) set this to true.
+        // If nothing needs another frame, the loop stops until the next explicit wake.
         let needsNextFrame = false;
 
         // Player position is snapped immediately in useMapperPlayerTracking — no queue/lerp needed here.
@@ -334,19 +315,23 @@ export const useMapAnimation = ({
         const container = cvs.closest('.mapper-container') as HTMLElement | null;
         if (container) {
             const FACTOR = 0.035;
-            container.style.setProperty('--parallax-x', `${-camera.current.x * FACTOR}px`);
-            container.style.setProperty('--parallax-y', `${-camera.current.y * FACTOR}px`);
-            container.style.setProperty('--parallax-scale', `${1 + (camera.current.zoom - 1) * 0.05}`);
-        }
-
-        // Breath keep-alive: if no real animation requested another frame, keep the loop alive
-        // solely for the perpetual beacon/room-glow breath — but flag it so the next frame is
-        // scheduled on the slow idle-pulse cadence instead of the full idle frame rate.
-        if (needsNextFrame) {
-            pulseOnlyRef.current = false;
-        } else {
-            pulseOnlyRef.current = true;
-            needsNextFrame = true;
+            const nextParallax = {
+                x: -camera.current.x * FACTOR,
+                y: -camera.current.y * FACTOR,
+                scale: 1 + (camera.current.zoom - 1) * 0.05,
+            };
+            const prevParallax = lastParallaxRef.current;
+            if (
+                !prevParallax ||
+                Math.abs(prevParallax.x - nextParallax.x) > 0.1 ||
+                Math.abs(prevParallax.y - nextParallax.y) > 0.1 ||
+                Math.abs(prevParallax.scale - nextParallax.scale) > 0.001
+            ) {
+                container.style.setProperty('--parallax-x', `${nextParallax.x}px`);
+                container.style.setProperty('--parallax-y', `${nextParallax.y}px`);
+                container.style.setProperty('--parallax-scale', `${nextParallax.scale}`);
+                lastParallaxRef.current = nextParallax;
+            }
         }
 
         const drawStart = performance.now();

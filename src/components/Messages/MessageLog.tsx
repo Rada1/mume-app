@@ -732,7 +732,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     top: 0,
                                     left: 0,
                                     width: '100%',
-                                    transform: `translateY(${virtualItem.start}px)`,
+                                    transform: `translate3d(0, ${virtualItem.start}px, 0)`,
+                                    contain: 'layout paint style',
                                     pointerEvents: 'auto',
                                 }}
                             >

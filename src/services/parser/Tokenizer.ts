@@ -5,7 +5,7 @@
  * Supports ANSI colors and nested XML entities (NPC, Player, Object, Room).
  */
 
-import React from 'react';
+import type React from 'react';
 import { Token, EntityToken, AnsiToken, TextToken, InlineCategoryConfig, GmcpOccupant } from '../../types';
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
 import { toCategoryId } from '../../utils/inlineActionModel';

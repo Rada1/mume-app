@@ -196,11 +196,11 @@ select.setting-input {
 .target-highlight {
     background-color: rgba(250, 204, 21, 0.35) !important;
     border: 1px solid rgba(250, 204, 21, 0.7) !important;
-    box-shadow: 0 0 8px rgba(250, 204, 21, 0.4);
+    box-shadow: none;
     border-radius: 3px;
     padding: 0 3px;
     cursor: pointer;
-    animation: target-pulse 2s infinite ease-in-out;
+    animation: none;
     color: #fff !important;
     font-weight: bold !important;
     display: inline-block;
