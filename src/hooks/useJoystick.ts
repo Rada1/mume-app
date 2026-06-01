@@ -166,25 +166,35 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             return d;
         };
 
+        const CARDINAL = new Set(['n', 's', 'e', 'w', 'u', 'd']);
+
         const getMagneticDir = (intended: string): Direction | null => {
             const mapped = mapToGameExit(intended);
-            
-            // 1. Exact match (Cardinals and unmuted NW/SE).
+
+            // 1. Exact match (cardinals, and NW/SE mapped to up/down when those exist).
             if (availableExits.includes(mapped)) {
                 return mapped as Direction;
             }
 
-            // 2. Magnetic Redirection (Dead-Zone Protection).
-            // If the intended direction is blocked, try redirecting to available neighbors.
+            // 2. Magnetic assist: bend an ambiguous *diagonal* swipe onto an adjacent
+            //    real exit. This is a UX nicety, NOT a gate.
             const neighbors = REDIRECTION_MATRIX[intended] || [];
             const candidates = neighbors.map(mapToGameExit).filter(n => availableExits.includes(n));
-
-            if (candidates.length === 0) {
-                return null;
+            if (candidates.length > 0) {
+                return candidates[0] as Direction;
             }
-            
-            // Just take the first available neighbor. No more "Favor Change" bias.
-            return candidates[0] as Direction;
+
+            // 3. No exit data matched. NEVER drop a deliberate cardinal/up-down swipe —
+            //    fire it and let the server adjudicate ("Alas, you cannot go that way.").
+            //    availableExits is frequently incomplete (closed doors, dark/fog rooms,
+            //    GMCP timing, missing exit packets), so using it to *block* a clean
+            //    cardinal swipe silently eats legitimate moves. Only unmatched diagonals
+            //    stay suppressed, since those are usually sloppy cardinal swipes with no
+            //    exit to snap onto.
+            if (CARDINAL.has(mapped)) {
+                return mapped as Direction;
+            }
+            return null;
         };
 
         // --- Console Debugging ---

@@ -123,6 +123,18 @@ describe('MUME Store Integration Tests', () => {
             expect(useRoomStore.getState().exits.sort()).toEqual(['e', 'n', 's', 'w']);
         });
 
+        it('normalizes long-form GMCP exit keys to short canonical form', () => {
+            gmcpBus.emit('Room.Info', {
+                num: 4321,
+                name: 'Long Keys',
+                exits: { north: 10, East: 11, Down: 12 }
+            });
+
+            // The joystick/renderer assume 'n'/'s'/'e'/'w'/'u'/'d'; long/mixed-case
+            // keys must collapse to that so swipes in those directions are recognized.
+            expect(useRoomStore.getState().exits.sort()).toEqual(['d', 'e', 'n']);
+        });
+
         it('removes only the exit marked false in a partial update', () => {
             useRoomStore.setState({
                 exits: ['n', 's', 'e'],

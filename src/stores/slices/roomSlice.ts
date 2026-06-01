@@ -7,7 +7,7 @@
 import { GmcpRoomInfo, GmcpUpdateExits, GmcpOccupant, WhereEntry } from '../../types';
 import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
-import { mergeGmcpExitUpdate } from '../../utils/gmcpExitUtils';
+import { mergeGmcpExitUpdate, normalizeExitMap } from '../../utils/gmcpExitUtils';
 import type { GmcpExitMap } from '../../utils/gmcpExitUtils';
 
 export interface RoomState {
@@ -135,15 +135,16 @@ export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, 
                 // SMARTER: Only clear occupants if it's a physical room change
                 chars: isNewPhysicalRoom ? {} : state.chars,
                 items: isNewPhysicalRoom ? [] : state.items,
-                // Exits often come in the same packet
-                exits: data.exits ? Object.keys(data.exits) : state.exits,
-                rawExits: data.exits ? data.exits : state.rawExits
+                // Exits often come in the same packet. Normalize keys to short canonical
+                // form so the joystick/renderer (which assume 'n'/'s'/'e'/'w') agree.
+                exits: data.exits ? Object.keys(normalizeExitMap(data.exits)) : state.exits,
+                rawExits: data.exits ? normalizeExitMap(data.exits) : state.rawExits
             };
         });
     },
 
     applyExitsUpdate: (data: GmcpUpdateExits | any) => {
-        const exitsData: GmcpExitMap = data.exits || data;
+        const exitsData: GmcpExitMap = normalizeExitMap(data.exits || data);
         set((state) => {
             const rawExits = mergeGmcpExitUpdate(state.rawExits, exitsData);
             return {

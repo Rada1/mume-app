@@ -3,7 +3,7 @@ import { GmcpOccupant, GmcpRoomInfo, GmcpUpdateExits } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { gmcpBus } from '../../events/gmcpBus';
 import { normalizeGmcpWeather } from '../../utils/weatherUtils';
-import { mergeGmcpExitUpdate } from '../../utils/gmcpExitUtils';
+import { mergeGmcpExitUpdate, normalizeExitMap } from '../../utils/gmcpExitUtils';
 import type { GmcpExitMap } from '../../utils/gmcpExitUtils';
 
 interface UseGmcpRoomProps {
@@ -132,8 +132,9 @@ export const useGmcpRoom = ({
         }
 
         if (data.exits) {
-            setRoomExits(Object.keys(data.exits));
-            lastExitsRef.current = data.exits;
+            const normExits = normalizeExitMap(data.exits);
+            setRoomExits(Object.keys(normExits));
+            lastExitsRef.current = normExits;
         }
 
         if (roomChanged) {
@@ -172,7 +173,7 @@ export const useGmcpRoom = ({
 
         if (data.exits) {
             // console.log('[GMCP] Room.UpdateExits:', data.exits);
-            const mergedExits = mergeGmcpExitUpdate(lastExitsRef.current, data.exits as GmcpExitMap);
+            const mergedExits = mergeGmcpExitUpdate(lastExitsRef.current, normalizeExitMap(data.exits as GmcpExitMap));
             // Door detection logic
             if (playDoorSound) {
                 const oldExits = lastExitsRef.current;
