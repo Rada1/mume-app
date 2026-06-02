@@ -9,7 +9,7 @@ import { Message } from '../../types';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import { TokenRenderer } from './TokenRenderer';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer, defaultRangeExtractor } from '@tanstack/react-virtual';
 import PracticeSkillCard from '../Practice/PracticeSkillCard';
 import PracticeHeaderCard from '../Practice/PracticeHeaderCard';
 import PracticeClassHeaderCard from '../Practice/PracticeClassHeaderCard';
@@ -102,6 +102,7 @@ const MessageItem = React.memo(({
     // cross the 2-second mark (rapid combat GMCP updates), which collapses inline-block
     // log-word wrappers and shifts inline button positions.
     const [isRecent] = React.useState(() => Date.now() - msg.timestamp < 2000);
+    const [isRecentEntry] = React.useState(() => Date.now() - msg.timestamp < 600);
     const isLatestBatch = msg.batchId === undefined || msg.batchId === maxBatchId;
     const isOldBatchDim = brightBatchFloor !== undefined && (msg.batchId === undefined || msg.batchId < brightBatchFloor);
     const [commandBloomPhase, setCommandBloomPhase] = React.useState<'off' | 'active' | 'exiting'>(isAwaitingResponse ? 'active' : 'off');
@@ -172,7 +173,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${isRecentEntry && isTextRevealEnabled ? ' recent-entry' : ''}`}
             style={{ '--reveal-delay': `${batchOffset * 15}ms` } as React.CSSProperties}
         >
             {showBlockHeaders && msg.isRoomBlock && (
@@ -594,8 +595,63 @@ const MessageLog: React.FC<MessageLogProps> = ({
         return () => container.removeEventListener('wheel', handleWheelInternal);
     }, [scrollContainerRef, viewport]);
 
+    const [selectionRange, setSelectionRange] = React.useState<{ start: number; end: number } | null>(null);
+
+    useEffect(() => {
+        const handleSelectionChange = () => {
+            const selection = window.getSelection();
+            if (!selection || selection.isCollapsed || selection.toString().length === 0) {
+                setSelectionRange(null);
+                return;
+            }
+            let anchorIndex = -1;
+            let focusIndex = -1;
+
+            let node: Node | null = selection.anchorNode;
+            while (node && node !== document.body) {
+                if (node instanceof HTMLElement && node.hasAttribute('data-index')) {
+                    anchorIndex = parseInt(node.getAttribute('data-index') || '-1', 10);
+                    break;
+                }
+                node = node.parentNode;
+            }
+
+            node = selection.focusNode;
+            while (node && node !== document.body) {
+                if (node instanceof HTMLElement && node.hasAttribute('data-index')) {
+                    focusIndex = parseInt(node.getAttribute('data-index') || '-1', 10);
+                    break;
+                }
+                node = node.parentNode;
+            }
+
+            if (anchorIndex !== -1 && focusIndex !== -1) {
+                setSelectionRange({
+                    start: Math.min(anchorIndex, focusIndex),
+                    end: Math.max(anchorIndex, focusIndex)
+                });
+            } else {
+                setSelectionRange(null);
+            }
+        };
+        document.addEventListener('selectionchange', handleSelectionChange);
+        return () => document.removeEventListener('selectionchange', handleSelectionChange);
+    }, []);
+
     const messagesRef = React.useRef(displayMessages);
     messagesRef.current = displayMessages;
+
+    const rangeExtractor = useCallback((range: any) => {
+        const defaultIndices = defaultRangeExtractor(range);
+        if (!selectionRange) return defaultIndices;
+        
+        const extraIndices = [];
+        for (let i = selectionRange.start; i <= selectionRange.end; i++) {
+            extraIndices.push(i);
+        }
+        
+        return Array.from(new Set([...defaultIndices, ...extraIndices])).sort((a, b) => a - b);
+    }, [selectionRange]);
 
     const virtualizer = useVirtualizer({
         count: displayMessages.length,
@@ -634,6 +690,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             return h;
         }, [viewport.columns, viewport.logFontSize, viewport.logFontSizePx, showBlockHeaders]),
         overscan: 12,
+        rangeExtractor,
     });
 
     const lastScrollCallRef = React.useRef(0);

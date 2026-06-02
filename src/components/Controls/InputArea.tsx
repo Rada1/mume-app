@@ -6,6 +6,8 @@ import { SpatButton, PopoverState } from '../../types';
 import { useUI, useBaseGame, useVitals, useGame } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useInputStore } from '../../stores/useInputStore';
+import { audioManager } from '../../services/audio/AudioManager';
+import { useRoomStore } from '../../stores/useRoomStore';
 
 
 
@@ -71,17 +73,87 @@ const InputArea: React.FC<InputAreaProps> = ({
     const isSwiping = useRef(false);
     const [commandIndex, setCommandIndex] = useState(0);
 
+    const chars = useRoomStore(s => s.chars);
+    const items = useRoomStore(s => s.items);
+    const rawExits = useRoomStore(s => s.rawExits);
+
+    // Dynamically build suggestions based on GMCP room data
+    const dynamicCommands = useMemo(() => {
+        const list: string[] = [];
+
+        // 1. NPC/Char suggestions
+        const occupants = Object.values(chars || {});
+        occupants.forEach(char => {
+            const kw = char.keyword || char.name?.split(' ')[0]?.toLowerCase();
+            if (kw) {
+                const isPC = char.type === 'pc' || char.pc === 1;
+                if (!isPC) {
+                    list.push(`kill ${kw}`);
+                    list.push(`examine ${kw}`);
+                } else {
+                    list.push(`examine ${kw}`);
+                }
+            }
+        });
+
+        // 2. Door/Exit suggestions
+        if (rawExits) {
+            Object.entries(rawExits).forEach(([dir, exitData]: [string, any]) => {
+                if (exitData?.closed) {
+                    const doorName = exitData.name || 'door';
+                    list.push(`open ${doorName}`);
+                    list.push(`open ${dir}`);
+                } else if (exitData?.hasDoor) {
+                    const doorName = exitData.name || 'door';
+                    list.push(`close ${doorName}`);
+                }
+            });
+        }
+
+        // 3. Item suggestions
+        if (Array.isArray(items)) {
+            items.forEach(item => {
+                const kw = item.keyword || item.name?.split(' ')[0]?.toLowerCase();
+                if (kw) {
+                    list.push(`get ${kw}`);
+                    list.push(`examine ${kw}`);
+                }
+            });
+        }
+
+        // Fallbacks / Static commands
+        const staticFallbacks = [
+            'look',
+            'score',
+            'where',
+            'who',
+            'inventory',
+            'equipment',
+            'skills',
+            'flee'
+        ];
+
+        const combined = [...list, ...staticFallbacks];
+        return Array.from(new Set(combined));
+    }, [chars, rawExits, items]);
+
     // Rotate placeholder commands for playing state
     useEffect(() => {
         const mode = parley.mode || (parley.active ? 'parley' : 'command');
         if (gameState !== 'playing' || mode !== 'command' || input) {
             return;
         }
+
+        setCommandIndex(prev => prev >= dynamicCommands.length ? 0 : prev);
+
         const interval = setInterval(() => {
-            setCommandIndex(prev => (prev + 1) % EXAMPLE_COMMANDS.length);
+            setCommandIndex(prev => {
+                if (dynamicCommands.length === 0) return 0;
+                return (prev + 1) % dynamicCommands.length;
+            });
         }, 4000);
         return () => clearInterval(interval);
-    }, [gameState, parley.mode, parley.active, input]);
+    }, [gameState, parley.mode, parley.active, input, dynamicCommands]);
 
 
     // Global listeners to catch fast swipes that leave the element bounds
@@ -157,10 +229,18 @@ const InputArea: React.FC<InputAreaProps> = ({
         };
     }, [onSwipe]);
 
-    // Reset height when input is cleared
+    // Reset height and set cursor position when input changes (e.g. via history navigation)
     React.useEffect(() => {
-        if (!input && inputRef.current) {
+        if (inputRef.current) {
             inputRef.current.style.height = 'auto';
+            if (input) {
+                inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
+                // If input is focused, move cursor to the end
+                if (document.activeElement === inputRef.current) {
+                    const len = input.length;
+                    inputRef.current.setSelectionRange(len, len);
+                }
+            }
         }
     }, [input]);
 
@@ -339,6 +419,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 rows={1}
                                 style={{ WebkitTextSecurity: isPasswordMode ? 'disc' : 'none' } as any}
                                 onChange={(e) => {
+                                    if (isSoundEnabled) audioManager.playEffect('typing');
                                     setInput(e.target.value);
                                     const target = e.target as HTMLTextAreaElement;
                                     target.style.height = 'auto';
@@ -371,9 +452,9 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 Login
                             </button>
                         </div>
-                        <div 
+                        <div
                             className="login-card-new-account"
-                            style={{ 
+                            style={{
                                 visibility: accountState?.currentPrompt?.toLowerCase().includes('by what name') ? 'visible' : 'hidden'
                             }}
                         >
@@ -384,6 +465,71 @@ const InputArea: React.FC<InputAreaProps> = ({
                             >
                                 New Account
                             </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        );
+    }
+
+
+
+    const isConfirmationStage = gameState === 'account' && accountState?.stage === 'account-confirmation';
+
+    if (isConfirmationStage) {
+        const promptTitle = accountState?.creationPrompt?.title || accountState?.currentPrompt || '';
+        const creationOptions = accountState?.creationPrompt?.options ?? [];
+
+        return (
+            <div className="login-card-container">
+                <div className="login-card">
+                    <h2 className="login-card-title">MUME</h2>
+                    {promptTitle && <div className="login-prompt-text">{promptTitle}</div>}
+
+                    {creationOptions.length > 0 && (
+                        <div className="creation-card-options">
+                            {creationOptions.map(opt => (
+                                <button
+                                    key={opt.id}
+                                    type="button"
+                                    className="creation-card-option-btn"
+                                    onClick={() => { triggerHaptic(15); executeCommand(opt.id); }}
+                                >
+                                    <span className="creation-card-option-id">({opt.id})</span>
+                                    {opt.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit}>
+                        <div className="login-input-wrapper">
+                            <textarea
+                                ref={inputRef}
+                                id="mud-input"
+                                name="mud-input"
+                                className="login-input-field"
+                                value={input}
+                                rows={1}
+                                onChange={(e) => {
+                                    if (isSoundEnabled) audioManager.playEffect('typing');
+                                    setInput(e.target.value);
+                                    const target = e.target as HTMLTextAreaElement;
+                                    target.style.height = 'auto';
+                                    target.style.height = `${target.scrollHeight}px`;
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleSubmit();
+                                    }
+                                }}
+                                placeholder="Type y or n..."
+                                autoFocus
+                            />
+                        </div>
+                        <div className="login-card-actions" style={{ justifyContent: 'flex-end' }}>
+                            <button type="submit" className="login-btn" onClick={() => { triggerHaptic?.(40); }}>Send</button>
                         </div>
                     </form>
                 </div>
@@ -514,6 +660,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                             rows={1}
                             style={{ WebkitTextSecurity: isPasswordMode ? 'disc' : 'none' } as any}
                             onChange={(e) => {
+                                if (isSoundEnabled) audioManager.playEffect('typing');
                                 setInput(e.target.value);
                                 // Auto-resize logic
                                 const target = e.target as HTMLTextAreaElement;
@@ -524,6 +671,12 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();
                                     handleSubmit();
+                                } else if (e.key === 'ArrowUp') {
+                                    e.preventDefault();
+                                    useInputStore.getState().navigateHistory('up');
+                                } else if (e.key === 'ArrowDown') {
+                                    e.preventDefault();
+                                    useInputStore.getState().navigateHistory('down');
                                 } else if (e.key === 'Tab' && !viewport.isMobile) {
                                     e.preventDefault();
                                     window.dispatchEvent(new CustomEvent('mume-trigger-target-input'));
@@ -540,7 +693,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                                     inputRef.current.focus();
                                 }
                             }}
-                            placeholder={isPasswordMode ? "Enter password..." : (gameState === 'account' ? "Enter username..." : (commandPreview ? "" : (currentMode === 'help' ? "Enter help topic..." : `Try: ${EXAMPLE_COMMANDS[commandIndex]}...`)))}
+                            placeholder={isPasswordMode ? "Enter password..." : (gameState === 'account' ? "Enter username..." : (commandPreview ? "" : (currentMode === 'help' ? "Enter help topic..." : `Try: ${dynamicCommands[commandIndex] || 'look'}...`)))}
                         />
                     </div>
 

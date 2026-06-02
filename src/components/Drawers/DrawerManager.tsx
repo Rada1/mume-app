@@ -105,11 +105,14 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         }
     }, [ui.drawer, ui.mapExpanded, viewport.isMobile, viewport.isLandscape, gameState, sessionMode, setUI]);
 
-    // Restore saved log width only (drawer widths use auto calc default)
+    // Restore saved layout values on load
     React.useEffect(() => {
         const stored = JSON.parse(localStorage.getItem('mume-desktop-layout-v2') || '{}');
-        if (stored['--desktop-log-width'])
-            document.documentElement.style.setProperty('--desktop-log-width', `${stored['--desktop-log-width']}vw`);
+        Object.entries(stored).forEach(([key, val]) => {
+            if (typeof val === 'number') {
+                document.documentElement.style.setProperty(key, `${val}vw`);
+            }
+        });
     }, []);
 
     if (viewport.isMobile && !viewport.isLandscape) {
@@ -131,7 +134,14 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             {!viewport.isMobile && (
                 <div className="map-drawer-desktop open">
-                    <DrawerResizeHandle side="right" cssVar="--desktop-map-width" />
+                    <DrawerResizeHandle handleType="left" widthVar="--desktop-map-width" leftVar="--desktop-map-left" />
+                    <DrawerResizeHandle handleType="right" widthVar="--desktop-map-width" />
+                    <DrawerResizeHandle handleType="top" widthVar="--desktop-map-width" topVar="--desktop-map-top" bottomVar="--desktop-map-bottom" />
+                    <DrawerResizeHandle handleType="bottom" widthVar="--desktop-map-width" topVar="--desktop-map-top" bottomVar="--desktop-map-bottom" />
+                    <DrawerResizeHandle handleType="top-left" widthVar="--desktop-map-width" leftVar="--desktop-map-left" topVar="--desktop-map-top" bottomVar="--desktop-map-bottom" />
+                    <DrawerResizeHandle handleType="top-right" widthVar="--desktop-map-width" topVar="--desktop-map-top" bottomVar="--desktop-map-bottom" />
+                    <DrawerResizeHandle handleType="bottom-left" widthVar="--desktop-map-width" leftVar="--desktop-map-left" topVar="--desktop-map-top" bottomVar="--desktop-map-bottom" />
+                    <DrawerResizeHandle handleType="bottom-right" widthVar="--desktop-map-width" topVar="--desktop-map-top" bottomVar="--desktop-map-bottom" />
                     <div className="drawer-header">
                         <span className="drawer-title">
                             Map

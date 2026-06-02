@@ -2,6 +2,7 @@ import React, { useRef, useCallback, useEffect, useMemo, forwardRef } from 'reac
 import { useMapperRenderer } from './useMapperRenderer';
 import { useMapAnimation } from './useMapAnimation';
 import { CompactMapExit, MapperPrediction } from './mapperTypes';
+import type { MoveAnimState } from './playerMoveAnimator';
 import { gmcpBus } from '../../events/gmcpBus';
 import type { CombatPulse } from './renderers/rendererUtils';
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -20,6 +21,7 @@ interface MapCanvasProps {
     imagesRef: React.MutableRefObject<Record<string, HTMLImageElement>>;
     characterName: string | null;
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>;
+    moveAnimRef?: React.MutableRefObject<MoveAnimState>;
     playerTrailRef: React.MutableRefObject<{ x: number, y: number, z: number, alpha: number }[]>;
     renderVersion: number;
     isDragging: boolean;
@@ -91,7 +93,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
     const {
         rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
         camera, isDarkMode, isMobile, isLandscape, imagesRef, characterName,
-        playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
+        playerPosRef, moveAnimRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, entitiesRef, serverIdIndexRef,
@@ -149,6 +151,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         canvasRef,
         camera: props.camera,
         playerPosRef: props.playerPosRef,
+        moveAnimRef: props.moveAnimRef,
         playerTrailRef: props.playerTrailRef,
         getDPR,
         marquee: props.marquee,

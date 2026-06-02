@@ -156,6 +156,92 @@
     justify-content: flex-end;
 }
 
+.combat-recharge-pill {
+    position: absolute;
+    top: -8px;
+    display: block;
+    width: calc(50% - 48px);
+    min-width: 96px;
+    max-width: 270px;
+    height: 8px;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.player-recharge {
+    left: 18px;
+}
+
+.player-recharge .opponent-recharge-track {
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.2);
+}
+
+.player-recharge .opponent-recharge-fill {
+    background: linear-gradient(90deg, #22d3ee, #a5f3fc);
+}
+
+.opponent-recharge-track {
+    display: flex;
+    height: 2px;
+    width: 100%;
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.18);
+}
+
+.opponent-recharge-fill {
+    display: block;
+    height: 100%;
+    width: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #ef4444, #fca5a5);
+    transform: scaleX(var(--charge-start, 0));
+    transform-origin: left center;
+    will-change: transform, filter;
+    animation: prompt-charge-fill var(--charge-duration, 0ms) linear forwards;
+}
+
+.opponent-recharge {
+    right: 18px;
+}
+
+.opponent-recharge .opponent-recharge-track {
+    justify-content: flex-end;
+}
+
+.opponent-recharge .opponent-recharge-fill {
+    background: linear-gradient(90deg, #fca5a5, #ef4444);
+    transform-origin: right center;
+}
+
+.combat-recharge-pill.confidence-unknown {
+    opacity: 0.6;
+}
+
+.combat-recharge-pill.is-charged .opponent-recharge-fill {
+    animation: prompt-charge-ready 0.9s ease-in-out infinite;
+}
+
+@keyframes prompt-charge-ready {
+    0%, 100% {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(1.8);
+    }
+}
+
+@keyframes prompt-charge-fill {
+    from {
+        transform: scaleX(var(--charge-start, 0));
+    }
+    to {
+        transform: scaleX(1);
+    }
+}
+
 .opponent-top-stats-row .prompt-inline-name {
     flex: 1 1 auto;
     max-width: 100%;

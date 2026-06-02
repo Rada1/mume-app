@@ -71,8 +71,21 @@ export const useSessionState = (
     const lighting = vStore?.lighting ?? 'normal';
     const weather = vStore?.weather ?? 'calm';
     const isFoggy = vStore?.isFoggy ?? false;
-    const isRiding = (vStore as any)?.isRiding ?? false;
-    const setIsRiding = useCallback((_flags: any) => {}, []); // Shimming setter for now
+    const isRiding = vStore?.isRiding ?? false;
+    const setIsRiding = useCallback((val: boolean) => {
+        vStore?.setIsRiding(val);
+    }, [vStore]);
+
+    const isRidingRef = useRef(isRiding);
+    const playerPositionRef = useRef(playerPosition);
+
+    useEffect(() => {
+        isRidingRef.current = isRiding;
+    }, [isRiding]);
+
+    useEffect(() => {
+        playerPositionRef.current = playerPosition;
+    }, [playerPosition]);
 
     const roomName = rStore?.roomName ?? '';
     const roomDesc = rStore?.roomDesc ?? '';
@@ -324,7 +337,9 @@ export const useSessionState = (
             isFoggy, setIsFoggy,
             inCombat, setInCombat,
             playerPosition, setPlayerPosition,
+            playerPositionRef,
             isRiding, setIsRiding,
+            isRidingRef,
             roomPlayers,
             roomNpcs,
             roomChars: rStore.chars,
@@ -387,7 +402,7 @@ export const useSessionState = (
         vitals, roomName, setRoomName, roomDesc, setRoomDesc, roomExits, setRoomExits,
         roomZone, setRoomZone, currentTerrain, setCurrentTerrain, lighting, setLighting,
         isFoggy, setIsFoggy, inCombat, setInCombat,
-        playerPosition, setPlayerPosition, isRiding, setIsRiding, roomPlayers,
+        playerPosition, setPlayerPosition, playerPositionRef, isRiding, setIsRiding, isRidingRef, roomPlayers,
         roomNpcs, roomItems, setRoomItems, inventoryLines, statsLines,
         infoLines, scoreLines, questLines, achievementLines, practiceLines, whoLines, whereLines,
         eqLines, abilities, characterClass, actions, mood, spellSpeed, alertness,

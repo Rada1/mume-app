@@ -235,13 +235,37 @@ const PoseIcon: React.FC<{ pose: string; size?: number }> = ({ pose, size = 14 }
             case 'riding':
                 return (
                     <>
-                        {/* Horse */}
-                        <path d="M5 15c0-1.5 1.5-2.5 4-2.5h4c2.5 0 4 1 4 2.5s-1.5 2.5-4 2.5h-4c-2.5 0-4-1-4-2.5z" fill="none" stroke={color} strokeWidth={strokeWidth - 0.5} />
-                        <path d="M17 14l2-5h-2.5" fill="none" stroke={color} strokeWidth={strokeWidth - 0.5} />
-                        <path d="M8 17.5v3.5M14 17.5v3.5" fill="none" stroke={color} strokeWidth={strokeWidth - 0.5} />
                         {/* Rider */}
-                        <circle cx="10" cy="6" r="2.5" fill="none" stroke={color} strokeWidth={strokeWidth} />
-                        <path d="M10 8.5v4.5M7 11.5l3-1 3 1" fill="none" stroke={color} strokeWidth={strokeWidth} />
+                        <circle cx="12.5" cy="4.5" r="2" fill="none" stroke={color} strokeWidth={strokeWidth} />
+                        {/* Rider body & leg */}
+                        <path d="M12.5 6.5c-1 1.5-1.5 3.5-1.5 5 0 1.5 1 2 2 3s.5 2.5.2 4.5" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+                        {/* Rider arm */}
+                        <path d="M11.8 8.5c1 .5 2 .8 3 0" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+                        
+                        {/* Horse Back & Tail */}
+                        <path d="M3 16c0-2 1.5-3.5 3.5-3.5h5.5c1.5 0 3-1.5 4-3.5" fill="none" stroke={color} strokeWidth={strokeWidth - 0.5} strokeLinecap="round" strokeLinejoin="round" />
+                        {/* Horse Tail */}
+                        <path d="M3.2 15.5c-1 1-1.2 3-1 4.5" fill="none" stroke={color} strokeWidth={strokeWidth - 0.5} strokeLinecap="round" />
+                        {/* Horse Neck, Head, Ear */}
+                        <path d="M16 9c1-2 2-3 3-3 .5 0 .8.5.8 1l-.5 1.5M19.8 7c.8.5 1.5 1 2 2 .3.6 0 1.5-.8 1.8l-2 .5" fill="none" stroke={color} strokeWidth={strokeWidth - 0.5} strokeLinecap="round" strokeLinejoin="round" />
+                        {/* Ear */}
+                        <path d="M18.8 6l.7-2 .3 1.5" fill="none" stroke={color} strokeWidth={strokeWidth - 0.5} strokeLinecap="round" strokeLinejoin="round" />
+                        
+                        {/* Horse Underbelly & Chest */}
+                        <path d="M6.5 16c0 1.5 2 2 4 2 2.5 0 4.5-1 5.5-3 .5-1 .5-2 1.5-3" fill="none" stroke={color} strokeWidth={strokeWidth - 0.5} strokeLinecap="round" strokeLinejoin="round" />
+                        
+                        {/* Horse Legs */}
+                        {/* Back Left Leg */}
+                        <path d="M5 14.5c-.5 2-1 3.5-1 6.5" fill="none" stroke={color} strokeWidth={strokeWidth - 0.5} strokeLinecap="round" strokeLinejoin="round" />
+                        {/* Back Right Leg */}
+                        <path d="M8 15.5c-.2 1.5-1 3-1.5 5" fill="none" stroke={color} strokeWidth={strokeWidth - 0.5} strokeLinecap="round" strokeLinejoin="round" />
+                        {/* Front Left Leg */}
+                        <path d="M15.5 15.5c.3 1.5.5 3 .5 5.5" fill="none" stroke={color} strokeWidth={strokeWidth - 0.5} strokeLinecap="round" strokeLinejoin="round" />
+                        {/* Front Right Leg (Bent) */}
+                        <path d="M17.2 13.5c.5.8.8 1.8 1.2 2.8-.2.8-.7 1.5-.7 2.2l.5 1" fill="none" stroke={color} strokeWidth={strokeWidth - 0.5} strokeLinecap="round" strokeLinejoin="round" />
+                        
+                        {/* Reins */}
+                        <path d="M14.8 8.5c1.2.7 2.8 1.2 4.2.8" fill="none" stroke={color} strokeWidth={strokeWidth - 1} strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
                     </>
                 );
             default:
@@ -273,7 +297,8 @@ const PromptBox: FC<PromptBoxProps> = ({
         spellSpeed,
         setSpellSpeed,
         alertness,
-        setAlertness
+        setAlertness,
+        isRiding: isRidingFromGame
     } = useGame();
     const { handleTabClick, setPopoverState, popoverState } = useUI();
     const enemyColor = useSettingsStore(state => state.enemyColor);
@@ -297,7 +322,7 @@ const PromptBox: FC<PromptBoxProps> = ({
     const position = activeVitals.position;
     const inCombat = position === 'fighting';
 
-    const isRiding = position === 'riding' || position === 'mounted';
+    const isRiding = isRidingFromGame || position === 'riding' || position === 'mounted';
     const playerPosition = position;
 
     const activeCombat = useActiveCombat();

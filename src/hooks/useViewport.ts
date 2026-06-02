@@ -228,10 +228,7 @@ export function useViewport(
             const safetyBuffer = (isMobile && !isLandscape) ? 0 : 2;
 
             if (!isMobile) {
-                const maxFontSize = DESKTOP_MAX_AUTO_LOG_FONT_SIZE_PX * logFontSize;
-                const textWidth = targetCols * charWidthRatio * maxFontSize;
-                const neededWidth = textWidth + totalPadding + safetyBuffer + 6; // 6px scrollbar buffer
-                document.documentElement.style.setProperty('--message-log-max-width', `${neededWidth}px`);
+                // Let the log width be driven by --desktop-log-width without max-width overrides
             } else {
                 document.documentElement.style.setProperty('--message-log-max-width', 'none');
             }

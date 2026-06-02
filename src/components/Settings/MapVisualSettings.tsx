@@ -207,7 +207,9 @@ const MapVisualSettings: React.FC = () => {
         resetZoneFilters,
         resetMapVisuals,
         zoneFocusGrayscale,
-        setZoneFocusGrayscale
+        setZoneFocusGrayscale,
+        optimisticMovement,
+        setOptimisticMovement
     } = useSettingsStore();
 
     const mapperContext = useContext(MapperContext);
@@ -347,6 +349,27 @@ const MapVisualSettings: React.FC = () => {
                     <div style={{
                         width: '20px', height: '20px', background: '#fff', borderRadius: '50%',
                         position: 'absolute', top: '2px', left: zoneFocusGrayscale ? '22px' : '2px', transition: 'all 0.3s'
+                    }} />
+                </button>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', padding: '8px 0', borderTop: '1px solid var(--border-modal)' }}>
+                <div>
+                    <label className="setting-label" style={{ margin: 0 }}>Predictive Movement</label>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Move your marker the instant you send a command, gliding to the predicted room and bouncing back if blocked. Off: the marker only moves when the game confirms the room.</div>
+                </div>
+                <button
+                    className={`setting-toggle ${optimisticMovement ? 'active' : ''}`}
+                    onClick={() => setOptimisticMovement(!optimisticMovement)}
+                    style={{
+                        height: '24px', width: '45px', position: 'relative', border: 'none',
+                        backgroundColor: optimisticMovement ? 'var(--accent)' : 'var(--input-bg)',
+                        borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s', flexShrink: 0
+                    }}
+                >
+                    <div style={{
+                        width: '20px', height: '20px', background: '#fff', borderRadius: '50%',
+                        position: 'absolute', top: '2px', left: optimisticMovement ? '22px' : '2px', transition: 'all 0.3s'
                     }} />
                 </button>
             </div>

@@ -5,6 +5,16 @@
 
 import { useCallback } from 'react';
 import { GroupMember, CharacterInfo, CombatHealthStatus } from '../../types';
+import {
+    recordCombatRechargeBlockedLine,
+    recordCombatRechargeConfirmation,
+    recordOpponentCombatRechargeConfirmation
+} from '../../stores/useCombatRechargeStore';
+import {
+    isOpponentFailedAttackLine,
+    isPlayerAttemptAvoidedLine,
+    isPlayerFailedAttackLine
+} from '../../utils/combatRechargeUtils';
 
 export interface CombatParserDeps {
     inCombatRef: React.RefObject<boolean>;
@@ -26,6 +36,7 @@ export interface CombatParserDeps {
     playLevelSound?: (options?: { pitch?: number, volume?: number }) => void;
     playHitImpactSound?: (options?: { pitch?: number, volume?: number } | string) => void;
     playOofSound?: () => void;
+    playEffect?: (name: string, options?: any) => void;
     playSpectateHitImpactSound?: (options?: { pitch?: number, volume?: number } | string) => void;
     playSpectateOofSound?: () => void;
     setInCombat?: (inCombat: boolean, force?: boolean) => void;
@@ -107,6 +118,13 @@ export function useCombatParser(deps: CombatParserDeps) {
                 const spectateTargetLower = spectateCharacterName?.toLowerCase();
                 isPlayerTarget = /\b(you|your)\b/i.test(cleanLower) || (!!spectateTargetLower && cleanLower.includes(spectateTargetLower));
             }
+        }
+        if (isPlayerAttemptAvoidedLine(cleanLower) || isPlayerFailedAttackLine(cleanLower)) {
+            side = 'player';
+            isPlayerTarget = false;
+        } else if (isOpponentFailedAttackLine(cleanLower)) {
+            side = 'opponent';
+            isPlayerTarget = true;
         }
         const modifiers = ['extremely hard', 'very hard', 'hard', 'strongly', 'lightly', 'barely'];
         const modifier = modifiers.find(m => cleanLower.includes(m));
@@ -203,6 +221,7 @@ export function useCombatParser(deps: CombatParserDeps) {
 
     const parseCombatLine = useCallback((textOnly: string, cleanLine: string, isSnoop: boolean = false): any => {
         const lower = textOnly.toLowerCase();
+        if (!isSnoop) recordCombatRechargeBlockedLine(textOnly);
 
         // 1. Detect Combat Exit/Death
         if (handleCombatExit(lower, isSnoop)) return 'game';
@@ -219,6 +238,11 @@ export function useCombatParser(deps: CombatParserDeps) {
             // AND damage lines should play oof.mp3
             const hasHitTag = cleanLine.includes('<hit>');
             const hasDamageTag = cleanLine.includes('<damage>');
+            const hasAvoidDamageTag = /<avoid_damage\b/i.test(cleanLine);
+            const hasMissTag = /<miss\b/i.test(cleanLine);
+            const isPlayerAvoidedAttempt = isPlayerAttemptAvoidedLine(lower);
+            const isPlayerFailedAttack = isPlayerFailedAttackLine(lower);
+            const isOpponentFailedAttack = isOpponentFailedAttackLine(lower);
 
             if (hasHitTag) {
                 if (isSnoop) deps.playSpectateHitImpactSound?.(match.modifier);
@@ -230,8 +254,23 @@ export function useCombatParser(deps: CombatParserDeps) {
                 else deps.playOofSound?.();
             }
 
+            if (!isSnoop && (hasMissTag || hasAvoidDamageTag || isOpponentFailedAttack)) {
+                deps.playEffect?.('miss', { volume: 0.85 });
+            }
+
             // Visual FX
             // Removed hitflash triggers
+            if (!isSnoop && (isPlayerAvoidedAttempt || isPlayerFailedAttack)) {
+                recordCombatRechargeConfirmation(match.verb || (hasMissTag || hasAvoidDamageTag ? 'miss' : undefined));
+            } else if (!isSnoop && hasAvoidDamageTag) {
+                recordOpponentCombatRechargeConfirmation(match.verb);
+            } else if (!isSnoop && isOpponentFailedAttack) {
+                recordOpponentCombatRechargeConfirmation(match.verb || 'hit');
+            } else if (!isSnoop && match.side === 'player') {
+                recordCombatRechargeConfirmation(match.verb || (hasMissTag ? 'miss' : undefined));
+            } else if (!isSnoop && match.side === 'opponent' && (hasDamageTag || match.isPlayerTarget)) {
+                recordOpponentCombatRechargeConfirmation(match.verb);
+            }
 
             return 'combat';
         }

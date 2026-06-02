@@ -113,6 +113,7 @@ interface SettingsState {
     showMapperToolbar: boolean;
     isTextRevealEnabled: boolean;
     showBackgroundImage: boolean;
+    optimisticMovement: boolean;
     mapTileVisuals: MapTileVisualAdjustments;
     mapBackgroundVisuals: MapBackgroundVisualAdjustments;
     zoneFilters: Record<string, ZoneFilterConfig>;
@@ -170,6 +171,7 @@ interface SettingsState {
     setShowMapperToolbar: (val: boolean) => void;
     setIsTextRevealEnabled: (val: boolean) => void;
     setShowBackgroundImage: (val: boolean) => void;
+    setOptimisticMovement: (val: boolean) => void;
     setMapTileVisuals: (val: Partial<MapTileVisualAdjustments>) => void;
     setMapBackgroundVisuals: (val: Partial<MapBackgroundVisualAdjustments>) => void;
     resetMapVisuals: () => void;
@@ -304,6 +306,7 @@ export const useSettingsStore = create<SettingsState>()(
             showMapperToolbar: false,
             isTextRevealEnabled: true,
             showBackgroundImage: true,
+            optimisticMovement: true,
             mapTileVisuals: DEFAULT_MAP_TILE_VISUALS,
             mapBackgroundVisuals: DEFAULT_MAP_BACKGROUND_VISUALS,
             zoneFilters: ZONE_FILTERS,
@@ -402,6 +405,7 @@ export const useSettingsStore = create<SettingsState>()(
             setShowMapperToolbar: (showMapperToolbar) => set({ showMapperToolbar }),
             setIsTextRevealEnabled: (isTextRevealEnabled) => set({ isTextRevealEnabled }),
             setShowBackgroundImage: (showBackgroundImage) => set({ showBackgroundImage }),
+            setOptimisticMovement: (optimisticMovement) => set({ optimisticMovement }),
             setMapTileVisuals: (mapTileVisuals) => set((state) => ({
                 mapTileVisuals: {
                     ...state.mapTileVisuals,
@@ -647,6 +651,7 @@ export const useSettingsStore = create<SettingsState>()(
                     ...(merged.mapBackgroundVisuals || {})
                 };
                 merged.showBackgroundImage = merged.showBackgroundImage ?? true;
+                merged.optimisticMovement = merged.optimisticMovement ?? true;
                 let validFilters = merged.zoneFilters;
                 if (validFilters) {
                     const firstKey = Object.keys(validFilters)[0];

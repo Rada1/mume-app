@@ -11,11 +11,16 @@ import { useMapPersistence } from '../components/Mapper/hooks/useMapPersistence'
 import { useMapActions } from '../components/Mapper/hooks/useMapActions';
 import { useMapGmcphandlers } from '../components/Mapper/hooks/useMapGmcphandlers';
 import { DIRS, getExitTargetId, getGateState, checkRoomFilter, findClosestMatchingRoomPath } from '../components/Mapper/mapperUtils';
+import {
+    createMoveAnimState, optimisticMove, settle, failMove, bumpWall, snapTo, MOVE_ANIM,
+    type MoveAnimState, type Vec3
+} from '../components/Mapper/playerMoveAnimator';
 import { MapperPrediction, MapperRoom, MapperMarker, RegionLabel } from '../components/Mapper/mapperTypes';
 import { useRegionLabels } from '../components/Mapper/hooks/useRegionLabels';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { useModeStore } from '../stores/useModeStore';
 import { useUIStore } from '../stores/useUIStore';
+import { useVitalsStore } from '../stores/useVitalsStore';
 import { gmcpBus } from '../events/gmcpBus';
 import { useAudioEffects } from '../hooks/useAudioSystem';
 
@@ -48,6 +53,7 @@ interface MapperContextType {
     handleMoveFailure: () => void;
     preMoveRef: React.MutableRefObject<{ dir: string, targetId: string, time: number } | null>;
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>;
+    moveAnimRef: React.MutableRefObject<MoveAnimState>;
     clientPredictionsRef: React.MutableRefObject<MapperPrediction[]>;
     spatialIndexRef: React.MutableRefObject<any>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
@@ -127,21 +133,77 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     // High-performance state/ref sync for character position
     const [currentRoomId, setCurrentRoomIdState] = useState<string | null>(null);
+    // playerPosRef is the *render* position of the player marker. It is no longer
+    // hard-snapped on every room change — instead moveAnimRef glides it optimistically
+    // (anticipate → settle, or bounce on failure). The confirmed truth is the room
+    // state itself; this ref only governs how the marker visually travels there.
     const playerPosRef = useRef<{ x: number, y: number, z: number } | null>(null);
+    const moveAnimRef = useRef<MoveAnimState>(createMoveAnimState());
+
+    // The room the marker is predicted to be in after all currently-queued optimistic
+    // moves. Spammed moves must predict from the PREVIOUS predicted room (walking the
+    // map graph), not the still-unconfirmed current room — otherwise "w then s" predicts
+    // south-of-current instead of south-of-west and the path kinks/resnaps.
+    const predictedRoomIdRef = useRef<string | null>(null);
+
+    // --- One-shot move-glide calibration to the user's link ---------------------------
+    // We time the first few CLEAN, isolated single-step moves (send → confirm), take the
+    // median, bias slightly slow, clamp, and lock that as the per-move glide duration for
+    // the session. No continuous adaptation (avoids the jittery feel); recalibrates only
+    // on reconnect (setCurrentRoomId(null)).
+    const glideMsRef = useRef<number>(MOVE_ANIM.GLIDE_MS);
+    const calibSamplesRef = useRef<number[]>([]);
+    const calibDoneRef = useRef<boolean>(false);
+    const moveSentAtRef = useRef<number | null>(null); // send time of an in-progress clean move
+    const cleanMoveRef = useRef<boolean>(false);       // is that in-progress move isolated (no spam)?
+    const CALIB_SAMPLES = 5;
+
+    const recordCalibrationSample = useCallback(() => {
+        if (calibDoneRef.current || !cleanMoveRef.current || moveSentAtRef.current == null) return;
+        const sample = Date.now() - moveSentAtRef.current;
+        moveSentAtRef.current = null;
+        cleanMoveRef.current = false;
+        // Ignore implausible samples (instant local echo or multi-second stalls).
+        if (sample < 20 || sample > 3000) return;
+        const samples = calibSamplesRef.current;
+        samples.push(sample);
+        if (samples.length >= CALIB_SAMPLES) {
+            const sorted = [...samples].sort((a, b) => a - b);
+            const median = sorted[Math.floor(sorted.length / 2)];
+            glideMsRef.current = Math.round(
+                Math.min(450, Math.max(130, median * 1.2))
+            );
+            calibDoneRef.current = true;
+        }
+    }, []);
+
+    // Nudge the rAF animation loop awake (it idles when nothing is moving). Movement
+    // triggers fire outside the loop, so they wake it explicitly.
+    const wakeMapper = useCallback(() => {
+        if (typeof window !== 'undefined') window.dispatchEvent(new Event('mume-mapper-wake'));
+    }, []);
+
     const setCurrentRoomId = useCallback((id: string | null) => {
+        const prevId = currentRoomIdRef.current;
         setCurrentRoomIdState(id);
         currentRoomIdRef.current = id;
-        // Snap the player position synchronously so it stays in sync with the prediction
-        // queue (which is reconciled synchronously in handleRoomInfo's clearPrediction).
-        // Otherwise the rAF render loop can fire between this call and React's commit,
-        // drawing the player at the previous room while the queue has already advanced —
-        // visible as a 1-tile gap between the player and the nearest prediction panel.
+
         if (!id) {
             playerPosRef.current = null;
+            moveAnimRef.current = createMoveAnimState();
+            // New session/disconnect: recalibrate the glide to this link.
+            calibDoneRef.current = false;
+            calibSamplesRef.current = [];
+            glideMsRef.current = MOVE_ANIM.GLIDE_MS;
+            moveSentAtRef.current = null;
+            cleanMoveRef.current = false;
             return;
         }
+
+        // Calibration: only a real room change (not a refresh/duplicate) counts as a move.
+        if (id !== prevId) recordCalibrationSample();
         const room = roomsRef.current[id];
-        let coords: { x: number, y: number, z: number } | null = null;
+        let coords: Vec3 | null = null;
         if (room) {
             coords = { x: room.x, y: room.y, z: room.z || 0 };
         } else {
@@ -150,13 +212,28 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             if (pData) coords = { x: pData[0], y: pData[1], z: pData[2] || 0 };
         }
         if (!coords) return;
-        if (!playerPosRef.current) playerPosRef.current = coords;
-        else {
-            playerPosRef.current.x = coords.x;
-            playerPosRef.current.y = coords.y;
-            playerPosRef.current.z = coords.z;
+
+        // First fix has no marker yet — place it directly.
+        if (!playerPosRef.current) {
+            playerPosRef.current = { ...coords };
+            moveAnimRef.current = createMoveAnimState();
+            return;
         }
-    }, [currentRoomIdRef, roomsRef, preloadedCoordsRef]);
+
+        // Feature off → "old school": snap the marker straight to the confirmed room (the
+        // camera still glides to follow). No optimistic glide/bounce.
+        if (!(useSettingsStore.getState().optimisticMovement ?? true)) {
+            snapTo(moveAnimRef.current, coords, playerPosRef.current);
+            wakeMapper();
+            return;
+        }
+
+        // Settle the marker onto the confirmed/forced room. During an optimistic glide
+        // this just records truth (the glide stays authoritative); with nothing in flight
+        // it glides/snaps to a forced move.
+        settle(moveAnimRef.current, playerPosRef.current, coords);
+        wakeMapper();
+    }, [currentRoomIdRef, roomsRef, preloadedCoordsRef, wakeMapper, recordCalibrationSample]);
 
     // Unified UI State
     const [selectedRoomIds, setSelectedRoomIds] = useState<Set<string>>(new Set());
@@ -575,8 +652,14 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const queue = clientPredictionsRef.current;
         clientPredictionsRef.current = queue.length > 0 ? queue.slice(1) : queue;
         if (clientPredictionsRef.current.length === 0) preMoveRef.current = null;
+        // Recoil the optimistic glide back to the last confirmed room (bounce + jiggle).
+        failMove(moveAnimRef.current);
+        // The pending move didn't confirm — discard its calibration timing.
+        moveSentAtRef.current = null;
+        cleanMoveRef.current = false;
+        wakeMapper();
         triggerRender();
-    }, [triggerRender]);
+    }, [triggerRender, wakeMapper]);
 
     // Global Event Listeners
     useEffect(() => {
@@ -587,31 +670,133 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const onTerrain = (e: any) => masterHandlers.handleTerrain(e.detail);
         const onPush    = (e: any) => {
             const dir = e.detail;
-            pushPendingMove(dir);
-
             const currentRoomId = currentRoomIdRef.current;
             const rooms = roomsRef.current;
             const preloaded = preloadedCoordsRef.current;
-            if (!currentRoomId || !rooms || !preloaded) return;
+            if (!currentRoomId || !rooms || !preloaded) {
+                // No map context — can't predict or detect blocks; enroll the move as-is.
+                pushPendingMove(dir);
+                return;
+            }
 
-            const room = rooms[currentRoomId] || rooms[`m_${currentRoomId}`];
-            const rawId = currentRoomId.startsWith('m_') ? currentRoomId.substring(2) : currentRoomId;
+            // Predict from the previous predicted room when moves are still in flight, so a
+            // spam like "w then s" walks west THEN south (graph walk), not south-of-current.
+            const fresh = moveAnimRef.current.inFlight === 0;
+            const baseRoomId = fresh ? currentRoomId : (predictedRoomIdRef.current || currentRoomId);
+            const room = rooms[baseRoomId] || rooms[`m_${baseRoomId}`];
+            const rawId = baseRoomId.startsWith('m_') ? baseRoomId.substring(2) : baseRoomId;
             const wEx = preloaded[rawId]?.[4]?.[dir];
             const { hasExit, hasDoor, isClosed } = getGateState(room, wEx, dir, rooms, preloaded);
-            if (showDebugEchoesRef.current) {
-                addMessageRef.current?.('system', `[MapperPredict] push ${dir}: room=${currentRoomId} exit=${hasExit ? 'yes' : 'no'} door=${hasDoor ? (isClosed ? 'closed' : 'open') : 'no'}`);
+
+            // Resolve the destination room id. Prefer the PRELOADED full-map exit (its
+            // target is an Arda vnum that's always in our data) over the live exit: a live
+            // exit toward an UNEXPLORED neighbor often only carries a GMCP server id we
+            // can't map yet, which resolves to a room not in preloaded — breaking the wall/
+            // no_ride/flag lookups and prediction the moment you head into unexplored areas.
+            const resolveExit = (ex: any): string | null => {
+                const tid = getExitTargetId(ex);
+                if (!tid) return null;
+                const key = String(tid).replace(/^m_/, '');
+                const internal = serverIdIndexRef.current[key] || key;
+                return String(internal).startsWith('m_') ? String(internal) : `m_${internal}`;
+            };
+            const inData = (fid: string | null) =>
+                !!fid && (!!roomsRef.current[fid] || !!preloadedCoordsRef.current[fid.replace(/^m_/, '')]);
+            let finalTargetId = resolveExit(wEx);          // preloaded full-map first
+            if (!inData(finalTargetId)) {
+                const live = resolveExit(room?.exits?.[dir]); // off-map fallback
+                if (inData(live) || !finalTargetId) finalTargetId = live;
             }
-            // Resolve the immediate next room ONLY to seed the ghost-camera preMoveRef.
-            // The prediction LINE stores no coords — it is graph-walked at render time.
-            const wasQueueEmpty = clientPredictionsRef.current.length === 0;
-            if (wasQueueEmpty) {
-                const exA = room?.exits?.[dir] || wEx;
-                const targetId = getExitTargetId(exA);
-                if (targetId) {
-                    const targetKey = String(targetId).replace(/^m_/, '');
-                    const internalTargetId = serverIdIndexRef.current[targetKey] || targetKey;
-                    const finalTargetId = String(internalTargetId).startsWith('m_') ? String(internalTargetId) : `m_${internalTargetId}`;
+
+            // Feature off → "old school": enroll for correlation + the prediction line, but
+            // never animate optimistically (the marker just snaps on confirmation).
+            if (!(useSettingsStore.getState().optimisticMovement ?? true)) {
+                pushPendingMove(dir);
+                const wasQueueEmptyOld = clientPredictionsRef.current.length === 0;
+                if (wasQueueEmptyOld && finalTargetId) {
                     preMoveRef.current = { dir, targetId: finalTargetId, time: Date.now() };
+                }
+                onPre({ detail: { dir } });
+                return;
+            }
+
+            // --- Can this move actually happen? If we KNOW it can't, bump and DON'T enroll
+            // it in the prediction system (pending queue / preMove / predicted chain / line).
+            // An unenrolled blocked move can't leave a phantom pending entry that
+            // mis-correlates the NEXT real move — the bug behind "thinks I'm in the wrong
+            // room" after spamming into a no-ride room. Block reasons:
+            //  1. Posture — must be standing/riding to move (fighting/sitting/resting/sleeping reject).
+            //  2. Riding into a NO_RIDE room — bounced at the boundary.
+            //  3. Known wall/closed door (base room in our map). Unknown rooms still animate.
+            const vitals = useVitalsStore.getState();
+            const pos = vitals.position;
+            // MUME reports position as 'standing' while mounted, so trust the dedicated
+            // isRiding flag (set from Char.Ride / "start riding") — not just position.
+            const isRiding = vitals.isRiding || pos === 'riding' || pos === 'mounted';
+            const postureBlocked = pos === 'fighting' || pos === 'sitting' || pos === 'resting' || pos === 'sleeping';
+            let noRideBlocked = false;
+            if (isRiding && finalTargetId) {
+                const tRoom = roomsRef.current[finalTargetId];
+                let ridable: any;
+                if (tRoom && tRoom.ridable !== undefined) ridable = tRoom.ridable;
+                else ridable = preloadedCoordsRef.current[finalTargetId.replace(/^m_/, '')]?.[14];
+                noRideBlocked = ridable === 'NOT_RIDABLE' || ridable === false || ridable === 'false';
+            }
+            const baseKnown = !!room || !!preloaded[rawId];
+            const blocked = postureBlocked || noRideBlocked || (baseKnown && (!hasExit || (hasDoor && isClosed)));
+
+            if (showDebugEchoesRef.current) {
+                addMessageRef.current?.('system', `[MapperPredict] push ${dir}: base=${baseRoomId} exit=${hasExit ? 'yes' : 'no'} door=${hasDoor ? (isClosed ? 'closed' : 'open') : 'no'}${blocked ? ' BLOCKED' : ''}`);
+            }
+
+            const origin = playerPosRef.current;
+
+            if (blocked) {
+                // Bump in place; no enrollment → a rejected move leaves no phantom behind.
+                const d = DIRS[dir];
+                if (d && origin) {
+                    bumpWall(moveAnimRef.current, origin, { x: d.dx || 0, y: d.dy || 0, z: 0 }, glideMsRef.current);
+                    wakeMapper();
+                }
+                return;
+            }
+
+            // --- Not blocked: enroll the move and glide optimistically toward it. ---
+            pushPendingMove(dir);
+            predictedRoomIdRef.current = finalTargetId; // advance the predicted-room chain
+
+            const wasQueueEmpty = clientPredictionsRef.current.length === 0;
+            if (wasQueueEmpty && finalTargetId) {
+                // The prediction LINE stores no coords — it is graph-walked at render time.
+                preMoveRef.current = { dir, targetId: finalTargetId, time: Date.now() };
+            }
+
+            if (origin) {
+                // Base room coords for the projection fallback — NOT the live render pos.
+                let baseCoords: Vec3 | null = null;
+                if (room) baseCoords = { x: room.x, y: room.y, z: room.z || 0 };
+                else { const bData = preloadedCoordsRef.current[rawId]; if (bData) baseCoords = { x: bData[0], y: bData[1], z: bData[2] || 0 }; }
+
+                let predicted: Vec3 | null = null;
+                if (finalTargetId) {
+                    const tRoom = roomsRef.current[finalTargetId];
+                    if (tRoom) predicted = { x: tRoom.x, y: tRoom.y, z: tRoom.z || 0 };
+                    else { const tData = preloadedCoordsRef.current[finalTargetId.replace(/^m_/, '')]; if (tData) predicted = { x: tData[0], y: tData[1], z: tData[2] || 0 }; }
+                }
+                // Unmapped open dir: project one cell so the marker still glides somewhere.
+                if (!predicted) {
+                    const d = DIRS[dir];
+                    const b = baseCoords || origin;
+                    if (d) predicted = { x: b.x + (d.dx || 0), y: b.y + (d.dy || 0), z: b.z + (d.dz || 0) };
+                }
+                if (predicted) {
+                    // Calibration timing: only an isolated single move is a clean sample.
+                    if (!calibDoneRef.current) {
+                        if (moveAnimRef.current.inFlight === 0) { moveSentAtRef.current = Date.now(); cleanMoveRef.current = true; }
+                        else cleanMoveRef.current = false;
+                    }
+                    optimisticMove(moveAnimRef.current, origin, predicted, glideMsRef.current);
+                    wakeMapper();
                 }
             }
 
@@ -719,7 +904,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         handleTerrain: masterHandlers.handleTerrain,
         handleAddRoom, handleDeleteRoom, pushPendingMove,
         handleMoveConfirmed, handleMoveFailure, preMoveRef, clientPredictionsRef,
-        playerPosRef,
+        playerPosRef, moveAnimRef,
         triggerRender, renderVersion,
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,

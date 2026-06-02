@@ -16,6 +16,7 @@ import { CaptureMiddleware } from '../services/command/middlewares/CaptureMiddle
 import { SystemCommandMiddleware } from '../services/command/middlewares/SystemCommandMiddleware';
 import { recordEffectTimerCommand } from '../services/timers/effectTimerParser';
 import { decodeCommandEntities } from '../utils/commandTextUtils';
+import { recordCombatRechargeCommand } from '../stores/useCombatRechargeStore';
 
 export interface ExecutorDeps {
     telnet: { sendCommand: (cmd: string) => void };
@@ -140,7 +141,10 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             addMessage('error', 'Not connected.');
         }
 
-        if (!silent && !isSystem) recordEffectTimerCommand(finalCmd);
+        if (!silent && !isSystem) {
+            recordEffectTimerCommand(finalCmd);
+            recordCombatRechargeCommand(finalCmd);
+        }
 
         if (normalizedFinalCmd.startsWith('practice ')) {
             d.practice?.setLastPracticedSkill(finalCmd.trim().slice(9).trim());

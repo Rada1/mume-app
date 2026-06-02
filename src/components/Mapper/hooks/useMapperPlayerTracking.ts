@@ -44,13 +44,12 @@ export const useMapperPlayerTracking = (
                 if (playerTrailRef.current.length > 40) playerTrailRef.current.shift();
             }
 
-            // Always snap to the confirmed room position immediately
+            // Marker position is owned by the optimistic move animator (driven from
+            // setCurrentRoomId → moveAnimRef), which glides/bounces it to the confirmed
+            // room. Only seed it on the very first fix; never hard-snap afterwards, or we
+            // would clobber the in-flight glide every render.
             if (!playerPosRef.current) {
                 playerPosRef.current = { x: r.x, y: r.y, z: r.z || 0 };
-            } else {
-                playerPosRef.current.x = r.x;
-                playerPosRef.current.y = r.y;
-                playerPosRef.current.z = r.z || 0;
             }
 
             // Whenever the room changes, enable auto-center so the animation loop

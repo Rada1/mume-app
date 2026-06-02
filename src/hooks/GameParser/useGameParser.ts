@@ -230,7 +230,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const { setStats, setTarget, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName, setBufferHealthStatus, setBufferName, setCharacterInfo } = session.vitals as any;
     const { 
         setRoomName, setRoomDesc, setRoomZone, setCurrentTerrain, setInCombat, 
-        setPlayerPosition, setWeather, setIsFoggy, setLightningEnabled, 
+        setPlayerPosition, setIsRiding, setWeather, setIsFoggy, setLightningEnabled, 
         setInventoryLines: sessionSetInventoryLines, setStatsLines: sessionSetStatsLines, 
         setInfoLines, setScoreLines: sessionSetScoreLines, setQuestLines, setAchievementLines,
         setPracticeLines: sessionSetPracticeLines, setWhoLines, setWhereLines, 
@@ -402,6 +402,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         playRideSound: deps.playRideSound,
         playStopRidingSound: deps.playStopRidingSound,
         setPlayerPosition,
+        setIsRiding,
         isSpectateMode: deps.isSpectateMode,
         setSpectatePosition: deps.setSpectatePosition,
     });

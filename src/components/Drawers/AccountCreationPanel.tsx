@@ -37,7 +37,7 @@ const CreationOptionButton: React.FC<{
     onSelect: (id: string) => void;
 }> = ({ option, onSelect }) => (
     <button className="account-menu-btn creation-option-btn" onClick={() => onSelect(option.id)}>
-        {/^\d+$/.test(option.id) && <span style={{ color: '#4ade80', marginRight: 8 }}>({option.id})</span>}
+        {/^\d+$/.test(option.id) && <span style={{ color: '#ffd700', marginRight: 8, fontWeight: 800 }}>({option.id})</span>}
         {option.label}
     </button>
 );

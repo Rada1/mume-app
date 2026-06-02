@@ -44,7 +44,14 @@ export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, child
 
     return (
         <div className={`log-card-drawer drawer-shell ${id}-drawer ${side}-drawer open`}>
-            <DrawerResizeHandle side="left" cssVar="--desktop-right-width" />
+            <DrawerResizeHandle handleType="left" widthVar="--desktop-right-width" />
+            <DrawerResizeHandle handleType="right" widthVar="--desktop-right-width" rightVar="--desktop-right-right" />
+            <DrawerResizeHandle handleType="top" widthVar="--desktop-right-width" topVar="--desktop-right-top" bottomVar="--desktop-right-bottom" />
+            <DrawerResizeHandle handleType="bottom" widthVar="--desktop-right-width" topVar="--desktop-right-top" bottomVar="--desktop-right-bottom" />
+            <DrawerResizeHandle handleType="top-left" widthVar="--desktop-right-width" topVar="--desktop-right-top" bottomVar="--desktop-right-bottom" />
+            <DrawerResizeHandle handleType="top-right" widthVar="--desktop-right-width" rightVar="--desktop-right-right" topVar="--desktop-right-top" bottomVar="--desktop-right-bottom" />
+            <DrawerResizeHandle handleType="bottom-left" widthVar="--desktop-right-width" topVar="--desktop-right-top" bottomVar="--desktop-right-bottom" />
+            <DrawerResizeHandle handleType="bottom-right" widthVar="--desktop-right-width" rightVar="--desktop-right-right" topVar="--desktop-right-top" bottomVar="--desktop-right-bottom" />
             <EnvironmentGlow terrain={accountState?.stage !== 'none' ? undefined : (currentTerrain || undefined)} lighting={lighting} input={input} />
             <div className="drawer-header">
                 <span className="drawer-title">

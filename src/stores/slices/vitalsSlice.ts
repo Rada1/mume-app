@@ -42,6 +42,7 @@ export interface VitalsState {
     manaStatus: string | null;
     moveStatus: string | null;
     position: string;
+    isRiding: boolean;
     inCombat: boolean;
     currentTerrain: string;
     lighting: LightingType;
@@ -79,6 +80,7 @@ export interface VitalsState {
     setStats: (stats: Partial<{ hp: number; maxHp: number; mana: number; maxMana: number; move: number; maxMove: number }> | ((prev: VitalsState) => Partial<VitalsState>)) => void;
     setHpStatus: (status: CombatHealthStatus | null | ((prev: CombatHealthStatus | null) => CombatHealthStatus | null)) => void;
     setPosition: (pos: string | ((prev: string) => string)) => void;
+    setIsRiding: (val: boolean) => void;
     setInCombat: (val: boolean | ((prev: boolean) => boolean)) => void;
     setLighting: (l: LightingType | ((prev: LightingType) => LightingType)) => void;
     setWeather: (w: WeatherType | ((prev: WeatherType) => WeatherType)) => void;
@@ -132,6 +134,7 @@ export const initialVitalsState = {
     wimpy: 0,
     conditions: {},
     carrying: null,
+    isRiding: false,
     isRidden: false,
     climb: null,
     sneak: null,
@@ -442,7 +445,7 @@ export const createVitalsActions = (set: any, get: any) => ({
         set((state: VitalsState) => {
             const nextPos = typeof pos === 'function' ? pos(state.position) : pos;
             const rawPosition = String(nextPos).toLowerCase();
-            const isCurrentlyRiding = state.position === 'riding' || state.position === 'mounted';
+            const isCurrentlyRiding = state.position === 'riding' || state.position === 'mounted' || state.isRiding;
             if (rawPosition === 'standing' && isCurrentlyRiding) return state;
             const waiting = rawPosition === 'waiting' || rawPosition.includes('waiting');
             return {
@@ -453,6 +456,17 @@ export const createVitalsActions = (set: any, get: any) => ({
             };
         });
     },
+
+    setIsRiding: (val: boolean) =>
+        set((state: VitalsState) => {
+            const updates: Partial<VitalsState> = { isRiding: val };
+            if (val) {
+                updates.position = 'riding';
+            } else if (state.position === 'riding' || state.position === 'mounted') {
+                updates.position = 'standing';
+            }
+            return { ...state, ...updates };
+        }),
 
     setInCombat: (inCombat: boolean | ((prev: boolean) => boolean)) => 
         set((state: VitalsState) => ({ ...state, inCombat: typeof inCombat === 'function' ? inCombat(state.inCombat) : inCombat })),

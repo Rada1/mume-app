@@ -49,9 +49,9 @@
 
 @media (min-width: 1025px) {
     .log-card-drawer {
-        right: 1vw;
-        top: 6%;
-        bottom: 6%;
+        right: var(--desktop-right-right, 1vw);
+        top: var(--desktop-right-top, 6vh);
+        bottom: var(--desktop-right-bottom, 6vh);
         width: var(--desktop-right-width, calc((100vw - clamp(600px, 38vw, 1000px)) / 2 - 2vw));
         border-radius: var(--radius-card);
     }
@@ -402,7 +402,7 @@
     transform: translateX(-20px);
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, box-shadow 0.8s ease;
     box-shadow: 0 0 20px rgba(212, 170, 0, 0.35), 0 4px 14px rgba(0, 0, 0, 0.45);
     display: flex;
     flex-direction: column;
@@ -424,9 +424,9 @@
 
 @media (min-width: 1025px) {
     .map-drawer-desktop {
-        left: 1vw;
-        top: 6%;
-        bottom: 6%;
+        left: var(--desktop-map-left, 1vw);
+        top: var(--desktop-map-top, 6vh);
+        bottom: var(--desktop-map-bottom, 6vh);
         width: var(--desktop-map-width, calc((100vw - clamp(600px, 38vw, 1000px)) / 2 - 2vw));
         border-radius: var(--radius-card);
     }
@@ -621,35 +621,70 @@
 /* ─── Drawer Resize Handles ───────────────────────────────── */
 .drawer-resize-handle {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 10px;
     z-index: 200;
-    cursor: col-resize;
+    background: transparent;
 }
 
-.drawer-resize-handle--right { right: 0; }
-.drawer-resize-handle--left  { left: 0; }
-
-.drawer-resize-handle::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 4px;
-    width: 2px;
-    height: 36px;
-    border-radius: 1px;
-    background: rgba(255, 255, 255, 0);
-    transition: background 0.2s;
+/* Edge handles */
+.drawer-resize-handle--top {
+    top: -4px;
+    left: 8px;
+    right: 8px;
+    height: 8px;
+    cursor: ns-resize;
+}
+.drawer-resize-handle--bottom {
+    bottom: -4px;
+    left: 8px;
+    right: 8px;
+    height: 8px;
+    cursor: ns-resize;
+}
+.drawer-resize-handle--left,
+.drawer-resize-handle--log-left {
+    left: -4px;
+    top: 8px;
+    bottom: 8px;
+    width: 8px;
+    cursor: ew-resize;
+}
+.drawer-resize-handle--right,
+.drawer-resize-handle--log-right {
+    right: -4px;
+    top: 8px;
+    bottom: 8px;
+    width: 8px;
+    cursor: ew-resize;
 }
 
-.drawer-resize-handle:hover::after {
-    background: rgba(255, 255, 255, 0.2);
+/* Corner handles */
+.drawer-resize-handle--top-left {
+    top: -4px;
+    left: -4px;
+    width: 12px;
+    height: 12px;
+    cursor: nwse-resize;
 }
-
-.global-dragging .drawer-resize-handle::after {
-    background: rgba(255, 255, 255, 0.35);
+.drawer-resize-handle--top-right {
+    top: -4px;
+    right: -4px;
+    width: 12px;
+    height: 12px;
+    cursor: nesw-resize;
+}
+.drawer-resize-handle--bottom-left {
+    bottom: -4px;
+    left: -4px;
+    width: 12px;
+    height: 12px;
+    cursor: nesw-resize;
+}
+.drawer-resize-handle--bottom-right {
+    bottom: -4px;
+    right: -4px;
+    width: 12px;
+    height: 12px;
+    cursor: nwse-resize;
 }
 
 /* Mobile Portrait Gutter Drawer Glass Background */

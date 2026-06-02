@@ -309,6 +309,9 @@ export function useCommandController(deps: CommandControllerDeps) {
     const handleSend = useCallback((e?: React.FormEvent) => {
         e?.preventDefault();
         const cmd = useInputStore.getState().input.trim();
+        if (cmd) {
+            useInputStore.getState().addToHistory(cmd);
+        }
         useInputStore.getState().setInput('');
 
         let finalCmd = cmd;

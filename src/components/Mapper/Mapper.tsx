@@ -125,7 +125,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         renderVersion, triggerRender, activeMapFilter, setActiveMapFilter,
         mapSearchQuery, setMapSearchQuery,
         regionLabels, setExploredMarkers,
-        playerPosRef,
+        playerPosRef, moveAnimRef,
         closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     } = context;
     const [selectedRegionLabelId, setSelectedRegionLabelId] = useState<string | null>(null);
@@ -305,6 +305,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 imagesRef={imagesRef}
                 characterName={characterName ?? null}
                 playerPosRef={playerPosRef}
+                moveAnimRef={moveAnimRef}
                 playerTrailRef={playerTrailRef}
                 renderVersion={renderVersion}
                 isDragging={isDragging}

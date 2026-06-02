@@ -83,6 +83,57 @@
     text-overflow: ellipsis;
 }
 
+.combat-recharge-overlay {
+    position: absolute;
+    inset: -1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.combat-recharge-mask {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.42);
+    mix-blend-mode: screen;
+    opacity: 0.42;
+    transform: scaleX(var(--charge-start, 0));
+    transform-origin: left center;
+    will-change: transform, filter;
+    animation: button-charge-fill var(--charge-duration, 0ms) linear forwards;
+}
+
+.combat-recharge-overlay.confidence-unknown .combat-recharge-mask {
+    opacity: 0.24;
+}
+
+.combat-recharge-overlay.is-charged .combat-recharge-mask {
+    opacity: 0.5;
+    animation: combat-charge-ready 0.9s ease-in-out infinite;
+}
+
+@keyframes combat-charge-ready {
+    0%, 100% {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(1.8);
+    }
+}
+
+@keyframes button-charge-fill {
+    from {
+        transform: scaleX(var(--charge-start, 0));
+    }
+    to {
+        transform: scaleX(1);
+    }
+}
+
 /* Design Mode Elements */
 .resize-handle {
     position: absolute;

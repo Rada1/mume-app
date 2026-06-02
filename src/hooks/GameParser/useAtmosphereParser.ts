@@ -18,6 +18,7 @@ export interface AtmosphereParserDeps {
     playStopRidingSound?: () => void;
     setPlayerPosition: (pos: string) => void;
     setSpectatePosition?: (pos: string) => void;
+    setIsRiding?: (val: boolean) => void;
     isSpectateMode?: boolean;
 }
 
@@ -25,7 +26,8 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
     const {
         setIsFoggy, setLightningEnabled,
         setSpectateIsFoggy, setSpectateLightningEnabled,
-        triggerHaptic, playDoorSound, playRideSound, playStopRidingSound, setPlayerPosition, setSpectatePosition, isSpectateMode
+        triggerHaptic, playDoorSound, playRideSound, playStopRidingSound,
+        setPlayerPosition, setSpectatePosition, setIsRiding, isSpectateMode
     } = deps;
 
     const parseAtmosphere = useCallback((lower: string, isSnoop: boolean = false) => {
@@ -58,16 +60,21 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
             playDoorSound?.(false);
         }
 
-        if (lower.includes("'s reins and start riding")) {
-            playRideSound?.();
-        } else if (lower.includes('you stop riding')) {
-            playStopRidingSound?.();
-        }
-
-        // --- Posture / Position ---
+        // --- Posture / Position / Riding ---
         const posSetter = (isSnoop && setSpectatePosition) ? setSpectatePosition : setPlayerPosition;
         
-        if (lower.includes('you sit down') || lower.includes('is now sitting')) {
+        const isMounting = lower.includes("you mount ") || lower.includes("mounts ") || lower.includes("start riding") || lower.includes("picks up some reins") || lower.includes("pick up some reins");
+        const isDismounting = lower.includes("you dismount") || lower.includes("dismounts ") || lower.includes("stop riding");
+
+        if (isMounting) {
+            setIsRiding?.(true);
+            posSetter('riding');
+            playRideSound?.();
+        } else if (isDismounting) {
+            setIsRiding?.(false);
+            posSetter('standing');
+            playStopRidingSound?.();
+        } else if (lower.includes('you sit down') || lower.includes('is now sitting')) {
             posSetter('sitting');
         } else if (lower.includes('you stand up') || lower.includes('is now standing')) {
             posSetter('standing');
@@ -76,7 +83,7 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
         } else if (lower.includes('you go to sleep') || lower.includes('is now sleeping')) {
             posSetter('sleeping');
         }
-    }, [setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, playRideSound, playStopRidingSound, setPlayerPosition, setSpectatePosition, isSpectateMode]);
+    }, [setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, playRideSound, playStopRidingSound, setPlayerPosition, setSpectatePosition, setIsRiding, isSpectateMode]);
 
     return { parseAtmosphere };
 }

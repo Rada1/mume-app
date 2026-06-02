@@ -326,8 +326,13 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             const token = tokens[i];
 
             if (token.type === 'entity') {
+                const isFirst = wordIdx === 0;
                 wordNodes.push(
-                    <span key={`lw-${i}`} className="log-word" style={{ animationDelay: `${wordIdx * 30}ms` }}>
+                    <span 
+                        key={`lw-${i}`} 
+                        className={isFirst ? undefined : "log-word"} 
+                        style={isFirst ? undefined : { animationDelay: `${wordIdx * 30}ms` }}
+                    >
                         {renderToken(token, i)}
                     </span>
                 );
@@ -350,11 +355,12 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 const wordContent = targetMatcher && word.toLowerCase().includes(targetMatcher.value)
                     ? renderTextWithTarget(word, `${i}-${j}`)
                     : word;
+                const isFirst = wordIdx === 0;
                 wordNodes.push(
                     <span
                         key={`lw-${i}-${j}`}
-                        className="log-word"
-                        style={{ ...ansiStyle, animationDelay: `${wordIdx * 30}ms` }}
+                        className={isFirst ? undefined : "log-word"}
+                        style={isFirst ? ansiStyle : { ...ansiStyle, animationDelay: `${wordIdx * 30}ms` }}
                     >
                         {wordContent}{j < words.length - 1 ? ' ' : ''}
                     </span>

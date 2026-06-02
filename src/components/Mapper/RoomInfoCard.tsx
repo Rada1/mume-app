@@ -363,6 +363,143 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 </label>
             </div>
 
+            {mode === 'edit' && (
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                    backgroundColor: isDarkMode ? '#1c1c1f' : '#ffffff',
+                    border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    fontSize: '12px'
+                }}>
+                    <span style={{ fontSize: '11px', color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '800' }}>Edit Flags & Attributes</span>
+                    
+                    {/* Portable / Ridable / Align Row */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                        {/* Portable Select */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ color: '#71717a', fontSize: '10px', fontWeight: '600' }}>Portability</span>
+                            <select
+                                value={room.portable !== undefined ? String(room.portable) : 'undefined'}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    updateRoom({ portable: val === 'undefined' ? undefined : val });
+                                }}
+                                style={{ backgroundColor: isDarkMode ? '#141417' : '#f4f4f5', border: 'none', color: isDarkMode ? '#e4e4e7' : '#1d1d1f', padding: '6px', borderRadius: '6px', fontSize: '11px', outline: 'none' }}
+                            >
+                                <option value="undefined">Unspecified</option>
+                                <option value="true">Portable</option>
+                                <option value="false">No Port</option>
+                            </select>
+                        </div>
+                        
+                        {/* Ridable Select */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ color: '#71717a', fontSize: '10px', fontWeight: '600' }}>Riding</span>
+                            <select
+                                value={room.ridable !== undefined ? String(room.ridable) : 'undefined'}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    updateRoom({ ridable: val === 'undefined' ? undefined : val });
+                                }}
+                                style={{ backgroundColor: isDarkMode ? '#141417' : '#f4f4f5', border: 'none', color: isDarkMode ? '#e4e4e7' : '#1d1d1f', padding: '6px', borderRadius: '6px', fontSize: '11px', outline: 'none' }}
+                            >
+                                <option value="undefined">Unspecified</option>
+                                <option value="true">Ridable</option>
+                                <option value="false">No Ride (no_ride)</option>
+                            </select>
+                        </div>
+
+                        {/* Align Select */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ color: '#71717a', fontSize: '10px', fontWeight: '600' }}>Alignment</span>
+                            <select
+                                value={room.align || 'undefined'}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    updateRoom({ align: val === 'undefined' ? undefined : val });
+                                }}
+                                style={{ backgroundColor: isDarkMode ? '#141417' : '#f4f4f5', border: 'none', color: isDarkMode ? '#e4e4e7' : '#1d1d1f', padding: '6px', borderRadius: '6px', fontSize: '11px', outline: 'none' }}
+                            >
+                                <option value="undefined">Neutral / None</option>
+                                <option value="good">Good</option>
+                                <option value="evil">Evil</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Mob Flags Toggle Group */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
+                        <span style={{ color: '#71717a', fontSize: '10px', fontWeight: '600' }}>Mob Flags</span>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                            {['AGGRESSIVE', 'SHOP', 'GUILD', 'DARK', 'NO_SUNDEATH'].map(f => {
+                                const active = (room.mobFlags || []).includes(f);
+                                return (
+                                    <button
+                                        key={f}
+                                        type="button"
+                                        onClick={() => {
+                                            const current = room.mobFlags || [];
+                                            const next = active ? current.filter(x => x !== f) : [...current, f];
+                                            updateRoom({ mobFlags: next });
+                                        }}
+                                        style={{
+                                            padding: '4px 8px',
+                                            borderRadius: '6px',
+                                            fontSize: '10px',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            backgroundColor: active ? 'rgba(148, 226, 213, 0.25)' : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
+                                            color: active ? '#94e2d5' : (isDarkMode ? '#a1a1aa' : '#71717a'),
+                                            border: active ? '1px solid rgba(148, 226, 213, 0.4)' : '1px solid transparent'
+                                        }}
+                                    >
+                                        {f}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Load Flags Toggle Group */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
+                        <span style={{ color: '#71717a', fontSize: '10px', fontWeight: '600' }}>Load Flags</span>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                            {['HERB', 'WATER', 'FOOD', 'HORSE', 'BOAT', 'STABLE', 'DEATHTRAP', 'FERRY', 'COACH'].map(f => {
+                                const active = (room.loadFlags || []).includes(f);
+                                return (
+                                    <button
+                                        key={f}
+                                        type="button"
+                                        onClick={() => {
+                                            const current = room.loadFlags || [];
+                                            const next = active ? current.filter(x => x !== f) : [...current, f];
+                                            updateRoom({ loadFlags: next });
+                                        }}
+                                        style={{
+                                            padding: '4px 8px',
+                                            borderRadius: '6px',
+                                            fontSize: '10px',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            backgroundColor: active ? 'rgba(166, 227, 161, 0.25)' : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
+                                            color: active ? '#a6e3a1' : (isDarkMode ? '#a1a1aa' : '#71717a'),
+                                            border: active ? '1px solid rgba(166, 227, 161, 0.4)' : '1px solid transparent'
+                                        }}
+                                    >
+                                        {f}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {room.desc && (
                 <div style={{ fontSize: '13px', color: isDarkMode ? '#d1d5db' : '#3a3a3c', backgroundColor: isDarkMode ? '#141417' : '#ffffff', padding: '14px', borderRadius: '8px', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6', lineHeight: '1.6' }}>
                     {room.desc}

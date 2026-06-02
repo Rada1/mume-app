@@ -6,6 +6,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { GRID_SIZE } from './mapperUtils';
 import { perfMonitor } from '../../utils/perfMonitor';
+import { advanceMoveAnim, type MoveAnimState } from './playerMoveAnimator';
 
 const WAKE_ANIMATION_MS = 1500;
 const EXPLORATION_WAKE_MS = 0;
@@ -21,6 +22,7 @@ interface AnimationProps {
     canvasRef: React.RefObject<HTMLCanvasElement>;
     camera: React.MutableRefObject<{ x: number, y: number, zoom: number }>;
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>;
+    moveAnimRef?: React.MutableRefObject<MoveAnimState>;
     playerTrailRef: React.MutableRefObject<{ x: number, y: number, z: number, alpha: number }[]>;
     getDPR: () => number;
     marquee: any;
@@ -43,7 +45,7 @@ interface AnimationProps {
 
 export const useMapAnimation = ({
     drawMap, rooms, markers, currentRoomId, isDragging, renderVersion,
-    canvasRef, camera, playerPosRef, playerTrailRef, getDPR, marquee, autoCenter,
+    canvasRef, camera, playerPosRef, moveAnimRef, playerTrailRef, getDPR, marquee, autoCenter,
     stableRoomsRef, stableRoomIdRef, stableMarkersRef, firstExploredAtRef, preloadedCoordsRef,
     preMoveRef, walkTargetId, walkPath, isDraggingRef, activeMapFilter, mapSearchQuery,
     entitiesRef, isMobile, isLandscape, filterFitRef
@@ -93,8 +95,13 @@ export const useMapAnimation = ({
             return fighting !== '' && fighting.toLowerCase() !== 'you' && fighting !== 'Someone';
         })));
         const effectiveIsDragging = isDragging || isDraggingRef?.current;
-        const hasLiveOverlayAnimation = !!(activeMapFilter || mapSearchQuery?.trim() || combatAnimationActive || walkTargetId);
-        const frameBudget = effectiveIsDragging || hasLiveOverlayAnimation || isJoystickActiveRef.current ? 16 : 50;
+        const moveAnimActive = !!moveAnimRef?.current && moveAnimRef.current.phase !== 'idle';
+        // Interactive (drag/joystick) and heavy overlays run at full 60fps. The optimistic
+        // move glide runs at a lighter 30fps — a clean 60Hz divisor that stays smooth for a
+        // ~200ms glide while roughly halving the per-move canvas-composite load on phones.
+        const interactive = effectiveIsDragging || isJoystickActiveRef.current;
+        const heavyOverlay = !!(activeMapFilter || mapSearchQuery?.trim() || combatAnimationActive || walkTargetId);
+        const frameBudget = interactive || heavyOverlay ? 16 : (moveAnimActive ? 33 : 50);
         if (deltaTime < frameBudget) return true;
         
         // Calculate a normalized factor for lerping based on time (aiming for 60fps base)
@@ -115,8 +122,14 @@ export const useMapAnimation = ({
         // If nothing needs another frame, the loop stops until the next explicit wake.
         let needsNextFrame = false;
 
-        // Player position is snapped immediately in useMapperPlayerTracking — no queue/lerp needed here.
-        // Camera centering still lerps smoothly toward playerPosRef.current.
+        // Optimistic movement: glide the player marker toward the predicted room and
+        // settle (or bounce off a wall) as the game confirms. Runs before camera
+        // centering below so the camera follows the animated position in the same frame.
+        if (moveAnimRef?.current && playerPosRef.current) {
+            if (advanceMoveAnim(moveAnimRef.current, playerPosRef.current, frameScale)) {
+                needsNextFrame = true;
+            }
+        }
 
         // Filter fit: zoom out to show both player and nearest match
         const filterFit = filterFitRef?.current;

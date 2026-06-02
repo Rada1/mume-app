@@ -15,6 +15,8 @@ import { TimerExpiryToast } from '../Timers/TimerExpiryToast';
 import { QuickButtonBar } from '../HUD/QuickButtonBar';
 import { ReplayHUD } from './HUD/ReplayHUD';
 
+import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
+
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
     handleLogPointerDown: (e: React.PointerEvent) => void;
@@ -198,6 +200,12 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         overflow: 'hidden'
                     } as React.CSSProperties}
                 >
+                    {!viewport.isMobile && (
+                        <>
+                            <DrawerResizeHandle handleType="log-left" widthVar="--desktop-log-width" />
+                            <DrawerResizeHandle handleType="log-right" widthVar="--desktop-log-width" />
+                        </>
+                    )}
                     {isMobile && <Embers />}
                     {isNewbieMode && roomName && (
                         <div className={`sticky-room-header terrain-${String(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">

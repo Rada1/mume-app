@@ -52,7 +52,7 @@ export const AccountDrawer: React.FC = () => {
     const [playNameInput, setPlayNameInput] = React.useState('');
     const [passwordInput, setPasswordInput] = React.useState('');
     const selectedMenuCommand = accountState.selectedMenuCommand ?? null;
-    const isCreationStage = ['character-creation', 'stat-editing', 'account-confirmation'].includes(accountState.stage);
+    const isCreationStage = ['character-creation', 'stat-editing'].includes(accountState.stage);
 
     const goBack = React.useCallback(() => {
         triggerHaptic(10);
@@ -165,7 +165,7 @@ export const AccountDrawer: React.FC = () => {
         );
     };
 
-    if (accountState.stage === 'login') {
+    if (accountState.stage === 'login' || accountState.stage === 'account-confirmation') {
         return <div className="char-select-hint"><span className="char-select-label">Log In</span><span className="char-select-sublabel">Use the login card in the main view</span></div>;
     }
 
