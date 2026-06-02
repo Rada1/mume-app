@@ -7,8 +7,10 @@ import { describe, expect, it } from 'vitest';
 import { getOccupantCommandKeyword } from '../occupantKeywordUtils';
 
 describe('getOccupantCommandKeyword', () => {
-    it('keeps NPC keywords hyphenated from the full GMCP name', () => {
-        expect(getOccupantCommandKeyword({ type: 'npc', name: 'pack horse' })).toBe('pack-horse');
+    it('uses the final meaningful word for normal NPC command keywords', () => {
+        expect(getOccupantCommandKeyword({ type: 'npc', name: 'pack horse' })).toBe('horse');
+        expect(getOccupantCommandKeyword({ type: 'npc', name: 'a man' })).toBe('man');
+        expect(getOccupantCommandKeyword({ type: 'npc', name: 'a-man' })).toBe('man');
     });
 
     it('uses first meaningful capitalized word for enemies and preserves markers', () => {

@@ -4,6 +4,7 @@
  */
 
 import type { GmcpOccupant } from '../types';
+import { extractMumeKeyword } from './keywordUtils';
 
 // --- Logic Section ---
 
@@ -13,8 +14,8 @@ const stripOuterMarkers = (value: string): string => (
     value.trim().replace(/^[*-]+|[*-]+$/g, '').trim()
 );
 
-const normalizeHyphenKeyword = (value: string | undefined): string => (
-    (value || '').trim().replace(/\s+/g, '-').toLowerCase()
+const normalizeCommandKeyword = (value: string | undefined): string => (
+    extractMumeKeyword(value || '').replace(/\s+/g, '-').toLowerCase()
 );
 
 const getEnemyNeutralWord = (value: string): string => {
@@ -40,5 +41,5 @@ export const getOccupantCommandKeyword = (
         return `${marker}${word}${marker}`;
     }
 
-    return normalizeHyphenKeyword(source);
+    return normalizeCommandKeyword(source);
 };

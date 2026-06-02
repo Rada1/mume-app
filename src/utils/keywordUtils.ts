@@ -176,8 +176,21 @@ export const sanitizeGameTarget = (target: string | null | undefined): string | 
  * Used for both NPCs and objects to ensure multi-word targets are parsed correctly.
  */
 export const formatMumeTarget = (target: string | null | undefined): string | null => {
+    const raw = target?.trim() || '';
+    const rawIndexed = raw.match(/^(\d+\.)(.+)$/);
+    const exception = getHardcodedKeywordException(rawIndexed ? rawIndexed[2] : raw);
+    if (exception) return rawIndexed ? `${rawIndexed[1]}${exception}` : exception;
+
     const clean = sanitizeGameTarget(target);
-    return clean ? clean.replace(/\s+/g, '-').toLowerCase() : null;
+    if (!clean) return null;
+    if (/^(?:\d+\.)?\*[^*]+\*$/.test(clean)) {
+        return clean;
+    }
+
+    const indexed = clean.match(/^(\d+\.)(.+)$/);
+    const keyword = extractMumeKeyword(indexed ? indexed[2] : clean);
+    const targetKeyword = keyword.replace(/\s+/g, '-').toLowerCase();
+    return indexed ? `${indexed[1]}${targetKeyword}` : targetKeyword;
 };
 
 // Legacy alias for backward compatibility
