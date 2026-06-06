@@ -93,6 +93,7 @@ interface SettingsState {
     hidePrompt: boolean;
     showBlockHeaders: boolean;
     isSoundEnabled: boolean;
+    isDiscordEnabled: boolean;
     isNewbieMode: boolean;
     autoSaveSessions: boolean;
     soundTriggers: import('../types').SoundTrigger[];
@@ -152,6 +153,7 @@ interface SettingsState {
     setHidePrompt: (val: boolean) => void;
     setShowBlockHeaders: (val: boolean) => void;
     setIsSoundEnabled: (val: boolean) => void;
+    setIsDiscordEnabled: (val: boolean) => void;
     setIsNewbieMode: (val: boolean) => void;
     setAutoSaveSessions: (val: boolean) => void;
     setSoundTriggers: (val: import('../types').SoundTrigger[]) => void;
@@ -284,6 +286,7 @@ export const useSettingsStore = create<SettingsState>()(
             showBlockHeaders: true,
             
             isSoundEnabled: true,
+            isDiscordEnabled: true,
             isNewbieMode: false,
             autoSaveSessions: true,
             soundTriggers: [],
@@ -352,6 +355,7 @@ export const useSettingsStore = create<SettingsState>()(
             setHidePrompt: (hidePrompt) => set({ hidePrompt }),
             setShowBlockHeaders: (showBlockHeaders) => set({ showBlockHeaders }),
             setIsSoundEnabled: (isSoundEnabled) => set({ isSoundEnabled }),
+            setIsDiscordEnabled: (isDiscordEnabled) => set({ isDiscordEnabled }),
             setIsNewbieMode: (isNewbieMode) => set({ isNewbieMode }),
             setAutoSaveSessions: (autoSaveSessions) => set({ autoSaveSessions }),
             setSoundTriggers: (soundTriggers) => set({ soundTriggers }),

@@ -581,4 +581,5 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setGameTime: Dispatch<SetStateAction<import('../../types').MumeTime | null>>;
     messageActivity: number;
     bumpActivity: () => void;
+    discordActivity?: ReturnType<typeof import('../../hooks/useDiscordActivity').useDiscordActivity>;
 }

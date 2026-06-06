@@ -28,6 +28,7 @@ import { useGmcpHandlers } from '../hooks/useGmcpHandlers/index';
 import { useGameProviderState } from './GameContext/state';
 import { useSessionManager } from '../hooks/useSessionManager';
 import { useAmbientController, useAudioEffects } from '../hooks/useAudioSystem';
+import { useDiscordActivity } from '../hooks/useDiscordActivity';
 import { useSessionRecorder, LogEntryType } from '../hooks/useSessionRecorder';
 import { useSessionReplayer } from '../hooks/useSessionReplayer';
 import { useSpectateBuffer } from '../hooks/useSpectateBuffer';
@@ -125,6 +126,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // 3. Ambient Controller (Must be after state initialization)
     useAmbientController(s.accountState.stage);
+
+    // Discord Activity SDK Integration
+    const discordActivity = useDiscordActivity();
 
     const ui = useUIStore();
     const settingsStore = useSettingsStore();
@@ -1031,12 +1035,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSessionMode,
         addToQueue: parser.addToQueue,
         rotateQueue: parser.rotateQueue,
-        removeFromQueue: parser.removeFromQueue
+        removeFromQueue: parser.removeFromQueue,
+        discordActivity
     }), [
         s, vStable, telnet, parser, controller, btn, joystick, editor, replayer,
         viewport, env, audioCtxRef, initAudio, spatButtons, ui.diagnosticLogs,
         practice, help, quests, keywordOverrides,
-        s.userSession.recorder, mapperRef, sessionMode, setSessionMode
+        s.userSession.recorder, mapperRef, sessionMode, setSessionMode,
+        discordActivity
     ]);
 
     return (
