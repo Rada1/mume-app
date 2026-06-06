@@ -33,11 +33,11 @@ export const TERRAIN_BACKGROUND_MAP: Record<string, string> = {
     'woods':         `${BASE_PATH}forest.png`,
 
     // Mountains & hills
-    'mountain':      `${BASE_PATH}mountains.png`,
-    'mountains':     `${BASE_PATH}mountains.png`,
-    'rocky':         `${BASE_PATH}mountains.png`,
-    'hills':         `${BASE_PATH}hills.png`,
-    'hill':          `${BASE_PATH}hills.png`,
+    'mountain':      `${BASE_PATH}mountains2.png`,
+    'mountains':     `${BASE_PATH}mountains2.png`,
+    'rocky':         `${BASE_PATH}mountains2.png`,
+    'hills':         `${BASE_PATH}hills2.png`,
+    'hill':          `${BASE_PATH}hills2.png`,
 
     // Water
     'water':         `${BASE_PATH}water.png`,
@@ -73,6 +73,7 @@ export const TERRAIN_BACKGROUND_MAP: Record<string, string> = {
     'arctic':        `${BASE_PATH}arctic.webp`,
     'snow':          `${BASE_PATH}arctic.webp`,
     'tundra':        `${BASE_PATH}arctic.webp`,
+    'brush':         `${BASE_PATH}brush.png`,
 };
 
 export const DEFAULT_TERRAIN_BG = `${BASE_PATH}default.webp`;

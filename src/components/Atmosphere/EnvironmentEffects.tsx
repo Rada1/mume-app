@@ -19,6 +19,10 @@ interface EnvironmentEffectsProps {
     terrain?: string | null;
 }
 
+const getLightingTint = (lighting: LightingType): string => {
+    return 'rgba(0, 0, 0, 0)'; // Tints disabled per user request
+};
+
 export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     lighting,
     weather,
@@ -31,6 +35,28 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     terrain
 }) => {
     const input = useInputStore(s => s.input);
+
+    const [prevPropBg, setPrevPropBg] = React.useState<string | null>(bgImage || null);
+    const [prevImage, setPrevImage] = React.useState<string | null>(null);
+    const [currentImage, setCurrentImage] = React.useState<string | null>(bgImage || null);
+    const [triggerFade, setTriggerFade] = React.useState(false);
+
+    // Sync state during render to eliminate transition lag
+    if (bgImage !== prevPropBg) {
+        setPrevPropBg(bgImage || null);
+        setPrevImage(currentImage);
+        setCurrentImage(bgImage || null);
+        setTriggerFade(false);
+    }
+
+    React.useEffect(() => {
+        if (!triggerFade && currentImage) {
+            const frame = requestAnimationFrame(() => {
+                setTriggerFade(true);
+            });
+            return () => cancelAnimationFrame(frame);
+        }
+    }, [currentImage, triggerFade]);
 
     const isWater = React.useMemo(() => {
         if (!bgImage) return false;
@@ -50,11 +76,43 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
         <div style={{ '--lightning-x': `${lightningX}%` } as React.CSSProperties}>
             {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
             <div className={`environment-root back lighting-state-none terrain-${(terrain || 'default').toLowerCase().replace(/\s+/g, '-')} ${isWater ? 'water-motion-active' : ''} ${isForest ? 'forest-motion-active' : ''}`}>
-                {bgImage && (
+                {prevImage && (
                     <div 
                         className="background-layer" 
-                        style={{ backgroundImage: `url(${bgImage})` }} 
-                    />
+                        style={{ 
+                            backgroundImage: `url(${prevImage})`,
+                            opacity: triggerFade ? 0 : 1,
+                            transition: 'opacity 300ms ease-in-out',
+                        }} 
+                    >
+                        <div style={{
+                            position: 'absolute',
+                            inset: 0,
+                            backgroundColor: getLightingTint(lighting),
+                            mixBlendMode: 'multiply',
+                            pointerEvents: 'none',
+                            transition: 'background-color 0.8s ease-in-out',
+                        }} />
+                    </div>
+                )}
+                {currentImage && (
+                    <div 
+                        className="background-layer" 
+                        style={{ 
+                            backgroundImage: `url(${currentImage})`,
+                            opacity: prevImage ? (triggerFade ? 1 : 0) : 1,
+                            transition: prevImage ? 'opacity 300ms ease-in-out' : 'none',
+                        }} 
+                    >
+                        <div style={{
+                            position: 'absolute',
+                            inset: 0,
+                            backgroundColor: getLightingTint(lighting),
+                            mixBlendMode: 'multiply',
+                            pointerEvents: 'none',
+                            transition: 'background-color 0.8s ease-in-out',
+                        }} />
+                    </div>
                 )}
                 <EnvironmentGlow terrain={terrain || undefined} lighting={lighting} input={input} />
                 {isImmersionMode && (

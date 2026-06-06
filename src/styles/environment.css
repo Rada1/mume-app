@@ -7,6 +7,14 @@
     overflow: hidden;
 }
 
+.is-mobile:not(.is-landscape) .environment-root {
+    bottom: var(--mobile-gutter-height);
+}
+
+.app-container.kb-open .environment-root {
+    bottom: 0;
+}
+
 .environment-root.back {
     z-index: 1;
 }
@@ -139,8 +147,8 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
         radial-gradient(circle at 50% 35%, transparent 35%, rgba(0, 0, 0, 0.45) 100%),
         linear-gradient(to top, 
             rgba(0, 0, 0, 0.75) 0%, 
-            rgba(0, 0, 0, 0.5) var(--mobile-gutter-height), 
-            transparent calc(var(--mobile-gutter-height) + 25%)
+            rgba(0, 0, 0, 0.5) 0px, 
+            transparent 25%
         );
 }
 
@@ -406,18 +414,7 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
     animation: fog-drift-new 45s linear infinite alternate;
 }
 
-/* --- Mobile Portrait: offset fog so it anchors to the log bottom, not the screen bottom --- */
-/* The map drawer peeks at 300px; without this the densest fog is hidden behind the drawer */
-.is-mobile:not(.is-landscape) .fog-layer {
-    /* Anchored to the top of the mobile gutter (minimized or expanded) */
-    bottom: var(--mobile-gutter-height);
-}
-
-/* When keyboard is open, the app-container is already cropped to the visual viewport.
-   Reset fog to bottom: 0 so it anchors to the visible area bottom, not off-screen. */
-.app-container.kb-open .fog-layer {
-    bottom: 0;
-}
+/* Mobile fog offsets are handled by the parent .environment-root bottom offset */
 
 .lighting-state-dark .fog-active {
     background: linear-gradient(to top,

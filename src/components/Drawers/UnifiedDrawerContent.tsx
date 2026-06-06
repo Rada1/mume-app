@@ -16,6 +16,7 @@ import { DrawerHoldCommandButton } from './DrawerHoldCommandButton';
 import { DrawerTabBar } from './DrawerTabBar';
 import { buildPracticeDrawerLines } from '../../utils/practiceDrawerLines';
 import { extractMumeKeyword } from '../../utils/gameUtils';
+import { GearView } from './Views/GearView';
 
 type GearTab = 'worn' | 'inv' | 'vicinity';
 type PlayersTab = 'online' | 'nearby' | 'group';
@@ -74,29 +75,7 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
         () => buildPracticeDrawerLines(practice.practiceData, practiceLines),
         [practice.practiceData, practiceLines]
     );
-    const roomObjectLines = React.useMemo<DrawerLine[]>(() => {
-        const header: DrawerLine = {
-            id: 'room-items-header',
-            text: 'Items in the room:',
-            html: 'Items in the room:',
-            isHeader: true
-        };
-        const itemLines = roomItems.map((item, index) => {
-            const label = item.name || item.short || item.shortdesc || item.keyword || item.desc || String(item.id || 'unknown object');
-            const id = item.id ? String(item.id) : `roomitems:${label}:${index}`;
-            return {
-                id,
-                stableId: id,
-                entityId: id,
-                text: label,
-                html: label,
-                context: extractMumeKeyword(label),
-                isItem: true,
-                cmd: 'cat-room-object'
-            };
-        });
-        return [header, ...itemLines];
-    }, [roomItems]);
+
 
     const refreshNearby = () => {
         const now = Date.now();
@@ -292,63 +271,16 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
 
                 {/* 4. Gear View */}
                 <div className="drawer-category-slide" style={{ width: '25%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-                    {(() => {
-                        const tabs = ['worn', 'inv', 'vicinity'] as GearTab[];
-                        const activeIndex = tabs.indexOf(gearTab);
-                        return (
-                            <>
-                                <DrawerTabBar
-                                    tabs={[{ id: 'worn', label: 'Worn' }, { id: 'inv', label: 'Inventory' }, { id: 'vicinity', label: 'Vicinity' }]}
-                                    active={gearTab}
-                                    onChange={(id) => selectGearTab(id as GearTab)}
-                                />
-                                <div className="drawer-tab-viewport" style={{ overflow: 'hidden', width: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                    <div 
-                                        className="drawer-tab-track" 
-                                        style={{ 
-                                            display: 'flex', 
-                                            flexDirection: 'row', 
-                                            width: '300%', 
-                                            height: '100%', 
-                                            transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)', 
-                                            transform: `translateX(-${activeIndex * (100 / 3)}%)` 
-                                        }}
-                                    >
-                                        <div className="drawer-tab-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-                                            <UnifiedView
-                                                lines={displayEqLines}
-                                                category="cat-worn-object"
-                                                emptyMessage="No equipment data. Tap refresh to update."
-                                                onRefresh={() => { triggerHaptic(15); executeCommand('eq', true, true, false, true); }}
-                                            />
-                                            {renderHoldActions([{ id: 'drawer-worn-remove', label: 'Remove', command: 'remove %n' }])}
-                                        </div>
-                                        <div className="drawer-tab-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-                                            <UnifiedView
-                                                lines={displayInventoryLines}
-                                                category="cat-inventory-object"
-                                                emptyMessage="No inventory data. Tap refresh to update."
-                                                onRefresh={() => { triggerHaptic(15); executeCommand('inv', true, true, false, true); }}
-                                            />
-                                            {renderHoldActions([
-                                                { id: 'drawer-inv-wear', label: 'Wear', command: 'wear %n' },
-                                                { id: 'drawer-inv-drop', label: 'Drop', command: 'drop %n' }
-                                            ])}
-                                        </div>
-                                        <div className="drawer-tab-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-                                            <UnifiedView
-                                                lines={roomObjectLines}
-                                                category="cat-room-object"
-                                                emptyMessage="No room objects detected. Tap refresh to look around."
-                                                onRefresh={() => { triggerHaptic(15); executeCommand('look', true, true, false, true); }}
-                                            />
-                                            {renderHoldActions([{ id: 'drawer-vicinity-get', label: 'Get', command: 'get %n' }])}
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        );
-                    })()}
+                    <GearView
+                        gearTab={gearTab}
+                        selectGearTab={selectGearTab}
+                        displayEqLines={displayEqLines}
+                        displayInventoryLines={displayInventoryLines}
+                        roomItems={roomItems}
+                        triggerHaptic={triggerHaptic}
+                        executeCommand={executeCommand}
+                        renderHoldActions={renderHoldActions}
+                    />
                 </div>
             </div>
         </div>
