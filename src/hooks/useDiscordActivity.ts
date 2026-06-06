@@ -114,17 +114,21 @@ export const useDiscordActivity = () => {
 
         const updatePresence = async () => {
             try {
-                let stateDetail = 'Exploring Middle-earth';
-                if (roomZone) {
-                    stateDetail = `Zone: ${roomZone}`;
-                }
+                // Capitalize the physical position (e.g., standing -> Standing)
+                const positionRaw = activeVitals.position || 'standing';
+                const positionText = positionRaw.charAt(0).toUpperCase() + positionRaw.slice(1);
+                const stateDetail = `Status: ${positionText}`;
 
-                let detailsText = characterName ? `Leveling ${characterName}` : 'Selecting Character...';
+                let detailsText = 'Selecting Character...';
+                const race = activeVitals.characterInfo?.race;
                 if (isFighting) {
-                    detailsText = `⚔️ Fighting in ${roomZone || 'Middle-earth'}`;
-                } else if (currentHp && maxHp) {
-                    const hpPercent = Math.round((currentHp / maxHp) * 100);
-                    detailsText = `${characterName || 'Player'} (${hpPercent}% HP)`;
+                    detailsText = `⚔️ In Combat`;
+                } else if (race) {
+                    const firstChar = race.charAt(0).toLowerCase();
+                    const article = ['a', 'e', 'i', 'o', 'u'].includes(firstChar) ? 'an' : 'a';
+                    detailsText = `Playing as ${article} ${race}`;
+                } else if (characterName) {
+                    detailsText = `Playing Game`;
                 }
 
                 await discordSdk!.commands.setActivity({
@@ -149,7 +153,7 @@ export const useDiscordActivity = () => {
         // Debounce updates to avoid spamming Discord RPC rate limits
         const timeout = setTimeout(updatePresence, 2000);
         return () => clearTimeout(timeout);
-    }, [sdkReady, isAuthenticated, isDiscordEnabled, characterName, roomZone, currentHp, maxHp, isFighting]);
+    }, [sdkReady, isAuthenticated, isDiscordEnabled, characterName, activeVitals.position, currentHp, maxHp, isFighting]);
 
     // --- Helper Commands ---
     const openInviteDialog = async () => {
