@@ -86,13 +86,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         occupants.forEach(char => {
             const kw = char.keyword || char.name?.split(' ')[0]?.toLowerCase();
             if (kw) {
-                const isPC = char.type === 'pc' || char.pc === 1;
-                if (!isPC) {
-                    list.push(`kill ${kw}`);
-                    list.push(`examine ${kw}`);
-                } else {
-                    list.push(`examine ${kw}`);
-                }
+                list.push(`examine ${kw}`);
             }
         });
 
@@ -134,7 +128,10 @@ const InputArea: React.FC<InputAreaProps> = ({
         ];
 
         const combined = [...list, ...staticFallbacks];
-        return Array.from(new Set(combined));
+        return Array.from(new Set(combined)).filter(cmd => 
+            !cmd.toLowerCase().startsWith('kill') && 
+            !cmd.toLowerCase().startsWith('hit')
+        );
     }, [chars, rawExits, items]);
 
     // Rotate placeholder commands for playing state

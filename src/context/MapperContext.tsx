@@ -11,6 +11,7 @@ import { useMapPersistence } from '../components/Mapper/hooks/useMapPersistence'
 import { useMapActions } from '../components/Mapper/hooks/useMapActions';
 import { useMapGmcphandlers } from '../components/Mapper/hooks/useMapGmcphandlers';
 import { DIRS, getExitTargetId, getGateState, checkRoomFilter, findClosestMatchingRoomPath } from '../components/Mapper/mapperUtils';
+import { getLearnedServerIds } from '../components/Mapper/learnedServerIds';
 import {
     createMoveAnimState, optimisticMove, settle, failMove, bumpWall, snapTo, MOVE_ANIM,
     type MoveAnimState, type Vec3
@@ -495,7 +496,20 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     sIndex[String(rServerId)] = vnum;
                 }
             }
-            spatialIndexRef.current = index; 
+            // Merge persisted, learned server ids onto the pristine base map. A server id
+            // baked into the map file always wins, so we only adopt a learned mapping for
+            // ids the map doesn't already define — that self-corrects an earlier bad guess
+            // once the real id ships in the data. The slot is also backfilled so downstream
+            // lookups (zone resolution, exit reconciliation) see the id without a reload.
+            const learnedIds = getLearnedServerIds();
+            for (const sid in learnedIds) {
+                if (sIndex[sid]) continue;
+                const vnum = learnedIds[sid];
+                if (!data[vnum]) continue; // vnum no longer in the map (data revision) — skip
+                sIndex[sid] = vnum;
+                if (Array.isArray(data[vnum]) && !data[vnum][6]) data[vnum][6] = sid;
+            }
+            spatialIndexRef.current = index;
             nameIndexRef.current = nIndex; 
             serverIdIndexRef.current = sIndex;
             baseMapExitsRef.current = baseMapExits;

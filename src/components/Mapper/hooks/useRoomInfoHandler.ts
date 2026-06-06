@@ -4,6 +4,7 @@ import { generateId, normalizeTerrain, DIRS, getExitTargetId } from '../mapperUt
 import { findBestTextRoomMatch } from '../textRoomMatcher';
 import { sanitizeTextDerivedDoorExits } from '../mapperExitSanitizer';
 import { findRoomByExitSignature } from '../mapperExitSignature';
+import { recordLearnedServerId } from '../learnedServerIds';
 
 interface RoomInfoProps {
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
@@ -494,16 +495,32 @@ export const useRoomInfoHandler = ({
         const gmcpIdNumber = Number(gmcpId) || 0;
         const gmcpIdKey = String(gmcpId);
 
-        if (!isVnumZero && matchedInternalId && gmcpIdNumber > 0) {
-            const mappedRoom = preloadedCoordsRef.current[matchedInternalId];
+        // --- Persisted server-id backfill ---
+        // We confidently resolved this live GMCP server id to a preloaded base-map room.
+        // The Ardanazgûm map predates GMCP, so most rooms have an empty server-id slot;
+        // adopt the id here so future arrivals hit the fast EXACT_VNUM path, and persist it
+        // so the mapping survives reloads. Covers BOTH match styles: a `matchedInternalId`
+        // (ghost/Arda/fingerprint hits) and a plain `m_<vnum>` targetId resolved via an
+        // existing exit. Guarded to real (non-dark, non-zero) ids only.
+        const backfillVnum = matchedInternalId
+            || (targetId && targetId.startsWith('m_') ? targetId.substring(2) : null);
+        if (!isVnumZero && gmcpIdNumber > 0 && backfillVnum) {
+            const mappedRoom = preloadedCoordsRef.current[backfillVnum];
             const currentServerId = Array.isArray(mappedRoom) ? mappedRoom[6] : undefined;
             const hasServerId = currentServerId !== undefined && currentServerId !== null && String(currentServerId) !== '' && String(currentServerId) !== '0';
 
-            if (Array.isArray(mappedRoom) && (!hasServerId || String(currentServerId) === gmcpIdKey)) {
+            if (Array.isArray(mappedRoom) && !hasServerId) {
+                // Empty slot — adopt and persist the learned mapping.
                 mappedRoom[6] = gmcpIdKey;
-                serverIdIndexRef.current[gmcpIdKey] = matchedInternalId;
+                serverIdIndexRef.current[gmcpIdKey] = backfillVnum;
+                recordLearnedServerId(gmcpIdKey, backfillVnum);
+            } else if (Array.isArray(mappedRoom) && String(currentServerId) === gmcpIdKey) {
+                // Slot already holds this id (from the map file or a prior learn) — just index it.
+                serverIdIndexRef.current[gmcpIdKey] = backfillVnum;
             } else if (!serverIdIndexRef.current[gmcpIdKey]) {
-                serverIdIndexRef.current[gmcpIdKey] = matchedInternalId;
+                // Slot holds a DIFFERENT id: don't overwrite a known-good mapping or persist a
+                // contradiction; only add an in-memory index alias if nothing else claims it.
+                serverIdIndexRef.current[gmcpIdKey] = backfillVnum;
             }
         }
 
