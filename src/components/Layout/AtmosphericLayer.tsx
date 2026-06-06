@@ -37,10 +37,10 @@ export const AtmosphericLayer: React.FC = () => {
         ? (isCreationSequence ? 'dark' : 'moon') 
         : lighting;
 
-    // Turned off top and bottom gameplay images for visual theming
+    // Resolved background image: always use mountain.png for gameplay, or account.png in account mode
     const resolvedBgImage = isAccountMode 
         ? (accountState.stage === 'login' ? null : '/assets/Pictures/account.png')
-        : null;
+        : '/assets/Pictures/terrain/mountain.png';
     const resolvedBottomBgImage = null;
     const resolvedBottomBgScale = 1;
 

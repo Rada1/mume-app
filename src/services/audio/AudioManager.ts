@@ -336,7 +336,9 @@ export class AudioManager {
                 }
             }
 
-            if (inCombat) {
+            if (key === 'account') {
+                targetVolume = 1.2;
+            } else if (inCombat) {
                 targetVolume = 0.035;
             } else {
                 targetVolume = 0.045;

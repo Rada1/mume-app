@@ -50,6 +50,12 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
         <div style={{ '--lightning-x': `${lightningX}%` } as React.CSSProperties}>
             {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
             <div className={`environment-root back lighting-state-none terrain-${(terrain || 'default').toLowerCase().replace(/\s+/g, '-')} ${isWater ? 'water-motion-active' : ''} ${isForest ? 'forest-motion-active' : ''}`}>
+                {bgImage && (
+                    <div 
+                        className="background-layer" 
+                        style={{ backgroundImage: `url(${bgImage})` }} 
+                    />
+                )}
                 <EnvironmentGlow terrain={terrain || undefined} lighting={lighting} input={input} />
                 {isImmersionMode && (
                     <div className={`storm-overlay-layer ${weather === 'heavy-rain' ? 'active' : ''}`} />
