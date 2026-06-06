@@ -8,6 +8,8 @@ import React from 'react';
 import { useGame } from '../../context/GameContext';
 import { EnvironmentEffects } from '../Atmosphere/EnvironmentEffects';
 import { useModeStore } from '../../stores/useModeStore';
+import { useSettingsStore } from '../../stores/useSettingsStore';
+import { resolveTerrainBackground } from '../../utils/terrainBackgrounds';
 
 export const AtmosphericLayer: React.FC = () => {
     const {
@@ -23,6 +25,9 @@ export const AtmosphericLayer: React.FC = () => {
         accountState,
     } = useGame();
 
+    const manualBgImage = useSettingsStore(state => state.bgImage);
+    const manualBgImageBottom = useSettingsStore(state => state.bgImageBottom);
+
     // --- Terrain Resolution ---
     const isAccountMode = accountState.stage !== 'none';
     const activeView = useModeStore(state => state.activeView);
@@ -37,11 +42,12 @@ export const AtmosphericLayer: React.FC = () => {
         ? (isCreationSequence ? 'dark' : 'moon') 
         : lighting;
 
-    // Resolved background image: always use mountain.png for gameplay, or account.png in account mode
+    // Resolved background image: dynamic terrain, custom manual, or account image
+    const terrainBg = resolveTerrainBackground(effectiveTerrain);
     const resolvedBgImage = isAccountMode 
         ? (accountState.stage === 'login' ? null : '/assets/Pictures/account.png')
-        : '/assets/Pictures/terrain/mountain.png';
-    const resolvedBottomBgImage = null;
+        : (manualBgImage || terrainBg);
+    const resolvedBottomBgImage = manualBgImageBottom;
     const resolvedBottomBgScale = 1;
 
     return (
