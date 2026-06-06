@@ -10,7 +10,7 @@ import { useSettingsStore } from '../stores/useSettingsStore';
 
 // --- Type-safe ImportMeta Cast ---
 const meta = import.meta as unknown as { env?: Record<string, string> };
-const CLIENT_ID = meta.env?.VITE_DISCORD_CLIENT_ID || '1347035544212537344';
+const CLIENT_ID = meta.env?.VITE_DISCORD_CLIENT_ID || '1512833894158696478';
 
 // --- Global SDK Instance ---
 let discordSdk: DiscordSDK | null = null;
