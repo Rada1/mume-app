@@ -40,7 +40,10 @@ export function useTelnetSocket() {
             let finalUrl = url;
             if (typeof window !== 'undefined' && window.location.hostname) {
                 const hostname = window.location.hostname;
-                if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+                if (hostname.endsWith('discordsays.com')) {
+                    // Rewrite wss://mume.org/ to the Discord URL Mapping proxy
+                    finalUrl = url.replace(/wss:\/\/mume\.org\//, `wss://${hostname}/mume-ws/`);
+                } else if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
                     finalUrl = url.replace(/\/\/(localhost|127\.0\.0\.1)(:|\/|$)/, `//${hostname}$2`);
                 }
             }
