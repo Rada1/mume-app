@@ -10,17 +10,28 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { code } = req.body;
+        const { code, redirect_uri } = req.body;
         if (!code) {
             return res.status(400).json({ error: 'Missing authorization code' });
         }
 
-        const clientId = process.env.VITE_DISCORD_CLIENT_ID || '1347035544212537344';
+        const clientId = process.env.VITE_DISCORD_CLIENT_ID || '1512833894158696478';
         const clientSecret = process.env.DISCORD_CLIENT_SECRET;
 
         if (!clientSecret) {
             console.error('Missing DISCORD_CLIENT_SECRET environment variable');
             return res.status(500).json({ error: 'Server configuration error' });
+        }
+
+        const params = {
+            client_id: clientId,
+            client_secret: clientSecret,
+            grant_type: 'authorization_code',
+            code,
+        };
+
+        if (redirect_uri) {
+            params.redirect_uri = redirect_uri;
         }
 
         // Exchange code for access token from Discord OAuth2
@@ -29,12 +40,7 @@ export default async function handler(req, res) {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: new URLSearchParams({
-                client_id: clientId,
-                client_secret: clientSecret,
-                grant_type: 'authorization_code',
-                code,
-            }),
+            body: new URLSearchParams(params),
         });
 
         if (!response.ok) {

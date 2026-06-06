@@ -69,10 +69,11 @@ export const useDiscordActivity = () => {
                 const tokenExchangeUrl = meta.env?.VITE_DISCORD_TOKEN_EXCHANGE_URL || '/api/token';
                 console.log(`[DiscordSDK] Exchanging code via ${tokenExchangeUrl}...`);
                 
+                const redirectUri = window.location.origin + window.location.pathname;
                 const response = await fetch(tokenExchangeUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code }),
+                    body: JSON.stringify({ code, redirect_uri: redirectUri }),
                 });
 
                 if (!response.ok) {
