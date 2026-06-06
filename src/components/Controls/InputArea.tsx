@@ -39,9 +39,9 @@ const EXAMPLE_COMMANDS = [
     'inventory',
     'equipment',
     'cast \'armour\'',
-    'kill orc',
+    'examine orc',
     'open gate',
-    'skills',
+    'practice',
     'help ranger',
     'examine chest',
     'wimpy 30',
@@ -87,6 +87,14 @@ const InputArea: React.FC<InputAreaProps> = ({
             const kw = char.keyword || char.name?.split(' ')[0]?.toLowerCase();
             if (kw) {
                 list.push(`examine ${kw}`);
+                const isPC = char.type === 'pc' || char.pc === 1;
+                if (isPC) {
+                    list.push(`smile ${kw}`);
+                    list.push(`nod ${kw}`);
+                    list.push(`wave ${kw}`);
+                    list.push(`bow ${kw}`);
+                    list.push(`wink ${kw}`);
+                }
             }
         });
 
@@ -123,7 +131,7 @@ const InputArea: React.FC<InputAreaProps> = ({
             'who',
             'inventory',
             'equipment',
-            'skills',
+            'practice',
             'flee'
         ];
 
