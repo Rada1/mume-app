@@ -40,7 +40,20 @@ export const HelpCard: React.FC<HelpCardProps> = ({
     }
 
     // Convert help text to HTML with ANSI support
-    const contentHtmlRaw = ansiConvert.toHtml(mainText);
+    let contentHtmlRaw = ansiConvert.toHtml(mainText);
+
+    // Restore the escaped XML formatting tags and entities sent by MUME
+    contentHtmlRaw = contentHtmlRaw
+        .replace(/&lt;code&gt;/gi, '<code>')
+        .replace(/&lt;\/code&gt;/gi, '</code>')
+        .replace(/&lt;em&gt;/gi, '<em>')
+        .replace(/&lt;\/em&gt;/gi, '</em>')
+        .replace(/&amp;lt;/gi, '&lt;')
+        .replace(/&amp;gt;/gi, '&gt;')
+        .replace(/&amp;amp;/gi, '&amp;')
+        .replace(/&amp;quot;/gi, '&quot;')
+        .replace(/&amp;apos;/gi, '&apos;')
+        .replace(/&amp;#039;/gi, '&#039;');
 
     // Convert all CAPS words to clickable help button spans (length >= 2) with bright gold/yellow theming (#ffcc00), avoiding HTML tags/attributes
     const contentHtml = contentHtmlRaw.replace(/(<[^>]+>)|(\b[A-Z]{2,}\b)/g, (match, tag, word) => {

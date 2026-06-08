@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { GmcpRoomInfo, MapperRoom } from '../mapperTypes';
-import { generateId, normalizeTerrain, DIRS, getExitTargetId } from '../mapperUtils';
+import { generateId, normalizeTerrain, DIRS, getExitTargetId, stripAnsi } from '../mapperUtils';
 import { findBestTextRoomMatch } from '../textRoomMatcher';
 import { sanitizeTextDerivedDoorExits } from '../mapperExitSanitizer';
 import { findRoomByExitSignature } from '../mapperExitSignature';
@@ -56,7 +56,7 @@ export const useRoomInfoHandler = ({
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
         let gmcpId = data.num !== undefined ? data.num : (data.vnum !== undefined ? data.vnum : data.id);
-        const gmcpName = data.name || 'Unknown Room';
+        const gmcpName = stripAnsi(data.name) || 'Unknown Room';
         const gmcpArea = data.area || data.zone || 'Unknown Zone';
         let targetId: string | null = null;
         let ghostData: any = null;
@@ -480,7 +480,7 @@ export const useRoomInfoHandler = ({
             addMessage?.('system', debugMsg);
         }
 
-        const name = data.name || 'Unknown Room';
+        const name = stripAnsi(data.name) || 'Unknown Room';
         const desc = data.desc || '';
         let zone = data.area || data.zone || (ghostData ? ghostData[9] : 'Unknown Zone');
         const freshTerrain = normalizeTerrain(data.terrain || data.environment || null);

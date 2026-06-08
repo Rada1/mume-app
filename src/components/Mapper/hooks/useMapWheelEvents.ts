@@ -41,6 +41,11 @@ export const useMapWheelEvents = ({
         if (Math.abs(newZoom - oldZoom) < 0.001) return;
         const wx = (mx / oldZoom) + cam.x, wy = (my / oldZoom) + cam.y;
         cam.x = wx - (mx / newZoom); cam.y = wy - (my / newZoom); cam.zoom = newZoom;
+        // Wheel zoom applies immediately to cam.zoom/x/y. Keep targetZoom in lockstep
+        // so the animation loop's zoom-reconciliation (which runs continuously while
+        // the Find filter is active) doesn't yank the camera back toward a stale
+        // target around an old anchor — the source of the "drift while zooming" bug.
+        (cam as any).targetZoom = newZoom;
         setAutoCenter(false);
         triggerRender();
     }, [cameraRef, roomsRef, currentRoomIdRef, canvasRef, setViewZ, setAutoCenter, triggerRender]);

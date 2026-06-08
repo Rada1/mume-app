@@ -1,4 +1,15 @@
 export const GRID_SIZE = 50;
+
+// Strips ANSI/VT100 escape sequences (e.g. "\x1b[32m...\x1b[0m") from a string.
+// MUME room names sometimes arrive with embedded color codes; we never want the
+// raw escape sequences surfacing in the UI.
+// eslint-disable-next-line no-control-regex
+const ANSI_ESCAPE_REGEX = /\x1b\[[0-9;?]*[ -/]*[@-~]/g;
+export const stripAnsi = (value: string | null | undefined): string => {
+    if (!value) return '';
+    return String(value).replace(ANSI_ESCAPE_REGEX, '');
+};
+
 export const ROAD_COLOR_DARK = '#a08858'; // Muted tan for roads
 export const ROAD_COLOR_LIGHT = '#a06828';
 export const PATH_COLOR_DARK = '#8a6850'; // Muted peach-brown for paths
@@ -304,17 +315,30 @@ export const checkRoomFilter = (
 ): boolean => {
     const mobFlags = (localRoom?.mobFlags || preloadedData?.[7] || []) as string[];
     const loadFlags = (localRoom?.loadFlags || preloadedData?.[8] || []) as string[];
-    
-    const notes = (localRoom?.notes || preloadedData?.[15] || '') as string;
-    const name = (localRoom?.name || preloadedData?.[5] || '') as string;
-    const desc = (localRoom?.desc || preloadedData?.[17] || '') as string;
 
-    const searchableText = `${name} ${desc} ${notes}`.toLowerCase();
+    const notes = (localRoom?.notes || preloadedData?.[15] || '') as string;
+    const contents = (localRoom?.contents || preloadedData?.[16] || '') as string;
+
+    // A free-text query matches a room that carries the term as a *flag*, in its
+    // *notes*, or in its *contents* — NOT the room name or prose description.
+    // Matching the description produced false positives (e.g. a courtyard whose
+    // desc mentions "food" but has no FOOD flag) and ranked them ahead of the
+    // room that actually holds the resource; the room name is likewise excluded
+    // so searches target what's actually in the room. Flag names are normalised
+    // (underscores → spaces) so "food" hits FOOD and FOOD_SHOP, and "pack horse"
+    // hits PACK_HORSE.
+    const flagText = [...mobFlags, ...loadFlags].join(' ').replace(/_/g, ' ').toLowerCase();
+    const queryMatches = (q: string): boolean => {
+        const needle = q.toLowerCase();
+        return flagText.includes(needle)
+            || notes.toLowerCase().includes(needle)
+            || contents.toLowerCase().includes(needle);
+    };
 
     // Search query check (no filter active)
     if (!filter) {
         if (!query) return false;
-        return searchableText.includes(query.toLowerCase());
+        return queryMatches(query);
     }
 
     // Category filter
@@ -336,7 +360,7 @@ export const checkRoomFilter = (
     if (!flagMatch) return false;
 
     // Narrow by search query when both filter and query are set
-    if (query) return searchableText.includes(query.toLowerCase());
+    if (query) return queryMatches(query);
 
     return true;
 };

@@ -159,12 +159,26 @@ export const useMapAnimation = ({
         if (playerMoved) {
             fitConvergedRef.current = true; // stop filter fit animation
             lastPlayerPosRef.current = null; // stop blocking autocenter
+            // The fit drove camera.zoom directly; sync targetZoom so the zoom
+            // logic below doesn't yank the camera back toward a stale target.
+            (camera.current as any).targetZoom = camera.current.zoom;
         }
 
         if (!isFilterFitActive && wasFilterActiveRef.current) {
             wasFilterActiveRef.current = false;
             fitConvergedRef.current = false;
             lastPlayerPosRef.current = null;
+            // Restore the pre-filter zoom through the single, screen-centred zoom
+            // path (below) instead of a separate animation that ignores x/y — the
+            // latter slid the view because it changed zoom without re-centring.
+            if (preFilterZoomRef.current !== null) {
+                const cam = camera.current as any;
+                cam.targetZoom = preFilterZoomRef.current;
+                cam.zoomAnchorX = w / 2;
+                cam.zoomAnchorY = h / 2;
+                delete cam.zoomTransition;
+                preFilterZoomRef.current = null;
+            }
         }
 
         // One-shot zoom-to-fit: runs until converged or user drags, then stops.
@@ -173,6 +187,7 @@ export const useMapAnimation = ({
             if (effectiveIsDragging) {
                 // User grabbed the map before convergence: abandon fit immediately
                 fitConvergedRef.current = true;
+                (camera.current as any).targetZoom = camera.current.zoom;
             } else {
                 const dz = filterFit.zoom - camera.current.zoom;
                 const cdx = filterFit.camX - camera.current.x;
@@ -189,6 +204,9 @@ export const useMapAnimation = ({
                     camera.current.y = filterFit.camY;
                     fitConvergedRef.current = true;
                 }
+                // The fit owns zoom while it runs; keep targetZoom aligned so the
+                // zoom-restore logic below stays dormant until the filter clears.
+                (camera.current as any).targetZoom = camera.current.zoom;
             }
         } else {
             const cam = camera.current as any;
@@ -238,19 +256,9 @@ export const useMapAnimation = ({
                 cam.x += (mx / oldZoom) - (mx / newZoom);
                 cam.y += (my / oldZoom) - (my / newZoom);
             }
-
-            // Restore pre-filter zoom when filter is cleared
-            if (!isFilterFitActive && preFilterZoomRef.current !== null) {
-                const savedZoom = preFilterZoomRef.current;
-                const dz = savedZoom - camera.current.zoom;
-                if (Math.abs(dz) > 0.001) {
-                    camera.current.zoom += dz * (1 - Math.pow(0.93, frameScale));
-                    needsNextFrame = true;
-                } else {
-                    camera.current.zoom = savedZoom;
-                    preFilterZoomRef.current = null;
-                }
-            }
+            // Pre-filter zoom restoration is handled when the filter clears (above)
+            // by retargeting cam.targetZoom about the screen centre, so the zoom
+            // animation here re-centres correctly instead of sliding the view.
 
             // Camera Centering logic (Allow auto-center even if dragging IF it's a joystick pulse)
             const shouldBlockAutoCenter = (isFilterFitActive && lastPlayerPosRef.current !== null) || !!cam.zoomTransition;

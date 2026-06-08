@@ -1,6 +1,6 @@
 import React from 'react';
 import { MapperRoom } from './mapperTypes';
-import { TERRAIN_MAP, DIRS, generateId, normalizeTerrain } from './mapperUtils';
+import { TERRAIN_MAP, DIRS, generateId, normalizeTerrain, stripAnsi } from './mapperUtils';
 
 interface RoomInfoCardProps {
     roomId: string;
@@ -310,7 +310,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <input
                     type="text"
-                    value={room.name || ''}
+                    value={stripAnsi(room.name)}
                     onChange={(e) => updateRoom({ name: e.target.value })}
                     style={{ backgroundColor: isDarkMode ? '#1c1c1f' : '#ffffff', border: isDarkMode ? '1px solid #3f3f46' : '1px solid #d1d1d6', padding: '10px 14px', borderRadius: '8px', color: isDarkMode ? 'white' : '#1d1d1f', fontWeight: 'bold', fontSize: '15px' }}
                     readOnly={mode !== 'edit'}

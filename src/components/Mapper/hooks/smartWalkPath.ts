@@ -4,6 +4,7 @@
  */
 
 import { MapperExit, MapperRoom } from '../mapperTypes';
+import { normalizeTerrain } from '../../../utils/terrainUtils';
 
 type SmartWalkExit = Partial<MapperExit> & { target?: string };
 type SmartWalkExitMap = Record<string, SmartWalkExit>;
@@ -31,6 +32,52 @@ const dirShortNames: Record<string, string> = {
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
     return typeof value === 'object' && value !== null;
+};
+
+// --- Terrain Cost Section ---
+// Movement-difficulty weights keyed by normalized terrain (see terrainUtils).
+// The goal is to prefer the *easiest* route, not strictly the fewest rooms:
+// roads/cities are cheap, open ground is moderate, rough terrain is costly, and
+// water is heavily penalized so the route avoids swimming whenever a land path
+// of reasonable length exists. Mirrors the relative effort described at
+// https://mume.org/help/terrain.
+const TERRAIN_COST: Record<string, number> = {
+    road: 1,
+    city: 1,
+    building: 1,
+    underground: 1,
+    field: 2,
+    hills: 3,
+    forest: 4,
+    brush: 4,
+    mountain: 6,
+    water: 12
+};
+const DEFAULT_TERRAIN_COST = 2;
+
+const getRawTerrain = (
+    id: string,
+    rooms: Record<string, MapperRoom>,
+    preloaded: PreloadedMap
+): string => {
+    const normId = normalizeSmartWalkId(id);
+    const local = rooms[id] || rooms[`m_${normId}`] || rooms[normId];
+    if (local?.terrain) return String(local.terrain);
+    const p = preloaded[normId];
+    if (p && p[3] != null) return String(p[3]);
+    return '';
+};
+
+// Cost of *entering* a room, derived from its terrain.
+const getTerrainCost = (
+    id: string,
+    rooms: Record<string, MapperRoom>,
+    preloaded: PreloadedMap
+): number => {
+    const raw = getRawTerrain(id, rooms, preloaded);
+    if (!raw) return DEFAULT_TERRAIN_COST;
+    const norm = normalizeTerrain(raw);
+    return TERRAIN_COST[norm] ?? DEFAULT_TERRAIN_COST;
 };
 
 // --- Id Section ---
@@ -149,10 +196,16 @@ export const findSmartWalkPath = (
     };
 
     const queue: PathNode[] = [{ id: startId, dirs: [], ids: [startId], g: 0, f: getHeuristic(startId) }];
-    const visited = new Set<string>([normStart]);
+    // Cheapest known cost-to-reach per room, so a later, cheaper route can
+    // relax a node that was already discovered via a costlier path. A plain
+    // "visited on discovery" set only stays optimal under uniform edge cost;
+    // terrain weighting makes edges non-uniform, so we need Dijkstra/A* relaxation.
+    const bestG = new Map<string, number>([[normStart, 0]]);
+    const closed = new Set<string>();
     let iterations = 0;
     const MAX_ITERATIONS = 50000;
 
+    // Queue is kept sorted by descending f, so pop() yields the lowest-f node.
     const insertSorted = (item: PathNode) => {
         let low = 0;
         let high = queue.length;
@@ -167,6 +220,19 @@ export const findSmartWalkPath = (
     while (queue.length > 0 && iterations < MAX_ITERATIONS) {
         iterations++;
         const curr = queue.pop()!;
+        const normCurr = normalizeSmartWalkId(curr.id);
+
+        // A node is only final (cheapest) once it is popped; ignore stale,
+        // costlier duplicates left in the queue.
+        if (closed.has(normCurr)) continue;
+        if (curr.g > (bestG.get(normCurr) ?? Infinity)) continue;
+
+        if (normCurr === normEnd) {
+            return { dirs: curr.dirs, ids: curr.ids };
+        }
+
+        closed.add(normCurr);
+
         const exits = getSmartWalkExits(curr.id, rooms, preloaded);
         if (!exits) continue;
 
@@ -175,24 +241,21 @@ export const findSmartWalkPath = (
 
             const targetId = String(exit.target);
             const normNext = normalizeSmartWalkId(targetId);
+            if (closed.has(normNext)) continue;
             if (!isTraversable(targetId)) continue;
 
-            if (normNext === normEnd) {
-                return { dirs: [...curr.dirs, dir], ids: [...curr.ids, targetId] };
-            }
+            const standardId = targetId.startsWith('m_') ? targetId : (preloaded[normNext] ? `m_${normNext}` : targetId);
+            const gNext = curr.g + getTerrainCost(targetId, rooms, preloaded);
+            if (gNext >= (bestG.get(normNext) ?? Infinity)) continue;
 
-            if (!visited.has(normNext)) {
-                visited.add(normNext);
-                const standardId = targetId.startsWith('m_') ? targetId : (preloaded[normNext] ? `m_${normNext}` : targetId);
-                const gNext = curr.g + 1;
-                insertSorted({
-                    id: standardId,
-                    dirs: [...curr.dirs, dir],
-                    ids: [...curr.ids, targetId],
-                    g: gNext,
-                    f: gNext + getHeuristic(standardId)
-                });
-            }
+            bestG.set(normNext, gNext);
+            insertSorted({
+                id: standardId,
+                dirs: [...curr.dirs, dir],
+                ids: [...curr.ids, targetId],
+                g: gNext,
+                f: gNext + getHeuristic(standardId)
+            });
         }
     }
 

@@ -1011,10 +1011,29 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             const { screenToWorld, getRoomAt } = hitTestRef.current;
             const world = screenToWorld(e.clientX, e.clientY);
             const clickedRoomId = getRoomAt(world.x, world.y);
-            if (clickedRoomId) {
-                depsRef.current.setInfoRoomId(clickedRoomId);
-                depsRef.current.playClickSound?.();
-            }
+
+            // Right-click should offer a choice (Walk Here / Room Info / ...) via
+            // the context menu rather than jumping straight into the info card.
+            // In play mode an empty-space right-click has no actions, so skip it
+            // (edit mode still offers Add Room / Add Marker on empty space).
+            if (!clickedRoomId && depsRef.current.mode !== 'edit') return;
+
+            const containerRect = depsRef.current.canvasRef.current?.parentElement?.getBoundingClientRect();
+            const localX = containerRect ? e.clientX - containerRect.left : e.clientX;
+            const localY = containerRect ? e.clientY - containerRect.top : e.clientY;
+            const menuWidth = 176;
+            const menuHeight = depsRef.current.mode === 'edit' ? 194 : 108;
+            const maxX = Math.max(8, (containerRect?.width || window.innerWidth) - menuWidth - 8);
+            const maxY = Math.max(8, (containerRect?.height || window.innerHeight) - menuHeight - 8);
+
+            depsRef.current.setContextMenu({
+                x: Math.min(Math.max(localX, 8), maxX),
+                y: Math.min(Math.max(localY, 8), maxY),
+                wx: Math.round(world.x / GRID_SIZE),
+                wy: Math.round(world.y / GRID_SIZE),
+                roomId: clickedRoomId
+            });
+            depsRef.current.playClickSound?.();
         };
 
         cvs.addEventListener('pointerdown', onDown, { passive: false });

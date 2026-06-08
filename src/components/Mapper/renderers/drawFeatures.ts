@@ -724,7 +724,7 @@ export const drawRoomFlagsOptimized = (
         if (/^GUILD$/i.test(ind.regex.source) && hasSpecificGuild) continue;
         if (/^SHOP$/i.test(ind.regex.source) && hasSpecificShop) continue;
 
-        const isLoadIndicator = /TREASURE|WEAPON(?!_SHOP)|ARMOUR(?!_SHOP)|EQUIPMENT|KEY|HERB|WATER|POND|WELL|FOUNTAIN|FOOD(?!_SHOP)/i.test(ind.regex.source);
+        const isLoadIndicator = /TREASURE|WEAPON(?!_SHOP)|ARMOUR(?!_SHOP)|EQUIPMENT|KEY|HERB|WATER|POND|WELL|FOUNTAIN|FOOD(?!_SHOP)|STABLE|WARG|WOLF|MULE|PONY|HORSE|PACK_HORSE|TRAINED_HORSE|ROHIRRIM|BOAT|FERRY|COACH|TOWER|MAIL|CLOCK|ATTENTION|DEATHTRAP|WHITE_WORD|DARK_WORD/i.test(ind.regex.source);
 
         if (isLoadIndicator) {
             const matches = ind.regex.test(loadFlagsStr);

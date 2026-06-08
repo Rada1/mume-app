@@ -8,6 +8,7 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useInputStore } from '../../stores/useInputStore';
 import { audioManager } from '../../services/audio/AudioManager';
 import { useRoomStore } from '../../stores/useRoomStore';
+import { useUIStore } from '../../stores/useUIStore';
 
 
 
@@ -251,6 +252,28 @@ const InputArea: React.FC<InputAreaProps> = ({
 
 
     const isHelpCardOpen = popoverState?.type === 'help-card';
+    const isShopOpen = useUIStore(s => s.isShopOpen);
+
+    const prevShopOpen = useRef(isShopOpen);
+    const prevHelpOpen = useRef(isHelpCardOpen);
+
+    useEffect(() => {
+        if (prevShopOpen.current && !isShopOpen) {
+            setTimeout(() => {
+                inputRef.current?.focus();
+            }, 50);
+        }
+        prevShopOpen.current = isShopOpen;
+    }, [isShopOpen]);
+
+    useEffect(() => {
+        if (prevHelpOpen.current && !isHelpCardOpen) {
+            setTimeout(() => {
+                inputRef.current?.focus();
+            }, 50);
+        }
+        prevHelpOpen.current = isHelpCardOpen;
+    }, [isHelpCardOpen]);
 
     // Auto set to help mode when help card is open, and restore to command when closed
     useEffect(() => {
