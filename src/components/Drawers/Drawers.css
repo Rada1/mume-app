@@ -526,7 +526,7 @@
 
     /* Match utility drawer data text size to room card description */
     .log-card-drawer {
-        --dynamic-log-size: 0.72rem;
+        --dynamic-log-size: calc(0.72rem * var(--drawer-zoom, 1));
     }
 }
 
@@ -700,4 +700,88 @@
     backdrop-filter: blur(16px) saturate(1.8) !important;
     -webkit-backdrop-filter: blur(16px) saturate(1.8) !important;
     border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Floating Drawer Zoom Controls */
+.drawer-zoom-control {
+    position: absolute;
+    bottom: 12px;
+    z-index: 115;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: rgba(60, 60, 65, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 18px;
+    height: 36px;
+    padding: 0 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+}
+
+.drawer-zoom-control:hover {
+    background: rgba(60, 60, 65, 0.6);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.drawer-zoom-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.15rem;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+    margin: 0;
+}
+
+.drawer-zoom-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.drawer-zoom-btn:active {
+    transform: scale(0.88);
+}
+
+.drawer-zoom-value {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: monospace;
+    min-width: 34px;
+    text-align: center;
+    user-select: none;
+}
+
+.light-mode .drawer-zoom-control {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.light-mode .drawer-zoom-control:hover {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(0, 0, 0, 0.18);
+}
+
+.light-mode .drawer-zoom-btn {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.light-mode .drawer-zoom-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: #000;
+}
+
+.light-mode .drawer-zoom-value {
+    color: rgba(0, 0, 0, 0.6);
 }

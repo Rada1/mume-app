@@ -6,6 +6,7 @@
 import React from 'react';
 import FontSizeSetting from './FontSizeSetting';
 import { ToggleRow } from './SettingHelpers';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import { UiMode } from '../../types';
 
 interface AppearanceSettingsProps {
@@ -53,6 +54,9 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
     isPerformanceMode,
     setIsPerformanceMode,
 }) => {
+    const drawerZoom = useSettingsStore(s => s.drawerZoom ?? 1.0);
+    const setDrawerZoom = useSettingsStore(s => s.setDrawerZoom);
+
     return (
         <>
             {/* Interface Mode */}
@@ -123,6 +127,40 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                     setLogFontSize={setLogFontSize}
                     inline
                 />
+
+                {/* Utility Drawer Zoom */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Utility Drawer Zoom</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Adjust font size and scaling of utility drawer panels.</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <button
+                            className="btn-secondary"
+                            style={{ padding: '2px 10px', fontSize: '1rem', lineHeight: 1, margin: 0 }}
+                            onClick={() => setDrawerZoom(Math.max(0.5, Math.round((drawerZoom - 0.1) * 10) / 10))}
+                        >-</button>
+                        <span style={{
+                            width: '48px',
+                            textAlign: 'center',
+                            fontSize: '0.85rem',
+                            color: 'var(--text-primary)',
+                            fontFamily: 'monospace',
+                        }}>{Math.round(drawerZoom * 100)}%</span>
+                        <button
+                            className="btn-secondary"
+                            style={{ padding: '2px 10px', fontSize: '1rem', lineHeight: 1, margin: 0 }}
+                            onClick={() => setDrawerZoom(Math.min(2.0, Math.round((drawerZoom + 0.1) * 10) / 10))}
+                        >+</button>
+                        {drawerZoom !== 1.0 && (
+                            <button
+                                className="btn-secondary"
+                                style={{ padding: '2px 8px', fontSize: '0.7rem', margin: 0 }}
+                                onClick={() => setDrawerZoom(1.0)}
+                            >Reset</button>
+                        )}
+                    </div>
+                </div>
 
                 {/* Show Timestamps */}
                 <ToggleRow

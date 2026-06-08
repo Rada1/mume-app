@@ -67,6 +67,7 @@ interface SettingsState {
     loginPassword?: string;
     rememberLogin: boolean;
     theme: 'dark' | 'light';
+    drawerZoom: number;
     isImmersionMode: boolean;
     isPerformanceMode: boolean;
     accentColor: string;
@@ -127,6 +128,7 @@ interface SettingsState {
     setRememberLogin: (val: boolean) => void;
     setAutoConnect: (val: boolean) => void;
     setTheme: (val: 'dark' | 'light') => void;
+    setDrawerZoom: (val: number) => void;
     setIsImmersionMode: (val: boolean) => void;
     setIsPerformanceMode: (val: boolean) => void;
     setAccentColor: (val: string) => void;
@@ -258,6 +260,7 @@ export const useSettingsStore = create<SettingsState>()(
             rememberLogin: true,
             
             theme: 'dark',
+            drawerZoom: 1.0,
             isImmersionMode: true,
             isPerformanceMode: false,
             accentColor: '#d4aa00',
@@ -329,6 +332,7 @@ export const useSettingsStore = create<SettingsState>()(
             setRememberLogin: (rememberLogin) => set({ rememberLogin }),
             setAutoConnect: (autoConnect) => set({ autoConnect }),
             setTheme: (theme) => set({ theme }),
+            setDrawerZoom: (drawerZoom) => set({ drawerZoom }),
             setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
             setIsPerformanceMode: (isPerformanceMode) => set({ isPerformanceMode }),
             setAccentColor: (accentColor) => set({ accentColor }),
