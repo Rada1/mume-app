@@ -1,0 +1,76 @@
+/**
+ * @file ShaperRoomTileBadges.css
+ * @description Tile-level indicators for room mobs and objects.
+ */
+
+/* --- Badge Section --- */
+.shaper-room-badges {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: grid;
+    max-width: calc(100% - 18px);
+    gap: 3px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.shaper-room-badge {
+    min-width: 0;
+    border-radius: 4px;
+    padding: 2px 5px;
+    color: #ffffff;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+}
+
+.shaper-room-badge.mob {
+    background: #7c3aed;
+}
+
+.shaper-room-badge.object {
+    background: #0f766e;
+}
+
+.shaper-room-badge.more {
+    background: #475569;
+}
+
+.shaper-room-annotation-marker {
+    position: absolute;
+    right: -7px;
+    top: 50%;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    min-width: 18px;
+    height: 18px;
+    border: 2px solid #0f1317;
+    border-radius: 999px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    pointer-events: none;
+    transform: translateY(-50%);
+}
+
+.shaper-room-tile:has(.shaper-room-annotation-marker) {
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.28);
+}
+
+.shaper-room-tile:has(.shaper-room-badges)::after {
+    position: absolute;
+    inset: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.36);
+    border-radius: 7px;
+    content: "";
+    pointer-events: none;
+}

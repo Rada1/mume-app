@@ -97,6 +97,34 @@ wss.on('connection', (ws) => {
                 ws.send('A green orc is standing here, glaring at you.\n');
                 ws.send('Ciltor is resting by the fire.\n');
                 ws.send('[ 5] a heavy sword is lying on the ground.\n\n> ');
+            } else if (input.toLowerCase() === 'look board' || input.toLowerCase() === 'look at board' || input.toLowerCase() === 'look b') {
+                ws.send('* Yavanna board - 4 messages (out of 4)\n' +
+                        '1103#: Buggy boards (Manwë)\n' +
+                        '25508#: A few comments on Mume7 (Fëanor)\n' +
+                        '32023 : [147:92] emote to the team (Gindil)\n' +
+                        '38315 : Maia rooms in zone 150 (Yavanna)\n\n> ');
+            } else if (/^read\s+(\d+)$/i.test(input)) {
+                const match = input.match(/^read\s+(\d+)$/i);
+                const msgId = match[1];
+                if (msgId === '38315') {
+                    ws.send('Message 38315 on Yavanna:\n' +
+                            'Subject: Maia rooms in zone 150\n' +
+                            'Author: Yavanna\n' +
+                            'Date: Tue Jun  9 14:00:00 2026\n' +
+                            '\n' +
+                            'Maia rooms body line 1.\n' +
+                            'Maia rooms body line 2.\n\n> ');
+                } else if (msgId === '25508') {
+                    ws.send('Message 25508 on Yavanna Board:\n' +
+                            'Subject: A few comments on Mume7\n' +
+                            'Author: Fëanor\n' +
+                            'Date: Tue Jun  9 14:00:00 2026\n' +
+                            '\n' +
+                            'This is the first line of the body.\n' +
+                            'And the second line.\n\n> ');
+                } else {
+                    ws.send(`Message ${msgId} not found.\n\n> `);
+                }
             } else if (input.toLowerCase() === 'look') {
                 ws.send('\x1b[32mThe Simulator Void\x1b[0m\nYou see a console output floating in the air.\n> ');
             } else if (input.toLowerCase() === 'metamorph') {

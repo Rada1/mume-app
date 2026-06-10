@@ -22,6 +22,7 @@ The MUME Client is an **AI-Native, Hook-Driven Mobile Client** for the MUME MUD.
 | **Fix UI/Layout** | `src/components/Layout/`, `src/styles/layout.css` |
 | **Edit Command Flow** | `src/hooks/useCommandController.ts`, `src/hooks/useCommandExecutor.ts` |
 | **Adjust Mapper** | `src/components/Mapper/`, `src/mapper/renderer.ts` |
+| **Plan or Build Shaper Mode** | `docs/shaper.md`, `src/shaper/`, `src/shaper/access/shaperAccess.ts` |
 | **Fix Broad Highlighting** | `src/services/parser/Tokenizer.ts`, `src/hooks/useEntityRegistry.ts` |
 | **Spectate Rotation** | `src/hooks/useSpectateAutomator.ts`, `src/hooks/GameParser/useGameParser.ts` |
 | **Manage Entity Traits** | `src/utils/inlineActionModel.ts`, `src/utils/categorizationUtils.ts`, `src/components/Settings/TraitSettings.tsx` |
@@ -34,6 +35,9 @@ inline entity -> category -> traits -> buttons
 ```
 
 Categories classify entities and own default trait IDs. Traits own button IDs. Do not attach buttons or button sets directly to categories; legacy `inline-*` IDs are compatibility aliases during migration.
+
+## Shaper Mode
+Shaper Mode is a privileged concept-building workspace, not a normal player-facing client mode. Keep its domain model, validation, collaboration, and deploy logic under `src/shaper/` as headless logic with thin components. Its entry point must remain hidden unless `canAccessShaper()` allows access.
 
 ## 🛠️ Team Lead Skill (Orchestrator Only)
 Antigravity acts as the **Team Lead**, delegating background tasks to **Jules** via the Gemini CLI.

@@ -14,6 +14,7 @@ import { ShopPanel } from '../Shop/ShopPanel';
 import { TimerExpiryToast } from '../Timers/TimerExpiryToast';
 import { QuickButtonBar } from '../HUD/QuickButtonBar';
 import { ReplayHUD } from './HUD/ReplayHUD';
+import type { MumeEditState } from '../../stores/useUIStore';
 
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
 
@@ -27,8 +28,8 @@ interface MainContentLayerProps {
     setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
     heldButton: any;
     setHeldButton: React.Dispatch<React.SetStateAction<any>>;
-    mumeEditState: { isOpen: boolean; title: string; text: string; key: string };
-    setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
+    mumeEditState: MumeEditState;
+    setMumeEditState: React.Dispatch<React.SetStateAction<MumeEditState>>;
     wasDraggingRef: React.MutableRefObject<boolean>;
 }
 

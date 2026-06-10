@@ -16,6 +16,8 @@ import { useGmcpRoom } from './useGmcpRoom';
 import { useGmcpVitals } from './useGmcpVitals';
 import { useGmcpOccupants } from './useGmcpOccupants';
 import { useGmcpGroup } from './useGmcpGroup';
+import { useArchiveStore } from '../../stores/useArchiveStore';
+import type { MumeEditState } from '../../stores/useUIStore';
 import { normalizeCombatantName } from '../../utils/combatUtils';
 import { getMumeTimeFromEpoch, MUME_MONTHS } from '../../utils/mumeTimeUtils';
 
@@ -51,7 +53,7 @@ interface GmcpHandlersProps {
     roomNpcs?: GmcpOccupant[];
     suppressNextTextHeaderRef?: React.MutableRefObject<boolean>;
     setGroupMembers: React.Dispatch<React.SetStateAction<GroupMember[]>>;
-    setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
+    setMumeEditState: React.Dispatch<React.SetStateAction<MumeEditState>>;
     setWhoList: React.Dispatch<React.SetStateAction<string[]>>;
     setWhereList: React.Dispatch<React.SetStateAction<import('../../types').WhereEntry[]>>;
     detectLighting?: (symbol: string | number) => void;
@@ -239,12 +241,15 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         onGroupRemove,
         onGroupSet,
         onMumeEdit: (data: GmcpMumeEdit) => {
-            if (data && data.key) {
+            const editKey = data.id !== undefined ? String(data.id) : (data.key !== undefined ? String(data.key) : '');
+            if (data && editKey) {
+                const context = useArchiveStore.getState().consumePendingEditorContext();
                 props.setMumeEditState({
                     isOpen: true,
                     title: data.title || 'Mume Editor',
                     text: data.text || '',
-                    key: data.key
+                    key: editKey,
+                    context
                 });
             }
         },

@@ -1,0 +1,258 @@
+/**
+ * @file ShaperDatabasePanels.css
+ * @description Database browse panel styles for Shaper mobile/object catalogs.
+ */
+
+/* --- Shell Section --- */
+.shaper-db-loading,
+.shaper-db-error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    font-size: 16px;
+    color: #aab7c4;
+}
+
+.shaper-db-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.shaper-db-header {
+    margin-bottom: 16px;
+}
+
+.shaper-db-header h2 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    color: #f0b45b;
+}
+
+.shaper-db-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #aab7c4;
+}
+
+/* --- Filters Section --- */
+.shaper-db-filters {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shaper-search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 250px;
+}
+
+.shaper-search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aab7c4;
+}
+
+.shaper-search-wrapper input {
+    width: 100%;
+    padding: 8px 12px 8px 34px;
+    background: #1e1d1d;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    color: #eef2f6;
+    font: inherit;
+    box-sizing: border-box;
+}
+
+.shaper-filter-group {
+    display: flex;
+    gap: 12px;
+}
+
+.shaper-filter-group label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.shaper-filter-group label span {
+    font-size: 11px;
+    font-weight: 700;
+    color: #aab7c4;
+    text-transform: uppercase;
+}
+
+.shaper-filter-group input,
+.shaper-filter-group select {
+    padding: 6px 10px;
+    background: #1e1d1d;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    color: #eef2f6;
+    font: inherit;
+    height: 32px;
+    box-sizing: border-box;
+}
+
+/* --- Cards Section --- */
+.shaper-db-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 4px;
+}
+
+.shaper-db-card {
+    background: #181717;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 10px 14px;
+    cursor: grab;
+    transition: all 0.2s ease;
+}
+
+.shaper-db-card:hover {
+    border-color: rgba(240, 180, 91, 0.3);
+    background: #1e1d1d;
+}
+
+.shaper-db-card.expanded {
+    border-color: rgba(240, 180, 91, 0.5);
+    background: #232222;
+}
+
+.shaper-db-card:active {
+    cursor: grabbing;
+}
+
+.shaper-db-card-summary {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.shaper-db-card-details {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.shaper-db-card-details span {
+    font-size: 11px;
+    font-weight: 700;
+    color: #aab7c4;
+    text-transform: uppercase;
+}
+
+/* --- Entity Section --- */
+.shaper-entity-vnum {
+    font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    font-weight: 700;
+    color: #f0b45b;
+    font-size: 14px;
+    min-width: 50px;
+}
+
+.shaper-entity-name {
+    flex: 1;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.shaper-entity-badges {
+    display: flex;
+    gap: 8px;
+}
+
+.shaper-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.shaper-badge.level { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+.shaper-badge.class { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+.shaper-badge.align.evil { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+.shaper-badge.align.good { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+.shaper-badge.type { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
+.shaper-badge.weight { background: rgba(245, 158, 11, 0.2); color: #fde047; }
+.shaper-badge.value { background: rgba(251, 191, 36, 0.25); color: #fbbf24; }
+
+/* --- Actions Section --- */
+.shaper-copy-btn,
+.shaper-add-room-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.shaper-copy-btn {
+    background: transparent;
+    border: none;
+    color: #aab7c4;
+    padding: 6px;
+    border-radius: 4px;
+}
+
+.shaper-copy-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+.shaper-copy-btn .copied {
+    color: #10b981;
+}
+
+.shaper-add-room-btn {
+    border: 1px solid rgba(240, 180, 91, 0.45);
+    border-radius: 4px;
+    background: rgba(240, 180, 91, 0.14);
+    color: #f0b45b;
+    padding: 6px;
+}
+
+.shaper-add-room-btn:hover {
+    background: rgba(240, 180, 91, 0.26);
+}
+
+.shaper-detail-flags {
+    font-size: 12px;
+    color: #cbd5e1;
+}
+
+.shaper-detail-flags strong {
+    color: #aab7c4;
+}
+
+.shaper-db-stat-pre {
+    background: #0e0e0e;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    padding: 12px;
+    font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #38bdf8;
+    overflow-x: auto;
+    margin: 4px 0 0;
+}

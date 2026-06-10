@@ -290,7 +290,8 @@ const drawOutskirtTrees = (
     preloaded: any,
     isDarkMode: boolean,
     tileOpacity: number,
-    explored: Set<string>
+    explored: Set<string>,
+    imagesRef: React.MutableRefObject<Record<string, HTMLImageElement>>
 ) => {
     const transform = ctx.getTransform();
     const physicalSize = s * transform.a;
@@ -307,6 +308,17 @@ const drawOutskirtTrees = (
     const gridY = Math.round(ry / s);
     const exits = rData[4] as Record<string, any>;
 
+    const trees1Img = imagesRef.current['trees1'];
+    const trees2Img = imagesRef.current['trees2'];
+    const trees3Img = imagesRef.current['trees3'];
+    const treeImg = imagesRef.current['tree'];
+    const treesImgReady = !!(
+        trees1Img && trees1Img.complete && trees1Img.naturalWidth > 0 &&
+        trees2Img && trees2Img.complete && trees2Img.naturalWidth > 0 &&
+        trees3Img && trees3Img.complete && trees3Img.naturalWidth > 0
+    );
+    const singleTreeReady = !!(treeImg && treeImg.complete && treeImg.naturalWidth > 0);
+
     for (const dir of ['n', 's', 'e', 'w']) {
         const exit = exits[dir];
         if (exit) {
@@ -314,7 +326,7 @@ const drawOutskirtTrees = (
             if (targetData && getTerrainName(targetData[3]) === 'Forest') {
                 ctx.save();
                 // slightly dimmer if target forest is unexplored
-                ctx.globalAlpha = tileOpacity * (explored.has(String(exit.target)) ? 1.0 : 0.45);
+                ctx.globalAlpha = tileOpacity * 0.82 * (explored.has(String(exit.target)) ? 1.0 : 0.45);
 
                 const treeSeed = Math.abs(Math.sin(gridX * 7.1 + gridY * 13.3 + (dir === 'n' ? 1 : dir === 's' ? 2 : dir === 'e' ? 3 : 4)) * 1000) % 1;
                 const numOutskirtTrees = treeSeed > 0.65 ? 2 : 1;
@@ -338,7 +350,29 @@ const drawOutskirtTrees = (
                         ty = ry + offsetFrac * s;
                     }
 
-                    drawSingleTree(ctx, tx, ty, s * 0.33, isDarkMode);
+                    const tSize = s * 0.33;
+                    ctx.save();
+                    ctx.shadowColor = isDarkMode ? 'rgba(0, 0, 0, 0.65)' : 'rgba(0, 0, 0, 0.45)';
+                    ctx.shadowBlur = s * 0.03;
+                    ctx.shadowOffsetX = s * 0.01;
+                    ctx.shadowOffsetY = s * 0.015;
+
+                    if (treesImgReady) {
+                        const images = [trees1Img, trees2Img, trees3Img];
+                        const imgIndex = Math.floor((treeSeed * 10 + j) % 3);
+                        const img = images[imgIndex];
+                        const sizeMultiplier = imgIndex === 2 ? 1.25 : 1.0;
+                        const tW = tSize * sizeMultiplier;
+                        const tH = tW * 1.15;
+                        ctx.drawImage(img, tx - tW / 2, ty - tH, tW, tH);
+                    } else if (singleTreeReady) {
+                        const tW = tSize;
+                        const tH = tW * 1.15;
+                        ctx.drawImage(treeImg, tx - tW / 2, ty - tH, tW, tH);
+                    } else {
+                        drawSingleTree(ctx, tx, ty, tSize, isDarkMode);
+                    }
+                    ctx.restore();
                 }
                 ctx.restore();
             }
@@ -419,7 +453,10 @@ const getOutdoorSpillWalls = (
     terrain: any,
     exits: any,
     preloaded: any,
-    walls: { n: boolean; s: boolean; e: boolean; w: boolean }
+    walls: { n: boolean; s: boolean; e: boolean; w: boolean },
+    gridX?: number,
+    gridY?: number,
+    roomAtCoord?: Record<string, any>
 ) => {
     const tName = getTerrainName(terrain);
     if (tName !== 'Forest' && tName !== 'Mountains') return walls;
@@ -433,11 +470,28 @@ const getOutdoorSpillWalls = (
         return !OUTDOOR_TERRAINS.has(targetTerrain);
     };
 
+    const isNeighborForest = (dir: 'n' | 's' | 'e' | 'w') => {
+        if (tName === 'Forest' && gridX !== undefined && gridY !== undefined && roomAtCoord) {
+            let nx = gridX;
+            let ny = gridY;
+            if (dir === 'n') ny -= 1;
+            else if (dir === 's') ny += 1;
+            else if (dir === 'e') nx += 1;
+            else if (dir === 'w') nx -= 1;
+            
+            const neighborTerrain = roomAtCoord[`${nx},${ny}`];
+            if (neighborTerrain && getTerrainName(neighborTerrain) === 'Forest') {
+                return true;
+            }
+        }
+        return false;
+    };
+
     return {
-        n: walls.n || blocksNonOutdoor('n'),
-        s: walls.s || blocksNonOutdoor('s'),
-        e: walls.e || blocksNonOutdoor('e'),
-        w: walls.w || blocksNonOutdoor('w'),
+        n: isNeighborForest('n') ? false : (walls.n || blocksNonOutdoor('n')),
+        s: isNeighborForest('s') ? false : (walls.s || blocksNonOutdoor('s')),
+        e: isNeighborForest('e') ? false : (walls.e || blocksNonOutdoor('e')),
+        w: isNeighborForest('w') ? false : (walls.w || blocksNonOutdoor('w')),
     };
 };
 
@@ -456,7 +510,8 @@ const drawTerrainTileIcon = (
     floorColor?: string,
     walls?: { n: boolean; s: boolean; e: boolean; w: boolean }
 ) => {
-    const inset = getTerrainTileInset(s);
+    const tName = getTerrainName(terrain);
+    const inset = tName === 'Forest' ? 0 : getTerrainTileInset(s);
     drawTerrainIcon(
         ctx,
         x + inset,
@@ -499,6 +554,17 @@ export const drawTerrainIcon = (
     const transform = ctx.getTransform();
     const physicalSize = s_orig * transform.a;
 
+    const trees1Img = imagesRef.current['trees1'];
+    const trees2Img = imagesRef.current['trees2'];
+    const trees3Img = imagesRef.current['trees3'];
+    const treeImg = imagesRef.current['tree'];
+    const treesImgReady = !!(
+        trees1Img && trees1Img.complete && trees1Img.naturalWidth > 0 &&
+        trees2Img && trees2Img.complete && trees2Img.naturalWidth > 0 &&
+        trees3Img && trees3Img.complete && trees3Img.naturalWidth > 0
+    );
+    const singleTreeReady = !!(treeImg && treeImg.complete && treeImg.naturalWidth > 0);
+
     let lodScale = 1.0;
     if (physicalSize < 10) {
         lodScale = 0.33; // 8x8 icon resolution
@@ -529,7 +595,8 @@ export const drawTerrainIcon = (
         let targetH = s;
         if (tName === 'Mountains' && mountainImgReady) {
             const ratio = mountainImg!.naturalHeight / mountainImg!.naturalWidth;
-            const scale = useMountain2 ? 1.0 : 1.3;
+            // Scale down all but 1 variant to create more organic size variance
+            const scale = (variant % 3 === 0) ? 1.3 : (variant % 3 === 1 ? 0.85 : 0.98);
             if (ratio > 1) {
                 targetW = s * scale;
                 targetH = s * ratio * scale;
@@ -570,6 +637,31 @@ export const drawTerrainIcon = (
             // Draw background grass texture
             drawGrassTexture(ictx, s, variant, isDarkMode, 8);
 
+            const drawMountainTree = (cx: number, baseY: number, sz: number) => {
+                ictx.save();
+                ictx.shadowColor = isDarkMode ? 'rgba(0, 0, 0, 0.65)' : 'rgba(0, 0, 0, 0.45)';
+                ictx.shadowBlur = s * 0.03;
+                ictx.shadowOffsetX = s * 0.01;
+                ictx.shadowOffsetY = s * 0.015;
+                ictx.globalAlpha = 0.82;
+
+                if (treesImgReady) {
+                    const imgIndex = Math.floor((Math.abs(Math.sin(cx * 17.3 + baseY * 29.7)) * 1000) % 3);
+                    const img = [trees1Img, trees2Img, trees3Img][imgIndex];
+                    const sizeMultiplier = imgIndex === 2 ? 1.25 : 1.0;
+                    const tW = sz * sizeMultiplier;
+                    const tH = tW * 1.15;
+                    ictx.drawImage(img, cx - tW / 2, baseY - tH, tW, tH);
+                } else if (singleTreeReady) {
+                    const tW = sz;
+                    const tH = sz * 1.15;
+                    ictx.drawImage(treeImg, cx - tW / 2, baseY - tH, tW, tH);
+                } else {
+                    drawSingleTree(ictx, cx, baseY, sz, isDarkMode);
+                }
+                ictx.restore();
+            };
+
             if (mountainImgReady) {
                 const offsetX = (canvasW - targetW) / 2;
                 const offsetY = canvasH - targetH;
@@ -582,9 +674,9 @@ export const drawTerrainIcon = (
                 ictx.restore();
 
                 // Draw a few trees around the mountain base
-                drawSingleTree(ictx, offsetX + targetW * 0.12, canvasH - targetH * 0.05, s * 0.40, isDarkMode);
-                drawSingleTree(ictx, offsetX + targetW * 0.88, canvasH - targetH * 0.07, s * 0.37, isDarkMode);
-                drawSingleTree(ictx, offsetX + targetW * 0.25, canvasH - targetH * 0.02, s * 0.33, isDarkMode);
+                drawMountainTree(offsetX + targetW * 0.12, canvasH - targetH * 0.05, s * 0.40);
+                drawMountainTree(offsetX + targetW * 0.88, canvasH - targetH * 0.07, s * 0.37);
+                drawMountainTree(offsetX + targetW * 0.25, canvasH - targetH * 0.02, s * 0.33);
 
                 if (weather === 'snow') {
                     ictx.save();
@@ -691,9 +783,9 @@ export const drawTerrainIcon = (
             ictx.restore();
 
             // Draw a few trees around the base for procedural mountains
-            drawSingleTree(ictx, s * 0.12, s * 0.90, s * 0.40, isDarkMode);
-            drawSingleTree(ictx, s * 0.88, s * 0.92, s * 0.37, isDarkMode);
-            drawSingleTree(ictx, s * 0.25, s * 0.95, s * 0.33, isDarkMode);
+            drawMountainTree(s * 0.12, s * 0.90, s * 0.40);
+            drawMountainTree(s * 0.88, s * 0.92, s * 0.37);
+            drawMountainTree(s * 0.25, s * 0.95, s * 0.33);
             } // end else (procedural fallback)
         } else if (tName === 'Hills') {
             // Draw background grass texture
@@ -762,49 +854,140 @@ export const drawTerrainIcon = (
         } else if (tName === 'Forest') {
             ictx.save();
 
-            // Tree icons: visible trunk + vertically-elongated crown, sorted back-to-front.
-            // [cx_frac, baseY_frac, size_frac]
-            type TreeDef = [number, number, number];
-            const treeLayouts: TreeDef[][] = [
-                [
-                    [0.20, 0.12, 0.42], [0.72, 0.10, 0.58],
-                    [0.10, 0.45, 0.62], [0.52, 0.48, 0.45], [0.88, 0.44, 0.55],
-                    [0.35, 0.80, 0.50],
-                ],
-                [
-                    [0.18, 0.10, 0.60], [0.65, 0.12, 0.44],
-                    [0.40, 0.46, 0.55], [0.85, 0.42, 0.63],
-                    [0.12, 0.78, 0.46], [0.60, 0.80, 0.57],
-                ],
-                [
-                    [0.28, 0.10, 0.56], [0.80, 0.13, 0.43],
-                    [0.08, 0.48, 0.64], [0.55, 0.44, 0.48],
-                    [0.30, 0.78, 0.42], [0.82, 0.76, 0.59],
-                ]
-            ];
-            const trees = [...treeLayouts[variant % 3]].sort((a, b) => a[1] - b[1]);
-
-            // [cx_frac, cy_frac, size_frac]
-            type StoneDef = [number, number, number];
-            const stoneLayouts: StoneDef[][] = [
-                [[0.62, 0.30, 0.10], [0.25, 0.65, 0.08]],
-                [[0.78, 0.58, 0.09], [0.45, 0.28, 0.10]],
-                [[0.50, 0.62, 0.09], [0.18, 0.38, 0.08]],
-            ];
-            const stones = stoneLayouts[variant % 3];
+            const trees1Img = imagesRef.current['trees1'];
+            const trees2Img = imagesRef.current['trees2'];
+            const trees3Img = imagesRef.current['trees3'];
+            const treesImgReady = !!(
+                trees1Img && trees1Img.complete && trees1Img.naturalWidth > 0 &&
+                trees2Img && trees2Img.complete && trees2Img.naturalWidth > 0 &&
+                trees3Img && trees3Img.complete && trees3Img.naturalWidth > 0
+            );
 
             const offsetX = (canvasW - s) / 2;
             const offsetY = canvasH - s;
 
-            ictx.globalAlpha = 0.5;
-            for (const [cxf, cyf, szf] of stones) {
-                drawSingleStone(ictx, offsetX + cxf * s, offsetY + cyf * s, szf * s, isDarkMode);
+            if (treesImgReady) {
+                // Draw a bit of grass background for texture depth
+                drawGrassTexture(ictx, s, variant, isDarkMode, 4);
+
+                // Stable grid coordinates for deterministic placement
+                const gridX = tileX !== undefined ? Math.round(tileX / s_orig) : variant * 17;
+                const gridY = tileY !== undefined ? Math.round(tileY / s_orig) : variant * 29;
+
+                // Deterministic PRNG based on grid coordinates
+                const tileSeed = gridX * 17.3 + gridY * 29.7;
+                let rVal = Math.abs(Math.sin(tileSeed) * 43758.5453) % 1;
+                const nextRand = () => {
+                    rVal = Math.abs(Math.sin(rVal * 93.1 + 12.7) * 43758.5453) % 1;
+                    return rVal;
+                };
+
+                const treesList: { xf: number; yf: number; scale: number }[] = [];
+                
+                // Distribute trees using a jittered 3x4 grid to ensure even, standardized coverage
+                for (let row = 0; row < 4; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        // 15% chance to skip a tree to add natural density variance (averages 10-11 trees per tile)
+                        if (nextRand() < 0.15) continue;
+
+                        // Nominal grid center
+                        const nominalX = -0.05 + col * 0.55; // Spans -0.05 to 1.05
+                        const nominalY = 0.10 + row * 0.26;  // Spans 0.10 to 0.88
+
+                        // Apply random jitter to avoid a rigid appearance
+                        const jitterX = (nextRand() - 0.5) * 0.22;
+                        const jitterY = (nextRand() - 0.5) * 0.14;
+
+                        treesList.push({
+                            xf: nominalX + jitterX,
+                            yf: nominalY + jitterY,
+                            scale: 0.35 + nextRand() * 0.15 // Scale ranges 0.35 to 0.50
+                        });
+                    }
+                }
+                // Sort by baseline yf so they draw back-to-front correctly
+                treesList.sort((a, b) => a.yf - b.yf);
+
+                ictx.save();
+                ictx.shadowColor = isDarkMode ? 'rgba(0, 0, 0, 0.65)' : 'rgba(0, 0, 0, 0.45)';
+                ictx.shadowBlur = s * 0.04;
+                ictx.shadowOffsetX = s * 0.015;
+                ictx.shadowOffsetY = s * 0.025;
+                ictx.globalAlpha = 0.82;
+
+                const images = [trees1Img, trees2Img, trees3Img];
+                for (let i = 0; i < treesList.length; i++) {
+                    const t = treesList[i];
+                    // Cycle the image so each tile has variety
+                    const imgIndex = Math.floor(nextRand() * 3);
+                    const img = images[imgIndex];
+                    const sizeMultiplier = imgIndex === 2 ? 1.25 : 1.0;
+                    const drawW = s * (t.scale * sizeMultiplier);
+                    const drawH = s * ((t.scale * sizeMultiplier) * 1.15); // slightly taller
+                    const tx = offsetX + t.xf * s - drawW / 2;
+                    const ty = offsetY + t.yf * s - drawH;
+                    ictx.drawImage(img, tx, ty, drawW, drawH);
+                }
+                ictx.restore();
+            } else {
+                // Tree icons: visible trunk + vertically-elongated crown, sorted back-to-front.
+                // [cx_frac, baseY_frac, size_frac]
+                type TreeDef = [number, number, number];
+                const treeLayouts: TreeDef[][] = [
+                    [
+                        [0.20, 0.12, 0.42], [0.72, 0.10, 0.58],
+                        [0.10, 0.45, 0.62], [0.52, 0.48, 0.45], [0.88, 0.44, 0.55],
+                        [0.35, 0.80, 0.50],
+                    ],
+                    [
+                        [0.18, 0.10, 0.60], [0.65, 0.12, 0.44],
+                        [0.40, 0.46, 0.55], [0.85, 0.42, 0.63],
+                        [0.12, 0.78, 0.46], [0.60, 0.80, 0.57],
+                    ],
+                    [
+                        [0.28, 0.10, 0.56], [0.80, 0.13, 0.43],
+                        [0.08, 0.48, 0.64], [0.55, 0.44, 0.48],
+                        [0.30, 0.78, 0.42], [0.82, 0.76, 0.59],
+                    ]
+                ];
+                const trees = [...treeLayouts[variant % 3]].sort((a, b) => a[1] - b[1]);
+
+                // [cx_frac, cy_frac, size_frac]
+                type StoneDef = [number, number, number];
+                const stoneLayouts: StoneDef[][] = [
+                    [[0.62, 0.30, 0.10], [0.25, 0.65, 0.08]],
+                    [[0.78, 0.58, 0.09], [0.45, 0.28, 0.10]],
+                    [[0.50, 0.62, 0.09], [0.18, 0.38, 0.08]],
+                ];
+                const stones = stoneLayouts[variant % 3];
+
+                // 1. Draw a dense background canopy using overlapping filled/stroked ellipses (very cheap)
+                ictx.fillStyle = isDarkMode ? 'rgba(8, 20, 8, 0.95)' : 'rgba(5, 32, 8, 0.9)';
+                ictx.beginPath();
+                ictx.ellipse(offsetX + s * 0.3, offsetY + s * 0.32, s * 0.33, s * 0.28, 0, 0, Math.PI * 2);
+                ictx.ellipse(offsetX + s * 0.72, offsetY + s * 0.28, s * 0.38, s * 0.32, 0, 0, Math.PI * 2);
+                ictx.ellipse(offsetX + s * 0.52, offsetY + s * 0.44, s * 0.32, s * 0.26, 0, 0, Math.PI * 2);
+                ictx.fill();
+
+                // Stroke the canopy outline for the hand-drawn sketch style
+                ictx.strokeStyle = isDarkMode ? 'rgba(3, 10, 3, 0.9)' : 'rgba(2, 16, 4, 0.85)';
+                ictx.lineWidth = 0.8;
+                ictx.stroke();
+
+                // 2. Draw ground stones
+                ictx.globalAlpha = 0.5;
+                for (const [cxf, cyf, szf] of stones) {
+                    drawSingleStone(ictx, offsetX + cxf * s, offsetY + cyf * s, szf * s, isDarkMode);
+                }
+
+                // 3. Render only the 2 foreground 'hero' trees to overlap the canopy
+                const heroTrees = trees.slice(-2);
+                for (const [cxf, byf, szf] of heroTrees) {
+                    const j1 = (Math.abs(Math.sin((cxf * 137 + variant * 11.3) * 43758.5453)) % 1 - 0.5) * s * 0.04;
+                    drawSingleTree(ictx, offsetX + cxf * s + j1, offsetY + byf * s, szf * s, isDarkMode);
+                }
+                ictx.globalAlpha = 1.0;
             }
-            for (const [cxf, byf, szf] of trees) {
-                const j1 = (Math.abs(Math.sin((cxf * 137 + variant * 11.3) * 43758.5453)) % 1 - 0.5) * s * 0.04;
-                drawSingleTree(ictx, offsetX + cxf * s + j1, offsetY + byf * s, szf * s, isDarkMode);
-            }
-            ictx.globalAlpha = 1.0;
 
             ictx.restore();
         } else if (tName === 'Field') {
@@ -1336,7 +1519,7 @@ export const drawExplorationRevealOverlay = (
             const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
             const exits = rData[4];
             const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
-            const walls = getOutdoorSpillWalls(terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap));
+            const walls = getOutdoorSpillWalls(terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
 
             ctx.save();
             ctx.filter = 'grayscale(1)';
@@ -1677,12 +1860,12 @@ export const drawTerrains = (
 
                 const exits = preloaded[r.vnum]?.[4];
                 const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
-                const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap));
+                const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
                 if (perfMonitor.enabled) perfMonitor.addWallMs(performance.now() - tWallStart);
 
                 const tIconStart = perfMonitor.enabled ? performance.now() : 0;
                 drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects, tFloor, walls);
-                drawOutskirtTrees(ctx, r.x, r.y, r.vnum, s, r.terrain, preloaded, isDarkMode, tileOpacity, explored);
+                drawOutskirtTrees(ctx, r.x, r.y, r.vnum, s, r.terrain, preloaded, isDarkMode, tileOpacity, explored, imagesRef);
                 if (perfMonitor.enabled) perfMonitor.addIconMs(performance.now() - tIconStart);
                 ctx.restore();
             }
@@ -1703,7 +1886,7 @@ export const drawTerrains = (
                 
                 const exits = preloaded[r.vnum]?.[4];
                 const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
-                const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap));
+                const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
 
                 drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls);
             }
@@ -1743,7 +1926,7 @@ export const drawTerrains = (
             
             const exits = preloaded[r.vnum]?.[4];
             const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
-            const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap));
+            const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
 
             drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls);
             ctx.restore();
@@ -1796,10 +1979,10 @@ export const drawTerrains = (
                     
                     const exits = preloaded[r.vnum]?.[4];
                     const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
-                    const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap));
+                    const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
 
                     drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects3, tFloor3, walls);
-                    drawOutskirtTrees(ctx, r.x, r.y, r.vnum, s, r.terrain, preloaded, isDarkMode, tileOpacity, explored);
+                    drawOutskirtTrees(ctx, r.x, r.y, r.vnum, s, r.terrain, preloaded, isDarkMode, tileOpacity, explored, imagesRef);
                     ctx.restore();
                 }
             }
@@ -1872,7 +2055,7 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
             
             const rId = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;
             const exits = preloaded[rId]?.[4];
-            const walls = getOutdoorSpillWalls(room.terrain, exits, preloaded, getRoomWalls(room, exits, allRooms, preloaded, rCtx.explored, rCtx.unveilMap));
+            const walls = getOutdoorSpillWalls(room.terrain, exits, preloaded, getRoomWalls(room, exits, allRooms, preloaded, rCtx.explored, rCtx.unveilMap), gridX, gridY, rCtx.roomAtCoord);
 
             drawTerrainTileIcon(ctx, rx, ry, s, room.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnectsLocal, tFloorLocal, walls);
             ctx.restore();

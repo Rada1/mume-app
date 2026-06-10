@@ -1,28 +1,32 @@
+/*
+ * @file MumeEditor.css
+ * @description Styles for MUME edit sessions and contextual reply composition.
+ */
+
 .mume-editor-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 3000;
+    z-index: 100020 !important;
     padding: 20px;
 }
 
 .mume-editor-container {
-    background: rgba(30, 30, 40, 0.65);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #15151e;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 12px;
     width: 100%;
     max-width: 800px;
     height: 80vh;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
     overflow: hidden;
 }
 
@@ -44,6 +48,25 @@
     letter-spacing: 1px;
 }
 
+.mume-editor-title-block {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mume-editor-title-block h2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mume-editor-title-block span {
+    color: #9ba7aa;
+    font-size: 0.78rem;
+    letter-spacing: 0;
+}
+
 .mume-editor-content {
     flex: 1;
     padding: 20px;
@@ -53,8 +76,8 @@
 
 .mume-editor-textarea {
     flex: 1;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #0b0b10;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
     padding: 15px;
     color: #fff;
@@ -62,7 +85,7 @@
     font-size: 1rem;
     resize: none;
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
 }
 
 .mume-editor-textarea:focus {
@@ -105,4 +128,15 @@
 .mume-editor-btn.save:hover {
     filter: brightness(1.1);
     transform: translateY(-1px);
+}
+
+.mume-editor-resize-handle {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+    background: linear-gradient(135deg, transparent 50%, rgba(255, 255, 255, 0.25) 50%);
+    border-radius: 0 0 12px 0;
 }

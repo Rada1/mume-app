@@ -31,7 +31,7 @@ export function usePromptParser(deps: PromptParserDeps) {
     const parsePrompt = useCallback((textOnly: string, _isSnoop: boolean = false) => {
         // Prompt text is only a boundary signal here. Character vitals,
         // opponent identity, tank/buffer status, and combat state come from GMCP.
-        const promptRegex = /^(([^\r\n<>]*[>])\s*|^([\[\!\*\(][^\]\)\r\n]{5,}[\]\)\>]\s*))/;
+        const promptRegex = /^(([^\r\n<>]*[>])\s*|^([\[\!\*\(](?=[^\]\)\>]*\d)[0-9hHmMvVspSP%/\(\)\[\]\s,:+-]{3,}[\]\)\>]\s*))/;
         const textPMatch = textOnly.match(promptRegex);
         
         if (!textPMatch) {

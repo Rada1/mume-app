@@ -88,6 +88,7 @@ interface SettingsState {
     isTimestampEnabled: boolean;
     showDebugEchoes: boolean;
     showLegacyButtons: boolean;
+    showDeveloperTools: boolean;
     showSpectatePromptInLog: boolean;
     showControls: boolean;
     showOrganicTerrain: boolean;
@@ -149,6 +150,7 @@ interface SettingsState {
     setIsTimestampEnabled: (val: boolean) => void;
     setShowDebugEchoes: (val: boolean) => void;
     setShowLegacyButtons: (val: boolean) => void;
+    setShowDeveloperTools: (val: boolean) => void;
     setShowSpectatePromptInLog: (val: boolean) => void;
     setShowControls: (val: boolean) => void;
     setShowOrganicTerrain: (val: boolean) => void;
@@ -282,6 +284,7 @@ export const useSettingsStore = create<SettingsState>()(
             isTimestampEnabled: false,
             showDebugEchoes: false,
             showLegacyButtons: false,
+            showDeveloperTools: false,
             showSpectatePromptInLog: true,
             showControls: true,
             showOrganicTerrain: true,
@@ -353,6 +356,7 @@ export const useSettingsStore = create<SettingsState>()(
             setIsTimestampEnabled: (isTimestampEnabled) => set({ isTimestampEnabled }),
             setShowDebugEchoes: (showDebugEchoes) => set({ showDebugEchoes }),
             setShowLegacyButtons: (showLegacyButtons) => set({ showLegacyButtons }),
+            setShowDeveloperTools: (showDeveloperTools) => set({ showDeveloperTools }),
             setShowSpectatePromptInLog: (showSpectatePromptInLog) => set({ showSpectatePromptInLog }),
             setShowControls: (showControls) => set({ showControls }),
             setShowOrganicTerrain: (showOrganicTerrain) => set({ showOrganicTerrain }),

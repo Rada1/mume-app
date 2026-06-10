@@ -37,3 +37,9 @@ test-results/
 # Diagnostics / Traces
 diagnostics/
 
+# MUME entity/mob/object databases (sensitive game data — do not publish)
+mume_usable_entities.json
+mume_entities*.json
+public/mume_entities*.json
+raw_stat_test.txt
+

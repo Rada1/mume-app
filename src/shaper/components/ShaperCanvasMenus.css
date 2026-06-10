@@ -1,0 +1,63 @@
+/**
+ * @file ShaperCanvasMenus.css
+ * @description Context menu styling for Shaper canvas actions.
+ */
+
+/* --- Connection Menu Section --- */
+.shaper-connection-menu {
+    width: min(380px, calc(100vw - 32px));
+}
+
+.shaper-menu-heading {
+    display: grid;
+    gap: 4px;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.shaper-menu-heading span,
+.shaper-menu-section > span {
+    color: #aab7c4;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.shaper-menu-heading strong {
+    color: #eef2f6;
+    font-size: 14px;
+}
+
+.shaper-menu-section {
+    display: grid;
+    gap: 4px;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shaper-menu-section button {
+    display: grid;
+    gap: 3px;
+    border-radius: 6px;
+    padding: 9px 10px;
+}
+
+.shaper-menu-section button strong {
+    color: #ffffff;
+    font-size: 13px;
+}
+
+.shaper-menu-section button em,
+.shaper-menu-section p {
+    margin: 0;
+    color: #b8c4cf;
+    font-size: 12px;
+    font-style: normal;
+    line-height: 1.35;
+}
+
+.shaper-danger-action {
+    color: #ff8f8f;
+}

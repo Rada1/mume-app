@@ -25,6 +25,8 @@ export const ExperimentalSettings: React.FC<ExperimentalSettingsProps> = ({
 }) => {
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const setIsSpectateMode = useModeStore(s => s.setIsSpectating);
+    const showDeveloperTools = useSettingsStore(s => s.showDeveloperTools ?? false);
+    const setShowDeveloperTools = useSettingsStore(s => s.setShowDeveloperTools);
 
     // Discord Activity Settings
     const isDiscordEnabled = useSettingsStore(s => s.isDiscordEnabled ?? true);
@@ -66,6 +68,13 @@ export const ExperimentalSettings: React.FC<ExperimentalSettingsProps> = ({
                 description="Display the snooped player's prompt line in the message log during spectate mode."
                 value={showSpectatePromptInLog}
                 onToggle={() => setShowSpectatePromptInLog(!showSpectatePromptInLog)}
+            />
+
+            <ToggleRow
+                label="Diagnostics and tools"
+                description="Expose diagnostics and tools."
+                value={showDeveloperTools}
+                onToggle={() => setShowDeveloperTools(!showDeveloperTools)}
             />
 
             {/* Spectate Mode */}

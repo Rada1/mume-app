@@ -42,6 +42,7 @@ Use clear, visual separators for logical blocks within a file. This helps AI age
 - **Context (`src/context/`):** Shared game and UI state (HP, target, drawer status).
 - **Hooks (`src/hooks/`):** Headless business logic (Networking, Parsing, Command Controller).
 - **Components (`src/components/`):** Pure "Presentational" layers. They should be "thin" and only handle rendering.
+- **Shaper (`src/shaper/`):** Privileged builder workspace. Domain model, validation, and future collaboration/deploy logic stay headless under `model/`, `hooks/`, `collaboration/`, or `deployment/`; components only render the builder UI.
 
 ## 6. Type Safety (Zero-Any)
 - **Rule:** The use of `any` is strictly prohibited.
@@ -67,3 +68,9 @@ To maintain UI precision and prevent "highlight sprawl," the text parsing pipeli
 - **Keyword-First:** Entities (NPCs, Players) must only be highlighted based on their specific `keyword` or derived `noun`. Never highlight full descriptive strings (e.g., "A tall man...").
 - **Word Boundaries:** All regex matches in the `Tokenizer` must use word boundaries (`\b`) to prevent partial word matches and overlapping interactive spans.
 - **Null Safety:** Rendering logic in the Mapper and Interaction utilities must implement defensive null checks (e.g., `(color || '')`) to remain robust against incomplete GMCP packets during rapid room transitions.
+
+## 10. Shaper Access Boundary
+Shaper Mode is a privileged building surface, not a normal player feature.
+- **Fail Closed:** Shaper must stay hidden unless `canAccessShaper()` returns true.
+- **No Direct Deploy:** Draft editing, validation, command preview, and future MCP tools must not bypass human-approved deploy locks.
+- **Concept First:** Shaper edits operate on concept drafts. Live map/game state is baseline/reference data unless deployment explicitly applies commands.

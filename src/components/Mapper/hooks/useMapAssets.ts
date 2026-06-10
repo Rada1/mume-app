@@ -7,6 +7,9 @@ import { useEffect, useState, MutableRefObject } from 'react';
 
 const ASSETS = {
     tree: '/assets/map/forest/tree1.png',
+    trees1: '/assets/map/forest/trees1.png',
+    trees2: '/assets/map/forest/trees2.png',
+    trees3: '/assets/map/forest/trees3.png',
     hill: '/assets/Pictures/terrain/hills.png',
     peak1: '/assets/map/m_peaks/peak1.png',
     peak2: '/assets/map/m_peaks/peak2.png',

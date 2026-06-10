@@ -14,6 +14,7 @@ import { useButtonEditor } from '../../hooks/useButtonEditor';
 import { useViewport } from '../../hooks/useViewport';
 import { useEnvironment } from '../../hooks/useEnvironment';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
+import type { MumeEditState } from '../../stores/useUIStore';
 
 export interface VitalsContextType {
     stats: GameStats;
@@ -117,6 +118,8 @@ export interface UIContextType {
         mapExpanded: boolean;
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
+        isShaperOpen?: boolean;
+        isShaperAccessOpen?: boolean;
         menuView: 'main' | 'availableSets';
         mapMode?: 'edit' | 'play';
         peekingDrawer?: DrawerType;
@@ -132,6 +135,8 @@ export interface UIContextType {
         mapExpanded: boolean;
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
+        isShaperOpen?: boolean;
+        isShaperAccessOpen?: boolean;
         menuView: 'main' | 'availableSets';
         mapMode?: 'edit' | 'play';
         managerSelectedSet: string | null;
@@ -424,8 +429,8 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     groupMembers: GroupMember[];
     setGroupMembers: Dispatch<SetStateAction<GroupMember[]>>;
     spectateGroupMembers: GroupMember[];
-    mumeEditState: { isOpen: boolean; title: string; text: string; key: string };
-    setMumeEditState: Dispatch<SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
+    mumeEditState: MumeEditState;
+    setMumeEditState: Dispatch<SetStateAction<MumeEditState>>;
     handleSaveMumeEdit: (text: string) => void;
     accountState: import('../../types').AccountState;
     setAccountState: Dispatch<SetStateAction<import('../../types').AccountState>>;

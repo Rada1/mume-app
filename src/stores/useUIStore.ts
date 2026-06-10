@@ -5,6 +5,7 @@
 
 import { create } from 'zustand';
 import { PopoverState, DrawerType, ObjectDragState, QuickButton } from '../types';
+import type { ArchiveEditorContext } from './useArchiveStore';
 
 export interface SelectedTargetInfo {
     id: string;
@@ -16,11 +17,12 @@ export interface SelectedTargetInfo {
     parentNoun?: string;
 }
 
-interface MumeEditState {
+export interface MumeEditState {
     isOpen: boolean;
     title: string;
     text: string;
     key: string;
+    context: ArchiveEditorContext | null;
 }
 
 export interface UIState {
@@ -34,6 +36,8 @@ export interface UIState {
     isSettingsOpen: boolean;
     isLibraryOpen: boolean;
     isButtonsOpen: boolean;
+    isShaperOpen: boolean;
+    isShaperAccessOpen: boolean;
     settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays';
     diagnosticLogs: string[];
     showReplayHud: boolean;
@@ -95,6 +99,8 @@ export interface UIState {
     setIsSettingsOpen: (open: boolean) => void;
     setIsLibraryOpen: (open: boolean) => void;
     setIsButtonsOpen: (open: boolean) => void;
+    setIsShaperOpen: (open: boolean) => void;
+    setIsShaperAccessOpen: (open: boolean) => void;
     setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays') => void;
     addDiagnosticLog: (msg: string) => void;
     setShowReplayHud: (show: boolean) => void;
@@ -116,7 +122,8 @@ const defaultMumeEditState: MumeEditState = {
     isOpen: false,
     title: '',
     text: '',
-    key: ''
+    key: '',
+    context: null
 };
 
 const isDesktopViewport = () => typeof window !== 'undefined' && window.innerWidth >= 1024;
@@ -131,6 +138,8 @@ export const useUIStore = create<UIState>((set) => ({
     isSettingsOpen: false,
     isLibraryOpen: false,
     isButtonsOpen: false,
+    isShaperOpen: false,
+    isShaperAccessOpen: false,
     settingsTab: 'general',
     diagnosticLogs: [],
     showReplayHud: false,
@@ -190,6 +199,8 @@ export const useUIStore = create<UIState>((set) => ({
     setIsSettingsOpen: (open) => set({ isSettingsOpen: open }),
     setIsLibraryOpen: (open) => set({ isLibraryOpen: open }),
     setIsButtonsOpen: (open) => set({ isButtonsOpen: open }),
+    setIsShaperOpen: (open) => set({ isShaperOpen: open }),
+    setIsShaperAccessOpen: (open) => set({ isShaperAccessOpen: open }),
     setSettingsTab: (tab) => set({ settingsTab: tab }),
     addDiagnosticLog: (msg) => set((state) => ({ 
         diagnosticLogs: [msg, ...state.diagnosticLogs].slice(0, 50) 
@@ -222,6 +233,8 @@ export const useUIStore = create<UIState>((set) => ({
         isSettingsOpen: false,
         isLibraryOpen: false,
         isButtonsOpen: false,
+        isShaperOpen: false,
+        isShaperAccessOpen: false,
         setManagerOpen: false
     })
 }));

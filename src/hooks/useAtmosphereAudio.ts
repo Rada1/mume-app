@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { FX_THRESHOLD } from '../constants';
 import { audioManager } from '../services/audio/AudioManager';
 import { useSettingsStore } from '../stores/useSettingsStore';
+import { useUIStore } from '../stores/useUIStore';
 
 interface AtmosphereAudioDeps {
     hpRatio: number;
@@ -24,14 +25,18 @@ export const useAtmosphereAudio = ({
 }: AtmosphereAudioDeps) => {
     const masterVolume = useSettingsStore(state => state.masterVolume);
     const musicVolume = useSettingsStore(state => state.musicVolume);
+    const isShaperOpen = useUIStore(state => state.isShaperOpen);
 
     // --- Audio Update Logic ---
     useEffect(() => {
-        if (isSoundEnabled) {
+        if (isSoundEnabled && !isShaperOpen) {
             // We pass ratios to audioManager which handles its own internal thresholds
             audioManager.updateAtmosphere(hpRatio, moveRatio);
+        } else {
+            // Silence heartbeat and breath loops
+            audioManager.updateAtmosphere(1.0, 1.0);
         }
-    }, [hpRatio, moveRatio, isSoundEnabled]);
+    }, [hpRatio, moveRatio, isSoundEnabled, isShaperOpen]);
 
     // --- Visual Heartbeat Logic ---
     useEffect(() => {

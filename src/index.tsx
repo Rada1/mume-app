@@ -35,6 +35,9 @@ import { normalizeTerrain } from './utils/terrainUtils';
 import { toThemeLinkedColor } from './utils/themeLinkedColors';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { canAccessShaper } from './shaper/access/shaperAccess';
+import { ShaperAccessDialog } from './shaper/components/ShaperAccessDialog';
+import { ShaperWorkspace } from './shaper/components/ShaperWorkspace';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
@@ -68,6 +71,7 @@ const MudClient = () => {
         env,
         mumeEditState,
         setMumeEditState,
+        handleSaveMumeEdit,
         isBloomEnabled,
         isImmersionMode,
         isPerformanceMode,
@@ -77,7 +81,8 @@ const MudClient = () => {
         setCommandPreview,
         gameState,
         currentTerrain,
-        accountState
+        accountState,
+        status
     } = useGame();
 
     const { rumble, setTarget, heldButton, heldButtonRef, setHeldButton } = useVitals();
@@ -350,6 +355,33 @@ const MudClient = () => {
                         <SwipeFeedbackOverlay />
                         <ObjectDragOverlay />
                     </div>
+                </ErrorBoundary>,
+                document.body
+            )}
+
+            {typeof document !== 'undefined' && ui.isShaperOpen && canAccessShaper() && createPortal(
+                <ErrorBoundary name="Shaper Workspace">
+                    <ShaperWorkspace
+                        onClose={() => setUI(prev => ({ ...prev, isShaperOpen: false }))}
+                        onSendCommand={(cmd: string) => executeCommand(cmd)}
+                        isConnected={status === 'connected'}
+                        isEditorOpen={mumeEditState.isOpen}
+                        onSaveEditor={handleSaveMumeEdit}
+                    />
+                </ErrorBoundary>,
+                document.body
+            )}
+
+            {typeof document !== 'undefined' && ui.isShaperAccessOpen && createPortal(
+                <ErrorBoundary name="Shaper Access">
+                    <ShaperAccessDialog
+                        onClose={() => setUI(prev => ({ ...prev, isShaperAccessOpen: false }))}
+                        onGranted={() => setUI(prev => ({
+                            ...prev,
+                            isShaperAccessOpen: false,
+                            isShaperOpen: true
+                        }))}
+                    />
                 </ErrorBoundary>,
                 document.body
             )}

@@ -4,6 +4,7 @@ import { useSettingsStore } from '../stores/useSettingsStore';
 import { useActiveRoom, useActiveVitals } from '../stores/useActiveGameState';
 import { useHaptics } from './interactions/useHaptics';
 import { useModeStore } from '../stores/useModeStore';
+import { useUIStore } from '../stores/useUIStore';
 
 export const useAmbientController = (accountStage: string = 'none') => {
     const isSoundEnabled = useSettingsStore(state => state.isSoundEnabled);
@@ -12,6 +13,7 @@ export const useAmbientController = (accountStage: string = 'none') => {
     const mode = useModeStore(state => state.mode);
     const isSpectating = useModeStore(state => state.isSpectating);
     const activeView = useModeStore(state => state.activeView);
+    const isShaperOpen = useUIStore(state => state.isShaperOpen);
 
     // We use the active stores so spectate mode automatically gets correct audio
     const activeRoom = useActiveRoom();
@@ -30,16 +32,16 @@ export const useAmbientController = (accountStage: string = 'none') => {
     const inCombatRef = useRef<boolean>(false);
     const dynamicUrlsRef = useRef<string[] | undefined>(undefined);
 
-    const isAmbientActive = isSoundEnabled && isImmersionMode;
+    const isAmbientActive = isSoundEnabled && isImmersionMode && !isShaperOpen;
 
     useEffect(() => {
-        if (!isSoundEnabled) {
+        if (!isSoundEnabled || isShaperOpen) {
             audioManager.setAmbient('terrain', { key: null });
             return;
         }
         const isDay = lighting === 'sun';
         audioManager.setAmbient('terrain', { key: terrain, isDay });
-    }, [terrain, lighting, isSoundEnabled, mode, isSpectating, activeView]);
+    }, [terrain, lighting, isSoundEnabled, mode, isSpectating, activeView, isShaperOpen]);
 
     useEffect(() => {
         if (!isAmbientActive) {
@@ -54,7 +56,7 @@ export const useAmbientController = (accountStage: string = 'none') => {
     }, [weather, isAmbientActive, mode, isSpectating, activeView]);
 
     useEffect(() => {
-        if (!isSoundEnabled) {
+        if (!isSoundEnabled || isShaperOpen) {
             audioManager.setAmbient('zone', { key: null });
             return;
         }
@@ -93,22 +95,22 @@ export const useAmbientController = (accountStage: string = 'none') => {
         dynamicUrlsRef.current = dynamicUrls;
 
         audioManager.setAmbient('zone', { key: normalizedZone, inCombat, dynamicUrls });
-    }, [roomZone, inCombat, isSoundEnabled, zoneMusic, mode, isSpectating, activeView, accountStage]);
+    }, [roomZone, inCombat, isSoundEnabled, zoneMusic, mode, isSpectating, activeView, accountStage, isShaperOpen]);
 
     // Handle drum loop
     useEffect(() => {
-        if (!isSoundEnabled) {
+        if (!isSoundEnabled || isShaperOpen) {
             audioManager.updateDrumLayer(false, null);
             return;
         }
         audioManager.updateDrumLayer(inCombat, roomZone);
-    }, [inCombat, roomZone, isSoundEnabled, mode, isSpectating, activeView]);
+    }, [inCombat, roomZone, isSoundEnabled, mode, isSpectating, activeView, isShaperOpen]);
 
     // Simple listener for zone ended to trigger re-evaluation if needed
     useEffect(() => {
         const handleZoneEnded = (key: string) => {
             console.log(`[useAmbientController] Zone audio ended: ${key}`);
-            if (isSoundEnabled && normalizedZoneRef.current === key) {
+            if (isSoundEnabled && normalizedZoneRef.current === key && !useUIStore.getState().isShaperOpen) {
                 console.log(`[useAmbientController] Re-triggering zone music for key: ${key}`);
                 audioManager.setAmbient('zone', {
                     key: normalizedZoneRef.current,
@@ -128,7 +130,7 @@ export const useAudioEffects = () => {
     type EffectOptions = { pitch?: number, volume?: number, filterFrequency?: number, skipJitter?: boolean };
 
     const playEffect = useCallback((name: string, options?: EffectOptions) => {
-        if (isSoundEnabled) {
+        if (isSoundEnabled && !useUIStore.getState().isShaperOpen) {
             audioManager.playEffect(name, options);
         }
     }, [isSoundEnabled]);

@@ -1,0 +1,23 @@
+/*
+ * @file MumeArchiveActions.css
+ * @description Action button styles for the MUME archive overlay.
+ */
+
+.mail-actions {
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 12px;
+}
+
+.mail-actions button,
+.mail-send-btn {
+    height: 34px;
+    padding: 0 12px;
+}
+
+.mail-actions button:hover,
+.mail-send-btn:hover {
+    color: #ffffff;
+    border-color: rgba(112, 194, 180, 0.5);
+    background: rgba(112, 194, 180, 0.18);
+}

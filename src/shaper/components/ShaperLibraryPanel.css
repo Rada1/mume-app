@@ -1,0 +1,210 @@
+/**
+ * @file ShaperLibraryPanel.css
+ * @description Styles for the Shaper /lib catalog and install manager.
+ */
+
+/* --- Panel Section --- */
+.shaper-lib-panel {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+}
+
+.shaper-lib-targets {
+    display: flex;
+    gap: 6px;
+}
+
+.shaper-lib-targets button {
+    flex: 1;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 6px;
+    background: #151a20;
+    color: #eef2f6;
+    min-height: 34px;
+    text-transform: capitalize;
+    cursor: pointer;
+    font: inherit;
+}
+
+.shaper-lib-targets button.active {
+    border-color: rgba(240, 180, 91, 0.55);
+    background: rgba(240, 180, 91, 0.12);
+    color: #f0b45b;
+}
+
+.shaper-lib-target-id {
+    color: #aab7c4;
+    font-size: 13px;
+}
+
+.shaper-lib-target-id strong {
+    color: #eef2f6;
+}
+
+.shaper-lib-empty {
+    margin: 0;
+    color: #aab7c4;
+    font-size: 13px;
+}
+
+/* --- Install Section --- */
+.shaper-lib-installed h4,
+.shaper-lib-catalog-head h4 {
+    margin: 0 0 8px;
+    color: #f0b45b;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.shaper-lib-install {
+    display: grid;
+    gap: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.045);
+    padding: 10px 12px;
+    margin-bottom: 8px;
+}
+
+.shaper-lib-install-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.shaper-lib-install-head strong {
+    color: #eef2f6;
+}
+
+.shaper-lib-remove {
+    margin-left: auto;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 5px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ff8f8f;
+    cursor: pointer;
+    padding: 4px 8px;
+    font: inherit;
+}
+
+.shaper-lib-badge.review {
+    border: 1px solid rgba(240, 180, 91, 0.45);
+    border-radius: 999px;
+    background: rgba(240, 180, 91, 0.12);
+    color: #f0b45b;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+}
+
+.shaper-lib-load {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #aab7c4;
+    font-size: 12px;
+}
+
+.shaper-lib-params {
+    display: grid;
+    gap: 6px;
+}
+
+.shaper-lib-param-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.shaper-lib-param-key {
+    min-width: 90px;
+    color: #b8c6d4;
+    font-size: 12px;
+}
+
+.shaper-lib-param-row input,
+.shaper-lib-notes {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 5px;
+    background: #0f1317;
+    color: #eef2f6;
+    padding: 6px;
+    font: inherit;
+}
+
+.shaper-lib-param-row button {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 5px;
+    background: #151a20;
+    color: #eef2f6;
+    cursor: pointer;
+    padding: 6px 10px;
+    font: inherit;
+}
+
+.shaper-lib-notes {
+    width: 100%;
+    resize: vertical;
+}
+
+/* --- Catalog Section --- */
+.shaper-lib-catalog-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.shaper-lib-catalog-head input {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 5px;
+    background: #0f1317;
+    color: #eef2f6;
+    padding: 6px 8px;
+    font: inherit;
+}
+
+.shaper-lib-catalog-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 8px 0;
+}
+
+.shaper-lib-catalog-row strong {
+    color: #eef2f6;
+    margin-right: 8px;
+}
+
+.shaper-lib-catalog-row p {
+    margin: 3px 0 0;
+    color: #aab7c4;
+    font-size: 12px;
+}
+
+.shaper-lib-catalog-row button {
+    border: 1px solid rgba(240, 180, 91, 0.4);
+    border-radius: 6px;
+    background: rgba(240, 180, 91, 0.12);
+    color: #f0b45b;
+    cursor: pointer;
+    padding: 6px 14px;
+    font: inherit;
+    white-space: nowrap;
+}
+
+.shaper-lib-catalog-row button:disabled {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: #6b7785;
+    cursor: default;
+}

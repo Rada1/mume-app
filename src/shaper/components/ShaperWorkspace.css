@@ -1,0 +1,315 @@
+/**
+ * @file ShaperWorkspace.css
+ * @description Layout and visual styling for the Shaper workspace shell.
+ */
+
+.shaper-workspace {
+    --shaper-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    background: #141313;
+    color: #eef2f6;
+    font-family: var(--shaper-font);
+}
+
+.shaper-workspace *,
+.shaper-workspace *::before,
+.shaper-workspace *::after {
+    font-family: inherit;
+}
+
+.shaper-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    background: #1e1d1d;
+}
+
+.shaper-kicker {
+    display: block;
+    color: #f0b45b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.shaper-topbar h1 {
+    margin: 2px 0 0;
+    font-size: 22px;
+    letter-spacing: 0;
+}
+
+.shaper-topbar-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.shaper-topbar button,
+.shaper-nav-section button {
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.06);
+    color: inherit;
+    border-radius: 6px;
+    min-height: 32px;
+    cursor: pointer;
+    font: inherit;
+}
+
+.shaper-main {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 260px minmax(420px, 1fr) 340px;
+}
+
+.shaper-left-panel,
+.shaper-inspector {
+    min-height: 0;
+    overflow: auto;
+    padding: 14px;
+    background: #181717;
+}
+
+.shaper-left-panel {
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.shaper-inspector {
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.shaper-panel-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 14px;
+}
+
+.shaper-panel-heading span,
+.shaper-field span,
+.shaper-room-issues span,
+.shaper-presence-card span {
+    color: #aab7c4;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.shaper-nav-section {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.shaper-nav-section button {
+    text-align: left;
+    padding: 8px 10px;
+}
+
+.shaper-nav-section button.active {
+    border-color: #f0b45b;
+    background: rgba(240, 180, 91, 0.14);
+}
+
+.shaper-nav-section button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.shaper-presence-card,
+.shaper-room-issues {
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    margin-bottom: 12px;
+}
+
+.shaper-presence-card p,
+.shaper-room-issues p {
+    margin: 8px 0 0;
+    color: #c9d3dd;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.shaper-center {
+    min-height: 0;
+    overflow: auto;
+    padding: 22px;
+    background: #1e1e1e;
+}
+
+.shaper-room-tile {
+    position: absolute;
+    z-index: 2;
+    box-sizing: border-box;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px;
+    border: 1px dashed rgba(255, 255, 255, 0.22);
+    border-radius: 8px;
+    background: var(--shaper-sector-color, rgba(255, 255, 255, 0.045));
+    color: #edf2f7;
+    cursor: grab;
+    text-align: left;
+    touch-action: none;
+}
+
+.shaper-room-tile.dragging {
+    cursor: grabbing;
+    opacity: 0.85;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.shaper-room-tile.named {
+    border-style: solid;
+}
+
+.shaper-room-tile.selected {
+    border-color: #f0b45b;
+    box-shadow: 0 0 0 2px rgba(240, 180, 91, 0.22);
+}
+
+.shaper-room-number,
+.shaper-room-sector {
+    color: #aab7c4;
+    font-size: 11px;
+}
+
+.shaper-room-name {
+    max-width: 100%;
+    overflow: hidden;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.shaper-multi-banner {
+    margin-bottom: 12px;
+    padding: 8px 10px;
+    border: 1px solid rgba(240, 180, 91, 0.4);
+    border-radius: 6px;
+    background: rgba(240, 180, 91, 0.12);
+    color: #f0b45b;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.shaper-field {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.shaper-field input,
+.shaper-field select,
+.shaper-field textarea {
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 6px;
+    background: #0e0e0e;
+    color: #eef2f6;
+    padding: 8px 9px;
+    font: inherit;
+}
+
+.shaper-field textarea {
+    resize: vertical;
+    line-height: 1.45;
+}
+
+.shaper-helper {
+    margin: -2px 0 12px;
+    color: #f0b45b;
+    font-size: 12px;
+}
+
+.shaper-flag-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 10px;
+}
+
+.shaper-flag {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    min-height: 28px;
+    padding: 4px 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.025);
+    color: #d9e2ec;
+    font-size: 13px;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.shaper-flag:hover {
+    border-color: rgba(240, 180, 91, 0.3);
+    background: rgba(240, 180, 91, 0.08);
+}
+
+.shaper-flag input {
+    justify-self: center;
+    margin: 0;
+}
+
+.shaper-flag span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.shaper-issue.warning {
+    color: #f7c66a;
+}
+
+.shaper-issue.error {
+    color: #ff8f8f;
+}
+
+.shaper-bottom-panel {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    padding: 10px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    background: #1e1d1d;
+}
+
+.shaper-bottom-summary,
+.shaper-command-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #c9d3dd;
+    font-size: 13px;
+}
+
+@media (max-width: 1100px) {
+    .shaper-main {
+        grid-template-columns: 220px minmax(360px, 1fr);
+    }
+
+    .shaper-inspector {
+        grid-column: 1 / -1;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}

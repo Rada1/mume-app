@@ -239,6 +239,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 executeCommandRef.current?.('change xml on', false, true, true, false);
                 executeCommandRef.current?.('change page off', false, true, true, false);
                 executeCommandRef.current?.('change width 80', false, true, true, false);
+                executeCommandRef.current?.('change editor external', false, true, true, false);
                 executeCommandRef.current?.('info %O %D %k %A', false, true, true, false);
                 setTimeout(() => {
                     executeCommandRef.current?.('practice', true, true, true, false);

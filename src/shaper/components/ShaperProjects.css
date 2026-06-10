@@ -1,0 +1,99 @@
+/**
+ * @file ShaperProjects.css
+ * @description Project dashboard styles for Shaper.
+ */
+
+.shaper-project-dashboard {
+    min-height: 0;
+    overflow: auto;
+    display: grid;
+    grid-template-columns: minmax(280px, 420px) minmax(360px, 1fr);
+    gap: 18px;
+    padding: 24px;
+    background: #141313;
+}
+
+.shaper-project-create,
+.shaper-project-list {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: #181717;
+    padding: 18px;
+}
+
+.shaper-project-create h2,
+.shaper-project-list h2 {
+    margin: 4px 0 16px;
+    font-size: 20px;
+}
+
+.shaper-project-create button,
+.shaper-project-card button {
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #eef2f6;
+    cursor: pointer;
+    font: inherit;
+}
+
+.shaper-project-create button {
+    min-height: 36px;
+    padding: 0 12px;
+}
+
+.shaper-project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.shaper-project-list p {
+    color: #aab7c4;
+}
+
+.shaper-project-card {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.shaper-project-open {
+    display: grid;
+    gap: 4px;
+    padding: 12px;
+    text-align: left;
+}
+
+.shaper-project-rename,
+.shaper-project-delete {
+    align-self: stretch;
+    padding: 0 12px;
+}
+
+.shaper-project-open:hover,
+.shaper-project-create button:hover {
+    border-color: #f0b45b;
+}
+
+.shaper-project-rename:hover {
+    border-color: #3b82f6;
+    color: #eff6ff;
+}
+
+.shaper-project-delete:hover {
+    border-color: #f06b6b;
+    color: #ffd1d1;
+}
+
+.shaper-project-list span,
+.shaper-project-list small {
+    color: #aab7c4;
+}
+
+@media (max-width: 860px) {
+    .shaper-project-dashboard {
+        grid-template-columns: 1fr;
+    }
+}

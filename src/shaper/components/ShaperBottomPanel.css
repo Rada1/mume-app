@@ -1,0 +1,201 @@
+/**
+ * @file ShaperBottomPanel.css
+ * @description Deploy preview styling for the Shaper bottom command tray.
+ */
+
+/* --- Preview Section --- */
+.shaper-command-preview {
+    align-items: stretch;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.shaper-command-preview-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.shaper-command-preview-header button {
+    margin-left: auto;
+    padding: 4px 10px;
+    border: 1px solid rgba(240, 180, 91, 0.5);
+    border-radius: 6px;
+    background: rgba(240, 180, 91, 0.16);
+    color: #f6d29c;
+    font-size: 12px;
+}
+
+.shaper-command-preview-header button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.shaper-command-preview pre {
+    max-height: 94px;
+    margin: 0;
+    padding: 8px 10px;
+    overflow: auto;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    background: #101416;
+    color: #dbe5ef;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+}
+
+.shaper-deploy-warnings {
+    display: grid;
+    gap: 3px;
+    color: #f0b45b;
+    font-size: 12px;
+}
+
+.shaper-copy-failed {
+    color: #ff8f8f;
+    font-size: 12px;
+}
+
+/* --- Deploy Queue Section --- */
+.shaper-bottom-panel {
+    align-items: flex-start;
+}
+
+.shaper-deploy-queue {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    color: #c9d3dd;
+    font-size: 13px;
+}
+
+.shaper-deploy-queue-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.shaper-deploy-queue-header button {
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+    color: #dbe5ef;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.shaper-deploy-send {
+    margin-left: auto;
+    border-color: rgba(96, 220, 130, 0.5) !important;
+    background: rgba(96, 220, 130, 0.16) !important;
+    color: #8ef0ad !important;
+}
+
+.shaper-deploy-send:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.shaper-deploy-abort {
+    margin-left: auto;
+    border-color: rgba(239, 68, 68, 0.5) !important;
+    background: rgba(239, 68, 68, 0.16) !important;
+    color: #ff8f8f !important;
+}
+
+.shaper-deploy-blocked {
+    color: #f0b45b;
+    font-size: 12px;
+}
+
+.shaper-deploy-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 120px;
+    overflow: auto;
+    display: grid;
+    gap: 3px;
+}
+
+.shaper-deploy-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 6px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.shaper-deploy-step code {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 12px;
+    color: #dbe5ef;
+}
+
+.shaper-deploy-step em {
+    color: #f0b45b;
+    font-size: 11px;
+}
+
+.shaper-deploy-step-status {
+    min-width: 64px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #aab7c4;
+}
+
+.shaper-deploy-step.sent .shaper-deploy-step-status,
+.shaper-deploy-step.sending .shaper-deploy-step-status { color: #8ec5ff; }
+.shaper-deploy-step.verified .shaper-deploy-step-status { color: #8ef0ad; }
+.shaper-deploy-step.failed .shaper-deploy-step-status { color: #ff8f8f; }
+.shaper-deploy-step.skipped .shaper-deploy-step-status { color: #f0b45b; }
+
+.shaper-deploy-step-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+}
+
+.shaper-deploy-step-actions button {
+    padding: 2px 8px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+    color: #dbe5ef;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.shaper-deploy-audit {
+    font-size: 12px;
+    color: #aab7c4;
+}
+
+.shaper-deploy-audit ul {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+    max-height: 96px;
+    overflow: auto;
+    display: grid;
+    gap: 2px;
+}
+
+.shaper-deploy-audit li {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+}
+
+.shaper-deploy-audit time { color: #6b7785; }
+.shaper-deploy-audit code { font-family: Consolas, "Courier New", monospace; color: #c9d3dd; }

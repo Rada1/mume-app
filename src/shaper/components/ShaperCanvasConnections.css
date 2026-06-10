@@ -1,0 +1,122 @@
+/**
+ * @file ShaperCanvasConnections.css
+ * @description Connection nodes and directed exit line styling for Shaper.
+ */
+
+/* --- Visual Nodes and SVG Lines Section --- */
+.shaper-node {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #1a1f26;
+    border: 2px solid #aab7c4;
+    padding: 0;
+    cursor: crosshair;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #eef2f6;
+    line-height: 1;
+    opacity: 0.4;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.shaper-node:hover {
+    transform: translate(-50%, -50%) scale(1.25);
+    border-color: #f0b45b;
+    box-shadow: 0 0 8px #f0b45b;
+    color: #f0b45b;
+    opacity: 1;
+}
+
+.shaper-node.node-n {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.shaper-node.node-s {
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.shaper-node.node-e {
+    top: 50%;
+    left: 100%;
+    transform: translate(-50%, -50%);
+}
+
+.shaper-node.node-w {
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+}
+
+.shaper-node.node-u {
+    top: 20px;
+    left: 20px;
+    transform: translate(-50%, -50%);
+}
+
+.shaper-node.node-d {
+    top: calc(100% - 20px);
+    left: calc(100% - 20px);
+    transform: translate(-50%, -50%);
+}
+
+.shaper-node.hovered-target {
+    transform: translate(-50%, -50%) scale(1.4);
+    border-color: #38bdf8;
+    box-shadow: 0 0 12px #38bdf8;
+    background: #38bdf8;
+    color: #1a1f26;
+    opacity: 1;
+}
+
+.shaper-connection-group {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.shaper-connection-line {
+    opacity: 0.9;
+    transition: opacity 0.15s ease, stroke 0.15s ease, stroke-width 0.15s ease, filter 0.15s ease;
+}
+
+.shaper-connection-group:hover .shaper-connection-line {
+    opacity: 1;
+    stroke: #60a5fa;
+    stroke-width: 11px;
+    filter: drop-shadow(0 0 4px rgba(96, 165, 250, 0.5));
+}
+
+.shaper-connection-group.selected .shaper-connection-line {
+    opacity: 1;
+    stroke: #38bdf8;
+    stroke-width: 13px;
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8));
+}
+
+.shaper-connection-group.selected:hover .shaper-connection-line {
+    opacity: 1;
+    stroke: #7dd3fc;
+    stroke-width: 14px;
+    filter: drop-shadow(0 0 10px rgba(56, 189, 248, 1));
+}
+
+.shaper-void-barrier {
+    stroke: #09090b;
+    stroke-width: 14px;
+    stroke-linecap: square;
+    opacity: 1;
+    pointer-events: none;
+}
+
+.shaper-connection-label {
+    pointer-events: none;
+}

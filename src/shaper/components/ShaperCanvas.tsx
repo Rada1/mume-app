@@ -1,0 +1,293 @@
+/**
+ * @file ShaperCanvas.tsx
+ * @description Pan/zoom concept canvas for Shaper room placement and exits.
+ */
+
+import { useCallback, useMemo, useState } from 'react';
+import type { CSSProperties, DragEvent, PointerEvent as ReactPointerEvent } from 'react';
+import { SHAPER_CELL, useShaperCanvasView } from '../hooks/useShaperCanvasView';
+import type { ShaperExitState } from '../model/shaperExits';
+import type { ShaperCommandNode, ShaperDirection, ShaperExitDraft, ShaperRoomDraft, ShaperRoomId, ShaperConnectionSelection } from '../model/shaperTypes';
+import { formatLayer, getNodePosition, type ShaperConnectionDragState, type ShaperRoomMenuState } from './ShaperCanvasGeometry';
+import { ShaperRoomContextMenu } from './ShaperCanvasMenus';
+import { ShaperCanvasToolbar } from './ShaperCanvasToolbar';
+import { ShaperConnectionLayer } from './ShaperConnectionLayer';
+import { ShaperExtraRooms } from './ShaperExtraRooms';
+import { ShaperRoomTile } from './ShaperRoomTile';
+import { useShaperTerrainAssets } from './shaperTerrainTile';
+import './ShaperCanvas.css';
+import './ShaperCanvasConnections.css';
+import './ShaperTerrain.css';
+
+interface ShaperCanvasProps {
+    rooms: Record<ShaperRoomId, ShaperRoomDraft>;
+    exits: Record<string, ShaperExitDraft>;
+    commandNodes: Record<string, ShaperCommandNode>;
+    selectedRoomId: ShaperRoomId;
+    selectedRoomIds: Set<ShaperRoomId>;
+    selectedConnection: ShaperConnectionSelection | null;
+    selectedConnectionIds: Set<string>;
+    onSelectConnection: (conn: ShaperConnectionSelection | null) => void;
+    onToggleSelectConnection: (conn: ShaperConnectionSelection) => void;
+    layers: number[];
+    viewZ: number;
+    onAddExtraRoom: () => void;
+    onCycleExit: (aId: ShaperRoomId, bId: ShaperRoomId, dirAB: ShaperDirection, dirBA: ShaperDirection) => void;
+    onConnectExits: (aId: ShaperRoomId, bId: ShaperRoomId, dirAB: ShaperDirection, dirBA: ShaperDirection, state: ShaperExitState) => void;
+    onConnectDirectedExit: (fromRoomId: ShaperRoomId, toRoomId: ShaperRoomId, direction: ShaperDirection) => void;
+    onToggleExitDoor: (fromRoomId: ShaperRoomId, direction: ShaperDirection) => void;
+    onSelectRoom: (roomId: ShaperRoomId) => void;
+    onToggleSelect: (roomId: ShaperRoomId) => void;
+    onSetViewZ: (z: number) => void;
+    onAddRoomAt: (x: number, y: number, z: number) => void;
+    onMoveRoom: (roomId: ShaperRoomId, x: number, y: number, z: number) => void;
+    onMoveRooms: (roomIds: ShaperRoomId[], dx: number, dy: number, z: number) => void;
+    onRemoveRoom: (roomId: ShaperRoomId) => void;
+    onRemoveRooms: (roomIds: ShaperRoomId[]) => void;
+}
+
+interface DragState {
+    roomId: ShaperRoomId;
+    startX: number;
+    startY: number;
+    dx: number;
+    dy: number;
+    moved: boolean;
+}
+
+const DRAG_THRESHOLD = 5;
+const EXTRA_ROOM_MIME = 'application/x-shaper-room';
+
+// --- Component Section ---
+export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
+    rooms,
+    exits,
+    commandNodes,
+    selectedRoomId,
+    selectedRoomIds,
+    selectedConnection,
+    selectedConnectionIds,
+    onSelectConnection,
+    onToggleSelectConnection,
+    layers,
+    viewZ,
+    onAddExtraRoom,
+    onConnectDirectedExit,
+    onToggleExitDoor,
+    onSelectRoom,
+    onToggleSelect,
+    onSetViewZ,
+    onAddRoomAt,
+    onMoveRoom,
+    onMoveRooms,
+    onRemoveRoom,
+    onRemoveRooms
+}) => {
+    const view = useShaperCanvasView();
+    // Re-render tiles when the terrain image assets finish loading.
+    useShaperTerrainAssets();
+    const [showNodes, setShowNodes] = useState(true);
+    const [showExits, setShowExits] = useState(true);
+    const [drag, setDrag] = useState<DragState | null>(null);
+    const [roomMenu, setRoomMenu] = useState<ShaperRoomMenuState | null>(null);
+    const [connectionDrag, setConnectionDrag] = useState<ShaperConnectionDragState | null>(null);
+
+    const gridRooms = useMemo(() => Object.values(rooms).filter(room => room.z === viewZ && room.kind === 'grid'), [rooms, viewZ]);
+    const extraRooms = useMemo(() => Object.values(rooms).filter(room => room.z === viewZ && room.kind === 'extra'), [rooms, viewZ]);
+    const roomByCell = useMemo(() => {
+        const map = new Map<string, ShaperRoomDraft>();
+        for (const room of gridRooms) map.set(`${room.x},${room.y}`, room);
+        return map;
+    }, [gridRooms]);
+
+    const groupDragIds = drag && selectedRoomIds.has(drag.roomId) && selectedRoomIds.size > 1
+        ? selectedRoomIds
+        : null;
+
+    const screenToWorld = useCallback((clientX: number, clientY: number) => {
+        const rect = view.viewportRef.current?.getBoundingClientRect();
+        return {
+            x: (clientX - (rect?.left ?? 0) - view.camera.x) / view.camera.zoom,
+            y: (clientY - (rect?.top ?? 0) - view.camera.y) / view.camera.zoom
+        };
+    }, [view.camera, view.viewportRef]);
+
+    // --- Connection Node Section ---
+    const handleNodePointerDown = (event: ReactPointerEvent<HTMLButtonElement>, roomId: ShaperRoomId, dir: ShaperDirection) => {
+        event.stopPropagation();
+        try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* best effort */ }
+        setConnectionDrag({ sourceRoomId: roomId, sourceDir: dir, currentPos: screenToWorld(event.clientX, event.clientY), hoveredTarget: null });
+    };
+
+    const readTargetNode = (clientX: number, clientY: number) => {
+        const targetNode = document.elementFromPoint(clientX, clientY)?.closest('[data-shaper-node]');
+        if (!targetNode) return null;
+        return {
+            roomId: targetNode.getAttribute('data-room-id') ?? '',
+            dir: targetNode.getAttribute('data-dir') as ShaperDirection
+        };
+    };
+
+    const handleNodePointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
+        if (!connectionDrag) return;
+        let worldPos = screenToWorld(event.clientX, event.clientY);
+        let hoveredTarget: ShaperConnectionDragState['hoveredTarget'] = null;
+        const target = readTargetNode(event.clientX, event.clientY);
+        if (target && target.roomId !== connectionDrag.sourceRoomId) {
+            hoveredTarget = target;
+            const targetRoom = rooms[target.roomId];
+            if (targetRoom) worldPos = getNodePosition(targetRoom.x, targetRoom.y, target.dir);
+        }
+        setConnectionDrag(current => current ? { ...current, currentPos: worldPos, hoveredTarget } : null);
+    };
+
+    const handleNodePointerUp = (event: ReactPointerEvent<HTMLButtonElement>) => {
+        if (!connectionDrag) return;
+        try { event.currentTarget.releasePointerCapture(event.pointerId); } catch { /* best effort */ }
+        const target = connectionDrag.hoveredTarget ?? readTargetNode(event.clientX, event.clientY);
+        if (target && target.roomId !== connectionDrag.sourceRoomId) {
+            onConnectDirectedExit(connectionDrag.sourceRoomId, target.roomId, connectionDrag.sourceDir);
+        }
+        setConnectionDrag(null);
+    };
+
+    // --- Room Drag Section ---
+    const handleTilePointerDown = (event: ReactPointerEvent<HTMLDivElement>, room: ShaperRoomDraft) => {
+        event.stopPropagation();
+        if (event.button !== 0) return;
+        try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* best effort */ }
+        setDrag({ roomId: room.id, startX: event.clientX, startY: event.clientY, dx: 0, dy: 0, moved: false });
+    };
+
+    const handleTilePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+        setDrag(current => {
+            if (!current) return current;
+            const dx = event.clientX - current.startX;
+            const dy = event.clientY - current.startY;
+            return { ...current, dx, dy, moved: current.moved || Math.hypot(dx, dy) > DRAG_THRESHOLD };
+        });
+    };
+
+    const handleTilePointerUp = (event: ReactPointerEvent<HTMLDivElement>, room: ShaperRoomDraft) => {
+        event.stopPropagation();
+        if (event.button !== 0) return;
+        if (drag?.roomId === room.id && drag.moved) {
+            const cell = view.screenToCell(event.clientX, event.clientY);
+            if (groupDragIds) onMoveRooms([...groupDragIds], cell.x - room.x, cell.y - room.y, viewZ);
+            else onMoveRoom(room.id, cell.x, cell.y, viewZ);
+        } else if (event.shiftKey) {
+            onToggleSelect(room.id);
+        } else {
+            onSelectRoom(room.id);
+        }
+        setDrag(null);
+    };
+
+    // --- Viewport Section ---
+    const openContextMenu = (event: ReactPointerEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        const cell = view.screenToCell(event.clientX, event.clientY);
+        const room = roomByCell.get(`${cell.x},${cell.y}`);
+        if (room && !selectedRoomIds.has(room.id)) onSelectRoom(room.id);
+        setRoomMenu({ screenX: event.clientX, screenY: event.clientY, cellX: cell.x, cellY: cell.y, roomId: room?.id ?? null });
+    };
+
+    const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        const roomId = event.dataTransfer.getData(EXTRA_ROOM_MIME);
+        if (!roomId) return;
+        const cell = view.screenToCell(event.clientX, event.clientY);
+        onMoveRoom(roomId, cell.x, cell.y, viewZ);
+    };
+
+    const worldStyle: CSSProperties = {
+        transform: `translate(${view.camera.x}px, ${view.camera.y}px) scale(${view.camera.zoom})`
+    };
+    const gridStyle: CSSProperties = {
+        backgroundSize: `${SHAPER_CELL * view.camera.zoom}px ${SHAPER_CELL * view.camera.zoom}px`,
+        backgroundPosition: `${view.camera.x}px ${view.camera.y}px`
+    };
+
+    return (
+        <div className="shaper-canvas-shell">
+            <ShaperCanvasToolbar
+                layers={layers}
+                viewZ={viewZ}
+                showNodes={showNodes}
+                showExits={showExits}
+                onAddExtraRoom={onAddExtraRoom}
+                onSetViewZ={onSetViewZ}
+                onSetShowNodes={setShowNodes}
+                onSetShowExits={setShowExits}
+                onResetCamera={view.resetCamera}
+            />
+
+            <div
+                ref={view.viewportRef}
+                className={`shaper-canvas-viewport ${view.isPanning ? 'panning' : ''}`}
+                aria-label={`${formatLayer(viewZ)} concept zone grid`}
+                onWheel={view.handleWheel}
+                onPointerDown={event => { setRoomMenu(null); view.handlePanStart(event); }}
+                onPointerMove={view.handlePanMove}
+                onPointerUp={view.handlePanEnd}
+                onContextMenu={openContextMenu}
+                onDragOver={event => event.preventDefault()}
+                onDrop={handleDrop}
+            >
+                <div className="shaper-grid-lines" style={gridStyle} />
+                <div className="shaper-world" style={worldStyle}>
+                    <ShaperConnectionLayer
+                        rooms={rooms}
+                        exits={exits}
+                        viewZ={viewZ}
+                        drag={connectionDrag}
+                        selectedConnection={selectedConnection}
+                        selectedConnectionIds={selectedConnectionIds}
+                        onSelectConnection={onSelectConnection}
+                        onToggleSelectConnection={onToggleSelectConnection}
+                        showExits={showExits}
+                    />
+                    {gridRooms.map(room => {
+                        const dragging = !!drag && drag.moved && (drag.roomId === room.id || (!!groupDragIds && groupDragIds.has(room.id)));
+                        const selected = room.id === selectedRoomId || selectedRoomIds.has(room.id);
+                        return (
+                            <ShaperRoomTile
+                                key={room.id}
+                                room={room}
+                                commandNodes={commandNodes}
+                                selected={selected}
+                                dragging={dragging}
+                                dragOffset={dragging ? drag : null}
+                                zoom={view.camera.zoom}
+                                showExits={showExits}
+                                showNodes={showNodes}
+                                connectionDrag={connectionDrag}
+                                onTilePointerDown={handleTilePointerDown}
+                                onTilePointerMove={handleTilePointerMove}
+                                onTilePointerUp={handleTilePointerUp}
+                                onNodePointerDown={handleNodePointerDown}
+                                onNodePointerMove={handleNodePointerMove}
+                                onNodePointerUp={handleNodePointerUp}
+                            />
+                        );
+                    })}
+                </div>
+
+                {roomMenu && (
+                    <ShaperRoomContextMenu
+                        menu={roomMenu}
+                        viewport={view.viewportRef.current}
+                        selectedRoomIds={selectedRoomIds}
+                        viewZ={viewZ}
+                        onAddRoomAt={onAddRoomAt}
+                        onRemoveRoom={onRemoveRoom}
+                        onRemoveRooms={onRemoveRooms}
+                        onClose={() => setRoomMenu(null)}
+                    />
+                )}
+            </div>
+
+            <ShaperExtraRooms rooms={extraRooms} selectedRoomId={selectedRoomId} mimeType={EXTRA_ROOM_MIME} onSelectRoom={onSelectRoom} />
+        </div>
+    );
+};

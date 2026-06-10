@@ -545,6 +545,8 @@ export const useMapperRenderer = ({
             const floorIndex = spatialIndexRef.current[curZInt];
 
             const tGatherStart = performance.now();
+            const rings = computeRevealRings(bX1, bY1, bX2, bY2, floorIndex || {}, explored, preloaded);
+
             if (floorIndex) {
                 for (let bx = bX1; bx <= bX2; bx++) {
                     for (let by = bY1; by <= bY2; by++) {
@@ -552,7 +554,9 @@ export const useMapperRenderer = ({
                         if (bucket) {
                             for (let j = 0; j < bucket.length; j++) {
                                 const vnum = bucket[j];
-                                if (!explored.has(vnum) && !unveilMap && !treatMapAsExplored) continue;
+                                const isExplored = explored.has(vnum);
+                                const isRing1 = rings.ring1Revealed.has(vnum);
+                                if (!isExplored && !isRing1 && !unveilMap && !treatMapAsExplored) continue;
                                 const rData = preloaded[vnum];
                                 const irx = Math.round(rData[0]), iry = Math.round(rData[1]);
                                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
@@ -584,8 +588,6 @@ export const useMapperRenderer = ({
             }
             const gatherMs = performance.now() - tGatherStart;
             perfMonitor.resetIconSplit();
-
-            const rings = computeRevealRings(bX1, bY1, bX2, bY2, floorIndex || {}, explored, preloaded);
 
             return { roomAtCoord, visitedAtCoord, localVisible, gatherMs, geo, ring1Revealed: rings.ring1Revealed, ring2Peeked: rings.ring2Peeked };
         };

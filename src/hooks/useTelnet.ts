@@ -88,6 +88,7 @@ export function useTelnet(config: TelnetConfig) {
             onCharRide: (val) => configRef.current.handlers.onCharRide?.(val),
             onComm: (s, c, m) => configRef.current.handlers.onComm?.(s, c, m),
             onEvent: (pkg, val) => configRef.current.handlers.onEvent?.(pkg, val),
+            onMumeEdit: (val) => configRef.current.handlers.onMumeEdit?.(val),
             onCorePing: () => sendGmcp('Core.Ping'),
             onCoreGoodbye: () => {},
         } as any);

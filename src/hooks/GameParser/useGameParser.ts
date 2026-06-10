@@ -824,8 +824,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         const expectedCaptureType = normalizeStageToCaptureType(deps.captureStage.current) as any;
         const isCaptureBoundary = isPromptResolved || promptInfo.isMatch || isPromptBoundaryLine(textOnly);
+        const archiveCaptureTypes = ['board_list', 'board_read', 'mail_list', 'mail_read', 'book_read'];
+        const isArchiveCapture = archiveCaptureTypes.includes(expectedCaptureType) || archiveCaptureTypes.includes(capture.getActiveType());
+        const captureAttachedText = (promptInfo as any).attachedText?.trim();
+        const effectiveCaptureText = isArchiveCapture && captureAttachedText ? captureAttachedText : textOnly;
+        const effectiveCaptureBoundary = isCaptureBoundary && !(isArchiveCapture && captureAttachedText);
         const shouldHidePendingSilentCapture = !isSnoop &&
-            !isCaptureBoundary &&
+            !effectiveCaptureBoundary &&
             capture.isPendingSilent() &&
             expectedCaptureType !== 'none';
 
@@ -938,13 +943,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // Prompt lines end list-style captures and should never be stored as
         // drawer content. A new drawer header can also arrive before the previous
         // capture sees a prompt, so switch sessions at the header boundary.
-        let skipCaptureAccumulation = isCaptureBoundary;
-        if (!isSnoop && isCaptureBoundary && capture.hasSession()) {
+        let skipCaptureAccumulation = effectiveCaptureBoundary;
+        if (!isSnoop && effectiveCaptureBoundary && capture.hasSession()) {
             capture.finalizeSession();
         }
 
-        const incomingCaptureType = !isSnoop && !isCaptureBoundary && !isAccountPhase
-            ? capture.checkTriggers(textOnly, (promptInfo as any).attachedText)
+        const incomingCaptureType = !isSnoop && !effectiveCaptureBoundary && !isAccountPhase
+            ? capture.checkTriggers(effectiveCaptureText, captureAttachedText)
             : null;
         if (incomingCaptureType && capture.hasSession() && incomingCaptureType !== capture.getActiveType()) {
             capture.finalizeSession();
@@ -964,7 +969,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // command middleware marked an expected capture type, begin on first output.
         const canStartExpectedCapture = (
             !isSnoop &&
-            !isCaptureBoundary &&
+            !effectiveCaptureBoundary &&
             !capture.hasSession() &&
             !incomingCaptureType &&
             [
@@ -977,7 +982,12 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 'info',
                 'practice',
                 'quests',
-                'container'
+                'container',
+                'board_list',
+                'board_read',
+                'mail_list',
+                'mail_read',
+                'book_read'
             ].includes(expectedCaptureType)
         );
         if (canStartExpectedCapture) {

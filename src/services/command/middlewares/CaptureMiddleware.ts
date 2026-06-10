@@ -5,6 +5,7 @@
  */
 
 import { CommandMiddleware } from '../types';
+import { useArchiveStore } from '../../../stores/useArchiveStore';
 
 const COMMAND_CAPTURE_TYPES: Record<string, import('../../../types/capture').CaptureType> = {
     eq: 'equipment',
@@ -41,13 +42,101 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
         setPendingFlags(silent, fromDrawer, cmd);
     }
 
+
     if (captureStage) {
         const baseCommand = lowerCmd.split(/\s+/)[0];
         let captureType = COMMAND_CAPTURE_TYPES[baseCommand];
         if (!captureType && (lowerCmd.startsWith('look in ') || lowerCmd.startsWith('look inside '))) {
             captureType = 'container';
         }
-        if (captureType) captureStage.current = captureType;
+        const words = lowerCmd.split(/\s+/);
+        const firstWord = words[0];
+        const lastWord = words[words.length - 1];
+
+        const isLook = firstWord === 'look' || firstWord === 'l';
+        const isTail = firstWord === 'tail';
+        const isBoardNoun = lastWord === 'board' || lastWord === 'b' || lastWord === 'bulletin';
+
+        // Match "look ... board", "look ... b", "look ... bulletin", "tail ...", "tail"
+        const isBoardListCommand = 
+            (isLook && isBoardNoun) ||
+            lowerCmd === 'look threads' ||
+            lowerCmd === 'look all threads' ||
+            /^look\s+thread\s+\d+$/i.test(lowerCmd) ||
+            (isTail && useArchiveStore.getState().activeView === 'board') ||
+            (lowerCmd.startsWith('look at ') && isBoardNoun) ||
+            (lowerCmd.startsWith('look all ') && isBoardNoun);
+
+        if (!captureType && isBoardListCommand) {
+            useArchiveStore.getState().setPanelMode('board');
+            useArchiveStore.getState().setActiveView(lowerCmd.includes('thread') ? 'board-threads' : 'board');
+            captureType = 'board_list';
+        }
+
+        const isBoardReadCommand = 
+            /^(?:read|view)\s+\d+$/i.test(lowerCmd) ||
+            /^(?:read|view)\s+\d+\s+(?:board|b)$/i.test(lowerCmd) ||
+            /^read\s+thread\s+\d+(?:\s+(?:next|whole))?$/i.test(lowerCmd);
+
+        if (!captureType && isBoardReadCommand) {
+            captureType = useArchiveStore.getState().activeView.startsWith('board') ? 'board_read' : 'mail_read';
+        }
+        const isMailListCommand =
+            lowerCmd === 'look mail' || lowerCmd === 'tail' || /^tail\s+\d+$/i.test(lowerCmd) ||
+            lowerCmd === 'look sent mail' || lowerCmd === 'look seen mail' ||
+            lowerCmd === 'look sent seen mail' ||
+            lowerCmd.startsWith('search mail ') || lowerCmd.startsWith('search sent mail ');
+        if (!captureType && isMailListCommand) {
+            useArchiveStore.getState().setPanelMode('mail');
+            useArchiveStore.getState().setActiveView(lowerCmd.includes('sent') ? 'mail-sent' : 'mail-inbox');
+            captureType = 'mail_list';
+        }
+        if (!captureType && /^read\s+sent\s+\d+$/i.test(lowerCmd)) {
+            useArchiveStore.getState().setPanelMode('mail');
+            useArchiveStore.getState().setActiveView('mail-sent');
+            captureType = 'mail_read';
+        }
+        const isBookReadCommand =
+            !captureType &&
+            /^(?:read|view)\s+(?!\d+\b|sent\b|thread\b|next\b|last\b|forward\b|origin\b).+/i.test(lowerCmd);
+        if (isBookReadCommand) {
+            const title = cmd.trim().replace(/^(?:read|view)\s+/i, '').trim();
+            useArchiveStore.getState().setPanelMode('book');
+            useArchiveStore.getState().setActiveView('book');
+            useArchiveStore.getState().setActiveDetail({
+                id: Date.now(),
+                source: 'book',
+                view: 'book',
+                subject: title || 'Book',
+                author: '',
+                date: '',
+                body: ''
+            });
+            captureType = 'book_read';
+        }
+        if (captureType) {
+            captureStage.current = captureType;
+        }
+
+        // Intercept manual board commands to run them silently
+        if ((captureType === 'board_list' || captureType === 'board_read') && !silent) {
+            if (context.executeCommand) {
+                context.executeCommand(cmd, true, isSystem, false, fromDrawer);
+            }
+            return null; // Intercept and cancel the original command execution
+        }
+        if ((captureType === 'mail_list' || captureType === 'mail_read') && !silent) {
+            if (context.executeCommand) {
+                context.executeCommand(cmd, true, isSystem, false, fromDrawer);
+            }
+            return null;
+        }
+        if (captureType === 'book_read' && !silent) {
+            if (context.executeCommand) {
+                context.executeCommand(cmd, true, isSystem, false, fromDrawer);
+            }
+            return null;
+        }
     }
 
     if (!isSystem && !fromDrawer) {

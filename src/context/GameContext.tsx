@@ -212,6 +212,17 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         telnetRef.current?.sendCommand(cmd);
     }, []);
 
+    const handleSaveMumeEdit = useCallback((text: string) => {
+        if (s.mumeEditState.key && telnetRef.current) {
+            const editId = Number(s.mumeEditState.key);
+            telnetRef.current.sendGMCP("Mume.Client.Write", {
+                id: isNaN(editId) ? s.mumeEditState.key : editId,
+                text: text
+            });
+        }
+        s.setMumeEditState(prev => ({ ...prev, isOpen: false, context: null }));
+    }, [s.mumeEditState.key, s.setMumeEditState]);
+
     const gmcpHandlers = useGmcpHandlers({
         mapperRef: mapperRef, roomDescRef: s.userSession.game.roomDescRef,
         setCurrentTerrain: s.userSession.game.setCurrentTerrain,
@@ -782,6 +793,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             mapExpanded: ui.mapExpanded,
             isMenuOpen: ui.isMenuOpen,
             isSetMenuOpen: ui.isSetMenuOpen,
+            isShaperOpen: ui.isShaperOpen,
+            isShaperAccessOpen: ui.isShaperAccessOpen,
             menuView: ui.menuView,
             mapMode: ui.mapMode,
             peekingSource: 'none' as any,
@@ -989,6 +1002,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         telnet,
         parser,
         ...controller,
+        handleSaveMumeEdit,
         setRoomChars: s.setRoomChars,
         addMessage,
         btn,
@@ -1042,7 +1056,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         viewport, env, audioCtxRef, initAudio, spatButtons, ui.diagnosticLogs,
         practice, help, quests, keywordOverrides,
         s.userSession.recorder, mapperRef, sessionMode, setSessionMode,
-        discordActivity
+        discordActivity, handleSaveMumeEdit
     ]);
 
     return (

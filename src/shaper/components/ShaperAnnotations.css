@@ -1,0 +1,83 @@
+/**
+ * @file ShaperAnnotations.css
+ * @description Inspector styling for room review annotations.
+ */
+
+/* --- Annotation Section --- */
+.shaper-annotations {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.shaper-annotations-heading {
+    display: flex;
+    justify-content: space-between;
+    color: #aab7c4;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.shaper-annotations p {
+    margin: 0;
+    color: #c9d3dd;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.shaper-annotation {
+    position: relative;
+    display: grid;
+    gap: 4px;
+    padding: 8px 28px 8px 9px;
+    border: 1px solid rgba(240, 180, 91, 0.22);
+    border-radius: 6px;
+    background: rgba(240, 180, 91, 0.08);
+}
+
+.shaper-annotation small {
+    color: #aab7c4;
+    font-size: 11px;
+}
+
+.shaper-annotation button,
+.shaper-annotation-add button {
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #eef2f6;
+    cursor: pointer;
+}
+
+.shaper-annotation button {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+}
+
+.shaper-annotation-add {
+    display: grid;
+    grid-template-columns: 1fr 32px;
+    gap: 6px;
+}
+
+.shaper-annotation-add textarea {
+    min-width: 0;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 6px;
+    background: #0f1317;
+    color: #eef2f6;
+    padding: 8px 9px;
+    resize: vertical;
+}

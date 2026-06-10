@@ -9,6 +9,8 @@ import { DrawerLine } from '../../types';
 import { Tokenizer } from '../../services/parser/Tokenizer';
 import { buildPlayerLineTokens } from './playerLineTokens';
 import { parseAffectedByLines } from '../../utils/affectUtils';
+import { useArchiveStore } from '../../stores/useArchiveStore';
+import { parseArchiveList, parseArchiveRead } from '../../utils/archiveAdapters';
 
 export interface CaptureParserDeps {
     captureSession: CaptureSession | null;
@@ -76,10 +78,16 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         else if (/\d+\/\d+ hits, \d+\/\d+ mana, and \d+\/\d+ moves/i.test(lower)) type = 'score';
         else if (clean.match(/^.{0,5}Score for /)) type = 'score';
         else if (lower.startsWith('when you look inside') || lower.startsWith('when you look in ')) type = 'container';
+        else if (/^message\s+\d+\s+on\s+((?!mailbox|mail).)+:?$/i.test(clean)) type = 'board_read';
+        else if (/^bulletin board for .+:$/i.test(clean)) type = 'board_list';
+        else if (/^bulletin board:$/i.test(clean)) type = 'board_list';
+        else if (lower.includes('board') && lower.includes('messages') && lower.includes('out of')) type = 'board_list';
+        else if (/^message\s+\d+:/i.test(clean)) type = 'board_list';
+        else if (/^-?\s*\d+(?:#:|\s+:).+\(.+\)$/i.test(clean)) type = 'board_list';
+        else if (/^(?:mailbox|mail addressed to you|sent mail|your mail|you have \d+ mails?|mail\s+-\s+\d+\s+messages?)/i.test(clean)) type = 'mail_list';
+        else if (/^(?:\+?\s*)?(?:mail|message)?\s*\d+(?:#|:|\.)\s+/i.test(clean) && lower.includes('@')) type = 'mail_list';
+        else if (/^(?:mail|message)\s+\d+\s*(?::|\s+(?:in|from|on)\s+(?:your\s+)?(?:mailbox|mail|sent mail))/i.test(clean)) type = 'mail_read';
 
-        if (type) {
-            // console.log(`[Capture] Trigger matched: ${type} for line: "${clean.substring(0, 40)}"`);
-        }
         return type;
     }, []);
 
@@ -89,22 +97,28 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             return;
         }
 
+        const archiveView = useArchiveStore.getState().activeView;
         const newSession: CaptureSession = {
             type,
             lines: [],
             startTime: Date.now(),
             isSilent: pendingFlagsRef.current.isSilent,
             fromDrawer: pendingFlagsRef.current.fromDrawer,
-            metadata: type === 'container' ? { 
-                containerId: lastRequestedContainerIdRef.current,
-                command: pendingFlagsRef.current.command
-            } : undefined
+            metadata: type === 'container'
+                ? {
+                    containerId: lastRequestedContainerIdRef.current,
+                    command: pendingFlagsRef.current.command
+                }
+                : ['board_list', 'board_read', 'mail_list', 'mail_read', 'book_read'].includes(type)
+                    ? { archiveView }
+                    : undefined
         };
         if (type === 'container') {
             lastRequestedContainerIdRef.current = null;
         }
         sessionRef.current = newSession;
         setCaptureSession(newSession);
+        console.log(`[Capture] Starting ${type} session. Silent flag from pending:`, newSession.isSilent);
 
         // Reset pending flags once session starts
         pendingFlagsRef.current = { isSilent: false, fromDrawer: false, command: undefined };
@@ -117,10 +131,23 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             'practice': 'practice',
             'info': 'info',
             'score': 'score',
-            'achievement': 'achievement'
+            'achievement': 'achievement',
+            'board_list': 'board_list',
+            'board_read': 'board_read',
+            'mail_list': 'mail_list',
+            'mail_read': 'mail_read',
+            'book_read': 'book_read'
         };
         if (stageMap[type]) {
             captureStage.current = stageMap[type];
+        }
+
+        if (['board_list', 'mail_list'].includes(type)) {
+            useArchiveStore.getState().setIsLoadingList(true);
+            useArchiveStore.getState().setIsOpen(true);
+        } else if (['board_read', 'mail_read', 'book_read'].includes(type)) {
+            useArchiveStore.getState().setIsLoadingDetail(true);
+            useArchiveStore.getState().setIsOpen(true);
         }
     }, [setCaptureSession, captureStage, sessionRef]);
 
@@ -130,6 +157,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         .replace(/&amp;/gi, '&');
 
     const stripXmlTags = (text: string) => decodeXmlEntities(text)
+        .replace(/<prompt\b[^>]*>.*?<\/prompt>/gi, '')
         .replace(/<\/?[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?>/g, (tag: string) => /^<[A-Z]>$/.test(tag) ? tag : '');
 
     const getObjectText = (line: string): string | null => {
@@ -163,7 +191,9 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             isHeader = true;
         }
 
-        const prefixMatch = cleanLine.match(/^(\s*(?:<|&lt;|\[|\*).*?(?:>|&gt;|\]|\*)\s*)(.*)/i);
+        const prefixMatch = ['board_list', 'board_read', 'mail_list', 'mail_read', 'book_read'].includes(session.type)
+            ? null
+            : cleanLine.match(/^(\s*(?:<|&lt;|\[|\*).*?(?:>|&gt;|\]|\*)\s*)(.*)/i);
         if (prefixMatch && !isHeader) {
             prefix = prefixMatch[1]
                 .replace(/&lt;/g, '<')
@@ -216,7 +246,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
 
         // Synchronous update of the ref so it's available for the next line
         session.lines.push(newLine);
-        // console.log(`[Capture] Accumulated line for ${session.type}: ${newLine.text.substring(0, 30)}... Total: ${session.lines.length}`);
+        console.log(`[Capture] Accumulated line for ${session.type}: "${newLine.text}"`);
     }, [registerEntity, ansiConvert, sessionRef]);
 
     const finalizeSession = useCallback(() => {
@@ -226,7 +256,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         }
 
         const lines = [...session.lines];
-        // console.log(`[Capture] Finalizing ${session.type} session with ${lines.length} lines`);
+        console.log(`[Capture] Finalizing ${session.type} session with ${lines.length} lines`);
 
         try {
             switch (session.type) {
@@ -277,6 +307,23 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                             [containerId]: lines
                         }));
                     }
+                    break;
+                }
+                case 'board_list':
+                case 'mail_list': {
+                    const store = useArchiveStore.getState();
+                    const view = session.metadata?.archiveView || store.activeView;
+                    store.setEntries(view, parseArchiveList(lines, view));
+                    store.setIsLoadingList(false);
+                    break;
+                }
+                case 'board_read':
+                case 'mail_read':
+                case 'book_read': {
+                    const store = useArchiveStore.getState();
+                    const view = session.metadata?.archiveView || store.activeView;
+                    store.setActiveDetail(parseArchiveRead(lines, view, store.activeDetail));
+                    store.setIsLoadingDetail(false);
                     break;
                 }
             }

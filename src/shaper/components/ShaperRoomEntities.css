@@ -1,0 +1,180 @@
+/**
+ * @file ShaperRoomEntities.css
+ * @description Styling for per-room mob/object reset lists in the inspector.
+ */
+
+.shaper-room-entities {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.shaper-entity-section {
+    display: grid;
+    gap: 6px;
+    border-radius: 8px;
+    transition: box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.shaper-entity-section.drop-active,
+.shaper-entity-row.drop-active {
+    background: rgba(240, 180, 91, 0.12);
+    box-shadow: 0 0 0 2px rgba(240, 180, 91, 0.55);
+}
+
+.shaper-entity-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #aab7c4;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.shaper-entity-subheading {
+    color: #8e9aa6;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin: 2px 0;
+}
+
+.shaper-entity-empty {
+    margin: 0;
+    color: #8e9aa6;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.shaper-entity-row {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.shaper-entity-row.expanded {
+    border-color: rgba(240, 180, 91, 0.4);
+}
+
+.shaper-entity-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 6px;
+}
+
+.shaper-entity-line.sub {
+    padding: 4px 6px 4px 10px;
+}
+
+.shaper-entity-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    color: #edf2f7;
+    cursor: pointer;
+    text-align: left;
+    padding: 0;
+    font: inherit;
+}
+
+.shaper-entity-vnum {
+    flex-shrink: 0;
+    color: #f0b45b;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.shaper-entity-name {
+    flex: 1;
+    overflow: hidden;
+    color: #edf2f7;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.shaper-entity-count {
+    flex-shrink: 0;
+    min-width: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: rgba(240, 180, 91, 0.18);
+    color: #f0b45b;
+    font-size: 10px;
+    text-align: center;
+}
+
+.shaper-entity-remove {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    border: none;
+    background: transparent;
+    color: #8e9aa6;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.shaper-entity-remove:hover {
+    background: rgba(229, 96, 96, 0.18);
+    color: #e56060;
+}
+
+.shaper-entity-children {
+    display: grid;
+    gap: 4px;
+    padding: 4px 6px 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shaper-entity-add {
+    display: flex;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.shaper-entity-add input {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 5px;
+    background: #0f1317;
+    color: #eef2f6;
+    padding: 5px 7px;
+    font: inherit;
+    font-size: 12px;
+    min-width: 0;
+}
+
+.shaper-entity-vnum-input {
+    width: 56px;
+    flex-shrink: 0;
+}
+
+.shaper-entity-name-input {
+    flex: 1;
+}
+
+.shaper-entity-add button {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(240, 180, 91, 0.4);
+    border-radius: 5px;
+    background: rgba(240, 180, 91, 0.14);
+    color: #f0b45b;
+    cursor: pointer;
+    padding: 0 8px;
+}
+
+.shaper-entity-add button:hover {
+    background: rgba(240, 180, 91, 0.24);
+}

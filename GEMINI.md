@@ -34,6 +34,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **Side Drawers (Inventory, Equipment, Stats):** `src/components/Drawers/`
 - **Inline Button Popovers:** `src/components/Popovers/StandardMenuPopover.tsx`
 - **Mapper Component:** `src/components/Mapper/` (and `src/mapper/renderer.ts`)
+- **Privileged Shaper Workspace:** `src/shaper/` and `docs/shaper.md` for concept-zone builder UI, validation, future collaboration, and deploy planning. Entry is hidden behind `canAccessShaper()`.
 
 ### 🧠 Logic & Networking
 - **Low-level Telnet/GMCP:** `src/hooks/useTelnet.ts`
@@ -69,6 +70,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 | **Fix Broad Highlighting** | `Tokenizer.ts`, `useEntityRegistry.ts` |
 | **Replay a Session** | `useSessionReplayer.ts`, `useSessionManager.ts` |
 | **Manage Custom Traits** | `inlineActionModel.ts`, `TraitSettings.tsx`, `useSettingsStore.ts` |
+| **Plan or Build Shaper Mode** | `docs/shaper.md`, `src/shaper/`, `src/shaper/access/shaperAccess.ts` |
 
 ## 🚫 Avoid Scanning (Use .geminiignore)
 - **Data/Logs:** Do NOT open `.txt`, `.xml`, `.mm2`, or large `.json` files in the root.

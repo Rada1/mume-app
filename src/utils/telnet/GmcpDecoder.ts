@@ -89,6 +89,14 @@ export class GmcpDecoder {
             console.log('[GMCP] Mume.Client package detected:', pkg, json);
             if (pkgLower === 'mume.client.edit') {
                 if (this.handlers.onExternalEdit) this.handlers.onExternalEdit(json);
+                try {
+                    const parsed = JSON.parse(json);
+                    if (this.handlers.onMumeEdit) {
+                        this.handlers.onMumeEdit(parsed);
+                    }
+                } catch (e) {
+                    console.error('[GMCP] Parse error in Mume.Client.Edit:', e, json);
+                }
             }
         } else if (pkgLower === 'char.ride') {
             this.handleSimpleJson(json, handlers.onCharRide);

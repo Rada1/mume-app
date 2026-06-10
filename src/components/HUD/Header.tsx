@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut } from 'lucide-react';
+import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, DraftingCompass } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
 import { formatCompactNumber } from '../../utils/gameUtils';
 import { useModeStore } from '../../stores/useModeStore';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useSessionStore } from '../../stores/useSessionStore';
+import { useArchiveStore } from '../../stores/useArchiveStore';
+import { canAccessShaper } from '../../shaper/access/shaperAccess';
 import XpTicker from '../Combat/XpTicker';
 
 interface HeaderProps {
@@ -43,11 +46,16 @@ const Header: React.FC<HeaderProps> = () => {
 
     const isReplayHUDMinimized = useSessionStore(state => state.isReplayHUDMinimized);
     const setIsReplayHUDMinimized = useSessionStore(state => state.setIsReplayHUDMinimized);
+    const openArchive = useArchiveStore(state => state.setIsOpen);
+    const setArchiveView = useArchiveStore(state => state.setActiveView);
+    const setArchivePanelMode = useArchiveStore(state => state.setPanelMode);
+    const showDeveloperTools = useSettingsStore(state => state.showDeveloperTools ?? false);
 
     const [isEnteringTarget, setIsEnteringTarget] = useState(false);
     const [manualTargetInput, setManualTargetInput] = useState('');
     const targetInputRef = useRef<HTMLInputElement>(null);
     const isAccountScreen = gameState === 'account';
+    const canOpenShaper = canAccessShaper();
     const displayedSpectateName = isSpectating
         ? (activeView === 'target' ? (characterInfo.name || spectateTarget) : spectateTarget)
         : null;
@@ -444,6 +452,23 @@ const Header: React.FC<HeaderProps> = () => {
                     </div>
                 )}
 
+                {!isAccountScreen && (
+                    <button
+                        className="menu-toggle-btn"
+                        onClick={() => {
+                            setArchivePanelMode('mail');
+                            setArchiveView('mail-inbox');
+                            openArchive(true);
+                            executeCommand('look mail', true, true, false, true);
+                            triggerHaptic?.(10);
+                        }}
+                        title="Mailbox"
+                        style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
+                    >
+                        <Mail size={17} />
+                    </button>
+                )}
+
                 {isEditMode && !viewport.isLandscape && (
                     <div className="action-menu-wrapper" ref={setMenuRef} style={{ flexShrink: 1, minWidth: 0 }}>
                         <div
@@ -579,6 +604,25 @@ const Header: React.FC<HeaderProps> = () => {
                                             <span>{label}</span>
                                         </div>
                                     ))}
+                                    {showDeveloperTools && (
+                                        <div
+                                            className="dropdown-item"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setUI(prev => ({
+                                                    ...prev,
+                                                    isShaperOpen: canOpenShaper,
+                                                    isShaperAccessOpen: !canOpenShaper,
+                                                    isMenuOpen: false
+                                                }));
+                                            }}
+                                        >
+                                            <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
+                                                <DraftingCompass size={16} />
+                                            </div>
+                                            <span>{canOpenShaper ? 'Shaper' : 'Unlock Shaper'}</span>
+                                        </div>
+                                    )}
                                     {!isAccountScreen && (
                                         <>
                                             <div style={{ height: '1px', background: 'rgba(255, 255, 255, 0.08)', margin: '4px 0' }} />

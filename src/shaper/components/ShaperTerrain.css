@@ -1,0 +1,112 @@
+/**
+ * @file ShaperTerrain.css
+ * @description Sector color tokens and background symbols for Shaper room tiles.
+ */
+
+/* --- Terrain Section --- */
+.shaper-room-tile,
+.shaper-extra-room {
+    background: var(--shaper-sector-color, #1e293b);
+    background-color: var(--shaper-sector-color, #1e293b);
+    position: relative;
+}
+
+.shaper-room-tile.named {
+    background: var(--shaper-sector-color, #1e293b);
+    background-color: var(--shaper-sector-color, #1e293b);
+    border-style: solid;
+}
+
+/* Background watermark symbol */
+.shaper-tile-bg-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.shaper-room-number,
+.shaper-room-name,
+.shaper-room-sector {
+    position: relative;
+    z-index: 2;
+}
+
+.shaper-room-tile.has-terrain .shaper-room-number,
+.shaper-room-tile.has-terrain .shaper-room-name,
+.shaper-room-tile.has-terrain .shaper-room-sector {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 0.85);
+}
+
+/* --- Muted Desaturated Palette Section --- */
+.sector-unset {
+    --shaper-sector-color: #1a202c;
+}
+
+.sector-inside,
+.sector-building {
+    --shaper-sector-color: #384252;
+}
+
+.sector-city {
+    --shaper-sector-color: #475569;
+}
+
+.sector-field {
+    --shaper-sector-color: #5c6e40; /* Muted Open Green-Yellow */
+}
+
+.sector-forest {
+    --shaper-sector-color: #224f1c; /* Forest Sage Green */
+}
+
+.sector-hills {
+    --shaper-sector-color: #60663a; /* Khaki Hills */
+}
+
+.sector-mountain {
+    --shaper-sector-color: #614e38; /* Mountain Brown */
+}
+
+.sector-road {
+    --shaper-sector-color: #2b303b;
+}
+
+.sector-water {
+    --shaper-sector-color: #1d5763; /* Water Slate Blue */
+}
+
+.sector-shallows {
+    --shaper-sector-color: #2b5773;
+}
+
+.sector-rapids {
+    --shaper-sector-color: #16364a;
+}
+
+.sector-underwater {
+    --shaper-sector-color: #0d212e;
+}
+
+.sector-brush {
+    --shaper-sector-color: #3a6954; /* Wetland Sage Brush */
+}
+
+.sector-tunnel {
+    --shaper-sector-color: #262320;
+}
+
+.sector-cavern {
+    --shaper-sector-color: #2c2830;
+}
+
+.shaper-room-tile.inactive {
+    --shaper-sector-color: #171d24 !important;
+    opacity: 0.35;
+    border-style: dashed !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: none !important;
+}

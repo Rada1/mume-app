@@ -168,7 +168,8 @@ export interface GmcpCharInfo {
 export interface GmcpMumeEdit {
     title: string;
     text: string;
-    key: string;
+    key?: string;
+    id?: number | string;
 }
 
 export interface GroupMember {

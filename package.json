@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "mmapper": "node mmapper-bridge.js",
     "bridge": "node mume-bridge.js",
+    "shaper:relay": "node shaper-sync-relay.js",
     "sim": "node mume-sim.js",
     "compile:map": "python tools/parse_xml.py data/ardanazgum.xml -o public/mume_map_data.json",
     "test": "playwright test",

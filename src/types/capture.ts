@@ -18,6 +18,11 @@ export type CaptureType =
   | 'achievement'
   | 'container'
   | 'help'
+  | 'board_list'
+  | 'board_read'
+  | 'mail_list'
+  | 'mail_read'
+  | 'book_read'
   | 'none';
 
 export interface CaptureSession {
