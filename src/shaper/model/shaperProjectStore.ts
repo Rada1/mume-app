@@ -98,7 +98,8 @@ const writeShaperProject = (doc: ShaperWorkspaceDoc, touchUpdatedAt: boolean): S
         id: nextDoc.id,
         name: nextDoc.name,
         zoneNumber: nextDoc.zoneNumber,
-        updatedAt: nextDoc.updatedAt
+        updatedAt: nextDoc.updatedAt,
+        shared: nextDoc.shared ?? false
     });
     writeJson(`${DOC_PREFIX}${doc.id}`, nextDoc);
     writeJson(PROJECTS_KEY, summaries);
@@ -106,7 +107,9 @@ const writeShaperProject = (doc: ShaperWorkspaceDoc, touchUpdatedAt: boolean): S
 };
 
 export const saveShaperProject = (doc: ShaperWorkspaceDoc): void => {
-    publishShaperProjectEvent({ type: 'project-saved', doc: writeShaperProject(doc, true) });
+    const saved = writeShaperProject(doc, true);
+    // Private projects never leave the device; only shared ones publish to the relay.
+    if (saved.shared) publishShaperProjectEvent({ type: 'project-saved', doc: saved });
 };
 
 export const saveShaperRoomPatch = (
@@ -115,8 +118,10 @@ export const saveShaperRoomPatch = (
     patch: Partial<ShaperRoomDraft>
 ): ShaperWorkspaceDoc => {
     const nextDoc = writeShaperProject(doc, true);
-    for (const roomId of roomIds) {
-        publishShaperProjectEvent({ type: 'room-patched', projectId: nextDoc.id, roomId, patch, updatedAt: nextDoc.updatedAt });
+    if (nextDoc.shared) {
+        for (const roomId of roomIds) {
+            publishShaperProjectEvent({ type: 'room-patched', projectId: nextDoc.id, roomId, patch, updatedAt: nextDoc.updatedAt });
+        }
     }
     return nextDoc;
 };
@@ -192,7 +197,7 @@ export const saveShaperAnnotationAdd = (
 ): ShaperWorkspaceDoc => {
     const updatedAt = Date.now();
     const nextDoc = writeShaperProject(applyAnnotationAdd(doc, roomId, annotation, updatedAt), false);
-    publishShaperProjectEvent({ type: 'annotation-added', projectId: nextDoc.id, roomId, annotation, updatedAt });
+    if (nextDoc.shared) publishShaperProjectEvent({ type: 'annotation-added', projectId: nextDoc.id, roomId, annotation, updatedAt });
     return nextDoc;
 };
 
@@ -203,7 +208,7 @@ export const saveShaperAnnotationRemove = (
 ): ShaperWorkspaceDoc => {
     const updatedAt = Date.now();
     const nextDoc = writeShaperProject(applyAnnotationRemove(doc, roomId, annotationId, updatedAt), false);
-    publishShaperProjectEvent({ type: 'annotation-removed', projectId: nextDoc.id, roomId, annotationId, updatedAt });
+    if (nextDoc.shared) publishShaperProjectEvent({ type: 'annotation-removed', projectId: nextDoc.id, roomId, annotationId, updatedAt });
     return nextDoc;
 };
 
@@ -214,7 +219,7 @@ export const saveShaperEntityEvent = (
     const updatedAt = Date.now();
     const fullEvent = { ...event, projectId: doc.id, updatedAt } as ShaperEntityProjectEvent;
     const nextDoc = writeShaperProject(applyEntityEvent(doc, fullEvent), false);
-    publishShaperProjectEvent(fullEvent);
+    if (nextDoc.shared) publishShaperProjectEvent(fullEvent);
     return nextDoc;
 };
 

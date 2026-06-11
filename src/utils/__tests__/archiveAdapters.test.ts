@@ -5,8 +5,8 @@
 
 import { describe, expect, it } from 'vitest';
 import { DrawerLine } from '../../types';
-import { ArchiveDetail } from '../../stores/useArchiveStore';
-import { parseArchiveRead } from '../archiveAdapters';
+import { ArchiveDetail, ArchiveEntry } from '../../stores/useArchiveStore';
+import { getArchiveListExpectedCount, mergeArchiveEntries, parseArchiveRead } from '../archiveAdapters';
 
 const line = (text: string): DrawerLine => ({
     id: text,
@@ -62,5 +62,18 @@ describe('archiveAdapters', () => {
             ...fallback,
             body: 'There and Back Again\n\nIn a hole in the ground there lived a hobbit.'
         });
+    });
+
+    it('merges fragmented sent mail rows by id', () => {
+        const existing: ArchiveEntry[] = [
+            { id: 1, source: 'mail', view: 'mail-sent', subject: 'Nuildor Quest @Kalev', author: 'Ellessar', date: '' },
+            { id: 2, source: 'mail', view: 'mail-sent', subject: 'Nuildor Desc @Kalev', author: 'Ellessar', date: '' }
+        ];
+        const incoming: ArchiveEntry[] = [
+            { id: 5, source: 'mail', view: 'mail-sent', subject: 'Object GMCP Module Request @Dain', author: 'Ellessar', date: '' }
+        ];
+
+        expect(getArchiveListExpectedCount([line('Sent mail - 5 messages')], 'mail-sent')).toBe(5);
+        expect(mergeArchiveEntries(existing, incoming).map(entry => entry.id)).toEqual([1, 2, 5]);
     });
 });

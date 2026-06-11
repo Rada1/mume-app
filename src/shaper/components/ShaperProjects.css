@@ -54,7 +54,7 @@
 
 .shaper-project-card {
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 1fr auto;
     gap: 8px;
     align-items: stretch;
 }
@@ -66,10 +66,23 @@
     text-align: left;
 }
 
-.shaper-project-rename,
-.shaper-project-delete {
-    align-self: stretch;
+.shaper-project-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.shaper-project-actions button {
     padding: 0 12px;
+    min-height: 32px;
+}
+
+.shaper-open-shared-heading {
+    margin-top: 22px !important;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .shaper-project-open:hover,
@@ -90,6 +103,21 @@
 .shaper-project-list span,
 .shaper-project-list small {
     color: #aab7c4;
+}
+
+.shaper-project-shared-tag {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 7px;
+    border: 1px solid rgba(240, 180, 91, 0.4);
+    border-radius: 6px;
+    background: rgba(240, 180, 91, 0.12);
+    color: #f0b45b !important;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    vertical-align: middle;
 }
 
 @media (max-width: 860px) {

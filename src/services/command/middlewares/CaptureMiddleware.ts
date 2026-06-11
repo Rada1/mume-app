@@ -81,14 +81,15 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
         if (!captureType && isBoardReadCommand) {
             captureType = useArchiveStore.getState().activeView.startsWith('board') ? 'board_read' : 'mail_read';
         }
+        const isSentMailListCommand = /^look\s+(?:sent\s+mail|mail\s+sent)(?:\s+seen)?$/i.test(lowerCmd) ||
+            /^look\s+(?:seen\s+sent\s+mail|sent\s+seen\s+mail|mail\s+sent\s+seen)$/i.test(lowerCmd);
         const isMailListCommand =
             lowerCmd === 'look mail' || lowerCmd === 'tail' || /^tail\s+\d+$/i.test(lowerCmd) ||
-            lowerCmd === 'look sent mail' || lowerCmd === 'look seen mail' ||
-            lowerCmd === 'look sent seen mail' ||
+            lowerCmd === 'look seen mail' || isSentMailListCommand ||
             lowerCmd.startsWith('search mail ') || lowerCmd.startsWith('search sent mail ');
         if (!captureType && isMailListCommand) {
             useArchiveStore.getState().setPanelMode('mail');
-            useArchiveStore.getState().setActiveView(lowerCmd.includes('sent') ? 'mail-sent' : 'mail-inbox');
+            useArchiveStore.getState().setActiveView(isSentMailListCommand || lowerCmd.startsWith('search sent mail ') ? 'mail-sent' : 'mail-inbox');
             captureType = 'mail_list';
         }
         if (!captureType && /^read\s+sent\s+\d+$/i.test(lowerCmd)) {

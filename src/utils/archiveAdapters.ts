@@ -47,6 +47,22 @@ export const getArchiveSearchCommand = (view: ArchiveView, query: string) => {
     return null;
 };
 
+export const getArchiveListExpectedCount = (lines: DrawerLine[], view: ArchiveView): number | null => {
+    if (!view.startsWith('mail')) return null;
+    for (const line of lines) {
+        const match = line.text.trim().match(/^(?:sent\s+mail|mail)\s+-+\s+(\d+)\s+messages?/i);
+        if (match) return parseInt(match[1], 10);
+    }
+    return null;
+};
+
+export const mergeArchiveEntries = (existing: ArchiveEntry[], incoming: ArchiveEntry[]): ArchiveEntry[] => {
+    const byId = new Map<number, ArchiveEntry>();
+    existing.forEach(entry => byId.set(entry.id, entry));
+    incoming.forEach(entry => byId.set(entry.id, entry));
+    return Array.from(byId.values()).sort((a, b) => a.id - b.id);
+};
+
 export const parseArchiveList = (lines: DrawerLine[], view: ArchiveView): ArchiveEntry[] => {
     if (view === 'board' || view === 'board-threads') {
         const rows = view === 'board-threads' ? parseBoardThreadList(lines) : parseBoardList(lines);

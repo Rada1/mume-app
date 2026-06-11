@@ -32,14 +32,20 @@ export interface ArchiveComposeState {
     body: string;
 }
 
-export interface ArchiveEditorContext {
+export type ArchiveEditorContext = {
     kind: 'archive-reply';
     source: Exclude<ArchiveSource, 'book'>;
     view: ArchiveView;
     entryId: number;
     subject: string;
     author: string;
-}
+} | {
+    kind: 'archive-compose';
+    source: Exclude<ArchiveSource, 'book'>;
+    view: ArchiveView;
+    subject: string;
+    body: string;
+};
 
 interface ArchiveStoreState {
     isOpen: boolean;

@@ -1,9 +1,10 @@
 /**
  * @file ShaperProjectDashboard.tsx
- * @description Project picker and creator for Shaper concept workspaces.
+ * @description Project picker, creator, and link-based sharing for Shaper concept workspaces.
  */
 
 import { useState } from 'react';
+import { buildShaperShareLink, parseShaperShareCode } from '../collaboration/shaperSharedProjects';
 import type { ShaperProjectSummary } from '../model/shaperTypes';
 import './ShaperProjects.css';
 
@@ -11,6 +12,9 @@ interface ShaperProjectDashboardProps {
     projects: ShaperProjectSummary[];
     onCreateProject: (name: string, zoneNumber: number) => void;
     onOpenProject: (projectId: string) => void;
+    onPullProject: (projectId: string) => void;
+    onShareProject: (projectId: string) => void;
+    onUnshareProject: (projectId: string) => void;
     onDeleteProject: (projectId: string) => void;
     onRenameProject: (projectId: string, name: string) => void;
 }
@@ -20,17 +24,42 @@ export const ShaperProjectDashboard: React.FC<ShaperProjectDashboardProps> = ({
     projects,
     onCreateProject,
     onOpenProject,
+    onPullProject,
+    onShareProject,
+    onUnshareProject,
     onDeleteProject,
     onRenameProject
 }) => {
     const [name, setName] = useState('New Concept Zone');
     const [zoneNumber, setZoneNumber] = useState('300');
+    const [linkInput, setLinkInput] = useState('');
 
     const submit = (event: React.FormEvent) => {
         event.preventDefault();
         const parsedZone = Number(zoneNumber);
         if (!name.trim() || !Number.isFinite(parsedZone)) return;
         onCreateProject(name.trim(), parsedZone);
+    };
+
+    const openSharedLink = (event: React.FormEvent) => {
+        event.preventDefault();
+        const projectId = parseShaperShareCode(linkInput);
+        if (!projectId) {
+            window.alert('That does not look like a valid project link or code.');
+            return;
+        }
+        onPullProject(projectId);
+        setLinkInput('');
+    };
+
+    const copyLink = async (project: ShaperProjectSummary) => {
+        const link = buildShaperShareLink(project.id);
+        try {
+            await navigator.clipboard.writeText(link);
+            window.alert('Share link copied to clipboard.');
+        } catch {
+            window.prompt('Copy this share link:', link);
+        }
     };
 
     const deleteProject = (project: ShaperProjectSummary) => {
@@ -61,25 +90,51 @@ export const ShaperProjectDashboard: React.FC<ShaperProjectDashboardProps> = ({
                     </label>
                     <button type="submit">Create Project</button>
                 </form>
+
+                <h2 className="shaper-open-shared-heading">Open shared project</h2>
+                <form onSubmit={openSharedLink}>
+                    <label className="shaper-field">
+                        <span>Paste a project link or code</span>
+                        <input
+                            value={linkInput}
+                            placeholder="https://…#shaper-project=…"
+                            onChange={event => setLinkInput(event.target.value)}
+                        />
+                    </label>
+                    <button type="submit">Open Link</button>
+                </form>
             </section>
 
             <section className="shaper-project-list">
-                <h2>Existing projects</h2>
+                <h2>Your projects</h2>
                 {projects.length === 0 ? (
                     <p>No shaping projects yet.</p>
                 ) : projects.map(project => (
                     <div key={project.id} className="shaper-project-card">
                         <button type="button" className="shaper-project-open" onClick={() => onOpenProject(project.id)}>
-                            <strong>{project.name}</strong>
+                            <strong>
+                                {project.name}
+                                {project.shared && <span className="shaper-project-shared-tag">Shared</span>}
+                            </strong>
                             <span>Zone {project.zoneNumber}</span>
                             <small>Updated {new Date(project.updatedAt).toLocaleString()}</small>
                         </button>
-                        <button type="button" className="shaper-project-rename" onClick={() => renameProject(project)}>
-                            Rename
-                        </button>
-                        <button type="button" className="shaper-project-delete" onClick={() => deleteProject(project)}>
-                            Delete
-                        </button>
+                        <div className="shaper-project-actions">
+                            {project.shared ? (
+                                <>
+                                    <button type="button" onClick={() => copyLink(project)}>Copy link</button>
+                                    <button type="button" onClick={() => onUnshareProject(project.id)}>Unshare</button>
+                                </>
+                            ) : (
+                                <button type="button" onClick={() => onShareProject(project.id)}>Share</button>
+                            )}
+                            <button type="button" className="shaper-project-rename" onClick={() => renameProject(project)}>
+                                Rename
+                            </button>
+                            <button type="button" className="shaper-project-delete" onClick={() => deleteProject(project)}>
+                                Delete
+                            </button>
+                        </div>
                     </div>
                 ))}
             </section>

@@ -140,6 +140,42 @@
     line-height: 1.4;
 }
 
+.shaper-peer-list {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 7px;
+}
+
+.shaper-peer-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    color: #c9d3dd;
+}
+
+.shaper-peer-dot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+}
+
+.shaper-peer-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.shaper-peer-here {
+    flex-shrink: 0;
+    color: #f0b45b;
+    font-size: 11px;
+}
+
 .shaper-center {
     min-height: 0;
     overflow: auto;

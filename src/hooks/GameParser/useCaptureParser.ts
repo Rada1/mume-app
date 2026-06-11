@@ -10,7 +10,7 @@ import { Tokenizer } from '../../services/parser/Tokenizer';
 import { buildPlayerLineTokens } from './playerLineTokens';
 import { parseAffectedByLines } from '../../utils/affectUtils';
 import { useArchiveStore } from '../../stores/useArchiveStore';
-import { parseArchiveList, parseArchiveRead } from '../../utils/archiveAdapters';
+import { getArchiveListExpectedCount, mergeArchiveEntries, parseArchiveList, parseArchiveRead } from '../../utils/archiveAdapters';
 
 export interface CaptureParserDeps {
     captureSession: CaptureSession | null;
@@ -313,7 +313,13 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 case 'mail_list': {
                     const store = useArchiveStore.getState();
                     const view = session.metadata?.archiveView || store.activeView;
-                    store.setEntries(view, parseArchiveList(lines, view));
+                    const parsedEntries = parseArchiveList(lines, view);
+                    const expectedCount = getArchiveListExpectedCount(lines, view);
+                    const isCompleteList = expectedCount !== null && parsedEntries.length >= expectedCount;
+                    const nextEntries = isCompleteList
+                        ? parsedEntries
+                        : mergeArchiveEntries(store.entriesByView[view], parsedEntries);
+                    store.setEntries(view, nextEntries);
                     store.setIsLoadingList(false);
                     break;
                 }

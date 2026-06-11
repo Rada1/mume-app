@@ -3,8 +3,10 @@
  * @description Main privileged Shaper workspace shell and tab routing.
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { X } from 'lucide-react';
+import { useShaperPresence } from '../collaboration/shaperPresence';
+import { readShareCodeFromHash, useShaperSharedProjects } from '../collaboration/shaperSharedProjects';
 import { useShaperWorkspace } from '../hooks/useShaperWorkspace';
 import { useShaperDeployQueue } from '../hooks/useShaperDeployQueue';
 import { buildSelectedRoomDeployPreview } from '../model/shaperDeployPreview';
@@ -39,7 +41,15 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
 }) => {
     const workspace = useShaperWorkspace();
     const activeDoc = workspace.doc;
+    const { peers } = useShaperPresence(activeDoc?.id ?? null);
+    const { pullProject } = useShaperSharedProjects(workspace.openProject);
     const [activeTab, setActiveTab] = useState<'grid' | 'com' | 'mobiles' | 'objects' | 'libraries'>('grid');
+
+    // Auto-open a project when the page is loaded with a share link in the URL hash.
+    useEffect(() => {
+        const code = readShareCodeFromHash();
+        if (code) pullProject(code);
+    }, [pullProject]);
     const deployPreview = activeDoc && workspace.selectedRoom
         ? buildSelectedRoomDeployPreview(workspace.selectedRoom, activeDoc.rooms, activeDoc.exits, activeDoc.commandNodes, activeDoc.libraries)
         : { commands: [], warnings: [] };
@@ -71,6 +81,9 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                     projects={workspace.projects}
                     onCreateProject={workspace.createProject}
                     onOpenProject={workspace.openProject}
+                    onPullProject={pullProject}
+                    onShareProject={workspace.shareProject}
+                    onUnshareProject={workspace.unshareProject}
                     onDeleteProject={workspace.deleteProject}
                     onRenameProject={workspace.renameProject}
                 />
@@ -81,6 +94,7 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                             doc={activeDoc}
                             issueCount={workspace.issues.length}
                             activeTab={activeTab}
+                            peers={peers}
                             onSelectTab={setActiveTab}
                         />
                         <main className="shaper-center">

@@ -33,9 +33,10 @@ const modeViews: Record<ArchivePanelMode, ArchiveView[]> = {
     book: ['book']
 };
 
-const ArchiveTab = ({ view, activeView, onClick }: { view: ArchiveView; activeView: ArchiveView; onClick: () => void }) => {
+const ArchiveTab = ({ view, activeView, entries, onClick }: { view: ArchiveView; activeView: ArchiveView; entries: ArchiveEntry[]; onClick: () => void }) => {
     const Icon = view === 'board' || view === 'board-threads' ? MessageSquare : view === 'mail-inbox' ? Inbox : Archive;
-    return <button className={activeView === view ? 'active' : ''} onClick={onClick}><Icon size={15} /> {viewLabels[view]}</button>;
+    const unread = entries.filter(entry => entry.isRead === false).length;
+    return <button className={activeView === view ? 'active' : ''} onClick={onClick}><Icon size={15} /> {viewLabels[view]} {entries.length > 0 ? `(${entries.length}${unread ? ` / ${unread} unread` : ''})` : ''}</button>;
 };
 
 export const MumeArchive: React.FC = () => {
@@ -71,6 +72,12 @@ export const MumeArchive: React.FC = () => {
         if (mumeEditState.context?.kind !== 'archive-reply') return;
         setReplyText(mumeEditState.text);
     }, [mumeEditState.context, mumeEditState.text]);
+    useEffect(() => {
+        if (!mumeEditState.isOpen || mumeEditState.context?.kind !== 'archive-compose') return;
+        handleSaveMumeEdit(mumeEditState.context.body);
+        if (mumeEditState.context.source === 'mail') { setActiveView('mail-sent'); [1200, 3000, 6000].forEach(ms => window.setTimeout(() => executeCommand('look sent mail', true, true, false, true), ms)); }
+        setCompose({ recipients: '', subject: '', body: '' });
+    }, [mumeEditState.isOpen, mumeEditState.context, executeCommand, handleSaveMumeEdit, setActiveView, setCompose]);
 
     useEffect(() => {
         if (!isDragging && !isResizing) return;
@@ -132,11 +139,13 @@ export const MumeArchive: React.FC = () => {
     const sendMail = () => {
         const recipients = compose.recipients.split(/[,\s]+/).map(name => name.trim().replace(/^@/, '')).filter(Boolean).map(name => `@${name}`).join(' ');
         if (!recipients) return;
+        setPendingEditorContext({ kind: 'archive-compose', source: 'mail', view: activeView, subject: compose.subject.trim(), body: compose.body });
         executeCommand(`write ${compose.subject.trim()} ${recipients}`.trim());
         setIsComposerOpen(false);
     };
     const postBoard = () => {
         if (!compose.subject.trim()) return;
+        setPendingEditorContext({ kind: 'archive-compose', source: 'board', view: activeView, subject: compose.subject.trim(), body: compose.body });
         executeCommand(`write ${compose.subject.trim()}`);
         setIsComposerOpen(false);
     };
@@ -203,7 +212,7 @@ export const MumeArchive: React.FC = () => {
                         )}
                         {panelMode !== 'book' && <div className="mail-tabs">
                             {modeViews[panelMode].map(view => (
-                                <ArchiveTab key={view} view={view} activeView={activeView} onClick={() => switchView(view)} />
+                                <ArchiveTab key={view} view={view} activeView={activeView} entries={entriesByView[view]} onClick={() => switchView(view)} />
                             ))}
                         </div>}
                         {panelMode !== 'book' && <div className="mail-search-row">

@@ -63,6 +63,17 @@ describe('mailParser', () => {
         ]);
     });
 
+    it('parses sent mail rows with spaced separators', () => {
+        const messages = parseMailList([
+            line('Sent mail -- 5 messages'),
+            line('5 : Object GMCP Module Request @Dáin (Ellessar)')
+        ], 'sent');
+
+        expect(messages).toEqual([
+            { id: 5, subject: 'Object GMCP Module Request @Dáin', author: 'Ellessar', date: '', isRead: false, folder: 'sent' }
+        ]);
+    });
+
     it('parses XML-stripped mail detail headers with Written on date lines', () => {
         const message = parseMailRead([
             line('Mail 1 : @Ellessar (Ellessar)'),

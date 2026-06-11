@@ -163,6 +163,8 @@ export interface ShaperWorkspaceDoc {
     name: string;
     zoneNumber: number;
     updatedAt: number;
+    // When true, edits publish to the relay and anyone with the project's link can pull it.
+    shared?: boolean;
     selectedRoomId: ShaperRoomId;
     rooms: Record<ShaperRoomId, ShaperRoomDraft>;
     exits: Record<string, ShaperExitDraft>;
@@ -176,4 +178,5 @@ export interface ShaperProjectSummary {
     name: string;
     zoneNumber: number;
     updatedAt: number;
+    shared?: boolean;
 }

@@ -11,7 +11,8 @@ const meta = import.meta as unknown as { env?: Record<string, string | undefined
 let socket: WebSocket | null = null;
 let socketUrl = '';
 const socketListeners = new Set<(event: ShaperProjectEvent) => void>();
-const pendingEvents: ShaperProjectEvent[] = [];
+const rawSocketListeners = new Set<(data: unknown) => void>();
+const pendingMessages: unknown[] = [];
 
 // --- Type Guards Section ---
 const isProjectEvent = (value: unknown): value is ShaperProjectEvent => {
@@ -36,14 +37,16 @@ const openSocket = (): WebSocket | null => {
     socketUrl = nextUrl;
     socket = new WebSocket(nextUrl);
     socket.addEventListener('open', () => {
-        while (socket?.readyState === WebSocket.OPEN && pendingEvents.length > 0) {
-            socket.send(JSON.stringify(pendingEvents.shift()));
+        while (socket?.readyState === WebSocket.OPEN && pendingMessages.length > 0) {
+            socket.send(JSON.stringify(pendingMessages.shift()));
         }
     });
     socket.addEventListener('message', event => {
         try {
             const parsed = JSON.parse(String(event.data)) as unknown;
+            // Typed project events first so the local store is written before raw consumers react.
             if (isProjectEvent(parsed)) socketListeners.forEach(listener => listener(parsed));
+            rawSocketListeners.forEach(listener => listener(parsed));
         } catch {
             // Ignore malformed relay traffic.
         }
@@ -52,11 +55,11 @@ const openSocket = (): WebSocket | null => {
     return socket;
 };
 
-const publishSocket = (event: ShaperProjectEvent): void => {
+const publishSocket = (message: unknown): void => {
     const activeSocket = openSocket();
     if (!activeSocket) return;
-    if (activeSocket.readyState === WebSocket.OPEN) activeSocket.send(JSON.stringify(event));
-    else pendingEvents.push(event);
+    if (activeSocket.readyState === WebSocket.OPEN) activeSocket.send(JSON.stringify(message));
+    else pendingMessages.push(message);
 };
 
 // --- Public Transport Section ---
@@ -67,6 +70,14 @@ export const publishShaperProjectEvent = (event: ShaperProjectEvent): void => {
         channel.close();
     }
     publishSocket(event);
+};
+
+export const publishRawSocketMessage = (message: unknown): void => publishSocket(message);
+
+export const subscribeRawSocket = (listener: (data: unknown) => void): (() => void) => {
+    rawSocketListeners.add(listener);
+    openSocket();
+    return () => rawSocketListeners.delete(listener);
 };
 
 export const subscribeShaperProjectSync = (

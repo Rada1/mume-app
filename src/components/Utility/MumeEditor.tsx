@@ -70,7 +70,7 @@ export const MumeEditor: React.FC = () => {
     }, [isDragging, isResizing]);
 
     if (!mumeEditState.isOpen) return null;
-    if (mumeEditState.context?.kind === 'archive-reply') return null;
+    if (mumeEditState.context?.kind === 'archive-reply' || mumeEditState.context?.kind === 'archive-compose') return null;
 
     const handleCancel = () => {
         setMumeEditState(prev => ({ ...prev, isOpen: false, context: null }));
