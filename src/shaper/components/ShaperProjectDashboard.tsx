@@ -5,6 +5,7 @@
 
 import { useState } from 'react';
 import { buildShaperShareLink, parseShaperShareCode } from '../collaboration/shaperSharedProjects';
+import { isShaperSyncConfigured } from '../model/shaperProjectSync';
 import type { ShaperProjectSummary } from '../model/shaperTypes';
 import './ShaperProjects.css';
 
@@ -12,7 +13,7 @@ interface ShaperProjectDashboardProps {
     projects: ShaperProjectSummary[];
     onCreateProject: (name: string, zoneNumber: number) => void;
     onOpenProject: (projectId: string) => void;
-    onPullProject: (projectId: string) => void;
+    onPullProject: (projectId: string, onFail?: () => void) => void;
     onShareProject: (projectId: string) => void;
     onUnshareProject: (projectId: string) => void;
     onDeleteProject: (projectId: string) => void;
@@ -33,6 +34,7 @@ export const ShaperProjectDashboard: React.FC<ShaperProjectDashboardProps> = ({
     const [name, setName] = useState('New Concept Zone');
     const [zoneNumber, setZoneNumber] = useState('300');
     const [linkInput, setLinkInput] = useState('');
+    const syncConfigured = isShaperSyncConfigured();
 
     const submit = (event: React.FormEvent) => {
         event.preventDefault();
@@ -48,8 +50,21 @@ export const ShaperProjectDashboard: React.FC<ShaperProjectDashboardProps> = ({
             window.alert('That does not look like a valid project link or code.');
             return;
         }
-        onPullProject(projectId);
+        if (!syncConfigured) {
+            window.alert('No sync relay is configured (VITE_SHAPER_SYNC_URL), so shared projects cannot be loaded.');
+            return;
+        }
+        onPullProject(projectId, () =>
+            window.alert('Could not load that project. The link may be wrong, the project was unshared, or the relay is offline.'));
         setLinkInput('');
+    };
+
+    const shareProject = (project: ShaperProjectSummary) => {
+        if (!syncConfigured) {
+            window.alert('No sync relay is configured (VITE_SHAPER_SYNC_URL), so sharing will not reach other devices.');
+            return;
+        }
+        onShareProject(project.id);
     };
 
     const copyLink = async (project: ShaperProjectSummary) => {
@@ -92,6 +107,12 @@ export const ShaperProjectDashboard: React.FC<ShaperProjectDashboardProps> = ({
                 </form>
 
                 <h2 className="shaper-open-shared-heading">Open shared project</h2>
+                {!syncConfigured && (
+                    <p className="shaper-sync-warning">
+                        No sync relay configured. Set <code>VITE_SHAPER_SYNC_URL</code> and run the relay
+                        to share projects across devices.
+                    </p>
+                )}
                 <form onSubmit={openSharedLink}>
                     <label className="shaper-field">
                         <span>Paste a project link or code</span>
@@ -126,7 +147,7 @@ export const ShaperProjectDashboard: React.FC<ShaperProjectDashboardProps> = ({
                                     <button type="button" onClick={() => onUnshareProject(project.id)}>Unshare</button>
                                 </>
                             ) : (
-                                <button type="button" onClick={() => onShareProject(project.id)}>Share</button>
+                                <button type="button" onClick={() => shareProject(project)}>Share</button>
                             )}
                             <button type="button" className="shaper-project-rename" onClick={() => renameProject(project)}>
                                 Rename

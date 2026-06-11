@@ -58,6 +58,16 @@ export const SystemCommandMiddleware: CommandMiddleware = (cmd, context) => {
         }
     }
 
+    if (lowerCmd === '/perf') {
+        const pm = (globalThis as any).__PERF__;
+        if (pm && typeof pm.toggle === 'function') {
+            pm.toggle();
+        } else {
+            addMessage('error', 'Performance monitor not initialized.');
+        }
+        return null; // Handled
+    }
+
     if (lowerCmd === 'closeall') {
         setUI({ drawer: 'none' });
         return null; // Handled

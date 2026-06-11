@@ -5,6 +5,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { GRID_SIZE } from './mapperUtils';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import { perfMonitor } from '../../utils/perfMonitor';
 import { advanceMoveAnim, type MoveAnimState } from './playerMoveAnimator';
 
@@ -52,6 +53,11 @@ export const useMapAnimation = ({
 }: AnimationProps) => {
     const requestRef = useRef<number | null>(null);
     const tickRef = useRef<(() => boolean) | null>(null);
+    const drawMapRef = useRef(drawMap);
+
+    useEffect(() => {
+        drawMapRef.current = drawMap;
+    });
     const preFilterZoomRef = useRef<number | null>(null);
     const wasFilterActiveRef = useRef(false);
     const fitConvergedRef = useRef(false);
@@ -89,11 +95,7 @@ export const useMapAnimation = ({
         const now = performance.now();
         const deltaTime = now - lastFrameTimeRef.current;
         
-        const { opponentId, opponentName, roomChars } = entitiesRef.current;
-        const combatAnimationActive = !!(opponentId || opponentName || (roomChars && Object.values(roomChars).some((char: any) => {
-            const fighting = char.fighting == null ? '' : String(char.fighting);
-            return fighting !== '' && fighting.toLowerCase() !== 'you' && fighting !== 'Someone';
-        })));
+        const combatAnimationActive = !!entitiesRef.current.combatAnimationActive;
         const effectiveIsDragging = isDragging || isDraggingRef?.current;
         const moveAnimActive = !!moveAnimRef?.current && moveAnimRef.current.phase !== 'idle';
         // Interactive (drag/joystick) and heavy overlays run at full 60fps. The optimistic
@@ -333,7 +335,8 @@ export const useMapAnimation = ({
             wakeUntilRef.current = 0;
         }
 
-        const container = cvs.closest('.mapper-container') as HTMLElement | null;
+        const showBg = useSettingsStore.getState().showBackgroundImage;
+        const container = (!isMobile && showBg) ? cvs.closest('.mapper-container') as HTMLElement | null : null;
         if (container) {
             const FACTOR = 0.035;
             const nextParallax = {
@@ -356,7 +359,7 @@ export const useMapAnimation = ({
         }
 
         const drawStart = performance.now();
-        drawMap(ctx, dpr, w, h, marquee, effectiveIsDragging);
+        drawMapRef.current(ctx, dpr, w, h, marquee, effectiveIsDragging);
         perfMonitor.recordFrame(performance.now() - drawStart);
         return needsNextFrame;
     };
@@ -396,7 +399,7 @@ export const useMapAnimation = ({
         triggerAnimation();
     // NOTE: currentRoomId intentionally excluded — room changes are handled by
     // the wake key system (wakeUntilRef) without needing to restart the loop.
-    }, [triggerAnimation, drawMap, renderVersion, walkTargetId, activeMapFilter]);
+    }, [triggerAnimation, renderVersion, walkTargetId, activeMapFilter]);
 
     useEffect(() => {
         return () => {

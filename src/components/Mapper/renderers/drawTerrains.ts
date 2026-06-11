@@ -1490,7 +1490,7 @@ export const drawExplorationRevealOverlay = (
     const latest = rCtx.firstExploredAtRef.current['_latest'] || 0;
     if (!latest) return;
 
-    const { ctx, preloaded, lighting, isDarkMode, allRooms, explored, unveilMap, imagesRef } = rCtx;
+    const { ctx, preloaded, lighting, isDarkMode, allRooms, explored, unveilMap, imagesRef, isMobile } = rCtx;
     const s = GRID_SIZE;
     const ringRevealGray = lighting === 'dark'
         ? (isDarkMode ? '#2e2e2e' : '#767676')
@@ -1513,7 +1513,7 @@ export const drawExplorationRevealOverlay = (
         ctx.globalAlpha = 1;
         fillTerrainTile(ctx, tx, ty, s);
 
-        if ((rCtx.showTerrainIcons || rCtx.lowEffects) && rCtx.camera.zoom > 0.05) {
+        if (!isMobile && (rCtx.showTerrainIcons || rCtx.lowEffects) && rCtx.camera.zoom > 0.05) {
             const terrain = allRooms[`m_${vnum}`]?.terrain || allRooms[vnum]?.terrain || rData[3];
             const gridX = Math.round(tx / s), gridY = Math.round(ty / s);
             const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
@@ -1529,6 +1529,19 @@ export const drawExplorationRevealOverlay = (
         }
     }
     ctx.restore();
+
+    if (isMobile) {
+        ctx.save();
+        ctx.fillStyle = ringRevealGray;
+        ctx.globalAlpha = (rCtx.mapTileOpacity ?? 1) * 0.25;
+        for (const vnum of ring2Peeked) {
+            const rData = preloaded[vnum];
+            if (!rData) continue;
+            fillTerrainTile(ctx, Math.round(rData[0]) * s, Math.round(rData[1]) * s, s);
+        }
+        ctx.restore();
+        return;
+    }
 
     const canvases = getTempCanvases(s);
     if (!canvases) return;

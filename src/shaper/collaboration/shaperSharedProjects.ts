@@ -37,15 +37,22 @@ export const readShareCodeFromHash = (): string | null => {
 export const useShaperSharedProjects = (onProjectPulled: (projectId: string) => void) => {
     // Request a project by id; the typed `project-saved` reply is written to the local
     // store before raw listeners fire, so the project exists locally when we open it.
-    const pullProject = useCallback((projectId: string) => {
+    // onFail fires if no snapshot arrives in time (bad link, unshared, or relay offline).
+    const pullProject = useCallback((projectId: string, onFail?: () => void) => {
+        let done = false;
         const unsub = subscribeRawSocket(data => {
             if (isProjectSaved(data) && data.doc.id === projectId) {
+                done = true;
                 unsub();
                 onProjectPulled(projectId);
             }
         });
         publishRawSocketMessage({ type: 'sync-request', projectId });
-        setTimeout(unsub, 5000);
+        setTimeout(() => {
+            if (done) return;
+            unsub();
+            onFail?.();
+        }, 5000);
     }, [onProjectPulled]);
 
     return { pullProject };

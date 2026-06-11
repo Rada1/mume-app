@@ -4,6 +4,8 @@ import MessageLog from '../Messages/MessageLog';
 import InputArea from '../Controls/InputArea';
 import { useGame, useUI, useVitals, useLog } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
+import { useSettingsStore } from '../../stores/useSettingsStore';
+import { resolveTerrainBackground } from '../../utils/terrainBackgrounds';
 import { LineCluster } from './HUD/LineCluster';
 import PromptBox from '../HUD/PromptBox';
 import { ansiConvert } from '../../utils/ansi';
@@ -71,14 +73,21 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         gameState,
         sessionMode,
         inCombat,
-        accountState
+        accountState,
+        activeSession,
+        spectateTerrain
     } = useGame() as any;
     const isSpectateMode = useModeStore(s => s.isSpectating);
+    const activeView = useModeStore(s => s.activeView);
     const { processMessageHtml, processMessageTokens } = useLog();
 
-    const prevInCombatRef = React.useRef(false);
-    React.useEffect(() => {
-    }, [inCombat, executeCommand]);
+    const manualBgImage = useSettingsStore(s => s.bgImage);
+    const isSpectating = activeSession === 'spectate' || activeView === 'target';
+    const activeTerrain = isSpectating ? spectateTerrain : currentTerrain;
+    const isAccountMode = accountState?.stage && accountState.stage !== 'none';
+    const resolvedBgImage = isAccountMode 
+        ? (accountState?.stage === 'login' ? null : '/assets/Pictures/account.png')
+        : (manualBgImage || resolveTerrainBackground(isAccountMode ? 'account-blue' : activeTerrain));
     
     const { setPopoverState } = useUI();
 
@@ -165,8 +174,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const isReplaying = sessionMode === 'replay';
     const shouldShowAccountInput = gameState === 'account' && !isReplaying;
 
-    const { activeView } = useModeStore();
-
     // Tactical-targeting flag, scoped to the log container instead of the root
     // .app-container. Toggling a class on the root invalidates style matching for the
     // entire tree; scoping it here bounds the recalc to the message log subtree.
@@ -201,29 +208,17 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         overflow: 'hidden'
                     } as React.CSSProperties}
                 >
-                    {!viewport.isMobile && (
-                        <>
-                            <DrawerResizeHandle handleType="log-left" widthVar="--desktop-log-width" />
-                            <DrawerResizeHandle handleType="log-right" widthVar="--desktop-log-width" />
-                        </>
-                    )}
+                    {resolvedBgImage && <div className="log-background-layer" style={{ backgroundImage: `url(${resolvedBgImage})` }} />}
+                    {!viewport.isMobile && <>
+                        <DrawerResizeHandle handleType="log-left" widthVar="--desktop-log-width" />
+                        <DrawerResizeHandle handleType="log-right" widthVar="--desktop-log-width" />
+                    </>}
                     {isMobile && <Embers />}
                     {isNewbieMode && roomName && (
                         <div className={`sticky-room-header terrain-${String(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">
                             <div className="room-info-text">
                                 <div className="message-content room-name">
-                                    {processMessageTokens ? (
-                                        <TokenRenderer
-                                            tokens={processMessageTokens(`\x1b[1;32m${roomName}\x1b[0m`)}
-                                            metadata={{
-                                                id: `room:${String(roomName).toLowerCase()}`,
-                                                context: roomName,
-                                                category: 'cat-room',
-                                                cmd: 'cat-room',
-                                                action: 'menu'
-                                            }}
-                                        />
-                                    ) : <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[1;32m${roomName}\x1b[0m`), 'roomname', true, 'room-name' as any)) }} />}
+                                    {processMessageTokens ? <TokenRenderer tokens={processMessageTokens(`\x1b[1;32m${roomName}\x1b[0m`)} metadata={{ id: `room:${String(roomName).toLowerCase()}`, context: roomName, category: 'cat-room', cmd: 'cat-room', action: 'menu' }} /> : <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[1;32m${roomName}\x1b[0m`), 'roomname', true, 'room-name' as any)) }} />}
                                 </div>
                                 {roomDesc && (
                                     <div className="message-content room-desc">

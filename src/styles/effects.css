@@ -54,3 +54,10 @@
 .performance-mode .screen-vignette {
   display: none !important;
 }
+
+/* Disable backdrop filters on mobile for GPU and fill-rate performance */
+.app-container.is-mobile,
+.app-container.is-mobile * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}

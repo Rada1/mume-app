@@ -85,6 +85,10 @@
     width: 100%;
 }
 
+.log-background-layer {
+    display: none;
+}
+
 /* Desktop layout — log and drawer widths driven by CSS vars for user resizing */
 @media (min-width: 1025px) {
     .content-layer {
@@ -93,6 +97,45 @@
     .message-log-container {
         max-width: var(--message-log-max-width, var(--desktop-log-width, clamp(600px, 38vw, 1000px)));
         overflow: visible;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: var(--radius-card, 12px) !important;
+        background-color: rgba(13, 16, 23, 0.35) !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35) !important;
+        padding: 10px 14px !important;
+        box-sizing: border-box !important;
+    }
+    .light-mode .message-log-container {
+        background-color: rgba(255, 255, 255, 0.45) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    }
+    .force-desktop .message-log-container {
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: var(--radius-card, 12px) !important;
+        background-color: rgba(13, 16, 23, 0.35) !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35) !important;
+        padding: 10px 14px !important;
+        box-sizing: border-box !important;
+    }
+    .light-mode.force-desktop .message-log-container {
+        background-color: rgba(255, 255, 255, 0.45) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    }
+    .log-background-layer {
+        display: block;
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1;
+        pointer-events: none;
+        opacity: 0.55;
+        filter: brightness(0.55) contrast(1.1);
+        transition: background-image 0.5s ease-in-out;
+        border-radius: inherit;
+    }
+    .background-layer {
+        display: none !important;
     }
     /* Drawers fill their 30vw columns — no push needed */
     body.map-drawer-open .app-content-shaker,
@@ -160,6 +203,30 @@
 
 .force-desktop .is-mobile {
     display: none !important; /* Hide mobile-only elements if any */
+}
+
+.force-desktop .message-log-container {
+    max-width: var(--message-log-max-width, var(--desktop-log-width, clamp(600px, 38vw, 1000px))) !important;
+    overflow: visible !important;
+}
+
+.force-desktop .log-background-layer {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.55;
+    filter: brightness(0.55) contrast(1.1);
+    transition: background-image 0.5s ease-in-out;
+    border-radius: inherit;
+}
+
+.force-desktop .background-layer {
+    display: none !important;
 }
 
 /* Force Mobile/Portrait Overrides */

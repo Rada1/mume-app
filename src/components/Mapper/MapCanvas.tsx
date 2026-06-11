@@ -131,6 +131,11 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         joystickActive
     });
 
+    const drawMapRef = useRef(drawMap);
+    useEffect(() => {
+        drawMapRef.current = drawMap;
+    });
+
     useEffect(() => gmcpBus.on('Game.CombatPulse', pulse => {
         const cutoff = pulse.time - 1200;
         combatPulsesRef.current = [
@@ -174,6 +179,8 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
 
     // Parallax: update when mapper state wakes instead of running a permanent RAF loop.
     useEffect(() => {
+        const showBg = useSettingsStore.getState().showBackgroundImage;
+        if (props.isMobile || !showBg) return;
         const FACTOR = 0.035;
         const container = canvasRef.current?.closest('.mapper-container') as HTMLElement | null;
         if (!container) return;
@@ -182,7 +189,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         const zoom = props.camera.current.zoom;
         const bgScale = 1 + (zoom - 1) * 0.05;
         container.style.setProperty('--parallax-scale', `${bgScale}`);
-    }, [canvasRef, props.camera, props.renderVersion]);
+    }, [canvasRef, props.camera, props.renderVersion, props.isMobile]);
 
     useEffect(() => {
         const cvs = canvasRef.current;
@@ -207,7 +214,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
             cvs.width = nextWidth;
             cvs.height = nextHeight;
             const ctx = cvs.getContext('2d', { alpha: true });
-            if (ctx) drawMap(ctx, dpr, width, height, null);
+            if (ctx) drawMapRef.current(ctx, dpr, width, height, null);
             props.triggerRender?.();
         };
 
@@ -226,7 +233,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
             }
             ro.disconnect();
         };
-    }, [drawMap, getDPR, canvasRef, props.triggerRender]);
+    }, [getDPR, canvasRef, props.triggerRender]);
 
     return (
         <canvas

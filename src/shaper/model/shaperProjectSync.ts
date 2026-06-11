@@ -29,6 +29,9 @@ const isProjectEvent = (value: unknown): value is ShaperProjectEvent => {
 // --- WebSocket Section ---
 const readSyncUrl = (): string => meta.env?.VITE_SHAPER_SYNC_URL ?? '';
 
+// Whether a relay URL is configured at all. Without one, cross-device sharing cannot work.
+export const isShaperSyncConfigured = (): boolean => readSyncUrl() !== '';
+
 const openSocket = (): WebSocket | null => {
     const nextUrl = readSyncUrl();
     if (!nextUrl || typeof WebSocket === 'undefined') return null;

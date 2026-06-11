@@ -3,7 +3,7 @@
  * @description Main privileged Shaper workspace shell and tab routing.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { useShaperPresence } from '../collaboration/shaperPresence';
 import { readShareCodeFromHash, useShaperSharedProjects } from '../collaboration/shaperSharedProjects';
@@ -45,10 +45,15 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
     const { pullProject } = useShaperSharedProjects(workspace.openProject);
     const [activeTab, setActiveTab] = useState<'grid' | 'com' | 'mobiles' | 'objects' | 'libraries'>('grid');
 
-    // Auto-open a project when the page is loaded with a share link in the URL hash.
+    // Auto-open a project once when the page is loaded with a share link in the URL hash.
+    const hashHandledRef = useRef(false);
     useEffect(() => {
+        if (hashHandledRef.current) return;
         const code = readShareCodeFromHash();
-        if (code) pullProject(code);
+        if (!code) return;
+        hashHandledRef.current = true;
+        pullProject(code, () =>
+            window.alert('Could not load the shared project from the link. The relay may be offline or the project was unshared.'));
     }, [pullProject]);
     const deployPreview = activeDoc && workspace.selectedRoom
         ? buildSelectedRoomDeployPreview(workspace.selectedRoom, activeDoc.rooms, activeDoc.exits, activeDoc.commandNodes, activeDoc.libraries)

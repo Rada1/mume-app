@@ -95,10 +95,27 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         inCombat,
         opponentName,
         opponentId,
-        target
+        target,
+        combatAnimationActive: false
     });
 
     useEffect(() => {
+        let combatAnimationActive = !!(opponentId || opponentName);
+        if (!combatAnimationActive && roomChars) {
+            for (const key in roomChars) {
+                if (Object.prototype.hasOwnProperty.call(roomChars, key)) {
+                    const char = roomChars[key];
+                    if (char) {
+                        const fighting = char.fighting == null ? '' : String(char.fighting);
+                        if (fighting !== '' && fighting.toLowerCase() !== 'you' && fighting !== 'Someone') {
+                            combatAnimationActive = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         entitiesRef.current = {
             roomChars,
             roomPlayers,
@@ -108,7 +125,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             inCombat,
             opponentName,
             opponentId,
-            target
+            target,
+            combatAnimationActive
         };
         window.dispatchEvent(new CustomEvent('mume-mapper-wake'));
     }, [roomChars, roomPlayers, roomNpcs, roomItems, groupMembers, inCombat, opponentName, opponentId, target]);
