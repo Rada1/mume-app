@@ -7,21 +7,13 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    background-color: rgba(13, 16, 23, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
-    border-radius: var(--radius-card, 12px);
-    padding: 10px 14px;
-    box-sizing: border-box;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
     margin: 0 auto;
     width: 100%;
     max-width: var(--message-log-max-width, 100%);
     transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
-}
-
-.light-mode .message-log-container {
-    background-color: rgba(255, 255, 255, 0.45);
-    border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .newbie-mode .message-log-container {
