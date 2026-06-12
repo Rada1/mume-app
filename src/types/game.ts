@@ -93,6 +93,8 @@ export interface Message {
     // Add specific data objects for UI support
     practiceSkill?: any;
     practiceHeader?: { sessionsLeft: number };
+    isWelcomeBlock?: boolean;
+    isWelcomeTitle?: boolean;
 }
 
 export interface MumeTime {

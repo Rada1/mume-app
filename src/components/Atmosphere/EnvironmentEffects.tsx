@@ -131,11 +131,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         {lightning && <div className="lightning-glow-drop" />}
                         {(weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
                         {weather === 'snow' && <div className="weather-layer weather-snow" />}
-                        {/* Stable count, independent of lighting. Tying the count to
-                           `lighting` regenerated the whole ember array (and restarted every
-                           animation from opacity:0) each time lighting flipped between rooms,
-                           causing the flicker when spamming commands. */}
-                        {!isMobile && <Embers count={12} />}
+
                     </>
                 )}
                 {isImmersionMode && <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} />}

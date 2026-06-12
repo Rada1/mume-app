@@ -308,16 +308,23 @@ const drawOutskirtTrees = (
     const gridY = Math.round(ry / s);
     const exits = rData[4] as Record<string, any>;
 
-    const trees1Img = imagesRef.current['trees1'];
-    const trees2Img = imagesRef.current['trees2'];
-    const trees3Img = imagesRef.current['trees3'];
-    const treeImg = imagesRef.current['tree'];
+    const shadowSuffix = isDarkMode ? '_dark' : '_light';
+    const trees1ImgOrig = imagesRef.current['trees1'] as HTMLImageElement;
+    const trees2ImgOrig = imagesRef.current['trees2'] as HTMLImageElement;
+    const trees3ImgOrig = imagesRef.current['trees3'] as HTMLImageElement;
+    const treeImgOrig = imagesRef.current['tree'] as HTMLImageElement;
+
     const treesImgReady = !!(
-        trees1Img && trees1Img.complete && trees1Img.naturalWidth > 0 &&
-        trees2Img && trees2Img.complete && trees2Img.naturalWidth > 0 &&
-        trees3Img && trees3Img.complete && trees3Img.naturalWidth > 0
+        trees1ImgOrig && trees1ImgOrig.complete && trees1ImgOrig.naturalWidth > 0 &&
+        trees2ImgOrig && trees2ImgOrig.complete && trees2ImgOrig.naturalWidth > 0 &&
+        trees3ImgOrig && trees3ImgOrig.complete && trees3ImgOrig.naturalWidth > 0
     );
-    const singleTreeReady = !!(treeImg && treeImg.complete && treeImg.naturalWidth > 0);
+    const singleTreeReady = !!(treeImgOrig && treeImgOrig.complete && treeImgOrig.naturalWidth > 0);
+
+    const trees1Img = (imagesRef.current['trees1' + shadowSuffix] || trees1ImgOrig) as HTMLCanvasElement | HTMLImageElement;
+    const trees2Img = (imagesRef.current['trees2' + shadowSuffix] || trees2ImgOrig) as HTMLCanvasElement | HTMLImageElement;
+    const trees3Img = (imagesRef.current['trees3' + shadowSuffix] || trees3ImgOrig) as HTMLCanvasElement | HTMLImageElement;
+    const treeImg = (imagesRef.current['tree' + shadowSuffix] || treeImgOrig) as HTMLCanvasElement | HTMLImageElement;
 
     for (const dir of ['n', 's', 'e', 'w']) {
         const exit = exits[dir];
@@ -352,10 +359,6 @@ const drawOutskirtTrees = (
 
                     const tSize = s * 0.33;
                     ctx.save();
-                    ctx.shadowColor = isDarkMode ? 'rgba(0, 0, 0, 0.65)' : 'rgba(0, 0, 0, 0.45)';
-                    ctx.shadowBlur = s * 0.03;
-                    ctx.shadowOffsetX = s * 0.01;
-                    ctx.shadowOffsetY = s * 0.015;
 
                     if (treesImgReady) {
                         const images = [trees1Img, trees2Img, trees3Img];
@@ -364,11 +367,19 @@ const drawOutskirtTrees = (
                         const sizeMultiplier = imgIndex === 2 ? 1.25 : 1.0;
                         const tW = tSize * sizeMultiplier;
                         const tH = tW * 1.15;
-                        ctx.drawImage(img, tx - tW / 2, ty - tH, tW, tH);
+                        const drawW = tW * 1.30;
+                        const drawH = tH * 1.30;
+                        const drawX = tx - tW / 2 - tW * 0.15;
+                        const drawY = ty - tH - tH * 0.15;
+                        ctx.drawImage(img, drawX, drawY, drawW, drawH);
                     } else if (singleTreeReady) {
                         const tW = tSize;
                         const tH = tW * 1.15;
-                        ctx.drawImage(treeImg, tx - tW / 2, ty - tH, tW, tH);
+                        const drawW = tW * 1.30;
+                        const drawH = tH * 1.30;
+                        const drawX = tx - tW / 2 - tW * 0.15;
+                        const drawY = ty - tH - tH * 0.15;
+                        ctx.drawImage(treeImg, drawX, drawY, drawW, drawH);
                     } else {
                         drawSingleTree(ctx, tx, ty, tSize, isDarkMode);
                     }
@@ -554,16 +565,23 @@ export const drawTerrainIcon = (
     const transform = ctx.getTransform();
     const physicalSize = s_orig * transform.a;
 
-    const trees1Img = imagesRef.current['trees1'];
-    const trees2Img = imagesRef.current['trees2'];
-    const trees3Img = imagesRef.current['trees3'];
-    const treeImg = imagesRef.current['tree'];
+    const shadowSuffix = isDarkMode ? '_dark' : '_light';
+    const trees1ImgOrig = imagesRef.current['trees1'] as HTMLImageElement;
+    const trees2ImgOrig = imagesRef.current['trees2'] as HTMLImageElement;
+    const trees3ImgOrig = imagesRef.current['trees3'] as HTMLImageElement;
+    const treeImgOrig = imagesRef.current['tree'] as HTMLImageElement;
+
     const treesImgReady = !!(
-        trees1Img && trees1Img.complete && trees1Img.naturalWidth > 0 &&
-        trees2Img && trees2Img.complete && trees2Img.naturalWidth > 0 &&
-        trees3Img && trees3Img.complete && trees3Img.naturalWidth > 0
+        trees1ImgOrig && trees1ImgOrig.complete && trees1ImgOrig.naturalWidth > 0 &&
+        trees2ImgOrig && trees2ImgOrig.complete && trees2ImgOrig.naturalWidth > 0 &&
+        trees3ImgOrig && trees3ImgOrig.complete && trees3ImgOrig.naturalWidth > 0
     );
-    const singleTreeReady = !!(treeImg && treeImg.complete && treeImg.naturalWidth > 0);
+    const singleTreeReady = !!(treeImgOrig && treeImgOrig.complete && treeImgOrig.naturalWidth > 0);
+
+    const trees1Img = (imagesRef.current['trees1' + shadowSuffix] || trees1ImgOrig) as HTMLCanvasElement | HTMLImageElement;
+    const trees2Img = (imagesRef.current['trees2' + shadowSuffix] || trees2ImgOrig) as HTMLCanvasElement | HTMLImageElement;
+    const trees3Img = (imagesRef.current['trees3' + shadowSuffix] || trees3ImgOrig) as HTMLCanvasElement | HTMLImageElement;
+    const treeImg = (imagesRef.current['tree' + shadowSuffix] || treeImgOrig) as HTMLCanvasElement | HTMLImageElement;
 
     let lodScale = 1.0;
     if (physicalSize < 10) {
@@ -639,10 +657,6 @@ export const drawTerrainIcon = (
 
             const drawMountainTree = (cx: number, baseY: number, sz: number) => {
                 ictx.save();
-                ictx.shadowColor = isDarkMode ? 'rgba(0, 0, 0, 0.65)' : 'rgba(0, 0, 0, 0.45)';
-                ictx.shadowBlur = s * 0.03;
-                ictx.shadowOffsetX = s * 0.01;
-                ictx.shadowOffsetY = s * 0.015;
                 ictx.globalAlpha = 0.82;
 
                 if (treesImgReady) {
@@ -651,11 +665,19 @@ export const drawTerrainIcon = (
                     const sizeMultiplier = imgIndex === 2 ? 1.25 : 1.0;
                     const tW = sz * sizeMultiplier;
                     const tH = tW * 1.15;
-                    ictx.drawImage(img, cx - tW / 2, baseY - tH, tW, tH);
+                    const drawW = tW * 1.30;
+                    const drawH = tH * 1.30;
+                    const drawX = cx - tW / 2 - tW * 0.15;
+                    const drawY = baseY - tH - tH * 0.15;
+                    ictx.drawImage(img, drawX, drawY, drawW, drawH);
                 } else if (singleTreeReady) {
                     const tW = sz;
                     const tH = sz * 1.15;
-                    ictx.drawImage(treeImg, cx - tW / 2, baseY - tH, tW, tH);
+                    const drawW = tW * 1.30;
+                    const drawH = tH * 1.30;
+                    const drawX = cx - tW / 2 - tW * 0.15;
+                    const drawY = baseY - tH - tH * 0.15;
+                    ictx.drawImage(treeImg, drawX, drawY, drawW, drawH);
                 } else {
                     drawSingleTree(ictx, cx, baseY, sz, isDarkMode);
                 }
@@ -854,14 +876,18 @@ export const drawTerrainIcon = (
         } else if (tName === 'Forest') {
             ictx.save();
 
-            const trees1Img = imagesRef.current['trees1'];
-            const trees2Img = imagesRef.current['trees2'];
-            const trees3Img = imagesRef.current['trees3'];
+            const shadowSuffix = isDarkMode ? '_dark' : '_light';
+            const trees1ImgOrig = imagesRef.current['trees1'] as HTMLImageElement;
+            const trees2ImgOrig = imagesRef.current['trees2'] as HTMLImageElement;
+            const trees3ImgOrig = imagesRef.current['trees3'] as HTMLImageElement;
             const treesImgReady = !!(
-                trees1Img && trees1Img.complete && trees1Img.naturalWidth > 0 &&
-                trees2Img && trees2Img.complete && trees2Img.naturalWidth > 0 &&
-                trees3Img && trees3Img.complete && trees3Img.naturalWidth > 0
+                trees1ImgOrig && trees1ImgOrig.complete && trees1ImgOrig.naturalWidth > 0 &&
+                trees2ImgOrig && trees2ImgOrig.complete && trees2ImgOrig.naturalWidth > 0 &&
+                trees3ImgOrig && trees3ImgOrig.complete && trees3ImgOrig.naturalWidth > 0
             );
+            const trees1Img = (imagesRef.current['trees1' + shadowSuffix] || trees1ImgOrig) as HTMLCanvasElement | HTMLImageElement;
+            const trees2Img = (imagesRef.current['trees2' + shadowSuffix] || trees2ImgOrig) as HTMLCanvasElement | HTMLImageElement;
+            const trees3Img = (imagesRef.current['trees3' + shadowSuffix] || trees3ImgOrig) as HTMLCanvasElement | HTMLImageElement;
 
             const offsetX = (canvasW - s) / 2;
             const offsetY = canvasH - s;
@@ -909,10 +935,6 @@ export const drawTerrainIcon = (
                 treesList.sort((a, b) => a.yf - b.yf);
 
                 ictx.save();
-                ictx.shadowColor = isDarkMode ? 'rgba(0, 0, 0, 0.65)' : 'rgba(0, 0, 0, 0.45)';
-                ictx.shadowBlur = s * 0.04;
-                ictx.shadowOffsetX = s * 0.015;
-                ictx.shadowOffsetY = s * 0.025;
                 ictx.globalAlpha = 0.82;
 
                 const images = [trees1Img, trees2Img, trees3Img];
@@ -922,11 +944,13 @@ export const drawTerrainIcon = (
                     const imgIndex = Math.floor(nextRand() * 3);
                     const img = images[imgIndex];
                     const sizeMultiplier = imgIndex === 2 ? 1.25 : 1.0;
-                    const drawW = s * (t.scale * sizeMultiplier);
-                    const drawH = s * ((t.scale * sizeMultiplier) * 1.15); // slightly taller
-                    const tx = offsetX + t.xf * s - drawW / 2;
-                    const ty = offsetY + t.yf * s - drawH;
-                    ictx.drawImage(img, tx, ty, drawW, drawH);
+                    const tW = s * (t.scale * sizeMultiplier);
+                    const tH = s * ((t.scale * sizeMultiplier) * 1.15); // slightly taller
+                    const drawW = tW * 1.30;
+                    const drawH = tH * 1.30;
+                    const drawX = offsetX + t.xf * s - tW / 2 - tW * 0.15;
+                    const drawY = offsetY + t.yf * s - tH - tH * 0.15;
+                    ictx.drawImage(img, drawX, drawY, drawW, drawH);
                 }
                 ictx.restore();
             } else {

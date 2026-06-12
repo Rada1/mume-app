@@ -428,10 +428,17 @@ const InputArea: React.FC<InputAreaProps> = ({
         onSend(e);
     }, [input, isLoginStage, isPasswordPrompt, onSend, rememberLogin, setLoginName, setLoginPassword]);
 
+    const handleCardClick = useCallback((e: React.MouseEvent) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName !== 'BUTTON' && target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA' && !target.closest('label')) {
+            inputRef.current?.focus();
+        }
+    }, []);
+
     if (isLoginStage) {
         return (
             <div className="login-card-container">
-                <div className="login-card">
+                <div className="login-card" onClick={handleCardClick}>
                     <h2 className="login-card-title">MUME</h2>
                     <div className="login-prompt-text">
                         {accountState?.currentPrompt || "By what name do you wish to be known?"}
@@ -459,7 +466,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                                         handleSubmit();
                                     }
                                 }}
-                                placeholder={isPasswordMode ? "Enter password..." : "Enter username..."}
+                                placeholder={accountState?.currentPrompt || (isPasswordMode ? "Enter password..." : "Enter username...")}
                                 autoFocus
                             />
                         </div>
@@ -510,7 +517,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 
         return (
             <div className="login-card-container">
-                <div className="login-card">
+                <div className="login-card" onClick={handleCardClick}>
                     <h2 className="login-card-title">MUME</h2>
                     {promptTitle && <div className="login-prompt-text">{promptTitle}</div>}
 

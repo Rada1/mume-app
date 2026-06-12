@@ -3,7 +3,7 @@
  * @description Local Shaper workspace state hook for the first foundation slice.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
     addShaperExtraRoom,
     addShaperGridRoom,
@@ -23,18 +23,20 @@ import {
     saveShaperAnnotationAdd,
     saveShaperAnnotationRemove,
     saveShaperProject,
-    saveShaperRoomPatch,
-    subscribeShaperProjectEvents
+    saveShaperRoomPatch
 } from '../model/shaperProjectStore';
+import { downloadShaperProjectFile, parseShaperProjectFile } from '../model/shaperProjectFiles';
+import { changeShaperProjectZone } from '../model/shaperProjectZone';
 import { publishRawSocketMessage } from '../model/shaperProjectSync';
 import { validateShaperDocument } from '../model/shaperValidation';
 import { useShaperComActions } from './useShaperComActions';
 import { useShaperEntityActions } from './useShaperEntityActions';
 import { useShaperExitActions } from './useShaperExitActions';
 import { useShaperLibraryActions } from './useShaperLibraryActions';
+import { useShaperProjectSubscription } from './useShaperProjectSubscription';
+import { useShaperUndoHistory } from './useShaperUndoHistory';
 import type { ShaperConnectionSelection } from '../model/shaperTypes';
 import type { ShaperAnnotation, ShaperProjectSummary, ShaperRoomDraft, ShaperRoomId, ShaperWorkspaceDoc } from '../model/shaperTypes';
-
 export const useShaperWorkspace = () => {
     const [projects, setProjects] = useState<ShaperProjectSummary[]>(listShaperProjects);
     const [doc, setDoc] = useState<ShaperWorkspaceDoc | null>(null);
@@ -53,69 +55,23 @@ export const useShaperWorkspace = () => {
         () => doc ? issues.filter(issue => issue.targetId === doc.selectedRoomId || issue.roomId === doc.selectedRoomId) : [],
         [issues, doc]
     );
-
-    useEffect(() => subscribeShaperProjectEvents(event => {
-        setProjects(listShaperProjects());
-        setDoc(current => {
-            if (event.type === 'project-deleted') return current?.id === event.projectId ? null : current;
-            if (event.type === 'room-patched') {
-                const room = current?.id === event.projectId ? current.rooms[event.roomId] : null;
-                if (!current || !room || event.updatedAt <= current.updatedAt) return current;
-                return { ...current, updatedAt: event.updatedAt, rooms: { ...current.rooms, [event.roomId]: { ...room, ...event.patch } } };
-            }
-            if (event.type === 'annotation-added') {
-                const room = current?.id === event.projectId ? current.rooms[event.roomId] : null;
-                if (!current || !room || room.annotations.some(item => item.id === event.annotation.id)) return current;
-                return { ...current, updatedAt: Math.max(current.updatedAt, event.updatedAt), rooms: { ...current.rooms, [event.roomId]: { ...room, annotations: [...room.annotations, event.annotation] } } };
-            }
-            if (event.type === 'annotation-removed') {
-                const room = current?.id === event.projectId ? current.rooms[event.roomId] : null;
-                if (!current || !room || !room.annotations.some(item => item.id === event.annotationId)) return current;
-                return { ...current, updatedAt: Math.max(current.updatedAt, event.updatedAt), rooms: { ...current.rooms, [event.roomId]: { ...room, annotations: room.annotations.filter(item => item.id !== event.annotationId) } } };
-            }
-            if (event.type === 'mob-added') {
-                const room = current?.id === event.projectId ? current.rooms[event.roomId] : null;
-                if (!current || !room || room.mobs.some(mob => mob.id === event.mob.id)) return current;
-                return { ...current, rooms: { ...current.rooms, [event.roomId]: { ...room, mobs: [...room.mobs, event.mob] } } };
-            }
-            if (event.type === 'mob-removed') {
-                const room = current?.id === event.projectId ? current.rooms[event.roomId] : null;
-                if (!current || !room) return current;
-                return { ...current, rooms: { ...current.rooms, [event.roomId]: { ...room, mobs: room.mobs.filter(mob => mob.id !== event.mobId) } } };
-            }
-            if (event.type === 'object-added') {
-                const room = current?.id === event.projectId ? current.rooms[event.roomId] : null;
-                if (!current || !room || room.objects.some(obj => obj.id === event.object.id)) return current;
-                return { ...current, rooms: { ...current.rooms, [event.roomId]: { ...room, objects: [...room.objects, event.object] } } };
-            }
-            if (event.type === 'object-removed') {
-                const room = current?.id === event.projectId ? current.rooms[event.roomId] : null;
-                if (!current || !room) return current;
-                return { ...current, rooms: { ...current.rooms, [event.roomId]: { ...room, objects: room.objects.filter(obj => obj.id !== event.objectId) } } };
-            }
-            if (event.type === 'mob-object-added' || event.type === 'mob-object-removed') {
-                const room = current?.id === event.projectId ? current.rooms[event.roomId] : null;
-                if (!current || !room) return current;
-                const mobs = room.mobs.map(mob => {
-                    if (mob.id !== event.mobId) return mob;
-                    return event.type === 'mob-object-added'
-                        ? { ...mob, items: mob.items.some(item => item.id === event.object.id) ? mob.items : [...mob.items, event.object] }
-                        : { ...mob, items: mob.items.filter(item => item.id !== event.objectId) };
-                });
-                return { ...current, rooms: { ...current.rooms, [event.roomId]: { ...room, mobs } } };
-            }
-            if (current?.id !== event.doc.id || event.doc.updatedAt <= current.updatedAt) return current;
-            return event.doc;
-        });
-    }), []);
-
+    const undoHistory = useShaperUndoHistory(doc);
+    useShaperProjectSubscription({ setProjects, setDoc });
     const persist = (nextDoc: ShaperWorkspaceDoc) => {
+        const trackedDoc = doc?.id === nextDoc.id ? undoHistory.rememberUndo(doc, nextDoc) : nextDoc;
+        saveShaperProject(trackedDoc);
+        setProjects(listShaperProjects());
+        return trackedDoc;
+    };
+    const persistSelection = (nextDoc: ShaperWorkspaceDoc) => {
         saveShaperProject(nextDoc);
+        undoHistory.syncSelection(nextDoc);
         setProjects(listShaperProjects());
         return nextDoc;
     };
     const persistRoomPatch = (nextDoc: ShaperWorkspaceDoc, roomIds: ShaperRoomId[], patch: Partial<ShaperRoomDraft>) => {
-        const savedDoc = saveShaperRoomPatch(nextDoc, roomIds, patch);
+        const trackedDoc = doc?.id === nextDoc.id ? undoHistory.rememberUndo(doc, nextDoc) : nextDoc;
+        const savedDoc = saveShaperRoomPatch(trackedDoc, roomIds, patch);
         setProjects(listShaperProjects());
         return savedDoc;
     };
@@ -125,24 +81,23 @@ export const useShaperWorkspace = () => {
         setProjects(listShaperProjects());
         setViewZ(0);
         setSelectedRoomIds(new Set());
+        undoHistory.resetUndo(nextDoc);
         setDoc(nextDoc);
     };
-
     const openProject = (projectId: string) => {
         const nextDoc = loadShaperProject(projectId);
         if (nextDoc) {
             setViewZ(nextDoc.rooms[nextDoc.selectedRoomId]?.z ?? 0);
             setSelectedRoomIds(new Set());
+            undoHistory.resetUndo(nextDoc);
             setDoc(nextDoc);
         }
     };
-
     const deleteProject = (projectId: string) => {
         deleteShaperProject(projectId);
         setProjects(listShaperProjects());
         setDoc(current => current?.id === projectId ? null : current);
     };
-
     const renameProject = (projectId: string, newName: string) => {
         setDoc(current => {
             if (current?.id === projectId) {
@@ -160,9 +115,31 @@ export const useShaperWorkspace = () => {
             }
         });
     };
-
+    const changeProjectZone = (projectId: string, zoneNumber: number) => {
+        setDoc(current => {
+            const target = current?.id === projectId ? current : loadShaperProject(projectId);
+            if (!target) return current;
+            const nextTarget = changeShaperProjectZone(target, zoneNumber);
+            if (current?.id === projectId) return persist(nextTarget);
+            saveShaperProject(nextTarget);
+            setProjects(listShaperProjects());
+            return current;
+        });
+    };
+    const exportProject = (projectId: string) => {
+        const target = doc?.id === projectId ? doc : loadShaperProject(projectId);
+        if (target) downloadShaperProjectFile(target);
+    };
+    const importProject = async (file: File) => {
+        const nextDoc = parseShaperProjectFile(await file.text());
+        saveShaperProject(nextDoc);
+        setProjects(listShaperProjects());
+        setViewZ(nextDoc.rooms[nextDoc.selectedRoomId]?.z ?? 0);
+        setSelectedRoomIds(new Set());
+        undoHistory.resetUndo(nextDoc);
+        setDoc(nextDoc);
+    };
     const closeProject = () => setDoc(null);
-
     const setProjectShared = (projectId: string, shared: boolean) => {
         setDoc(current => {
             const target = current?.id === projectId ? current : loadShaperProject(projectId);
@@ -177,16 +154,14 @@ export const useShaperWorkspace = () => {
 
     const shareProject = (projectId: string) => setProjectShared(projectId, true);
     const unshareProject = (projectId: string) => setProjectShared(projectId, false);
-
     const selectRoom = (roomId: ShaperRoomId) => {
         setSelectedConnection(null);
         setSelectedConnectionIds(new Set());
         const nextZ = doc?.rooms[roomId]?.z;
         if (typeof nextZ === 'number') setViewZ(nextZ);
         setSelectedRoomIds(new Set([roomId]));
-        setDoc(current => current ? persist(selectShaperRoom(current, roomId)) : current);
+        setDoc(current => current ? persistSelection(selectShaperRoom(current, roomId)) : current);
     };
-
     // Shift-click: toggle a room in the multi-selection and make it primary.
     const toggleSelectRoom = (roomId: ShaperRoomId) => {
         setSelectedConnection(null);
@@ -197,9 +172,8 @@ export const useShaperWorkspace = () => {
             if (next.has(roomId)) next.delete(roomId); else next.add(roomId);
             return next;
         });
-        setDoc(current => current ? persist(selectShaperRoom(current, roomId)) : current);
+        setDoc(current => current ? persistSelection(selectShaperRoom(current, roomId)) : current);
     };
-
     const selectConnection = (conn: ShaperConnectionSelection | null) => {
         setSelectedRoomIds(new Set());
         if (!conn) {
@@ -210,7 +184,6 @@ export const useShaperWorkspace = () => {
             setSelectedConnectionIds(new Set([`${conn.aId}:${conn.dirAB}`]));
         }
     };
-
     const toggleSelectConnection = (conn: ShaperConnectionSelection) => {
         setSelectedRoomIds(new Set());
         setSelectedConnection(conn);
@@ -221,13 +194,11 @@ export const useShaperWorkspace = () => {
             return next;
         });
     };
-
     const clearSelection = () => {
         setSelectedConnection(null);
         setSelectedConnectionIds(new Set());
         setSelectedRoomIds(new Set());
     };
-
     // Apply an inspector patch to every selected room when 2+ are selected,
     // otherwise just the primary room.
     const updateRoom = (patch: Partial<ShaperRoomDraft>) => {
@@ -239,41 +210,32 @@ export const useShaperWorkspace = () => {
             return persistRoomPatch(next, ids, patch);
         });
     };
-
     const addAnnotation = (annotation: ShaperAnnotation) =>
-        setDoc(current => current ? saveShaperAnnotationAdd(current, current.selectedRoomId, annotation) : current);
+        setDoc(current => current ? undoHistory.rememberUndo(current, saveShaperAnnotationAdd(current, current.selectedRoomId, annotation)) : current);
     const removeAnnotation = (annotationId: string) =>
-        setDoc(current => current ? saveShaperAnnotationRemove(current, current.selectedRoomId, annotationId) : current);
-
-    const addRoom = () => {
-        setDoc(current => current ? persist(addShaperGridRoom(current, viewZ)) : current);
-    };
-
-    const addExtraRoom = () => {
-        setDoc(current => current ? persist(addShaperExtraRoom(current, viewZ)) : current);
-    };
-
-    const addRoomAt = (x: number, y: number, z: number) => {
-        setDoc(current => current ? persist(addShaperRoomAt(current, x, y, z)) : current);
-    };
-
-    const moveRoom = (roomId: ShaperRoomId, x: number, y: number, z: number) => {
+        setDoc(current => current ? undoHistory.rememberUndo(current, saveShaperAnnotationRemove(current, current.selectedRoomId, annotationId)) : current);
+    const addExtraRoom = () => setDoc(current => current ? persist(addShaperExtraRoom(current, viewZ)) : current);
+    const addRoomAt = (x: number, y: number, z: number) => setDoc(current => current ? persist(addShaperRoomAt(current, x, y, z)) : current);
+    const moveRoom = (roomId: ShaperRoomId, x: number, y: number, z: number) =>
         setDoc(current => current ? persist(moveShaperRoom(current, roomId, x, y, z)) : current);
-    };
-
-    const removeRoom = (roomId: ShaperRoomId) => {
-        setDoc(current => current ? persist(removeShaperRoom(current, roomId)) : current);
-    };
-
-    const moveRooms = (roomIds: ShaperRoomId[], dx: number, dy: number, z: number) => {
+    const removeRoom = (roomId: ShaperRoomId) => setDoc(current => current ? persist(removeShaperRoom(current, roomId)) : current);
+    const moveRooms = (roomIds: ShaperRoomId[], dx: number, dy: number, z: number) =>
         setDoc(current => current ? persist(moveShaperRooms(current, roomIds, dx, dy, z)) : current);
-    };
-
     const removeRooms = (roomIds: ShaperRoomId[]) => {
         setSelectedRoomIds(new Set());
         setDoc(current => current ? persist(removeShaperRooms(current, roomIds)) : current);
     };
-
+    const undo = () => {
+        const previous = undoHistory.popUndo();
+        if (!previous) return;
+        saveShaperProject(previous);
+        setProjects(listShaperProjects());
+        setViewZ(previous.rooms[previous.selectedRoomId]?.z ?? 0);
+        setSelectedRoomIds(new Set([previous.selectedRoomId]));
+        setSelectedConnection(null);
+        setSelectedConnectionIds(new Set());
+        setDoc(previous);
+    };
     const entityActions = useShaperEntityActions({ persist, setDoc });
     const comActions = useShaperComActions({ persist, setDoc });
     const exitActions = useShaperExitActions({ persist, selectedConnectionIds, setDoc });
@@ -292,8 +254,8 @@ export const useShaperWorkspace = () => {
         projects,
         issues,
         selectedIssues,
+        canUndo: undoHistory.canUndo,
         setViewZ,
-        addRoom,
         addExtraRoom,
         addRoomAt,
         moveRoom,
@@ -304,12 +266,16 @@ export const useShaperWorkspace = () => {
         openProject,
         deleteProject,
         renameProject,
+        changeProjectZone,
+        exportProject,
+        importProject,
         shareProject,
         unshareProject,
         closeProject,
         selectRoom,
         toggleSelectRoom,
         clearSelection,
+        undo,
         updateRoom,
         addAnnotation,
         removeAnnotation,

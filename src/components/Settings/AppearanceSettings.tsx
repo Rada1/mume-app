@@ -117,6 +117,7 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                         <option value="'IBM Plex Mono', monospace">IBM Plex Mono</option>
                         <option value="'Anonymous Pro', monospace">Anonymous Pro</option>
                         <option value="'Aniron', serif">Aniron (Elven)</option>
+                        <option value="'Google Sans', sans-serif">Google Sans</option>
                     </select>
                 </div>
 

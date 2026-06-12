@@ -42,4 +42,8 @@ mume_usable_entities.json
 mume_entities*.json
 public/mume_entities*.json
 raw_stat_test.txt
+mume_scraped_entities.json
+mume_scraped_raw.txt
+mume_scraper_info_stats.log
+
 

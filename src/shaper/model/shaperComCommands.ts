@@ -75,26 +75,44 @@ export const listShaperComRoomEntities = (
     const childNodes = (parentId: string) => roomNodes
         .filter(node => node.parentId === parentId)
         .sort((a, b) => a.order - b.order);
+
     const itemFromNode = (node: ShaperCommandNode): ShaperItemRef => ({
         id: node.id,
         vnum: nodeField(node, 'vnum'),
-        name: nodeField(node, 'name', nodeField(node, 'vnum', 'unnamed object'))
+        name: nodeField(node, 'name', nodeField(node, 'vnum', 'unnamed object')),
+        resetType: node.type,
+        resetDetail: node.type === 'equip' ? nodeField(node, 'position') : undefined,
+        contents: childNodes(node.id)
+            .filter(child => child.type === 'put')
+            .map(itemFromNode),
+        limit: node.limit
     });
+
+    const mobFromNode = (node: ShaperCommandNode): ShaperMobPlacement => ({
+        id: node.id,
+        vnum: nodeField(node, 'vnum'),
+        name: nodeField(node, 'name', nodeField(node, 'vnum', 'unnamed mob')),
+        resetType: node.type,
+        resetDetail: node.type === 'follow' ? (nodeField(node, 'ridden') ? 'ridden' : 'follower') : undefined,
+        items: childNodes(node.id)
+            .filter(child => child.type === 'give' || child.type === 'equip')
+            .map(itemFromNode),
+        followers: childNodes(node.id)
+            .filter(child => child.type === 'follow')
+            .map(mobFromNode),
+        limit: node.limit
+    });
+
     const mobs = roomNodes
         .filter(node => !node.parentId && (node.type === 'mobile' || node.type === 'follow'))
         .sort((a, b) => a.order - b.order)
-        .map(node => ({
-            id: node.id,
-            vnum: nodeField(node, 'vnum'),
-            name: nodeField(node, 'name', nodeField(node, 'vnum', 'unnamed mob')),
-            items: childNodes(node.id)
-                .filter(child => child.type === 'give' || child.type === 'equip')
-                .map(itemFromNode)
-        }));
+        .map(mobFromNode);
+
     const objects = roomNodes
         .filter(node => !node.parentId && (node.type === 'object' || node.type === 'hide'))
         .sort((a, b) => a.order - b.order)
         .map(itemFromNode);
+
     return { mobs, objects };
 };
 

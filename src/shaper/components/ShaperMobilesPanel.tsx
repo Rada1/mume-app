@@ -14,6 +14,7 @@ interface MobileEntity {
     class: string;
     align: number;
     rawText: string;
+    info?: string | null;
 }
 
 interface ShaperMobilesPanelProps {
@@ -33,6 +34,11 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
     const [selectedClass, setSelectedClass] = useState('ALL');
     const [expandedVnum, setExpandedVnum] = useState<number | null>(null);
     const [copiedVnum, setCopiedVnum] = useState<number | null>(null);
+    const [displayLimit, setDisplayLimit] = useState(100);
+
+    useEffect(() => {
+        setDisplayLimit(100);
+    }, [search, minLevel, maxLevel, selectedClass]);
 
     useEffect(() => {
         fetch('/mume_entities_with_stats.json')
@@ -152,7 +158,7 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
             </div>
 
             <div className="shaper-db-list">
-                {filteredMobiles.map(mob => {
+                {filteredMobiles.slice(0, displayLimit).map(mob => {
                     const isExpanded = expandedVnum === mob.vnum;
                     return (
                         <div
@@ -199,6 +205,14 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
 
                             {isExpanded && (
                                 <div className="shaper-db-card-details" onClick={e => e.stopPropagation()}>
+                                    {mob.info && (
+                                        <div style={{ marginBottom: '10px' }}>
+                                            <strong style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#f0b45b' }}>MUD Info Notes:</strong>
+                                            <div style={{ padding: '8px', background: 'rgba(255,255,255,0.03)', borderRadius: '4px', borderLeft: '3px solid #f0b45b', fontSize: '12px', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+                                                {mob.info}
+                                            </div>
+                                        </div>
+                                    )}
                                     <span>Raw /stat output:</span>
                                     <pre className="shaper-db-stat-pre">{mob.rawText}</pre>
                                 </div>
@@ -206,6 +220,15 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
                         </div>
                     );
                 })}
+                {filteredMobiles.length > displayLimit && (
+                    <button
+                        type="button"
+                        className="shaper-load-more-btn"
+                        onClick={() => setDisplayLimit(prev => prev + 100)}
+                    >
+                        Load More ({filteredMobiles.length - displayLimit} remaining)
+                    </button>
+                )}
             </div>
         </div>
     );

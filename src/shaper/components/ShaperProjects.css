@@ -101,6 +101,10 @@
     font-size: 11px;
 }
 
+.shaper-file-input {
+    display: none;
+}
+
 .shaper-project-open:hover,
 .shaper-project-create button:hover {
     border-color: #f0b45b;

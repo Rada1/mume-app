@@ -65,4 +65,36 @@ describe('buildSelectedRoomDeployPreview', () => {
         expect(preview.commands).toContain('/at 300:00 /com add mobile 2 0');
         expect(preview.warnings).toContain('Description and keyword description previews require an editor-save deployment step.');
     });
+
+    it('builds door and climb commands from exit flags', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 300 });
+        const room = doc.rooms[doc.selectedRoomId];
+        const targetId = 'room-1-0-0';
+        const exits = {
+            [`${room.id}:e`]: {
+                id: `${room.id}:e`,
+                fromRoomId: room.id,
+                direction: 'e' as const,
+                toRoomId: targetId,
+                isTwoWay: false,
+                doorName: 'gate',
+                doorFlags: ['door', 'closed' as const]
+            },
+            [`${room.id}:s`]: {
+                id: `${room.id}:s`,
+                fromRoomId: room.id,
+                direction: 's' as const,
+                toRoomId: targetId,
+                isTwoWay: false,
+                doorFlags: ['climb_down' as const],
+                climbDifficulty: 12,
+                climbDamage: 3
+            }
+        };
+
+        const preview = buildSelectedRoomDeployPreview(room, doc.rooms, exits, {});
+
+        expect(preview.commands).toContain('/at 300:00 /room dadd e gate');
+        expect(preview.commands).toContain('/at 300:00 /room cliset s 12 3');
+    });
 });

@@ -2015,3 +2015,42 @@ span.inline-btn {
     background-color: rgba(255, 255, 255, 0.85) !important;
     box-shadow: none !important;
 }
+
+/* --- MUME Welcome Block Centering --- */
+.message.welcome-block {
+    justify-content: center !important;
+    text-align: center !important;
+    margin: 3px 0 !important;
+}
+
+.message.welcome-block .message-content {
+    white-space: normal !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 650px;
+    margin: 0 auto;
+    font-size: 1.0rem !important;
+    line-height: 1.5 !important;
+}
+
+.message.welcome-title {
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
+}
+
+.message.welcome-title .message-content {
+    font-size: 1.3rem !important;
+    font-weight: bold !important;
+    letter-spacing: 0.12em !important;
+    color: #ffd700 !important; /* Gold header */
+}
+
+/* Scroll padding for absolutely positioned login card on desktop */
+@media (min-width: 1025px) {
+    .state-account .message-log {
+        padding-bottom: 300px !important;
+    }
+}
+.force-desktop.state-account .message-log {
+    padding-bottom: 300px !important;
+}

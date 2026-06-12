@@ -82,12 +82,13 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const { processMessageHtml, processMessageTokens } = useLog();
 
     const manualBgImage = useSettingsStore(s => s.bgImage);
+    const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
     const isSpectating = activeSession === 'spectate' || activeView === 'target';
     const activeTerrain = isSpectating ? spectateTerrain : currentTerrain;
-    const isAccountMode = accountState?.stage && accountState.stage !== 'none';
-    const resolvedBgImage = isAccountMode 
-        ? (accountState?.stage === 'login' ? null : '/assets/Pictures/account.png')
-        : (manualBgImage || resolveTerrainBackground(isAccountMode ? 'account-blue' : activeTerrain));
+    const isAccountMode = !!(accountState?.stage && accountState.stage !== 'none');
+    const resolvedBgImage = manualBgImage || (isAccountMode 
+        ? (accountState?.stage === 'login' ? resolveTerrainBackground('account-blue') : '/assets/Pictures/account.png')
+        : resolveTerrainBackground(activeTerrain));
     
     const { setPopoverState } = useUI();
 
@@ -213,7 +214,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         <DrawerResizeHandle handleType="log-left" widthVar="--desktop-log-width" />
                         <DrawerResizeHandle handleType="log-right" widthVar="--desktop-log-width" />
                     </>}
-                    {isMobile && <Embers />}
+                    {isImmersionMode && <Embers count={12} />}
                     {isNewbieMode && roomName && (
                         <div className={`sticky-room-header terrain-${String(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">
                             <div className="room-info-text">

@@ -4,6 +4,7 @@
  */
 
 import { listShaperComTree } from './shaperComCommands';
+import { hasShaperExitClimb, hasShaperExitDoor } from './shaperExitFlags';
 import { buildShaperLibraryCommands } from './shaperLibraries';
 import type { ShaperCommandNode, ShaperExitDraft, ShaperLibraryInstall, ShaperRoomDraft, ShaperRoomId } from './shaperTypes';
 
@@ -89,13 +90,13 @@ const buildExitCommands = (
         if (exit.doorFlags && exit.doorFlags.length > 0) {
             commands.push(wrapAt(room.roomNumber, `/room dset ${dir} @${exit.doorFlags.join(' ')}`));
         }
-        if (exit.hasDoor && exit.doorName?.trim()) {
+        if (hasShaperExitDoor(exit) && exit.doorName?.trim()) {
             commands.push(wrapAt(room.roomNumber, `/room dadd ${dir} ${exit.doorName.trim()}${doorKeyArg(exit)}`));
         }
         if (exit.doorWeight !== undefined) {
             commands.push(wrapAt(room.roomNumber, `/room dweight ${dir} ${exit.doorWeight}`));
         }
-        if (exit.isClimb) {
+        if (hasShaperExitClimb(exit)) {
             commands.push(wrapAt(room.roomNumber, `/room cliset ${dir} ${exit.climbDifficulty ?? 0} ${exit.climbDamage ?? 0}`));
         }
         commands.push(...editorBlock(room.roomNumber, `/room edescription ${dir}`, exit.exitDescription || ''));
@@ -140,7 +141,7 @@ export const buildSelectedRoomDeployPreview = (
         warnings.push('Description and keyword description previews require an editor-save deployment step.');
     }
     outgoing.forEach(exit => {
-        if (exit.hasDoor && !exit.doorName?.trim()) {
+        if (hasShaperExitDoor(exit) && !exit.doorName?.trim()) {
             warnings.push(`Exit ${exit.direction.toUpperCase()} is marked as a door but has no door keywords.`);
         }
         if (exit.exitDescription?.trim()) {

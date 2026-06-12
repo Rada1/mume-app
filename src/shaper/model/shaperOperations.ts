@@ -5,8 +5,8 @@
 
 import { createGridRoom, createShaperRoomId, formatRoomNumber } from './shaperDocument';
 import { autoConnectRoom, clearRoomCardinals } from './shaperExits';
+import { removeInactiveRoomAt } from './shaperLegacyInactiveRooms';
 import type { ShaperExitDraft, ShaperRoomDraft, ShaperRoomId, ShaperWorkspaceDoc } from './shaperTypes';
-
 // --- Occupancy Section ---
 const cellKey = (x: number, y: number, z: number): string => `${x},${y},${z}`;
 
@@ -17,6 +17,7 @@ const buildOccupancy = (
     const occupied = new Set<string>();
     for (const room of Object.values(rooms)) {
         if (room.kind !== 'grid') continue;
+        if (room.inactive) continue;
         if (room.id === exceptId) continue;
         occupied.add(cellKey(room.x, room.y, room.z));
     }
@@ -30,7 +31,6 @@ export const isShaperCellFree = (
     z: number,
     exceptId?: ShaperRoomId
 ): boolean => !buildOccupancy(doc.rooms, exceptId).has(cellKey(x, y, z));
-
 // --- Selection Section ---
 export const selectShaperRoom = (
     doc: ShaperWorkspaceDoc,
@@ -39,7 +39,6 @@ export const selectShaperRoom = (
     ...doc,
     selectedRoomId: roomId
 });
-
 // --- Room Update Section ---
 export const updateShaperRoom = (
     doc: ShaperWorkspaceDoc,
@@ -135,30 +134,10 @@ export const addShaperRoomAt = (
     y: number,
     z: number
 ): ShaperWorkspaceDoc => {
-    const inactiveRoom = Object.values(doc.rooms).find(
-        r => r.kind === 'grid' && r.x === x && r.y === y && r.z === z && r.inactive
-    );
-
-    if (inactiveRoom) {
-        const rooms = {
-            ...doc.rooms,
-            [inactiveRoom.id]: {
-                ...inactiveRoom,
-                inactive: false,
-                status: 'new-draft' as const
-            }
-        };
-        return {
-            ...doc,
-            selectedRoomId: inactiveRoom.id,
-            rooms,
-            exits: autoConnectRoom(rooms, doc.exits, inactiveRoom.id)
-        };
-    }
-
-    if (!isShaperCellFree(doc, x, y, z)) return doc;
+    const baseDoc = removeInactiveRoomAt(doc, x, y, z);
+    if (!isShaperCellFree(baseDoc, x, y, z)) return doc;
     const room = { ...createGridRoom(doc.zoneNumber, x, y, z), id: createShaperRoomId() };
-    return withGridRoom(doc, room);
+    return withGridRoom(baseDoc, room);
 };
 
 // --- Move / Place Section ---
@@ -257,25 +236,7 @@ export const removeShaperRooms = (doc: ShaperWorkspaceDoc, roomIds: ShaperRoomId
 
     const rooms = { ...doc.rooms };
     for (const id of removing) {
-        const room = rooms[id];
-        if (room && room.x >= 0 && room.x < 10 && room.y >= 0 && room.y < 10 && room.z === 0) {
-            rooms[id] = {
-                ...room,
-                name: '',
-                description: '',
-                sector: '',
-                flags: [],
-                mobs: [],
-                objects: [],
-                notes: '',
-                keywords: [],
-                annotations: [],
-                preposition: 'in',
-                inactive: true
-            };
-        } else {
-            delete rooms[id];
-        }
+        delete rooms[id];
     }
 
     const exits: Record<string, ShaperExitDraft> = {};
@@ -294,7 +255,6 @@ export const removeShaperRooms = (doc: ShaperWorkspaceDoc, roomIds: ShaperRoomId
 
 export const removeShaperRoom = (doc: ShaperWorkspaceDoc, roomId: ShaperRoomId): ShaperWorkspaceDoc =>
     removeShaperRooms(doc, [roomId]);
-
 // --- Extra Room Section ---
 const nextExtraRoomNumber = (doc: ShaperWorkspaceDoc): string => {
     const prefix = `${doc.zoneNumber}:`;
@@ -329,7 +289,6 @@ export const addShaperExtraRoom = (doc: ShaperWorkspaceDoc, z: number): ShaperWo
         mobs: [],
         objects: []
     };
-
     return {
         ...doc,
         selectedRoomId: id,

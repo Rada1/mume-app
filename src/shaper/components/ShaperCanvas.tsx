@@ -4,11 +4,12 @@
  */
 
 import { useCallback, useMemo, useState } from 'react';
-import type { CSSProperties, DragEvent, PointerEvent as ReactPointerEvent } from 'react';
-import { SHAPER_CELL, useShaperCanvasView } from '../hooks/useShaperCanvasView';
-import type { ShaperExitState } from '../model/shaperExits';
-import type { ShaperCommandNode, ShaperDirection, ShaperExitDraft, ShaperRoomDraft, ShaperRoomId, ShaperConnectionSelection } from '../model/shaperTypes';
+import type { CSSProperties, DragEvent, MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react';
+import { SHAPER_CELL, SHAPER_GUTTER, SHAPER_TILE, useShaperCanvasView } from '../hooks/useShaperCanvasView';
+import type { ShaperCommandNode, ShaperDirection, ShaperExitDraft, ShaperLibraryInstall, ShaperRoomDraft, ShaperRoomId, ShaperConnectionSelection } from '../model/shaperTypes';
+import { ShaperHoverCard, type ShaperHoverContent } from './ShaperHoverCard';
 import { formatLayer, getNodePosition, type ShaperConnectionDragState, type ShaperRoomMenuState } from './ShaperCanvasGeometry';
+import { ShaperAdjacentRoomTile } from './ShaperAdjacentRoomTile';
 import { ShaperRoomContextMenu } from './ShaperCanvasMenus';
 import { ShaperCanvasToolbar } from './ShaperCanvasToolbar';
 import { ShaperConnectionLayer } from './ShaperConnectionLayer';
@@ -23,6 +24,7 @@ interface ShaperCanvasProps {
     rooms: Record<ShaperRoomId, ShaperRoomDraft>;
     exits: Record<string, ShaperExitDraft>;
     commandNodes: Record<string, ShaperCommandNode>;
+    libraries: Record<string, ShaperLibraryInstall>;
     selectedRoomId: ShaperRoomId;
     selectedRoomIds: Set<ShaperRoomId>;
     selectedConnection: ShaperConnectionSelection | null;
@@ -32,18 +34,19 @@ interface ShaperCanvasProps {
     layers: number[];
     viewZ: number;
     onAddExtraRoom: () => void;
-    onCycleExit: (aId: ShaperRoomId, bId: ShaperRoomId, dirAB: ShaperDirection, dirBA: ShaperDirection) => void;
-    onConnectExits: (aId: ShaperRoomId, bId: ShaperRoomId, dirAB: ShaperDirection, dirBA: ShaperDirection, state: ShaperExitState) => void;
     onConnectDirectedExit: (fromRoomId: ShaperRoomId, toRoomId: ShaperRoomId, direction: ShaperDirection) => void;
     onToggleExitDoor: (fromRoomId: ShaperRoomId, direction: ShaperDirection) => void;
     onSelectRoom: (roomId: ShaperRoomId) => void;
     onToggleSelect: (roomId: ShaperRoomId) => void;
+    onSelectEntity?: (roomId: ShaperRoomId, entityId: string) => void;
     onSetViewZ: (z: number) => void;
     onAddRoomAt: (x: number, y: number, z: number) => void;
     onMoveRoom: (roomId: ShaperRoomId, x: number, y: number, z: number) => void;
     onMoveRooms: (roomIds: ShaperRoomId[], dx: number, dy: number, z: number) => void;
     onRemoveRoom: (roomId: ShaperRoomId) => void;
     onRemoveRooms: (roomIds: ShaperRoomId[]) => void;
+    showComOverlay?: boolean;
+    onToggleComOverlay?: () => void;
 }
 
 interface DragState {
@@ -54,7 +57,6 @@ interface DragState {
     dy: number;
     moved: boolean;
 }
-
 const DRAG_THRESHOLD = 5;
 const EXTRA_ROOM_MIME = 'application/x-shaper-room';
 
@@ -63,6 +65,7 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
     rooms,
     exits,
     commandNodes,
+    libraries,
     selectedRoomId,
     selectedRoomIds,
     selectedConnection,
@@ -76,12 +79,15 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
     onToggleExitDoor,
     onSelectRoom,
     onToggleSelect,
+    onSelectEntity,
     onSetViewZ,
     onAddRoomAt,
     onMoveRoom,
     onMoveRooms,
     onRemoveRoom,
-    onRemoveRooms
+    onRemoveRooms,
+    showComOverlay = false,
+    onToggleComOverlay
 }) => {
     const view = useShaperCanvasView();
     // Re-render tiles when the terrain image assets finish loading.
@@ -91,8 +97,25 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
     const [drag, setDrag] = useState<DragState | null>(null);
     const [roomMenu, setRoomMenu] = useState<ShaperRoomMenuState | null>(null);
     const [connectionDrag, setConnectionDrag] = useState<ShaperConnectionDragState | null>(null);
+    const [hoverCard, setHoverCard] = useState<{ content: ShaperHoverContent; x: number; y: number; flipX: boolean; flipY: boolean } | null>(null);
 
-    const gridRooms = useMemo(() => Object.values(rooms).filter(room => room.z === viewZ && room.kind === 'grid'), [rooms, viewZ]);
+    const handleHover = useCallback((content: ShaperHoverContent, event: ReactMouseEvent) => {
+        const rect = view.viewportRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        // Flip toward the cursor near the right/bottom edge so the card isn't clipped.
+        setHoverCard({ content, x, y, flipX: x > rect.width - 300, flipY: y > rect.height - 160 });
+    }, [view.viewportRef]);
+    const handleHoverEnd = useCallback(() => setHoverCard(null), []);
+
+    const gridRooms = useMemo(() => Object.values(rooms).filter(room =>
+        room.z === viewZ && room.kind === 'grid' && !room.inactive), [rooms, viewZ]);
+    const adjacentRooms = useMemo(() => {
+        return Object.values(rooms).filter(room => 
+            (room.z === viewZ - 1 || room.z === viewZ + 1) && room.kind === 'grid' && !room.inactive
+        );
+    }, [rooms, viewZ]);
     const extraRooms = useMemo(() => Object.values(rooms).filter(room => room.z === viewZ && room.kind === 'extra'), [rooms, viewZ]);
     const roomByCell = useMemo(() => {
         const map = new Map<string, ShaperRoomDraft>();
@@ -103,7 +126,6 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
     const groupDragIds = drag && selectedRoomIds.has(drag.roomId) && selectedRoomIds.size > 1
         ? selectedRoomIds
         : null;
-
     const screenToWorld = useCallback((clientX: number, clientY: number) => {
         const rect = view.viewportRef.current?.getBoundingClientRect();
         return {
@@ -111,14 +133,12 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
             y: (clientY - (rect?.top ?? 0) - view.camera.y) / view.camera.zoom
         };
     }, [view.camera, view.viewportRef]);
-
     // --- Connection Node Section ---
     const handleNodePointerDown = (event: ReactPointerEvent<HTMLButtonElement>, roomId: ShaperRoomId, dir: ShaperDirection) => {
         event.stopPropagation();
         try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* best effort */ }
         setConnectionDrag({ sourceRoomId: roomId, sourceDir: dir, currentPos: screenToWorld(event.clientX, event.clientY), hoveredTarget: null });
     };
-
     const readTargetNode = (clientX: number, clientY: number) => {
         const targetNode = document.elementFromPoint(clientX, clientY)?.closest('[data-shaper-node]');
         if (!targetNode) return null;
@@ -127,7 +147,6 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
             dir: targetNode.getAttribute('data-dir') as ShaperDirection
         };
     };
-
     const handleNodePointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
         if (!connectionDrag) return;
         let worldPos = screenToWorld(event.clientX, event.clientY);
@@ -140,7 +159,6 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
         }
         setConnectionDrag(current => current ? { ...current, currentPos: worldPos, hoveredTarget } : null);
     };
-
     const handleNodePointerUp = (event: ReactPointerEvent<HTMLButtonElement>) => {
         if (!connectionDrag) return;
         try { event.currentTarget.releasePointerCapture(event.pointerId); } catch { /* best effort */ }
@@ -150,7 +168,6 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
         }
         setConnectionDrag(null);
     };
-
     // --- Room Drag Section ---
     const handleTilePointerDown = (event: ReactPointerEvent<HTMLDivElement>, room: ShaperRoomDraft) => {
         event.stopPropagation();
@@ -158,7 +175,6 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
         try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* best effort */ }
         setDrag({ roomId: room.id, startX: event.clientX, startY: event.clientY, dx: 0, dy: 0, moved: false });
     };
-
     const handleTilePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
         setDrag(current => {
             if (!current) return current;
@@ -167,7 +183,6 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
             return { ...current, dx, dy, moved: current.moved || Math.hypot(dx, dy) > DRAG_THRESHOLD };
         });
     };
-
     const handleTilePointerUp = (event: ReactPointerEvent<HTMLDivElement>, room: ShaperRoomDraft) => {
         event.stopPropagation();
         if (event.button !== 0) return;
@@ -182,7 +197,6 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
         }
         setDrag(null);
     };
-
     // --- Viewport Section ---
     const openContextMenu = (event: ReactPointerEvent<HTMLDivElement>) => {
         event.preventDefault();
@@ -191,7 +205,6 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
         if (room && !selectedRoomIds.has(room.id)) onSelectRoom(room.id);
         setRoomMenu({ screenX: event.clientX, screenY: event.clientY, cellX: cell.x, cellY: cell.y, roomId: room?.id ?? null });
     };
-
     const handleDrop = (event: DragEvent<HTMLDivElement>) => {
         event.preventDefault();
         const roomId = event.dataTransfer.getData(EXTRA_ROOM_MIME);
@@ -199,7 +212,6 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
         const cell = view.screenToCell(event.clientX, event.clientY);
         onMoveRoom(roomId, cell.x, cell.y, viewZ);
     };
-
     const worldStyle: CSSProperties = {
         transform: `translate(${view.camera.x}px, ${view.camera.y}px) scale(${view.camera.zoom})`
     };
@@ -220,6 +232,8 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                 onSetShowNodes={setShowNodes}
                 onSetShowExits={setShowExits}
                 onResetCamera={view.resetCamera}
+                showComOverlay={showComOverlay}
+                onToggleComOverlay={onToggleComOverlay}
             />
 
             <div
@@ -239,6 +253,7 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                     <ShaperConnectionLayer
                         rooms={rooms}
                         exits={exits}
+                        commandNodes={commandNodes}
                         viewZ={viewZ}
                         drag={connectionDrag}
                         selectedConnection={selectedConnection}
@@ -247,6 +262,9 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                         onToggleSelectConnection={onToggleSelectConnection}
                         showExits={showExits}
                     />
+                    {adjacentRooms.map(room => (
+                        <ShaperAdjacentRoomTile key={room.id} room={room} viewZ={viewZ} showExits={showExits} />
+                    ))}
                     {gridRooms.map(room => {
                         const dragging = !!drag && drag.moved && (drag.roomId === room.id || (!!groupDragIds && groupDragIds.has(room.id)));
                         const selected = room.id === selectedRoomId || selectedRoomIds.has(room.id);
@@ -254,6 +272,8 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                             <ShaperRoomTile
                                 key={room.id}
                                 room={room}
+                                rooms={rooms}
+                                exits={exits}
                                 commandNodes={commandNodes}
                                 selected={selected}
                                 dragging={dragging}
@@ -268,10 +288,27 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                                 onNodePointerDown={handleNodePointerDown}
                                 onNodePointerMove={handleNodePointerMove}
                                 onNodePointerUp={handleNodePointerUp}
+                                onHover={handleHover}
+                                onHoverEnd={handleHoverEnd}
+                                onSelectEntity={onSelectEntity}
+                                showComOverlay={showComOverlay}
                             />
                         );
                     })}
                 </div>
+
+                {hoverCard && !drag && !view.isPanning && (
+                    <div
+                        className="shaper-hovercard"
+                        style={{
+                            left: hoverCard.x + (hoverCard.flipX ? -16 : 16),
+                            top: hoverCard.y + (hoverCard.flipY ? -16 : 16),
+                            transform: `translate(${hoverCard.flipX ? '-100%' : '0'}, ${hoverCard.flipY ? '-100%' : '0'})`
+                        }}
+                    >
+                        <ShaperHoverCard content={hoverCard.content} libraries={libraries} />
+                    </div>
+                )}
 
                 {roomMenu && (
                     <ShaperRoomContextMenu

@@ -37,6 +37,10 @@ export interface ShaperItemRef {
     id: string;
     vnum: string;
     name: string;
+    resetType?: string;
+    resetDetail?: string;
+    contents?: ShaperItemRef[];
+    limit?: ShaperCommandLimit | null;
 }
 
 // A mob placed in a room, with the objects it carries / wears.
@@ -45,6 +49,10 @@ export interface ShaperMobPlacement {
     vnum: string;
     name: string;
     items: ShaperItemRef[];
+    resetType?: string;
+    resetDetail?: string;
+    followers?: ShaperMobPlacement[];
+    limit?: ShaperCommandLimit | null;
 }
 
 export interface ShaperAnnotation {

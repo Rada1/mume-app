@@ -135,7 +135,12 @@
         border-radius: inherit;
     }
     .background-layer {
-        display: none !important;
+        display: block !important;
+        background-image: url('/assets/Pictures/UIPics/darkmap.png') !important;
+        background-size: cover !important;
+        background-position: center !important;
+        opacity: 0.07 !important;
+        filter: sepia(0.5) brightness(0.6) contrast(1.1) !important;
     }
     /* Drawers fill their 30vw columns — no push needed */
     body.map-drawer-open .app-content-shaker,
@@ -226,7 +231,12 @@
 }
 
 .force-desktop .background-layer {
-    display: none !important;
+    display: block !important;
+    background-image: url('/assets/Pictures/UIPics/darkmap.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    opacity: 0.07 !important;
+    filter: sepia(0.5) brightness(0.6) contrast(1.1) !important;
 }
 
 /* Force Mobile/Portrait Overrides */
@@ -523,16 +533,28 @@
 
 @media (min-width: 1025px) {
     .state-account .control-card-wrapper {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
+        position: absolute !important;
+        bottom: 30px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: var(--z-hud-interactive) !important;
+        width: 100% !important;
+        max-width: 800px !important;
     }
 
     .state-account .control-card-wrapper .input-area {
         border-top: none !important;
     }
+}
+
+.force-desktop.state-account .control-card-wrapper {
+    position: absolute !important;
+    bottom: 30px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: var(--z-hud-interactive) !important;
+    width: 100% !important;
+    max-width: 800px !important;
 }
 
 
@@ -1612,4 +1634,194 @@
     color: #ffd700;
     min-width: 24px;
     text-align: center;
+}
+
+/* Desktop flat prompt style layout overrides */
+@media (min-width: 1025px) {
+    .state-account .login-card-container {
+        margin: 0;
+        max-width: none;
+        padding: 0;
+    }
+    .state-account .login-card {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 12px 16px;
+    }
+    .state-account .login-card-title {
+        display: none;
+    }
+    .state-account .login-prompt-text {
+        display: none !important;
+    }
+    .state-account .login-card form {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+    }
+    .state-account .login-input-wrapper {
+        flex: 1;
+        margin-bottom: 0;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        box-sizing: border-box;
+        border-radius: 6px;
+    }
+    .state-account .login-input-field {
+        text-align: left;
+        font-size: 0.95rem;
+        height: auto;
+        line-height: normal;
+        width: 100%;
+    }
+    .state-account .remember-login-toggle {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0 4px;
+        font-size: 0.82rem;
+        white-space: nowrap;
+    }
+    .state-account .login-card-actions {
+        display: flex;
+        align-items: center;
+        width: auto;
+        gap: 16px;
+    }
+    .state-account .login-btn {
+        height: 38px !important;
+        border-radius: 6px !important;
+        margin: 0 !important;
+        font-family: var(--font-main), sans-serif !important;
+        font-size: 0.85rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1.2px !important;
+        box-shadow: none !important;
+        padding: 0 20px !important;
+    }
+    .state-account .login-card-new-account {
+        margin-top: 0;
+        width: auto;
+        display: flex;
+        align-items: center;
+    }
+    .state-account .login-new-acc-btn {
+        height: 38px !important;
+        border-radius: 6px !important;
+        padding: 0 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+        font-size: 0.85rem !important;
+        font-weight: 700 !important;
+        margin: 0 !important;
+    }
+    .state-account .creation-card-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 10px;
+        justify-content: flex-start;
+    }
+}
+
+/* Also apply overrides for .force-desktop.state-account */
+.force-desktop.state-account .login-card-container {
+    margin: 0;
+    max-width: none;
+    padding: 0;
+}
+.force-desktop.state-account .login-card {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 12px 16px;
+}
+.force-desktop.state-account .login-card-title {
+    display: none;
+}
+.force-desktop.state-account .login-prompt-text {
+    display: none !important;
+}
+.force-desktop.state-account .login-card form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+}
+.force-desktop.state-account .login-input-wrapper {
+    flex: 1;
+    margin-bottom: 0;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    box-sizing: border-box;
+    border-radius: 6px;
+}
+.force-desktop.state-account .login-input-field {
+    text-align: left;
+    font-size: 0.95rem;
+    height: auto;
+    line-height: normal;
+    width: 100%;
+}
+.force-desktop.state-account .remember-login-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 4px;
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+.force-desktop.state-account .login-card-actions {
+    display: flex;
+    align-items: center;
+    width: auto;
+    gap: 16px;
+}
+.force-desktop.state-account .login-btn {
+    height: 38px !important;
+    border-radius: 6px !important;
+    margin: 0 !important;
+    font-family: var(--font-main), sans-serif !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.2px !important;
+    box-shadow: none !important;
+    padding: 0 20px !important;
+}
+.force-desktop.state-account .login-card-new-account {
+    margin-top: 0;
+    width: auto;
+    display: flex;
+    align-items: center;
+}
+.force-desktop.state-account .login-new-acc-btn {
+    height: 38px !important;
+    border-radius: 6px !important;
+    padding: 0 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+}
+.force-desktop.state-account .creation-card-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+    justify-content: flex-start;
 }

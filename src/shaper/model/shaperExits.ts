@@ -6,6 +6,7 @@
  */
 
 import type { ShaperDirection, ShaperExitDraft, ShaperRoomId, ShaperRoomDraft, ShaperWorkspaceDoc } from './shaperTypes';
+import { hasShaperExitDoor, syncShaperExitDoorFlag } from './shaperExitFlags';
 
 // --- Types Section ---
 export type ShaperExitState = 'none' | 'two-way' | 'forward' | 'reverse';
@@ -211,7 +212,8 @@ export const toggleShaperExitDoor = (
             ...doc.exits,
             [key]: {
                 ...exit,
-                hasDoor: !exit.hasDoor
+                doorFlags: syncShaperExitDoorFlag(exit, !hasShaperExitDoor(exit)),
+                hasDoor: !hasShaperExitDoor(exit)
             }
         }
     };

@@ -586,12 +586,6 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
     overflow: hidden;
 }
 
-.is-desktop .embers-container {
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: var(--log-max-width);
-}
 
 .ember-particle {
     position: absolute;

@@ -44,9 +44,9 @@ export const AtmosphericLayer: React.FC = () => {
 
     // Resolved background image: dynamic terrain, custom manual, or account image
     const terrainBg = resolveTerrainBackground(effectiveTerrain);
-    const resolvedBgImage = isAccountMode 
-        ? (accountState.stage === 'login' ? null : '/assets/Pictures/account.png')
-        : (manualBgImage || terrainBg);
+    const resolvedBgImage = manualBgImage || (isAccountMode 
+        ? (accountState.stage === 'login' ? terrainBg : '/assets/Pictures/account.png')
+        : terrainBg);
     const resolvedBottomBgImage = manualBgImageBottom;
     const resolvedBottomBgScale = 1;
 

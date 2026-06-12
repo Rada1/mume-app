@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { hasShaperExitClimb, hasShaperExitDoor } from '../model/shaperExitFlags';
 import type { ShaperDirection, ShaperDoorFlag, ShaperExitDraft, ShaperRoomDraft, ShaperRoomId } from '../model/shaperTypes';
 
 interface ShaperConnectionInspectorProps {
@@ -50,7 +51,17 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
         const nextFlags = flags.includes(flag)
             ? flags.filter(f => f !== flag)
             : [...flags, flag];
-        onUpdateExit(exitId, { doorFlags: nextFlags });
+        const patch: Partial<ShaperExitDraft> = { doorFlags: nextFlags };
+        if (flag === 'door') patch.hasDoor = nextFlags.includes('door');
+        if (flag === 'climb_up' || flag === 'climb_down') {
+            patch.isClimb = nextFlags.includes('climb_up') || nextFlags.includes('climb_down');
+            patch.climbDirection = nextFlags.includes('climb_up')
+                ? 'up'
+                : nextFlags.includes('climb_down')
+                    ? 'down'
+                    : undefined;
+        }
+        onUpdateExit(exitId, patch);
     };
 
     const renderExitFields = (exitId: string, exit: ShaperExitDraft | undefined, fromRoom: ShaperRoomDraft, toRoom: ShaperRoomDraft, dir: ShaperDirection) => {
@@ -90,53 +101,6 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                     />
                 </label>
 
-                {/* Climb section */}
-                <div style={{ margin: '12px 0', padding: '8px', background: 'rgba(255,255,255,0.02)', borderRadius: 6, border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <label className="shaper-flag" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-                        <input
-                            type="checkbox"
-                            checked={!!exit.isClimb}
-                            onChange={e => onUpdateExit(exitId, { isClimb: e.target.checked })}
-                        />
-                        <span style={{ fontWeight: 'bold', marginLeft: 6 }}>Is Climb Exits</span>
-                    </label>
-
-                    {exit.isClimb && (
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
-                            <label className="shaper-field">
-                                <span>Difficulty</span>
-                                <input
-                                    type="number"
-                                    value={exit.climbDifficulty ?? ''}
-                                    onChange={e => onUpdateExit(exitId, { climbDifficulty: e.target.value ? parseInt(e.target.value, 10) : undefined })}
-                                    placeholder="e.g. 10"
-                                />
-                            </label>
-                            <label className="shaper-field">
-                                <span>Damage</span>
-                                <input
-                                    type="number"
-                                    value={exit.climbDamage ?? ''}
-                                    onChange={e => onUpdateExit(exitId, { climbDamage: e.target.value ? parseInt(e.target.value, 10) : undefined })}
-                                    placeholder="e.g. 5"
-                                />
-                            </label>
-                            <label className="shaper-field" style={{ gridColumn: 'span 2' }}>
-                                <span>Climb Direction</span>
-                                <select
-                                    value={exit.climbDirection || ''}
-                                    onChange={e => onUpdateExit(exitId, { climbDirection: (e.target.value || undefined) as 'up' | 'down' | undefined })}
-                                    style={{ width: '100%', background: '#0f172a', border: '1px solid #334155', borderRadius: 4, padding: 6, color: '#f8fafc', fontSize: 13 }}
-                                >
-                                    <option value="">None</option>
-                                    <option value="up">Up</option>
-                                    <option value="down">Down</option>
-                                </select>
-                            </label>
-                        </div>
-                    )}
-                </div>
-
                 <div className="shaper-field" style={{ marginBottom: 12 }}>
                     <span>Exit Flags (/room dset)</span>
                     <div className="shaper-flag-grid">
@@ -155,20 +119,35 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                         })}
                     </div>
                 </div>
-                
-                {/* Door section */}
-                <div style={{ margin: '12px 0', padding: '8px', background: 'rgba(255,255,255,0.02)', borderRadius: 6, border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <label className="shaper-flag" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-                        <input
-                            type="checkbox"
-                            checked={!!exit.hasDoor}
-                            onChange={e => onUpdateExit(exitId, { hasDoor: e.target.checked })}
-                        />
-                        <span style={{ fontWeight: 'bold', marginLeft: 6 }}>Has Door</span>
-                    </label>
 
-                    {exit.hasDoor && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+                {hasShaperExitClimb(exit) && (
+                    <div style={{ margin: '12px 0', padding: '8px', background: 'rgba(255,255,255,0.02)', borderRadius: 6, border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                            <label className="shaper-field">
+                                <span>Climb Difficulty</span>
+                                <input
+                                    type="number"
+                                    value={exit.climbDifficulty ?? ''}
+                                    onChange={e => onUpdateExit(exitId, { climbDifficulty: e.target.value ? parseInt(e.target.value, 10) : undefined })}
+                                    placeholder="e.g. 10"
+                                />
+                            </label>
+                            <label className="shaper-field">
+                                <span>Climb Damage</span>
+                                <input
+                                    type="number"
+                                    value={exit.climbDamage ?? ''}
+                                    onChange={e => onUpdateExit(exitId, { climbDamage: e.target.value ? parseInt(e.target.value, 10) : undefined })}
+                                    placeholder="e.g. 5"
+                                />
+                            </label>
+                        </div>
+                    </div>
+                )}
+                
+                {hasShaperExitDoor(exit) && (
+                    <div style={{ margin: '12px 0', padding: '8px', background: 'rgba(255,255,255,0.02)', borderRadius: 6, border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                             <label className="shaper-field">
                                 <span>Door Keywords</span>
                                 <input
@@ -203,8 +182,8 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                                 Door behavior flags are edited in Exit Flags above.
                             </p>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         );
     };

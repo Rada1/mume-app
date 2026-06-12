@@ -630,6 +630,7 @@ AI may:
 
 - create or update concept rooms
 - suggest room descriptions
+- apply generated room names and descriptions through typed room prose helpers
 - generate missing reciprocal exits
 - build `/com` tree drafts
 - explain validation issues
@@ -644,6 +645,14 @@ AI may not:
 - deploy without explicit human approval
 
 Every AI edit must appear as a reviewable concept change and be undoable.
+For file-based agent workflows, export a `.shaper.json` project, patch room prose
+with `scripts/apply_shaper_room_prose.js`, then import the project back through
+the dashboard. Agents should inspect context first with
+`scripts/print_shaper_prose_context.js`, which includes room sectors, flags,
+doors, exit descriptions, libraries, mobs, objects, notes, and neighboring room
+names. In-code agents should prefer `applyShaperRoomProse()`,
+`buildShaperRoomProseContext()`, and `buildShaperProjectProseContext()` over
+direct JSON edits.
 
 ## Milestones
 

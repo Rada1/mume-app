@@ -17,6 +17,17 @@
     border-style: solid;
 }
 
+/* Procedural road/trail path drawn between connected road tiles, like the live map. */
+.shaper-road-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
 /* Background watermark symbol */
 .shaper-tile-bg-svg {
     position: absolute;
@@ -39,6 +50,174 @@
 .shaper-room-tile.has-terrain .shaper-room-name,
 .shaper-room-tile.has-terrain .shaper-room-sector {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 0.85);
+}
+
+.shaper-room-tile.has-terrain {
+    image-rendering: auto;
+}
+
+.shaper-mmapper-door {
+    position: absolute;
+    z-index: 3;
+    width: 28px;
+    height: 28px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+    pointer-events: none;
+}
+
+.shaper-mmapper-door.door-n {
+    top: -3px;
+    left: calc(50% - 14px);
+}
+
+.shaper-mmapper-door.door-e {
+    top: calc(50% - 14px);
+    right: -3px;
+}
+
+.shaper-mmapper-door.door-s {
+    bottom: -3px;
+    left: calc(50% - 14px);
+}
+
+.shaper-mmapper-door.door-w {
+    top: calc(50% - 14px);
+    left: -3px;
+}
+
+.shaper-mmapper-door.door-u {
+    top: 22px;
+    right: 7px;
+}
+
+.shaper-mmapper-door.door-d {
+    right: 7px;
+    bottom: 22px;
+}
+
+.shaper-door-frame {
+    --shaper-door-color: #ffcc00;
+    /* Posts mirror the void-barrier walls (.shaper-void-barrier): same color + thickness. */
+    --shaper-door-post-color: #09090b;
+    --shaper-wall-thickness: 14px;
+    position: absolute;
+    z-index: 4;
+    /* Hoverable for the door card; pointerdown still bubbles to the tile for dragging. */
+    pointer-events: auto;
+}
+
+.shaper-door-frame.door-n,
+.shaper-door-frame.door-s {
+    left: 0;
+    width: 100%;
+    height: var(--shaper-wall-thickness);
+}
+
+.shaper-door-frame.door-n { top: calc(var(--shaper-wall-thickness) / -2); }
+.shaper-door-frame.door-s { bottom: calc(var(--shaper-wall-thickness) / -2); }
+
+.shaper-door-frame.door-e,
+.shaper-door-frame.door-w {
+    top: 0;
+    width: var(--shaper-wall-thickness);
+    height: 100%;
+}
+
+.shaper-door-frame.door-e { right: calc(var(--shaper-wall-thickness) / -2); }
+.shaper-door-frame.door-w { left: calc(var(--shaper-wall-thickness) / -2); }
+
+/* Up/down exits & doors: ▲ top-left, ▼ bottom-right, mirroring the live map. */
+.shaper-vert-exit {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    z-index: 3;
+    pointer-events: auto;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.85));
+}
+
+.shaper-vert-exit svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.shaper-vert-exit.dir-u { top: 6px; left: 6px; }
+.shaper-vert-exit.dir-d { right: 6px; bottom: 6px; }
+
+/* Dotted diagonal linking up & down markers (compact view only). */
+.shaper-vert-link {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.shaper-door-frame .shaper-door-post,
+.shaper-door-frame .shaper-door-bar {
+    position: absolute;
+    display: block;
+    border-radius: 0;
+}
+
+.shaper-door-frame.door-n .shaper-door-post,
+.shaper-door-frame.door-s .shaper-door-post,
+.shaper-door-frame.door-n .shaper-door-bar,
+.shaper-door-frame.door-s .shaper-door-bar {
+    top: 0;
+    height: 100%;
+}
+
+.shaper-door-frame.door-e .shaper-door-post,
+.shaper-door-frame.door-w .shaper-door-post,
+.shaper-door-frame.door-e .shaper-door-bar,
+.shaper-door-frame.door-w .shaper-door-bar {
+    left: 0;
+    width: 100%;
+}
+
+.shaper-door-frame.door-n .shaper-door-post,
+.shaper-door-frame.door-s .shaper-door-post {
+    width: 25%;
+    background: var(--shaper-door-post-color);
+}
+
+.shaper-door-frame.door-e .shaper-door-post,
+.shaper-door-frame.door-w .shaper-door-post {
+    height: 25%;
+    background: var(--shaper-door-post-color);
+}
+
+.shaper-door-frame.door-n .post-a,
+.shaper-door-frame.door-s .post-a { left: 0; }
+.shaper-door-frame.door-n .post-b,
+.shaper-door-frame.door-s .post-b { right: 0; }
+
+.shaper-door-frame.door-e .post-a,
+.shaper-door-frame.door-w .post-a { top: 0; }
+.shaper-door-frame.door-e .post-b,
+.shaper-door-frame.door-w .post-b { bottom: 0; }
+
+.shaper-door-frame.door-n .shaper-door-bar,
+.shaper-door-frame.door-s .shaper-door-bar {
+    left: 25%;
+    width: 50%;
+}
+
+.shaper-door-frame.door-e .shaper-door-bar,
+.shaper-door-frame.door-w .shaper-door-bar {
+    top: 25%;
+    height: 50%;
+}
+
+.shaper-door-frame .shaper-door-bar {
+    background: var(--shaper-door-color);
+    box-shadow: 0 0 4px rgba(255, 204, 0, 0.7);
 }
 
 /* --- Muted Desaturated Palette Section --- */

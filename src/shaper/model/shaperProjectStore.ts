@@ -69,13 +69,17 @@ const normalizeRoom = (room: ShaperRoomDraft): ShaperRoomDraft => ({
 const normalizeDocument = (doc: ShaperWorkspaceDoc | null): ShaperWorkspaceDoc | null => {
     if (!doc) return null;
     const rooms = Object.fromEntries(
-        Object.entries(doc.rooms).map(([id, room]) => [id, normalizeRoom(room)])
+        Object.entries(doc.rooms)
+            .filter(([, room]) => !room.inactive)
+            .map(([id, room]) => [id, normalizeRoom(room)])
     ) as Record<string, ShaperRoomDraft>;
     const commandNodes = Object.fromEntries(
         Object.entries(doc.commandNodes ?? {}).map(([id, node], index) => [id, { ...node, order: node.order ?? index }])
     ) as Record<string, ShaperCommandNode>;
+    const selectedRoomId = rooms[doc.selectedRoomId] ? doc.selectedRoomId : Object.keys(rooms)[0] ?? '';
     return {
         ...doc,
+        selectedRoomId,
         rooms,
         exits: Object.keys(doc.exits).length > 0 ? doc.exits : autoConnectAllRooms(rooms, {}),
         commandNodes,

@@ -16,6 +16,7 @@ interface ObjectEntity {
     extraFlags: string[];
     wearFlags: string[];
     rawText: string;
+    info?: string | null;
 }
 
 interface ShaperObjectsPanelProps {
@@ -34,6 +35,11 @@ export const ShaperObjectsPanel: React.FC<ShaperObjectsPanelProps> = ({ onAddToR
     const [selectedType, setSelectedType] = useState('ALL');
     const [expandedVnum, setExpandedVnum] = useState<number | null>(null);
     const [copiedVnum, setCopiedVnum] = useState<number | null>(null);
+    const [displayLimit, setDisplayLimit] = useState(100);
+
+    useEffect(() => {
+        setDisplayLimit(100);
+    }, [search, maxWeight, selectedType]);
 
     useEffect(() => {
         fetch('/mume_entities_with_stats.json')
@@ -145,7 +151,7 @@ export const ShaperObjectsPanel: React.FC<ShaperObjectsPanelProps> = ({ onAddToR
             </div>
 
             <div className="shaper-db-list">
-                {filteredObjects.map(obj => {
+                {filteredObjects.slice(0, displayLimit).map(obj => {
                     const isExpanded = expandedVnum === obj.vnum;
                     return (
                         <div
@@ -200,13 +206,30 @@ export const ShaperObjectsPanel: React.FC<ShaperObjectsPanelProps> = ({ onAddToR
                                             {obj.wearFlags.join(', ')}
                                         </div>
                                     )}
-                                    <span>Raw /stat output:</span>
+                                    {obj.info && (
+                                        <div style={{ marginBottom: '10px', marginTop: '10px' }}>
+                                            <strong style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#f0b45b' }}>MUD Info Notes:</strong>
+                                            <div style={{ padding: '8px', background: 'rgba(255,255,255,0.03)', borderRadius: '4px', borderLeft: '3px solid #f0b45b', fontSize: '12px', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+                                                {obj.info}
+                                            </div>
+                                        </div>
+                                    )}
+                                    <span style={{ display: 'block', marginTop: '10px' }}>Raw /stat output:</span>
                                     <pre className="shaper-db-stat-pre">{obj.rawText}</pre>
                                 </div>
                             )}
                         </div>
                     );
                 })}
+                {filteredObjects.length > displayLimit && (
+                    <button
+                        type="button"
+                        className="shaper-load-more-btn"
+                        onClick={() => setDisplayLimit(prev => prev + 100)}
+                    >
+                        Load More ({filteredObjects.length - displayLimit} remaining)
+                    </button>
+                )}
             </div>
         </div>
     );

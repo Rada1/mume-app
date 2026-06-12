@@ -256,3 +256,25 @@
     overflow-x: auto;
     margin: 4px 0 0;
 }
+
+.shaper-load-more-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    color: #aab7c4;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.shaper-load-more-btn:hover {
+    background: rgba(240, 180, 91, 0.08);
+    border-color: rgba(240, 180, 91, 0.4);
+    color: #f0b45b;
+}

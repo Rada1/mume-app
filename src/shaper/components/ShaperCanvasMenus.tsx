@@ -4,6 +4,7 @@
  */
 
 import type { ShaperExitState } from '../model/shaperExits';
+import { hasShaperExitDoor } from '../model/shaperExitFlags';
 import type { ShaperDirection, ShaperExitDraft, ShaperRoomDraft, ShaperRoomId } from '../model/shaperTypes';
 import type { ShaperConnectionMenuState, ShaperRoomMenuState } from './ShaperCanvasGeometry';
 
@@ -133,13 +134,13 @@ export const ShaperConnectionContextMenu: React.FC<ConnectionContextMenuProps> =
                 <span>Doors</span>
                 {exit1 ? (
                     <button type="button" onClick={() => { onToggleExitDoor(menu.aId, menu.dirAB); onClose(); }}>
-                        <strong>{exit1.hasDoor ? 'Remove door' : 'Add door'}</strong>
+                        <strong>{hasShaperExitDoor(exit1) ? 'Remove door' : 'Add door'}</strong>
                         <em>On {forwardLabel}</em>
                     </button>
                 ) : <p>No exit from {labelA} to {labelB}.</p>}
                 {exit2 ? (
                     <button type="button" onClick={() => { onToggleExitDoor(menu.bId, menu.dirBA); onClose(); }}>
-                        <strong>{exit2.hasDoor ? 'Remove door' : 'Add door'}</strong>
+                        <strong>{hasShaperExitDoor(exit2) ? 'Remove door' : 'Add door'}</strong>
                         <em>On {reverseLabel}</em>
                     </button>
                 ) : <p>No exit from {labelB} to {labelA}.</p>}

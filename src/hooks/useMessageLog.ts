@@ -361,6 +361,23 @@ export function useMessageLog(
             });
         }
 
+        const isWelcomeBlock = !providedIsSnoop && (
+            currentTextLower.includes('***  mume ix') ||
+            currentTextLower.includes('*** mume ix') ||
+            currentTextLower.includes('in progress at fire') ||
+            currentTextLower.includes('free internet roleplay experiences') ||
+            currentTextLower.includes('hosted at heig-vd') ||
+            currentTextLower.includes("tolkien's middle-earth") ||
+            currentTextLower.includes('maintained by cryhavoc') ||
+            currentTextLower.includes('original code dikumud') ||
+            currentTextLower.includes('s. hammer, t. madsen') ||
+            currentTextLower.includes('if you have never played mume before') ||
+            currentTextLower.includes('type new to create a new character') ||
+            currentTextLower.includes('or ? for help.')
+        );
+
+        const isWelcomeTitle = isWelcomeBlock && currentTextLower.includes('***');
+
         const msg: Message = {
             id: mid || Math.random().toString(36).substring(7),
             html,
@@ -373,6 +390,8 @@ export function useMessageLog(
             dimmedInCombat,
             isUrgent,
             isEmpty,
+            isWelcomeBlock,
+            isWelcomeTitle,
             isComm,
             replyTarget,
             replyCommand,

@@ -16,6 +16,7 @@ import type {
     ShaperValidationIssue,
     ShaperWorkspaceDoc
 } from './shaperTypes';
+import { hasShaperExitClimb, hasShaperExitDoor } from './shaperExitFlags';
 
 // --- Constants Section ---
 const forcedActionPattern = /\b(you feel|you think|you sneeze|you gasp|you shiver|you notice|you see)\b/i;
@@ -89,13 +90,16 @@ const validateExit = (
     const toRoom = exit.toRoomId ? rooms[exit.toRoomId] : null;
     const dir = exit.direction.toUpperCase();
 
-    if (exit.hasDoor && exit.isClimb) {
+    const hasDoor = hasShaperExitDoor(exit);
+    const hasClimb = hasShaperExitClimb(exit);
+
+    if (hasDoor && hasClimb) {
         issues.push(issue(`${exit.id}-door-climb`, 'error', exit.id, exit.fromRoomId, `Exit ${dir} cannot be both a door and a climb.`));
     }
-    if (exit.isClimb && (exit.climbDifficulty === undefined || exit.climbDifficulty <= 0)) {
+    if (hasClimb && (exit.climbDifficulty === undefined || exit.climbDifficulty <= 0)) {
         issues.push(issue(`${exit.id}-climb-difficulty`, 'warning', exit.id, exit.fromRoomId, `Climb exit ${dir} needs a positive difficulty (skill requirement).`));
     }
-    if (exit.isClimb && exit.climbDamage !== undefined && exit.climbDamage < 0) {
+    if (hasClimb && exit.climbDamage !== undefined && exit.climbDamage < 0) {
         issues.push(issue(`${exit.id}-climb-damage`, 'warning', exit.id, exit.fromRoomId, `Climb exit ${dir} has negative damage.`));
     }
     if (exit.doorFlags?.includes('stream') && (!fromRoom?.sector || !waterSectors.includes(fromRoom.sector))) {
