@@ -7,6 +7,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Search, Copy, Check, Plus } from 'lucide-react';
 import { setEntityDragData } from './shaperEntityDrag';
 import { useShaperEntityStore, MobileEntity } from '../model/useShaperEntityStore';
+import { useVitalsStore } from '../../stores/useVitalsStore';
 
 interface ShaperMobilesPanelProps {
     onAddToRoom?: (vnum: string, name: string) => void;
@@ -15,6 +16,12 @@ interface ShaperMobilesPanelProps {
 
 // --- Component Section ---
 export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToRoom, roomLabel }) => {
+    const characterInfo = useVitalsStore(s => s.characterInfo);
+    const isGod = useMemo(() => {
+        const name = characterInfo?.name?.toLowerCase();
+        return name === 'ellessar' || !!(characterInfo?.level && characterInfo.level >= 100);
+    }, [characterInfo]);
+
     const mobiles = useShaperEntityStore(s => s.mobiles);
     const loadingMobiles = useShaperEntityStore(s => s.loadingMobiles);
     const searchMobiles = useShaperEntityStore(s => s.searchMobiles);
@@ -34,11 +41,12 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
 
     // Debounce search query
     useEffect(() => {
+        if (!isGod) return;
         const handler = setTimeout(() => {
             searchMobiles(localSearch);
         }, 400);
         return () => clearTimeout(handler);
-    }, [localSearch, searchMobiles]);
+    }, [localSearch, searchMobiles, isGod]);
 
     // Reset display limit on query or filter changes
     useEffect(() => {
@@ -47,10 +55,10 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
 
     // Query stats when expanding a card
     useEffect(() => {
-        if (expandedVnum !== null) {
+        if (expandedVnum !== null && isGod) {
             loadMobileStats(expandedVnum);
         }
-    }, [expandedVnum, loadMobileStats]);
+    }, [expandedVnum, loadMobileStats, isGod]);
 
     const classes = useMemo(() => {
         const set = new Set<string>();
@@ -81,17 +89,33 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
         <div className="shaper-db-panel">
             <div className="shaper-db-header">
                 <h2>Mobiles Database</h2>
-                <p>Real-time MUD lookup (requires God character)</p>
+                <p>Real-time MUD lookup (requires an Ainu with appropriate access)</p>
             </div>
+
+            {!isGod && (
+                <div style={{
+                    background: 'rgba(239, 68, 68, 0.15)',
+                    border: '1px solid rgba(239, 68, 68, 0.4)',
+                    color: '#fca5a5',
+                    padding: '10px 12px',
+                    borderRadius: '6px',
+                    fontSize: '0.8rem',
+                    marginBottom: '15px',
+                    lineHeight: '1.4'
+                }}>
+                    <strong>Notice:</strong> Mobile search and stats lookup require an Ainu with appropriate access to be logged in. Live query features are currently disabled.
+                </div>
+            )}
 
             <div className="shaper-db-filters">
                 <div className="shaper-search-wrapper">
                     <Search size={16} className="shaper-search-icon" />
                     <input
                         type="text"
-                        placeholder="Search by name or Vnum..."
+                        placeholder={isGod ? "Search by name or Vnum..." : "Search disabled (requires Ainu access)..."}
                         value={localSearch}
                         onChange={e => setLocalSearch(e.target.value)}
+                        disabled={!isGod}
                     />
                 </div>
 
@@ -103,6 +127,7 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
                             value={minLevel}
                             onChange={e => setMinLevel(e.target.value)}
                             min={0}
+                            disabled={!isGod}
                         />
                     </label>
 
@@ -113,12 +138,17 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
                             value={maxLevel}
                             onChange={e => setMaxLevel(e.target.value)}
                             min={0}
+                            disabled={!isGod}
                         />
                     </label>
 
                     <label>
                         <span>Class</span>
-                        <select value={selectedClass} onChange={e => setSelectedClass(e.target.value)}>
+                        <select 
+                            value={selectedClass} 
+                            onChange={e => setSelectedClass(e.target.value)}
+                            disabled={!isGod}
+                        >
                             {classes.map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
                     </label>

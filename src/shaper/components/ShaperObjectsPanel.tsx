@@ -7,6 +7,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Search, Copy, Check, Plus } from 'lucide-react';
 import { setEntityDragData } from './shaperEntityDrag';
 import { useShaperEntityStore, ObjectEntity } from '../model/useShaperEntityStore';
+import { useVitalsStore } from '../../stores/useVitalsStore';
 
 interface ShaperObjectsPanelProps {
     onAddToRoom?: (vnum: string, name: string) => void;
@@ -15,6 +16,12 @@ interface ShaperObjectsPanelProps {
 
 // --- Component Section ---
 export const ShaperObjectsPanel: React.FC<ShaperObjectsPanelProps> = ({ onAddToRoom, roomLabel }) => {
+    const characterInfo = useVitalsStore(s => s.characterInfo);
+    const isGod = useMemo(() => {
+        const name = characterInfo?.name?.toLowerCase();
+        return name === 'ellessar' || !!(characterInfo?.level && characterInfo.level >= 100);
+    }, [characterInfo]);
+
     const objects = useShaperEntityStore(s => s.objects);
     const loadingObjects = useShaperEntityStore(s => s.loadingObjects);
     const searchObjects = useShaperEntityStore(s => s.searchObjects);
@@ -33,11 +40,12 @@ export const ShaperObjectsPanel: React.FC<ShaperObjectsPanelProps> = ({ onAddToR
 
     // Debounce search query
     useEffect(() => {
+        if (!isGod) return;
         const handler = setTimeout(() => {
             searchObjects(localSearch);
         }, 400);
         return () => clearTimeout(handler);
-    }, [localSearch, searchObjects]);
+    }, [localSearch, searchObjects, isGod]);
 
     // Reset display limit on query or filter changes
     useEffect(() => {
@@ -46,10 +54,10 @@ export const ShaperObjectsPanel: React.FC<ShaperObjectsPanelProps> = ({ onAddToR
 
     // Query stats when expanding a card
     useEffect(() => {
-        if (expandedVnum !== null) {
+        if (expandedVnum !== null && isGod) {
             loadObjectStats(expandedVnum);
         }
-    }, [expandedVnum, loadObjectStats]);
+    }, [expandedVnum, loadObjectStats, isGod]);
 
     const types = useMemo(() => {
         const set = new Set<string>();
@@ -79,17 +87,33 @@ export const ShaperObjectsPanel: React.FC<ShaperObjectsPanelProps> = ({ onAddToR
         <div className="shaper-db-panel">
             <div className="shaper-db-header">
                 <h2>Objects Database</h2>
-                <p>Real-time MUD lookup (requires God character)</p>
+                <p>Real-time MUD lookup (requires an Ainu with appropriate access)</p>
             </div>
+
+            {!isGod && (
+                <div style={{
+                    background: 'rgba(239, 68, 68, 0.15)',
+                    border: '1px solid rgba(239, 68, 68, 0.4)',
+                    color: '#fca5a5',
+                    padding: '10px 12px',
+                    borderRadius: '6px',
+                    fontSize: '0.8rem',
+                    marginBottom: '15px',
+                    lineHeight: '1.4'
+                }}>
+                    <strong>Notice:</strong> Object search and stats lookup require an Ainu with appropriate access to be logged in. Live query features are currently disabled.
+                </div>
+            )}
 
             <div className="shaper-db-filters">
                 <div className="shaper-search-wrapper">
                     <Search size={16} className="shaper-search-icon" />
                     <input
                         type="text"
-                        placeholder="Search by name or Vnum..."
+                        placeholder={isGod ? "Search by name or Vnum..." : "Search disabled (requires Ainu access)..."}
                         value={localSearch}
                         onChange={e => setLocalSearch(e.target.value)}
+                        disabled={!isGod}
                     />
                 </div>
 
@@ -98,16 +122,21 @@ export const ShaperObjectsPanel: React.FC<ShaperObjectsPanelProps> = ({ onAddToR
                         <span>Max Weight</span>
                         <input
                             type="number"
-                            placeholder="e.g. 10"
+                            placeholder={isGod ? "e.g. 10" : ""}
                             value={maxWeight}
                             onChange={e => setMaxWeight(e.target.value)}
                             min={0}
+                            disabled={!isGod}
                         />
                     </label>
 
                     <label>
                         <span>Type</span>
-                        <select value={selectedType} onChange={e => setSelectedType(e.target.value)}>
+                        <select 
+                            value={selectedType} 
+                            onChange={e => setSelectedType(e.target.value)}
+                            disabled={!isGod}
+                        >
                             {types.map(t => <option key={t} value={t}>{t}</option>)}
                         </select>
                     </label>

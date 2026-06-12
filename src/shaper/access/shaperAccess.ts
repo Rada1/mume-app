@@ -1,6 +1,6 @@
 /**
  * @file shaperAccess.ts
- * @description Client-side feature gate for the privileged Shaper workspace, enforcing God character privileges.
+ * @description Client-side feature gate for the privileged Shaper workspace.
  */
 
 import { useVitalsStore } from '../../stores/useVitalsStore';
@@ -21,14 +21,13 @@ export const canAccessShaper = (): boolean => {
         baseAccess = window.localStorage.getItem(ACCESS_KEY) === 'granted';
     }
 
-    if (!baseAccess) return false;
+    return baseAccess;
+};
 
-    // Enforce God character restriction (Ellessar or level 100+ Deity/Wizard)
+export const isGodCharacter = (): boolean => {
     const characterInfo = useVitalsStore.getState().characterInfo;
     const name = characterInfo?.name?.toLowerCase();
-    const isGod = name === 'ellessar' || (characterInfo?.level && characterInfo.level >= 100);
-    
-    return !!isGod;
+    return name === 'ellessar' || !!(characterInfo?.level && characterInfo.level >= 100);
 };
 
 export const requestShaperAccess = (passcode: string): boolean => {

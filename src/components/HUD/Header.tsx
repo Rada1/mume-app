@@ -604,25 +604,23 @@ const Header: React.FC<HeaderProps> = () => {
                                             <span>{label}</span>
                                         </div>
                                     ))}
-                                    {showDeveloperTools && (
-                                        <div
-                                            className="dropdown-item"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setUI(prev => ({
-                                                    ...prev,
-                                                    isShaperOpen: canOpenShaper,
-                                                    isShaperAccessOpen: !canOpenShaper,
-                                                    isMenuOpen: false
-                                                }));
-                                            }}
-                                        >
-                                            <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
-                                                <DraftingCompass size={16} />
-                                            </div>
-                                            <span>{canOpenShaper ? 'Shaper' : 'Unlock Shaper'}</span>
+                                    <div
+                                        className="dropdown-item"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setUI(prev => ({
+                                                ...prev,
+                                                isShaperOpen: canOpenShaper,
+                                                isShaperAccessOpen: !canOpenShaper,
+                                                isMenuOpen: false
+                                            }));
+                                        }}
+                                    >
+                                        <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
+                                            <DraftingCompass size={16} />
                                         </div>
-                                    )}
+                                        <span>{canOpenShaper ? 'Shaper' : 'Unlock Shaper'}</span>
+                                    </div>
                                     {!isAccountScreen && (
                                         <>
                                             <div style={{ height: '1px', background: 'rgba(255, 255, 255, 0.08)', margin: '4px 0' }} />
