@@ -114,6 +114,9 @@ const buildRoomLibraryCommands = (
     return buildShaperLibraryCommands(installs, 'room', room.roomNumber);
 };
 
+const buildSaveCommands = (room: ShaperRoomDraft, commandCount: number): string[] =>
+    commandCount > 0 ? [wrapAt(room.roomNumber, '/room save')] : [];
+
 // --- Preview Section ---
 export const buildSelectedRoomDeployPreview = (
     room: ShaperRoomDraft,
@@ -124,11 +127,15 @@ export const buildSelectedRoomDeployPreview = (
 ): ShaperDeployPreview => {
     const roomLibraries = Object.values(libraries)
         .filter(install => install.targetType === 'room' && install.targetId === room.id);
-    const commands = [
+    const draftCommands = [
         ...buildRoomCommands(room),
         ...buildExitCommands(room, rooms, exits),
         ...buildComCommands(room, commandNodes),
         ...buildRoomLibraryCommands(room, libraries)
+    ];
+    const commands = [
+        ...draftCommands,
+        ...buildSaveCommands(room, draftCommands.length)
     ];
     const warnings: string[] = [];
     const roomComCount = Object.values(commandNodes).filter(node => node.roomId === room.id).length;

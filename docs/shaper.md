@@ -654,6 +654,41 @@ names. In-code agents should prefer `applyShaperRoomProse()`,
 `buildShaperRoomProseContext()`, and `buildShaperProjectProseContext()` over
 direct JSON edits.
 
+For full agent-authored concept edits, use `scripts/apply_shaper_patch.js`.
+The script accepts an exported `.shaper.json` project plus a structured patch,
+updates rooms/exits/libraries/reset commands, and prints deploy previews for
+touched rooms.
+
+```bash
+node scripts/apply_shaper_patch.js --project zone.shaper.json --patch patch.json --out next.shaper.json
+```
+
+Patch files should be explicit and room-centered:
+
+```json
+{
+  "rooms": [{
+    "room": "300:01",
+    "create": true,
+    "x": 1,
+    "y": 0,
+    "kind": "grid",
+    "name": "A shadowed trail",
+    "preposition": "on",
+    "description": "A narrow trail slips beneath old trees.",
+    "sector": "forest",
+    "flags": ["dark", "trail"],
+    "exits": [{ "direction": "w", "to": "300:00", "twoWay": true }],
+    "libraries": [{ "name": "hide-exits", "params": { "direction": "w" } }],
+    "com": [{ "type": "mobile", "vnum": "1234", "limit": { "zone": 1 } }]
+  }]
+}
+```
+
+Agents should use this patch script for broad zone creation instead of hand
+editing project JSON. Live deployment still goes through the Shaper deploy
+preview and queue.
+
 ## Milestones
 
 ### 1. Collaborative Draft Core
@@ -728,6 +763,27 @@ direct JSON edits.
 - deploy queue throttles commands
 - failed command is marked on the correct artifact
 - audit log records user, timestamp, command, and result
+
+### Real Zone Smoke Test
+
+Use one disposable builder-owned room, not a whole zone. Pick a room that can
+be safely changed and restored, then deploy a visible marker such as a temporary
+name suffix, test keyword, or harmless room flag.
+
+1. Connect as a builder character and open Shaper Mode.
+2. Create or select the Shaper project for the target zone.
+3. Select exactly the disposable room, for example `300:00`.
+4. Change one reversible field, such as the room name or a keyword description.
+5. Confirm the deploy preview only contains commands for that one room and ends
+   with `/at <room> /room save`.
+6. Run the deploy queue and verify every step reaches `sent`.
+7. In-game, run `/stat room <room> full` or move to the room and `look` to
+   confirm the changed field is live.
+8. Revert the field through Shaper, deploy the same single room again, and
+   verify the reverted value after the final `/room save`.
+
+Do not run this smoke test against production content without a selected
+throwaway room and a recorded before/after value.
 
 ### UI Acceptance Scenarios
 

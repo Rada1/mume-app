@@ -63,6 +63,7 @@ describe('buildSelectedRoomDeployPreview', () => {
         expect(preview.commands).toContain('/at 300:00 /room kadd sign notice');
         expect(preview.commands).toContain('/at 300:00 /room edescription e');
         expect(preview.commands).toContain('/at 300:00 /com add mobile 2 0');
+        expect(preview.commands.at(-1)).toBe('/at 300:00 /room save');
         expect(preview.warnings).toContain('Description and keyword description previews require an editor-save deployment step.');
     });
 
@@ -96,5 +97,16 @@ describe('buildSelectedRoomDeployPreview', () => {
 
         expect(preview.commands).toContain('/at 300:00 /room dadd e gate');
         expect(preview.commands).toContain('/at 300:00 /room cliset s 12 3');
+        expect(preview.commands.at(-1)).toBe('/at 300:00 /room save');
+    });
+
+    it('does not save an empty selected-room deploy preview', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 300 });
+        const room = doc.rooms[doc.selectedRoomId];
+
+        const preview = buildSelectedRoomDeployPreview(room, doc.rooms, {}, {});
+
+        expect(preview.commands).toEqual([]);
+        expect(preview.warnings).toContain('Select or edit a room with deployable fields to generate commands.');
     });
 });
