@@ -373,7 +373,8 @@ export function useMessageLog(
             currentTextLower.includes('s. hammer, t. madsen') ||
             currentTextLower.includes('if you have never played mume before') ||
             currentTextLower.includes('type new to create a new character') ||
-            currentTextLower.includes('or ? for help.')
+            currentTextLower.includes('or ? for help.') ||
+            currentTextLower.includes('by what name')
         );
 
         const isWelcomeTitle = isWelcomeBlock && currentTextLower.includes('***');

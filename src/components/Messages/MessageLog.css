@@ -2029,7 +2029,7 @@ span.inline-btn {
     width: 100% !important;
     max-width: 650px;
     margin: 0 auto;
-    font-size: 1.0rem !important;
+    font-size: var(--dynamic-log-size, 1.0rem) !important;
     line-height: 1.5 !important;
 }
 
@@ -2039,7 +2039,7 @@ span.inline-btn {
 }
 
 .message.welcome-title .message-content {
-    font-size: 1.3rem !important;
+    font-size: calc(var(--dynamic-log-size, 16px) * 1.3) !important;
     font-weight: bold !important;
     letter-spacing: 0.12em !important;
     color: #ffd700 !important; /* Gold header */
