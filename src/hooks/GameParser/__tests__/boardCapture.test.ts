@@ -188,6 +188,7 @@ describe('Bulletin Board Capture & Parsing', () => {
         const mockSetEntries = vi.fn();
         vi.spyOn(useArchiveStore, 'getState').mockReturnValue({
             activeView: 'board',
+            entriesByView: { board: [] },
             setIsLoadingList: vi.fn(),
             setIsOpen: vi.fn(),
             setEntries: mockSetEntries

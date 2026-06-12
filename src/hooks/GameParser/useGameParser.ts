@@ -157,6 +157,15 @@ const normalizeStageToCaptureType = (stage: unknown) => {
     return normalized;
 };
 
+const SHAPER_CAPTURE_TYPES = [
+    'shaper_mob_find',
+    'shaper_obj_find',
+    'shaper_mob_stat',
+    'shaper_obj_stat',
+    'shaper_mob_info',
+    'shaper_obj_info'
+];
+
 const addSnoopedPlainLine = (
     addMessage: UseGameParserDeps['addMessage'],
     ansiConvert: UseGameParserDeps['ansiConvert'],
@@ -952,7 +961,12 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             ? capture.checkTriggers(effectiveCaptureText, captureAttachedText)
             : null;
         if (incomingCaptureType && capture.hasSession() && incomingCaptureType !== capture.getActiveType()) {
-            capture.finalizeSession();
+            const activeType = capture.getActiveType();
+            const isInfoSession = activeType === 'shaper_mob_info' || activeType === 'shaper_obj_info';
+            const isStatTrigger = incomingCaptureType === 'shaper_mob_stat' || incomingCaptureType === 'shaper_obj_stat';
+            if (!(isInfoSession && isStatTrigger)) {
+                capture.finalizeSession();
+            }
         }
 
         if (
@@ -987,7 +1001,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 'board_read',
                 'mail_list',
                 'mail_read',
-                'book_read'
+                'book_read',
+                ...SHAPER_CAPTURE_TYPES
             ].includes(expectedCaptureType)
         );
         if (canStartExpectedCapture) {

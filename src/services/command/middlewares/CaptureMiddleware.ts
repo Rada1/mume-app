@@ -46,6 +46,30 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
     if (captureStage) {
         const baseCommand = lowerCmd.split(/\s+/)[0];
         let captureType = COMMAND_CAPTURE_TYPES[baseCommand];
+
+        if (baseCommand === '/num') {
+            const arg = lowerCmd.split(/\s+/)[1];
+            if (arg === 'm' || arg === 'mobile') {
+                captureType = 'shaper_mob_find';
+            } else if (arg === 'o' || arg === 'object') {
+                captureType = 'shaper_obj_find';
+            }
+        } else if (baseCommand === '/stat') {
+            const arg = lowerCmd.split(/\s+/)[1];
+            if (arg === 'm' || arg === 'mobile') {
+                captureType = 'shaper_mob_stat';
+            } else if (arg === 'o' || arg === 'object') {
+                captureType = 'shaper_obj_stat';
+            }
+        } else if (baseCommand === '/info') {
+            const arg = lowerCmd.split(/\s+/)[1];
+            if (arg === 'm' || arg === 'mobile') {
+                captureType = 'shaper_mob_info';
+            } else if (arg === 'o' || arg === 'object') {
+                captureType = 'shaper_obj_info';
+            }
+        }
+
         if (!captureType && (lowerCmd.startsWith('look in ') || lowerCmd.startsWith('look inside '))) {
             captureType = 'container';
         }

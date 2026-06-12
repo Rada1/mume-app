@@ -36,4 +36,20 @@ describe('CaptureMiddleware', () => {
         expect(useArchiveStore.getState().activeView).toBe('mail-sent');
         expect(context.executeCommand).toHaveBeenCalledWith('look mail sent', true, false, false, false);
     });
+
+    it('classifies shaper /num and /stat commands correctly', () => {
+        const context = createContext();
+
+        CaptureMiddleware('/num m orc', context as any, { silent: true, isSystem: false, fromDrawer: false });
+        expect(context.captureStage.current).toBe('shaper_mob_find');
+
+        CaptureMiddleware('/num o sword', context as any, { silent: true, isSystem: false, fromDrawer: false });
+        expect(context.captureStage.current).toBe('shaper_obj_find');
+
+        CaptureMiddleware('/stat m 70', context as any, { silent: true, isSystem: false, fromDrawer: false });
+        expect(context.captureStage.current).toBe('shaper_mob_stat');
+
+        CaptureMiddleware('/stat o 101', context as any, { silent: true, isSystem: false, fromDrawer: false });
+        expect(context.captureStage.current).toBe('shaper_obj_stat');
+    });
 });

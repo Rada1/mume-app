@@ -11,6 +11,7 @@ import { buildPlayerLineTokens } from './playerLineTokens';
 import { parseAffectedByLines } from '../../utils/affectUtils';
 import { useArchiveStore } from '../../stores/useArchiveStore';
 import { getArchiveListExpectedCount, mergeArchiveEntries, parseArchiveList, parseArchiveRead } from '../../utils/archiveAdapters';
+import { useShaperEntityStore } from '../../shaper/model/useShaperEntityStore';
 
 export interface CaptureParserDeps {
     captureSession: CaptureSession | null;
@@ -87,6 +88,10 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         else if (/^(?:mailbox|mail addressed to you|sent mail|your mail|you have \d+ mails?|mail\s+-\s+\d+\s+messages?)/i.test(clean)) type = 'mail_list';
         else if (/^(?:\+?\s*)?(?:mail|message)?\s*\d+(?:#|:|\.)\s+/i.test(clean) && lower.includes('@')) type = 'mail_list';
         else if (/^(?:mail|message)\s+\d+\s*(?::|\s+(?:in|from|on)\s+(?:your\s+)?(?:mailbox|mail|sent mail))/i.test(clean)) type = 'mail_read';
+        else if (lower.includes('mobiles matching ') || lower.includes('matching mobiles')) type = 'shaper_mob_find';
+        else if (lower.includes('objects matching ') || lower.includes('matching objects')) type = 'shaper_obj_find';
+        else if (clean.match(/^Mobile\s+'[^']+',\s+vnum\s+\d+\./i)) type = 'shaper_mob_stat';
+        else if (clean.match(/^Object\s+'[^']+',\s+vnum\s+\d+\./i)) type = 'shaper_obj_stat';
 
         return type;
     }, []);
@@ -111,7 +116,9 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 }
                 : ['board_list', 'board_read', 'mail_list', 'mail_read', 'book_read'].includes(type)
                     ? { archiveView }
-                    : undefined
+                    : ['shaper_mob_stat', 'shaper_obj_stat', 'shaper_mob_info', 'shaper_obj_info', 'shaper_mob_find', 'shaper_obj_find'].includes(type)
+                        ? { command: pendingFlagsRef.current.command }
+                        : undefined
         };
         if (type === 'container') {
             lastRequestedContainerIdRef.current = null;
@@ -136,7 +143,13 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             'board_read': 'board_read',
             'mail_list': 'mail_list',
             'mail_read': 'mail_read',
-            'book_read': 'book_read'
+            'book_read': 'book_read',
+            'shaper_mob_find': 'shaper_mob_find',
+            'shaper_obj_find': 'shaper_obj_find',
+            'shaper_mob_stat': 'shaper_mob_stat',
+            'shaper_obj_stat': 'shaper_obj_stat',
+            'shaper_mob_info': 'shaper_mob_info',
+            'shaper_obj_info': 'shaper_obj_info'
         };
         if (stageMap[type]) {
             captureStage.current = stageMap[type];
@@ -187,7 +200,9 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             lower.includes('player distance') || lower.startsWith('players') ||
             lower.includes('visible players in your area') || lower.startsWith('distance') ||
             lower.startsWith('when you look inside') || lower.includes('it is empty.') ||
-            lower.startsWith('in your') || cleanLine.toLowerCase().includes('<header>')) {
+            lower.startsWith('in your') || cleanLine.toLowerCase().includes('<header>') ||
+            lower.includes('matching mobiles') || lower.includes('matching objects') ||
+            lower.includes('mobiles matching') || lower.includes('objects matching')) {
             isHeader = true;
         }
 
@@ -332,6 +347,222 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     store.setIsLoadingDetail(false);
                     break;
                 }
+                case 'shaper_mob_find': {
+                    const parsed = lines
+                        .filter(l => !l.isHeader && l.text.trim().length > 0)
+                        .map(l => {
+                            const text = l.text.trim();
+                            // Match MUME format: 70: orc : an Ohurk-uai soldier
+                            const match = text.match(/^\s*(\d+)\s*:\s*(?:([^:]+)\s*:\s*)?(.*)$/);
+                            if (match) {
+                                const vnum = parseInt(match[1], 10);
+                                const name = (match[3] || match[2] || '').trim();
+                                if (name && !name.toLowerCase().includes('no match') && !name.toLowerCase().includes('matching')) {
+                                    return { vnum, name };
+                                }
+                            } else {
+                                const fallbackMatch = text.match(/^\s*(?:\[?\s*(\d+)\s*\]?\.?\s+)?(.*)$/);
+                                if (fallbackMatch) {
+                                    const vnum = parseInt(fallbackMatch[1], 10);
+                                    const name = fallbackMatch[2].trim();
+                                    if (!isNaN(vnum) && name && !name.toLowerCase().includes('no match') && !name.toLowerCase().includes('matching')) {
+                                        return { vnum, name };
+                                    }
+                                }
+                            }
+                            return null;
+                        })
+                        .filter((x): x is { vnum: number; name: string } => x !== null);
+                    useShaperEntityStore.getState().setMobilesResult(parsed);
+                    break;
+                }
+                case 'shaper_obj_find': {
+                    const parsed = lines
+                        .filter(l => !l.isHeader && l.text.trim().length > 0)
+                        .map(l => {
+                            const text = l.text.trim();
+                            // Match MUME format: 70: orc : an Ohurk-uai soldier
+                            const match = text.match(/^\s*(\d+)\s*:\s*(?:([^:]+)\s*:\s*)?(.*)$/);
+                            if (match) {
+                                const vnum = parseInt(match[1], 10);
+                                const name = (match[3] || match[2] || '').trim();
+                                if (name && !name.toLowerCase().includes('no match') && !name.toLowerCase().includes('matching')) {
+                                    return { vnum, name };
+                                }
+                            } else {
+                                const fallbackMatch = text.match(/^\s*(?:\[?\s*(\d+)\s*\]?\.?\s+)?(.*)$/);
+                                if (fallbackMatch) {
+                                    const vnum = parseInt(fallbackMatch[1], 10);
+                                    const name = fallbackMatch[2].trim();
+                                    if (!isNaN(vnum) && name && !name.toLowerCase().includes('no match') && !name.toLowerCase().includes('matching')) {
+                                        return { vnum, name };
+                                    }
+                                }
+                            }
+                            return null;
+                        })
+                        .filter((x): x is { vnum: number; name: string } => x !== null);
+                    useShaperEntityStore.getState().setObjectsResult(parsed);
+                    break;
+                }
+                case 'shaper_mob_stat': {
+                    const text = lines.map(l => l.text).join('\n');
+                    let vnum = NaN;
+                    let name = '';
+
+                    for (const l of lines) {
+                        const idMatch = l.text.match(/^Id:[{\[](\d+)[}\]]/i) || l.text.match(/vnum\s+(\d+)\b/i);
+                        if (idMatch) {
+                            vnum = parseInt(idMatch[1], 10);
+                        }
+
+                        const nameMatch = l.text.match(/Short desc:\[([^\]]*)\]/i) || l.text.match(/^Mobile\s+'([^']*)'/i);
+                        if (nameMatch) {
+                            name = nameMatch[1].trim();
+                        }
+                    }
+
+                    if (!isNaN(vnum)) {
+                        let level = 0;
+                        let mobClass = 'UNKNOWN';
+                        let align = 0;
+
+                        for (const l of lines) {
+                            const lvlMatch = l.text.match(/Level:\s*(?:\[(\d+)\]|(\d+))/i);
+                            if (lvlMatch) level = parseInt(lvlMatch[1] || lvlMatch[2], 10);
+
+                            const classMatch = l.text.match(/Class:\s*(?:\[([^\]]+)\]|([^,\n]+))/i);
+                            if (classMatch) mobClass = (classMatch[1] || classMatch[2]).trim();
+
+                            const alignMatch = l.text.match(/(?:Align|Alignment):\s*(?:\[(-?\d+)\]|(-?\d+))/i);
+                            if (alignMatch) align = parseInt(alignMatch[1] || alignMatch[2], 10);
+                        }
+
+                        useShaperEntityStore.getState().setMobileStatResult({
+                            vnum,
+                            name: name || 'UNKNOWN',
+                            level,
+                            class: mobClass,
+                            align,
+                            rawText: text
+                        });
+                    } else {
+                        const cmdText = session.metadata?.command || '';
+                        const cmdMatch = cmdText.match(/\/stat\s+[a-z]\s+(\d+)/i);
+                        if (cmdMatch) {
+                            const vnum = parseInt(cmdMatch[1], 10);
+                            useShaperEntityStore.getState().setMobileStatResult({
+                                vnum,
+                                name: 'ERROR: Template not found',
+                                level: 0,
+                                class: 'UNKNOWN',
+                                align: 0,
+                                rawText: text || 'Template not found on MUD.'
+                            });
+                        }
+                    }
+                    break;
+                }
+                case 'shaper_obj_stat': {
+                    const text = lines.map(l => l.text).join('\n');
+                    let vnum = NaN;
+                    let name = '';
+
+                    for (const l of lines) {
+                        const idMatch = l.text.match(/^Id:[{\[](\d+)[}\]]/i) || l.text.match(/vnum\s+(\d+)\b/i);
+                        if (idMatch) {
+                            vnum = parseInt(idMatch[1], 10);
+                        }
+
+                        const nameMatch = l.text.match(/Short desc:\[([^\]]*)\]/i) || l.text.match(/^Object\s+'([^']*)'/i);
+                        if (nameMatch) {
+                            name = nameMatch[1].trim();
+                        }
+                    }
+
+                    if (!isNaN(vnum)) {
+                        let objType = 'UNKNOWN';
+                        let weight = 0;
+                        let value = 0;
+                        let extraFlags: string[] = [];
+                        let wearFlags: string[] = [];
+
+                        for (const l of lines) {
+                            const typeMatch = l.text.match(/Type:\s*(?:\[([^\]]+)\]|([^,\n]+))/i);
+                            if (typeMatch) objType = (typeMatch[1] || typeMatch[2]).trim();
+
+                            const extraMatch = l.text.match(/Extra flags:\s*(?:\[([^\]]+)\]|([^,\n]+))/i);
+                            if (extraMatch) {
+                                const flagsText = (extraMatch[1] || extraMatch[2]).trim();
+                                if (flagsText.toLowerCase() !== 'none') {
+                                    extraFlags = flagsText.split(/[\s,]+/).map(f => f.trim()).filter(Boolean);
+                                }
+                            }
+
+                            const wearMatch = l.text.match(/Wear flags:\s*(?:\[([^\]]+)\]|([^.\n]+))/i);
+                            if (wearMatch) {
+                                const flagsText = (wearMatch[1] || wearMatch[2]).trim();
+                                if (flagsText.toLowerCase() !== 'none') {
+                                    wearFlags = flagsText.split(/[\s,]+/).map(f => f.trim()).filter(Boolean);
+                                }
+                            }
+
+                            const weightMatch = l.text.match(/Weight:\s*(?:\[([\d.]+)(?:\s*kg)?\]|([\d.]+))/i);
+                            if (weightMatch) weight = parseFloat(weightMatch[1] || weightMatch[2]);
+
+                            const valueMatch = l.text.match(/Value:\s*(?:\[(\d+)\]|(\d+))/i);
+                            if (valueMatch) value = parseInt(valueMatch[1] || valueMatch[2], 10);
+                        }
+
+                        useShaperEntityStore.getState().setObjectStatResult({
+                            vnum,
+                            name: name || 'UNKNOWN',
+                            type: objType,
+                            weight,
+                            value,
+                            extraFlags,
+                            wearFlags,
+                            rawText: text
+                        });
+                    } else {
+                        const cmdText = session.metadata?.command || '';
+                        const cmdMatch = cmdText.match(/\/stat\s+[a-z]\s+(\d+)/i);
+                        if (cmdMatch) {
+                            const vnum = parseInt(cmdMatch[1], 10);
+                            useShaperEntityStore.getState().setObjectStatResult({
+                                vnum,
+                                name: 'ERROR: Template not found',
+                                type: 'UNKNOWN',
+                                weight: 0,
+                                value: 0,
+                                extraFlags: [],
+                                wearFlags: [],
+                                rawText: text || 'Template not found on MUD.'
+                            });
+                        }
+                    }
+                    break;
+                }
+                case 'shaper_mob_info': {
+                    const text = lines.map(l => l.text).join('\n');
+                    const cmdText = session.metadata?.command || '';
+                    const cmdMatch = cmdText.match(/\/info\s+[a-z]\s+(\d+)/i);
+                    if (cmdMatch) {
+                        const vnum = parseInt(cmdMatch[1], 10);
+                        useShaperEntityStore.getState().setMobileInfoResult(vnum, text);
+                    }
+                    break;
+                }
+                case 'shaper_obj_info': {
+                    const text = lines.map(l => l.text).join('\n');
+                    const cmdText = session.metadata?.command || '';
+                    const cmdMatch = cmdText.match(/\/info\s+[a-z]\s+(\d+)/i);
+                    if (cmdMatch) {
+                        const vnum = parseInt(cmdMatch[1], 10);
+                        useShaperEntityStore.getState().setObjectInfoResult(vnum, text);
+                    }
+                    break;
+                }
             }
         } catch (err) {
             console.error(`[Capture] Error updating ${session.type} lines:`, err);
@@ -339,8 +570,19 @@ export function useCaptureParser(deps: CaptureParserDeps) {
 
         sessionRef.current = null;
         setCaptureSession(null);
-        captureStage.current = 'none';
-    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setWhoList, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setAchievementLines, setCaptureSession, captureStage, practiceHandler, setContainerContents, setCharacterInfo]);
+
+        const currentStage = captureStage.current;
+        const normalizedExpected = currentStage === 'eq' ? 'equipment'
+            : currentStage === 'inv' ? 'inventory'
+            : (currentStage === 'stat' || currentStage === 'status') ? 'stats'
+            : currentStage === 'quest' ? 'quests'
+            : currentStage === 'sc' ? 'score'
+            : currentStage;
+
+        if (normalizedExpected === session.type && !pendingFlagsRef.current.command) {
+            captureStage.current = 'none';
+        }
+    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setWhoList, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setAchievementLines, setCaptureSession, captureStage, pendingFlagsRef, practiceHandler, setContainerContents, setCharacterInfo]);
 
     const hasSession = useCallback(() => sessionRef.current !== null, [sessionRef]);
     const isSilent = useCallback(() => sessionRef.current?.isSilent || false, [sessionRef]);

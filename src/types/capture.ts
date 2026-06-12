@@ -23,6 +23,12 @@ export type CaptureType =
   | 'mail_list'
   | 'mail_read'
   | 'book_read'
+  | 'shaper_mob_find'
+  | 'shaper_obj_find'
+  | 'shaper_mob_stat'
+  | 'shaper_obj_stat'
+  | 'shaper_mob_info'
+  | 'shaper_obj_info'
   | 'none';
 
 export interface CaptureSession {

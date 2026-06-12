@@ -22,6 +22,8 @@ import { ShaperConnectionInspector } from './ShaperConnectionInspector';
 import { ShaperComTreePanel } from './ShaperComTreePanel';
 import { ShaperLibraryPanel } from './ShaperLibraryPanel';
 import type { ShaperEntityFocusSignal } from './shaperEntityFocus';
+import { useGame } from '../../context/GameContext';
+import { useShaperEntityStore } from '../model/useShaperEntityStore';
 import './ShaperDatabasePanels.css';
 import './ShaperWorkspace.css';
 
@@ -41,6 +43,7 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
     isEditorOpen = false,
     onSaveEditor
 }) => {
+    const { executeCommand } = useGame() as any;
     const workspace = useShaperWorkspace();
     const activeDoc = workspace.doc;
     const { peers } = useShaperPresence(activeDoc?.id ?? null);
@@ -48,6 +51,11 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
     const [activeTab, setActiveTab] = useState<'grid' | 'com' | 'mobiles' | 'objects' | 'libraries'>('grid');
     const [showComOverlay, setShowComOverlay] = useState(false);
     const [focusEntity, setFocusEntity] = useState<ShaperEntityFocusSignal | null>(null);
+
+    // Bind Telnet command executor to the shaper entity store
+    useEffect(() => {
+        useShaperEntityStore.getState().setExecuteCommand(executeCommand);
+    }, [executeCommand]);
 
     // Clicking a mob/object on a grid tile selects its room and reveals it in the inspector.
     const handleSelectEntity = (roomId: string, entityId: string) => {

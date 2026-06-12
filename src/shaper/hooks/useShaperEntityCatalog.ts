@@ -1,9 +1,10 @@
 /**
  * @file useShaperEntityCatalog.ts
- * @description Shared mob/object catalog lookup for Shaper entity inputs.
+ * @description Dynamic mob/object catalog lookup using the real-time Zustand store.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useShaperEntityStore } from '../model/useShaperEntityStore';
 
 export interface ShaperCatalogEntry {
     kind: 'mob' | 'object';
@@ -11,44 +12,40 @@ export interface ShaperCatalogEntry {
     name: string;
 }
 
-interface StatsEntity {
-    vnum: number;
-    name: string;
-}
-
-const parseFallback = (kind: ShaperCatalogEntry['kind'], item: string): ShaperCatalogEntry => {
-    const match = item.match(/^\s*(\d+)\s*:\s*(.*)$/);
-    return { kind, vnum: match?.[1] ?? '', name: match?.[2] ?? item };
-};
-
 // --- Hook Section ---
-export const useShaperEntityCatalog = (kind: ShaperCatalogEntry['kind']) => {
-    const [entries, setEntries] = useState<ShaperCatalogEntry[]>([]);
+export const useShaperEntityCatalog = (
+    kind: ShaperCatalogEntry['kind'],
+    query?: string
+) => {
+    const mobiles = useShaperEntityStore(s => s.mobiles);
+    const objects = useShaperEntityStore(s => s.objects);
+    const searchMobiles = useShaperEntityStore(s => s.searchMobiles);
+    const searchObjects = useShaperEntityStore(s => s.searchObjects);
 
+    // Trigger debounced search dynamically for autocomplete suggestions
     useEffect(() => {
-        let alive = true;
-        fetch('/mume_entities_with_stats.json')
-            .then(res => {
-                if (!res.ok) throw new Error('Missing stats catalog');
-                return res.json();
-            })
-            .then(data => {
-                const source = (kind === 'mob' ? data.mobiles : data.objects) as StatsEntity[] | undefined;
-                if (alive) setEntries((source ?? []).map(item => ({ kind, vnum: String(item.vnum), name: item.name })));
-            })
-            .catch(() => {
-                fetch('/mume_usable_entities.json')
-                    .then(res => res.ok ? res.json() : Promise.reject(new Error('Missing fallback catalog')))
-                    .then(data => {
-                        const source = (kind === 'mob' ? data.mobiles : data.objects) as string[] | undefined;
-                        if (alive) setEntries((source ?? []).map(item => parseFallback(kind, item)));
-                    })
-                    .catch(() => { if (alive) setEntries([]); });
-            });
-        return () => { alive = false; };
-    }, [kind]);
+        const trimmed = (query || '').trim();
+        if (trimmed.length < 3) return;
 
-    return useMemo(() => entries, [entries]);
+        const handler = setTimeout(() => {
+            if (kind === 'mob') {
+                searchMobiles(trimmed);
+            } else {
+                searchObjects(trimmed);
+            }
+        }, 400);
+
+        return () => clearTimeout(handler);
+    }, [kind, query, searchMobiles, searchObjects]);
+
+    return useMemo(() => {
+        const source = kind === 'mob' ? mobiles : objects;
+        return source.map(item => ({
+            kind,
+            vnum: String(item.vnum),
+            name: item.name
+        }));
+    }, [kind, mobiles, objects]);
 };
 
 export const matchShaperCatalogEntries = (

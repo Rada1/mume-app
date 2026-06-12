@@ -1,21 +1,12 @@
 /**
  * @file ShaperMobilesPanel.tsx
- * @description Searchable and filterable database for MUME mobiles with stats.
+ * @description Searchable and filterable database for MUME mobiles with live stats.
  */
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { Search, Copy, Check, Plus } from 'lucide-react';
 import { setEntityDragData } from './shaperEntityDrag';
-
-interface MobileEntity {
-    vnum: number;
-    name: string;
-    level: number;
-    class: string;
-    align: number;
-    rawText: string;
-    info?: string | null;
-}
+import { useShaperEntityStore, MobileEntity } from '../model/useShaperEntityStore';
 
 interface ShaperMobilesPanelProps {
     onAddToRoom?: (vnum: string, name: string) => void;
@@ -24,11 +15,16 @@ interface ShaperMobilesPanelProps {
 
 // --- Component Section ---
 export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToRoom, roomLabel }) => {
-    const [mobiles, setMobiles] = useState<MobileEntity[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const mobiles = useShaperEntityStore(s => s.mobiles);
+    const loadingMobiles = useShaperEntityStore(s => s.loadingMobiles);
+    const searchMobiles = useShaperEntityStore(s => s.searchMobiles);
+    const loadMobileStats = useShaperEntityStore(s => s.loadMobileStats);
+    const loadingStats = useShaperEntityStore(s => s.loadingStats);
+    const mobileStats = useShaperEntityStore(s => s.mobileStats);
+    const mobilesQuery = useShaperEntityStore(s => s.mobilesQuery);
+    const mobilesError = useShaperEntityStore(s => s.mobilesError);
 
-    const [search, setSearch] = useState('');
+    const [localSearch, setLocalSearch] = useState(mobilesQuery);
     const [minLevel, setMinLevel] = useState<string>('');
     const [maxLevel, setMaxLevel] = useState<string>('');
     const [selectedClass, setSelectedClass] = useState('ALL');
@@ -36,48 +32,25 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
     const [copiedVnum, setCopiedVnum] = useState<number | null>(null);
     const [displayLimit, setDisplayLimit] = useState(100);
 
+    // Debounce search query
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            searchMobiles(localSearch);
+        }, 400);
+        return () => clearTimeout(handler);
+    }, [localSearch, searchMobiles]);
+
+    // Reset display limit on query or filter changes
     useEffect(() => {
         setDisplayLimit(100);
-    }, [search, minLevel, maxLevel, selectedClass]);
+    }, [localSearch, minLevel, maxLevel, selectedClass]);
 
+    // Query stats when expanding a card
     useEffect(() => {
-        fetch('/mume_entities_with_stats.json')
-            .then(res => {
-                if (!res.ok) throw new Error('Stats JSON not generated yet. Running stat scraper...');
-                return res.json();
-            })
-            .then(data => {
-                setMobiles(data.mobiles || []);
-                setLoading(false);
-            })
-            .catch(err => {
-                // Try falling back to mume_usable_entities.json
-                fetch('/mume_usable_entities.json')
-                    .then(res2 => {
-                        if (!res2.ok) throw new Error('No entity lists found.');
-                        return res2.json();
-                    })
-                    .then(data2 => {
-                        const fallbackMobiles = (data2.mobiles || []).map((item: string) => {
-                            const match = item.match(/^\s*(\d+)\s*:\s*(.*)$/);
-                            return {
-                                vnum: match ? parseInt(match[1], 10) : 0,
-                                name: match ? match[2] : item,
-                                level: 0,
-                                class: 'UNKNOWN',
-                                align: 0,
-                                rawText: 'Stats details are currently being scraped in the background. Check back in a moment!'
-                            };
-                        });
-                        setMobiles(fallbackMobiles);
-                        setLoading(false);
-                    })
-                    .catch(err2 => {
-                        setError(err.message + ' | ' + err2.message);
-                        setLoading(false);
-                    });
-            });
-    }, []);
+        if (expandedVnum !== null) {
+            loadMobileStats(expandedVnum);
+        }
+    }, [expandedVnum, loadMobileStats]);
 
     const classes = useMemo(() => {
         const set = new Set<string>();
@@ -89,15 +62,13 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
 
     const filteredMobiles = useMemo(() => {
         return mobiles.filter(mob => {
-            const matchesSearch = mob.name.toLowerCase().includes(search.toLowerCase()) || 
-                                 mob.vnum.toString().includes(search);
             const matchesMinLevel = minLevel === '' || mob.level >= parseInt(minLevel, 10);
             const matchesMaxLevel = maxLevel === '' || mob.level <= parseInt(maxLevel, 10);
             const matchesClass = selectedClass === 'ALL' || mob.class.toUpperCase() === selectedClass;
 
-            return matchesSearch && matchesMinLevel && matchesMaxLevel && matchesClass;
+            return matchesMinLevel && matchesMaxLevel && matchesClass;
         });
-    }, [mobiles, search, minLevel, maxLevel, selectedClass]);
+    }, [mobiles, minLevel, maxLevel, selectedClass]);
 
     const copyToClipboard = (vnum: number, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -106,14 +77,11 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
         setTimeout(() => setCopiedVnum(null), 2000);
     };
 
-    if (loading) return <div className="shaper-db-loading">Loading Mobiles database...</div>;
-    if (error) return <div className="shaper-db-error">Error loading database: {error}</div>;
-
     return (
         <div className="shaper-db-panel">
             <div className="shaper-db-header">
                 <h2>Mobiles Database</h2>
-                <p>Showing {filteredMobiles.length} of {mobiles.length} unique mobiles</p>
+                <p>Real-time MUD lookup (requires God character)</p>
             </div>
 
             <div className="shaper-db-filters">
@@ -122,8 +90,8 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
                     <input
                         type="text"
                         placeholder="Search by name or Vnum..."
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
+                        value={localSearch}
+                        onChange={e => setLocalSearch(e.target.value)}
                     />
                 </div>
 
@@ -158,68 +126,97 @@ export const ShaperMobilesPanel: React.FC<ShaperMobilesPanelProps> = ({ onAddToR
             </div>
 
             <div className="shaper-db-list">
-                {filteredMobiles.slice(0, displayLimit).map(mob => {
-                    const isExpanded = expandedVnum === mob.vnum;
-                    return (
-                        <div
-                            key={mob.vnum}
-                            className={`shaper-db-card ${isExpanded ? 'expanded' : ''}`}
-                            draggable
-                            onDragStart={e => setEntityDragData(e, { kind: 'mob', vnum: String(mob.vnum), name: mob.name })}
-                            onClick={() => setExpandedVnum(isExpanded ? null : mob.vnum)}
-                        >
-                            <div className="shaper-db-card-summary">
-                                <span className="shaper-entity-vnum">{mob.vnum}</span>
-                                <span className="shaper-entity-name">{mob.name}</span>
-                                
-                                <div className="shaper-entity-badges">
-                                    {mob.level > 0 && <span className="shaper-badge level">Lvl {mob.level}</span>}
-                                    {mob.class !== 'UNKNOWN' && <span className="shaper-badge class">{mob.class}</span>}
-                                    {mob.align !== 0 && (
-                                        <span className={`shaper-badge align ${mob.align < 0 ? 'evil' : 'good'}`}>
-                                            {mob.align}
-                                        </span>
-                                    )}
-                                </div>
+                {loadingMobiles ? (
+                    <div className="shaper-db-loading">Searching live MUD database...</div>
+                ) : mobilesError ? (
+                    <div className="shaper-db-placeholder" style={{ padding: '20px', textAlign: 'center', opacity: 0.7, fontSize: '0.85rem' }}>
+                        {mobilesError}
+                    </div>
+                ) : !localSearch.trim() ? (
+                    <div className="shaper-db-placeholder" style={{ padding: '20px', textAlign: 'center', opacity: 0.6, fontSize: '0.85rem' }}>
+                        Type a keyword (e.g., 'orc', 'troll') to search live MUD mobiles.
+                    </div>
+                ) : localSearch.trim().length < 3 ? (
+                    <div className="shaper-db-placeholder" style={{ padding: '20px', textAlign: 'center', opacity: 0.6, fontSize: '0.85rem' }}>
+                        Type at least 3 characters to search live MUD mobiles (e.g. 'orc').
+                    </div>
+                ) : filteredMobiles.length === 0 ? (
+                    <div className="shaper-db-placeholder" style={{ padding: '20px', textAlign: 'center', opacity: 0.6, fontSize: '0.85rem' }}>
+                        No mobiles found matching "{localSearch}".
+                    </div>
+                ) : (
+                    filteredMobiles.slice(0, displayLimit).map(mob => {
+                        const isExpanded = expandedVnum === mob.vnum;
+                        const isStatsLoading = loadingStats[mob.vnum];
+                        const stats = mobileStats[mob.vnum] || mob;
 
-                                {onAddToRoom && (
+                        return (
+                            <div
+                                key={mob.vnum}
+                                className={`shaper-db-card ${isExpanded ? 'expanded' : ''}`}
+                                draggable
+                                onDragStart={e => setEntityDragData(e, { kind: 'mob', vnum: String(mob.vnum), name: mob.name })}
+                                onClick={() => setExpandedVnum(isExpanded ? null : mob.vnum)}
+                            >
+                                <div className="shaper-db-card-summary">
+                                    <span className="shaper-entity-vnum">{mob.vnum}</span>
+                                    <span className="shaper-entity-name">{mob.name}</span>
+                                    
+                                    <div className="shaper-entity-badges">
+                                        {stats.level > 0 && <span className="shaper-badge level">Lvl {stats.level}</span>}
+                                        {stats.class !== 'UNKNOWN' && <span className="shaper-badge class">{stats.class}</span>}
+                                        {stats.align !== 0 && (
+                                            <span className={`shaper-badge align ${stats.align < 0 ? 'evil' : 'good'}`}>
+                                                {stats.align}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {onAddToRoom && (
+                                        <button
+                                            type="button"
+                                            className="shaper-add-room-btn"
+                                            onClick={e => { e.stopPropagation(); onAddToRoom(String(mob.vnum), mob.name); }}
+                                            title={roomLabel ? `Add to ${roomLabel}` : 'Add to selected room'}
+                                        >
+                                            <Plus size={14} />
+                                        </button>
+                                    )}
+
                                     <button
                                         type="button"
-                                        className="shaper-add-room-btn"
-                                        onClick={e => { e.stopPropagation(); onAddToRoom(String(mob.vnum), mob.name); }}
-                                        title={roomLabel ? `Add to ${roomLabel}` : 'Add to selected room'}
+                                        className="shaper-copy-btn"
+                                        onClick={e => copyToClipboard(mob.vnum, e)}
+                                        title="Copy Vnum"
                                     >
-                                        <Plus size={14} />
+                                        {copiedVnum === mob.vnum ? <Check size={14} className="copied" /> : <Copy size={14} />}
                                     </button>
-                                )}
-
-                                <button
-                                    type="button"
-                                    className="shaper-copy-btn"
-                                    onClick={e => copyToClipboard(mob.vnum, e)}
-                                    title="Copy Vnum"
-                                >
-                                    {copiedVnum === mob.vnum ? <Check size={14} className="copied" /> : <Copy size={14} />}
-                                </button>
-                            </div>
-
-                            {isExpanded && (
-                                <div className="shaper-db-card-details" onClick={e => e.stopPropagation()}>
-                                    {mob.info && (
-                                        <div style={{ marginBottom: '10px' }}>
-                                            <strong style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#f0b45b' }}>MUD Info Notes:</strong>
-                                            <div style={{ padding: '8px', background: 'rgba(255,255,255,0.03)', borderRadius: '4px', borderLeft: '3px solid #f0b45b', fontSize: '12px', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
-                                                {mob.info}
-                                            </div>
-                                        </div>
-                                    )}
-                                    <span>Raw /stat output:</span>
-                                    <pre className="shaper-db-stat-pre">{mob.rawText}</pre>
                                 </div>
-                            )}
-                        </div>
-                    );
-                })}
+
+                                {isExpanded && (
+                                    <div className="shaper-db-card-details" onClick={e => e.stopPropagation()}>
+                                        {isStatsLoading ? (
+                                            <div style={{ padding: '10px', fontSize: '12px', opacity: 0.6 }}>Loading stats from MUD...</div>
+                                        ) : (
+                                            <>
+                                                {stats.info && (
+                                                    <div style={{ marginBottom: '10px' }}>
+                                                        <strong style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#f0b45b' }}>MUD Info Notes:</strong>
+                                                        <div style={{ padding: '8px', background: 'rgba(255,255,255,0.03)', borderRadius: '4px', borderLeft: '3px solid #f0b45b', fontSize: '12px', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+                                                            {stats.info}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                <span>Raw /stat output:</span>
+                                                <pre className="shaper-db-stat-pre">{stats.rawText}</pre>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })
+                )}
                 {filteredMobiles.length > displayLimit && (
                     <button
                         type="button"
