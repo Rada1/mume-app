@@ -92,7 +92,6 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
     const view = useShaperCanvasView();
     // Re-render tiles when the terrain image assets finish loading.
     useShaperTerrainAssets();
-    const [showNodes, setShowNodes] = useState(true);
     const [showExits, setShowExits] = useState(true);
     const [drag, setDrag] = useState<DragState | null>(null);
     const [roomMenu, setRoomMenu] = useState<ShaperRoomMenuState | null>(null);
@@ -116,7 +115,10 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
             (room.z === viewZ - 1 || room.z === viewZ + 1) && room.kind === 'grid' && !room.inactive
         );
     }, [rooms, viewZ]);
-    const extraRooms = useMemo(() => Object.values(rooms).filter(room => room.z === viewZ && room.kind === 'extra'), [rooms, viewZ]);
+    const activeLayerVerticalTargets = useMemo(() => new Set(Object.values(exits)
+        .filter(exit => (exit.direction === 'u' || exit.direction === 'd') && rooms[exit.fromRoomId]?.z === viewZ && exit.toRoomId)
+        .map(exit => exit.toRoomId as string)), [exits, rooms, viewZ]);
+    const extraRooms = useMemo(() => Object.values(rooms).filter(room => room.kind === 'extra' && !room.inactive), [rooms]);
     const roomByCell = useMemo(() => {
         const map = new Map<string, ShaperRoomDraft>();
         for (const room of gridRooms) map.set(`${room.x},${room.y}`, room);
@@ -225,11 +227,9 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
             <ShaperCanvasToolbar
                 layers={layers}
                 viewZ={viewZ}
-                showNodes={showNodes}
                 showExits={showExits}
                 onAddExtraRoom={onAddExtraRoom}
                 onSetViewZ={onSetViewZ}
-                onSetShowNodes={setShowNodes}
                 onSetShowExits={setShowExits}
                 onResetCamera={view.resetCamera}
                 showComOverlay={showComOverlay}
@@ -262,7 +262,13 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                         showExits={showExits}
                     />
                     {adjacentRooms.map(room => (
-                        <ShaperAdjacentRoomTile key={room.id} room={room} viewZ={viewZ} showExits={showExits} />
+                        <ShaperAdjacentRoomTile
+                            key={room.id}
+                            room={room}
+                            viewZ={viewZ}
+                            showExits={showExits}
+                            linkedToActiveLayer={activeLayerVerticalTargets.has(room.id)}
+                        />
                     ))}
                     {gridRooms.map(room => {
                         const dragging = !!drag && drag.moved && (drag.roomId === room.id || (!!groupDragIds && groupDragIds.has(room.id)));
@@ -280,7 +286,6 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                                 dragOffset={dragging ? drag : null}
                                 zoom={view.camera.zoom}
                                 showExits={showExits}
-                                showNodes={showNodes}
                                 connectionDrag={connectionDrag}
                                 onTilePointerDown={handleTilePointerDown}
                                 onTilePointerMove={handleTilePointerMove}

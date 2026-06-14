@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { createDefaultShaperDocument } from '../shaperDocument';
-import { addShaperRoomAt, removeShaperRoom } from '../shaperOperations';
+import { addShaperRoomAt, moveShaperRoom, removeShaperRoom } from '../shaperOperations';
 
 // --- Test Section ---
 describe('shaper room operations', () => {
@@ -42,5 +42,27 @@ describe('shaper room operations', () => {
         expect(room.roomNumber).toBe('31:99');
         expect(room.inactive).toBeUndefined();
         expect(Object.values(restored.rooms).filter(item => item.x === 9 && item.y === 9 && item.z === 0)).toHaveLength(1);
+    });
+
+    it('assigns a unique room number when adding the same coordinate on another z layer', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const next = addShaperRoomAt(doc, 5, 0, 1);
+        const room = next.rooms[next.selectedRoomId];
+
+        expect(doc.rooms['room-5-0-0'].roomNumber).toBe('31:50');
+        expect(room.x).toBe(5);
+        expect(room.y).toBe(0);
+        expect(room.z).toBe(1);
+        expect(room.roomNumber).toBe('31:101');
+    });
+
+    it('keeps room numbers unique when moving between z layers', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const withUpper = addShaperRoomAt(doc, 5, 0, 1);
+        const moved = moveShaperRoom(withUpper, withUpper.selectedRoomId, 6, 0, 1);
+        const room = moved.rooms[moved.selectedRoomId];
+
+        expect(room.roomNumber).toBe('31:101');
+        expect(Object.values(moved.rooms).filter(item => item.roomNumber === '31:60')).toHaveLength(1);
     });
 });

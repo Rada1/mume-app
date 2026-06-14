@@ -78,6 +78,31 @@ export const updateShaperRoom = (
 const NEIGHBOUR_RINGS = 8;
 const EXTRA_ROOM_START = 101;
 
+const isRoomNumberFree = (
+    doc: ShaperWorkspaceDoc,
+    roomNumber: string,
+    exceptId?: ShaperRoomId
+): boolean => !Object.values(doc.rooms).some(room =>
+    room.id !== exceptId && !room.inactive && room.roomNumber === roomNumber
+);
+
+const nextAvailableRoomNumber = (doc: ShaperWorkspaceDoc, exceptId?: ShaperRoomId): string => {
+    const prefix = `${doc.zoneNumber}:`;
+    const used = new Set(Object.values(doc.rooms)
+        .filter(room => room.id !== exceptId && !room.inactive && room.roomNumber.startsWith(prefix))
+        .map(room => Number(room.roomNumber.slice(prefix.length)))
+        .filter(number => Number.isFinite(number)));
+    let next = EXTRA_ROOM_START;
+    while (used.has(next)) next += 1;
+    return `${doc.zoneNumber}:${next}`;
+};
+
+const uniqueRoomNumber = (
+    doc: ShaperWorkspaceDoc,
+    preferred: string,
+    exceptId?: ShaperRoomId
+): string => isRoomNumberFree(doc, preferred, exceptId) ? preferred : nextAvailableRoomNumber(doc, exceptId);
+
 const findFreeCell = (
     occupied: Set<string>,
     z: number,
@@ -123,7 +148,8 @@ export const addShaperGridRoom = (doc: ShaperWorkspaceDoc, z: number): ShaperWor
     const originX = anchor && anchor.z === z ? anchor.x : 0;
     const originY = anchor && anchor.z === z ? anchor.y : 0;
     const { x, y } = findFreeCell(buildOccupancy(doc.rooms), z, originX, originY);
-    const room = { ...createGridRoom(doc.zoneNumber, x, y, z), id: createShaperRoomId() };
+    const draft = createGridRoom(doc.zoneNumber, x, y, z);
+    const room = { ...draft, id: createShaperRoomId(), roomNumber: uniqueRoomNumber(doc, draft.roomNumber) };
     return withGridRoom(doc, room);
 };
 
@@ -136,7 +162,8 @@ export const addShaperRoomAt = (
 ): ShaperWorkspaceDoc => {
     const baseDoc = removeInactiveRoomAt(doc, x, y, z);
     if (!isShaperCellFree(baseDoc, x, y, z)) return doc;
-    const room = { ...createGridRoom(doc.zoneNumber, x, y, z), id: createShaperRoomId() };
+    const draft = createGridRoom(doc.zoneNumber, x, y, z);
+    const room = { ...draft, id: createShaperRoomId(), roomNumber: uniqueRoomNumber(baseDoc, draft.roomNumber) };
     return withGridRoom(baseDoc, room);
 };
 
@@ -154,6 +181,10 @@ export const moveShaperRoom = (
     if (!room) return doc;
     if (!isShaperCellFree(doc, x, y, z, roomId)) return doc;
 
+    const preferredRoomNumber = formatRoomNumber(doc.zoneNumber, x, y);
+    const nextRoomNumber = isRoomNumberFree(doc, preferredRoomNumber, roomId)
+        ? preferredRoomNumber
+        : uniqueRoomNumber(doc, room.roomNumber, roomId);
     const clearedExits = clearRoomCardinals(doc.exits, roomId);
     const rooms = {
         ...doc.rooms,
@@ -164,7 +195,7 @@ export const moveShaperRoom = (
             z,
             kind: 'grid' as const,
             anchorRoomId: null,
-            roomNumber: formatRoomNumber(doc.zoneNumber, x, y)
+            roomNumber: nextRoomNumber
         }
     };
     const exits = autoConnectRoom(rooms, clearedExits, roomId);
@@ -211,6 +242,10 @@ export const moveShaperRooms = (
         const room = doc.rooms[id];
         const x = room.x + dx;
         const y = room.y + dy;
+        const preferredRoomNumber = formatRoomNumber(doc.zoneNumber, x, y);
+        const nextRoomNumber = isRoomNumberFree({ ...doc, rooms }, preferredRoomNumber, id)
+            ? preferredRoomNumber
+            : uniqueRoomNumber({ ...doc, rooms }, room.roomNumber, id);
         rooms[id] = {
             ...room,
             x,
@@ -218,7 +253,7 @@ export const moveShaperRooms = (
             z,
             kind: 'grid' as const,
             anchorRoomId: null,
-            roomNumber: formatRoomNumber(doc.zoneNumber, x, y)
+            roomNumber: nextRoomNumber
         };
     }
 
@@ -256,15 +291,6 @@ export const removeShaperRooms = (doc: ShaperWorkspaceDoc, roomIds: ShaperRoomId
 export const removeShaperRoom = (doc: ShaperWorkspaceDoc, roomId: ShaperRoomId): ShaperWorkspaceDoc =>
     removeShaperRooms(doc, [roomId]);
 // --- Extra Room Section ---
-const nextExtraRoomNumber = (doc: ShaperWorkspaceDoc): string => {
-    const prefix = `${doc.zoneNumber}:`;
-    const used = Object.values(doc.rooms)
-        .map(room => room.roomNumber.startsWith(prefix) ? Number(room.roomNumber.slice(prefix.length)) : 0)
-        .filter(number => Number.isFinite(number) && number >= EXTRA_ROOM_START);
-    const next = Math.max(EXTRA_ROOM_START - 1, ...used) + 1;
-    return `${doc.zoneNumber}:${next}`;
-};
-
 export const addShaperExtraRoom = (doc: ShaperWorkspaceDoc, z: number): ShaperWorkspaceDoc => {
     const extraIndex = Object.values(doc.rooms).filter(room => room.kind === 'extra').length + 1;
     const id = createShaperRoomId();
@@ -275,7 +301,7 @@ export const addShaperExtraRoom = (doc: ShaperWorkspaceDoc, z: number): ShaperWo
         z,
         kind: 'extra',
         anchorRoomId: doc.selectedRoomId,
-        roomNumber: nextExtraRoomNumber(doc),
+        roomNumber: nextAvailableRoomNumber(doc),
         status: 'new-draft',
         name: '',
         preposition: 'in',

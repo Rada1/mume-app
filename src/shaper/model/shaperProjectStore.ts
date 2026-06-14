@@ -67,13 +67,40 @@ const normalizeRoom = (room: ShaperRoomDraft): ShaperRoomDraft => ({
     liveSnapshot: room.liveSnapshot
 });
 
+const dedupeRoomNumbers = (
+    rooms: Record<string, ShaperRoomDraft>,
+    zoneNumber: number
+): Record<string, ShaperRoomDraft> => {
+    const seen = new Set<string>();
+    const usedExtraNumbers = new Set(Object.values(rooms)
+        .map(room => room.roomNumber.startsWith(`${zoneNumber}:`) ? Number(room.roomNumber.slice(`${zoneNumber}:`.length)) : NaN)
+        .filter(number => Number.isFinite(number) && number >= 101));
+    let nextExtra = 101;
+    const nextRoomNumber = () => {
+        while (usedExtraNumbers.has(nextExtra)) nextExtra += 1;
+        usedExtraNumbers.add(nextExtra);
+        return `${zoneNumber}:${nextExtra}`;
+    };
+
+    return Object.fromEntries(Object.entries(rooms).map(([id, room]) => {
+        if (!seen.has(room.roomNumber)) {
+            seen.add(room.roomNumber);
+            return [id, room];
+        }
+        const roomNumber = nextRoomNumber();
+        seen.add(roomNumber);
+        return [id, { ...room, roomNumber }];
+    })) as Record<string, ShaperRoomDraft>;
+};
+
 const normalizeDocument = (doc: ShaperWorkspaceDoc | null): ShaperWorkspaceDoc | null => {
     if (!doc) return null;
-    const rooms = Object.fromEntries(
+    const normalizedRooms = Object.fromEntries(
         Object.entries(doc.rooms)
             .filter(([, room]) => !room.inactive)
             .map(([id, room]) => [id, normalizeRoom(room)])
     ) as Record<string, ShaperRoomDraft>;
+    const rooms = dedupeRoomNumbers(normalizedRooms, doc.zoneNumber);
     const commandNodes = Object.fromEntries(
         Object.entries(doc.commandNodes ?? {}).map(([id, node], index) => [id, { ...node, order: node.order ?? index }])
     ) as Record<string, ShaperCommandNode>;

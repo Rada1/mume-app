@@ -115,15 +115,6 @@
     box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.28);
 }
 
-.shaper-room-tile:has(.shaper-room-badges)::after {
-    position: absolute;
-    inset: 3px;
-    border: 1px solid rgba(255, 255, 255, 0.36);
-    border-radius: 7px;
-    content: "";
-    pointer-events: none;
-}
-
 /* --- Resets Visual Overlay Styles --- */
 .shaper-room-badge.low-chance {
     opacity: 0.82;

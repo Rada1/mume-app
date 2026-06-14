@@ -208,6 +208,31 @@ export const ShaperConnectionLayer: React.FC<ShaperConnectionLayerProps> = ({
         }
 
         for (const room of roomByCoords.values()) {
+            const rx = room.x * SHAPER_CELL;
+            const ry = room.y * SHAPER_CELL;
+            const northNeighbor = roomByCoords.get(`${room.x},${room.y - 1}`);
+            const westNeighbor = roomByCoords.get(`${room.x - 1},${room.y}`);
+
+            if (!northNeighbor && !exits[`${room.id}:n`]?.toRoomId) {
+                list.push({
+                    key: `barrier-edge-n-${room.id}`,
+                    x1: rx,
+                    y1: ry,
+                    x2: rx + SHAPER_CELL,
+                    y2: ry
+                });
+            }
+
+            if (!westNeighbor && !exits[`${room.id}:w`]?.toRoomId) {
+                list.push({
+                    key: `barrier-edge-w-${room.id}`,
+                    x1: rx,
+                    y1: ry,
+                    x2: rx,
+                    y2: ry + SHAPER_CELL
+                });
+            }
+
             const eastNeighbor = roomByCoords.get(`${room.x + 1},${room.y}`);
             if (eastNeighbor) {
                 const keyAB = `${room.id}:e`;
@@ -225,6 +250,15 @@ export const ShaperConnectionLayer: React.FC<ShaperConnectionLayerProps> = ({
                         y2: ry + SHAPER_CELL
                     });
                 }
+            } else if (!exits[`${room.id}:e`]?.toRoomId) {
+                const midX = (room.x + 1) * SHAPER_CELL;
+                list.push({
+                    key: `barrier-edge-e-${room.id}`,
+                    x1: midX,
+                    y1: ry,
+                    x2: midX,
+                    y2: ry + SHAPER_CELL
+                });
             }
 
             const southNeighbor = roomByCoords.get(`${room.x},${room.y + 1}`);
@@ -244,6 +278,15 @@ export const ShaperConnectionLayer: React.FC<ShaperConnectionLayerProps> = ({
                         y2: midY
                     });
                 }
+            } else if (!exits[`${room.id}:s`]?.toRoomId) {
+                const midY = (room.y + 1) * SHAPER_CELL;
+                list.push({
+                    key: `barrier-edge-s-${room.id}`,
+                    x1: rx,
+                    y1: midY,
+                    x2: rx + SHAPER_CELL,
+                    y2: midY
+                });
             }
         }
         return list;

@@ -6,11 +6,9 @@
 interface ShaperCanvasToolbarProps {
     layers: number[];
     viewZ: number;
-    showNodes: boolean;
     showExits: boolean;
     onAddExtraRoom: () => void;
     onSetViewZ: (z: number) => void;
-    onSetShowNodes: (show: boolean) => void;
     onSetShowExits: (show: boolean) => void;
     onResetCamera: () => void;
     showComOverlay?: boolean;
@@ -21,11 +19,9 @@ interface ShaperCanvasToolbarProps {
 export const ShaperCanvasToolbar: React.FC<ShaperCanvasToolbarProps> = ({
     layers,
     viewZ,
-    showNodes,
     showExits,
     onAddExtraRoom,
     onSetViewZ,
-    onSetShowNodes,
     onSetShowExits,
     onResetCamera,
     showComOverlay = false,
@@ -52,9 +48,6 @@ export const ShaperCanvasToolbar: React.FC<ShaperCanvasToolbarProps> = ({
         <button type="button" onClick={onAddExtraRoom}>Add Extra Room</button>
         <button type="button" onClick={() => onSetShowExits(!showExits)} className={showExits ? 'active' : ''}>
             {showExits ? 'Hide Exits' : 'Show Exits'}
-        </button>
-        <button type="button" onClick={() => onSetShowNodes(!showNodes)} className={showNodes ? 'active' : ''} disabled={!showExits}>
-            {showNodes ? 'Hide Nodes' : 'Show Nodes'}
         </button>
         <button
             type="button"

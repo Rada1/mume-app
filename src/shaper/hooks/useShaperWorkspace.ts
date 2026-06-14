@@ -139,11 +139,12 @@ export const useShaperWorkspace = ({ sendCommand }: ShaperWorkspaceOptions) => {
     const importProject = async (file: File) => {
         const nextDoc = parseShaperProjectFile(await file.text());
         saveShaperProject(nextDoc);
+        const loadedDoc = loadShaperProject(nextDoc.id) ?? nextDoc;
         setProjects(listShaperProjects());
-        setViewZ(nextDoc.rooms[nextDoc.selectedRoomId]?.z ?? 0);
+        setViewZ(loadedDoc.rooms[loadedDoc.selectedRoomId]?.z ?? 0);
         setSelectedRoomIds(new Set());
-        undoHistory.resetUndo(nextDoc);
-        setDoc(nextDoc);
+        undoHistory.resetUndo(loadedDoc);
+        setDoc(loadedDoc);
     };
     const closeProject = () => setDoc(null);
     const setProjectShared = (projectId: string, shared: boolean) => {

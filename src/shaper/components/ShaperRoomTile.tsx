@@ -73,7 +73,6 @@ interface ShaperRoomTileProps {
     dragOffset: { dx: number; dy: number } | null;
     zoom: number;
     showExits: boolean;
-    showNodes: boolean;
     connectionDrag: ShaperConnectionDragState | null;
     onTilePointerDown: (event: ReactPointerEvent<HTMLDivElement>, room: ShaperRoomDraft) => void;
     onTilePointerMove: (event: ReactPointerEvent<HTMLDivElement>) => void;
@@ -101,7 +100,6 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
     dragOffset,
     zoom,
     showExits,
-    showNodes,
     connectionDrag,
     onTilePointerDown,
     onTilePointerMove,
@@ -197,11 +195,6 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
                     </span>
                 );
             })}
-            {!room.inactive && !showExits && verticalExits.some(e => e.direction === 'u') && verticalExits.some(e => e.direction === 'd') && (
-                <svg className="shaper-vert-link" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                    <line x1={18} y1={18} x2={82} y2={82} stroke="rgba(148, 163, 184, 0.8)" strokeWidth={1.5} strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />
-                </svg>
-            )}
             {!room.inactive && verticalExits.map(exit => {
                 const isClimb = hasShaperExitClimb(exit);
                 const hasDoor = hasShaperExitDoor(exit);
@@ -250,7 +243,7 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
                     onSelectEntity={onSelectEntity}
                 />
             )}
-            {showNodes && showExits && !room.inactive && directions.map(dir => (
+            {showExits && !room.inactive && directions.map(dir => (
                 <button
                     key={dir}
                     type="button"

@@ -11,10 +11,11 @@ interface ShaperAdjacentRoomTileProps {
     room: ShaperRoomDraft;
     viewZ: number;
     showExits: boolean;
+    linkedToActiveLayer: boolean;
 }
 
 // --- Component Section ---
-export const ShaperAdjacentRoomTile: React.FC<ShaperAdjacentRoomTileProps> = ({ room, viewZ, showExits }) => {
+export const ShaperAdjacentRoomTile: React.FC<ShaperAdjacentRoomTileProps> = ({ room, viewZ, showExits, linkedToActiveLayer }) => {
     const isAbove = room.z > viewZ;
     const baseSize = showExits ? SHAPER_TILE : SHAPER_CELL;
     const scale = isAbove ? 1.12 : 0.84;
@@ -32,6 +33,11 @@ export const ShaperAdjacentRoomTile: React.FC<ShaperAdjacentRoomTileProps> = ({ 
 
     return (
         <div style={tileStyle} className={`shaper-room-tile-adjacent ${isAbove ? 'above' : 'below'}`}>
+            {!showExits && linkedToActiveLayer && (
+                <svg className="shaper-vert-link" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                    <line x1={18} y1={18} x2={82} y2={82} stroke="rgba(148, 163, 184, 0.8)" strokeWidth={1.5} strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />
+                </svg>
+            )}
             <span className="shaper-room-number">{room.roomNumber}</span>
             <span className="shaper-room-name-adjacent">
                 {room.name ? `[${room.name}]` : `[Room ${room.roomNumber}]`}
