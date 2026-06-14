@@ -253,7 +253,6 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                     <ShaperConnectionLayer
                         rooms={rooms}
                         exits={exits}
-                        commandNodes={commandNodes}
                         viewZ={viewZ}
                         drag={connectionDrag}
                         selectedConnection={selectedConnection}
@@ -275,6 +274,7 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                                 rooms={rooms}
                                 exits={exits}
                                 commandNodes={commandNodes}
+                                libraries={libraries}
                                 selected={selected}
                                 dragging={dragging}
                                 dragOffset={dragging ? drag : null}

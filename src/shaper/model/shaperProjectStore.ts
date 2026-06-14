@@ -63,7 +63,8 @@ const normalizeRoom = (room: ShaperRoomDraft): ShaperRoomDraft => ({
     keywords: room.keywords ?? [],
     annotations: room.annotations ?? [],
     mobs: room.mobs ?? [],
-    objects: room.objects ?? []
+    objects: room.objects ?? [],
+    liveSnapshot: room.liveSnapshot
 });
 
 const normalizeDocument = (doc: ShaperWorkspaceDoc | null): ShaperWorkspaceDoc | null => {
@@ -83,7 +84,8 @@ const normalizeDocument = (doc: ShaperWorkspaceDoc | null): ShaperWorkspaceDoc |
         rooms,
         exits: Object.keys(doc.exits).length > 0 ? doc.exits : autoConnectAllRooms(rooms, {}),
         commandNodes,
-        libraries: doc.libraries ?? {}
+        libraries: doc.libraries ?? {},
+        zoneInfoKeywords: doc.zoneInfoKeywords ?? {}
     };
 };
 

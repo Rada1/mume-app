@@ -16,11 +16,17 @@ interface ShaperAdjacentRoomTileProps {
 // --- Component Section ---
 export const ShaperAdjacentRoomTile: React.FC<ShaperAdjacentRoomTileProps> = ({ room, viewZ, showExits }) => {
     const isAbove = room.z > viewZ;
+    const baseSize = showExits ? SHAPER_TILE : SHAPER_CELL;
+    const scale = isAbove ? 1.12 : 0.84;
+    const size = baseSize * scale;
+    const baseLeft = showExits ? room.x * SHAPER_CELL + SHAPER_GUTTER : room.x * SHAPER_CELL;
+    const baseTop = showExits ? room.y * SHAPER_CELL + SHAPER_GUTTER : room.y * SHAPER_CELL;
+    const centerOffset = (baseSize - size) / 2;
     const tileStyle: CSSProperties = {
-        left: (showExits ? room.x * SHAPER_CELL + SHAPER_GUTTER : room.x * SHAPER_CELL) + (isAbove ? 14 : -14),
-        top: (showExits ? room.y * SHAPER_CELL + SHAPER_GUTTER : room.y * SHAPER_CELL) + (isAbove ? -14 : 14),
-        width: showExits ? SHAPER_TILE : SHAPER_CELL,
-        height: showExits ? SHAPER_TILE : SHAPER_CELL,
+        left: baseLeft + centerOffset + (isAbove ? 14 : -14),
+        top: baseTop + centerOffset + (isAbove ? -14 : 14),
+        width: size,
+        height: size,
         pointerEvents: 'none'
     };
 

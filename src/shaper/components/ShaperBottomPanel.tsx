@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import type { ShaperDeployAuditEntry, ShaperDeployCommand } from '../deployment/shaperDeployTypes';
-import type { ShaperValidationIssue } from '../model/shaperTypes';
+import type { ShaperRoomDraft, ShaperRoomId, ShaperValidationIssue } from '../model/shaperTypes';
 import './ShaperBottomPanel.css';
 
 interface ShaperBottomPanelProps {
@@ -19,7 +19,13 @@ interface ShaperBottomPanelProps {
     isDeploying: boolean;
     isConnected: boolean;
     blockingErrors: number;
+    roomBlockingErrors: number;
+    selectedRoomId?: string;
+    rooms: Record<ShaperRoomId, ShaperRoomDraft>;
+    onSelectRoom: (roomId: string) => void;
     onStartDeploy: () => void;
+    zoneDeployCommands: string[];
+    onStartZoneDeploy: () => void;
     onAbortDeploy: () => void;
     onClearDeploy: () => void;
     onMarkVerified: (id: string) => void;
@@ -36,7 +42,13 @@ export const ShaperBottomPanel: React.FC<ShaperBottomPanelProps> = ({
     isDeploying,
     isConnected,
     blockingErrors,
+    roomBlockingErrors,
+    selectedRoomId,
+    rooms,
+    onSelectRoom,
     onStartDeploy,
+    zoneDeployCommands,
+    onStartZoneDeploy,
     onAbortDeploy,
     onClearDeploy,
     onMarkVerified,
@@ -70,11 +82,28 @@ export const ShaperBottomPanel: React.FC<ShaperBottomPanelProps> = ({
 
     const deployBlockedReason = !isConnected
         ? 'Connect to MUME to deploy.'
-        : blockingErrors > 0
-            ? `${blockingErrors} blocking error${blockingErrors === 1 ? '' : 's'} must be resolved first.`
+        : roomBlockingErrors > 0
+            ? `${roomBlockingErrors} error${roomBlockingErrors === 1 ? '' : 's'} in this room must be resolved first.`
             : deployCommands.length === 0
                 ? 'No commands to deploy.'
                 : '';
+
+    const zoneDeployBlockedReason = !isConnected
+        ? 'Connect to MUME to deploy.'
+        : blockingErrors > 0
+            ? `${blockingErrors} blocking error${blockingErrors === 1 ? '' : 's'} must be resolved first.`
+            : zoneDeployCommands.length === 0
+                ? 'No deployable rooms in this zone.'
+                : '';
+
+    const handleStartZoneDeploy = () => {
+        if (window.confirm(
+            `Publish the whole zone to MUME? This sends ${zoneDeployCommands.length} commands across every deployable room ` +
+            `(each room's reset tree is cleared with /com kill all before its previewed /com commands replay).`
+        )) {
+            onStartZoneDeploy();
+        }
+    };
 
     return (
         <section className={`shaper-bottom-panel ${isMinimized ? 'minimized' : ''}`}>
@@ -117,6 +146,29 @@ export const ShaperBottomPanel: React.FC<ShaperBottomPanelProps> = ({
                         <span className={warnings > 0 ? 'shaper-issue warning' : ''}>{warnings} warnings</span>
                     </div>
 
+                    {issues.length > 0 && (
+                        <ul className="shaper-issue-list">
+                            {[...issues]
+                                .sort((a, b) => (a.severity === b.severity ? 0 : a.severity === 'error' ? -1 : 1))
+                                .map(issue => {
+                                    const roomNumber = issue.roomId ? rooms[issue.roomId]?.roomNumber : undefined;
+                                    const isSelectable = !!issue.roomId && !!rooms[issue.roomId];
+                                    return (
+                                        <li
+                                            key={issue.id}
+                                            className={`shaper-issue-row ${issue.severity}${issue.roomId === selectedRoomId ? ' selected-room' : ''}${isSelectable ? ' selectable' : ''}`}
+                                            onClick={isSelectable ? () => onSelectRoom(issue.roomId!) : undefined}
+                                            title={isSelectable ? 'Select this room' : undefined}
+                                        >
+                                            <span className={`shaper-issue-sev ${issue.severity}`}>{issue.severity}</span>
+                                            {roomNumber && <span className="shaper-issue-room">{roomNumber}</span>}
+                                            <span className="shaper-issue-message">{issue.message}</span>
+                                        </li>
+                                    );
+                                })}
+                        </ul>
+                    )}
+
                     <div className="shaper-command-preview">
                         <div className="shaper-command-preview-header">
                             <strong>Deploy Preview</strong>
@@ -146,15 +198,26 @@ export const ShaperBottomPanel: React.FC<ShaperBottomPanelProps> = ({
                             {isDeploying
                                 ? <button type="button" className="shaper-deploy-abort" onClick={onAbortDeploy}>Abort</button>
                                 : (
-                                    <button
-                                        type="button"
-                                        className="shaper-deploy-send"
-                                        onClick={onStartDeploy}
-                                        disabled={!!deployBlockedReason}
-                                        title={deployBlockedReason}
-                                    >
-                                        Send to MUME
-                                    </button>
+                                    <>
+                                        <button
+                                            type="button"
+                                            className="shaper-deploy-send"
+                                            onClick={onStartDeploy}
+                                            disabled={!!deployBlockedReason}
+                                            title={deployBlockedReason}
+                                        >
+                                            Send Room to MUME
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="shaper-deploy-send-zone"
+                                            onClick={handleStartZoneDeploy}
+                                            disabled={!!zoneDeployBlockedReason}
+                                            title={zoneDeployBlockedReason || `Publish all rooms (${zoneDeployCommands.length} commands)`}
+                                        >
+                                            Send Zone to MUME
+                                        </button>
+                                    </>
                                 )}
                             {deploySteps.length > 0 && !isDeploying && (
                                 <button type="button" onClick={onClearDeploy}>Clear</button>

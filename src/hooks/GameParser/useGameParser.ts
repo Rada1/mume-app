@@ -34,6 +34,7 @@ import { useRoomStore } from '../../stores/useRoomStore';
 import { parseEffectTimerLine } from '../../services/timers/effectTimerParser';
 import { parseMagicKeyLine, upsertMagicKeyTarget } from '../../utils/magicKeyUtils';
 import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir } from './textMapperEvents';
+import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
 
 const decodeTextEntities = (text: string) => text
     .replace(/&gt;/gi, '>')
@@ -163,7 +164,11 @@ const SHAPER_CAPTURE_TYPES = [
     'shaper_mob_stat',
     'shaper_obj_stat',
     'shaper_mob_info',
-    'shaper_obj_info'
+    'shaper_obj_info',
+    'shaper_live_build_list',
+    'shaper_live_room_stat',
+    'shaper_live_com_list',
+    'shaper_live_lib_list'
 ];
 
 const addSnoopedPlainLine = (
@@ -832,7 +837,20 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         const expectedCaptureType = normalizeStageToCaptureType(deps.captureStage.current) as any;
-        const isCaptureBoundary = isPromptResolved || promptInfo.isMatch || isPromptBoundaryLine(textOnly);
+        // `/misc build <zone> list` rows are `[zone:room] ...`, which the prompt
+        // parser mistakes for a bracket prompt (e.g. `[0:0]`). While the build-list
+        // capture is expected or active, treat those rows as data, not boundaries.
+        const isBuildListRow = (expectedCaptureType === 'shaper_live_build_list' ||
+            capture.getActiveType() === 'shaper_live_build_list') &&
+            /^\s*\[\d+:\d+\]/.test(textOnly);
+        const isCaptureBoundary = !isBuildListRow &&
+            (isPromptResolved || promptInfo.isMatch || isPromptBoundaryLine(textOnly));
+        // While a live import runs, feed every output line to the dedicated
+        // collector (it ignores `/at` teleport movement and resolves on the first
+        // prompt after real content) instead of the fragile capture session.
+        if (!isSnoop && useShaperLiveImportStore.getState().importing) {
+            useShaperLiveImportStore.getState().collectLine(textOnly, isCaptureBoundary);
+        }
         const archiveCaptureTypes = ['board_list', 'board_read', 'mail_list', 'mail_read', 'book_read'];
         const isArchiveCapture = archiveCaptureTypes.includes(expectedCaptureType) || archiveCaptureTypes.includes(capture.getActiveType());
         const captureAttachedText = (promptInfo as any).attachedText?.trim();
@@ -1086,6 +1104,11 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             isVisible = false;
         }
         if (shouldHidePendingSilentCapture) {
+            isVisible = false;
+        }
+        // A live Shaper import streams hundreds of god-command output lines; keep
+        // them out of the log entirely (progress is shown in the Shaper topbar).
+        if (!isSnoop && useShaperLiveImportStore.getState().importing) {
             isVisible = false;
         }
 

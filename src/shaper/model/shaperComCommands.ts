@@ -60,7 +60,8 @@ export const addShaperComNode = (
         parentId,
         order: nextOrder(doc, roomId, parentId),
         type,
-        limit: { world: null, zone: null, room: null, chancePercent: 100, raw: '0' },
+        // MUME requires at least one of world/zone/room; default to a room cap of 1.
+        limit: { world: null, zone: null, room: 1, chancePercent: 100, raw: formatShaperLimitRaw(null, null, 1, 100) },
         fields: { vnum: vnum.trim(), name: name.trim(), target: 'parent', container: 'parent', position: '' },
         notes: ''
     };

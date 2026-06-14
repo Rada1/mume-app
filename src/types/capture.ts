@@ -29,6 +29,10 @@ export type CaptureType =
   | 'shaper_obj_stat'
   | 'shaper_mob_info'
   | 'shaper_obj_info'
+  | 'shaper_live_build_list'
+  | 'shaper_live_room_stat'
+  | 'shaper_live_com_list'
+  | 'shaper_live_lib_list'
   | 'none';
 
 export interface CaptureSession {

@@ -136,8 +136,14 @@ const validateCommandNode = (
     if (node.limit && !/^\d+$/.test(node.limit.raw)) {
         issues.push(issue(`${node.id}-bad-limit`, 'error', node.id, node.roomId, `${label} has an invalid limit string.`));
     }
-    if (node.type === 'mobile' && (!node.limit || node.limit.zone === null || node.limit.zone === 0)) {
-        issues.push(issue(`${node.id}-mobile-zone-cap`, 'warning', node.id, node.roomId, `${label} has no zone cap; wandering mobs can over-populate the zone.`));
+    // MUME requires at least one of world/zone/room cap; any single one satisfies it.
+    if (node.type === 'mobile' || node.type === 'object') {
+        const hasCap = !!node.limit && (
+            (node.limit.world ?? 0) > 0 || (node.limit.zone ?? 0) > 0 || (node.limit.room ?? 0) > 0
+        );
+        if (!hasCap) {
+            issues.push(issue(`${node.id}-no-cap`, 'warning', node.id, node.roomId, `${label} has no world/zone/room spawn cap.`));
+        }
     }
 
     return issues;

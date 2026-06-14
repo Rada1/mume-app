@@ -38,7 +38,7 @@ const buildRoomCommands = (room: ShaperRoomDraft): string[] => {
     if (room.flags.length > 0) {
         commands.push(wrapAt(room.roomNumber, `/room flag @${room.flags.join(' ')}`));
     }
-    commands.push(...editorBlock(room.roomNumber, '/room description', room.description));
+    commands.push(...editorBlock(room.roomNumber, '/room desc', room.description));
     room.keywords.forEach(keyword => {
         const keys = keyword.keywords.map(item => item.trim()).filter(Boolean);
         if (keys.length === 0) return;
@@ -106,11 +106,19 @@ const buildExitCommands = (
 
 const buildRoomLibraryCommands = (
     room: ShaperRoomDraft,
+    commandNodes: Record<string, ShaperCommandNode>,
     libraries: Record<string, ShaperLibraryInstall>
 ): string[] => {
+    const roomNodeIds = new Set(Object.values(commandNodes)
+        .filter(node => node.roomId === room.id)
+        .map(node => node.id));
     const installs = Object.values(libraries)
-        .filter(install => install.targetType === 'room' && install.targetId === room.id)
-        .sort((a, b) => a.name.localeCompare(b.name));
+        .filter(install => install.targetId === room.id || roomNodeIds.has(install.targetId))
+        .sort((a, b) => {
+            const aNode = commandNodes[a.targetId]?.order ?? -1;
+            const bNode = commandNodes[b.targetId]?.order ?? -1;
+            return aNode - bNode || a.name.localeCompare(b.name);
+        });
     return buildShaperLibraryCommands(installs, 'room', room.roomNumber);
 };
 
@@ -125,13 +133,11 @@ export const buildSelectedRoomDeployPreview = (
     commandNodes: Record<string, ShaperCommandNode>,
     libraries: Record<string, ShaperLibraryInstall> = {}
 ): ShaperDeployPreview => {
-    const roomLibraries = Object.values(libraries)
-        .filter(install => install.targetType === 'room' && install.targetId === room.id);
     const draftCommands = [
         ...buildRoomCommands(room),
         ...buildExitCommands(room, rooms, exits),
         ...buildComCommands(room, commandNodes),
-        ...buildRoomLibraryCommands(room, libraries)
+        ...buildRoomLibraryCommands(room, commandNodes, libraries)
     ];
     const commands = [
         ...draftCommands,
@@ -161,10 +167,15 @@ export const buildSelectedRoomDeployPreview = (
             warnings.push(`Exit ${exit.direction.toUpperCase()} climb direction is noted for review; /room cliset uses the exit direction.`);
         }
     });
-    if (roomLibraries.some(install => install.requiresSupervisorReview)) {
+    const roomNodeIds = new Set(Object.values(commandNodes)
+        .filter(node => node.roomId === room.id)
+        .map(node => node.id));
+    const deployLibraries = Object.values(libraries)
+        .filter(install => install.targetId === room.id || roomNodeIds.has(install.targetId));
+    if (deployLibraries.some(install => install.requiresSupervisorReview)) {
         warnings.push('One or more room libraries require supervisor review before deploy.');
     }
-    if (roomLibraries.length > 0) {
+    if (deployLibraries.length > 0) {
         warnings.push('Library /lib set positions are previewed in install order; confirm against /lib room ... list.');
     }
     if (commands.length === 0) {
@@ -172,4 +183,36 @@ export const buildSelectedRoomDeployPreview = (
     }
 
     return { commands, warnings };
+};
+
+// Whole-zone deploy: every room's command script, in room-number order, folded
+// into one paced run. Rooms with nothing deployable are skipped. Per-room
+// warnings are aggregated and de-duplicated.
+export const buildZoneDeployPreview = (
+    rooms: Record<ShaperRoomId, ShaperRoomDraft>,
+    exits: Record<string, ShaperExitDraft>,
+    commandNodes: Record<string, ShaperCommandNode>,
+    libraries: Record<string, ShaperLibraryInstall> = {}
+): ShaperDeployPreview => {
+    const orderedRooms = Object.values(rooms)
+        .sort((a, b) => a.roomNumber.localeCompare(b.roomNumber, undefined, { numeric: true }));
+    const commands: string[] = [];
+    const warnings = new Set<string>();
+    let deployableRooms = 0;
+
+    orderedRooms.forEach(room => {
+        const preview = buildSelectedRoomDeployPreview(room, rooms, exits, commandNodes, libraries);
+        if (preview.commands.length === 0) return;
+        deployableRooms += 1;
+        commands.push(...preview.commands);
+        preview.warnings
+            .filter(warning => warning !== 'Select or edit a room with deployable fields to generate commands.')
+            .forEach(warning => warnings.add(warning));
+    });
+
+    if (deployableRooms === 0) {
+        warnings.add('No rooms have deployable fields yet.');
+    }
+
+    return { commands, warnings: [...warnings] };
 };

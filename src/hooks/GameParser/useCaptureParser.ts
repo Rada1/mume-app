@@ -12,6 +12,7 @@ import { parseAffectedByLines } from '../../utils/affectUtils';
 import { useArchiveStore } from '../../stores/useArchiveStore';
 import { getArchiveListExpectedCount, mergeArchiveEntries, parseArchiveList, parseArchiveRead } from '../../utils/archiveAdapters';
 import { useShaperEntityStore } from '../../shaper/model/useShaperEntityStore';
+import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
 
 export interface CaptureParserDeps {
     captureSession: CaptureSession | null;
@@ -116,7 +117,8 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 }
                 : ['board_list', 'board_read', 'mail_list', 'mail_read', 'book_read'].includes(type)
                     ? { archiveView }
-                    : ['shaper_mob_stat', 'shaper_obj_stat', 'shaper_mob_info', 'shaper_obj_info', 'shaper_mob_find', 'shaper_obj_find'].includes(type)
+                    : ['shaper_mob_stat', 'shaper_obj_stat', 'shaper_mob_info', 'shaper_obj_info', 'shaper_mob_find', 'shaper_obj_find',
+                        'shaper_live_build_list', 'shaper_live_room_stat', 'shaper_live_com_list', 'shaper_live_lib_list'].includes(type)
                         ? { command: pendingFlagsRef.current.command }
                         : undefined
         };
@@ -149,7 +151,11 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             'shaper_mob_stat': 'shaper_mob_stat',
             'shaper_obj_stat': 'shaper_obj_stat',
             'shaper_mob_info': 'shaper_mob_info',
-            'shaper_obj_info': 'shaper_obj_info'
+            'shaper_obj_info': 'shaper_obj_info',
+            'shaper_live_build_list': 'shaper_live_build_list',
+            'shaper_live_room_stat': 'shaper_live_room_stat',
+            'shaper_live_com_list': 'shaper_live_com_list',
+            'shaper_live_lib_list': 'shaper_live_lib_list'
         };
         if (stageMap[type]) {
             captureStage.current = stageMap[type];
@@ -206,7 +212,8 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             isHeader = true;
         }
 
-        const prefixMatch = ['board_list', 'board_read', 'mail_list', 'mail_read', 'book_read'].includes(session.type)
+        const prefixMatch = ['board_list', 'board_read', 'mail_list', 'mail_read', 'book_read',
+            'shaper_live_build_list', 'shaper_live_room_stat', 'shaper_live_com_list', 'shaper_live_lib_list'].includes(session.type)
             ? null
             : cleanLine.match(/^(\s*(?:<|&lt;|\[|\*).*?(?:>|&gt;|\]|\*)\s*)(.*)/i);
         if (prefixMatch && !isHeader) {
@@ -561,6 +568,17 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                         const vnum = parseInt(cmdMatch[1], 10);
                         useShaperEntityStore.getState().setObjectInfoResult(vnum, text);
                     }
+                    break;
+                }
+                case 'shaper_live_build_list':
+                case 'shaper_live_room_stat':
+                case 'shaper_live_com_list':
+                case 'shaper_live_lib_list': {
+                    useShaperLiveImportStore.getState().receiveCapture({
+                        type: session.type,
+                        command: session.metadata?.command ?? '',
+                        output: lines.map(l => l.text).join('\n')
+                    });
                     break;
                 }
             }

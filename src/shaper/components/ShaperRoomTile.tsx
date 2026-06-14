@@ -5,7 +5,7 @@
 
 import type { CSSProperties, MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react';
 import { SHAPER_CELL, SHAPER_GUTTER, SHAPER_TILE } from '../hooks/useShaperCanvasView';
-import type { ShaperCommandNode, ShaperDirection, ShaperExitDraft, ShaperRoomDraft } from '../model/shaperTypes';
+import type { ShaperCommandNode, ShaperDirection, ShaperExitDraft, ShaperLibraryInstall, ShaperRoomDraft } from '../model/shaperTypes';
 import type { ShaperConnectionDragState } from './ShaperCanvasGeometry';
 import { ShaperRoomTileBadges } from './ShaperRoomTileBadges';
 import { getShaperDoorTile, getShaperTerrainTile } from './shaperTerrainTile';
@@ -67,6 +67,7 @@ interface ShaperRoomTileProps {
     rooms: Record<string, ShaperRoomDraft>;
     exits: Record<string, ShaperExitDraft>;
     commandNodes: Record<string, ShaperCommandNode>;
+    libraries: Record<string, ShaperLibraryInstall>;
     selected: boolean;
     dragging: boolean;
     dragOffset: { dx: number; dy: number } | null;
@@ -94,6 +95,7 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
     rooms,
     exits,
     commandNodes,
+    libraries,
     selected,
     dragging,
     dragOffset,
@@ -238,7 +240,16 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
                     </span>
                 );
             })}
-            {!room.inactive && <ShaperRoomTileBadges room={room} commandNodes={commandNodes} showComOverlay={showComOverlay} onHover={onHover} onSelectEntity={onSelectEntity} />}
+            {!room.inactive && (
+                <ShaperRoomTileBadges
+                    room={room}
+                    commandNodes={commandNodes}
+                    libraries={libraries}
+                    showComOverlay={showComOverlay}
+                    onHover={onHover}
+                    onSelectEntity={onSelectEntity}
+                />
+            )}
             {showNodes && showExits && !room.inactive && directions.map(dir => (
                 <button
                     key={dir}

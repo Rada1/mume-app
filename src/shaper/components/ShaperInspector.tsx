@@ -12,6 +12,7 @@ import { SHAPER_LIBRARY_CATALOG } from '../model/shaperLibraryCatalog';
 import { ShaperAnnotations } from './ShaperAnnotations';
 import { ShaperRoomEntities } from './ShaperRoomEntities';
 import { ShaperDoorCard } from './ShaperDoorCard';
+import { ShaperLibraryInstallCard } from './ShaperLibraryPanel';
 import type { ShaperEntityFocusSignal } from './shaperEntityFocus';
 
 interface ShaperInspectorProps {
@@ -38,7 +39,14 @@ interface ShaperInspectorProps {
     libraries: Record<string, ShaperLibraryInstall>;
     onAddLibrary: (targetType: any, targetId: string, name: string) => void;
     onRemoveLibrary: (id: string) => void;
+    onSetLibraryParam: (id: string, key: string, value: string) => void;
+    onRemoveLibraryParam: (id: string, key: string) => void;
+    onToggleLibraryLoad: (id: string) => void;
+    onUpdateLibraryNotes: (id: string, notes: string) => void;
     onUpdateComLimit: (nodeId: string, patch: any) => void;
+    onReimportRoom: () => void;
+    isImporting: boolean;
+    isConnected: boolean;
     focusEntity?: ShaperEntityFocusSignal | null;
 }
 
@@ -78,7 +86,14 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
     libraries,
     onAddLibrary,
     onRemoveLibrary,
+    onSetLibraryParam,
+    onRemoveLibraryParam,
+    onToggleLibraryLoad,
+    onUpdateLibraryNotes,
     onUpdateComLimit,
+    onReimportRoom,
+    isImporting,
+    isConnected,
     focusEntity
 }) => {
     const [flagsCollapsed, setFlagsCollapsed] = useState(false);
@@ -113,6 +128,15 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
                 <span>Room Inspector</span>
                 <strong>{room.roomNumber}</strong>
                 <small>{room.kind === 'extra' ? 'Extra room' : 'Grid room'} / Layer {room.z}</small>
+                <button
+                    type="button"
+                    className="shaper-reimport-room"
+                    onClick={onReimportRoom}
+                    disabled={isImporting || !isConnected}
+                    title={!isConnected ? 'Connect to MUME to re-import' : isImporting ? 'Import in progress…' : `Re-read ${room.roomNumber} from MUME`}
+                >
+                    {isImporting ? 'Importing…' : 'Re-import'}
+                </button>
             </div>
 
             {room.inactive && (
@@ -250,21 +274,36 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
                     </button>
                 </div>
                 {!libsCollapsed && (
-                    <div className="shaper-flag-grid" style={{ maxHeight: '180px', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '4px', padding: '6px', background: 'rgba(0,0,0,0.1)' }}>
-                        {SHAPER_LIBRARY_CATALOG.room.map(entry => {
-                            const isInstalled = roomInstalls.some(i => i.name === entry.name);
-                            return (
-                                <label key={entry.name} className="shaper-flag" title={entry.description}>
-                                    <input 
-                                        type="checkbox" 
-                                        checked={isInstalled} 
-                                        onChange={() => toggleLibrary(entry.name)} 
-                                    />
-                                    <span>{entry.name}</span>
-                                </label>
-                            );
-                        })}
-                    </div>
+                    <>
+                        <div className="shaper-flag-grid" style={{ maxHeight: '180px', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '4px', padding: '6px', background: 'rgba(0,0,0,0.1)' }}>
+                            {SHAPER_LIBRARY_CATALOG.room.map(entry => {
+                                const isInstalled = roomInstalls.some(i => i.name === entry.name);
+                                return (
+                                    <label key={entry.name} className="shaper-flag" title={entry.description}>
+                                        <input
+                                            type="checkbox"
+                                            checked={isInstalled}
+                                            onChange={() => toggleLibrary(entry.name)}
+                                        />
+                                        <span>{entry.name}</span>
+                                    </label>
+                                );
+                            })}
+                        </div>
+                        <div className="shaper-entity-libraries">
+                            {roomInstalls.map(install => (
+                                <ShaperLibraryInstallCard
+                                    key={install.id}
+                                    install={install}
+                                    onRemoveLibrary={onRemoveLibrary}
+                                    onSetParam={onSetLibraryParam}
+                                    onRemoveParam={onRemoveLibraryParam}
+                                    onToggleLoad={onToggleLibraryLoad}
+                                    onUpdateNotes={onUpdateLibraryNotes}
+                                />
+                            ))}
+                        </div>
+                    </>
                 )}
             </div>
 
@@ -305,6 +344,13 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
                 onAddHiddenObject={onAddHiddenObject}
                 onUpdateComFields={onUpdateComFields}
                 onUpdateComLimit={onUpdateComLimit}
+                libraries={libraries}
+                onAddLibrary={onAddLibrary}
+                onRemoveLibrary={onRemoveLibrary}
+                onSetLibraryParam={onSetLibraryParam}
+                onRemoveLibraryParam={onRemoveLibraryParam}
+                onToggleLibraryLoad={onToggleLibraryLoad}
+                onUpdateLibraryNotes={onUpdateLibraryNotes}
                 focusEntity={focusEntity}
             />
 

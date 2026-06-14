@@ -244,7 +244,7 @@ const roomPreview = (doc, roomId) => {
   if (clean(room.name)) commands.push(wrapAt(room.roomNumber, `/room name ${clean(room.preposition) || 'in'}@${clean(room.name)}`));
   if (room.sector) commands.push(wrapAt(room.roomNumber, `/room sector ${room.sector}`));
   if (room.flags?.length) commands.push(wrapAt(room.roomNumber, `/room flag @${room.flags.join(' ')}`));
-  commands.push(...editorBlock(room.roomNumber, '/room description', room.description));
+  commands.push(...editorBlock(room.roomNumber, '/room desc', room.description));
   asArray(room.keywords).forEach(keyword => {
     const keys = asArray(keyword.keywords).map(clean).filter(Boolean);
     if (keys.length) commands.push(wrapAt(room.roomNumber, `/room kadd ${keys.join(' ')}`));

@@ -128,6 +128,7 @@
 }
 
 .shaper-lib-param-row input,
+.shaper-lib-param-row textarea,
 .shaper-lib-notes {
     flex: 1;
     min-width: 0;
@@ -137,6 +138,10 @@
     color: #eef2f6;
     padding: 6px;
     font: inherit;
+}
+
+.shaper-lib-param-row textarea {
+    resize: vertical;
 }
 
 .shaper-lib-param-row button {

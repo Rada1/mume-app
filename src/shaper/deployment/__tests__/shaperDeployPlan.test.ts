@@ -20,7 +20,7 @@ describe('planShaperDeploy', () => {
 
     it('folds an opener plus indented lines into one manual editor step', () => {
         const steps = planShaperDeploy([
-            '/at 300:00 /room description',
+            '/at 300:00 /room desc',
             '  A quiet glade.',
             '  [save editor]',
             '/at 300:00 /room owner builder'
@@ -34,7 +34,7 @@ describe('planShaperDeploy', () => {
 
     it('extracts editor body without opener, marker, or indent', () => {
         const body = extractEditorBody([
-            '/at 300:00 /room description',
+            '/at 300:00 /room desc',
             '  A quiet glade.',
             '  Sun filters through the leaves.',
             '  [save editor]'

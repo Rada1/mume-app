@@ -146,6 +146,84 @@
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.shaper-entity-libraries {
+    display: grid;
+    gap: 6px;
+    margin: 4px 0 6px;
+}
+
+.shaper-entity-libraries-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.035);
+    color: #cbd5df;
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    min-height: 28px;
+    padding: 5px 7px;
+    text-transform: uppercase;
+}
+
+.shaper-entity-libraries-toggle:hover {
+    border-color: rgba(240, 180, 91, 0.35);
+    color: #f0b45b;
+}
+
+.shaper-entity-libraries-toggle strong {
+    min-width: 18px;
+    border-radius: 9px;
+    background: rgba(240, 180, 91, 0.16);
+    color: #f0b45b;
+    font-size: 10px;
+    text-align: center;
+}
+
+.shaper-entity-libraries-toggle small {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: #8e9aa6;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-align: left;
+    text-overflow: ellipsis;
+    text-transform: none;
+    white-space: nowrap;
+}
+
+.shaper-entity-libraries-body {
+    display: grid;
+    gap: 6px;
+}
+
+.shaper-entity-libraries-quick-add {
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 5px;
+    background: #0f1317;
+    color: #eef2f6;
+    min-height: 32px;
+    padding: 6px;
+    font: inherit;
+}
+
+.shaper-entity-libraries .shaper-lib-install {
+    margin: 0;
+    background: rgba(15, 19, 23, 0.72);
+}
+
+.shaper-entity-libraries .shaper-lib-param-row {
+    grid-template-columns: minmax(76px, 0.45fr) minmax(0, 1fr) auto;
+}
+
 .shaper-entity-add {
     display: flex;
     gap: 4px;

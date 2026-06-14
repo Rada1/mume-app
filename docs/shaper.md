@@ -245,6 +245,7 @@ ZonePlan
   exits
   commandNodes
   libraries
+  zoneInfoKeywords
   comments
   validationIssues
 
@@ -266,6 +267,12 @@ RoomDraft
   keywordDescriptions
   exitDescriptions
   notes
+
+ZoneInfoKeyword
+  keyword
+  body
+  rawText?
+  importedAt?
 
 ExitDraft
   id
@@ -784,6 +791,54 @@ name suffix, test keyword, or harmless room flag.
 
 Do not run this smoke test against production content without a selected
 throwaway room and a recorded before/after value.
+
+### Live Zone Read Plan
+
+Shaper reads live MUME zones in phases. MUME is the durable source of truth;
+Shaper imports a working copy, compares later live reads against that baseline,
+then deploys reviewed changes back through the command queue.
+
+Use the read-plan script to generate commands for an Ainu with appropriate
+access to run from the client:
+
+```bash
+node scripts/print_shaper_live_read_plan.js --zone 31 --grid --commands-only
+```
+
+The discovery phase reads zone metadata and god-facing zone info keywords:
+
+```text
+/stat zone 31
+/zone 31 list
+/info z 31 list
+```
+
+Known zone info keywords are project-level documentation, not room keywords:
+
+```text
+/info z 31 map
+/info z 31 history
+```
+
+Room scans are room-centered and collect live structure, resets, and libraries:
+
+```text
+/at 31:04 /stat room full
+/at 31:04 /com list -commands
+/lib room 31:04 list -commands
+```
+
+To update a project from MUME, open the matching Shaper project while connected
+as Ainu with appropriate access and use **Import Live Read** from the Shaper
+header. Shaper sends `/misc build <zone> list` first, filters the discovered
+rooms to the project's zone number, then reads each room with `/at <room> /stat
+room`, `/at <room> /com list -commands`, and `/lib room <room> list -commands`.
+The importer updates room fields, replaces that room's imported `/com` tree,
+replaces that room's imported room libraries, and keeps raw live output on each
+touched room as a snapshot so unsupported formatting can still be inspected.
+
+Room keywords remain player-facing extra descriptions on `RoomDraft.keywords`.
+Zone info keywords live in `ShaperWorkspaceDoc.zoneInfoKeywords`.
 
 ### UI Acceptance Scenarios
 

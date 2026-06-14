@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo } from 'react';
-import type { ShaperDirection, ShaperExitDraft, ShaperRoomDraft, ShaperRoomId, ShaperConnectionSelection, ShaperCommandNode } from '../model/shaperTypes';
+import type { ShaperDirection, ShaperExitDraft, ShaperRoomDraft, ShaperRoomId, ShaperConnectionSelection } from '../model/shaperTypes';
 import {
     getNodePosition,
     getOffsetPoints,
@@ -18,7 +18,6 @@ import { hasShaperExitClimb, hasShaperExitDoor } from '../model/shaperExitFlags'
 interface ShaperConnectionLayerProps {
     rooms: Record<ShaperRoomId, ShaperRoomDraft>;
     exits: Record<string, ShaperExitDraft>;
-    commandNodes: Record<string, ShaperCommandNode>;
     viewZ: number;
     drag: ShaperConnectionDragState | null;
     selectedConnection: ShaperConnectionSelection | null;
@@ -43,32 +42,6 @@ interface RenderedExit {
 const directions: ShaperDirection[] = ['n', 'e', 's', 'w', 'u', 'd'];
 
 // --- Render Helpers Section ---
-const DoorMark: React.FC<{ a: ShaperPoint; b: ShaperPoint; resetAction: 'close' | 'lock' | 'none' }> = ({ a, b, resetAction }) => {
-    const mx = (a.x + b.x) / 2;
-    const my = (a.y + b.y) / 2;
-    const dx = b.x - a.x;
-    const dy = b.y - a.y;
-    const len = Math.hypot(dx, dy) || 1;
-    const px = -dy / len;
-    const py = dx / len;
-
-    let strokeColor = '#ef4444'; // default warning red if no reset com is defined
-    if (resetAction === 'close') strokeColor = '#10b981'; // emerald green
-    if (resetAction === 'lock') strokeColor = '#f59e0b'; // amber/orange
-
-    return (
-        <line
-            x1={mx - px * 12}
-            y1={my - py * 12}
-            x2={mx + px * 12}
-            y2={my + py * 12}
-            stroke={strokeColor}
-            strokeWidth={4.5}
-            strokeLinecap="round"
-        />
-    );
-};
-
 const ClimbMark: React.FC<{ a: ShaperPoint; b: ShaperPoint }> = ({ a, b }) => {
     const mx = (a.x + b.x) / 2;
     const my = (a.y + b.y) / 2;
@@ -103,7 +76,7 @@ const ClimbMark: React.FC<{ a: ShaperPoint; b: ShaperPoint }> = ({ a, b }) => {
     );
 };
 
-const ArrowLine: React.FC<{ a: ShaperPoint; b: ShaperPoint; hasDoor: boolean; resetAction: 'close' | 'lock' | 'none'; isClimb: boolean; isSelected: boolean }> = ({ a, b, hasDoor, resetAction, isClimb, isSelected }) => (
+const ArrowLine: React.FC<{ a: ShaperPoint; b: ShaperPoint; isClimb: boolean; isSelected: boolean }> = ({ a, b, isClimb, isSelected }) => (
     <>
         <line
             className="shaper-connection-line"
@@ -115,7 +88,6 @@ const ArrowLine: React.FC<{ a: ShaperPoint; b: ShaperPoint; hasDoor: boolean; re
             strokeWidth={isSelected ? 13 : 8}
             markerEnd={isSelected ? 'url(#arrow-selected)' : 'url(#arrow)'}
         />
-        {hasDoor && <DoorMark a={a} b={b} resetAction={resetAction} />}
         {isClimb && <ClimbMark a={a} b={b} />}
     </>
 );
@@ -172,7 +144,6 @@ const ConnectionLabel: React.FC<{
 export const ShaperConnectionLayer: React.FC<ShaperConnectionLayerProps> = ({
     rooms,
     exits,
-    commandNodes,
     viewZ,
     drag,
     selectedConnection,
@@ -352,10 +323,6 @@ export const ShaperConnectionLayer: React.FC<ShaperConnectionLayerProps> = ({
                 const from = { x: line.x1, y: line.y1 };
                 const to = { x: line.x2, y: line.y2 };
 
-                const doorCom = Object.values(commandNodes).find(
-                    node => node.roomId === conn.aId && node.type === 'door' && node.fields.direction === conn.dirAB
-                );
-                const resetAction = doorCom ? (doorCom.fields.doorAction as 'close' | 'lock' || 'close') : 'none';
                 const hasDoor = hasShaperExitDoor(exitAB);
                 const hasClimb = hasShaperExitClimb(exitAB);
 
@@ -373,8 +340,6 @@ export const ShaperConnectionLayer: React.FC<ShaperConnectionLayerProps> = ({
                         <ArrowLine
                             a={from}
                             b={to}
-                            hasDoor={hasDoor}
-                            resetAction={resetAction}
                             isClimb={hasClimb}
                             isSelected={isSelected}
                         />

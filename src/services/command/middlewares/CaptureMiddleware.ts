@@ -69,6 +69,18 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
                 captureType = 'shaper_obj_info';
             }
         }
+        if (!captureType && /^\/misc\s+build\s+\d+\s+list\b/i.test(lowerCmd)) {
+            captureType = 'shaper_live_build_list';
+        } else if (!captureType && /^\/at\s+\S+\s+\/stat\s+room(?:\s+full)?\b/i.test(lowerCmd)) {
+            captureType = 'shaper_live_room_stat';
+        } else if (!captureType && (/^\/com\s+room\s+\S+\s+list\b/i.test(lowerCmd) || /^\/at\s+\S+\s+\/com\s+list\b/i.test(lowerCmd))) {
+            captureType = 'shaper_live_com_list';
+        } else if (!captureType && (
+            /^\/at\s+\S+\s+\/lib\s+list(?:\s+-com(?:mands)?)?\b/i.test(lowerCmd) ||
+            /^\/lib\s+room\s+\S+\s+list(?:\s+-com(?:mands)?)?\b/i.test(lowerCmd)
+        )) {
+            captureType = 'shaper_live_lib_list';
+        }
 
         if (!captureType && (lowerCmd.startsWith('look in ') || lowerCmd.startsWith('look inside '))) {
             captureType = 'container';

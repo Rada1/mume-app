@@ -5,7 +5,7 @@
  */
 
 import { useMemo, useState } from 'react';
-import { SHAPER_LIBRARY_CATALOG } from '../model/shaperLibraryCatalog';
+import { findShaperLibraryEntry, SHAPER_LIBRARY_CATALOG } from '../model/shaperLibraryCatalog';
 import { listShaperLibraries } from '../model/shaperLibraries';
 import type {
     ShaperLibraryInstall,
@@ -29,7 +29,7 @@ interface ShaperLibraryPanelProps {
 const TARGET_TYPES: ShaperLibraryTargetType[] = ['room', 'mobile', 'object'];
 
 // --- Param Editor Section ---
-const InstallCard: React.FC<{
+export const ShaperLibraryInstallCard: React.FC<{
     install: ShaperLibraryInstall;
     onRemoveLibrary: (id: string) => void;
     onSetParam: (id: string, key: string, value: string) => void;
@@ -39,6 +39,12 @@ const InstallCard: React.FC<{
 }> = ({ install, onRemoveLibrary, onSetParam, onRemoveParam, onToggleLoad, onUpdateNotes }) => {
     const [key, setKey] = useState('');
     const [value, setValue] = useState('');
+    const catalogEntry = findShaperLibraryEntry('room', install.name)
+        ?? findShaperLibraryEntry(install.targetType, install.name);
+    const parameterKeys = Array.from(new Set([
+        ...(catalogEntry?.parameterKeys ?? []),
+        ...Object.keys(install.parameters)
+    ]));
 
     const addParam = () => {
         if (!key.trim()) return;
@@ -61,13 +67,21 @@ const InstallCard: React.FC<{
             </label>
 
             <div className="shaper-lib-params">
-                {Object.entries(install.parameters).map(([paramKey, paramValue]) => (
+                {parameterKeys.map(paramKey => (
                     <div key={paramKey} className="shaper-lib-param-row">
                         <span className="shaper-lib-param-key">{paramKey}</span>
-                        <input
-                            value={String(paramValue)}
-                            onChange={event => onSetParam(install.id, paramKey, event.target.value)}
-                        />
+                        {paramKey.includes('desc') || paramKey === 'act' ? (
+                            <textarea
+                                value={String(install.parameters[paramKey] ?? '')}
+                                rows={paramKey === 'full-desc' ? 3 : 2}
+                                onChange={event => onSetParam(install.id, paramKey, event.target.value)}
+                            />
+                        ) : (
+                            <input
+                                value={String(install.parameters[paramKey] ?? '')}
+                                onChange={event => onSetParam(install.id, paramKey, event.target.value)}
+                            />
+                        )}
                         <button type="button" onClick={() => onRemoveParam(install.id, paramKey)}>x</button>
                     </div>
                 ))}
@@ -155,7 +169,7 @@ export const ShaperLibraryPanel: React.FC<ShaperLibraryPanelProps> = ({
                         {installed.length === 0
                             ? <p className="shaper-lib-empty">No libraries installed yet.</p>
                             : installed.map(install => (
-                                <InstallCard
+                                <ShaperLibraryInstallCard
                                     key={install.id}
                                     install={install}
                                     onRemoveLibrary={onRemoveLibrary}

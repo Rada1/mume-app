@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import type { DragEvent } from 'react';
 import { Shield, Users, HelpCircle, EyeOff, Layout } from 'lucide-react';
-import type { ShaperItemRef, ShaperMobPlacement } from '../model/shaperTypes';
+import type { ShaperItemRef, ShaperLibraryInstall, ShaperLibraryTargetType, ShaperMobPlacement } from '../model/shaperTypes';
 import { getEntityDragData, hasEntityKind } from './shaperEntityDrag';
 import { ShaperEntityAddForm } from './ShaperEntityAddForm';
 import { ShaperMobCard } from './ShaperMobCard';
@@ -28,6 +28,13 @@ interface ShaperRoomEntitiesProps {
     onAddHiddenObject: (vnum: string, name: string) => void;
     onUpdateComFields: (nodeId: string, patch: Record<string, any>) => void;
     onUpdateComLimit: (nodeId: string, patch: any) => void;
+    libraries: Record<string, ShaperLibraryInstall>;
+    onAddLibrary: (targetType: ShaperLibraryTargetType, targetId: string, name: string) => void;
+    onRemoveLibrary: (id: string) => void;
+    onSetLibraryParam: (id: string, key: string, value: string) => void;
+    onRemoveLibraryParam: (id: string, key: string) => void;
+    onToggleLibraryLoad: (id: string) => void;
+    onUpdateLibraryNotes: (id: string, notes: string) => void;
     focusEntity?: ShaperEntityFocusSignal | null;
 }
 
@@ -45,6 +52,13 @@ export const ShaperRoomEntities: React.FC<ShaperRoomEntitiesProps> = ({
     onAddHiddenObject,
     onUpdateComFields,
     onUpdateComLimit,
+    libraries,
+    onAddLibrary,
+    onRemoveLibrary,
+    onSetLibraryParam,
+    onRemoveLibraryParam,
+    onToggleLibraryLoad,
+    onUpdateLibraryNotes,
     focusEntity
 }) => {
     const [dropTarget, setDropTarget] = useState<string | null>(null);
@@ -68,6 +82,8 @@ export const ShaperRoomEntities: React.FC<ShaperRoomEntitiesProps> = ({
 
     const floorObjects = objects.filter(obj => obj.resetType === 'object');
     const hiddenObjects = objects.filter(obj => obj.resetType === 'hide');
+    const librariesFor = (targetId: string) =>
+        Object.values(libraries).filter(install => install.targetId === targetId);
 
     return (
         <ShaperEntityFocusProvider value={focusEntity ?? null}>
@@ -100,6 +116,13 @@ export const ShaperRoomEntities: React.FC<ShaperRoomEntitiesProps> = ({
                             onUpdateComFields={onUpdateComFields}
                             onAddObjectPut={onAddObjectPut}
                             onUpdateComLimit={onUpdateComLimit}
+                            libraries={librariesFor(mob.id)}
+                            onAddLibrary={onAddLibrary}
+                            onRemoveLibrary={onRemoveLibrary}
+                            onSetLibraryParam={onSetLibraryParam}
+                            onRemoveLibraryParam={onRemoveLibraryParam}
+                            onToggleLibraryLoad={onToggleLibraryLoad}
+                            onUpdateLibraryNotes={onUpdateLibraryNotes}
                         />
                     ))}
                 </div>
@@ -134,6 +157,13 @@ export const ShaperRoomEntities: React.FC<ShaperRoomEntitiesProps> = ({
                             onUpdateComFields={onUpdateComFields}
                             onAddObjectPut={onAddObjectPut}
                             onUpdateComLimit={onUpdateComLimit}
+                            libraries={librariesFor(obj.id)}
+                            onAddLibrary={onAddLibrary}
+                            onRemoveLibrary={onRemoveLibrary}
+                            onSetLibraryParam={onSetLibraryParam}
+                            onRemoveLibraryParam={onRemoveLibraryParam}
+                            onToggleLibraryLoad={onToggleLibraryLoad}
+                            onUpdateLibraryNotes={onUpdateLibraryNotes}
                         />
                     ))}
                 </div>
@@ -168,6 +198,13 @@ export const ShaperRoomEntities: React.FC<ShaperRoomEntitiesProps> = ({
                             onUpdateComFields={onUpdateComFields}
                             onAddObjectPut={onAddObjectPut}
                             onUpdateComLimit={onUpdateComLimit}
+                            libraries={librariesFor(obj.id)}
+                            onAddLibrary={onAddLibrary}
+                            onRemoveLibrary={onRemoveLibrary}
+                            onSetLibraryParam={onSetLibraryParam}
+                            onRemoveLibraryParam={onRemoveLibraryParam}
+                            onToggleLibraryLoad={onToggleLibraryLoad}
+                            onUpdateLibraryNotes={onUpdateLibraryNotes}
                         />
                     ))}
                 </div>

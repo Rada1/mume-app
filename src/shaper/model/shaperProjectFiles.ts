@@ -30,6 +30,7 @@ export const parseShaperProjectFile = (text: string): ShaperWorkspaceDoc => {
     }
     return {
         ...parsed,
+        zoneInfoKeywords: parsed.zoneInfoKeywords ?? {},
         shared: false,
         updatedAt: Date.now()
     };

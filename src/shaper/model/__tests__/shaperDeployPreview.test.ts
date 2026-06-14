@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { createDefaultShaperDocument } from '../shaperDocument';
-import { buildSelectedRoomDeployPreview } from '../shaperDeployPreview';
+import { buildSelectedRoomDeployPreview, buildZoneDeployPreview } from '../shaperDeployPreview';
 
 // --- Test Section ---
 describe('buildSelectedRoomDeployPreview', () => {
@@ -58,7 +58,7 @@ describe('buildSelectedRoomDeployPreview', () => {
         );
 
         expect(preview.commands).toContain('/at 300:00 /room name in@A test room');
-        expect(preview.commands).toContain('/at 300:00 /room description');
+        expect(preview.commands).toContain('/at 300:00 /room desc');
         expect(preview.commands).toContain('  A clean test room waits here.');
         expect(preview.commands).toContain('/at 300:00 /room kadd sign notice');
         expect(preview.commands).toContain('/at 300:00 /room edescription e');
@@ -100,6 +100,42 @@ describe('buildSelectedRoomDeployPreview', () => {
         expect(preview.commands.at(-1)).toBe('/at 300:00 /room save');
     });
 
+    it('pushes entity-attached redress libraries as room library commands', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 300 });
+        const room = doc.rooms[doc.selectedRoomId];
+        const commandNodes = {
+            'obj-1': {
+                id: 'obj-1',
+                roomId: room.id,
+                parentId: null,
+                order: 0,
+                type: 'object' as const,
+                limit: { world: null, zone: null, room: 1, chancePercent: 100, raw: '100' },
+                fields: { vnum: '9902', name: 'some cracked wood' },
+                notes: ''
+            }
+        };
+        const libraries = {
+            'lib-1': {
+                id: 'lib-1',
+                targetType: 'object' as const,
+                targetId: 'obj-1',
+                name: 'redress-obj',
+                parameters: { object: '9902', keywords: 'watchtower', 'short-desc': 'a watchtower is here' },
+                requiresSupervisorReview: false,
+                requiresLoad: true,
+                notes: ''
+            }
+        };
+
+        const preview = buildSelectedRoomDeployPreview(room, doc.rooms, {}, commandNodes, libraries);
+
+        expect(preview.commands).toContain('/lib room 300:00 add redress-obj');
+        expect(preview.commands).toContain('/lib room 300:00 set 1 object 9902');
+        expect(preview.commands).toContain('/lib room 300:00 set 1 keywords watchtower');
+        expect(preview.commands).toContain('/lib room 300:00 load');
+    });
+
     it('does not save an empty selected-room deploy preview', () => {
         const doc = createDefaultShaperDocument({ zoneNumber: 300 });
         const room = doc.rooms[doc.selectedRoomId];
@@ -108,5 +144,39 @@ describe('buildSelectedRoomDeployPreview', () => {
 
         expect(preview.commands).toEqual([]);
         expect(preview.warnings).toContain('Select or edit a room with deployable fields to generate commands.');
+    });
+});
+
+describe('buildZoneDeployPreview', () => {
+    it('aggregates every deployable room in room-number order and skips empty rooms', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 300 });
+        const roomIds = Object.keys(doc.rooms);
+        // Name two rooms (deployable); leave the rest empty.
+        const rooms = {
+            ...doc.rooms,
+            [roomIds[1]]: { ...doc.rooms[roomIds[1]], name: 'Second room', preposition: 'in' },
+            [roomIds[0]]: { ...doc.rooms[roomIds[0]], name: 'First room', preposition: 'in' }
+        };
+
+        const preview = buildZoneDeployPreview(rooms, {}, {});
+
+        const nameCommands = preview.commands.filter(c => c.includes('/room name'));
+        expect(nameCommands).toHaveLength(2);
+        // Both rooms' commands appear, ordered by room number (lower first).
+        const [lower, higher] = [rooms[roomIds[0]], rooms[roomIds[1]]]
+            .sort((a, b) => a.roomNumber.localeCompare(b.roomNumber, undefined, { numeric: true }));
+        const lowerIdx = preview.commands.findIndex(c => c.startsWith(`/at ${lower.roomNumber} /room name`));
+        const higherIdx = preview.commands.findIndex(c => c.startsWith(`/at ${higher.roomNumber} /room name`));
+        expect(lowerIdx).toBeGreaterThanOrEqual(0);
+        expect(higherIdx).toBeGreaterThan(lowerIdx);
+        // Each deployable room ends with its own save.
+        expect(preview.commands.filter(c => c.endsWith('/room save'))).toHaveLength(2);
+    });
+
+    it('warns when no room has deployable fields', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 300 });
+        const preview = buildZoneDeployPreview(doc.rooms, {}, {});
+        expect(preview.commands).toEqual([]);
+        expect(preview.warnings).toContain('No rooms have deployable fields yet.');
     });
 });

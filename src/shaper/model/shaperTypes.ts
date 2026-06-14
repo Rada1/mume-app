@@ -61,6 +61,13 @@ export interface ShaperAnnotation {
     createdAt: number;
 }
 
+export interface ShaperLiveRoomSnapshot {
+    importedAt: number;
+    statRoomFull?: string;
+    comListCommands?: string;
+    libRoomCommands?: string;
+}
+
 export interface ShaperRoomDraft {
     id: ShaperRoomId;
     x: number;
@@ -82,6 +89,7 @@ export interface ShaperRoomDraft {
     annotations: ShaperAnnotation[];
     mobs: ShaperMobPlacement[];
     objects: ShaperItemRef[];
+    liveSnapshot?: ShaperLiveRoomSnapshot;
 }
 
 export interface ShaperConnectionSelection {
@@ -128,6 +136,15 @@ export interface ShaperLibraryInstall {
     requiresSupervisorReview: boolean;
     requiresLoad: boolean;
     notes: string;
+}
+
+// --- Zone Info Section ---
+export interface ShaperZoneInfoKeyword {
+    id: string;
+    keyword: string;
+    body: string;
+    rawText?: string;
+    importedAt?: number;
 }
 
 // --- Exit Section ---
@@ -178,6 +195,9 @@ export interface ShaperWorkspaceDoc {
     exits: Record<string, ShaperExitDraft>;
     commandNodes: Record<string, ShaperCommandNode>;
     libraries: Record<string, ShaperLibraryInstall>;
+    // God-facing zone documentation from `/info z <zone> ...`, distinct from
+    // player-facing room keywords/extra descriptions.
+    zoneInfoKeywords: Record<string, ShaperZoneInfoKeyword>;
 }
 
 // --- Project Section ---

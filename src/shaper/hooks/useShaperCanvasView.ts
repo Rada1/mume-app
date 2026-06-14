@@ -47,6 +47,8 @@ export const useShaperCanvasView = () => {
     }, [camera]);
 
     const handleWheel = useCallback((e: ReactWheelEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
         const rect = viewportRef.current?.getBoundingClientRect();
         const sx = e.clientX - (rect?.left ?? 0);
         const sy = e.clientY - (rect?.top ?? 0);

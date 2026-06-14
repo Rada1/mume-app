@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { DragEvent } from 'react';
 import { ChevronDown, ChevronRight, X, Shield, Briefcase, Users } from 'lucide-react';
-import type { ShaperItemRef, ShaperMobPlacement } from '../model/shaperTypes';
+import type { ShaperItemRef, ShaperLibraryInstall, ShaperLibraryTargetType, ShaperMobPlacement } from '../model/shaperTypes';
 import { useShaperEntityFocus, useShaperEntityFocusSignal } from './shaperEntityFocus';
 
 // All command-node ids beneath a mob (its items + their contents, plus followers).
@@ -23,6 +23,7 @@ const collectMobDescendantIds = (mob: ShaperMobPlacement): Set<string> => {
 import { getEntityDragData, hasEntityKind } from './shaperEntityDrag';
 import { ShaperObjectCard } from './ShaperObjectCard';
 import { ShaperEntityAddForm } from './ShaperEntityAddForm';
+import { ShaperEntityLibraries } from './ShaperEntityLibraries';
 
 interface ShaperMobCardProps {
     mob: ShaperMobPlacement;
@@ -34,6 +35,13 @@ interface ShaperMobCardProps {
     onUpdateComFields: (nodeId: string, patch: Record<string, any>) => void;
     onAddObjectPut: (containerId: string, vnum: string, name: string) => void;
     onUpdateComLimit: (nodeId: string, patch: any) => void;
+    libraries: ShaperLibraryInstall[];
+    onAddLibrary: (targetType: ShaperLibraryTargetType, targetId: string, name: string) => void;
+    onRemoveLibrary: (id: string) => void;
+    onSetLibraryParam: (id: string, key: string, value: string) => void;
+    onRemoveLibraryParam: (id: string, key: string) => void;
+    onToggleLibraryLoad: (id: string) => void;
+    onUpdateLibraryNotes: (id: string, notes: string) => void;
 }
 
 export const ShaperMobCard: React.FC<ShaperMobCardProps> = ({
@@ -45,7 +53,14 @@ export const ShaperMobCard: React.FC<ShaperMobCardProps> = ({
     onAddFollower,
     onUpdateComFields,
     onAddObjectPut,
-    onUpdateComLimit
+    onUpdateComLimit,
+    libraries,
+    onAddLibrary,
+    onRemoveLibrary,
+    onSetLibraryParam,
+    onRemoveLibraryParam,
+    onToggleLibraryLoad,
+    onUpdateLibraryNotes
 }) => {
     const [expanded, setExpanded] = useState(false);
     const [dropTarget, setDropTarget] = useState<string | null>(null);
@@ -174,6 +189,18 @@ export const ShaperMobCard: React.FC<ShaperMobCardProps> = ({
                         </label>
                     </div>
 
+                    <ShaperEntityLibraries
+                        targetType="mobile"
+                        targetId={mob.id}
+                        libraries={libraries}
+                        onAddLibrary={onAddLibrary}
+                        onRemoveLibrary={onRemoveLibrary}
+                        onSetParam={onSetLibraryParam}
+                        onRemoveParam={onRemoveLibraryParam}
+                        onToggleLoad={onToggleLibraryLoad}
+                        onUpdateNotes={onUpdateLibraryNotes}
+                    />
+
                     {/* Worn Equipment Field */}
                     <div
                         className={`shaper-mob-field-zone ${dropTarget === 'equip' ? 'drop-active' : ''}`}
@@ -194,6 +221,13 @@ export const ShaperMobCard: React.FC<ShaperMobCardProps> = ({
                                 onUpdateComFields={onUpdateComFields}
                                 onAddObjectPut={onAddObjectPut}
                                 onUpdateComLimit={onUpdateComLimit}
+                                libraries={[]}
+                                onAddLibrary={onAddLibrary}
+                                onRemoveLibrary={onRemoveLibrary}
+                                onSetLibraryParam={onSetLibraryParam}
+                                onRemoveLibraryParam={onRemoveLibraryParam}
+                                onToggleLibraryLoad={onToggleLibraryLoad}
+                                onUpdateLibraryNotes={onUpdateLibraryNotes}
                             />
                         ))}
 
@@ -227,6 +261,13 @@ export const ShaperMobCard: React.FC<ShaperMobCardProps> = ({
                                 onUpdateComFields={onUpdateComFields}
                                 onAddObjectPut={onAddObjectPut}
                                 onUpdateComLimit={onUpdateComLimit}
+                                libraries={[]}
+                                onAddLibrary={onAddLibrary}
+                                onRemoveLibrary={onRemoveLibrary}
+                                onSetLibraryParam={onSetLibraryParam}
+                                onRemoveLibraryParam={onRemoveLibraryParam}
+                                onToggleLibraryLoad={onToggleLibraryLoad}
+                                onUpdateLibraryNotes={onUpdateLibraryNotes}
                             />
                         ))}
 
@@ -264,6 +305,13 @@ export const ShaperMobCard: React.FC<ShaperMobCardProps> = ({
                                 onUpdateComFields={onUpdateComFields}
                                 onAddObjectPut={onAddObjectPut}
                                 onUpdateComLimit={onUpdateComLimit}
+                                libraries={[]}
+                                onAddLibrary={onAddLibrary}
+                                onRemoveLibrary={onRemoveLibrary}
+                                onSetLibraryParam={onSetLibraryParam}
+                                onRemoveLibraryParam={onRemoveLibraryParam}
+                                onToggleLibraryLoad={onToggleLibraryLoad}
+                                onUpdateLibraryNotes={onUpdateLibraryNotes}
                             />
                         ))}
 

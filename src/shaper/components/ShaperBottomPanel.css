@@ -205,6 +205,83 @@
     cursor: not-allowed;
 }
 
+.shaper-issue-list {
+    list-style: none;
+    margin: 0.25rem 0 0;
+    padding: 0;
+    max-height: 9rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.shaper-issue-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    line-height: 1.3;
+}
+
+.shaper-issue-row.selectable {
+    cursor: pointer;
+}
+
+.shaper-issue-row.selectable:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.shaper-issue-row.selected-room {
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.shaper-issue-sev {
+    flex: 0 0 auto;
+    text-transform: uppercase;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+.shaper-issue-sev.error {
+    color: #ff9a9a;
+    background: rgba(220, 96, 96, 0.18);
+}
+
+.shaper-issue-sev.warning {
+    color: #f0c98e;
+    background: rgba(240, 184, 96, 0.16);
+}
+
+.shaper-issue-room {
+    flex: 0 0 auto;
+    font-family: var(--font-mono, monospace);
+    color: #8ecbf0;
+    font-size: 0.72rem;
+}
+
+.shaper-issue-message {
+    flex: 1 1 auto;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.shaper-deploy-send-zone {
+    margin-left: 0.5rem;
+    border-color: rgba(240, 184, 96, 0.5) !important;
+    background: rgba(240, 184, 96, 0.16) !important;
+    color: #f0c98e !important;
+}
+
+.shaper-deploy-send-zone:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
 .shaper-deploy-abort {
     margin-left: auto;
     border-color: rgba(239, 68, 68, 0.5) !important;

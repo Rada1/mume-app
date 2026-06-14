@@ -2,15 +2,13 @@
  * @file ShaperWorkspace.tsx
  * @description Main privileged Shaper workspace shell and tab routing.
  */
-
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Undo2, X } from 'lucide-react';
 import { useShaperPresence } from '../collaboration/shaperPresence';
 import { readShareCodeFromHash, useShaperSharedProjects } from '../collaboration/shaperSharedProjects';
 import { useShaperWorkspace } from '../hooks/useShaperWorkspace';
 import { useShaperDeployQueue } from '../hooks/useShaperDeployQueue';
 import { useShaperKeyboardUndo } from '../hooks/useShaperKeyboardUndo';
-import { buildSelectedRoomDeployPreview } from '../model/shaperDeployPreview';
+import { buildSelectedRoomDeployPreview, buildZoneDeployPreview } from '../model/shaperDeployPreview';
 import { ShaperBottomPanel } from './ShaperBottomPanel';
 import { ShaperCanvas } from './ShaperCanvas';
 import { ShaperInspector } from './ShaperInspector';
@@ -21,6 +19,7 @@ import { ShaperObjectsPanel } from './ShaperObjectsPanel';
 import { ShaperConnectionInspector } from './ShaperConnectionInspector';
 import { ShaperComTreePanel } from './ShaperComTreePanel';
 import { ShaperLibraryPanel } from './ShaperLibraryPanel';
+import { ShaperWorkspaceTopbar } from './ShaperWorkspaceTopbar';
 import type { ShaperEntityFocusSignal } from './shaperEntityFocus';
 import { useGame } from '../../context/GameContext';
 import { useShaperEntityStore } from '../model/useShaperEntityStore';
@@ -43,8 +42,8 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
     isEditorOpen = false,
     onSaveEditor
 }) => {
-    const { executeCommand } = useGame() as any;
-    const workspace = useShaperWorkspace();
+    const { executeCommand } = useGame();
+    const workspace = useShaperWorkspace({ sendCommand: executeCommand });
     const activeDoc = workspace.doc;
     const { peers } = useShaperPresence(activeDoc?.id ?? null);
     const { pullProject } = useShaperSharedProjects(workspace.openProject);
@@ -52,12 +51,10 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
     const [showComOverlay, setShowComOverlay] = useState(false);
     const [focusEntity, setFocusEntity] = useState<ShaperEntityFocusSignal | null>(null);
 
-    // Bind Telnet command executor to the shaper entity store
     useEffect(() => {
         useShaperEntityStore.getState().setExecuteCommand(executeCommand);
     }, [executeCommand]);
 
-    // Clicking a mob/object on a grid tile selects its room and reveals it in the inspector.
     const handleSelectEntity = (roomId: string, entityId: string) => {
         workspace.selectRoom(roomId);
         setFocusEntity({ id: entityId, nonce: Date.now() });
@@ -98,7 +95,6 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
         };
     }, [isResizing]);
 
-    // Auto-open a project once when the page is loaded with a share link in the URL hash.
     const hashHandledRef = useRef(false);
     useEffect(() => {
         if (hashHandledRef.current) return;
@@ -111,11 +107,21 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
     const deployPreview = activeDoc && workspace.selectedRoom
         ? buildSelectedRoomDeployPreview(workspace.selectedRoom, activeDoc.rooms, activeDoc.exits, activeDoc.commandNodes, activeDoc.libraries)
         : { commands: [], warnings: [] };
+    const zoneDeployPreview = activeDoc
+        ? buildZoneDeployPreview(activeDoc.rooms, activeDoc.exits, activeDoc.commandNodes, activeDoc.libraries)
+        : { commands: [], warnings: [] };
     const deploy = useShaperDeployQueue({ send: onSendCommand, isConnected, isEditorOpen, saveEditor: onSaveEditor });
     useShaperKeyboardUndo(!!activeDoc && workspace.canUndo, workspace.undo);
     const blockingErrors = useMemo(
         () => workspace.issues.filter(issue => issue.severity === 'error').length,
         [workspace.issues]
+    );
+    // A single-room push should only require that room to be error-free, not the
+    // whole zone. The zone push still requires every room clean (blockingErrors).
+    const selectedRoomId = workspace.selectedRoom?.id;
+    const roomBlockingErrors = useMemo(
+        () => workspace.issues.filter(issue => issue.severity === 'error' && issue.roomId === selectedRoomId).length,
+        [workspace.issues, selectedRoomId]
     );
     const changeActiveZone = () => {
         if (!activeDoc) return;
@@ -125,25 +131,19 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
         if (!Number.isInteger(parsedZone) || parsedZone < 0) window.alert('Zone number must be a non-negative whole number.');
         else if (parsedZone !== activeDoc.zoneNumber) workspace.changeProjectZone(activeDoc.id, parsedZone);
     };
-
     return (
         <div className="shaper-workspace" role="dialog" aria-label="Shaper workspace">
-            <header className="shaper-topbar">
-                <div>
-                    <span className="shaper-kicker">Builder Workspace</span>
-                    <h1>Shaper Mode</h1>
-                </div>
-                <div className="shaper-topbar-status">
-                    {activeDoc && <button type="button" onClick={workspace.closeProject}>Projects</button>}
-                    {activeDoc && <button type="button" onClick={workspace.undo} disabled={!workspace.canUndo} title="Undo (Ctrl+Z)"><Undo2 size={16} /></button>}
-                    {activeDoc && <button type="button" onClick={changeActiveZone}>Zone {activeDoc.zoneNumber}</button>}
-                    {activeDoc && <span>{workspace.issues.length} issues</span>}
-                    <button type="button" onClick={onClose} title="Close Shaper">
-                        <X size={18} />
-                    </button>
-                </div>
-            </header>
-
+            <ShaperWorkspaceTopbar
+                activeDoc={activeDoc}
+                issueCount={workspace.issues.length}
+                canUndo={workspace.canUndo}
+                onProjects={workspace.closeProject}
+                onUndo={workspace.undo}
+                onChangeZone={changeActiveZone}
+                onImportLiveRead={workspace.startLiveImport}
+                liveImportStatus={workspace.liveImportStatus}
+                onClose={onClose}
+            />
             {!activeDoc || !workspace.selectedRoom ? (
                 <ShaperProjectDashboard
                     projects={workspace.projects}
@@ -166,9 +166,9 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                             issueCount={workspace.issues.length}
                             activeTab={activeTab}
                             peers={peers}
-                            onSelectTab={setActiveTab}
-                        />
-                        <main className="shaper-center">
+                        onSelectTab={setActiveTab}
+                    />
+                    <main className="shaper-center">
                             {activeTab === 'grid' && (
                                 <ShaperCanvas
                                     rooms={activeDoc.rooms}
@@ -249,11 +249,9 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                                 selectionCount={workspace.selectedConnectionIds.size}
                                 onUpdateExit={workspace.updateExit}
                                 onDeleteConnection={() => {
-                                    const ids = workspace.selectedConnectionIds.size > 0 
-                                        ? [...workspace.selectedConnectionIds] 
-                                        : workspace.selectedConnection 
-                                            ? [`${workspace.selectedConnection.aId}:${workspace.selectedConnection.dirAB}`] 
-                                            : [];
+                                    const ids = workspace.selectedConnectionIds.size > 0
+                                        ? [...workspace.selectedConnectionIds]
+                                        : [`${workspace.selectedConnection?.aId}:${workspace.selectedConnection?.dirAB}`];
                                     workspace.removeExits(ids);
                                     workspace.setSelectedConnection(null);
                                 }}
@@ -284,7 +282,14 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                                 libraries={activeDoc.libraries}
                                 onAddLibrary={workspace.addLibrary}
                                 onRemoveLibrary={workspace.removeLibrary}
+                                onSetLibraryParam={workspace.setLibraryParam}
+                                onRemoveLibraryParam={workspace.removeLibraryParam}
+                                onToggleLibraryLoad={workspace.toggleLibraryLoad}
+                                onUpdateLibraryNotes={workspace.updateLibraryNotes}
                                 onUpdateComLimit={workspace.updateComLimit}
+                                onReimportRoom={() => workspace.startRoomLiveImport(workspace.selectedRoom!.roomNumber)}
+                                isImporting={workspace.liveImportStatus.running}
+                                isConnected={isConnected}
                                 focusEntity={focusEntity}
                             />
                         )}
@@ -299,7 +304,13 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                         isDeploying={deploy.isDeploying}
                         isConnected={isConnected}
                         blockingErrors={blockingErrors}
+                        roomBlockingErrors={roomBlockingErrors}
+                        selectedRoomId={selectedRoomId}
+                        rooms={activeDoc.rooms}
+                        onSelectRoom={workspace.selectRoom}
                         onStartDeploy={() => deploy.start(deployPreview.commands)}
+                        zoneDeployCommands={zoneDeployPreview.commands}
+                        onStartZoneDeploy={() => deploy.start(zoneDeployPreview.commands)}
                         onAbortDeploy={deploy.abort}
                         onClearDeploy={deploy.reset}
                         onMarkVerified={deploy.markVerified}

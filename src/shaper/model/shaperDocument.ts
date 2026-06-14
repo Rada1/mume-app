@@ -42,7 +42,8 @@ export const createGridRoom = (
     notes: '',
     annotations: [],
     mobs: [],
-    objects: []
+    objects: [],
+    liveSnapshot: undefined
 });
 
 interface ShaperDocumentOptions {
@@ -72,6 +73,7 @@ export const createDefaultShaperDocument = (options: ShaperDocumentOptions = {})
         rooms,
         exits: autoConnectAllRooms(rooms, {}),
         commandNodes: {},
-        libraries: {}
+        libraries: {},
+        zoneInfoKeywords: {}
     };
 };

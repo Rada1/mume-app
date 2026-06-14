@@ -33,11 +33,17 @@ import { useShaperComActions } from './useShaperComActions';
 import { useShaperEntityActions } from './useShaperEntityActions';
 import { useShaperExitActions } from './useShaperExitActions';
 import { useShaperLibraryActions } from './useShaperLibraryActions';
+import { useShaperLiveImportRunner } from './useShaperLiveImportRunner';
 import { useShaperProjectSubscription } from './useShaperProjectSubscription';
 import { useShaperUndoHistory } from './useShaperUndoHistory';
 import type { ShaperConnectionSelection } from '../model/shaperTypes';
 import type { ShaperAnnotation, ShaperProjectSummary, ShaperRoomDraft, ShaperRoomId, ShaperWorkspaceDoc } from '../model/shaperTypes';
-export const useShaperWorkspace = () => {
+
+interface ShaperWorkspaceOptions {
+    sendCommand: (command: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
+}
+
+export const useShaperWorkspace = ({ sendCommand }: ShaperWorkspaceOptions) => {
     const [projects, setProjects] = useState<ShaperProjectSummary[]>(listShaperProjects);
     const [doc, setDoc] = useState<ShaperWorkspaceDoc | null>(null);
     const [viewZ, setViewZ] = useState(0);
@@ -240,6 +246,7 @@ export const useShaperWorkspace = () => {
     const comActions = useShaperComActions({ persist, setDoc });
     const exitActions = useShaperExitActions({ persist, selectedConnectionIds, setDoc });
     const libraryActions = useShaperLibraryActions({ persist, setDoc });
+    const liveImport = useShaperLiveImportRunner({ send: sendCommand, persist, setDoc });
 
     return {
         doc,
@@ -255,6 +262,7 @@ export const useShaperWorkspace = () => {
         issues,
         selectedIssues,
         canUndo: undoHistory.canUndo,
+        liveImportStatus: liveImport.status,
         setViewZ,
         addExtraRoom,
         addRoomAt,
@@ -269,6 +277,8 @@ export const useShaperWorkspace = () => {
         changeProjectZone,
         exportProject,
         importProject,
+        startLiveImport: () => { if (doc) void liveImport.start(doc); },
+        startRoomLiveImport: (roomNumber: string) => { if (doc) void liveImport.startRoom(doc, roomNumber); },
         shareProject,
         unshareProject,
         closeProject,

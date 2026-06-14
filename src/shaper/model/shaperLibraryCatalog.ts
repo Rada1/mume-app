@@ -10,6 +10,7 @@ import type { ShaperLibraryTargetType } from './shaperTypes';
 export interface ShaperLibraryCatalogEntry {
     name: string;
     description: string;
+    parameterKeys?: string[];
     // Libraries the help text marks as restricted, experimental, or CPU-intensive.
     supervisorReview?: boolean;
 }
@@ -51,9 +52,9 @@ const roomLibraries: ShaperLibraryCatalogEntry[] = [
     { name: 'poisonroom', description: 'Poison people as they enter/leave a room.' },
     { name: 'qtoken', description: 'Set qname on a qtoken loaded via /com.' },
     { name: 'random-movement', description: 'Makes all exits random; no group splitting.' },
-    { name: 'redress-corpse', description: 'Replace descriptions of a corpse loading here.' },
-    { name: 'redress-mob', description: 'Replace descriptions of a mobile loading here.' },
-    { name: 'redress-obj', description: 'Replace descriptions of an object loading here.' },
+    { name: 'redress-corpse', description: 'Replace descriptions of a corpse loading here.', parameterKeys: ['mobile', 'keywords', 'short-desc', 'long-desc', 'plural-desc', 'full-desc', 'butchered?', 'drainable?', 'hanging?', 'head?'] },
+    { name: 'redress-mob', description: 'Replace descriptions of a mobile loading here.', parameterKeys: ['mobile', 'act', 'full-desc', 'no-charm?', 'no-summon?'] },
+    { name: 'redress-obj', description: 'Replace descriptions of an object loading here.', parameterKeys: ['object', 'keywords', 'short-desc', 'long-desc', 'plural-desc', 'full-desc', 'ptype'] },
     { name: 'room-echo', description: 'Makes a room send echoes now and then.' },
     { name: 'room-water', description: 'Customize message drinking in water-flagged rooms.' },
     { name: 'shake-tree', description: 'Makes a tree shake-able in the room.' },

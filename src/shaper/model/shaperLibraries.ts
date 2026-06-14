@@ -36,13 +36,20 @@ export const addShaperLibrary = (
     if (exists) return doc;
 
     const entry = findShaperLibraryEntry(targetType, trimmed);
+    const node = doc.commandNodes[targetId];
+    const vnum = String(node?.fields.vnum ?? '').trim();
+    const parameters = vnum && trimmed === 'redress-obj'
+        ? { object: vnum }
+        : vnum && (trimmed === 'redress-mob' || trimmed === 'redress-corpse')
+            ? { mobile: vnum }
+            : {};
     const id = createShaperRoomId();
     const install: ShaperLibraryInstall = {
         id,
         targetType,
         targetId,
         name: trimmed,
-        parameters: {},
+        parameters,
         requiresSupervisorReview: entry?.supervisorReview ?? false,
         requiresLoad: true,
         notes: ''
