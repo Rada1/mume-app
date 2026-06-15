@@ -3,7 +3,7 @@
  * @description Collapsible card for placed objects, supporting container loading and wear positions.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { DragEvent } from 'react';
 import { ChevronDown, ChevronRight, X, Package } from 'lucide-react';
 import type { ShaperItemRef, ShaperLibraryInstall, ShaperLibraryTargetType } from '../model/shaperTypes';
@@ -59,8 +59,15 @@ export const ShaperObjectCard: React.FC<ShaperObjectCardProps> = ({
     const { ref: focusRef, focused } = useShaperEntityFocus(item.id);
     const focusSignal = useShaperEntityFocusSignal();
 
+    const lastSignalRef = useRef<number | null>(null);
+
     useEffect(() => {
-        if (focusSignal && collectItemDescendantIds(item).has(focusSignal.id)) setExpanded(true);
+        if (focusSignal && focusSignal.nonce !== lastSignalRef.current) {
+            lastSignalRef.current = focusSignal.nonce;
+            if (collectItemDescendantIds(item).has(focusSignal.id)) {
+                setExpanded(true);
+            }
+        }
     }, [focusSignal, item]);
 
     const allowDrop = (e: DragEvent) => {

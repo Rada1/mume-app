@@ -67,9 +67,16 @@ export const ShaperMobCard: React.FC<ShaperMobCardProps> = ({
     const { ref: focusRef, focused } = useShaperEntityFocus(mob.id);
     const focusSignal = useShaperEntityFocusSignal();
 
+    const lastSignalRef = useRef<number | null>(null);
+
     // Expand when this mob, or one of its nested items/followers, is focused.
     useEffect(() => {
-        if (focusSignal && collectMobDescendantIds(mob).has(focusSignal.id)) setExpanded(true);
+        if (focusSignal && focusSignal.nonce !== lastSignalRef.current) {
+            lastSignalRef.current = focusSignal.nonce;
+            if (collectMobDescendantIds(mob).has(focusSignal.id)) {
+                setExpanded(true);
+            }
+        }
     }, [focusSignal, mob]);
 
     const allowDrop = (zoneKey: string, accepts: 'mob' | 'object') => (e: DragEvent) => {
