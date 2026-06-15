@@ -6,10 +6,11 @@
 /* --- Badge Section --- */
 .shaper-room-badges {
     position: absolute;
-    top: 6px;
+    top: 24px;
+    left: 6px;
     right: 6px;
     display: grid;
-    max-width: calc(100% - 18px);
+    max-width: calc(100% - 12px);
     gap: 3px;
     z-index: 3;
     pointer-events: none;

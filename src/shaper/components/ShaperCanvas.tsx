@@ -306,8 +306,8 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                     <div
                         className="shaper-hovercard"
                         style={{
-                            left: hoverCard.x + (hoverCard.flipX ? -16 : 16),
-                            top: hoverCard.y + (hoverCard.flipY ? -16 : 16),
+                            left: hoverCard.x + (hoverCard.flipX ? -22 : 22),
+                            top: hoverCard.y + (hoverCard.flipY ? -22 : 32),
                             transform: `translate(${hoverCard.flipX ? '-100%' : '0'}, ${hoverCard.flipY ? '-100%' : '0'})`
                         }}
                     >
