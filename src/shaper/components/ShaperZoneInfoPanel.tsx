@@ -453,7 +453,7 @@ export const ShaperZoneInfoPanel: React.FC<ShaperZoneInfoPanelProps> = ({
                         </div>
                     ) : (
                         <div className="shaper-zone-info-no-selection">
-                            Select a keyword from the list or add a new one to view and edit zone info.
+                            Select a keyword from the list or add a new one to view and edit zone keywords.
                         </div>
                     )}
                 </div>
