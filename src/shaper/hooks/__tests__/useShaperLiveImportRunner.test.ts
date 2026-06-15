@@ -10,7 +10,7 @@ import { buildShaperRoomLiveImportCommands } from '../useShaperLiveImportRunner'
 describe('buildShaperRoomLiveImportCommands', () => {
     it('reads room libraries through the rich room list command', () => {
         expect(buildShaperRoomLiveImportCommands('31:50')).toEqual([
-            '/at 31:50 /stat room',
+            '/at 31:50 /stat room full',
             '/at 31:50 /com list',
             '/lib room 31:50 list'
         ]);

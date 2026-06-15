@@ -76,6 +76,14 @@
     overflow: hidden;
     padding: 10px 14px;
     background: #121111;
+    /* Shaper log defaults to Roboto Mono (imported in index.css). The nested
+       MessageLog reads var(--font-mono, var(--font-main)), so BOTH must be
+       overridden together — otherwise elements falling through to --font-main
+       keep the app font and mix two metrics on one line, skewing the ASCII map.
+       The monospace fallback guarantees alignment even if Roboto Mono fails to
+       load (a bare family name falls back to a proportional serif). */
+    --font-mono: 'Roboto Mono', monospace;
+    --font-main: 'Roboto Mono', monospace;
 }
 
 /* Scoped adjustments for MessageLog within the side panel */

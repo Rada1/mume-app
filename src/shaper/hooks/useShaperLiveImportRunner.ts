@@ -39,7 +39,9 @@ const toMumeRoom = (roomNumber: string): string => {
 export const buildShaperRoomLiveImportCommands = (roomNumber: string): string[] => {
     const mume = toMumeRoom(roomNumber);
     return [
-        `/at ${mume} /stat room`,
+        // `full` is required: the short `/stat room` output omits the
+        // Description block, so the room description never imports without it.
+        `/at ${mume} /stat room full`,
         `/at ${mume} /com list`,
         `/lib room ${mume} list`
     ];

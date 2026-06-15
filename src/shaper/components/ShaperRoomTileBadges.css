@@ -133,5 +133,23 @@
 }
 
 .shaper-room-tile.has-resets-overlay {
-    box-shadow: inset 0 0 0 1.5px rgba(124, 58, 237, 0.65), 0 0 12px rgba(124, 58, 237, 0.3) !important;
+    box-shadow: 0 0 0 2px #a78bfa, inset 0 0 0 1.5px rgba(167, 139, 250, 0.8), 0 0 15px rgba(167, 139, 250, 0.5) !important;
+    border-color: #a78bfa !important;
+}
+
+/* Dim rooms without resets when in resets view mode to make the active ones pop */
+.shaper-canvas-viewport.show-com-overlay .shaper-room-tile:not(.has-resets-overlay) {
+    opacity: 0.45;
+    filter: saturate(0.5);
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.shaper-canvas-viewport.show-com-overlay .shaper-room-tile:not(.has-resets-overlay):hover {
+    opacity: 0.8;
+    filter: saturate(0.85);
+}
+
+/* Highlight the badges when resets view is active */
+.shaper-room-badge.com-mode {
+    box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.4), 0 2px 4px rgba(0, 0, 0, 0.4);
 }

@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { createDefaultShaperDocument } from '../shaperDocument';
-import { buildSelectedRoomDeployPreview, buildZoneDeployPreview } from '../shaperDeployPreview';
+import { buildMultiRoomDeployPreview, buildSelectedRoomDeployPreview, buildZoneDeployPreview } from '../shaperDeployPreview';
 import type { ShaperExitDraft, ShaperDoorFlag } from '../shaperTypes';
 
 // --- Test Section ---
@@ -64,8 +64,32 @@ describe('buildSelectedRoomDeployPreview', () => {
         expect(preview.commands).toContain('/at 300:00 /room kadd sign notice');
         expect(preview.commands).toContain('/at 300:00 /room edescription e');
         expect(preview.commands).toContain('/at 300:00 /com add mobile 2 0');
+        expect(preview.commands).toContain('/at 300:00 /room owner builder');
         expect(preview.commands.at(-1)).toBe('/at 300:00 /room save');
         expect(preview.warnings).toContain('Description and keyword description previews require an editor-save deployment step.');
+    });
+
+    it('omits the /room owner command when owner is unset or none', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 300 });
+        const base = doc.rooms[doc.selectedRoomId];
+
+        const noneRoom = { ...base, name: 'Owned by no one', owner: 'none' };
+        const nonePreview = buildSelectedRoomDeployPreview(
+            noneRoom,
+            { ...doc.rooms, [noneRoom.id]: noneRoom },
+            doc.exits,
+            {}
+        );
+        expect(nonePreview.commands.some(line => line.includes('/room owner'))).toBe(false);
+
+        const emptyRoom = { ...base, name: 'Owned by no one', owner: '  ' };
+        const emptyPreview = buildSelectedRoomDeployPreview(
+            emptyRoom,
+            { ...doc.rooms, [emptyRoom.id]: emptyRoom },
+            doc.exits,
+            {}
+        );
+        expect(emptyPreview.commands.some(line => line.includes('/room owner'))).toBe(false);
     });
 
     it('builds door and climb commands from exit flags', () => {
@@ -179,5 +203,42 @@ describe('buildZoneDeployPreview', () => {
         const preview = buildZoneDeployPreview(doc.rooms, {}, {});
         expect(preview.commands).toEqual([]);
         expect(preview.warnings).toContain('No rooms have deployable fields yet.');
+    });
+});
+
+describe('buildMultiRoomDeployPreview', () => {
+    it('deploys only the selected rooms, in room-number order, skipping others', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 300 });
+        const roomIds = Object.keys(doc.rooms);
+        const rooms = {
+            ...doc.rooms,
+            [roomIds[0]]: { ...doc.rooms[roomIds[0]], name: 'First room', preposition: 'in' },
+            [roomIds[1]]: { ...doc.rooms[roomIds[1]], name: 'Second room', preposition: 'in' },
+            [roomIds[2]]: { ...doc.rooms[roomIds[2]], name: 'Third room', preposition: 'in' }
+        };
+
+        // Select only rooms 0 and 2; room 1 must be excluded even though deployable.
+        const preview = buildMultiRoomDeployPreview([roomIds[0], roomIds[2]], rooms, {}, {});
+
+        const nameCommands = preview.commands.filter(c => c.includes('/room name'));
+        expect(nameCommands).toHaveLength(2);
+        expect(preview.commands.some(c => c.includes('First room'))).toBe(true);
+        expect(preview.commands.some(c => c.includes('Third room'))).toBe(true);
+        expect(preview.commands.some(c => c.includes('Second room'))).toBe(false);
+        expect(preview.commands.filter(c => c.endsWith('/room save'))).toHaveLength(2);
+
+        const [lower, higher] = [rooms[roomIds[0]], rooms[roomIds[2]]]
+            .sort((a, b) => a.roomNumber.localeCompare(b.roomNumber, undefined, { numeric: true }));
+        const lowerIdx = preview.commands.findIndex(c => c.startsWith(`/at ${lower.roomNumber} /room name`));
+        const higherIdx = preview.commands.findIndex(c => c.startsWith(`/at ${higher.roomNumber} /room name`));
+        expect(higherIdx).toBeGreaterThan(lowerIdx);
+    });
+
+    it('ignores unknown ids and warns when no selected room is deployable', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 300 });
+        const roomId = Object.keys(doc.rooms)[0];
+        const preview = buildMultiRoomDeployPreview([roomId, 'does-not-exist'], doc.rooms, {}, {});
+        expect(preview.commands).toEqual([]);
+        expect(preview.warnings).toContain('No selected rooms have deployable fields yet.');
     });
 });

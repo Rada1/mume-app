@@ -45,8 +45,9 @@ const buildRoomCommands = (room: ShaperRoomDraft): string[] => {
         commands.push(wrapAt(room.roomNumber, `/room kadd ${keys.join(' ')}`));
         commands.push(...editorBlock(room.roomNumber, `/room kdescription ${keys[0]}`, keyword.description));
     });
-    if (room.owner.trim()) {
-        commands.push(wrapAt(room.roomNumber, `/room owner ${room.owner.trim()}`));
+    const owner = room.owner.trim();
+    if (owner && owner.toLowerCase() !== 'none') {
+        commands.push(wrapAt(room.roomNumber, `/room owner ${owner}`));
     }
     return commands;
 };
@@ -185,16 +186,19 @@ export const buildSelectedRoomDeployPreview = (
     return { commands, warnings };
 };
 
-// Whole-zone deploy: every room's command script, in room-number order, folded
-// into one paced run. Rooms with nothing deployable are skipped. Per-room
-// warnings are aggregated and de-duplicated.
-export const buildZoneDeployPreview = (
+// Shared multi-room folding: each room's command script, in room-number order,
+// folded into one paced run. Rooms with nothing deployable are skipped. Per-room
+// warnings are aggregated and de-duplicated. `emptyWarning` is surfaced when no
+// room in the set has deployable fields.
+const buildRoomSetDeployPreview = (
+    targetRooms: ShaperRoomDraft[],
     rooms: Record<ShaperRoomId, ShaperRoomDraft>,
     exits: Record<string, ShaperExitDraft>,
     commandNodes: Record<string, ShaperCommandNode>,
-    libraries: Record<string, ShaperLibraryInstall> = {}
+    libraries: Record<string, ShaperLibraryInstall>,
+    emptyWarning: string
 ): ShaperDeployPreview => {
-    const orderedRooms = Object.values(rooms)
+    const orderedRooms = [...targetRooms]
         .sort((a, b) => a.roomNumber.localeCompare(b.roomNumber, undefined, { numeric: true }));
     const commands: string[] = [];
     const warnings = new Set<string>();
@@ -211,8 +215,39 @@ export const buildZoneDeployPreview = (
     });
 
     if (deployableRooms === 0) {
-        warnings.add('No rooms have deployable fields yet.');
+        warnings.add(emptyWarning);
     }
 
     return { commands, warnings: [...warnings] };
 };
+
+// Multi-select deploy: the command scripts for an explicit set of rooms (e.g. a
+// canvas multi-selection), folded into one paced run.
+export const buildMultiRoomDeployPreview = (
+    roomIds: Iterable<ShaperRoomId>,
+    rooms: Record<ShaperRoomId, ShaperRoomDraft>,
+    exits: Record<string, ShaperExitDraft>,
+    commandNodes: Record<string, ShaperCommandNode>,
+    libraries: Record<string, ShaperLibraryInstall> = {}
+): ShaperDeployPreview => {
+    const targetRooms = [...roomIds]
+        .map(id => rooms[id])
+        .filter((room): room is ShaperRoomDraft => !!room);
+    return buildRoomSetDeployPreview(
+        targetRooms, rooms, exits, commandNodes, libraries,
+        'No selected rooms have deployable fields yet.'
+    );
+};
+
+// Whole-zone deploy: every room's command script, in room-number order, folded
+// into one paced run.
+export const buildZoneDeployPreview = (
+    rooms: Record<ShaperRoomId, ShaperRoomDraft>,
+    exits: Record<string, ShaperExitDraft>,
+    commandNodes: Record<string, ShaperCommandNode>,
+    libraries: Record<string, ShaperLibraryInstall> = {}
+): ShaperDeployPreview =>
+    buildRoomSetDeployPreview(
+        Object.values(rooms), rooms, exits, commandNodes, libraries,
+        'No rooms have deployable fields yet.'
+    );

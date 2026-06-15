@@ -20,6 +20,7 @@ interface ShaperBottomPanelProps {
     isConnected: boolean;
     blockingErrors: number;
     roomBlockingErrors: number;
+    deployRoomCount: number;
     selectedRoomId?: string;
     rooms: Record<ShaperRoomId, ShaperRoomDraft>;
     onSelectRoom: (roomId: string) => void;
@@ -43,6 +44,7 @@ export const ShaperBottomPanel: React.FC<ShaperBottomPanelProps> = ({
     isConnected,
     blockingErrors,
     roomBlockingErrors,
+    deployRoomCount,
     selectedRoomId,
     rooms,
     onSelectRoom,
@@ -83,7 +85,7 @@ export const ShaperBottomPanel: React.FC<ShaperBottomPanelProps> = ({
     const deployBlockedReason = !isConnected
         ? 'Connect to MUME to deploy.'
         : roomBlockingErrors > 0
-            ? `${roomBlockingErrors} error${roomBlockingErrors === 1 ? '' : 's'} in this room must be resolved first.`
+            ? `${roomBlockingErrors} error${roomBlockingErrors === 1 ? '' : 's'} in ${deployRoomCount > 1 ? 'the selected rooms' : 'this room'} must be resolved first.`
             : deployCommands.length === 0
                 ? 'No commands to deploy.'
                 : '';
@@ -206,7 +208,7 @@ export const ShaperBottomPanel: React.FC<ShaperBottomPanelProps> = ({
                                             disabled={!!deployBlockedReason}
                                             title={deployBlockedReason}
                                         >
-                                            Send Room to MUME
+                                            {deployRoomCount > 1 ? `Send ${deployRoomCount} Rooms to MUME` : 'Send Room to MUME'}
                                         </button>
                                         <button
                                             type="button"

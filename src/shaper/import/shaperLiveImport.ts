@@ -156,14 +156,29 @@ const parseFlags = (output: string): ShaperRoomFlag[] => {
         .filter((flag): flag is ShaperRoomFlag => flagValues.has(flag as ShaperRoomFlag));
 };
 
+// MUME `/stat room full` prints the description as a free-text block under a
+// `Description:` line (`Description: <none>` inline when empty). The body is NOT
+// reliably indented — it begins at column 0 — so it cannot be detected by
+// indentation. Instead it runs until the next structured line: the
+// `Extra description keywords:` field, a `------- ... -------` section separator,
+// or any other room-stat field label.
+const DESCRIPTION_TERMINATOR =
+    /^(Extra description keywords|Exits|Flags|Sector|Owner|Keywords|Room|Zone|Commands|Light sources|Entrances|Magic|Magical key):/i;
+
 const parseDescription = (output: string): string => {
     const lines = output.split('\n');
-    const start = lines.findIndex(line => /^Description:\s*$/i.test(line.trim()));
+    const start = lines.findIndex(line => /^Description:/i.test(line.trim()));
     if (start < 0) return '';
+
+    const inline = lines[start].replace(/^\s*Description:\s*/i, '').trim();
+    if (/^<none>$/i.test(inline)) return '';
+
     const body: string[] = [];
+    if (inline) body.push(inline);
     for (const line of lines.slice(start + 1)) {
-        if (/^(Exits|Flags|Sector|Owner|Keywords|Room|Zone|Commands):/i.test(line.trim())) break;
-        body.push(line.trimEnd());
+        const trimmed = line.trim();
+        if (DESCRIPTION_TERMINATOR.test(trimmed) || /^-{3,}/.test(trimmed)) break;
+        body.push(line.trim());
     }
     return body.join('\n').trim();
 };

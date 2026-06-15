@@ -242,7 +242,7 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
 
             <div
                 ref={view.viewportRef}
-                className={`shaper-canvas-viewport ${view.isPanning ? 'panning' : ''}`}
+                className={`shaper-canvas-viewport ${view.isPanning ? 'panning' : ''} ${showComOverlay ? 'show-com-overlay' : ''}`}
                 aria-label={`${formatLayer(viewZ)} concept zone grid`}
                 onWheel={view.handleWheel}
                 onPointerDown={event => { setRoomMenu(null); view.handlePanStart(event); }}
@@ -300,6 +300,8 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                                 onHover={handleHover}
                                 onHoverEnd={handleHoverEnd}
                                 onSelectEntity={onSelectEntity}
+                                selectedConnectionIds={selectedConnectionIds}
+                                onSelectConnection={onSelectConnection}
                                 showComOverlay={showComOverlay}
                                 playerRoomNum={playerRoomNum}
                                 playerMapId={playerMapId}

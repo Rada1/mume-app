@@ -53,16 +53,16 @@ export const ShaperCanvasToolbar: React.FC<ShaperCanvasToolbarProps> = ({
             type="button"
             onClick={onToggleComOverlay}
             className={`shaper-zoom-reset ${showComOverlay ? 'active' : ''}`}
-            title="Toggle resets and load chances overlay"
+            title="Toggle mob/item reset rules overlay on the map"
             style={{
                 borderColor: showComOverlay ? '#7c3aed' : undefined,
                 background: showComOverlay ? 'rgba(124,58,237,0.15)' : undefined
             }}
         >
-            {showComOverlay ? 'Hide Resets View' : 'Resets View'}
+            {showComOverlay ? 'Hide Resets Overlay' : 'Resets Overlay'}
         </button>
-        <button type="button" onClick={onResetCamera} className="shaper-zoom-reset" title="Reset view">
-            Reset view
+        <button type="button" onClick={onResetCamera} className="shaper-zoom-reset" title="Reset map camera zoom and pan">
+            Recenter Camera
         </button>
     </div>
 );

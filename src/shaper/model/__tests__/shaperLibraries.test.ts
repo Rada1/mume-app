@@ -52,4 +52,44 @@ describe('shaper libraries', () => {
         expect(commands).toContain('/lib room 300:00 set 2 level 3');
         expect(commands.filter(line => line.endsWith('load'))).toHaveLength(1);
     });
+
+    it('emits full-desc as an editor block, not an inline set value', () => {
+        let doc = createDefaultShaperDocument({ zoneNumber: 300 });
+        doc = addShaperLibrary(doc, 'object', '4500', 'redress-obj');
+        const redress = listShaperLibraries(doc, 'object', '4500')[0];
+        doc = setShaperLibraryParam(doc, redress.id, 'short-desc', 'a rusty key');
+        doc = setShaperLibraryParam(doc, redress.id, 'full-desc', 'A small rusty key.\nIt is covered in grime.');
+
+        const commands = buildShaperLibraryCommands(
+            listShaperLibraries(doc, 'object', '4500'),
+            'object',
+            '4500'
+        );
+
+        // Single-line fields stay inline.
+        expect(commands).toContain('/lib object 4500 set 1 short-desc a rusty key');
+        // full-desc opens the editor: opener line carries no value, body is indented,
+        // and a [save editor] marker closes the block.
+        expect(commands).toContain('/lib object 4500 set 1 full-desc');
+        expect(commands).not.toContain('/lib object 4500 set 1 full-desc A small rusty key.');
+        expect(commands).toContain('  A small rusty key.');
+        expect(commands).toContain('  It is covered in grime.');
+        expect(commands).toContain('  [save editor]');
+    });
+
+    it('skips a full-desc editor block when the value is empty', () => {
+        let doc = createDefaultShaperDocument({ zoneNumber: 300 });
+        doc = addShaperLibrary(doc, 'object', '4500', 'redress-obj');
+        const redress = listShaperLibraries(doc, 'object', '4500')[0];
+        doc = setShaperLibraryParam(doc, redress.id, 'full-desc', '   ');
+
+        const commands = buildShaperLibraryCommands(
+            listShaperLibraries(doc, 'object', '4500'),
+            'object',
+            '4500'
+        );
+
+        expect(commands.some(line => line.includes('full-desc'))).toBe(false);
+        expect(commands.some(line => line.includes('[save editor]'))).toBe(false);
+    });
 });

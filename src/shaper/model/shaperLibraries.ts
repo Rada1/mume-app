@@ -114,6 +114,25 @@ export const updateShaperLibraryNotes = (
 };
 
 // --- Serialization Section ---
+// Parameters whose value MUME edits in the in-game string editor rather than
+// reading off the `set` line. These must be emitted as an editor block (opener
+// followed by indented body lines) so the deploy planner folds them into a
+// single manual editor-save step instead of trying to send the text inline.
+const EDITOR_PARAM_KEYS = new Set(['full-desc']);
+
+// Mirrors the editorBlock helper in shaperDeployPreview.ts: opener line, then
+// the body indented two spaces, then the [save editor] marker. An empty body
+// is skipped so we never leave the editor hanging with nothing to save.
+const libraryEditorBlock = (opener: string, text: string): string[] => {
+    const body = (text ?? '').trim();
+    if (!body) return [];
+    return [
+        opener,
+        ...body.split(/\r?\n/).map(line => `  ${line}`),
+        '  [save editor]'
+    ];
+};
+
 // Builds the /lib commands for one target's installs. Positions mirror the
 // install order so `set` lines line up with what /lib ... list would report.
 export const buildShaperLibraryCommands = (
@@ -126,7 +145,12 @@ export const buildShaperLibraryCommands = (
         const position = index + 1;
         commands.push(`/lib ${targetType} ${targetNumber} add ${install.name}`);
         Object.entries(install.parameters).forEach(([key, value]) => {
-            commands.push(`/lib ${targetType} ${targetNumber} set ${position} ${key} ${value}`);
+            const opener = `/lib ${targetType} ${targetNumber} set ${position} ${key}`;
+            if (EDITOR_PARAM_KEYS.has(key)) {
+                commands.push(...libraryEditorBlock(opener, String(value)));
+            } else {
+                commands.push(`${opener} ${value}`);
+            }
         });
     });
     if (installs.some(install => install.requiresLoad)) {

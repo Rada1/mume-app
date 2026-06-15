@@ -5,7 +5,7 @@
 
 import type { CSSProperties, MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react';
 import { SHAPER_CELL, SHAPER_GUTTER, SHAPER_TILE } from '../hooks/useShaperCanvasView';
-import type { ShaperCommandNode, ShaperDirection, ShaperExitDraft, ShaperLibraryInstall, ShaperRoomDraft } from '../model/shaperTypes';
+import type { ShaperCommandNode, ShaperConnectionSelection, ShaperDirection, ShaperExitDraft, ShaperLibraryInstall, ShaperRoomDraft } from '../model/shaperTypes';
 import type { ShaperConnectionDragState } from './ShaperCanvasGeometry';
 import { ShaperRoomTileBadges } from './ShaperRoomTileBadges';
 import { getShaperDoorTile, getShaperTerrainTile } from './shaperTerrainTile';
@@ -83,12 +83,31 @@ interface ShaperRoomTileProps {
     onHover?: (content: ShaperHoverContent, event: ReactMouseEvent) => void;
     onHoverEnd?: () => void;
     onSelectEntity?: (roomId: string, entityId: string) => void;
+    selectedConnectionIds?: Set<string>;
+    onSelectConnection?: (conn: ShaperConnectionSelection | null) => void;
     showComOverlay?: boolean;
     playerRoomNum?: number | string | null;
     playerMapId?: number | string | null;
 }
 
 const directions: ShaperDirection[] = ['n', 'e', 's', 'w', 'u', 'd'];
+
+// Selecting a door selects its underlying connection (same as clicking the
+// connection line), preferring an actual reverse exit for the B->A direction.
+const buildDoorConnectionSelection = (
+    exit: ShaperExitDraft,
+    exits: Record<string, ShaperExitDraft>
+): ShaperConnectionSelection | null => {
+    if (!exit.toRoomId) return null;
+    let dirBA = DIR_OPPOSITE[exit.direction];
+    for (const dir of directions) {
+        if (exits[`${exit.toRoomId}:${dir}`]?.toRoomId === exit.fromRoomId) {
+            dirBA = dir;
+            break;
+        }
+    }
+    return { aId: exit.fromRoomId, bId: exit.toRoomId, dirAB: exit.direction, dirBA };
+};
 
 // --- Component Section ---
 export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
@@ -112,6 +131,8 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
     onHover,
     onHoverEnd,
     onSelectEntity,
+    selectedConnectionIds,
+    onSelectConnection,
     showComOverlay = false,
     playerRoomNum,
     playerMapId
@@ -198,12 +219,19 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
                         />
                     );
                 }
+                const isDoorSelected = !!selectedConnectionIds?.has(exit.id);
                 return (
                     <span
                         key={`${exit.id}:door`}
-                        className={`shaper-door-frame door-${exit.direction}`}
+                        className={`shaper-door-frame door-${exit.direction}${isDoorSelected ? ' selected' : ''}`}
                         title={`Door ${exit.direction.toUpperCase()}`}
                         onMouseMove={event => { event.stopPropagation(); onHover?.({ kind: 'door', exit }, event); }}
+                        onPointerDown={onSelectConnection ? (event => {
+                            const selection = buildDoorConnectionSelection(exit, exits);
+                            if (!selection) return;
+                            event.stopPropagation();
+                            onSelectConnection(selection);
+                        }) : undefined}
                     >
                         <span className="shaper-door-post post-a" />
                         <span className="shaper-door-bar" />

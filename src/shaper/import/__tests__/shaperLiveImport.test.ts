@@ -57,6 +57,62 @@ Exits: east west
         expect(result.summary.roomsTouched).toBe(1);
     });
 
+    it('imports a real /stat room full description (unindented body, Extra-keywords terminator)', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const result = applyShaperLiveTranscript(doc, `
+/at 31:20 /stat room full
+Room 31:20 (3120) - in@a Shadowy Forest by the River
+Magical key: seamnebobvi, Owner: none, Sector: forest, MapId: 15019284
+Entrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]
+Room permanent flags: BUILD
+Room temporary flags: none
+Light sources: 0
+Description:
+The trees press close here, their tangled boughs shutting out nearly all light.
+Rope-thick webs sag between the trunks and roots, beaded with cold moisture
+from the nearby river. To the east, the faint rush of water stirs the stale
+air, carrying the scent of mud, rot, and old silk.
+Extra description keywords: none
+------- Chars present -------
+  a huge, venomous spider (6113)
+  Ellessar (player 695470)
+------- Exits -------
+West   31: 10, flags: none
+`, 1234);
+
+        const room = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:20');
+        expect(room?.name).toBe('a Shadowy Forest by the River');
+        expect(room?.preposition).toBe('in');
+        expect(room?.sector).toBe('forest');
+        expect(room?.description).toBe(
+            'The trees press close here, their tangled boughs shutting out nearly all light.\n' +
+            'Rope-thick webs sag between the trunks and roots, beaded with cold moisture\n' +
+            'from the nearby river. To the east, the faint rush of water stirs the stale\n' +
+            'air, carrying the scent of mud, rot, and old silk.'
+        );
+        // The char list, separators, and exits must NOT leak into the description.
+        expect(room?.description).not.toContain('spider');
+        expect(room?.description).not.toContain('Extra description');
+        expect(room?.description).not.toContain('Exits');
+    });
+
+    it('treats Description: <none> as an empty import (keeps existing desc)', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const result = applyShaperLiveTranscript(doc, `
+/at 31:15 /stat room full
+Room 31:15 (3115) - on a@Brambly Slope
+Magical key: oilxygraac, Owner: none, Sector: mountains, MapId: 15413516
+Room permanent flags: BUILD
+Description: <none>
+Extra description keywords: none
+------- Exits -------
+North 31: 14, flags: none
+`, 1234);
+
+        const room = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:15');
+        expect(room?.description).toBe('');
+    });
+
     it('parses /com via the room-scoped command form', () => {
         const doc = createDefaultShaperDocument({ zoneNumber: 31 });
         const result = applyShaperLiveTranscript(doc, `

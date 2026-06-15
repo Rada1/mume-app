@@ -103,31 +103,52 @@
     /* Posts mirror the void-barrier walls (.shaper-void-barrier): same color + thickness. */
     --shaper-door-post-color: #09090b;
     --shaper-wall-thickness: 14px;
+    /* Doors are half as thick as a normal wall and hug their own tile's side of
+       the boundary (rather than straddling it), so it's clear which tile a door
+       belongs to. Two rooms sharing a wall each show their own half-thick door
+       butted against opposite sides of the grid line. */
+    --shaper-door-thickness: calc(var(--shaper-wall-thickness) / 2);
     position: absolute;
     z-index: 4;
     /* Hoverable for the door card; pointerdown still bubbles to the tile for dragging. */
     pointer-events: auto;
 }
 
+/* Doors run the full length of the tile side, at half wall thickness, flush to
+   the tile's own (inner) edge. */
 .shaper-door-frame.door-n,
 .shaper-door-frame.door-s {
     left: 0;
     width: 100%;
-    height: var(--shaper-wall-thickness);
+    height: var(--shaper-door-thickness);
 }
 
-.shaper-door-frame.door-n { top: calc(var(--shaper-wall-thickness) / -2); }
-.shaper-door-frame.door-s { bottom: calc(var(--shaper-wall-thickness) / -2); }
+.shaper-door-frame.door-n { top: 0; }
+.shaper-door-frame.door-s { bottom: 0; }
 
 .shaper-door-frame.door-e,
 .shaper-door-frame.door-w {
     top: 0;
-    width: var(--shaper-wall-thickness);
+    width: var(--shaper-door-thickness);
     height: 100%;
 }
 
-.shaper-door-frame.door-e { right: calc(var(--shaper-wall-thickness) / -2); }
-.shaper-door-frame.door-w { left: calc(var(--shaper-wall-thickness) / -2); }
+.shaper-door-frame.door-e { right: 0; }
+.shaper-door-frame.door-w { left: 0; }
+
+/* Hover / selected highlight, mirroring the mob & object chips. The raised
+   z-index keeps the ring above the neighbouring tile's door on a shared wall. */
+.shaper-door-frame {
+    cursor: pointer;
+}
+.shaper-door-frame:hover {
+    outline: 1px solid rgba(255, 255, 255, 0.7);
+    z-index: 6;
+}
+.shaper-door-frame.selected {
+    outline: 2px solid #38bdf8;
+    z-index: 6;
+}
 
 /* Up/down exits & doors: ▲ top-left, ▼ bottom-right, mirroring the live map. */
 .shaper-vert-exit {

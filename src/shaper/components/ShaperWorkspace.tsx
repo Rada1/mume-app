@@ -8,7 +8,7 @@ import { readShareCodeFromHash, useShaperSharedProjects } from '../collaboration
 import { useShaperWorkspace } from '../hooks/useShaperWorkspace';
 import { useShaperDeployQueue } from '../hooks/useShaperDeployQueue';
 import { useShaperKeyboardUndo } from '../hooks/useShaperKeyboardUndo';
-import { buildSelectedRoomDeployPreview, buildZoneDeployPreview } from '../model/shaperDeployPreview';
+import { buildMultiRoomDeployPreview, buildSelectedRoomDeployPreview, buildZoneDeployPreview } from '../model/shaperDeployPreview';
 import { ShaperBottomPanel } from './ShaperBottomPanel';
 import { ShaperCanvas } from './ShaperCanvas';
 import { ShaperInspector } from './ShaperInspector';
@@ -151,8 +151,14 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
         pullProject(code, () =>
             window.alert('Could not load the shared project from the link. The relay may be offline or the project was unshared.'));
     }, [pullProject]);
-    const deployPreview = activeDoc && workspace.selectedRoom
-        ? buildSelectedRoomDeployPreview(workspace.selectedRoom, activeDoc.rooms, activeDoc.exits, activeDoc.commandNodes, activeDoc.libraries)
+    // 2+ rooms selected → "Send Room to MUME" pushes every selected room.
+    const isMultiRoomDeploy = workspace.selectedRoomIds.size > 1;
+    const deployPreview = activeDoc
+        ? (isMultiRoomDeploy
+            ? buildMultiRoomDeployPreview(workspace.selectedRoomIds, activeDoc.rooms, activeDoc.exits, activeDoc.commandNodes, activeDoc.libraries)
+            : workspace.selectedRoom
+                ? buildSelectedRoomDeployPreview(workspace.selectedRoom, activeDoc.rooms, activeDoc.exits, activeDoc.commandNodes, activeDoc.libraries)
+                : { commands: [], warnings: [] })
         : { commands: [], warnings: [] };
     const zoneDeployPreview = activeDoc
         ? buildZoneDeployPreview(activeDoc.rooms, activeDoc.exits, activeDoc.commandNodes, activeDoc.libraries)
@@ -163,13 +169,18 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
         () => workspace.issues.filter(issue => issue.severity === 'error').length,
         [workspace.issues]
     );
-    // A single-room push should only require that room to be error-free, not the
-    // whole zone. The zone push still requires every room clean (blockingErrors).
+    // A room push should only require the pushed room(s) to be error-free, not
+    // the whole zone. The zone push still requires every room clean
+    // (blockingErrors). For a multi-select push, count errors across all
+    // selected rooms.
     const selectedRoomId = workspace.selectedRoom?.id;
-    const roomBlockingErrors = useMemo(
-        () => workspace.issues.filter(issue => issue.severity === 'error' && issue.roomId === selectedRoomId).length,
-        [workspace.issues, selectedRoomId]
-    );
+    const roomBlockingErrors = useMemo(() => {
+        const deployRoomIds = isMultiRoomDeploy
+            ? workspace.selectedRoomIds
+            : new Set(selectedRoomId ? [selectedRoomId] : []);
+        return workspace.issues.filter(issue =>
+            issue.severity === 'error' && !!issue.roomId && deployRoomIds.has(issue.roomId)).length;
+    }, [workspace.issues, workspace.selectedRoomIds, selectedRoomId, isMultiRoomDeploy]);
     const changeActiveZone = () => {
         if (!activeDoc) return;
         const value = window.prompt(`Change zone number for "${activeDoc.name}" to:`, String(activeDoc.zoneNumber));
@@ -379,6 +390,7 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                         isConnected={isConnected}
                         blockingErrors={blockingErrors}
                         roomBlockingErrors={roomBlockingErrors}
+                        deployRoomCount={isMultiRoomDeploy ? workspace.selectedRoomIds.size : 1}
                         selectedRoomId={selectedRoomId}
                         rooms={activeDoc.rooms}
                         onSelectRoom={workspace.selectRoom}
