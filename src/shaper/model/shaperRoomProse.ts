@@ -86,6 +86,13 @@ const entityContext = (entity: { vnum: string; name: string; resetType?: string;
     resetDetail: entity.resetDetail ?? ''
 });
 
+const zoneLore = (doc: ShaperWorkspaceDoc): string | undefined => {
+    const parts = ['lore', 'story', 'history', 'map']
+        .map(key => doc.zoneInfoKeywords?.[key]?.body?.trim())
+        .filter((body): body is string => Boolean(body));
+    return parts.length ? parts.join('\n\n') : undefined;
+};
+
 export const applyShaperRoomProse = (
     doc: ShaperWorkspaceDoc,
     roomId: ShaperRoomId,
@@ -116,7 +123,7 @@ export const buildShaperRoomProseContext = (
         return [{ direction: exit.direction, roomNumber: target.roomNumber, name: target.name, sector: target.sector }];
     });
     const entities = listShaperComRoomEntities(doc.commandNodes, roomId);
-    const lore = doc.zoneInfoKeywords?.lore?.body ?? undefined;
+    const lore = zoneLore(doc);
     return {
         roomId,
         roomNumber: room.roomNumber,
@@ -156,7 +163,7 @@ export const buildShaperProjectProseContext = (doc: ShaperWorkspaceDoc): ShaperP
     projectId: doc.id,
     projectName: doc.name,
     zoneNumber: doc.zoneNumber,
-    lore: doc.zoneInfoKeywords?.lore?.body ?? undefined,
+    lore: zoneLore(doc),
     rooms: Object.values(doc.rooms)
         .filter(room => !room.inactive)
         .sort((a, b) => a.roomNumber.localeCompare(b.roomNumber, undefined, { numeric: true }))

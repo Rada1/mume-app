@@ -11,6 +11,7 @@ import type { ShaperAnnotation, ShaperCommandNode, ShaperItemRef, ShaperMobPlace
 
 const PROJECTS_KEY = 'mume.shaper.projects';
 const DOC_PREFIX = 'mume.shaper.project.';
+const AGENT_SYNC_URL = '/api/shaper-sync';
 
 export type ShaperEntityProjectEvent =
     | { type: 'mob-added'; projectId: string; roomId: string; mob: ShaperMobPlacement; updatedAt: number }
@@ -47,6 +48,15 @@ const readJson = <T,>(key: string, fallback: T): T => {
 const writeJson = (key: string, value: unknown): void => {
     if (typeof window === 'undefined') return;
     window.localStorage.setItem(key, JSON.stringify(value));
+};
+
+const syncAgentProjectSnapshot = (doc: ShaperWorkspaceDoc): void => {
+    if (typeof fetch === 'undefined') return;
+    void fetch(AGENT_SYNC_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(doc)
+    }).catch(() => undefined);
 };
 
 const removeStorageItem = (key: string): void => {
@@ -157,6 +167,7 @@ const writeShaperProject = (doc: ShaperWorkspaceDoc, touchUpdatedAt: boolean): S
     });
     writeJson(`${DOC_PREFIX}${doc.id}`, nextDoc);
     writeJson(PROJECTS_KEY, summaries);
+    syncAgentProjectSnapshot(nextDoc);
     return nextDoc;
 };
 

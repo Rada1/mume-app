@@ -14,14 +14,35 @@ interface UseAIGeneratorOptions<T> {
     onSuccess: (result: T) => void;
 }
 
+// --- Validation Section ---
+const hasTextField = (data: unknown, field: string): boolean =>
+    Boolean(data && typeof data === 'object' && typeof (data as Record<string, unknown>)[field] === 'string' && ((data as Record<string, unknown>)[field] as string).trim());
+
+const assertGeneratedPayload = (
+    target: UseAIGeneratorOptions<unknown>['target'],
+    data: unknown
+): void => {
+    if (target === 'room-name') {
+        if (hasTextField(data, 'name') && hasTextField(data, 'preposition')) return;
+        throw new Error('AI returned no usable room name.');
+    }
+    if (target === 'door-description') {
+        if (hasTextField(data, 'exitDescription')) return;
+        throw new Error('AI returned no usable exit description.');
+    }
+    if (hasTextField(data, 'description')) return;
+    throw new Error('AI returned no usable room description.');
+};
+
+// --- Hook Section ---
 export const useAIGenerator = <T>({ target, doc, roomId, onSuccess }: UseAIGeneratorOptions<T>) => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [status, setStatus] = useState('');
 
-    const generate = useCallback(async (customContext?: any) => {
+    const generate = useCallback(async (customContext?: Record<string, unknown>) => {
         if (isGenerating) return;
         setIsGenerating(true);
-        setStatus('Requesting Agent...');
+        setStatus('Queueing AI request...');
 
         try {
             const baseContext = buildShaperRoomProseContext(doc, roomId);
@@ -44,7 +65,11 @@ export const useAIGenerator = <T>({ target, doc, roomId, onSuccess }: UseAIGener
             });
 
             if (!response.ok) {
-                throw new Error('Failed to send AI request to local server.');
+                const errorData = await response.json().catch(() => null);
+                const message = errorData && typeof errorData.error === 'string'
+                    ? errorData.error
+                    : 'Failed to send AI request to local server.';
+                throw new Error(message);
             }
 
             const initData = await response.json();
@@ -54,6 +79,7 @@ export const useAIGenerator = <T>({ target, doc, roomId, onSuccess }: UseAIGener
                 if (pollRes.ok) {
                     const pollData = await pollRes.json();
                     if (pollData && pollData.success && pollData.data) {
+                        assertGeneratedPayload(target, pollData.data);
                         onSuccess(pollData.data as T);
                         setIsGenerating(false);
                         setStatus('');
@@ -62,14 +88,14 @@ export const useAIGenerator = <T>({ target, doc, roomId, onSuccess }: UseAIGener
                 }
             }
 
-            setStatus('Waiting for Agent...');
+            setStatus('Queued for Agent');
             let attempts = 0;
             const pollInterval = setInterval(async () => {
                 attempts++;
                 if (attempts > 120) {
                     clearInterval(pollInterval);
                     setIsGenerating(false);
-                    setStatus('Timeout waiting for agent.');
+                    setStatus('Agent request still pending');
                     return;
                 }
 
@@ -79,6 +105,7 @@ export const useAIGenerator = <T>({ target, doc, roomId, onSuccess }: UseAIGener
                         const pollData = await pollResponse.json();
                         if (pollData.success && pollData.data) {
                             clearInterval(pollInterval);
+                            assertGeneratedPayload(target, pollData.data);
                             onSuccess(pollData.data as T);
                             setIsGenerating(false);
                             setStatus('');
@@ -86,12 +113,16 @@ export const useAIGenerator = <T>({ target, doc, roomId, onSuccess }: UseAIGener
                     }
                 } catch (e) {
                     console.error('Error polling AI status:', e);
+                    clearInterval(pollInterval);
+                    setIsGenerating(false);
+                    setStatus(e instanceof Error ? `Error: ${e.message}` : 'Error polling AI status.');
                 }
             }, 1500);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('AI generation error:', err);
             setIsGenerating(false);
-            setStatus(`Error: ${err.message}`);
+            const message = err instanceof Error ? err.message : 'AI request failed.';
+            setStatus(`Error: ${message}`);
         }
     }, [target, doc, roomId, isGenerating, onSuccess]);
 

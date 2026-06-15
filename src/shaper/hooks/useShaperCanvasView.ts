@@ -5,7 +5,7 @@
  *              screen coordinates back to grid cells for placement.
  */
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from 'react';
 
 // --- Constants Section ---
@@ -46,21 +46,29 @@ export const useShaperCanvasView = () => {
         return { x: Math.floor(worldX / SHAPER_CELL), y: Math.floor(worldY / SHAPER_CELL) };
     }, [camera]);
 
-    const handleWheel = useCallback((e: ReactWheelEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const rect = viewportRef.current?.getBoundingClientRect();
-        const sx = e.clientX - (rect?.left ?? 0);
-        const sy = e.clientY - (rect?.top ?? 0);
-        setCamera(prev => {
-            const nextZoom = clampZoom(prev.zoom * (1 - e.deltaY * ZOOM_SENSITIVITY));
-            const scale = nextZoom / prev.zoom;
-            return {
-                zoom: nextZoom,
-                x: sx - (sx - prev.x) * scale,
-                y: sy - (sy - prev.y) * scale
-            };
-        });
+    useEffect(() => {
+        const el = viewportRef.current;
+        if (!el) return;
+
+        const onWheel = (e: WheelEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const rect = el.getBoundingClientRect();
+            const sx = e.clientX - rect.left;
+            const sy = e.clientY - rect.top;
+            setCamera(prev => {
+                const nextZoom = clampZoom(prev.zoom * (1 - e.deltaY * ZOOM_SENSITIVITY));
+                const scale = nextZoom / prev.zoom;
+                return {
+                    zoom: nextZoom,
+                    x: sx - (sx - prev.x) * scale,
+                    y: sy - (sy - prev.y) * scale
+                };
+            });
+        };
+
+        el.addEventListener('wheel', onWheel, { passive: false });
+        return () => el.removeEventListener('wheel', onWheel);
     }, []);
 
     const handlePanStart = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
@@ -92,7 +100,6 @@ export const useShaperCanvasView = () => {
         camera,
         isPanning,
         screenToCell,
-        handleWheel,
         handlePanStart,
         handlePanMove,
         handlePanEnd,

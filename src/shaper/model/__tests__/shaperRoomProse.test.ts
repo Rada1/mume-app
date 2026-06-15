@@ -87,4 +87,23 @@ describe('shaper room prose helpers', () => {
         }));
         expect(projectContext.rooms.some(room => room.roomNumber === '31:00')).toBe(true);
     });
+
+    it('merges zone lore keywords into prose context', () => {
+        const doc = {
+            ...createDefaultShaperDocument({ zoneNumber: 31 }),
+            zoneInfoKeywords: {
+                story: { id: 'story', keyword: 'story', body: 'The valley remembers old wars.' },
+                history: { id: 'history', keyword: 'history', body: 'A ruined watch line crossed this field.' },
+                map: { id: 'map', keyword: 'map', body: 'Northern rooms climb into wooded hills.' }
+            }
+        };
+
+        const roomContext = buildShaperRoomProseContext(doc, doc.selectedRoomId);
+        const projectContext = buildShaperProjectProseContext(doc);
+
+        expect(roomContext?.lore).toContain('old wars');
+        expect(roomContext?.lore).toContain('ruined watch line');
+        expect(roomContext?.lore).toContain('wooded hills');
+        expect(projectContext.lore).toBe(roomContext?.lore);
+    });
 });

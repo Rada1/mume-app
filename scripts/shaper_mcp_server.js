@@ -7,12 +7,13 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validateShaperDocument } from '../src/shaper/model/shaperValidation.ts';
 
 // --- Configuration Section ---
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = join(__dirname, '..');
 const defaultProjectPath = join(workspaceRoot, 'projects', 'active.shaper.json');
+const aiRequestPath = join(workspaceRoot, 'src', 'shaper', 'ai_request.json');
+const aiResponsePath = join(workspaceRoot, 'src', 'shaper', 'ai_response.json');
 
 // --- Helper Constants & Utils ---
 const directions = ['n', 'e', 's', 'w', 'u', 'd'];
@@ -28,6 +29,77 @@ const nowId = prefix => `${prefix}-${Date.now().toString(36)}-${Math.random().to
 const clean = value => String(value ?? '').trim();
 const normalizeText = value => String(value ?? '').replace(/\r\n/g, '\n').trim();
 const zoneFromRoomNumber = roomNumber => Number(String(roomNumber).split(':')[0]);
+
+const validateProjectForMcp = doc => Object.values(doc.rooms ?? {}).flatMap(room => {
+  const issues = [];
+  if (!clean(room.roomNumber)) issues.push({ severity: 'error', roomId: room.id, message: 'Room number is required.' });
+  if (!clean(room.name)) issues.push({ severity: 'error', roomId: room.id, message: 'Room name is required.' });
+  if (!clean(room.description)) issues.push({ severity: 'warning', roomId: room.id, message: 'Room description is empty.' });
+  return issues;
+});
+
+const roomMatchesZone = (room, zoneNumber) =>
+  !zoneNumber || String(room.roomNumber ?? '').startsWith(`${zoneNumber}:`);
+
+const roomSummary = room => ({
+  id: room.id,
+  roomNumber: room.roomNumber,
+  name: room.name,
+  preposition: room.preposition,
+  kind: room.kind,
+  x: room.x,
+  y: room.y,
+  z: room.z,
+  sector: room.sector,
+  flags: room.flags ?? [],
+  status: room.status,
+  hasDescription: Boolean(clean(room.description)),
+  inactive: !!room.inactive
+});
+
+const zoneLoreEntries = doc => Object.values(doc.zoneInfoKeywords ?? {})
+  .filter(item => ['lore', 'story', 'history', 'map', 'asciimap'].includes(clean(item.keyword || item.id).toLowerCase()))
+  .map(item => ({ keyword: item.keyword, body: item.body }));
+
+const zoneCoverage = (doc, zoneNumber) => {
+  const rooms = Object.values(doc.rooms ?? {}).filter(room => roomMatchesZone(room, zoneNumber));
+  const baseRoomNumbers = new Set(rooms
+    .map(room => String(room.roomNumber ?? '').match(/^\d+:(\d{1,2})$/)?.[1])
+    .filter(Boolean)
+    .map(offset => Number(offset)));
+  const missingBaseOffsets = [];
+  for (let offset = 0; offset < 100; offset += 1) {
+    if (!baseRoomNumbers.has(offset)) missingBaseOffsets.push(`${zoneNumber}:${String(offset).padStart(2, '0')}`);
+  }
+  return {
+    zoneNumber,
+    roomsCount: rooms.length,
+    baseRoomsCount: baseRoomNumbers.size,
+    expectedBaseRooms: 100,
+    likelyIncomplete: baseRoomNumbers.size < 100,
+    missingBaseOffsets,
+    note: baseRoomNumbers.size < 100
+      ? 'Snapshot is incomplete for a normal 100-room zone; refresh from live /misc build before treating missing-field results as authoritative.'
+      : 'Snapshot has all normal base room offsets for this zone.'
+  };
+};
+
+const missingFieldRooms = (doc, fields, zoneNumber) => {
+  const wanted = asArray(fields).length ? asArray(fields).map(clean) : ['name', 'description', 'sector'];
+  return Object.values(doc.rooms ?? {})
+    .filter(room => roomMatchesZone(room, zoneNumber))
+    .map(room => ({
+      ...roomSummary(room),
+      missing: wanted.filter(field => {
+        if (field === 'description') return !clean(room.description);
+        if (field === 'name') return !clean(room.name);
+        if (field === 'sector') return !clean(room.sector);
+        if (field === 'preposition') return !clean(room.preposition);
+        return false;
+      })
+    }))
+    .filter(room => room.missing.length > 0);
+};
 
 const findRoomEntry = (doc, ref) => Object.entries(doc.rooms ?? {}).find(([id, room]) =>
   id === ref || room?.roomNumber === ref
@@ -302,10 +374,75 @@ function saveProject(doc) {
   writeFileSync(defaultProjectPath, JSON.stringify(doc, null, 2) + '\n');
 }
 
+const readAiRequest = () => {
+  if (!existsSync(aiRequestPath)) return null;
+  return JSON.parse(readFileSync(aiRequestPath, 'utf8'));
+};
+
+const writeAiResponse = response => {
+  writeFileSync(aiResponsePath, JSON.stringify(response, null, 2) + '\n');
+};
+
 // --- Tool Execution Section ---
 function executeTool(name, args) {
   try {
     const doc = loadProject();
+    if (name === 'shaper_get_ai_request') {
+      const request = readAiRequest();
+      return { data: { pending: Boolean(request), request } };
+    }
+
+    if (name === 'shaper_submit_ai_response') {
+      const response = args.response;
+      if (!response || typeof response !== 'object') fail('response object is required.');
+      writeAiResponse(response);
+      return { data: { success: true } };
+    }
+
+    if (name === 'shaper_get_workspace_snapshot') {
+      const zoneNumber = Number(args.zoneNumber ?? doc.zoneNumber ?? 0);
+      const rooms = Object.values(doc.rooms ?? {}).filter(room => roomMatchesZone(room, zoneNumber));
+      return {
+        data: {
+          id: doc.id,
+          name: doc.name,
+          zoneNumber: doc.zoneNumber,
+          updatedAt: doc.updatedAt,
+          selectedRoomId: doc.selectedRoomId,
+          coverage: zoneCoverage(doc, zoneNumber),
+          rooms: rooms.map(roomSummary),
+          exits: Object.values(doc.exits ?? {}),
+          commandNodes: Object.values(doc.commandNodes ?? {}),
+          libraries: Object.values(doc.libraries ?? {}),
+          zoneInfoKeywords: doc.zoneInfoKeywords ?? {},
+          validation: validateProjectForMcp(doc)
+        }
+      };
+    }
+
+    if (name === 'shaper_find_rooms') {
+      const zoneNumber = Number(args.zoneNumber ?? doc.zoneNumber ?? 0);
+      const query = clean(args.query).toLowerCase();
+      const rooms = Object.values(doc.rooms ?? {})
+        .filter(room => roomMatchesZone(room, zoneNumber))
+        .filter(room => !query || [room.roomNumber, room.name, room.sector, ...(room.flags ?? [])]
+          .some(value => clean(value).toLowerCase().includes(query)));
+      return { data: { rooms: rooms.map(roomSummary) } };
+    }
+
+    if (name === 'shaper_get_missing_fields') {
+      const zoneNumber = Number(args.zoneNumber ?? doc.zoneNumber ?? 0);
+      return { data: { coverage: zoneCoverage(doc, zoneNumber), rooms: missingFieldRooms(doc, args.fields, zoneNumber) } };
+    }
+
+    if (name === 'shaper_get_zone_lore') {
+      return { data: { zoneNumber: doc.zoneNumber, entries: zoneLoreEntries(doc) } };
+    }
+
+    if (name === 'shaper_get_validation_issues') {
+      return { data: { issues: validateProjectForMcp(doc) } };
+    }
+
     if (name === 'shaper_get_context') {
       const roomList = Object.values(doc.rooms ?? {}).map(room => ({
         id: room.id,
@@ -410,7 +547,7 @@ function executeTool(name, args) {
         commands: roomPreview(doc, roomId)
       }));
 
-      const allIssues = validateShaperDocument(doc);
+      const allIssues = validateProjectForMcp(doc);
       const validationIssues = allIssues.map(issue => ({
         severity: issue.severity,
         roomId: issue.roomId,
@@ -469,6 +606,76 @@ function handleMessage(line) {
     } else if (message.method === 'tools/list') {
       sendResponse(message.id, {
         tools: [
+          {
+            name: 'shaper_get_ai_request',
+            description: 'Read the pending Shaper AI generation request from the client, including target, prompt, schema, and room context.',
+            inputSchema: {
+              type: 'object',
+              properties: {}
+            }
+          },
+          {
+            name: 'shaper_submit_ai_response',
+            description: 'Submit a generated Shaper AI response for the client to poll and apply.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                response: {
+                  type: 'object',
+                  description: 'For room-description use { "description": "..." }; for room-name use { "name": "...", "preposition": "..." }; for door-description use { "exitDescription": "..." }.'
+                }
+              },
+              required: ['response']
+            }
+          },
+          {
+            name: 'shaper_get_workspace_snapshot',
+            description: 'Get the current synced Shaper workspace snapshot for a zone, including rooms, exits, resets, libraries, zone info, and validation.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                zoneNumber: { type: 'number', description: 'Optional zone number to filter room summaries.' }
+              }
+            }
+          },
+          {
+            name: 'shaper_find_rooms',
+            description: 'Search synced Shaper rooms by room number, name, sector, or flag.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                zoneNumber: { type: 'number' },
+                query: { type: 'string' }
+              }
+            }
+          },
+          {
+            name: 'shaper_get_missing_fields',
+            description: 'List rooms missing builder-critical fields such as name, description, sector, or preposition.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                zoneNumber: { type: 'number' },
+                fields: { type: 'array', items: { type: 'string' } }
+              }
+            }
+          },
+          {
+            name: 'shaper_get_zone_lore',
+            description: 'Get lore/story/history/map/asciimap zone info entries from the synced Shaper project.',
+            inputSchema: {
+              type: 'object',
+              properties: {}
+            }
+          },
+          {
+            name: 'shaper_get_validation_issues',
+            description: 'Get validation issues from the synced Shaper project.',
+            inputSchema: {
+              type: 'object',
+              properties: {}
+            }
+          },
           {
             name: 'shaper_get_context',
             description: 'Get an overview of the active Shaper project, including zone number, project name, and list of rooms.',

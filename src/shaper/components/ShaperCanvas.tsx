@@ -244,7 +244,6 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                 ref={view.viewportRef}
                 className={`shaper-canvas-viewport ${view.isPanning ? 'panning' : ''} ${showComOverlay ? 'show-com-overlay' : ''}`}
                 aria-label={`${formatLayer(viewZ)} concept zone grid`}
-                onWheel={view.handleWheel}
                 onPointerDown={event => { setRoomMenu(null); view.handlePanStart(event); }}
                 onPointerMove={view.handlePanMove}
                 onPointerUp={view.handlePanEnd}

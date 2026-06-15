@@ -1,46 +1,1247 @@
 {
-  "id": "active-project",
-  "name": "Active Project",
+  "id": "project-1781226562977",
+  "name": "Corner Zone",
   "zoneNumber": 31,
-  "updatedAt": 1781486814068,
-  "selectedRoomId": "room-31-01-agent-mqehpft6-5c2up9",
+  "updatedAt": 1781566282029,
+  "selectedRoomId": "room-5-2-0",
   "rooms": {
-    "room-31-01-agent-mqehpft6-5c2up9": {
-      "id": "room-31-01-agent-mqehpft6-5c2up9",
-      "x": 1,
-      "y": 2,
+    "room-0-0-0": {
+      "id": "room-0-0-0",
+      "x": 0,
+      "y": 0,
       "z": 0,
-      "kind": "extra",
+      "kind": "grid",
       "anchorRoomId": null,
-      "roomNumber": "31:01",
+      "roomNumber": "31:00",
       "status": "verified",
-      "name": "A dusty path",
-      "preposition": "on",
-      "description": "",
-      "sector": "road",
+      "name": "A Vine Choked Forest Thicket",
+      "preposition": "in",
+      "description": "The forest grows deeper and tighter here, with thick vines coiling around\ntrunks and hanging low from the branches. Little light reaches the ground,\nleaving the air heavy with damp shadow. A few pale strands cling high among the\nleaves, easy to miss in the gloom.",
+      "sector": "forest",
       "flags": [
-        "trail"
+        "build",
+        "dark"
       ],
-      "owner": "",
+      "owner": "none",
       "keywords": [],
       "notes": "",
       "annotations": [],
       "mobs": [],
-      "objects": []
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781497752549,
+        "statRoomFull": "Room 31:0 (3100) - in@A Vine Choked Forest Thicket\nMagical key: izyahnoohm, Owner: none, Sector: forest, MapId: 3868361\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe forest grows deeper and tighter here, with thick vines coiling around\ntrunks and hanging low from the branches. Little light reaches the ground,\nleaving the air heavy with damp shadow. A few pale strands cling high among the\nleaves, easy to miss in the gloom.\nExtra description keywords: none\n------- Chars present -------\n  a coil of oozing vines (2663)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 10, flags: none\nSouth  31:  1, flags: none",
+        "comListCommands": "1   Mobile  2663 (a coil of oozing vines) (--/--/1/100%)",
+        "libRoomCommands": "Commands on room 31:0 (A Vine Choked Forest Thicket):"
+      },
+      "mapId": "3868361"
     },
-    "room-31-15-agent-mqeibdmn-ga3nh7": {
-      "id": "room-31-15-agent-mqeibdmn-ga3nh7",
+    "room-1-0-0": {
+      "id": "room-1-0-0",
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:10",
+      "status": "verified",
+      "name": "Muddy Pit Surrounded by Trees",
+      "preposition": "in a",
+      "description": "The forest floor sinks into black, sucking mud, broken by twisted roots and\nmats of rotting leaves. Tiny tracks and strange marks freckle the wet earth,\nvanishing beneath low branches. Here and there, old strands of webbing cling to\nbark and thorn.",
+      "sector": "forest",
+      "flags": [
+        "build",
+        "dark"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781497729299,
+        "statRoomFull": "Room 31:10 (3110) - in a@Muddy Pit Surrounded by Trees\nMagical key: ashothhabzig, Owner: none, Sector: forest, MapId: 934319\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe forest floor sinks into black, sucking mud, broken by twisted roots and\nmats of rotting leaves. Tiny tracks and strange marks freckle the wet earth,\nvanishing beneath low branches. Here and there, old strands of webbing cling to\nbark and thorn.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 20, flags: none\nWest   31:  0, flags: none",
+        "libRoomCommands": "Commands on room 31:10 (Muddy Pit Surrounded by Trees):",
+        "comListCommands": "1   Mobile  1970 (a blue dragonfly) (--/2/--/100%)"
+      },
+      "mapId": "934319"
+    },
+    "room-2-0-0": {
+      "id": "room-2-0-0",
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:20",
+      "status": "verified",
+      "name": "a Shadowy Forest by the River",
+      "preposition": "in",
+      "description": "The trees press close here, their tangled boughs shutting out nearly all light.\nRope-thick webs sag between the trunks and roots, beaded with cold moisture\nfrom the nearby river. To the east, the faint rush of water stirs the stale\nair, carrying the scent of mud, rot, and old silk.",
+      "sector": "forest",
+      "flags": [
+        "build",
+        "dark"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781497725800,
+        "statRoomFull": "Room 31:20 (3120) - in@a Shadowy Forest by the River\nMagical key: cyatgympod, Owner: none, Sector: forest, MapId: 15019284\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe trees press close here, their tangled boughs shutting out nearly all light.\nRope-thick webs sag between the trunks and roots, beaded with cold moisture\nfrom the nearby river. To the east, the faint rush of water stirs the stale\nair, carrying the scent of mud, rot, and old silk.\nExtra description keywords: none\n------- Chars present -------\n  a huge, venomous spider (6113)\n  a huge tarantula (6114)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nWest   31: 10, flags: none",
+        "libRoomCommands": "Commands on room 31:20 (a Shadowy Forest by the River):",
+        "comListCommands": "1   Mobile  6114 (a huge tarantula) (--/--/1/100%)\n2   Mobile  6113 (a huge, venomous spider) (--/--/1/100%)"
+      },
+      "mapId": "15019284"
+    },
+    "room-3-0-0": {
+      "id": "room-3-0-0",
+      "x": 3,
+      "y": 0,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:30",
+      "status": "verified",
+      "name": "the River Running",
+      "preposition": "in",
+      "description": "The cold, murky waters of the River Running flow steadily here. The current is relatively calm compared to the deeper stretches of the river, though the mud beneath makes navigation somewhat sluggish. Near the stony riverbank to the east lies the Dorwinion Road, while the river continues southward, deepening into a muddy riverbed. Below the surface, small currents stir the silt, and occasionally the dark shell of a river crayfish can be seen darting between the submerged rocks.",
+      "sector": "water",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483382197,
+        "statRoomFull": "Room 31:30 (3130) - in@the River Running\nMagical key: oldvulmyev, Owner: none, Sector: water, MapId: 2156685\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nEast   31: 40, flags: none\nSouth  31: 31, flags: none",
+        "libRoomCommands": "Commands on room 31:30 (the River Running):",
+        "comListCommands": "1   Mobile  1331 (a crayfish) (--/1/--/100%)"
+      },
+      "mapId": "2156685"
+    },
+    "room-4-0-0": {
+      "id": "room-4-0-0",
+      "x": 4,
+      "y": 0,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:40",
+      "status": "verified",
+      "name": "Dorwinion Road",
+      "preposition": "on the",
+      "description": "",
+      "sector": "road",
+      "flags": [
+        "build",
+        "sunlit"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483408946,
+        "statRoomFull": "Room 31:40 (3140) - on the@Dorwinion Road\nMagical key: irtymgimne, Owner: none, Sector: road, MapId: 5935201\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nEast   31: 50, flags: none\nSouth  31: 41, flags: none\nWest   31: 30, flags: none",
+        "libRoomCommands": "Commands on room 31:40 (Dorwinion Road):",
+        "comListCommands": "An ibex leaves east."
+      },
+      "mapId": "5935201"
+    },
+    "room-5-0-0": {
+      "id": "room-5-0-0",
+      "x": 5,
+      "y": 0,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:50",
+      "status": "verified",
+      "name": "The Old Road Lookout",
+      "preposition": "at",
+      "description": "Rolling, grass-covered hills swell and dip in rhythmic waves across this high\nvantage point. Low ridges of fractured stone break through the green landscape,\nwhere patches of coarse weeds and dry brush fight for survival in the shallow\nsoil. To the west, the grassy slopes descend toward a dusty, well-worn\nhighway, while a weathered wooden lookout stands to one side, its crumbling\ntimbers quietly succumbing to the constant buffeting of the upland wind.",
+      "sector": "hills",
+      "flags": [
+        "build",
+        "sunlit"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483441178,
+        "statRoomFull": "Room 31:50 (3150) - among@hills by a watchtower\nMagical key: cyanreox, Owner: none, Sector: hills, MapId: 5262803\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nEast   31: 60, flags: none\nSouth  31: 51, flags: none\nWest   31: 40, flags: none\nUp     31:101, flags: none\nDown   31:100, flags: DOOR NO_MOB, name: trapdoor, key: no-keyhole, pick: 0%,\n               weight: 1",
+        "libRoomCommands": "Commands on room 31:50 (hills by a watchtower):\n1: redress-obj\n  object:       obj 9902 (some cracked and splintered pieces of wood)\n  keywords:     watchtower\n  short-desc:   a watchtower is here\n  long-desc:    A crumbling, circular watchtower rises above the hills.\n  plural-desc:  watchtowers\n  full-desc:    A withered wooden watchtower of Dorwinion slumps beside the old\n                road, its narrow beams gray with rot and weather. Little more\n                than a raised lookout now, it creaks in the wind over empty\n                fields once guarded by eastern men.\n  ptype:        the",
+        "comListCommands": "1   Object  9902 (some cracked and splintered pieces of wood) (--/--/1/100%)"
+      },
+      "mapId": "5262803"
+    },
+    "room-6-0-0": {
+      "id": "room-6-0-0",
+      "x": 6,
+      "y": 0,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:60",
+      "status": "verified",
+      "name": "The Rocky Hills",
+      "preposition": "among",
+      "description": "Rocky hills rise in uneven shelves from the open ground, their stony\nfaces broken by patches of dry grass and low, stubborn brush. Loose\nstones lie scattered between the slopes, and the land falls away toward\nrougher scrub to the east. The old road can still be seen to the west,\nwhere it winds past the shoulder of the hills.",
+      "sector": "hills",
+      "flags": [
+        "build",
+        "sunlit"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483465945,
+        "statRoomFull": "Room 31:60 (3160) - among@The Rocky Hills\nMagical key: clifladoip, Owner: none, Sector: hills, MapId: 9349144\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nEast   31: 70, flags: none\nSouth  31: 61, flags: none\nWest   31: 50, flags: none",
+        "comListCommands": "1   Mobile  4002 (a small centipede) (--/--/1/100%)",
+        "libRoomCommands": "Commands on room 31:60 (The Rocky Hills):"
+      },
+      "mapId": "9349144"
+    },
+    "room-7-0-0": {
+      "id": "room-7-0-0",
+      "x": 7,
+      "y": 0,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:70",
+      "status": "verified",
+      "name": "a Brushy Hillside",
+      "preposition": "on",
+      "sector": "brush",
+      "flags": [
+        "build",
+        "sunlit"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483497692,
+        "statRoomFull": "Room 31:70 (3170) - @brush\nMagical key: okayevioil, Owner: none, Sector: brush, MapId: 10089080\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nEast   31: 80, flags: none\nSouth  31: 71, flags: none\nWest   31: 60, flags: none",
+        "libRoomCommands": "Commands on room 31:70 (brush):",
+        "comListCommands": "Bad arguments, usage:\n/com [<room>]\nlist [-commands|-changes] [area|zone]\nadd [<after>] [+|-...] ...\nchange <index> ...\nmove|copy ...\nkill ...\nlimit ...\ndiff [zone]                                             show unsaved changes\nupgrade [zone] [-list]               upgrade room/zone to new-style commands\nrevert for real                                 reload room's /com from disk"
+      },
+      "mapId": "10089080",
+      "description": "Low brush clings to the rough slope, its thin stems crowding the stony ground between scattered patches of dry grass. The hillside rises unevenly here, with the broader hills standing to the west. The land feels open despite the scrub, and the wind moves easily across the slope, carrying the scent of dust and crushed leaves."
+    },
+    "room-8-0-0": {
+      "id": "room-8-0-0",
+      "x": 8,
+      "y": 0,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:80",
+      "status": "verified",
+      "name": "the Open Meadow",
+      "preposition": "in",
+      "sector": "field",
+      "flags": [
+        "build",
+        "sunlit"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483500703,
+        "statRoomFull": "Room 31:80 (3180) - @field\nMagical key: ghazadojib, Owner: none, Sector: field, MapId: 9060081\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nWest   31: 70, flags: none",
+        "libRoomCommands": "Commands on room 31:80 (field):",
+        "comListCommands": "Wisps of clouds begin to form slowly over the tree-tops."
+      },
+      "mapId": "9060081",
+      "description": "Rough grass covers the low field, broken by patches of bare earth and\ntufts of hardy weeds. The ground rises only gently here, with a brushy\nslope to the west and open land stretching away toward the east. The air is clear and still, and the uneven terrain gives the place a quiet, weathered look despite the broad openness of the field."
+    },
+    "room-0-1-0": {
+      "id": "room-0-1-0",
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:01",
+      "status": "verified",
+      "name": "A Dark Canopy",
+      "preposition": "under",
+      "description": "The forest is dark and close here, with twisted trees crowding on every side.\nLittle light reaches the mossy ground, and the stale air carries the smell of\ndamp bark and old leaves. Shadows gather beneath the branches, making the path\nahead feel narrow and uncertain.",
+      "sector": "forest",
+      "flags": [
+        "build",
+        "dark"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781497765299,
+        "statRoomFull": "Room 31:1 (3101) - on@A dusty path\nMagical key: ughbeaohmyt, Owner: none, Sector: road, MapId: 270349\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD TRAIL\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe forest is dark and close here, with twisted trees crowding on every side.\nLittle light reaches the mossy ground, and the stale air carries the smell of\ndamp bark and old leaves. Shadows gather beneath the branches, making the path\nahead feel narrow and uncertain.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  0, flags: none\nSouth  31:  2, flags: none",
+        "libRoomCommands": "Commands on room 31:1 (A dusty path):",
+        "comListCommands": "Your burden is heavy."
+      },
+      "mapId": "270349"
+    },
+    "room-1-1-0": {
+      "id": "room-1-1-0",
+      "x": 1,
+      "y": 1,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:11",
+      "status": "verified",
+      "name": "Muddy Tree-filled Ravine",
+      "preposition": "in a",
+      "description": "Sparsely lit by a choked canopy, this damp, twisting ravine cuts deeply into\nthe earth, pooling with thick runoff from the nearby river. The heavy scent\nof rotting fish hangs stagnant in the humid air, trapped by tangled roots and\ndecaying timber. Stripped fish skeletons and sticky, silk-strewn debris litter\nthe muddy ground, warning of a repulsive, hidden appetite that actively preys\nupon the water's edge from the deep shadows of the undergrowth.",
+      "sector": "forest",
+      "flags": [
+        "build",
+        "dark"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483308201,
+        "statRoomFull": "Room 31:11 (3111) - in a@Muddy Tree-filled Ravine\nMagical key: zezyoutve, Owner: none, Sector: forest, MapId: 14181886\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nEast   31: 21, flags: none",
+        "comListCommands": "1   Mobile  7004 (a giant earth beetle) (--/2/--/100%)\n2   Mobile  2730 (a brown, long-legged spider) (--/1/--/100%)",
+        "libRoomCommands": "Commands on room 31:11 (Muddy Tree-filled Ravine):\n1: redress-mob\n  mobile:      mob 2730 (a brown, long-legged spider)\n  act:         hisses and gurgles at you with malice\n  full-desc:   Abnormally large and bloated, the hairy legs of this spider\n               struggle to support its immense weight. A stench of rotting fish\n               eminates from its swollen and grotesque orafice of a mouth. Its\n               mandibles have two fangs protruding from either side with the\n               left one cracked from what one can only assume was a fierce\n               encounter. On its back, a violet hourglass shape bears claw\n               marks that have been raked across its hidious vestiges.\n  no-charm?:   yes\n  no-summon?:  yes"
+      },
+      "mapId": "14181886"
+    },
+    "room-2-1-0": {
+      "id": "room-2-1-0",
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:21",
+      "status": "verified",
+      "name": "a Silk-Choked Bank",
+      "preposition": "in",
+      "description": "The tree-filled ravine opens up slightly to the east, flattening into a damp\nriverbank that directly borders the steady flow of the water channel. Sticky,\nmilky-white webbing clings stubbornly to the low-hanging branches and coats\nthe muddy soil, entangling chunks of driftwood and dried reeds. Strung tight\nacross the brush, these heavy strands pulse slightly with every vibration from\nthe shore, marking a clear trail where a massive hunger leaves the deep hollow.",
+      "sector": "forest",
+      "flags": [
+        "build",
+        "dark"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483354948,
+        "statRoomFull": "Room 31:21 (3121) - in a@Muddy Ravine\nMagical key: ailzoopreiz, Owner: none, Sector: forest, MapId: 15409217\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nEast   31: 31, flags: none\nWest   31: 11, flags: none",
+        "libRoomCommands": "Commands on room 31:21 (Muddy Ravine):",
+        "comListCommands": "Bad arguments, usage:\n/com [<room>]\nlist [-commands|-changes] [area|zone]\nadd [<after>] [+|-...] ...\nchange <index> ...\nmove|copy ...\nkill ...\nlimit ...\ndiff [zone]                                             show unsaved changes\nupgrade [zone] [-list]               upgrade room/zone to new-style commands\nrevert for real                                 reload room's /com from disk"
+      },
+      "mapId": "15409217"
+    },
+    "room-3-1-0": {
+      "id": "room-3-1-0",
+      "x": 3,
+      "y": 1,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:31",
+      "status": "verified",
+      "name": "a Muddy Riverbed",
+      "preposition": "in",
+      "description": "The river channel maintains its steady southward path, though the visibility\ndecreases as suspended sediment clouds the water column. Along the bottom, the\nclean stone gives way to thick, heavy deposits of dark river mud and soft silt.\nShadowy, whiskered silhouettes stir lazily within the murky twilight of the\nriverbed, their bottom-feeding habits leaving trailing clouds of dust in the\nsluggish lower currents.",
+      "sector": "water",
+      "flags": [
+        "build",
+        "water"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483384447,
+        "statRoomFull": "Room 31:31 (3131) - in@the River Running\nMagical key: psokuavoe, Owner: none, Sector: water, MapId: 11642468\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 30, flags: none\nEast   31: 41, flags: none\nSouth  31: 32, flags: none\nWest   31: 21, flags: none",
+        "comListCommands": "1   Mobile  1010 (a catfish) (--/2/--/100%)",
+        "libRoomCommands": "Commands on room 31:31 (the River Running):"
+      },
+      "mapId": "11642468"
+    },
+    "room-4-1-0": {
+      "id": "room-4-1-0",
+      "x": 4,
+      "y": 1,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:41",
+      "status": "verified",
+      "name": "Dorwinion Road",
+      "preposition": "on the",
+      "description": "",
+      "sector": "road",
+      "flags": [
+        "build",
+        "sunlit"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483418945,
+        "statRoomFull": "Room 31:41 (3141) - on the@Dorwinion Road\nMagical key: soazpheav, Owner: none, Sector: road, MapId: 5870898\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 40, flags: none\nEast   31: 51, flags: none\nSouth  31: 42, flags: none\nWest   31: 31, flags: none",
+        "libRoomCommands": "Commands on room 31:41 (Dorwinion Road):",
+        "comListCommands": "Bad arguments, usage:\n/com [<room>]\nlist [-commands|-changes] [area|zone]\nadd [<after>] [+|-...] ...\nchange <index> ...\nmove|copy ...\nkill ...\nlimit ...\ndiff [zone]                                             show unsaved changes\nupgrade [zone] [-list]               upgrade room/zone to new-style commands\nrevert for real                                 reload room's /com from disk"
+      },
+      "mapId": "5870898"
+    },
+    "room-5-1-0": {
+      "id": "room-5-1-0",
+      "x": 5,
+      "y": 1,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:51",
+      "status": "verified",
+      "name": "A Grassy Rise Beside the Road",
+      "preposition": "on",
+      "description": "Gentle, grass-covered slopes roll across the landscape, marking a soft rise\njust east of the dusty highway. Low ridges swell and dip in rhythmic waves,\ntheir green surfaces broken only by the occasional cluster of resilient weeds.\nTo the west, the open ground descends slightly before meeting the structured,\nhard-packed dirt of the thoroughfare, while further eastward the landscape\nstretches out into an uninterrupted expanse of empty hills.",
+      "sector": "hills",
+      "flags": [
+        "build",
+        "sunlit"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483443449,
+        "statRoomFull": "Room 31:51 (3151) - among@The Rolling Hills\nMagical key: yeatughanyc, Owner: none, Sector: hills, MapId: 11266864\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 50, flags: none\nEast   31: 61, flags: none\nSouth  31: 52, flags: none\nWest   31: 41, flags: none",
+        "comListCommands": "1   Mobile  6011 (an ibex) (--/2/2/100%)",
+        "libRoomCommands": "Commands on room 31:51 (The Rolling Hills):"
+      },
+      "mapId": "11266864"
+    },
+    "room-6-1-0": {
+      "id": "room-6-1-0",
+      "x": 6,
+      "y": 1,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:61",
+      "status": "verified",
+      "name": "A Low Hill",
+      "preposition": "on",
+      "description": "The hill rises in a low, uneven stretch of grass and stone, with rough turf giving way to patches of bare earth. The slope leans toward the road to the west and climbs back toward harder ground to the north. Small stones and stubborn weeds break up the open surface, and the place feels shaped more by repeated passage than by any single feature.",
+      "sector": "hills",
+      "flags": [
+        "build",
+        "sunlit"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483481818,
+        "statRoomFull": "Room 31:61 (3161) - @hill\nMagical key: scadhoquatra, Owner: none, Sector: hills, MapId: 10372658\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 60, flags: none\nWest   31: 51, flags: none",
+        "libRoomCommands": "Commands on room 31:61 (hill):",
+        "comListCommands": "A giant earth beetle leaves south."
+      },
+      "mapId": "10372658"
+    },
+    "room-7-1-0": {
+      "id": "room-7-1-0",
+      "x": 7,
+      "y": 1,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:71",
+      "status": "verified",
+      "name": "the Broken Timber Grove",
+      "preposition": "in",
+      "description": "Broken lengths of timber lie scattered through the field, splintered and weathered as if they were once part of a larger structure. Short grass pushes up around the fallen wood, softening the edges of the broken shapes. The ground here opens toward the north, where a brushy hillside rises above the grove, while the rest of the land remains low and open.",
+      "sector": "field",
+      "flags": [
+        "build",
+        "sunlit"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483499943,
+        "statRoomFull": "Room 31:71 (3171) - @field\nMagical key: xenatopeye, Owner: none, Sector: field, MapId: 15677516\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 70, flags: none",
+        "libRoomCommands": "Commands on room 31:71 (field):",
+        "comListCommands": "1   Object  9902 (some cracked and splintered pieces of wood) (--/--/1/100%)\n2   Object  8351 (a tall, radiant sunflower plant; Mar-Oct; -10-16 C)\n            (--/--/1/100%)"
+      },
+      "mapId": "15677516"
+    },
+    "room-0-2-0": {
+      "id": "room-0-2-0",
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:02",
+      "status": "verified",
+      "name": "Clump of Trees",
+      "preposition": "in a",
+      "description": "The forest lies heavy in shadow here, its crooked trees pressing close around a\nnarrow path. Wisps of old cobweb cling to bark and low branches, growing\nthicker toward the east. The air is damp and still, carrying the faint smell of\nrot and river-mist.",
+      "sector": "forest",
+      "flags": [
+        "build",
+        "dark"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781497845322,
+        "statRoomFull": "Room 31:2 (3102) - in a@Clump of Trees\nMagical key: laplarolha, Owner: none, Sector: forest, MapId: 16180528\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe forest lies heavy in shadow here, its crooked trees pressing close around a\nnarrow path. Wisps of old cobweb cling to bark and low branches, growing\nthicker toward the east. The air is damp and still, carrying the faint smell of\nrot and river-mist.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  1, flags: none\nEast   31: 12, flags: none\nSouth  31:  3, flags: none",
+        "libRoomCommands": "Commands on room 31:2 (Clump of Trees):",
+        "comListCommands": "A giant earth beetle has arrived from the south."
+      },
+      "mapId": "16180528"
+    },
+    "room-1-2-0": {
+      "id": "room-1-2-0",
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:12",
+      "status": "verified",
+      "name": "Roots and Cobwebs",
+      "preposition": "among",
+      "description": "Ancient roots twist across the forest floor, rising like dark, grasping fingers\nfrom the earth. The trees crowd close overhead, leaving the air still, damp,\nand heavy. Faint scratchings mark the bark and soil, while thin strands of silk\ntrail between the roots.",
+      "sector": "forest",
+      "flags": [
+        "build",
+        "dark"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781497864819,
+        "statRoomFull": "Room 31:12 (3112) - among@Roots and Cobwebs\nMagical key: lobtraozeye, Owner: none, Sector: forest, MapId: 10251233\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nAncient roots twist across the forest floor, rising like dark, grasping fingers\nfrom the earth. The trees crowd close overhead, leaving the air still, damp,\nand heavy. Faint scratchings mark the bark and soil, while thin strands of silk\ntrail between the roots.\nExtra description keywords: none\n------- Chars present -------\n  a black widow (1550)\n  a clump of roots (1804)\n  a giant earth beetle (7004)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nWest   31:  2, flags: none",
+        "comListCommands": "1   Mobile  1804 (a clump of roots) (--/--/1/100%)\n2   Mobile  1550 (a black widow) (--/--/1/100%)",
+        "libRoomCommands": "Commands on room 31:12 (Roots and Cobwebs):"
+      },
+      "mapId": "10251233"
+    },
+    "room-2-2-0": {
+      "id": "room-2-2-0",
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:22",
+      "status": "verified",
+      "name": "Field by the River Running",
+      "preposition": "in a",
+      "description": "",
+      "sector": "field",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483365453,
+        "statRoomFull": "Room 31:22 (3122) - in a@Field by the River Running\nMagical key: uxnobabyea, Owner: none, Sector: field, MapId: 2915719\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nEast   31: 32, flags: none\nSouth  31: 23, flags: none",
+        "libRoomCommands": "Commands on room 31:22 (Field by the River Running):",
+        "comListCommands": "Bad arguments, usage:\n/com [<room>]\nlist [-commands|-changes] [area|zone]\nadd [<after>] [+|-...] ...\nchange <index> ...\nmove|copy ...\nkill ...\nlimit ...\ndiff [zone]                                             show unsaved changes\nupgrade [zone] [-list]               upgrade room/zone to new-style commands\nrevert for real                                 reload room's /com from disk"
+      },
+      "mapId": "2915719"
+    },
+    "room-3-2-0": {
+      "id": "room-3-2-0",
+      "x": 3,
+      "y": 2,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:32",
+      "status": "verified",
+      "name": "strong Current of River Running",
+      "preposition": "in",
+      "description": "The cold, gray waters of the River Running surge around you with alarming force. Here, the current bends and quickens, threatening to sweep any unwary traveler off their feet. To the west, the riverbank flattens out into an open field, while to the east, the river runs alongside the stone-laid Dorwinion Road. Northward, the waters shallow into a muddy riverbed, whereas the deep river continues its steady flow towards the south.",
+      "sector": "water",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483394448,
+        "statRoomFull": "Room 31:32 (3132) - in@strong Current of River Running\nMagical key: ofweekeac, Owner: none, Sector: water, MapId: 13727235\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 31, flags: none\nEast   31: 42, flags: none\nSouth  31: 33, flags: none\nWest   31: 22, flags: none",
+        "libRoomCommands": "Commands on room 31:32 (strong Current of River Running):",
+        "comListCommands": "Bad arguments, usage:\n/com [<room>]\nlist [-commands|-changes] [area|zone]\nadd [<after>] [+|-...] ...\nchange <index> ...\nmove|copy ...\nkill ...\nlimit ...\ndiff [zone]                                             show unsaved changes\nupgrade [zone] [-list]               upgrade room/zone to new-style commands\nrevert for real                                 reload room's /com from disk"
+      },
+      "mapId": "13727235"
+    },
+    "room-4-2-0": {
+      "id": "room-4-2-0",
+      "x": 4,
+      "y": 2,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:42",
+      "status": "verified",
+      "name": "the Dorwinion Road",
+      "preposition": "on ",
+      "description": "The historic trade road presses steadily north and south, tracking a parallel path\njust east of the low riverbanks. Time and abandonment have left the surfaced\nstone severely cracked, allowing tough weeds to claim the deep fissures. To\nthe west, the open ground dips slightly toward the edge of the channel where\nthe water flows smoothly, while the terrain to the east begins a gradual,\ngrassy rise into the quiet baseline of the foothills.",
+      "sector": "road",
+      "flags": [
+        "build",
+        "sunlit"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483428946,
+        "statRoomFull": "Room 31:42 (3142) - on the@Dorwinion Road\nMagical key: tosoplaaye, Owner: none, Sector: road, MapId: 10583545\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 41, flags: none\nEast   31: 52, flags: none\nSouth  31: 43, flags: none\nWest   31: 32, flags: none",
+        "libRoomCommands": "Commands on room 31:42 (Dorwinion Road):",
+        "comListCommands": "The day has begun."
+      },
+      "mapId": "10583545"
+    },
+    "room-5-2-0": {
+      "id": "room-5-2-0",
+      "x": 5,
+      "y": 2,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:52",
+      "status": "verified",
+      "name": "a Grassy Hill",
+      "preposition": "on",
+      "description": "The hill rises in a broad, uneven mound of grass and stone,\nwith rough earth showing between the tufts of short growth. To the\nwest the ground falls toward the Dorwinion Road, while the slope continues north toward the higher hills. Small rocks and scattered weeds mark the surface, giving the place a worn, open look where the road runs close beside the rise.",
+      "sector": "hills",
+      "flags": [
+        "build",
+        "sunlit"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483444196,
+        "statRoomFull": "Room 31:52 (3152) - @hill\nMagical key: wesmienlha, Owner: none, Sector: hills, MapId: 8301947\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 51, flags: none\nWest   31: 42, flags: none",
+        "libRoomCommands": "Commands on room 31:52 (hill):",
+        "comListCommands": "Bad arguments, usage:\n/com [<room>]\nlist [-commands|-changes] [area|zone]\nadd [<after>] [+|-...] ...\nchange <index> ...\nmove|copy ...\nkill ...\nlimit ...\ndiff [zone]                                             show unsaved changes\nupgrade [zone] [-list]               upgrade room/zone to new-style commands\nrevert for real                                 reload room's /com from disk"
+      },
+      "mapId": "8301947"
+    },
+    "room-0-3-0": {
+      "id": "room-0-3-0",
+      "x": 0,
+      "y": 3,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:03",
+      "status": "verified",
+      "name": "Some Dark Bows",
+      "preposition": "under",
+      "description": "The trees thin here, though crooked boughs still cast deep shadows over the\nforest floor. To the east, the land opens beyond the last trunks, leading out\nof the wood. Westward, the forest closes back into gloom and silence.",
+      "sector": "forest",
+      "flags": [
+        "build",
+        "dark"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781497859072,
+        "statRoomFull": "Room 31:3 (3103) - under@Some Dark Bows\nMagical key: moanfyloz, Owner: none, Sector: forest, MapId: 16426941\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The trees thin here, though crooked boughs still cast deep shadows over the\n  forest floor. To the east, the land opens beyond the last trunks, leading out\n  of the wood. Westward, the forest closes back into gloom and silence.\nExtra description keywords: none\n------- Chars present -------\n  a blue dragonfly (1970)\n  a blue dragonfly (1970)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  2, flags: none\nEast   31: 13, flags: DOOR NO_MOB, name: door, key: no-keyhole, pick: 0%,\n               weight: 1",
+        "libRoomCommands": "Commands on room 31:3 (Some Dark Bows):",
+        "comListCommands": "Bad arguments, usage:\n/com [<room>]\nlist [-commands|-changes] [area|zone]\nadd [<after>] [+|-...] ...\nchange <index> ...\nmove|copy ...\nkill ...\nlimit ...\ndiff [zone]                                             show unsaved changes\nupgrade [zone] [-list]               upgrade room/zone to new-style commands\nrevert for real                                 reload room's /com from disk"
+      },
+      "mapId": "16426941"
+    },
+    "room-1-3-0": {
+      "id": "room-1-3-0",
+      "x": 1,
+      "y": 3,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:13",
+      "status": "verified",
+      "name": "field",
+      "preposition": "in",
+      "description": "",
+      "sector": "field",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483320451,
+        "statRoomFull": "Room 31:13 (3113) - @field\nMagical key: enxenempre, Owner: none, Sector: field, MapId: 8106256\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nEast   31: 23, flags: none\nSouth  31: 14, flags: none\nWest   31:  3, flags: DOOR NO_MOB, name: door, key: no-keyhole, pick: 0%,\n               weight: 1",
+        "libRoomCommands": "Commands on room 31:13 (field):",
+        "comListCommands": "Bad arguments, usage:\n/com [<room>]\nlist [-commands|-changes] [area|zone]\nadd [<after>] [+|-...] ...\nchange <index> ...\nmove|copy ...\nkill ...\nlimit ...\ndiff [zone]                                             show unsaved changes\nupgrade [zone] [-list]               upgrade room/zone to new-style commands\nrevert for real                                 reload room's /com from disk"
+      },
+      "mapId": "8106256"
+    },
+    "room-2-3-0": {
+      "id": "room-2-3-0",
+      "x": 2,
+      "y": 3,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:23",
+      "status": "verified",
+      "name": "fishing camp",
+      "preposition": "in",
+      "description": "",
+      "sector": "field",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483367697,
+        "statRoomFull": "Room 31:23 (3123) - @fishing camp\nMagical key: toajmykla, Owner: none, Sector: field, MapId: 16433793\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 22, flags: none\nEast   31: 33, flags: none\nSouth  31: 24, flags: none\nWest   31: 13, flags: none",
+        "comListCommands": "1   Mobile  6481 (a fisherman) (stand) (--/--/1/100%)",
+        "libRoomCommands": "Commands on room 31:23 (fishing camp):"
+      },
+      "mapId": "16433793"
+    },
+    "room-3-3-0": {
+      "id": "room-3-3-0",
+      "x": 3,
+      "y": 3,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:33",
+      "status": "verified",
+      "name": "River Running",
+      "preposition": "in the",
+      "description": "The river continues its steady, southwards journey, flowing smoothly between\nlow, earthen banks that show signs of gradual erosion. The water remains crisp\nand relatively shallow, allowing the bright sunlight to illuminate the clean,\nstony riverbed beneath the main channel. Tiny ripples disrupt the surface where\nsmaller fish dart between the rocks, while deep along the bottom, massive and\nancient forms glide silently through the shadows of the lower current.",
+      "sector": "water",
+      "flags": [
+        "build",
+        "water"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483396696,
+        "statRoomFull": "Room 31:33 (3133) - in the@River Running\nMagical key: xyughobbab, Owner: none, Sector: water, MapId: 3486568\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 32, flags: none\nEast   31: 43, flags: none\nSouth  31: 34, flags: none\nWest   31: 23, flags: none",
+        "comListCommands": "1   Mobile    28 (a trout) (--/1/--/100%)",
+        "libRoomCommands": "Commands on room 31:33 (River Running):"
+      },
+      "mapId": "3486568"
+    },
+    "room-4-3-0": {
+      "id": "room-4-3-0",
+      "x": 4,
+      "y": 3,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:43",
+      "status": "verified",
+      "name": "Dorwinion Road",
+      "preposition": "on the",
+      "description": "",
+      "sector": "road",
+      "flags": [
+        "build",
+        "sunlit"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483438946,
+        "statRoomFull": "Room 31:43 (3143) - on the@Dorwinion Road\nMagical key: azklafrapee, Owner: none, Sector: road, MapId: 14623727\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keyword: runes\n------- Exits -------\nNorth  31: 42, flags: none\nWest   31: 33, flags: none",
+        "libRoomCommands": "Commands on room 31:43 (Dorwinion Road):\n1: sign\n  signs:  [1 defined]\n            runes [Sindarin]",
+        "comListCommands": "Bad arguments, usage:\n/com [<room>]\nlist [-commands|-changes] [area|zone]\nadd [<after>] [+|-...] ...\nchange <index> ...\nmove|copy ...\nkill ...\nlimit ...\ndiff [zone]                                             show unsaved changes\nupgrade [zone] [-list]               upgrade room/zone to new-style commands\nrevert for real                                 reload room's /com from disk"
+      },
+      "mapId": "14623727"
+    },
+    "room-0-4-0": {
+      "id": "room-0-4-0",
+      "x": 0,
+      "y": 4,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:04",
+      "status": "verified",
+      "name": "Field Bordering a Forest",
+      "preposition": "in a",
+      "description": "",
+      "sector": "field",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483279205,
+        "statRoomFull": "Room 31:4 (3104) - in a@Field Bordering a Forest\nMagical key: actwibeaur, Owner: none, Sector: field, MapId: 1135945\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nEast   31: 14, flags: none\nSouth  31:  5, flags: none",
+        "libRoomCommands": "Commands on room 31:4 (Field Bordering a Forest):",
+        "comListCommands": "Bad arguments, usage:\n/com [<room>]\nlist [-commands|-changes] [area|zone]\nadd [<after>] [+|-...] ...\nchange <index> ...\nmove|copy ...\nkill ...\nlimit ...\ndiff [zone]                                             show unsaved changes\nupgrade [zone] [-list]               upgrade room/zone to new-style commands\nrevert for real                                 reload room's /com from disk"
+      },
+      "mapId": "1135945"
+    },
+    "room-1-4-0": {
+      "id": "room-1-4-0",
+      "x": 1,
+      "y": 4,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:14",
+      "status": "verified",
+      "name": "forest",
+      "preposition": "in",
+      "description": "",
+      "sector": "forest",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483330450,
+        "statRoomFull": "Room 31:14 (3114) - @forest\nMagical key: ecbibgoold, Owner: none, Sector: forest, MapId: 4476407\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 13, flags: none\nEast   31: 24, flags: none\nSouth  31: 15, flags: none\nWest   31:  4, flags: none",
+        "libRoomCommands": "Commands on room 31:14 (forest):",
+        "comListCommands": "Bad arguments, usage:\n/com [<room>]\nlist [-commands|-changes] [area|zone]\nadd [<after>] [+|-...] ...\nchange <index> ...\nmove|copy ...\nkill ...\nlimit ...\ndiff [zone]                                             show unsaved changes\nupgrade [zone] [-list]               upgrade room/zone to new-style commands\nrevert for real                                 reload room's /com from disk"
+      },
+      "mapId": "4476407"
+    },
+    "room-2-4-0": {
+      "id": "room-2-4-0",
+      "x": 2,
+      "y": 4,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:24",
+      "status": "verified",
+      "name": "Amongst Some Ragged Trees",
+      "preposition": "amongst",
+      "description": "",
+      "sector": "forest",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483815455,
+        "statRoomFull": "Room 31:24 (3124) - amongst@Amongst Some Ragged Trees\nMagical key: necaburit, Owner: none, Sector: forest, MapId: 2332683\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 23, flags: none\nWest   31: 14, flags: none",
+        "libRoomCommands": "Commands on room 31:24 (Amongst Some Ragged Trees):\n1: redress-corpse\n  mobile:       mob 2138 (a bear cub)\n  keywords:     \n  short-desc:   a half-eaten corpse\n  long-desc:    The half-eaten corpse of a bear cub is lying here.\n  plural-desc:  half-eaten corpses\n  full-desc:    The corpse of a young bear cub has been picked and gnawed at by\n                some carnivore who has made this its dinner. The meat has been\n                torn off the bones and what is left offers little nutritional\n                value.\n  butchered?:   no\n  drainable?:   no\n  hanging?:     no\n  head?:        yes",
+        "comListCommands": "1   Object  6008 (a rotting corpse) (--/--/1/100%)"
+      },
+      "mapId": "2332683"
+    },
+    "room-3-4-0": {
+      "id": "room-3-4-0",
+      "x": 3,
+      "y": 4,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:34",
+      "status": "verified",
+      "name": "a Clear Channel in the River Running",
+      "preposition": "at",
+      "description": "The river straightens completely here, running in a clean, unhurried channel\nbetween the low banks. Beneath the surface, the heavy current drops its silt,\nrevealing a smooth bed of light clay and flat stones well out of the sun's reach.\nFaint ripples mar the water as ancient, bottom-dwelling life stirs sluggishly\nthrough the cool depths, entirely concealed by the steady, unyielding flow of\nthe main channel.",
+      "sector": "water",
+      "flags": [
+        "build",
+        "water"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781490810125,
+        "statRoomFull": "Room 31:34 (3134) - in the@River Running\nMagical key: spazethekel, Owner: none, Sector: water, MapId: 8262684\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 33, flags: none",
+        "comListCommands": "1   Mobile  1453 (a large sturgeon) (--/1/--/100%)",
+        "libRoomCommands": "Commands on room 31:34 (River Running):"
+      },
+      "mapId": "8262684"
+    },
+    "room-0-5-0": {
+      "id": "room-0-5-0",
+      "x": 0,
+      "y": 5,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:05",
+      "status": "verified",
+      "name": "A Nook in the Mountains",
+      "preposition": "in",
+      "description": "A narrow, rocky shelf clings to the sheer mountain face, providing a small pocket of level ground amidst the towering peaks. Jagged stone walls press in from the sides, their gray surfaces split by deep fissures where hardy alpine mosses manage to take root. Littered across the dirt floor are the cracked, hollow remains of discarded eggshells, half-buried in the scree. A sharp, distinct musk hangs heavy in the thin air, hinting at the large predators that occasionally seek shelter within this rugged alcove.",
+      "sector": "mountain",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483281452,
+        "statRoomFull": "Room 31:5 (3105) - in@A Nook in the Mountains\nMagical key: kodibtzapla, Owner: none, Sector: mountains, MapId: 16309478\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31:  4, flags: none\nEast   31: 15, flags: none\nSouth  31:  6, flags: none",
+        "comListCommands": "1   Mobile  1599 (a black bear) (--/1/1/100%)\n2   Mobile  2138 (a bear cub) (--/1/--/100%)",
+        "libRoomCommands": "Commands on room 31:5 (A Nook in the Mountains):"
+      },
+      "mapId": "16309478"
+    },
+    "room-1-5-0": {
+      "id": "room-1-5-0",
       "x": 1,
       "y": 5,
       "z": 0,
-      "kind": "extra",
+      "kind": "grid",
       "anchorRoomId": null,
       "roomNumber": "31:15",
       "status": "verified",
-      "name": "a Brambly Slope",
+      "name": "Brambly Slope",
+      "preposition": "on a",
+      "description": "",
+      "sector": "mountain",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483340455,
+        "statRoomFull": "Room 31:15 (3115) - on a@Brambly Slope\nMagical key: cuuitohmqua, Owner: none, Sector: mountains, MapId: 15413516\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 14, flags: none\nEast   31: 25, flags: none\nSouth  31: 16, flags: none\nWest   31:  5, flags: none",
+        "libRoomCommands": "Commands on room 31:15 (Brambly Slope):",
+        "comListCommands": "An ibex leaves south."
+      },
+      "mapId": "15413516"
+    },
+    "room-2-5-0": {
+      "id": "room-2-5-0",
+      "x": 2,
+      "y": 5,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:25",
+      "status": "verified",
+      "name": "A Silted Woodland Glade",
+      "preposition": "in",
+      "description": "Moss-covered boulders lie half-buried in the earth, tumbled down from the\nhigher ridges to the west. The air carries a heavy, damp stillness, characteristic\nof the wild borderlands where the great lake meets the forest eaves. Sedge\nand coarse river grass sprout in patches between the trees, surviving where\nthe woodland floor dips low and gathers the runoff from the northern plains.",
+      "sector": "forest",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483379947,
+        "statRoomFull": "Room 31:25 (3125) - @forest\nMagical key: aleqvitra, Owner: none, Sector: forest, MapId: 11583968\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nWest   31: 15, flags: none",
+        "libRoomCommands": "Commands on room 31:25 (forest):",
+        "comListCommands": "An ibex has arrived from the south."
+      },
+      "mapId": "11583968"
+    },
+    "room-0-6-0": {
+      "id": "room-0-6-0",
+      "x": 0,
+      "y": 6,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:06",
+      "status": "verified",
+      "name": "Windswept Mountain Ridge",
+      "preposition": "on a",
+      "description": "A treacherous, exposed path winds precariously along the sun-bleached rock of\nthe mountain ridge. To the north, the trail dips slightly toward a sheltered\nrecess, while southern views reveal a gradual descent toward greener slopes.\nStunted, wind-battered shrubs claw for a foothold in the sparse soil, their\ntwisted branches frozen in defensive postures against the elements. Ground\npredators and nimble mountain herbivores frequently cross this high thoroughfare.",
+      "sector": "mountain",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483291451,
+        "statRoomFull": "Room 31:6 (3106) - in a@Scratchy Brush\nMagical key: akfabzigna, Owner: none, Sector: mountains, MapId: 4437341\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31:  5, flags: none\nSouth  31:  7, flags: none",
+        "libRoomCommands": "Commands on room 31:6 (Scratchy Brush):",
+        "comListCommands": "The night has begun."
+      },
+      "mapId": "4437341"
+    },
+    "room-1-6-0": {
+      "id": "room-1-6-0",
+      "x": 1,
+      "y": 6,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:16",
+      "status": "verified",
+      "name": "Elevated Perch",
+      "preposition": "on a",
+      "description": "The rugged ridge ascends sharply to a high, windswept vantage point, offering\na commanding view over the lower forest canopy spreading out towards the east.\nSkeletal branches of weather-beaten pine trees claw at the sky, anchoring\nthemselves precariously among the pale, fractured crags. Deep fissures score\nthe grey stone underfoot, where coarse mountain grass grows in sparse clumps\nsheltered from the biting northern gales.",
+      "sector": "mountain",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483342699,
+        "statRoomFull": "Room 31:16 (3116) - on a@Elevated Perch\nMagical key: ytewbibpla, Owner: none, Sector: mountains, MapId: 730781\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31: 15, flags: none",
+        "comListCommands": "1   Mobile  7018 (a vulture) (--/--/2/100%)\n2   Object  1750 (a nest) (--/--/1/100%)\n3   Put     8030 (a small egg) in 1750 (nest) (--/--/3/100%)",
+        "libRoomCommands": "Commands on room 31:16 (Elevated Perch):"
+      },
+      "mapId": "730781"
+    },
+    "room-0-7-0": {
+      "id": "room-0-7-0",
+      "x": 0,
+      "y": 7,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:07",
+      "status": "verified",
+      "name": "The Base of the Crags",
+      "preposition": "at",
+      "description": "The steep mountain terrain flattens out, giving way to a broken landscape of\nlow, rolling hills. To the north, the massive stone ridges of the high peaks\ntower dramatically against the skyline, marking a sharp contrast to the open\nground here. Patches of tough, coarse brush claw for survival among scattered\nboulders that have tumbled down from the upper slopes over the centuries. A\nhardy alpine breeze sweeps across the expanse, carrying the faint scent of pine.",
+      "sector": "field",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483301451,
+        "statRoomFull": "Room 31:7 (3107) - in a@Grassy Knoll\nMagical key: oilsoecom, Owner: none, Sector: field, MapId: 11578953\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31:  6, flags: none\nSouth  31:  8, flags: none",
+        "libRoomCommands": "Commands on room 31:7 (Grassy Knoll):",
+        "comListCommands": "An ibex has arrived from the east."
+      },
+      "mapId": "11578953"
+    },
+    "room-0-8-0": {
+      "id": "room-0-8-0",
+      "x": 0,
+      "y": 8,
+      "z": 0,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:08",
+      "status": "verified",
+      "name": "a Jagged Crag",
       "preposition": "on",
-      "description": "The hillside rises steeply here, choked with tangled brambles and patches\nof coarse heather clinging to the rocky soil. Loose stones shift underfoot\non the narrow path winding between the thorns. To the north the slope\ndescends into dense woodland, while to the south the ridge climbs toward\na more elevated and windswept vantage point.",
-      "sector": "mountains",
+      "description": "Scattered boulders and splintered branches choke this narrow, rocky hollow,\nwhere the mountain terrain transitions into the low hills. A murky, stagnant\npond is nestled tightly between old roots, its dark water reflecting the grim\ncliffs above. High overhead, wide thermal currents trace the sky, watched by\ndistant, unseen eyes waiting for signs of weakness below. Fresh, heavy tracks\ndeep in the soft mud along the water's edge give clear warning of what roams.",
+      "sector": "hills",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483303700,
+        "statRoomFull": "Room 31:8 (3108) - on@a Jagged Crag test push\nMagical key: wadnobreice, Owner: none, Sector: hills, MapId: 5184203\nEntrances: 1.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nNorth  31:  7, flags: none",
+        "comListCommands": "1   Object  6515 (a brown pond) (--/1/1/100%)",
+        "libRoomCommands": "Commands on room 31:8 (a Jagged Crag test push):"
+      },
+      "mapId": "5184203"
+    },
+    "room-mqacvebu-2": {
+      "id": "room-mqacvebu-2",
+      "x": 5,
+      "y": 0,
+      "z": 1,
+      "kind": "grid",
+      "anchorRoomId": null,
+      "roomNumber": "31:101",
+      "status": "verified",
+      "name": "a Watchtower",
+      "preposition": "in",
+      "description": "",
+      "sector": "building",
+      "flags": [
+        "build"
+      ],
+      "owner": "none",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483527191,
+        "statRoomFull": "Room 31:101 (39769) - in@a Watchtower\nMagical key: rubkraigcza, Owner: none, Sector: building, MapId: 0\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nExtra description keywords: none\n------- Exits -------\nDown   31: 50, flags: none",
+        "comListCommands": "1   Object  9902 (some cracked and splintered pieces of wood) (--/--/1/100%)",
+        "libRoomCommands": "Commands on room 31:101 (a Watchtower):"
+      },
+      "mapId": "0"
+    },
+    "room-mqacvesq-3": {
+      "id": "room-mqacvesq-3",
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "kind": "extra",
+      "anchorRoomId": "room-mqacvebu-2",
+      "roomNumber": "31:102",
+      "status": "new-draft",
+      "name": "",
+      "preposition": "in",
+      "description": "",
+      "sector": "",
       "flags": [],
       "owner": "",
       "keywords": [],
@@ -49,33 +1250,1703 @@
       "mobs": [],
       "objects": []
     },
-    "room-31-25-agent-mqej9377-xzisou": {
-      "id": "room-31-25-agent-mqej9377-xzisou",
-      "x": 0,
+    "room-mqbhcudw-2": {
+      "id": "room-mqbhcudw-2",
+      "x": 5,
       "y": 0,
-      "z": 0,
-      "kind": "extra",
+      "z": -1,
+      "kind": "grid",
       "anchorRoomId": null,
-      "roomNumber": "31:25",
-      "status": "new-draft",
-      "name": "a Dense Woodland",
+      "roomNumber": "31:100",
+      "status": "verified",
+      "name": "abandoned hideout",
       "preposition": "in",
-      "description": "The trees press close here, their roots gnarled and exposed where the ground\nfalls away toward the rocky slopes to the west. Ferns and low brambles\ncarpet the floor between the trunks, and the canopy above filters the light\nto a dim, shifting green. The air is still and smells of damp earth and\nmoss-covered bark.",
-      "sector": "forest",
-      "flags": [
-        "no_ride"
-      ],
-      "owner": "",
+      "description": "",
+      "sector": "cavern",
+      "flags": [],
+      "owner": "none",
       "keywords": [],
       "notes": "",
       "annotations": [],
       "mobs": [],
-      "objects": []
+      "objects": [],
+      "liveSnapshot": {
+        "importedAt": 1781483524941,
+        "statRoomFull": "Commands on room 31:80 (field):",
+        "comListCommands": "1   Mobile  3801 (a giant termite) (--/--/1/100%)\n2   Follow  3800 (a small termite) follows 3801 (termite) (--/3/--/100%)\n3   Object  6042 (a wooden crate) (--/--/1/100%)",
+        "libRoomCommands": "Commands on room 31:100 (abandoned hideout):"
+      }
     }
   },
-  "exits": {},
-  "commandNodes": {},
-  "libraries": {},
-  "zoneInfoKeywords": {},
-  "shared": false
+  "exits": {
+    "room-0-4-0:e": {
+      "id": "room-0-4-0:e",
+      "fromRoomId": "room-0-4-0",
+      "direction": "e",
+      "toRoomId": "room-1-4-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-4-0:s": {
+      "id": "room-0-4-0:s",
+      "fromRoomId": "room-0-4-0",
+      "direction": "s",
+      "toRoomId": "room-0-5-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-5-0:n": {
+      "id": "room-0-5-0:n",
+      "fromRoomId": "room-0-5-0",
+      "direction": "n",
+      "toRoomId": "room-0-4-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-5-0:s": {
+      "id": "room-0-5-0:s",
+      "fromRoomId": "room-0-5-0",
+      "direction": "s",
+      "toRoomId": "room-0-6-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-6-0:n": {
+      "id": "room-0-6-0:n",
+      "fromRoomId": "room-0-6-0",
+      "direction": "n",
+      "toRoomId": "room-0-5-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-6-0:s": {
+      "id": "room-0-6-0:s",
+      "fromRoomId": "room-0-6-0",
+      "direction": "s",
+      "toRoomId": "room-0-7-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-7-0:n": {
+      "id": "room-0-7-0:n",
+      "fromRoomId": "room-0-7-0",
+      "direction": "n",
+      "toRoomId": "room-0-6-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-7-0:s": {
+      "id": "room-0-7-0:s",
+      "fromRoomId": "room-0-7-0",
+      "direction": "s",
+      "toRoomId": "room-0-8-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-8-0:n": {
+      "id": "room-0-8-0:n",
+      "fromRoomId": "room-0-8-0",
+      "direction": "n",
+      "toRoomId": "room-0-7-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-1-1-0:e": {
+      "id": "room-1-1-0:e",
+      "fromRoomId": "room-1-1-0",
+      "direction": "e",
+      "toRoomId": "room-2-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-1-3-0:s": {
+      "id": "room-1-3-0:s",
+      "fromRoomId": "room-1-3-0",
+      "direction": "s",
+      "toRoomId": "room-1-4-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-1-3-0:w": {
+      "id": "room-1-3-0:w",
+      "fromRoomId": "room-1-3-0",
+      "direction": "w",
+      "toRoomId": "room-0-3-0",
+      "isTwoWay": false,
+      "doorFlags": [
+        "door",
+        "no_mob"
+      ],
+      "hasDoor": true,
+      "doorName": "door",
+      "keyMode": "no_keyhole",
+      "doorWeight": 1
+    },
+    "room-1-4-0:n": {
+      "id": "room-1-4-0:n",
+      "fromRoomId": "room-1-4-0",
+      "direction": "n",
+      "toRoomId": "room-1-3-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-1-4-0:w": {
+      "id": "room-1-4-0:w",
+      "fromRoomId": "room-1-4-0",
+      "direction": "w",
+      "toRoomId": "room-0-4-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-2-1-0:e": {
+      "id": "room-2-1-0:e",
+      "fromRoomId": "room-2-1-0",
+      "direction": "e",
+      "toRoomId": "room-3-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-2-1-0:w": {
+      "id": "room-2-1-0:w",
+      "fromRoomId": "room-2-1-0",
+      "direction": "w",
+      "toRoomId": "room-1-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-2-2-0:e": {
+      "id": "room-2-2-0:e",
+      "fromRoomId": "room-2-2-0",
+      "direction": "e",
+      "toRoomId": "room-3-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-3-0-0:e": {
+      "id": "room-3-0-0:e",
+      "fromRoomId": "room-3-0-0",
+      "direction": "e",
+      "toRoomId": "room-4-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-3-0-0:s": {
+      "id": "room-3-0-0:s",
+      "fromRoomId": "room-3-0-0",
+      "direction": "s",
+      "toRoomId": "room-3-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-3-1-0:n": {
+      "id": "room-3-1-0:n",
+      "fromRoomId": "room-3-1-0",
+      "direction": "n",
+      "toRoomId": "room-3-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-3-1-0:e": {
+      "id": "room-3-1-0:e",
+      "fromRoomId": "room-3-1-0",
+      "direction": "e",
+      "toRoomId": "room-4-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-3-1-0:s": {
+      "id": "room-3-1-0:s",
+      "fromRoomId": "room-3-1-0",
+      "direction": "s",
+      "toRoomId": "room-3-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-3-1-0:w": {
+      "id": "room-3-1-0:w",
+      "fromRoomId": "room-3-1-0",
+      "direction": "w",
+      "toRoomId": "room-2-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-3-2-0:n": {
+      "id": "room-3-2-0:n",
+      "fromRoomId": "room-3-2-0",
+      "direction": "n",
+      "toRoomId": "room-3-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-3-2-0:e": {
+      "id": "room-3-2-0:e",
+      "fromRoomId": "room-3-2-0",
+      "direction": "e",
+      "toRoomId": "room-4-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-3-2-0:w": {
+      "id": "room-3-2-0:w",
+      "fromRoomId": "room-3-2-0",
+      "direction": "w",
+      "toRoomId": "room-2-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-4-0-0:e": {
+      "id": "room-4-0-0:e",
+      "fromRoomId": "room-4-0-0",
+      "direction": "e",
+      "toRoomId": "room-5-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-4-0-0:s": {
+      "id": "room-4-0-0:s",
+      "fromRoomId": "room-4-0-0",
+      "direction": "s",
+      "toRoomId": "room-4-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-4-0-0:w": {
+      "id": "room-4-0-0:w",
+      "fromRoomId": "room-4-0-0",
+      "direction": "w",
+      "toRoomId": "room-3-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-4-1-0:n": {
+      "id": "room-4-1-0:n",
+      "fromRoomId": "room-4-1-0",
+      "direction": "n",
+      "toRoomId": "room-4-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-4-1-0:e": {
+      "id": "room-4-1-0:e",
+      "fromRoomId": "room-4-1-0",
+      "direction": "e",
+      "toRoomId": "room-5-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-4-1-0:s": {
+      "id": "room-4-1-0:s",
+      "fromRoomId": "room-4-1-0",
+      "direction": "s",
+      "toRoomId": "room-4-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-4-1-0:w": {
+      "id": "room-4-1-0:w",
+      "fromRoomId": "room-4-1-0",
+      "direction": "w",
+      "toRoomId": "room-3-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-4-2-0:n": {
+      "id": "room-4-2-0:n",
+      "fromRoomId": "room-4-2-0",
+      "direction": "n",
+      "toRoomId": "room-4-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-4-2-0:e": {
+      "id": "room-4-2-0:e",
+      "fromRoomId": "room-4-2-0",
+      "direction": "e",
+      "toRoomId": "room-5-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-4-2-0:s": {
+      "id": "room-4-2-0:s",
+      "fromRoomId": "room-4-2-0",
+      "direction": "s",
+      "toRoomId": "room-4-3-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-4-2-0:w": {
+      "id": "room-4-2-0:w",
+      "fromRoomId": "room-4-2-0",
+      "direction": "w",
+      "toRoomId": "room-3-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-4-3-0:n": {
+      "id": "room-4-3-0:n",
+      "fromRoomId": "room-4-3-0",
+      "direction": "n",
+      "toRoomId": "room-4-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-0-0:e": {
+      "id": "room-5-0-0:e",
+      "fromRoomId": "room-5-0-0",
+      "direction": "e",
+      "toRoomId": "room-6-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-0-0:s": {
+      "id": "room-5-0-0:s",
+      "fromRoomId": "room-5-0-0",
+      "direction": "s",
+      "toRoomId": "room-5-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-0-0:w": {
+      "id": "room-5-0-0:w",
+      "fromRoomId": "room-5-0-0",
+      "direction": "w",
+      "toRoomId": "room-4-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-0-0:u": {
+      "id": "room-5-0-0:u",
+      "fromRoomId": "room-5-0-0",
+      "direction": "u",
+      "toRoomId": "room-mqacvebu-2",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-0-0:d": {
+      "id": "room-5-0-0:d",
+      "fromRoomId": "room-5-0-0",
+      "direction": "d",
+      "toRoomId": "room-mqbhcudw-2",
+      "isTwoWay": false,
+      "doorFlags": [
+        "door",
+        "no_mob"
+      ],
+      "hasDoor": true,
+      "doorName": "trapdoor",
+      "keyMode": "no_keyhole",
+      "doorWeight": 1
+    },
+    "room-5-1-0:n": {
+      "id": "room-5-1-0:n",
+      "fromRoomId": "room-5-1-0",
+      "direction": "n",
+      "toRoomId": "room-5-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-1-0:e": {
+      "id": "room-5-1-0:e",
+      "fromRoomId": "room-5-1-0",
+      "direction": "e",
+      "toRoomId": "room-6-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-1-0:s": {
+      "id": "room-5-1-0:s",
+      "fromRoomId": "room-5-1-0",
+      "direction": "s",
+      "toRoomId": "room-5-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-1-0:w": {
+      "id": "room-5-1-0:w",
+      "fromRoomId": "room-5-1-0",
+      "direction": "w",
+      "toRoomId": "room-4-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-2-0:n": {
+      "id": "room-5-2-0:n",
+      "fromRoomId": "room-5-2-0",
+      "direction": "n",
+      "toRoomId": "room-5-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-2-0:w": {
+      "id": "room-5-2-0:w",
+      "fromRoomId": "room-5-2-0",
+      "direction": "w",
+      "toRoomId": "room-4-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-6-0-0:e": {
+      "id": "room-6-0-0:e",
+      "fromRoomId": "room-6-0-0",
+      "direction": "e",
+      "toRoomId": "room-7-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-6-0-0:s": {
+      "id": "room-6-0-0:s",
+      "fromRoomId": "room-6-0-0",
+      "direction": "s",
+      "toRoomId": "room-6-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-6-0-0:w": {
+      "id": "room-6-0-0:w",
+      "fromRoomId": "room-6-0-0",
+      "direction": "w",
+      "toRoomId": "room-5-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-6-1-0:n": {
+      "id": "room-6-1-0:n",
+      "fromRoomId": "room-6-1-0",
+      "direction": "n",
+      "toRoomId": "room-6-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-6-1-0:w": {
+      "id": "room-6-1-0:w",
+      "fromRoomId": "room-6-1-0",
+      "direction": "w",
+      "toRoomId": "room-5-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-7-0-0:e": {
+      "id": "room-7-0-0:e",
+      "fromRoomId": "room-7-0-0",
+      "direction": "e",
+      "toRoomId": "room-8-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-7-0-0:s": {
+      "id": "room-7-0-0:s",
+      "fromRoomId": "room-7-0-0",
+      "direction": "s",
+      "toRoomId": "room-7-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-7-0-0:w": {
+      "id": "room-7-0-0:w",
+      "fromRoomId": "room-7-0-0",
+      "direction": "w",
+      "toRoomId": "room-6-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-7-1-0:n": {
+      "id": "room-7-1-0:n",
+      "fromRoomId": "room-7-1-0",
+      "direction": "n",
+      "toRoomId": "room-7-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-8-0-0:w": {
+      "id": "room-8-0-0:w",
+      "fromRoomId": "room-8-0-0",
+      "direction": "w",
+      "toRoomId": "room-7-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-mqacvebu-2:d": {
+      "id": "room-mqacvebu-2:d",
+      "fromRoomId": "room-mqacvebu-2",
+      "direction": "d",
+      "toRoomId": "room-5-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-1-5-0:n": {
+      "id": "room-1-5-0:n",
+      "fromRoomId": "room-1-5-0",
+      "direction": "n",
+      "toRoomId": "room-1-4-0",
+      "isTwoWay": false
+    },
+    "room-1-4-0:s": {
+      "id": "room-1-4-0:s",
+      "fromRoomId": "room-1-4-0",
+      "direction": "s",
+      "toRoomId": "room-1-5-0",
+      "isTwoWay": false
+    },
+    "room-1-5-0:s": {
+      "id": "room-1-5-0:s",
+      "fromRoomId": "room-1-5-0",
+      "direction": "s",
+      "toRoomId": "room-1-6-0",
+      "isTwoWay": false
+    },
+    "room-1-6-0:n": {
+      "id": "room-1-6-0:n",
+      "fromRoomId": "room-1-6-0",
+      "direction": "n",
+      "toRoomId": "room-1-5-0",
+      "isTwoWay": false
+    },
+    "room-1-5-0:e": {
+      "id": "room-1-5-0:e",
+      "fromRoomId": "room-1-5-0",
+      "direction": "e",
+      "toRoomId": "room-2-5-0",
+      "isTwoWay": false
+    },
+    "room-2-5-0:w": {
+      "id": "room-2-5-0:w",
+      "fromRoomId": "room-2-5-0",
+      "direction": "w",
+      "toRoomId": "room-1-5-0",
+      "isTwoWay": false
+    },
+    "room-1-5-0:w": {
+      "id": "room-1-5-0:w",
+      "fromRoomId": "room-1-5-0",
+      "direction": "w",
+      "toRoomId": "room-0-5-0",
+      "isTwoWay": false
+    },
+    "room-0-5-0:e": {
+      "id": "room-0-5-0:e",
+      "fromRoomId": "room-0-5-0",
+      "direction": "e",
+      "toRoomId": "room-1-5-0",
+      "isTwoWay": false
+    },
+    "room-2-4-0:s": {
+      "id": "room-2-4-0:s",
+      "fromRoomId": "room-2-4-0",
+      "direction": "s",
+      "toRoomId": "room-2-5-0",
+      "isTwoWay": false
+    },
+    "room-2-5-0:n": {
+      "id": "room-2-5-0:n",
+      "fromRoomId": "room-2-5-0",
+      "direction": "n",
+      "toRoomId": "room-2-4-0",
+      "isTwoWay": false
+    },
+    "room-2-4-0:e": {
+      "id": "room-2-4-0:e",
+      "fromRoomId": "room-2-4-0",
+      "direction": "e",
+      "toRoomId": "room-3-4-0",
+      "isTwoWay": false
+    },
+    "room-2-4-0:w": {
+      "id": "room-2-4-0:w",
+      "fromRoomId": "room-2-4-0",
+      "direction": "w",
+      "toRoomId": "room-1-4-0",
+      "isTwoWay": false
+    },
+    "room-1-4-0:e": {
+      "id": "room-1-4-0:e",
+      "fromRoomId": "room-1-4-0",
+      "direction": "e",
+      "toRoomId": "room-2-4-0",
+      "isTwoWay": false
+    },
+    "room-3-3-0:n": {
+      "id": "room-3-3-0:n",
+      "fromRoomId": "room-3-3-0",
+      "direction": "n",
+      "toRoomId": "room-3-2-0",
+      "isTwoWay": false
+    },
+    "room-3-2-0:s": {
+      "id": "room-3-2-0:s",
+      "fromRoomId": "room-3-2-0",
+      "direction": "s",
+      "toRoomId": "room-3-3-0",
+      "isTwoWay": false
+    },
+    "room-3-3-0:s": {
+      "id": "room-3-3-0:s",
+      "fromRoomId": "room-3-3-0",
+      "direction": "s",
+      "toRoomId": "room-3-4-0",
+      "isTwoWay": false
+    },
+    "room-3-4-0:n": {
+      "id": "room-3-4-0:n",
+      "fromRoomId": "room-3-4-0",
+      "direction": "n",
+      "toRoomId": "room-3-3-0",
+      "isTwoWay": false
+    },
+    "room-3-3-0:e": {
+      "id": "room-3-3-0:e",
+      "fromRoomId": "room-3-3-0",
+      "direction": "e",
+      "toRoomId": "room-4-3-0",
+      "isTwoWay": false
+    },
+    "room-4-3-0:w": {
+      "id": "room-4-3-0:w",
+      "fromRoomId": "room-4-3-0",
+      "direction": "w",
+      "toRoomId": "room-3-3-0",
+      "isTwoWay": false
+    },
+    "room-2-0-0:w": {
+      "id": "room-2-0-0:w",
+      "fromRoomId": "room-2-0-0",
+      "direction": "w",
+      "toRoomId": "room-1-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-1-0-0:e": {
+      "id": "room-1-0-0:e",
+      "fromRoomId": "room-1-0-0",
+      "direction": "e",
+      "toRoomId": "room-2-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-1-0-0:w": {
+      "id": "room-1-0-0:w",
+      "fromRoomId": "room-1-0-0",
+      "direction": "w",
+      "toRoomId": "room-0-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-0-0:e": {
+      "id": "room-0-0-0:e",
+      "fromRoomId": "room-0-0-0",
+      "direction": "e",
+      "toRoomId": "room-1-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-0-0:s": {
+      "id": "room-0-0-0:s",
+      "fromRoomId": "room-0-0-0",
+      "direction": "s",
+      "toRoomId": "room-0-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-1-0:n": {
+      "id": "room-0-1-0:n",
+      "fromRoomId": "room-0-1-0",
+      "direction": "n",
+      "toRoomId": "room-0-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-1-0:s": {
+      "id": "room-0-1-0:s",
+      "fromRoomId": "room-0-1-0",
+      "direction": "s",
+      "toRoomId": "room-0-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-2-0:n": {
+      "id": "room-0-2-0:n",
+      "fromRoomId": "room-0-2-0",
+      "direction": "n",
+      "toRoomId": "room-0-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-2-0:e": {
+      "id": "room-0-2-0:e",
+      "fromRoomId": "room-0-2-0",
+      "direction": "e",
+      "toRoomId": "room-1-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-2-0:s": {
+      "id": "room-0-2-0:s",
+      "fromRoomId": "room-0-2-0",
+      "direction": "s",
+      "toRoomId": "room-0-3-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-3-0:n": {
+      "id": "room-0-3-0:n",
+      "fromRoomId": "room-0-3-0",
+      "direction": "n",
+      "toRoomId": "room-0-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-3-0:e": {
+      "id": "room-0-3-0:e",
+      "fromRoomId": "room-0-3-0",
+      "direction": "e",
+      "toRoomId": "room-1-3-0",
+      "isTwoWay": false,
+      "doorFlags": [
+        "door",
+        "no_mob"
+      ],
+      "hasDoor": true,
+      "doorName": "door",
+      "keyMode": "no_keyhole",
+      "doorWeight": 1
+    },
+    "room-1-2-0:w": {
+      "id": "room-1-2-0:w",
+      "fromRoomId": "room-1-2-0",
+      "direction": "w",
+      "toRoomId": "room-0-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-2-3-0:n": {
+      "id": "room-2-3-0:n",
+      "fromRoomId": "room-2-3-0",
+      "direction": "n",
+      "toRoomId": "room-2-2-0",
+      "isTwoWay": false
+    },
+    "room-2-2-0:s": {
+      "id": "room-2-2-0:s",
+      "fromRoomId": "room-2-2-0",
+      "direction": "s",
+      "toRoomId": "room-2-3-0",
+      "isTwoWay": false
+    },
+    "room-2-3-0:s": {
+      "id": "room-2-3-0:s",
+      "fromRoomId": "room-2-3-0",
+      "direction": "s",
+      "toRoomId": "room-2-4-0",
+      "isTwoWay": false
+    },
+    "room-2-4-0:n": {
+      "id": "room-2-4-0:n",
+      "fromRoomId": "room-2-4-0",
+      "direction": "n",
+      "toRoomId": "room-2-3-0",
+      "isTwoWay": false
+    },
+    "room-2-3-0:e": {
+      "id": "room-2-3-0:e",
+      "fromRoomId": "room-2-3-0",
+      "direction": "e",
+      "toRoomId": "room-3-3-0",
+      "isTwoWay": false
+    },
+    "room-3-3-0:w": {
+      "id": "room-3-3-0:w",
+      "fromRoomId": "room-3-3-0",
+      "direction": "w",
+      "toRoomId": "room-2-3-0",
+      "isTwoWay": false
+    },
+    "room-2-3-0:w": {
+      "id": "room-2-3-0:w",
+      "fromRoomId": "room-2-3-0",
+      "direction": "w",
+      "toRoomId": "room-1-3-0",
+      "isTwoWay": false
+    },
+    "room-1-3-0:e": {
+      "id": "room-1-3-0:e",
+      "fromRoomId": "room-1-3-0",
+      "direction": "e",
+      "toRoomId": "room-2-3-0",
+      "isTwoWay": false
+    }
+  },
+  "commandNodes": {
+    "room-mqeh5cu6-4": {
+      "id": "room-mqeh5cu6-4",
+      "roomId": "room-0-5-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": 1,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "10100"
+      },
+      "fields": {
+        "vnum": "1599",
+        "name": "a black bear",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeh5cu7-5": {
+      "id": "room-mqeh5cu7-5",
+      "roomId": "room-0-5-0",
+      "parentId": null,
+      "order": 1,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": 1,
+        "room": null,
+        "chancePercent": 100,
+        "raw": "10000"
+      },
+      "fields": {
+        "vnum": "2138",
+        "name": "a bear cub",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeh5u06-6": {
+      "id": "room-mqeh5u06-6",
+      "roomId": "room-0-8-0",
+      "parentId": null,
+      "order": 0,
+      "type": "object",
+      "limit": {
+        "world": null,
+        "zone": 1,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "10100"
+      },
+      "fields": {
+        "vnum": "6515",
+        "name": "a brown pond",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeh5xh6-8": {
+      "id": "room-mqeh5xh6-8",
+      "roomId": "room-1-1-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": 2,
+        "room": null,
+        "chancePercent": 100,
+        "raw": "20000"
+      },
+      "fields": {
+        "vnum": "7004",
+        "name": "a giant earth beetle",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeh5xh6-9": {
+      "id": "room-mqeh5xh6-9",
+      "roomId": "room-1-1-0",
+      "parentId": null,
+      "order": 1,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": 1,
+        "room": null,
+        "chancePercent": 100,
+        "raw": "10000"
+      },
+      "fields": {
+        "vnum": "2730",
+        "name": "a brown, long-legged spider",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeh6o3i-13": {
+      "id": "room-mqeh6o3i-13",
+      "roomId": "room-1-6-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 2,
+        "chancePercent": 100,
+        "raw": "200"
+      },
+      "fields": {
+        "vnum": "7018",
+        "name": "a vulture",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeh6o3i-14": {
+      "id": "room-mqeh6o3i-14",
+      "roomId": "room-1-6-0",
+      "parentId": null,
+      "order": 1,
+      "type": "object",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "1750",
+        "name": "a nest",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeh77dx-17": {
+      "id": "room-mqeh77dx-17",
+      "roomId": "room-2-3-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "6481",
+        "name": "a fisherman) (stand",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeh7ikn-20": {
+      "id": "room-mqeh7ikn-20",
+      "roomId": "room-3-0-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": 1,
+        "room": null,
+        "chancePercent": 100,
+        "raw": "10000"
+      },
+      "fields": {
+        "vnum": "1331",
+        "name": "a crayfish",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeh7kb5-21": {
+      "id": "room-mqeh7kb5-21",
+      "roomId": "room-3-1-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": 2,
+        "room": null,
+        "chancePercent": 100,
+        "raw": "20000"
+      },
+      "fields": {
+        "vnum": "1010",
+        "name": "a catfish",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeh7trf-22": {
+      "id": "room-mqeh7trf-22",
+      "roomId": "room-3-3-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": 1,
+        "room": null,
+        "chancePercent": 100,
+        "raw": "10000"
+      },
+      "fields": {
+        "vnum": "28",
+        "name": "a trout",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeh8s3h-25": {
+      "id": "room-mqeh8s3h-25",
+      "roomId": "room-5-0-0",
+      "parentId": null,
+      "order": 0,
+      "type": "object",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "9902",
+        "name": "some cracked and splintered pieces of wood",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeh8ttz-27": {
+      "id": "room-mqeh8ttz-27",
+      "roomId": "room-5-1-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": 2,
+        "room": 2,
+        "chancePercent": 100,
+        "raw": "20200"
+      },
+      "fields": {
+        "vnum": "6011",
+        "name": "an ibex",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeh9b70-28": {
+      "id": "room-mqeh9b70-28",
+      "roomId": "room-6-0-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "4002",
+        "name": "a small centipede",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeha1fd-29": {
+      "id": "room-mqeha1fd-29",
+      "roomId": "room-7-1-0",
+      "parentId": null,
+      "order": 0,
+      "type": "object",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "9902",
+        "name": "some cracked and splintered pieces of wood",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqehakpr-30": {
+      "id": "room-mqehakpr-30",
+      "roomId": "room-mqbhcudw-2",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "3801",
+        "name": "a giant termite",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqehakpr-31": {
+      "id": "room-mqehakpr-31",
+      "roomId": "room-mqbhcudw-2",
+      "parentId": null,
+      "order": 1,
+      "type": "object",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "6042",
+        "name": "a wooden crate",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqehamga-32": {
+      "id": "room-mqehamga-32",
+      "roomId": "room-mqacvebu-2",
+      "parentId": null,
+      "order": 0,
+      "type": "object",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "9902",
+        "name": "some cracked and splintered pieces of wood",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqehgsvf-33": {
+      "id": "room-mqehgsvf-33",
+      "roomId": "room-2-4-0",
+      "parentId": null,
+      "order": 0,
+      "type": "object",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "6008",
+        "name": "a rotting corpse",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqelmq04-1": {
+      "id": "room-mqelmq04-1",
+      "roomId": "room-3-4-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": 1,
+        "room": null,
+        "chancePercent": 100,
+        "raw": "10000"
+      },
+      "fields": {
+        "vnum": "1453",
+        "name": "a large sturgeon",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqepqy63-3": {
+      "id": "room-mqepqy63-3",
+      "roomId": "room-2-0-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "6114",
+        "name": "a huge tarantula",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqepqy63-4": {
+      "id": "room-mqepqy63-4",
+      "roomId": "room-2-0-0",
+      "parentId": null,
+      "order": 1,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "6113",
+        "name": "a huge, venomous spider",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqepr0v9-5": {
+      "id": "room-mqepr0v9-5",
+      "roomId": "room-1-0-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": 2,
+        "room": null,
+        "chancePercent": 100,
+        "raw": "20000"
+      },
+      "fields": {
+        "vnum": "1970",
+        "name": "a blue dragonfly",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeprit4-6": {
+      "id": "room-mqeprit4-6",
+      "roomId": "room-0-0-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "2663",
+        "name": "a coil of oozing vines",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeptxfm-7": {
+      "id": "room-mqeptxfm-7",
+      "roomId": "room-1-2-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "1804",
+        "name": "a clump of roots",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mqeptxfm-8": {
+      "id": "room-mqeptxfm-8",
+      "roomId": "room-1-2-0",
+      "parentId": null,
+      "order": 1,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "1550",
+        "name": "a black widow",
+        "target": "parent",
+        "container": "parent",
+        "position": ""
+      },
+      "notes": ""
+    }
+  },
+  "libraries": {
+    "room-mqee79ym-2": {
+      "id": "room-mqee79ym-2",
+      "targetType": "object",
+      "targetId": "room-mqee79db-1",
+      "name": "redress-obj",
+      "parameters": {
+        "object": "obj 9902 (some cracked and splintered pieces of wood)",
+        "keywords": "watchtower",
+        "short-desc": "a watchtower is here",
+        "long-desc": "A crumbling, circular watchtower rises above the hills.",
+        "plural-desc": "watchtowers",
+        "full-desc": "A withered wooden watchtower of Dorwinion slumps beside the old\n                road, its narrow beams gray with rot and weather. Little more\n                than a raised lookout now, it creaks in the wind over empty\n                fields once guarded by eastern men.",
+        "ptype": "the"
+      },
+      "requiresSupervisorReview": false,
+      "requiresLoad": true,
+      "notes": ""
+    },
+    "room-mqeefb3h-10": {
+      "id": "room-mqeefb3h-10",
+      "targetType": "mobile",
+      "targetId": "room-mqeefaje-9",
+      "name": "redress-mob",
+      "parameters": {
+        "mobile": "mob 2730 (a brown, long-legged spider)",
+        "act": "hisses and gurgles at you with malice",
+        "full-desc": "Abnormally large and bloated, the hairy legs of this spider\n               struggle to support its immense weight. A stench of rotting fish\n               eminates from its swollen and grotesque orafice of a mouth. Its\n               mandibles have two fangs protruding from either side with the\n               left one cracked from what one can only assume was a fierce\n               encounter. On its back, a violet hourglass shape bears claw\n               marks that have been raked across its hidious vestiges.",
+        "no-charm?": "yes",
+        "no-summon?": "yes"
+      },
+      "requiresSupervisorReview": false,
+      "requiresLoad": true,
+      "notes": ""
+    },
+    "room-mqeei60v-26": {
+      "id": "room-mqeei60v-26",
+      "targetType": "object",
+      "targetId": "room-mqeei5ah-25",
+      "name": "redress-obj",
+      "parameters": {
+        "object": "obj 9902 (some cracked and splintered pieces of wood)",
+        "keywords": "watchtower",
+        "short-desc": "a watchtower is here",
+        "long-desc": "A crumbling, circular watchtower rises above the hills.",
+        "plural-desc": "watchtowers",
+        "full-desc": "A withered wooden watchtower of Dorwinion slumps beside the old\n                road, its narrow beams gray with rot and weather. Little more\n                than a raised lookout now, it creaks in the wind over empty\n                fields once guarded by eastern men.",
+        "ptype": "the"
+      },
+      "requiresSupervisorReview": false,
+      "requiresLoad": true,
+      "notes": ""
+    },
+    "room-mqeflwl2-42": {
+      "id": "room-mqeflwl2-42",
+      "targetType": "mobile",
+      "targetId": "room-mqeflw07-41",
+      "name": "redress-mob",
+      "parameters": {
+        "mobile": "mob 2730 (a brown, long-legged spider)",
+        "act": "hisses and gurgles at you with malice",
+        "full-desc": "Abnormally large and bloated, the hairy legs of this spider\n               struggle to support its immense weight. A stench of rotting fish\n               eminates from its swollen and grotesque orafice of a mouth. Its\n               mandibles have two fangs protruding from either side with the\n               left one cracked from what one can only assume was a fierce\n               encounter. On its back, a violet hourglass shape bears claw\n               marks that have been raked across its hidious vestiges.",
+        "no-charm?": "yes",
+        "no-summon?": "yes"
+      },
+      "requiresSupervisorReview": false,
+      "requiresLoad": true,
+      "notes": ""
+    },
+    "room-mqefoqth-58": {
+      "id": "room-mqefoqth-58",
+      "targetType": "object",
+      "targetId": "room-mqefoq8l-57",
+      "name": "redress-obj",
+      "parameters": {
+        "object": "obj 9902 (some cracked and splintered pieces of wood)",
+        "keywords": "watchtower",
+        "short-desc": "a watchtower is here",
+        "long-desc": "A crumbling, circular watchtower rises above the hills.",
+        "plural-desc": "watchtowers",
+        "full-desc": "A withered wooden watchtower of Dorwinion slumps beside the old\n                road, its narrow beams gray with rot and weather. Little more\n                than a raised lookout now, it creaks in the wind over empty\n                fields once guarded by eastern men.",
+        "ptype": "the"
+      },
+      "requiresSupervisorReview": false,
+      "requiresLoad": true,
+      "notes": ""
+    },
+    "room-mqeh2kcb-2": {
+      "id": "room-mqeh2kcb-2",
+      "targetType": "object",
+      "targetId": "room-mqeh2jrf-1",
+      "name": "redress-obj",
+      "parameters": {
+        "object": "obj 9902 (some cracked and splintered pieces of wood)",
+        "keywords": "watchtower",
+        "short-desc": "a watchtower is here",
+        "long-desc": "A crumbling, circular watchtower rises above the hills.",
+        "plural-desc": "watchtowers",
+        "full-desc": "A withered wooden watchtower of Dorwinion slumps beside the old\n                road, its narrow beams gray with rot and weather. Little more\n                than a raised lookout now, it creaks in the wind over empty\n                fields once guarded by eastern men.",
+        "ptype": "the"
+      },
+      "requiresSupervisorReview": false,
+      "requiresLoad": true,
+      "notes": ""
+    },
+    "room-mqeh5y21-10": {
+      "id": "room-mqeh5y21-10",
+      "targetType": "mobile",
+      "targetId": "room-mqeh5xh6-9",
+      "name": "redress-mob",
+      "parameters": {
+        "mobile": "mob 2730 (a brown, long-legged spider)",
+        "act": "hisses and gurgles at you with malice",
+        "full-desc": "Abnormally large and bloated, the hairy legs of this spider\n               struggle to support its immense weight. A stench of rotting fish\n               eminates from its swollen and grotesque orafice of a mouth. Its\n               mandibles have two fangs protruding from either side with the\n               left one cracked from what one can only assume was a fierce\n               encounter. On its back, a violet hourglass shape bears claw\n               marks that have been raked across its hidious vestiges.",
+        "no-charm?": "yes",
+        "no-summon?": "yes"
+      },
+      "requiresSupervisorReview": false,
+      "requiresLoad": true,
+      "notes": ""
+    },
+    "room-mqeh8qxu-24": {
+      "id": "room-mqeh8qxu-24",
+      "targetType": "room",
+      "targetId": "room-4-3-0",
+      "name": "sign",
+      "parameters": {
+        "signs": "[1 defined]\n            runes [Sindarin]"
+      },
+      "requiresSupervisorReview": false,
+      "requiresLoad": true,
+      "notes": ""
+    },
+    "room-mqeh8snu-26": {
+      "id": "room-mqeh8snu-26",
+      "targetType": "object",
+      "targetId": "room-mqeh8s3h-25",
+      "name": "redress-obj",
+      "parameters": {
+        "object": "obj 9902 (some cracked and splintered pieces of wood)",
+        "keywords": "watchtower",
+        "short-desc": "a watchtower is here",
+        "long-desc": "A crumbling, circular watchtower rises above the hills.",
+        "plural-desc": "watchtowers",
+        "full-desc": "A withered wooden watchtower of Dorwinion slumps beside the old\n                road, its narrow beams gray with rot and weather. Little more\n                than a raised lookout now, it creaks in the wind over empty\n                fields once guarded by eastern men.",
+        "ptype": "the"
+      },
+      "requiresSupervisorReview": false,
+      "requiresLoad": true,
+      "notes": ""
+    },
+    "room-mqehgtgf-34": {
+      "id": "room-mqehgtgf-34",
+      "targetType": "room",
+      "targetId": "room-2-4-0",
+      "name": "redress-corpse",
+      "parameters": {
+        "mobile": "mob 2138 (a bear cub)",
+        "keywords": "",
+        "short-desc": "a half-eaten corpse",
+        "long-desc": "The half-eaten corpse of a bear cub is lying here.",
+        "plural-desc": "half-eaten corpses",
+        "full-desc": "The corpse of a young bear cub has been picked and gnawed at by\n                some carnivore who has made this its dinner. The meat has been\n                torn off the bones and what is left offers little nutritional\n                value.",
+        "butchered?": "no",
+        "drainable?": "no",
+        "hanging?": "no",
+        "head?": "yes"
+      },
+      "requiresSupervisorReview": false,
+      "requiresLoad": true,
+      "notes": ""
+    }
+  },
+  "zoneInfoKeywords": {
+    "asciimap": {
+      "id": "asciimap",
+      "keyword": "asciimap",
+      "body": "Keyword \"asciimap\" (lgit: info/zones/31/asciimap)\n\nThe ASCIIMAP is the \"root\" map we use for all building projects. This map\ndirectly informs the \"sector\" of each room.\n\n\nKey\n===\n\n. = field or brush\n~ = river or water\nt = trail through field or brush\nf = forest\n( = forested hills\n[ = barren/grass/brush hills\n> = mountains\n\n\n                15\n\n           fff~t[[..\n           fff~t[[.\n           ff.~t[\n           f..~t\n     306   .ff~\n           >>f\n           >>\n           .\n           [",
+      "rawText": "Keyword \"asciimap\" (lgit: info/zones/31/asciimap)\n\nThe ASCIIMAP is the \"root\" map we use for all building projects. This map\ndirectly informs the \"sector\" of each room.\n\n\nKey\n===\n\n. = field or brush\n~ = river or water\nt = trail through field or brush\nf = forest\n( = forested hills\n[ = barren/grass/brush hills\n> = mountains\n\n\n                15\n\n           fff~t[[..\n           fff~t[[.\n           ff.~t[\n           f..~t\n     306   .ff~\n           >>f\n           >>\n           .\n           [",
+      "importedAt": 1781536629576
+    },
+    "map": {
+      "id": "map",
+      "keyword": "map",
+      "body": "Keyword \"map\" (lgit: info/zones/31/map)\n\nThe MAP keyword serves as a blueprint for the zone's layout.\nThis has become a little redundant in the age of Mapper, but\nit is still has use as a reference.\n\nThe MAP is usually made after the zone has been built out and\nfinalized.\n\n\nIN PROGRESS -- Below is map from z14 for reference.\n\n\nLegend, terrain:                                  Legend, connections:\n\nP     Plains                                      ^v <>    One way connection\nF     Forests                                     du       Down/up connection\nSC    Small Cavern                                D        Door\nI     Indoors                                     MM       Delayed forest exit\nS     Swamp\n+     Trail\n\n\n\n\n                                                     P92\n                                                      |\n                                                      |\n                                                      |\n                                               P83---P93\n                                                |     +\n                                                |     +\n                                                |     +\n                                         P74---P84---P94\n                                                |     +\n                                                |     +\n                                                |     +\n                                   P65---P75---S85+++P95\n                                I104|           | SC103\n                      I100     duD\\ |           |  du\\\n                       |D          \\|           |     \\\n                      P101+++P56+++P66   P76---P86---P96\n                       |      +           |     +     |\n                      P102    +           |     +     |\n                              +           |     +     |\n                       F47   F57+++F67+++P77+++P87---P97\n                        |     +           |     |     |\n                        |     +           |     |     |\n                        |  MM +           |     |     |\n                 F38+++F48+++F58---F68---P78---P88---P98\n                  +           |     |     |     |     |\n                  +           |     |     |     |     |\n                  +           |     |     |     |     |\n           F29---F39   F49---F59   F69---P79   P89---P99\n                  +                             |     |\n                  +                             |     |\n                  +                             |     |\n               306:30                       306:80---306:90",
+      "rawText": "Keyword \"map\" (lgit: info/zones/31/map)\n\nThe MAP keyword serves as a blueprint for the zone's layout.\nThis has become a little redundant in the age of Mapper, but\nit is still has use as a reference.\n\nThe MAP is usually made after the zone has been built out and\nfinalized.\n\n\nIN PROGRESS -- Below is map from z14 for reference.\n\n\nLegend, terrain:                                  Legend, connections:\n\nP     Plains                                      ^v <>    One way connection\nF     Forests                                     du       Down/up connection\nSC    Small Cavern                                D        Door\nI     Indoors                                     MM       Delayed forest exit\nS     Swamp\n+     Trail\n\n\n\n\n                                                     P92\n                                                      |\n                                                      |\n                                                      |\n                                               P83---P93\n                                                |     +\n                                                |     +\n                                                |     +\n                                         P74---P84---P94\n                                                |     +\n                                                |     +\n                                                |     +\n                                   P65---P75---S85+++P95\n                                I104|           | SC103\n                      I100     duD\\ |           |  du\\\n                       |D          \\|           |     \\\n                      P101+++P56+++P66   P76---P86---P96\n                       |      +           |     +     |\n                      P102    +           |     +     |\n                              +           |     +     |\n                       F47   F57+++F67+++P77+++P87---P97\n                        |     +           |     |     |\n                        |     +           |     |     |\n                        |  MM +           |     |     |\n                 F38+++F48+++F58---F68---P78---P88---P98\n                  +           |     |     |     |     |\n                  +           |     |     |     |     |\n                  +           |     |     |     |     |\n           F29---F39   F49---F59   F69---P79   P89---P99\n                  +                             |     |\n                  +                             |     |\n                  +                             |     |\n               306:30                       306:80---306:90",
+      "importedAt": 1781537702705
+    },
+    "mobs": {
+      "id": "mobs",
+      "keyword": "mobs",
+      "body": "Keyword \"mobs\" (lgit: info/zones/31/mobs)\nz31, mobs\nJUN 15 2026, Shaper\nThis zone contains automatically summarized mobile load data.\n\nInformation:\n This is summary of the mobile load for z31.\n                                      First Load   Max load\n New\n Significant (lvl 15+)                2            2\n High        (lvl 10-14)              8            8\n Mid         (lvl 5-9)                4            4\n Low         (lvl 0-4)                10           10\n===========================================================\n Total       (all levels)             24           24\n\nSignificant mobiles:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m7018 a vulture                      16         2           Elevated Perch\n\nHigh:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m2663 a coil of oozing vines         14         1           A Vine Choked Forest Thicket\n m6114 a huge tarantula               14         1           a Shadowy Forest by the River\n m1599 a black bear                   13         1           A Nook in the Mountains\n m1453 a large sturgeon               12         1           a Clear Channel in the River Running\n m1804 a clump of roots               12         1           Roots and Cobwebs\n m2730 UNKNOWN                        11         1           Muddy Tree-filled Ravine\n m3801 a giant termite                11         1           abandoned hideout\n m1550 a black widow                  10         1           Roots and Cobwebs\n\nMid:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m6113 a huge, venomous spider        9          1           a Shadowy Forest by the River\n m6481 a fisherman                    6          1           fishing camp\n m7004 a giant earth beetle           5          2           Muddy Tree-filled Ravine\n\nLow:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m1010 a catfish                      4          2           a Muddy Riverbed\n m2138 a bear cub                     4          1           A Nook in the Mountains\n m6011 an ibex                        4          2           A Grassy Rise Beside the Road\n m28   a trout                        1          1           River Running\n m1331 a crayfish                     1          1           the River Running\n m4002 a small centipede              1          1           The Rocky Hills\n m1970 a blue dragonfly               0          2           Muddy Pit Surrounded by Trees\n",
+      "rawText": "Keyword \"mobs\" (lgit: info/zones/31/mobs)\nz31, mobs\nJUN 15 2026, Shaper\nThis zone contains automatically summarized mobile load data.\n\nInformation:\n This is summary of the mobile load for z31.\n                                      First Load   Max load\n New\n Significant (lvl 15+)                2            2\n High        (lvl 10-14)              8            8\n Mid         (lvl 5-9)                4            4\n Low         (lvl 0-4)                10           10\n===========================================================\n Total       (all levels)             24           24\n\nSignificant mobiles:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m7018 a vulture                      16         2           Elevated Perch\n\nHigh:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m2663 a coil of oozing vines         14         1           A Vine Choked Forest Thicket\n m6114 a huge tarantula               14         1           a Shadowy Forest by the River\n m1599 a black bear                   13         1           A Nook in the Mountains\n m1453 a large sturgeon               12         1           a Clear Channel in the River Running\n m1804 a clump of roots               12         1           Roots and Cobwebs\n m2730 UNKNOWN                        11         1           Muddy Tree-filled Ravine\n m3801 a giant termite                11         1           abandoned hideout\n m1550 a black widow                  10         1           Roots and Cobwebs\n\nMid:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m6113 a huge, venomous spider        9          1           a Shadowy Forest by the River\n m6481 a fisherman                    6          1           fishing camp\n m7004 a giant earth beetle           5          2           Muddy Tree-filled Ravine\n\nLow:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m1010 a catfish                      4          2           a Muddy Riverbed\n m2138 a bear cub                     4          1           A Nook in the Mountains\n m6011 an ibex                        4          2           A Grassy Rise Beside the Road\n m28   a trout                        1          1           River Running\n m1331 a crayfish                     1          1           the River Running\n m4002 a small centipede              1          1           The Rocky Hills\n m1970 a blue dragonfly               0          2           Muddy Pit Surrounded by Trees\n",
+      "importedAt": 1781537341221
+    },
+    "mudlle": {
+      "id": "mudlle",
+      "keyword": "mudlle",
+      "body": "Keyword \"mudlle\" (lgit: info/zones/31/mudlle)\n\nThe MUDLLE keyword is where you document all the non-custom mudlle in your\nzone.\nBegin this during the Mb phase.\n\nMudlle list for z31\n\nSUMMARY\n=======\n  room_echo              X\n  slope                  X\n  special-door           X\n  redress_obj            X\n  redress_mob            X\n  redress-corpse         X\n  watch-tower            X\n  watched-room           X\n...\n\nTotal:                  XX\n\nroom_echo\n=========\n  :XX \n\n\nslope\n=====\n\nspecial-door\n============\n\n\nredress_obj\n===========\n\n\nredress-corpse\n==============\n\n\nredress_mob\n===========\n\n\nwatch-tower\n===========\n\n\nwatched-room\n============",
+      "rawText": "Keyword \"mudlle\" (lgit: info/zones/31/mudlle)\n\nThe MUDLLE keyword is where you document all the non-custom mudlle in your\nzone.\nBegin this during the Mb phase.\n\nMudlle list for z31\n\nSUMMARY\n=======\n  room_echo              X\n  slope                  X\n  special-door           X\n  redress_obj            X\n  redress_mob            X\n  redress-corpse         X\n  watch-tower            X\n  watched-room           X\n...\n\nTotal:                  XX\n\nroom_echo\n=========\n  :XX \n\n\nslope\n=====\n\nspecial-door\n============\n\n\nredress_obj\n===========\n\n\nredress-corpse\n==============\n\n\nredress_mob\n===========\n\n\nwatch-tower\n===========\n\n\nwatched-room\n============",
+      "importedAt": 1781537341974
+    },
+    "objects": {
+      "id": "objects",
+      "keyword": "objects",
+      "body": "Keyword \"objects\" (lgit: info/zones/31/objects)\nz31, objects\nJUN 15 2026, Shaper\n                                    MIN LOAD        MAX LOAD\n    Herbs/plants                    0               0\n    Food                            0               0\n    Immobile                        7               7\n    Equipment                       0               0\n    Other                           0               0\n    Key                             0               0\n                                    ======          ======\n    Total                           7               7\n\nHERBS/PLANTS:\n (None)\n\nFOOD:\n (None)\n\nIMMOBILE:\no1750 a nest                             1                       31:16\no6008 a rotting corpse                   1                       31:24\no6042 a wooden crate                     1                       31:100\no6515 a brown pond                       1                       31:08\no9902 some cracked and splintered pieces of wood3                       31:50/71/101\n\nEQUIPMENT:\n (None)\n\nKEY:\n (None)\n\nOTHER:\n (None)\n",
+      "rawText": "Keyword \"objects\" (lgit: info/zones/31/objects)\nz31, objects\nJUN 15 2026, Shaper\n                                    MIN LOAD        MAX LOAD\n    Herbs/plants                    0               0\n    Food                            0               0\n    Immobile                        7               7\n    Equipment                       0               0\n    Other                           0               0\n    Key                             0               0\n                                    ======          ======\n    Total                           7               7\n\nHERBS/PLANTS:\n (None)\n\nFOOD:\n (None)\n\nIMMOBILE:\no1750 a nest                             1                       31:16\no6008 a rotting corpse                   1                       31:24\no6042 a wooden crate                     1                       31:100\no6515 a brown pond                       1                       31:08\no9902 some cracked and splintered pieces of wood3                       31:50/71/101\n\nEQUIPMENT:\n (None)\n\nKEY:\n (None)\n\nOTHER:\n (None)\n",
+      "importedAt": 1781537342973
+    },
+    "mc-review": {
+      "id": "mc-review",
+      "keyword": "mc-review",
+      "body": "Keyword \"mc-review\" (lgit: info/zones/31/mc-review)\n\nKeyword \"mc-review\" (lgit: info/zones/15/mc-review)\n\nThe MC-REVIEW keyword is your Supervisor documents any issues during the Mc\nphase.\nThe builder will also document that the issues have been rectified in this\ndocument.\n\nMc review for the zone 31\n\nText = Veladan\n/V = comments by Veladan\n/E = comments by Ellessar\n\n*******************************************************************************\nOPEN ISSUES\n*******************************************************************************\n\n*******************************************************************************\nRE-CHECK\n*******************************************************************************\nKEYWORDS:\nMAP:\nROOMS:\n\n\n*******************************************************************************\nCLOSED ISSUES\n*******************************************************************************",
+      "rawText": "Keyword \"mc-review\" (lgit: info/zones/31/mc-review)\n\nKeyword \"mc-review\" (lgit: info/zones/15/mc-review)\n\nThe MC-REVIEW keyword is your Supervisor documents any issues during the Mc\nphase.\nThe builder will also document that the issues have been rectified in this\ndocument.\n\nMc review for the zone 31\n\nText = Veladan\n/V = comments by Veladan\n/E = comments by Ellessar\n\n*******************************************************************************\nOPEN ISSUES\n*******************************************************************************\n\n*******************************************************************************\nRE-CHECK\n*******************************************************************************\nKEYWORDS:\nMAP:\nROOMS:\n\n\n*******************************************************************************\nCLOSED ISSUES\n*******************************************************************************",
+      "importedAt": 1781537344471
+    },
+    "mb-review": {
+      "id": "mb-review",
+      "keyword": "mb-review",
+      "body": "Keyword \"mb-review\" (lgit: info/zones/31/mb-review)\n\nKeyword \"mb-review\" (lgit: info/zones/15/mb-review)\n\nThe MB-REVIEW keyword is your Supervisor documents any issues during the Mb\nphase.\nThe builder will also document that the issues have been rectified in this\ndocument.\n\nMb review for the zone 31\n\nText = Veladan\n/V = comments by Veladan\n/E = comments by Ellessar\n\n*******************************************************************************\nOPEN ISSUES\n*******************************************************************************\n\n*******************************************************************************\nRE-CHECK\n*******************************************************************************\nKEYWORDS:\nMAP:\nROOMS:\n\n\n*******************************************************************************\nCLOSED ISSUES\n*******************************************************************************",
+      "rawText": "Keyword \"mb-review\" (lgit: info/zones/31/mb-review)\n\nKeyword \"mb-review\" (lgit: info/zones/15/mb-review)\n\nThe MB-REVIEW keyword is your Supervisor documents any issues during the Mb\nphase.\nThe builder will also document that the issues have been rectified in this\ndocument.\n\nMb review for the zone 31\n\nText = Veladan\n/V = comments by Veladan\n/E = comments by Ellessar\n\n*******************************************************************************\nOPEN ISSUES\n*******************************************************************************\n\n*******************************************************************************\nRE-CHECK\n*******************************************************************************\nKEYWORDS:\nMAP:\nROOMS:\n\n\n*******************************************************************************\nCLOSED ISSUES\n*******************************************************************************",
+      "importedAt": 1781537344721
+    },
+    "lore": {
+      "id": "lore",
+      "keyword": "Lore",
+      "body": "This region lies just south of Esgaroth (Long Lake) and east of the dark eaves of Mirkwood, where the River Running (Celduin) flows south toward the Sea of Rhûn. Historically, this area serves as a vital trade corridor where the Raft-men of Thranduil's realm, the Men of Dale, and the merchants of Dorwinion interact. The presence of the Dorwinion Road highlights its role as a bustling mercantile highway, though its proximity to the wild edges of Mirkwood leaves it vulnerable to stray orcs, spiders, and bandits preying on wealthy wine caravans.",
+      "rawText": "This region lies just south of Esgaroth (Long Lake) and east of the dark eaves of Mirkwood, where the River Running (Celduin) flows south toward the Sea of Rhûn. Historically, this area serves as a vital trade corridor where the Raft-men of Thranduil's realm, the Men of Dale, and the merchants of Dorwinion interact. The presence of the Dorwinion Road highlights its role as a bustling mercantile highway, though its proximity to the wild edges of Mirkwood leaves it vulnerable to stray orcs, spiders, and bandits preying on wealthy wine caravans.",
+      "importedAt": 1781540786610
+    }
+  }
 }
