@@ -232,7 +232,8 @@ class ZoneImporter {
       const lines = cleanOutput.split('\n');
       const prefix = `${zoneNumber}:`;
       lines.forEach(line => {
-        const match = line.match(/^\s*(\d+:\d+)/);
+        // Matches [31:15] bracket format from /misc build list output
+        const match = line.match(/^\s*\[(\d+:\d+)\]/);
         if (match) {
           const roomNum = match[1];
           if (roomNum.startsWith(prefix) && !this.roomNumbers.includes(roomNum)) {

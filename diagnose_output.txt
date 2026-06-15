@@ -1,0 +1,93 @@
+
+                               ***  MUME IX  ***
+
+                              In progress at FIRE
+                      (Free Internet Roleplay Experiences)
+                       Hosted at HEIG-VD (www.heig-vd.ch)
+
+              Adapted from J.R.R. Tolkien's Middle-earth world and
+                    maintained by CryHavoc, Manwe, and Nada.
+
+              Original code DikuMUD I (help credits), created by:
+        S. Hammer, T. Madsen, K. Nyboe, M. Seifert, and H.H. Staerfeldt.
+
+If you have never played MUME before, type NEW to create a new character,
+or ? for help.
+
+By what name do you wish to be known? Account password: 
+
+Reconnecting.
+
+[32mRiver Running[0m
+Obvious exits (31:33):
+ ~North~  - Strong Current of River Running  [31:32]
+  East    - Dorwinion Road  [31:43]
+ ~South~  - River Running  [31:34]
+  West    - Fishing camp  [31:23]
+
++ *~ C iMw NN NS 3133[31:33]>[31:0]    in@A Vine Choked Forest Thicket   {forest}  BUILD                    
+[31:1]    under@A Thick Dark Canopy         {forest}  BUILD                    
+[31:2]    in a@Clump of Trees               {forest}  BUILD                    
+[31:3]    under@Some Dark Bows              {forest}  BUILD                    
+[31:4]    in a@Field Bordering a Forest     {field}   BUILD                    
+[31:5]    in@A Nook in the Mountains       {mountains} BUILD                   
+[31:6]    in a@Scratchy Brush              {mountains} BUILD                   
+[31:7]    in a@Grassy Knoll                 {field}   BUILD                    
+[31:8]    on@a Jagged Crag test push        {hills}   BUILD                    
+[31:10]   in a@Muddy Pit Surrounded by      {forest}  BUILD                    
+          Trees                                                                
+[31:11]   in a@Muddy Tree-filled Ravine     {forest}  BUILD                    
+[31:12]   among@Roots and Cobwebs           {forest}  BUILD                    
+[31:13]   @field                            {field}   BUILD                    
+[31:14]   @forest                           {forest}  BUILD                    
+[31:15]   on a@Brambly Slope               {mountains} BUILD                   
+[31:16]   on a@Elevated Perch              {mountains} BUILD                   
+[31:20]   in@a Shadowy Forest by the River  {forest}  BUILD                    
+[31:21]   in a@Muddy Ravine                 {forest}  BUILD                    
+[31:22]   in a@Field by the River Running   {field}   BUILD                    
+[31:23]   @fishing camp                     {field}   BUILD                    
+[31:24]   amongst@Amongst Some Ragged       {forest}  BUILD                    
+          Trees                                                                
+[31:25]   @forest                           {forest}  BUILD                    
+[31:30]   in@the River Running              {water}   BUILD                    
+[31:31]   in@the River Running              {water}   BUILD                    
+[31:32]   in@strong Current of River        {water}   BUILD                    
+          Running                                                              
+[31:33]   in the@River Running              {water}   BUILD                    
+[31:34]   in the@River Running              {water}   BUILD                    
+[31:40]   on the@Dorwinion Road              {road}   BUILD                    
+[31:41]   on the@Dorwinion Road              {road}   BUILD                    
+[31:42]   on the@Dorwinion Road              {road}   BUILD                    
+[31:43]   on the@Dorwinion Road              {road}   BUILD                    
+[31:50]   among@hills by a watchtower       {hills}   BUILD                    
+[31:51]   among@The Rolling Hills           {hills}   BUILD                    
+[31:52]   @hill                             {hills}   BUILD                    
+[31:60]   among@The Rocky Hills             {hills}   BUILD                    
+[31:61]   @hill                             {hills}   BUILD                    
+[31:70]   @brush                            {brush}   BUILD                    
+[31:71]   @field                            {field}   BUILD                    
+[31:80]   @field                            {field}   BUILD                    
+[31:100]  @abandoned hideout                {cavern}  DARK BUILD               
+[31:101]  in@a Watchtower                  {building} BUILD                    
+
++ *~ C iMw NN NS 3133[31:33]>A [35mlarge sturgeon[0m has arrived from the south.
+Room [32m31:15[0m ([32m3115[0m) - [32mon a@Brambly Slope[0m
+Magical key: [32moilxygraac[0m, Owner: none, Sector: [32mmountains[0m, MapId: [32m15413516[0m
+Entrances: [32m0.00[0m ([32m0.0000[0m%), Magic: [[32m0.00[0m%,[32m0.00[0m%]
+Room permanent flags: [32mBUILD[0m
+Room temporary flags: none
+Light sources: [32m0[0m
+Description: <none>
+Extra description keywords: none
+------- Chars present -------
+  Ellessar (player 695470)
+--------- Contents ---------
+--------- Hidden -----------
+------- Exits -------
+North [32m 31: 14[0m, flags: none
+East  [32m 31: 25[0m, flags: none
+South [32m 31: 16[0m, flags: none
+West  [32m 31:  5[0m, flags: none
+
++ *~ C iMw NN NS 3133[31:33]>
++ *~ C iMw NN NS 3133[31:33]>

@@ -75,7 +75,7 @@ if (!fs.existsSync(projectPath)) {
   process.exit(1);
 }
 
-const doc = JSON.parse(readFileSync(projectPath, 'utf8')) as ShaperWorkspaceDoc;
+const doc = JSON.parse(fs.readFileSync(projectPath, 'utf8')) as ShaperWorkspaceDoc;
 const commandsToDeploy: string[] = [];
 
 // Collect all commands for non-verified rooms
@@ -120,6 +120,7 @@ class ZoneDeployer {
   private currentCommand: string | null = null;
   private commandOutput = '';
   private inEditor = false;
+  private _editorFallback: ReturnType<typeof setTimeout> | null = null;
 
   public start() {
     this.socket = net.createConnection(PORT, HOST, () => {
@@ -267,9 +268,16 @@ class ZoneDeployer {
       const cleanOutput = this.commandOutput.replace(/\x1b\[[0-9;]*m/g, '');
 
       if (this.inEditor) {
-        // Look for editor prompts to write body
-        if (cleanOutput.includes('Write description') || cleanOutput.includes('Terminate with') || cleanOutput.includes('~')) {
+        // MUME editor opens with '==>' prompt after 'MUME editor. Type %h for help'
+        const editorOpen =
+          cleanOutput.includes('==>') ||
+          cleanOutput.includes('Enter your description') ||
+          cleanOutput.includes('Write description') ||
+          cleanOutput.includes('Terminate with');
+
+        if (editorOpen) {
           this.inEditor = false;
+          if (this._editorFallback) { clearTimeout(this._editorFallback); this._editorFallback = null; }
           this.commandOutput = '';
           this.buffer = '';
           this.runNextCommand();
@@ -303,10 +311,11 @@ class ZoneDeployer {
     console.log(`[Deploying ${this.commandIndex}/${commandsToDeploy.length}] ${rawCmd.trim()}`);
 
     if (rawCmd.startsWith('  [save editor]')) {
-      this.send('@');
+      this.send('%e'); // %e saves in the MUME line editor (@  would abort)
       this.buffer = '';
       this.commandOutput = '';
-      this.runNextCommand();
+      // Wait for the prompt to return after saving before running next command
+      return;
     } else if (rawCmd.startsWith('  ')) {
       // Send description line
       this.send(rawCmd.slice(2));
@@ -318,6 +327,16 @@ class ZoneDeployer {
       this.send(rawCmd);
       if (rawCmd.includes('/room desc') || rawCmd.includes('/room kdescription') || rawCmd.includes('/room edescription')) {
         this.inEditor = true;
+        // Fallback: if MUME editor prompt not recognised within 2s, proceed anyway
+        this._editorFallback = setTimeout(() => {
+          if (this.inEditor) {
+            console.log('[Fallback] Editor prompt not detected — proceeding with description lines.');
+            this.inEditor = false;
+            this.commandOutput = '';
+            this.buffer = '';
+            this.runNextCommand();
+          }
+        }, 2000);
       }
     }
   }

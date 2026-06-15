@@ -91,15 +91,39 @@ const patchRoomFields = (room, spec) => {
       keywords: asArray(item.keywords).map(clean).filter(Boolean),
       description: normalizeText(item.description)
     })).filter(item => item.keywords.length > 0);
+    else if (key === 'name') {
+      // Auto-split MUME's raw prep@name format (e.g. "on@a Brambly Slope")
+      // so agents can pass either the raw format or pre-split values.
+      const raw = clean(spec.name);
+      const atIdx = raw.indexOf('@');
+      if (atIdx >= 0 && !('preposition' in spec)) {
+        // Only auto-split if preposition not explicitly provided
+        room.preposition = raw.slice(0, atIdx).trim();
+        room.name = raw.slice(atIdx + 1).trim();
+      } else {
+        room.name = raw;
+      }
+    }
     else room[key] = typeof spec[key] === 'string' ? clean(spec[key]) : spec[key];
   }
 };
 
 const exitKey = (roomId, direction) => `${roomId}:${direction}`;
+
+// Resolve a room ref to its internal ID. If the room number isn't in the project
+// yet (e.g. it exists in MUME but hasn't been imported), auto-create a minimal
+// stub so exits can still be recorded without a full zone import.
 const resolveRoomId = (doc, ref) => {
   const entry = findRoomEntry(doc, clean(ref));
-  if (!entry) fail(`Target room not found: ${ref}`);
-  return entry[0];
+  if (entry) return entry[0];
+
+  // Auto-stub: create a placeholder room for any valid-looking room number
+  const roomNumber = clean(ref);
+  if (!roomNumber.match(/^\d+:\d+$/)) fail(`Invalid room reference: ${ref}`);
+  const stub = makeRoom(doc, { roomNumber, status: 'stub' });
+  doc.rooms = { ...(doc.rooms ?? {}), [stub.id]: stub };
+  console.error(`[shaper-mcp] Auto-stubbed missing room ${roomNumber} to satisfy exit link.`);
+  return stub.id;
 };
 
 const upsertExit = (doc, fromId, spec, touched) => {
