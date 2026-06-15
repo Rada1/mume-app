@@ -1,0 +1,37 @@
+{
+  "id": "active-project",
+  "name": "Active Project",
+  "zoneNumber": 31,
+  "updatedAt": 1781484821323,
+  "selectedRoomId": "room-31-01-agent-mqehpft6-5c2up9",
+  "rooms": {
+    "room-31-01-agent-mqehpft6-5c2up9": {
+      "id": "room-31-01-agent-mqehpft6-5c2up9",
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "kind": "extra",
+      "anchorRoomId": null,
+      "roomNumber": "31:01",
+      "status": "new-draft",
+      "name": "A dusty path",
+      "preposition": "on",
+      "description": "",
+      "sector": "road",
+      "flags": [
+        "trail"
+      ],
+      "owner": "",
+      "keywords": [],
+      "notes": "",
+      "annotations": [],
+      "mobs": [],
+      "objects": []
+    }
+  },
+  "exits": {},
+  "commandNodes": {},
+  "libraries": {},
+  "zoneInfoKeywords": {},
+  "shared": false
+}
