@@ -44,6 +44,22 @@ describe('useShaperLiveImportStore collector', () => {
         expect(result.output).not.toContain('movement');
     });
 
+    it('preserves empty lines after live-read content begins', async () => {
+        const store = useShaperLiveImportStore.getState();
+        const promise = store.waitForCommand('/info z 31 asciimap r');
+
+        store.collectLine('', false);
+        store.collectLine('Key', false);
+        store.collectLine('', false);
+        store.collectLine('> = mountains', false);
+        store.collectLine('', false);
+        store.collectLine('        15', false);
+        store.collectLine('*f C iMw NN NS 3100[31:0]', true);
+
+        const result = await promise;
+        expect(result.output).toBe('Key\n\n> = mountains\n\n        15');
+    });
+
     it('ignores session finalizes (receiveCapture) while importing', () => {
         const store = useShaperLiveImportStore.getState();
         store.setImporting(true);

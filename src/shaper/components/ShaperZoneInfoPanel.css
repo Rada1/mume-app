@@ -1,0 +1,294 @@
+/**
+ * @file ShaperZoneInfoPanel.css
+ * @description Layout and styles for the Shaper zone info / keywords panel.
+ */
+
+.shaper-zone-info-panel {
+    --shaper-zone-info-mono: 'Iosevka', 'Roboto Mono', 'Cascadia Code', monospace;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 16px;
+    box-sizing: border-box;
+    color: #eef2f6;
+}
+
+.shaper-zone-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 12px;
+}
+
+.shaper-zone-info-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #f0b45b;
+}
+
+.shaper-zone-info-body {
+    display: flex;
+    flex: 1;
+    gap: 16px;
+    min-height: 0;
+}
+
+/* Sidebar List */
+.shaper-zone-info-sidebar {
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    padding-right: 16px;
+    min-height: 0;
+}
+
+.shaper-zone-info-search {
+    width: 100%;
+    padding: 8px 12px;
+    background: #151515;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    color: #eef2f6;
+    font: inherit;
+    box-sizing: border-box;
+}
+
+.shaper-zone-info-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.shaper-zone-info-item {
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    background: #151515;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    color: #aab7c4;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.shaper-zone-info-item:hover {
+    background: #232222;
+    border-color: rgba(240, 180, 91, 0.3);
+    color: #ffffff;
+}
+
+.shaper-zone-info-item.active {
+    background: rgba(240, 180, 91, 0.15);
+    border-color: rgba(240, 180, 91, 0.6);
+    color: #f0b45b;
+}
+
+.shaper-zone-info-empty-list {
+    color: #8899a6;
+    font-size: 13px;
+    text-align: center;
+    padding: 24px 0;
+}
+
+/* Detail & Editor Area */
+.shaper-zone-info-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.shaper-zone-info-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+.shaper-zone-info-view-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.shaper-zone-info-view-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #f0b45b;
+}
+
+.shaper-zone-info-view-body {
+    flex: 1;
+    background: #0f0f0f;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 16px;
+    overflow-y: auto;
+    font-family: var(--shaper-zone-info-mono) !important;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    color: #cbd5e1;
+}
+
+.shaper-workspace .shaper-zone-info-view-body,
+.shaper-workspace .shaper-zone-info-body-textarea {
+    font-family: var(--shaper-zone-info-mono) !important;
+}
+
+.shaper-zone-info-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    min-height: 0;
+}
+
+.shaper-zone-info-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.shaper-zone-info-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #aab7c4;
+    text-transform: uppercase;
+}
+
+.shaper-zone-info-field input {
+    padding: 8px 12px;
+    background: #151515;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    color: #eef2f6;
+    font: inherit;
+}
+
+.shaper-zone-info-import-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+}
+
+.shaper-zone-info-import-list > span {
+    color: #aab7c4;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.shaper-zone-info-import-list > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.shaper-zone-info-import-keyword {
+    border: 1px solid rgba(240, 180, 91, 0.35);
+    background: rgba(240, 180, 91, 0.12);
+    border-radius: 4px;
+    color: #f0b45b;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 8px;
+}
+
+.shaper-zone-info-import-keyword:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.shaper-zone-info-body-textarea {
+    flex: 1;
+    padding: 12px;
+    background: #0f0f0f;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    color: #cbd5e1;
+    font-family: var(--shaper-zone-info-mono) !important;
+    font-size: 13px;
+    line-height: 1.5;
+    resize: none;
+}
+
+.shaper-zone-info-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+/* Button overrides */
+.shaper-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.shaper-btn-primary {
+    background: #f0b45b;
+    color: #1e1e1e;
+}
+
+.shaper-btn-primary:hover {
+    background: #f3c27b;
+}
+
+.shaper-btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #eef2f6;
+}
+
+.shaper-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.shaper-btn-danger {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+}
+
+.shaper-btn-danger:hover {
+    background: rgba(239, 68, 68, 0.3);
+}
+
+.shaper-btn-link {
+    background: transparent;
+    color: #f0b45b;
+    padding: 4px 8px;
+}
+
+.shaper-btn-link:hover {
+    text-decoration: underline;
+}
+
+.shaper-zone-info-no-selection {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #8899a6;
+    font-size: 14px;
+}

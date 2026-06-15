@@ -93,6 +93,14 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         else if (lower.includes('objects matching ') || lower.includes('matching objects')) type = 'shaper_obj_find';
         else if (clean.match(/^Mobile\s+'[^']+',\s+vnum\s+\d+\./i)) type = 'shaper_mob_stat';
         else if (clean.match(/^Object\s+'[^']+',\s+vnum\s+\d+\./i)) type = 'shaper_obj_stat';
+        else if (clean.match(/^Id:[{\[]\d+[}\]],\s+Instances:/i)) {
+            const cmd = pendingFlagsRef.current.command ?? '';
+            if (cmd.includes('stat o') || cmd.includes('stat object')) {
+                type = 'shaper_obj_stat';
+            } else {
+                type = 'shaper_mob_stat';
+            }
+        }
 
         return type;
     }, []);

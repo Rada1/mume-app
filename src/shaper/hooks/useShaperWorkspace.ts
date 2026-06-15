@@ -36,6 +36,7 @@ import { useShaperLibraryActions } from './useShaperLibraryActions';
 import { useShaperLiveImportRunner } from './useShaperLiveImportRunner';
 import { useShaperProjectSubscription } from './useShaperProjectSubscription';
 import { useShaperUndoHistory } from './useShaperUndoHistory';
+import { useShaperZoneInfoActions } from './useShaperZoneInfoActions';
 import type { ShaperConnectionSelection } from '../model/shaperTypes';
 import type { ShaperAnnotation, ShaperProjectSummary, ShaperRoomDraft, ShaperRoomId, ShaperWorkspaceDoc } from '../model/shaperTypes';
 
@@ -247,6 +248,7 @@ export const useShaperWorkspace = ({ sendCommand }: ShaperWorkspaceOptions) => {
     const comActions = useShaperComActions({ persist, setDoc });
     const exitActions = useShaperExitActions({ persist, selectedConnectionIds, setDoc });
     const libraryActions = useShaperLibraryActions({ persist, setDoc });
+    const zoneInfoActions = useShaperZoneInfoActions({ persist, setDoc });
     const liveImport = useShaperLiveImportRunner({ send: sendCommand, persist, setDoc });
 
     return {
@@ -264,6 +266,7 @@ export const useShaperWorkspace = ({ sendCommand }: ShaperWorkspaceOptions) => {
         selectedIssues,
         canUndo: undoHistory.canUndo,
         liveImportStatus: liveImport.status,
+        liveImportKeywordOptions: liveImport.keywordOptions,
         setViewZ,
         addExtraRoom,
         addRoomAt,
@@ -280,6 +283,8 @@ export const useShaperWorkspace = ({ sendCommand }: ShaperWorkspaceOptions) => {
         importProject,
         startLiveImport: () => { if (doc) void liveImport.start(doc); },
         startRoomLiveImport: (roomNumber: string) => { if (doc) void liveImport.startRoom(doc, roomNumber); },
+        startKeywordLiveImport: (keyword: string) => { if (doc) void liveImport.startKeyword(doc, keyword); },
+        startKeywordListLiveImport: () => { if (doc) void liveImport.startKeywordList(doc); },
         shareProject,
         unshareProject,
         closeProject,
@@ -293,6 +298,7 @@ export const useShaperWorkspace = ({ sendCommand }: ShaperWorkspaceOptions) => {
         ...comActions,
         ...entityActions,
         ...exitActions,
-        ...libraryActions
+        ...libraryActions,
+        ...zoneInfoActions
     };
 };

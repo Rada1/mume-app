@@ -5,6 +5,7 @@
 
 import { createGridRoom, createShaperRoomId } from '../model/shaperDocument';
 import { formatShaperLimitRaw } from '../model/shaperComCommands';
+import { decodeZoneInfoText } from '../model/shaperZoneInfo';
 import type {
     ShaperCommandLimit,
     ShaperCommandNode,
@@ -296,30 +297,48 @@ const parseLimitField = (field: string): number | null => {
 
 const parseComListTable = (output: string, roomId: ShaperRoomId): ShaperCommandNode[] => {
     const nodes: ShaperCommandNode[] = [];
+    let lastRootId: string | null = null;
     output.split('\n').forEach(line => {
-        const match = line.trim().match(/^(\d+)\s+(Mobile|Object)\s+(\d+)\s+\((.*?)\)\s+\(([^)]*)\)\s*$/i);
+        // Match: optional room prefix (e.g. 31:100), optional nested symbol (>), order, type, vnum, name, extra, limits
+        const match = line.match(/^\s*(?:\d+:\d+\s+)?(?:>\s*)?(\d+)\s+([a-zA-Z]+)\s+(\d+)\s+\((.*?)\)(.*?)\(([^)]*)\)\s*$/i);
         if (!match) return;
-        const type = match[2].toLowerCase() === 'mobile' ? 'mobile' : 'object';
-        const fields = match[5].split('/');
+        const resolvedType = resolveCommandType(match[2]);
+        if (!resolvedType) return;
+        const isNested = />/.test(line.split(/\b[a-zA-Z]+\b/)[0] || '');
+        const parentId = isNested ? lastRootId : null;
+
+        const fields = match[6].split('/');
         const world = parseLimitField(fields[0] ?? '');
         const zone = parseLimitField(fields[1] ?? '');
         const room = parseLimitField(fields[2] ?? '');
         const chancePercent = parseLimitField(fields[3] ?? '') ?? 100;
+        
+        const id = createShaperRoomId();
+        if (!isNested) {
+            lastRootId = id;
+        }
+
         nodes.push({
-            id: createShaperRoomId(),
+            id,
             roomId,
-            parentId: null,
+            parentId,
             order: nodes.length,
-            type,
+            type: resolvedType,
             limit: {
                 world,
                 zone,
                 room,
                 chancePercent,
-                // Deploy and validation need the packed numeric form, not the table text.
                 raw: formatShaperLimitRaw(world, zone, room, chancePercent)
             },
-            fields: { vnum: match[3], name: match[4].trim(), target: 'parent', container: 'parent', position: '' },
+            fields: {
+                vnum: match[3],
+                name: match[4].trim(),
+                target: 'parent',
+                container: 'parent',
+                master: 'parent',
+                position: ''
+            },
             notes: ''
         });
     });
@@ -328,7 +347,7 @@ const parseComListTable = (output: string, roomId: ShaperRoomId): ShaperCommandN
 
 const parseComOutput = (output: string, roomId: ShaperRoomId): ShaperCommandNode[] => {
     // Plain `/com list` table form (has names + decoded counts) is preferred.
-    if (/^\s*\d+\s+(Mobile|Object)\s+\d+\s+\(/im.test(output)) {
+    if (/^\s*(?:\d+:\d+\s+)?(?:>\s*)?\d+\s+(Mobile|Object|Follow|Put|Give|Equip|Hide)\s+\d+\s+\(/im.test(output)) {
         return parseComListTable(output, roomId);
     }
     // Fallback: `/com list -commands` machine form (`/com add mob …`).
@@ -551,15 +570,50 @@ export const applyShaperLiveTranscript = (
     const warnings: string[] = [];
 
     parseShaperLiveTranscript(transcript).forEach(block => {
-        const info = block.command.match(/^\/info\s+z\s+\d+\s+(\S+)/i);
+        const info = block.command.match(/^\/info\s+(?:z|zone)\s+\d+\s+(\S+)/i);
         if (info && info[1].toLowerCase() !== 'list') {
+            const body = decodeZoneInfoText(block.output.trim());
             nextDoc = {
                 ...nextDoc,
                 zoneInfoKeywords: {
                     ...nextDoc.zoneInfoKeywords,
-                    [info[1]]: { id: info[1], keyword: info[1], body: block.output.trim(), rawText: block.output.trim(), importedAt }
+                    [info[1]]: { id: info[1], keyword: info[1], body, rawText: body, importedAt }
                 }
             };
+            return;
+        }
+
+        const isZoneCom = /^\/com\s+list\s+(?:z|zone)\b/i.test(block.command.trim());
+        if (isZoneCom) {
+            const linesByRoom: Record<string, string[]> = {};
+            block.output.split('\n').forEach(line => {
+                const roomMatch = line.match(/^\s*(\d+:\d+)/);
+                if (roomMatch) {
+                    const rNum = padRoomNumber(roomMatch[1]);
+                    if (!linesByRoom[rNum]) linesByRoom[rNum] = [];
+                    linesByRoom[rNum].push(line);
+                }
+            });
+
+            Object.entries(linesByRoom).forEach(([rNum, lines]) => {
+                const ensured = ensureRoom(nextDoc, rNum);
+                nextDoc = ensured.doc;
+                const room = ensured.room;
+                touchedRooms.add(room.id);
+
+                const outputForRoom = lines.join('\n');
+                const nodes = parseComOutput(outputForRoom, room.id);
+                nextDoc = replaceRoomCommands(nextDoc, room.id, nodes);
+                nextDoc = retargetRoomLibraries(nextDoc, room.id);
+                nextDoc.rooms[room.id] = {
+                    ...nextDoc.rooms[room.id],
+                    liveSnapshot: {
+                        ...nextDoc.rooms[room.id].liveSnapshot,
+                        importedAt,
+                        comListCommands: outputForRoom.trim()
+                    }
+                };
+            });
             return;
         }
 

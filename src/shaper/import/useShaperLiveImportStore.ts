@@ -5,8 +5,8 @@
  * Live reads run god commands through `/at <room> …`, which teleports and emits
  * `<movement/>` tags plus extra prompts around the real output. The generic
  * capture machine is too fragile against that interleaving, so while an import
- * is active we collect output here directly: ignore movement/empty lines, and
- * resolve the pending command on the first prompt that follows real content.
+ * is active we collect output here directly: ignore movement noise and leading
+ * empty lines, then resolve on the first prompt that follows real content.
  */
 
 import { create } from 'zustand';
@@ -37,12 +37,14 @@ interface ShaperLiveImportState {
     clearWaiters: () => void;
 }
 
-const normalizeCommand = (command: string): string =>
-    command.trim().toLowerCase().replace(/\s+/g, ' ');
+const normalizeCommand = (command: string): string => {
+    if (typeof command !== 'string') return '';
+    return command.trim().toLowerCase().replace(/\s+/g, ' ');
+};
 
-const isIgnorableLine = (text: string): boolean => {
+const isMovementLine = (text: string): boolean => {
+    if (typeof text !== 'string') return true;
     const clean = text.trim();
-    if (!clean) return true;
     // `/at` teleport noise: movement tags and bare movement markers.
     return /^<\/?\s*movement\b/i.test(clean) || clean === '<movement/' || clean === '<movement/>';
 };
@@ -90,7 +92,8 @@ export const useShaperLiveImportStore = create<ShaperLiveImportState>((set, get)
                 if (get().buffer.length > 0) resolveActive(get().buffer.join('\n'));
                 return;
             }
-            if (isIgnorableLine(text)) return;
+            if (isMovementLine(text)) return;
+            if (text.trim() === '' && get().buffer.length === 0) return;
             set(state => ({ buffer: [...state.buffer, text] }));
         },
         receiveCapture: result => {

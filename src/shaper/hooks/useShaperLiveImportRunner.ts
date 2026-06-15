@@ -6,6 +6,7 @@
 import { useCallback, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { applyShaperLiveTranscript } from '../import/shaperLiveImport';
 import { parseShaperBuildListRooms } from '../import/shaperLiveRoomDiscovery';
+import { parseShaperZoneInfoKeywords } from '../import/shaperZoneInfoDiscovery';
 import { useShaperLiveImportStore } from '../import/useShaperLiveImportStore';
 import type { ShaperWorkspaceDoc } from '../model/shaperTypes';
 
@@ -47,6 +48,12 @@ export const buildShaperRoomLiveImportCommands = (roomNumber: string): string[] 
     ];
 };
 
+export const buildShaperZoneInfoListCommand = (zoneNumber: number): string =>
+    `/info zone ${zoneNumber} list`;
+
+export const buildShaperZoneInfoReadCommand = (zoneNumber: number, keyword: string): string =>
+    `/info zone ${zoneNumber} ${keyword} read`;
+
 // --- Hook Section ---
 export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveImportRunnerParams) => {
     const [status, setStatus] = useState<ShaperLiveImportStatus>({
@@ -56,6 +63,7 @@ export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveI
         total: 0,
         error: null
     });
+    const [keywordOptions, setKeywordOptions] = useState<string[]>([]);
     const runningRef = useRef(false);
 
     const runCommand = useCallback(async (command: string) => {
@@ -95,6 +103,34 @@ export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveI
         return { doc: nextDoc, completed, failures };
     }, [persist, runCommand, setDoc]);
 
+    const importZoneInfoKeywords = useCallback(async (
+        startDoc: ShaperWorkspaceDoc,
+        keywords: string[],
+        completedOffset: number,
+        total: number
+    ): Promise<{ doc: ShaperWorkspaceDoc; completed: number; failures: number }> => {
+        let completed = completedOffset;
+        let failures = 0;
+        let nextDoc = startDoc;
+        for (const keyword of keywords) {
+            const command = buildShaperZoneInfoReadCommand(nextDoc.zoneNumber, keyword);
+            setStatus({ running: true, label: `Reading keyword ${keyword}`, completed, total, error: null });
+            try {
+                const result = await runCommand(command);
+                nextDoc = applyShaperLiveTranscript(nextDoc, `${command}\n${result.output}`).doc;
+                setDoc(persist(nextDoc));
+            } catch (commandError) {
+                failures += 1;
+                // eslint-disable-next-line no-console
+                console.warn('[ShaperLiveImport] keyword read failed, skipping:', command, commandError);
+            }
+            completed += 1;
+            setStatus({ running: true, label: `Read keyword ${keyword}`, completed, total, error: null });
+            await sleep(PACE_MS);
+        }
+        return { doc: nextDoc, completed, failures };
+    }, [persist, runCommand, setDoc]);
+
     // Shared lifecycle wrapper: single-run lock, output suppression, error capture.
     const runImport = useCallback(async (
         work: () => Promise<{ label: string; completed: number; total: number }>
@@ -126,17 +162,31 @@ export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveI
             const snippet = buildList.output.replace(/\s+/g, ' ').trim().slice(0, 80);
             throw new Error(`No rooms found for zone ${doc.zoneNumber} (captured ${buildList.output.length} chars: "${snippet}").`);
         }
-        const total = roomNumbers.length * 3;
-        setStatus({ running: true, label: `Found ${roomNumbers.length} rooms`, completed: 0, total, error: null });
-        const { failures } = await importRoomNumbers(doc, roomNumbers, 0, total);
+        let discoveryFailures = 0;
+        setStatus({ running: true, label: 'Reading zone keyword list', completed: 0, total: 0, error: null });
+        const keywordListCommand = buildShaperZoneInfoListCommand(doc.zoneNumber);
+        let keywords: string[] = [];
+        try {
+            const keywordList = await runCommand(keywordListCommand);
+            keywords = parseShaperZoneInfoKeywords(keywordList.output);
+        } catch (commandError) {
+            discoveryFailures = 1;
+            // eslint-disable-next-line no-console
+            console.warn('[ShaperLiveImport] keyword list failed, skipping zone info auto-import:', commandError);
+        }
+        const total = keywords.length + roomNumbers.length * 3;
+        setStatus({ running: true, label: `Found ${roomNumbers.length} rooms and ${keywords.length} keywords`, completed: 0, total, error: null });
+        const keywordResult = await importZoneInfoKeywords(doc, keywords, 0, total);
+        const { failures } = await importRoomNumbers(keywordResult.doc, roomNumbers, keywordResult.completed, total);
+        const allFailures = discoveryFailures + failures + keywordResult.failures;
         return {
-            label: failures > 0
-                ? `Imported ${roomNumbers.length} rooms (${failures} reads skipped)`
-                : `Imported ${roomNumbers.length} rooms`,
+            label: allFailures > 0
+                ? `Imported ${roomNumbers.length} rooms and ${keywords.length} keywords (${allFailures} reads skipped)`
+                : `Imported ${roomNumbers.length} rooms and ${keywords.length} keywords`,
             completed: total,
             total
         };
-    }), [runImport, runCommand, importRoomNumbers]);
+    }), [runImport, runCommand, importZoneInfoKeywords, importRoomNumbers]);
 
     // Single-room re-import: skips build-list discovery for a quick refresh.
     const startRoom = useCallback((doc: ShaperWorkspaceDoc, roomNumber: string) => runImport(async () => {
@@ -150,5 +200,32 @@ export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveI
         };
     }), [runImport, importRoomNumbers]);
 
-    return { status, start, startRoom };
+    // Keyword re-import: fetch `/info z <zone> <keyword> read` from MUD.
+    const startKeyword = useCallback((doc: ShaperWorkspaceDoc, keyword: string) => runImport(async () => {
+        const cmd = buildShaperZoneInfoReadCommand(doc.zoneNumber, keyword);
+        setStatus({ running: true, label: `Reading keyword ${keyword}`, completed: 0, total: 1, error: null });
+        const result = await runCommand(cmd);
+        const nextDoc = applyShaperLiveTranscript(doc, `${cmd}\n${result.output}`).doc;
+        setDoc(persist(nextDoc));
+        return {
+            label: `Imported keyword ${keyword}`,
+            completed: 1,
+            total: 1
+        };
+    }), [runImport, runCommand, persist, setDoc]);
+
+    const startKeywordList = useCallback((doc: ShaperWorkspaceDoc) => runImport(async () => {
+        const cmd = buildShaperZoneInfoListCommand(doc.zoneNumber);
+        setStatus({ running: true, label: 'Reading zone keyword list', completed: 0, total: 1, error: null });
+        const result = await runCommand(cmd);
+        const keywords = parseShaperZoneInfoKeywords(result.output);
+        setKeywordOptions(keywords);
+        return {
+            label: `Found ${keywords.length} zone keywords`,
+            completed: 1,
+            total: 1
+        };
+    }), [runImport, runCommand]);
+
+    return { status, keywordOptions, start, startRoom, startKeyword, startKeywordList };
 };

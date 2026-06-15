@@ -3,6 +3,7 @@
  * @description Main privileged Shaper workspace shell and tab routing.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { X } from 'lucide-react';
 import { useShaperPresence } from '../collaboration/shaperPresence';
 import { readShareCodeFromHash, useShaperSharedProjects } from '../collaboration/shaperSharedProjects';
 import { useShaperWorkspace } from '../hooks/useShaperWorkspace';
@@ -19,6 +20,8 @@ import { ShaperObjectsPanel } from './ShaperObjectsPanel';
 import { ShaperConnectionInspector } from './ShaperConnectionInspector';
 import { ShaperComTreePanel } from './ShaperComTreePanel';
 import { ShaperLibraryPanel } from './ShaperLibraryPanel';
+import { ShaperZoneInfoPanel } from './ShaperZoneInfoPanel';
+import { ShaperHelpPanel } from './ShaperHelpPanel';
 import { ShaperWorkspaceTopbar } from './ShaperWorkspaceTopbar';
 import type { ShaperEntityFocusSignal } from './shaperEntityFocus';
 import { useRoomStore } from '../../stores/useRoomStore';
@@ -49,7 +52,96 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
     const activeDoc = workspace.doc;
     const { peers } = useShaperPresence(activeDoc?.id ?? null);
     const { pullProject } = useShaperSharedProjects(workspace.openProject);
-    const [activeTab, setActiveTab] = useState<'grid' | 'com' | 'mobiles' | 'objects' | 'libraries'>('grid');
+    
+    const [openPanels, setOpenPanels] = useState<Record<string, boolean>>(() => {
+        const saved = localStorage.getItem('shaper-open-panels');
+        return saved ? JSON.parse(saved) : { grid: true };
+    });
+
+    const togglePanel = (panel: string) => {
+        setOpenPanels(prev => {
+            const next = { ...prev, [panel]: !prev[panel] };
+            localStorage.setItem('shaper-open-panels', JSON.stringify(next));
+            return next;
+        });
+    };
+
+    const [comWidth, setComWidth] = useState<number>(() => {
+        const saved = localStorage.getItem('shaper-panel-width-com');
+        return saved ? parseInt(saved, 10) : 360;
+    });
+    const [mobilesWidth, setMobilesWidth] = useState<number>(() => {
+        const saved = localStorage.getItem('shaper-panel-width-mobiles');
+        return saved ? parseInt(saved, 10) : 300;
+    });
+    const [objectsWidth, setObjectsWidth] = useState<number>(() => {
+        const saved = localStorage.getItem('shaper-panel-width-objects');
+        return saved ? parseInt(saved, 10) : 300;
+    });
+    const [libsWidth, setLibsWidth] = useState<number>(() => {
+        const saved = localStorage.getItem('shaper-panel-width-libs');
+        return saved ? parseInt(saved, 10) : 320;
+    });
+    const [zoneInfoWidth, setZoneInfoWidth] = useState<number>(() => {
+        const saved = localStorage.getItem('shaper-panel-width-zoneInfo');
+        return saved ? parseInt(saved, 10) : 400;
+    });
+    const [helpWidth, setHelpWidth] = useState<number>(() => {
+        const saved = localStorage.getItem('shaper-panel-width-help');
+        return saved ? parseInt(saved, 10) : 400;
+    });
+
+    const [resizingPanel, setResizingPanel] = useState<string | null>(null);
+    const resizeRef = useRef<{ panel: string; startWidth: number; startX: number } | null>(null);
+
+    const handlePanelResizeMouseDown = (e: React.MouseEvent, panelName: string, currentWidth: number) => {
+        e.preventDefault();
+        resizeRef.current = { panel: panelName, startWidth: currentWidth, startX: e.clientX };
+        setResizingPanel(panelName);
+    };
+
+    useEffect(() => {
+        if (!resizingPanel) return;
+
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!resizeRef.current) return;
+            const { panel, startWidth, startX } = resizeRef.current;
+            const delta = e.clientX - startX;
+            const newWidth = Math.max(150, startWidth - delta);
+            if (panel === 'com') {
+                setComWidth(newWidth);
+                localStorage.setItem('shaper-panel-width-com', String(newWidth));
+            } else if (panel === 'mobiles') {
+                setMobilesWidth(newWidth);
+                localStorage.setItem('shaper-panel-width-mobiles', String(newWidth));
+            } else if (panel === 'objects') {
+                setObjectsWidth(newWidth);
+                localStorage.setItem('shaper-panel-width-objects', String(newWidth));
+            } else if (panel === 'libraries') {
+                setLibsWidth(newWidth);
+                localStorage.setItem('shaper-panel-width-libs', String(newWidth));
+            } else if (panel === 'info') {
+                setZoneInfoWidth(newWidth);
+                localStorage.setItem('shaper-panel-width-zoneInfo', String(newWidth));
+            } else if (panel === 'help') {
+                setHelpWidth(newWidth);
+                localStorage.setItem('shaper-panel-width-help', String(newWidth));
+            }
+        };
+
+        const handleMouseUp = () => {
+            setResizingPanel(null);
+            resizeRef.current = null;
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [resizingPanel]);
+
     const [showComOverlay, setShowComOverlay] = useState(false);
     const [focusEntity, setFocusEntity] = useState<ShaperEntityFocusSignal | null>(null);
 
@@ -233,80 +325,218 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                         <ShaperLeftPanel
                             doc={activeDoc}
                             issueCount={workspace.issues.length}
-                            activeTab={activeTab}
+                            openPanels={openPanels}
                             peers={peers}
-                        onSelectTab={setActiveTab}
-                    />
-                    <main className="shaper-center">
-                            {activeTab === 'grid' && (
-                                <ShaperCanvas
-                                    rooms={activeDoc.rooms}
-                                    exits={activeDoc.exits}
-                                    commandNodes={activeDoc.commandNodes}
-                                    libraries={activeDoc.libraries}
-                                    selectedRoomId={activeDoc.selectedRoomId}
-                                    selectedRoomIds={workspace.selectedRoomIds}
-                                    selectedConnection={workspace.selectedConnection}
-                                    selectedConnectionIds={workspace.selectedConnectionIds}
-                                    onSelectConnection={workspace.setSelectedConnection}
-                                    onToggleSelectConnection={workspace.onToggleSelectConnection}
-                                    layers={workspace.layers}
-                                    viewZ={workspace.viewZ}
-                                    onAddExtraRoom={workspace.addExtraRoom}
-                                    onConnectDirectedExit={workspace.connectDirectedExit}
-                                    onToggleExitDoor={workspace.toggleExitDoor}
-                                    onSelectRoom={workspace.selectRoom}
-                                    onToggleSelect={workspace.toggleSelectRoom}
-                                    onSelectEntity={handleSelectEntity}
-                                    onSetViewZ={workspace.setViewZ}
-                                    onAddRoomAt={workspace.addRoomAt}
-                                    onMoveRoom={workspace.moveRoom}
-                                    onMoveRooms={workspace.moveRooms}
-                                    onRemoveRoom={workspace.removeRoom}
-                                    onRemoveRooms={workspace.removeRooms}
-                                    showComOverlay={showComOverlay}
-                                    onToggleComOverlay={() => setShowComOverlay(!showComOverlay)}
-                                    playerRoomNum={playerRoomNum}
-                                    playerMapId={playerMapId}
-                                />
-                            )}
-                            {activeTab === 'com' && (
-                                <ShaperComTreePanel
-                                    room={workspace.selectedRoom}
-                                    commandNodes={activeDoc.commandNodes}
-                                    onAddNode={workspace.addComNode}
-                                    onDeleteNode={workspace.deleteComNode}
-                                    onMoveNode={workspace.moveComNode}
-                                    onReparentNode={workspace.reparentComNode}
-                                    onUpdateLimit={workspace.updateComLimit}
-                                    onUpdateFields={workspace.updateComFields}
-                                    onUpdateNode={workspace.updateComNode}
-                                />
-                            )}
-                            {activeTab === 'mobiles' && (
-                                <ShaperMobilesPanel
-                                    onAddToRoom={workspace.addMob}
-                                    roomLabel={workspace.selectedRoom?.roomNumber}
-                                />
-                            )}
-                            {activeTab === 'objects' && (
-                                <ShaperObjectsPanel
-                                    onAddToRoom={workspace.addObject}
-                                    roomLabel={workspace.selectedRoom?.roomNumber}
-                                />
-                            )}
-                            {activeTab === 'libraries' && (
-                                <ShaperLibraryPanel
-                                    libraries={activeDoc.libraries}
-                                    selectedRoom={workspace.selectedRoom}
-                                    onAddLibrary={workspace.addLibrary}
-                                    onRemoveLibrary={workspace.removeLibrary}
-                                    onSetParam={workspace.setLibraryParam}
-                                    onRemoveParam={workspace.removeLibraryParam}
-                                    onToggleLoad={workspace.toggleLibraryLoad}
-                                    onUpdateNotes={workspace.updateLibraryNotes}
-                                />
-                            )}
+                            onTogglePanel={togglePanel}
+                        />
+                        <main className="shaper-center">
+                            {(() => {
+                                const openKeys = Object.entries(openPanels)
+                                    .filter(([, open]) => open)
+                                    .map(([key]) => key);
+
+                                const flexPanel = openKeys.includes('grid') ? 'grid' : openKeys[0] || null;
+
+                                if (openKeys.length === 0) {
+                                    return (
+                                        <div className="shaper-center-placeholder">
+                                            <p>Select a tool from the left panel to open it.</p>
+                                        </div>
+                                    );
+                                }
+
+                                return openKeys.map((panelKey, index) => {
+                                    const isFlex = panelKey === flexPanel;
+                                    const panelWidth = panelKey === 'com' ? comWidth : panelKey === 'mobiles' ? mobilesWidth : panelKey === 'objects' ? objectsWidth : panelKey === 'libraries' ? libsWidth : panelKey === 'info' ? zoneInfoWidth : helpWidth;
+
+                                    const wrapperStyle: React.CSSProperties = isFlex
+                                        ? { flex: '1 1 0%', minWidth: '300px', display: 'flex', flexDirection: 'row', height: '100%' }
+                                        : { width: `${panelWidth}px`, flexShrink: 0, display: 'flex', flexDirection: 'row', height: '100%' };
+
+                                    const paneStyle: React.CSSProperties = { flex: '1 1 0%', minWidth: 0, height: '100%', borderRight: 'none' };
+
+                                    const renderResizer = index > 0;
+
+                                    return (
+                                        <div key={panelKey} style={wrapperStyle}>
+                                            {renderResizer && (
+                                                <div 
+                                                    className="shaper-panel-resize-handle"
+                                                    onMouseDown={(e) => handlePanelResizeMouseDown(e, panelKey, panelWidth)}
+                                                />
+                                            )}
+                                            <div className="shaper-workspace-pane" style={paneStyle}>
+                                                {panelKey === 'grid' && (
+                                                    <>
+                                                        <div className="shaper-pane-header">
+                                                            <h3>Concept Grid</h3>
+                                                            <button type="button" className="shaper-pane-close" onClick={() => togglePanel('grid')}>
+                                                                <X size={14} />
+                                                            </button>
+                                                        </div>
+                                                        <div className="shaper-pane-content" style={{ padding: 0 }}>
+                                                            <ShaperCanvas
+                                                                rooms={activeDoc.rooms}
+                                                                exits={activeDoc.exits}
+                                                                commandNodes={activeDoc.commandNodes}
+                                                                libraries={activeDoc.libraries}
+                                                                selectedRoomId={activeDoc.selectedRoomId}
+                                                                selectedRoomIds={workspace.selectedRoomIds}
+                                                                selectedConnection={workspace.selectedConnection}
+                                                                selectedConnectionIds={workspace.selectedConnectionIds}
+                                                                onSelectConnection={workspace.setSelectedConnection}
+                                                                onToggleSelectConnection={workspace.onToggleSelectConnection}
+                                                                layers={workspace.layers}
+                                                                viewZ={workspace.viewZ}
+                                                                onAddExtraRoom={workspace.addExtraRoom}
+                                                                onConnectDirectedExit={workspace.connectDirectedExit}
+                                                                onToggleExitDoor={workspace.toggleExitDoor}
+                                                                onSelectRoom={workspace.selectRoom}
+                                                                onToggleSelect={workspace.toggleSelectRoom}
+                                                                onSelectEntity={handleSelectEntity}
+                                                                onSetViewZ={workspace.setViewZ}
+                                                                onAddRoomAt={workspace.addRoomAt}
+                                                                onMoveRoom={workspace.moveRoom}
+                                                                onMoveRooms={workspace.moveRooms}
+                                                                onRemoveRoom={workspace.removeRoom}
+                                                                onRemoveRooms={workspace.removeRooms}
+                                                                showComOverlay={showComOverlay}
+                                                                onToggleComOverlay={() => setShowComOverlay(!showComOverlay)}
+                                                                playerRoomNum={playerRoomNum}
+                                                                playerMapId={playerMapId}
+                                                            />
+                                                        </div>
+                                                    </>
+                                                )}
+                                                {panelKey === 'com' && (
+                                                    <>
+                                                        <div className="shaper-pane-header">
+                                                            <h3>/com Trees</h3>
+                                                            <button type="button" className="shaper-pane-close" onClick={() => togglePanel('com')}>
+                                                                <X size={14} />
+                                                            </button>
+                                                        </div>
+                                                        <div className="shaper-pane-content">
+                                                            <ShaperComTreePanel
+                                                                room={workspace.selectedRoom}
+                                                                commandNodes={activeDoc.commandNodes}
+                                                                onAddNode={workspace.addComNode}
+                                                                onDeleteNode={workspace.deleteComNode}
+                                                                onMoveNode={workspace.moveComNode}
+                                                                onReparentNode={workspace.reparentComNode}
+                                                                onUpdateLimit={workspace.updateComLimit}
+                                                                onUpdateFields={workspace.updateComFields}
+                                                                onUpdateNode={workspace.updateComNode}
+                                                            />
+                                                        </div>
+                                                    </>
+                                                )}
+                                                {panelKey === 'mobiles' && (
+                                                    <>
+                                                        <div className="shaper-pane-header">
+                                                            <h3>Mobiles</h3>
+                                                            <button type="button" className="shaper-pane-close" onClick={() => togglePanel('mobiles')}>
+                                                                <X size={14} />
+                                                            </button>
+                                                        </div>
+                                                        <div className="shaper-pane-content">
+                                                            <ShaperMobilesPanel
+                                                                onAddToRoom={workspace.addMob}
+                                                                roomLabel={workspace.selectedRoom?.roomNumber}
+                                                            />
+                                                        </div>
+                                                    </>
+                                                )}
+                                                {panelKey === 'objects' && (
+                                                    <>
+                                                        <div className="shaper-pane-header">
+                                                            <h3>Objects</h3>
+                                                            <button type="button" className="shaper-pane-close" onClick={() => togglePanel('objects')}>
+                                                                <X size={14} />
+                                                            </button>
+                                                        </div>
+                                                        <div className="shaper-pane-content">
+                                                            <ShaperObjectsPanel
+                                                                onAddToRoom={workspace.addObject}
+                                                                roomLabel={workspace.selectedRoom?.roomNumber}
+                                                            />
+                                                        </div>
+                                                    </>
+                                                )}
+                                                {panelKey === 'libraries' && (
+                                                    <>
+                                                        <div className="shaper-pane-header">
+                                                            <h3>Libs</h3>
+                                                            <button type="button" className="shaper-pane-close" onClick={() => togglePanel('libraries')}>
+                                                                <X size={14} />
+                                                            </button>
+                                                        </div>
+                                                        <div className="shaper-pane-content">
+                                                            <ShaperLibraryPanel
+                                                                libraries={activeDoc.libraries}
+                                                                selectedRoom={workspace.selectedRoom}
+                                                                onAddLibrary={workspace.addLibrary}
+                                                                onRemoveLibrary={workspace.removeLibrary}
+                                                                onSetParam={workspace.setLibraryParam}
+                                                                onRemoveParam={workspace.removeLibraryParam}
+                                                                onToggleLoad={workspace.toggleLibraryLoad}
+                                                                onUpdateNotes={workspace.updateLibraryNotes}
+                                                            />
+                                                        </div>
+                                                    </>
+                                                )}
+                                                {panelKey === 'info' && (
+                                                    <>
+                                                        <div className="shaper-pane-header">
+                                                            <h3>Zone Info</h3>
+                                                            <button type="button" className="shaper-pane-close" onClick={() => togglePanel('info')}>
+                                                                <X size={14} />
+                                                            </button>
+                                                        </div>
+                                                        <div className="shaper-pane-content">
+                                                            <ShaperZoneInfoPanel
+                                                                doc={activeDoc}
+                                                                viewZ={workspace.viewZ}
+                                                                onAddKeyword={workspace.addZoneKeyword}
+                                                                onUpdateKeyword={workspace.updateZoneKeyword}
+                                                                onDeleteKeyword={workspace.deleteZoneKeyword}
+                                                                onRefreshKeyword={workspace.startKeywordLiveImport}
+                                                                onDiscoverKeywords={workspace.startKeywordListLiveImport}
+                                                                importableKeywords={workspace.liveImportKeywordOptions}
+                                                                onImportAsciiMap={(text) => workspace.importAsciiMap(text, workspace.viewZ)}
+                                                                onDeployKeyword={(keyword, body) => {
+                                                                    if (!activeDoc) return;
+                                                                    const commands = [
+                                                                        `/info zone ${activeDoc.zoneNumber} ${keyword} edit`,
+                                                                        ...body.split(/\r?\n/).map(line => `  ${line}`),
+                                                                        '  [save editor]'
+                                                                    ];
+                                                                    deploy.start(commands);
+                                                                }}
+                                                                isImporting={workspace.liveImportStatus.running}
+                                                                isConnected={isConnected}
+                                                            />
+                                                        </div>
+                                                    </>
+                                                )}
+                                                {panelKey === 'help' && (
+                                                    <>
+                                                        <div className="shaper-pane-header">
+                                                            <h3>Guides & Help</h3>
+                                                            <button type="button" className="shaper-pane-close" onClick={() => togglePanel('help')}>
+                                                                <X size={14} />
+                                                            </button>
+                                                        </div>
+                                                        <div className="shaper-pane-content" style={{ padding: 0 }}>
+                                                            <ShaperHelpPanel />
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                });
+                            })()}
                         </main>
                         <div 
                             className={`shaper-inspector-resize-handle ${isResizing ? 'resizing' : ''}`}
@@ -314,6 +544,7 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                         />
                         {workspace.selectedConnection ? (
                             <ShaperConnectionInspector
+                                doc={activeDoc}
                                 connection={workspace.selectedConnection}
                                 rooms={activeDoc.rooms}
                                 exits={activeDoc.exits}
@@ -330,6 +561,7 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                             />
                         ) : (
                             <ShaperInspector
+                                doc={activeDoc}
                                 room={workspace.selectedRoom}
                                 exits={activeDoc.exits}
                                 commandNodes={activeDoc.commandNodes}

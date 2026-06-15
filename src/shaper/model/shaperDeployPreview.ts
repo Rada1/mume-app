@@ -14,9 +14,10 @@ export interface ShaperDeployPreview {
 }
 
 // --- Command Section ---
+const textValue = (value: string | null | undefined): string => value ?? '';
 const wrapAt = (roomNumber: string, command: string): string => `/at ${roomNumber} ${command}`;
-const editorBlock = (roomNumber: string, command: string, text: string): string[] => {
-    const body = text.trim();
+const editorBlock = (roomNumber: string, command: string, text: string | null | undefined): string[] => {
+    const body = textValue(text).trim();
     if (!body) return [];
     return [
         wrapAt(roomNumber, command),
@@ -27,25 +28,25 @@ const editorBlock = (roomNumber: string, command: string, text: string): string[
 
 const buildRoomCommands = (room: ShaperRoomDraft): string[] => {
     const commands: string[] = [];
-    const name = room.name.trim();
+    const name = textValue(room.name).trim();
     if (name) {
-        const preposition = room.preposition.trim() || 'in';
+        const preposition = textValue(room.preposition).trim() || 'in';
         commands.push(wrapAt(room.roomNumber, `/room name ${preposition}@${name}`));
     }
     if (room.sector) {
         commands.push(wrapAt(room.roomNumber, `/room sector ${room.sector}`));
     }
-    if (room.flags.length > 0) {
+    if (room.flags?.length > 0) {
         commands.push(wrapAt(room.roomNumber, `/room flag @${room.flags.join(' ')}`));
     }
     commands.push(...editorBlock(room.roomNumber, '/room desc', room.description));
-    room.keywords.forEach(keyword => {
-        const keys = keyword.keywords.map(item => item.trim()).filter(Boolean);
+    room.keywords?.forEach(keyword => {
+        const keys = (keyword.keywords ?? []).map(item => textValue(item).trim()).filter(Boolean);
         if (keys.length === 0) return;
         commands.push(wrapAt(room.roomNumber, `/room kadd ${keys.join(' ')}`));
         commands.push(...editorBlock(room.roomNumber, `/room kdescription ${keys[0]}`, keyword.description));
     });
-    const owner = room.owner.trim();
+    const owner = textValue(room.owner).trim();
     if (owner && owner.toLowerCase() !== 'none') {
         commands.push(wrapAt(room.roomNumber, `/room owner ${owner}`));
     }
@@ -151,7 +152,7 @@ export const buildSelectedRoomDeployPreview = (
     if (roomComCount > 0) {
         warnings.push('/com kill all clears this room reset tree before replaying the previewed /com commands.');
     }
-    if (room.description.trim() || room.keywords.some(keyword => keyword.description.trim())) {
+    if (textValue(room.description).trim() || room.keywords?.some(keyword => textValue(keyword.description).trim())) {
         warnings.push('Description and keyword description previews require an editor-save deployment step.');
     }
     outgoing.forEach(exit => {

@@ -7,8 +7,9 @@ import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { listShaperComRoomEntities } from '../model/shaperComCommands';
 import { hasShaperExitDoor } from '../model/shaperExitFlags';
-import type { ShaperAnnotation, ShaperCommandNode, ShaperRoomDraft, ShaperRoomFlag, ShaperSector, ShaperValidationIssue, ShaperExitDraft, ShaperLibraryInstall } from '../model/shaperTypes';
+import type { ShaperAnnotation, ShaperCommandNode, ShaperRoomDraft, ShaperRoomFlag, ShaperSector, ShaperValidationIssue, ShaperExitDraft, ShaperLibraryInstall, ShaperWorkspaceDoc } from '../model/shaperTypes';
 import { SHAPER_LIBRARY_CATALOG } from '../model/shaperLibraryCatalog';
+import { AIGenerateButton } from './AIGenerateButton';
 import { ShaperAnnotations } from './ShaperAnnotations';
 import { ShaperRoomEntities } from './ShaperRoomEntities';
 import { ShaperDoorCard } from './ShaperDoorCard';
@@ -16,6 +17,7 @@ import { ShaperLibraryInstallCard } from './ShaperLibraryPanel';
 import type { ShaperEntityFocusSignal } from './shaperEntityFocus';
 
 interface ShaperInspectorProps {
+    doc: ShaperWorkspaceDoc;
     room: ShaperRoomDraft;
     exits: Record<string, ShaperExitDraft>;
     commandNodes: Record<string, ShaperCommandNode>;
@@ -63,6 +65,7 @@ const flags: ShaperRoomFlag[] = [
 
 // --- Component Section ---
 export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
+    doc,
     room,
     exits,
     commandNodes,
@@ -98,6 +101,7 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
 }) => {
     const [flagsCollapsed, setFlagsCollapsed] = useState(false);
     const [libsCollapsed, setLibsCollapsed] = useState(true);
+
     const multi = selectionCount > 1;
     const roomEntities = listShaperComRoomEntities(commandNodes, room.id);
     const doors = Object.values(exits).filter(
@@ -178,26 +182,49 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
                         placeholder="in" 
                     />
                 </label>
-                <label className="shaper-field" style={{ flex: 1, marginBottom: 0 }}>
-                    <span>Name</span>
+                <div className="shaper-field" style={{ flex: 1, marginBottom: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                        <span>Name</span>
+                        <AIGenerateButton
+                            target="room-name"
+                            doc={doc}
+                            roomId={room.id}
+                            onSuccess={(res: { name: string; preposition: string }) => {
+                                onUpdateRoom({ name: res.name, preposition: res.preposition });
+                            }}
+                            title="Suggest an atmospheric room name"
+                        />
+                    </div>
                     <input 
                         value={room.name} 
                         onChange={event => onUpdateRoom({ name: event.target.value })} 
                         placeholder="Draft room" 
                     />
-                </label>
+                </div>
             </div>
 
             <div className="shaper-helper">You are {room.preposition || '...'} {room.name || '...'}</div>
 
-            <label className="shaper-field">
-                <span>Description</span>
+            <div className="shaper-field">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span>Description</span>
+                    <AIGenerateButton
+                        target="room-description"
+                        doc={doc}
+                        roomId={room.id}
+                        onSuccess={(res: { description: string }) => {
+                            onUpdateRoom({ description: res.description });
+                        }}
+                        title="Generate an atmospheric description"
+                    />
+                </div>
                 <textarea
                     value={room.description}
                     onChange={event => onUpdateRoom({ description: event.target.value })}
                     rows={8}
+                    placeholder="Enter description..."
                 />
-            </label>
+            </div>
 
             <label className="shaper-field">
                 <span>Sector</span>

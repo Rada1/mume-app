@@ -849,7 +849,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // collector (it ignores `/at` teleport movement and resolves on the first
         // prompt after real content) instead of the fragile capture session.
         if (!isSnoop && useShaperLiveImportStore.getState().importing) {
-            useShaperLiveImportStore.getState().collectLine(textOnly, isCaptureBoundary);
+            useShaperLiveImportStore.getState().collectLine(textOnly, isCaptureBoundary && !promptInfo.attachedText);
         }
         const archiveCaptureTypes = ['board_list', 'board_read', 'mail_list', 'mail_read', 'book_read'];
         const isArchiveCapture = archiveCaptureTypes.includes(expectedCaptureType) || archiveCaptureTypes.includes(capture.getActiveType());

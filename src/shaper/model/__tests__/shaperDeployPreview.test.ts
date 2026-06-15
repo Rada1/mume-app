@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import { createDefaultShaperDocument } from '../shaperDocument';
 import { buildMultiRoomDeployPreview, buildSelectedRoomDeployPreview, buildZoneDeployPreview } from '../shaperDeployPreview';
-import type { ShaperExitDraft, ShaperDoorFlag } from '../shaperTypes';
+import type { ShaperExitDraft, ShaperDoorFlag, ShaperRoomDraft } from '../shaperTypes';
 
 // --- Test Section ---
 describe('buildSelectedRoomDeployPreview', () => {
@@ -169,6 +169,30 @@ describe('buildSelectedRoomDeployPreview', () => {
 
         expect(preview.commands).toEqual([]);
         expect(preview.warnings).toContain('Select or edit a room with deployable fields to generate commands.');
+    });
+
+    it('treats missing legacy text fields as empty instead of crashing', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 300 });
+        const base = doc.rooms[doc.selectedRoomId];
+        const legacyRoom = {
+            ...base,
+            name: undefined,
+            preposition: undefined,
+            description: undefined,
+            owner: undefined,
+            keywords: [{ id: 'legacy-keyword', keywords: ['plaque'], description: undefined }]
+        } as Partial<ShaperRoomDraft> as ShaperRoomDraft;
+
+        const preview = buildSelectedRoomDeployPreview(
+            legacyRoom,
+            { ...doc.rooms, [legacyRoom.id]: legacyRoom },
+            doc.exits,
+            {}
+        );
+
+        expect(preview.commands).toContain('/at 300:00 /room kadd plaque');
+        expect(preview.commands.some(line => line.includes('/room desc'))).toBe(false);
+        expect(preview.warnings).not.toContain('Description and keyword description previews require an editor-save deployment step.');
     });
 });
 

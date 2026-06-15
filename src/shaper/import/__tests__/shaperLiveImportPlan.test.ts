@@ -14,7 +14,7 @@ describe('shaperLiveImportPlan', () => {
         expect(plan.commands.map(item => item.command)).toEqual([
             '/stat zone 31',
             '/zone 31 list',
-            '/info z 31 list'
+            '/info zone 31 list'
         ]);
     });
 
@@ -33,8 +33,8 @@ describe('shaperLiveImportPlan', () => {
             zoneInfoKeywords: ['map', 'history', 'map']
         });
 
-        expect(plan.commands.map(item => item.command)).toContain('/info z 31 map');
-        expect(plan.commands.map(item => item.command)).toContain('/info z 31 history');
+        expect(plan.commands.map(item => item.command)).toContain('/info zone 31 map read');
+        expect(plan.commands.map(item => item.command)).toContain('/info zone 31 history read');
         expect(plan.commands.filter(item => item.phase === 'zone-info')).toHaveLength(2);
         expect(plan.commands.filter(item => item.phase === 'room-scan')).toHaveLength(3);
     });

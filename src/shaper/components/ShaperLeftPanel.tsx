@@ -6,18 +6,16 @@
 import type { ShaperPeerInfo } from '../collaboration/shaperPresence';
 import type { ShaperWorkspaceDoc } from '../model/shaperTypes';
 
-type ShaperTab = 'grid' | 'com' | 'mobiles' | 'objects' | 'libraries';
-
 interface ShaperLeftPanelProps {
     doc: ShaperWorkspaceDoc;
     issueCount: number;
-    activeTab: ShaperTab;
+    openPanels: Record<string, boolean>;
     peers: ShaperPeerInfo[];
-    onSelectTab: (tab: ShaperTab) => void;
+    onTogglePanel: (panel: string) => void;
 }
 
 // --- Component Section ---
-export const ShaperLeftPanel: React.FC<ShaperLeftPanelProps> = ({ doc, issueCount, activeTab, peers, onSelectTab }) => (
+export const ShaperLeftPanel: React.FC<ShaperLeftPanelProps> = ({ doc, issueCount, openPanels, peers, onTogglePanel }) => (
     <aside className="shaper-left-panel">
         <div className="shaper-panel-heading">
             <span>Workspace</span>
@@ -27,38 +25,52 @@ export const ShaperLeftPanel: React.FC<ShaperLeftPanelProps> = ({ doc, issueCoun
         <div className="shaper-nav-section">
             <button
                 type="button"
-                className={activeTab === 'grid' ? 'active' : ''}
-                onClick={() => onSelectTab('grid')}
+                className={openPanels.grid ? 'active' : ''}
+                onClick={() => onTogglePanel('grid')}
             >
                 Concept Grid
             </button>
             <button
                 type="button"
-                className={activeTab === 'com' ? 'active' : ''}
-                onClick={() => onSelectTab('com')}
+                className={openPanels.com ? 'active' : ''}
+                onClick={() => onTogglePanel('com')}
             >
                 /com Trees
             </button>
             <button
                 type="button"
-                className={activeTab === 'mobiles' ? 'active' : ''}
-                onClick={() => onSelectTab('mobiles')}
+                className={openPanels.mobiles ? 'active' : ''}
+                onClick={() => onTogglePanel('mobiles')}
             >
                 Mobiles
             </button>
             <button
                 type="button"
-                className={activeTab === 'objects' ? 'active' : ''}
-                onClick={() => onSelectTab('objects')}
+                className={openPanels.objects ? 'active' : ''}
+                onClick={() => onTogglePanel('objects')}
             >
                 Objects
             </button>
             <button
                 type="button"
-                className={activeTab === 'libraries' ? 'active' : ''}
-                onClick={() => onSelectTab('libraries')}
+                className={openPanels.libraries ? 'active' : ''}
+                onClick={() => onTogglePanel('libraries')}
             >
                 Libs
+            </button>
+            <button
+                type="button"
+                className={openPanels.info ? 'active' : ''}
+                onClick={() => onTogglePanel('info')}
+            >
+                Keywords
+            </button>
+            <button
+                type="button"
+                className={openPanels.help ? 'active' : ''}
+                onClick={() => onTogglePanel('help')}
+            >
+                Guides & Help
             </button>
             <button type="button" disabled>Shops</button>
         </div>

@@ -5,9 +5,11 @@
 
 import React from 'react';
 import { hasShaperExitClimb, hasShaperExitDoor } from '../model/shaperExitFlags';
-import type { ShaperDirection, ShaperDoorFlag, ShaperExitDraft, ShaperRoomDraft, ShaperRoomId } from '../model/shaperTypes';
+import type { ShaperDirection, ShaperDoorFlag, ShaperExitDraft, ShaperRoomDraft, ShaperRoomId, ShaperWorkspaceDoc } from '../model/shaperTypes';
+import { AIGenerateButton } from './AIGenerateButton';
 
 interface ShaperConnectionInspectorProps {
+    doc: ShaperWorkspaceDoc;
     connection: {
         aId: ShaperRoomId;
         bId: ShaperRoomId;
@@ -29,6 +31,7 @@ const EXIT_FLAGS: ShaperDoorFlag[] = [
 ];
 
 export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps> = ({
+    doc,
     connection,
     rooms,
     exits,
@@ -90,8 +93,25 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                     />
                 </label>
 
-                <label className="shaper-field" style={{ marginBottom: 12 }}>
-                    <span>Exit Description</span>
+                <div className="shaper-field" style={{ marginBottom: 12 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                        <span>Exit Description</span>
+                        <AIGenerateButton
+                            target="door-description"
+                            doc={doc}
+                            roomId={fromRoom.id}
+                            customContext={{
+                                direction: dir,
+                                fromRoomNum: fromRoom.roomNumber,
+                                toRoomNum: toRoom.roomNumber,
+                                doorName: exit.doorName
+                            }}
+                            onSuccess={(res: { exitDescription: string }) => {
+                                onUpdateExit(exitId, { exitDescription: res.exitDescription });
+                            }}
+                            title="Generate exit/door description with AI"
+                        />
+                    </div>
                     <textarea
                         value={exit.exitDescription || ''}
                         onChange={e => onUpdateExit(exitId, { exitDescription: e.target.value })}
@@ -99,7 +119,7 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                         rows={2}
                         style={{ width: '100%', resize: 'vertical', background: '#0f172a', border: '1px solid #334155', borderRadius: 4, padding: 6, color: '#f8fafc', fontSize: 13 }}
                     />
-                </label>
+                </div>
 
                 <div className="shaper-field" style={{ marginBottom: 12 }}>
                     <span>Exit Flags (/room dset)</span>

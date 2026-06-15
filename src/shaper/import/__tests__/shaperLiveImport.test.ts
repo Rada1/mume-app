@@ -57,6 +57,44 @@ Exits: east west
         expect(result.summary.roomsTouched).toBe(1);
     });
 
+    it('decodes escaped symbols in imported zone info keyword bodies', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const result = applyShaperLiveTranscript(doc, `
+/info z 31 asciimap
+&gt; = mountain
+&lt; = valley
+&amp; = river crossing
+`, 1234);
+
+        expect(result.doc.zoneInfoKeywords.asciimap.body).toBe(
+            '> = mountain\n< = valley\n& = river crossing'
+        );
+    });
+
+    it('accepts explicit /info zone keyword reads', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const result = applyShaperLiveTranscript(doc, `
+/info zone 31 history read
+Old notes survive here.
+`, 1234);
+
+        expect(result.doc.zoneInfoKeywords.history.body).toBe('Old notes survive here.');
+    });
+
+    it('preserves internal empty lines in imported zone info keyword bodies', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const result = applyShaperLiveTranscript(doc, `
+/info z 31 asciimap
+Key
+
+> = mountains
+
+        15
+`, 1234);
+
+        expect(result.doc.zoneInfoKeywords.asciimap.body).toBe('Key\n\n> = mountains\n\n        15');
+    });
+
     it('imports a real /stat room full description (unindented body, Extra-keywords terminator)', () => {
         const doc = createDefaultShaperDocument({ zoneNumber: 31 });
         const result = applyShaperLiveTranscript(doc, `
@@ -285,6 +323,34 @@ Commands on room 31:50 (hills by a watchtower):
         expect(commands[0].limit?.raw).toBe('20000');
         expect(commands[1].limit?.raw).toBe('20200');
         expect(commands[2].limit?.raw).toBe('150');
+    });
+
+    it('parses nested /com list table commands with room prefixes and sets parent-child relationships', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const result = applyShaperLiveTranscript(doc, `
+/com list z
+ 31:100  3   Object  6042 (a wooden crate) (--/--/1/100%)
+ 31:100  > 4   Put     2090 (a fishing net) in 6042 (crate) (--/--/1/100%)
+ 31:100  2   Follow  3800 (a small termite) follows 3801 (termite) (--/3/--/100%)
+`, 1234);
+
+        const commands = Object.values(result.doc.commandNodes).sort((a, b) => a.order - b.order);
+        expect(commands).toHaveLength(3);
+        expect(commands[0]).toMatchObject({
+            type: 'object',
+            parentId: null,
+            fields: { vnum: '6042', name: 'a wooden crate' }
+        });
+        expect(commands[1]).toMatchObject({
+            type: 'put',
+            parentId: commands[0].id,
+            fields: { vnum: '2090', name: 'a fishing net' }
+        });
+        expect(commands[2]).toMatchObject({
+            type: 'follow',
+            parentId: null,
+            fields: { vnum: '3800', name: 'a small termite' }
+        });
     });
 
     it('splits the MUME room title into preposition and name on the @ marker', () => {

@@ -43,18 +43,23 @@ const issue = (
 // --- Room Rules Section ---
 const validateRoom = (room: ShaperRoomDraft): ShaperValidationIssue[] => {
     const issues: ShaperValidationIssue[] = [];
-    const has = (flag: ShaperRoomFlag) => room.flags.includes(flag);
+    const flags = room.flags ?? [];
+    const has = (flag: ShaperRoomFlag) => flags.includes(flag);
+    const name = room.name ?? '';
+    const description = room.description ?? '';
+    const notes = room.notes ?? '';
+    const mobs = room.mobs ?? [];
 
-    if (!room.name.trim()) {
+    if (!name.trim()) {
         issues.push(issue(`${room.id}-missing-name`, 'error', room.id, room.id, 'Room name is required.'));
     }
-    if (!room.description.trim()) {
+    if (!description.trim()) {
         issues.push(issue(`${room.id}-missing-description`, 'warning', room.id, room.id, 'Room description is empty.'));
     }
-    if (maxLineLength(room.description) > 80) {
+    if (maxLineLength(description) > 80) {
         issues.push(issue(`${room.id}-description-width`, 'warning', room.id, room.id, 'Description has lines longer than 80 characters.'));
     }
-    if (forcedActionPattern.test(room.description)) {
+    if (forcedActionPattern.test(description)) {
         issues.push(issue(`${room.id}-forced-action`, 'warning', room.id, room.id, 'Description may force player perception or action.'));
     }
     if (!room.sector) {
@@ -69,10 +74,10 @@ const validateRoom = (room: ShaperRoomDraft): ShaperValidationIssue[] => {
     if (has('sunlit') && !has('dark') && !has('indoors')) {
         issues.push(issue(`${room.id}-sunlit-meaningless`, 'warning', room.id, room.id, 'The sunlit flag is meaningless without dark or indoors.'));
     }
-    if (has('random_exits') && room.mobs.length > 0) {
+    if (has('random_exits') && mobs.length > 0) {
         issues.push(issue(`${room.id}-random-exits-mobs`, 'warning', room.id, room.id, 'random_exits with placed mobs can scatter them; verify mob movement plans.'));
     }
-    if (has('death') && !room.notes.toLowerCase().includes('edesc')) {
+    if (has('death') && !notes.toLowerCase().includes('edesc')) {
         issues.push(issue(`${room.id}-deathtrap-edesc`, 'warning', room.id, room.id, 'Deathtrap rooms should document exit descriptions.'));
     }
 

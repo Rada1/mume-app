@@ -6,6 +6,7 @@
 import { createDefaultShaperDocument } from './shaperDocument';
 import { autoConnectAllRooms } from './shaperExits';
 import { publishShaperProjectEvent, subscribeShaperProjectSync } from './shaperProjectSync';
+import { decodeZoneInfoText } from './shaperZoneInfo';
 import type { ShaperAnnotation, ShaperCommandNode, ShaperItemRef, ShaperMobPlacement, ShaperProjectSummary, ShaperRoomDraft, ShaperWorkspaceDoc } from './shaperTypes';
 
 const PROJECTS_KEY = 'mume.shaper.projects';
@@ -54,13 +55,33 @@ const removeStorageItem = (key: string): void => {
 };
 
 // --- Migration Section ---
+const normalizeText = (value: string | null | undefined): string => value ?? '';
+const normalizeZoneInfoKeywords = (
+    keywords: ShaperWorkspaceDoc['zoneInfoKeywords'] | undefined
+): ShaperWorkspaceDoc['zoneInfoKeywords'] => Object.fromEntries(
+    Object.entries(keywords ?? {}).map(([id, item]) => {
+        const body = decodeZoneInfoText(item.body ?? '');
+        return [id, { ...item, body, rawText: item.rawText ? decodeZoneInfoText(item.rawText) : body }];
+    })
+) as ShaperWorkspaceDoc['zoneInfoKeywords'];
+
 const normalizeRoom = (room: ShaperRoomDraft): ShaperRoomDraft => ({
     ...room,
     z: room.z ?? 0,
     kind: room.kind ?? 'grid',
     anchorRoomId: room.anchorRoomId ?? null,
+    name: normalizeText(room.name),
+    preposition: normalizeText(room.preposition) || 'in',
+    description: normalizeText(room.description),
+    sector: room.sector ?? '',
+    flags: room.flags ?? [],
     owner: room.owner ?? '',
-    keywords: room.keywords ?? [],
+    keywords: (room.keywords ?? []).map(keyword => ({
+        ...keyword,
+        keywords: keyword.keywords ?? [],
+        description: normalizeText(keyword.description)
+    })),
+    notes: normalizeText(room.notes),
     annotations: room.annotations ?? [],
     mobs: room.mobs ?? [],
     objects: room.objects ?? [],
@@ -112,7 +133,7 @@ const normalizeDocument = (doc: ShaperWorkspaceDoc | null): ShaperWorkspaceDoc |
         exits: Object.keys(doc.exits).length > 0 ? doc.exits : autoConnectAllRooms(rooms, {}),
         commandNodes,
         libraries: doc.libraries ?? {},
-        zoneInfoKeywords: doc.zoneInfoKeywords ?? {}
+        zoneInfoKeywords: normalizeZoneInfoKeywords(doc.zoneInfoKeywords)
     };
 };
 

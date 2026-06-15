@@ -22,4 +22,15 @@ Sector: [road]
             { command: '/at 31:04 /stat room full', output: 'Name: [A quiet road]\nSector: [road]' }
         ]);
     });
+
+    it('recognizes explicit /info zone keyword reads', () => {
+        const blocks = parseShaperLiveTranscript(`
+* W C Mana:Burning > /info zone 31 asciimap read
+Key
+`);
+
+        expect(blocks).toEqual([
+            { command: '/info zone 31 asciimap read', output: 'Key' }
+        ]);
+    });
 });

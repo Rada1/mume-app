@@ -64,12 +64,14 @@ export type ShaperRoomProseContext = {
     objects: ShaperRoomEntityContext[];
     exits: ShaperRoomExitContext[];
     neighbors: ShaperRoomNeighborContext[];
+    lore?: string;
 };
 
 export type ShaperProjectProseContext = {
     projectId: string;
     projectName: string;
     zoneNumber: number;
+    lore?: string;
     rooms: ShaperRoomProseContext[];
 };
 
@@ -114,6 +116,7 @@ export const buildShaperRoomProseContext = (
         return [{ direction: exit.direction, roomNumber: target.roomNumber, name: target.name, sector: target.sector }];
     });
     const entities = listShaperComRoomEntities(doc.commandNodes, roomId);
+    const lore = doc.zoneInfoKeywords?.lore?.body ?? undefined;
     return {
         roomId,
         roomNumber: room.roomNumber,
@@ -144,7 +147,8 @@ export const buildShaperRoomProseContext = (
                 isClimb: hasShaperExitClimb(exit)
             };
         }),
-        neighbors
+        neighbors,
+        lore
     };
 };
 
@@ -152,6 +156,7 @@ export const buildShaperProjectProseContext = (doc: ShaperWorkspaceDoc): ShaperP
     projectId: doc.id,
     projectName: doc.name,
     zoneNumber: doc.zoneNumber,
+    lore: doc.zoneInfoKeywords?.lore?.body ?? undefined,
     rooms: Object.values(doc.rooms)
         .filter(room => !room.inactive)
         .sort((a, b) => a.roomNumber.localeCompare(b.roomNumber, undefined, { numeric: true }))

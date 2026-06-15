@@ -4,7 +4,11 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { buildShaperRoomLiveImportCommands } from '../useShaperLiveImportRunner';
+import {
+    buildShaperRoomLiveImportCommands,
+    buildShaperZoneInfoListCommand,
+    buildShaperZoneInfoReadCommand
+} from '../useShaperLiveImportRunner';
 
 // --- Test Section ---
 describe('buildShaperRoomLiveImportCommands', () => {
@@ -18,5 +22,12 @@ describe('buildShaperRoomLiveImportCommands', () => {
 
     it('canonicalizes padded grid room ids for MUME commands', () => {
         expect(buildShaperRoomLiveImportCommands('31:08')[2]).toBe('/lib room 31:8 list');
+    });
+});
+
+describe('Shaper zone info import commands', () => {
+    it('uses explicit zone keyword list and read commands', () => {
+        expect(buildShaperZoneInfoListCommand(31)).toBe('/info zone 31 list');
+        expect(buildShaperZoneInfoReadCommand(31, 'asciimap')).toBe('/info zone 31 asciimap read');
     });
 });

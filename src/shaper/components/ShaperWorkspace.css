@@ -217,9 +217,99 @@
 
 .shaper-center {
     min-height: 0;
-    overflow: auto;
-    padding: 22px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0;
     background: #1e1e1e;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+/* Resizable Workspace Panes */
+.shaper-workspace-pane {
+    min-width: 200px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #1e1e1e;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.shaper-pane-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #181717;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shaper-pane-header h3 {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: #f0b45b;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.shaper-pane-close {
+    border: none;
+    background: transparent;
+    color: #aab7c4;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.shaper-pane-close:hover {
+    opacity: 1;
+    color: #ef4444;
+}
+
+.shaper-pane-content {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+.shaper-center-placeholder {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #aab7c4;
+    font-size: 14px;
+    opacity: 0.7;
+    text-align: center;
+    padding: 40px;
+}
+
+.shaper-panel-resize-handle {
+    width: 6px;
+    cursor: col-resize;
+    background: transparent;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background 0.15s ease, border-color 0.15s ease;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.shaper-panel-resize-handle:hover,
+.shaper-panel-resize-handle.resizing {
+    background: rgba(240, 180, 91, 0.22);
+    border-right-color: #f0b45b;
 }
 
 .shaper-room-tile {

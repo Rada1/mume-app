@@ -4,6 +4,7 @@
  */
 
 .shaper-gamelog-panel {
+    --shaper-log-font: 'Iosevka', 'Roboto Mono', 'Cascadia Code', monospace;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -82,11 +83,19 @@
        keep the app font and mix two metrics on one line, skewing the ASCII map.
        The monospace fallback guarantees alignment even if Roboto Mono fails to
        load (a bare family name falls back to a proportional serif). */
-    --font-mono: 'Roboto Mono', monospace;
-    --font-main: 'Roboto Mono', monospace;
+    --font-mono: var(--shaper-log-font);
+    --font-main: var(--shaper-log-font);
+    font-family: var(--shaper-log-font);
 }
 
 /* Scoped adjustments for MessageLog within the side panel */
+.shaper-workspace .shaper-gamelog-body .message-log,
+.shaper-workspace .shaper-gamelog-body .message,
+.shaper-workspace .shaper-gamelog-body .message-content,
+.shaper-workspace .shaper-gamelog-body .message-content * {
+    font-family: var(--shaper-log-font) !important;
+}
+
 .shaper-gamelog-body .message-log-container {
     max-width: 100% !important;
     border: none !important;
@@ -119,7 +128,7 @@
 }
 
 .shaper-gamelog-prompt {
-    font-family: 'Iosevka', monospace;
+    font-family: var(--shaper-log-font);
     font-size: 14px;
     color: #f0b45b;
     user-select: none;
@@ -130,7 +139,7 @@
     border: none;
     background: transparent;
     color: #eef2f6;
-    font-family: 'Iosevka', monospace;
+    font-family: var(--shaper-log-font);
     font-size: 14px;
     outline: none;
     padding: 0;

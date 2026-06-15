@@ -11,7 +11,7 @@ export interface ShaperLiveTranscriptBlock {
 const commandPatterns = [
     /^\/stat\s+zone\s+\d+\b/i,
     /^\/zone\s+\d+\s+list\b/i,
-    /^\/info\s+z\s+\d+\s+\S+/i,
+    /^\/info\s+(?:z|zone)\s+\d+\s+\S+/i,
     /^\/at\s+\S+\s+\/stat\s+room(?:\s+full)?\b/i,
     /^\/com\s+room\s+\S+\s+list\b/i,
     /^\/at\s+\S+\s+\/com\s+list\b/i,

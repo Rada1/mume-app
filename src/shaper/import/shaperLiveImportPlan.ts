@@ -44,7 +44,7 @@ const commandId = (phase: ShaperLiveReadPhase, target: string, index: number): s
 export const buildShaperZoneDiscoveryCommands = (zoneNumber: number): ShaperLiveReadCommand[] => [
     { id: 'zone-discovery:stat-zone:0', phase: 'zone-discovery', scope: 'zone', target: String(zoneNumber), command: `/stat zone ${zoneNumber}` },
     { id: 'zone-discovery:zone-list:1', phase: 'zone-discovery', scope: 'zone', target: String(zoneNumber), command: `/zone ${zoneNumber} list` },
-    { id: 'zone-discovery:info-zone-list:2', phase: 'zone-discovery', scope: 'zone-info', target: String(zoneNumber), command: `/info z ${zoneNumber} list` }
+    { id: 'zone-discovery:info-zone-list:2', phase: 'zone-discovery', scope: 'zone-info', target: String(zoneNumber), command: `/info zone ${zoneNumber} list` }
 ];
 
 export const buildShaperZoneInfoReadCommands = (
@@ -56,7 +56,7 @@ export const buildShaperZoneInfoReadCommands = (
         phase: 'zone-info',
         scope: 'zone-info',
         target: keyword,
-        command: `/info z ${zoneNumber} ${keyword}`
+        command: `/info zone ${zoneNumber} ${keyword} read`
     }));
 
 export const buildShaperRoomReadCommands = (roomNumber: string): ShaperLiveReadCommand[] => [
