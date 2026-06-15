@@ -488,7 +488,7 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                                                 {panelKey === 'info' && (
                                                     <>
                                                         <div className="shaper-pane-header">
-                                                            <h3>Zone Info</h3>
+                                                            <h3>Keywords</h3>
                                                             <button type="button" className="shaper-pane-close" onClick={() => togglePanel('info')}>
                                                                 <X size={14} />
                                                             </button>
