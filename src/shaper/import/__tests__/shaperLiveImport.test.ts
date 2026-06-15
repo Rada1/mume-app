@@ -243,6 +243,7 @@ Room permanent flags: BUILD
         const room = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:08');
         expect(room?.preposition).toBe('on a');
         expect(room?.name).toBe('Jagged Crag');
+        expect(room?.mapId).toBe('1');
     });
 
     it('understands compact /stat room output from live MUME', () => {
@@ -263,6 +264,7 @@ West   31: 2, flags: none
         expect(room?.sector).toBe('forest');
         expect(room?.flags).toEqual(['build']);
         expect(room?.owner).toBe('none');
+        expect(room?.mapId).toBe('10251233');
         expect(room?.liveSnapshot?.statRoomFull).toContain('Room 31:12');
         const westTarget = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:02');
         expect(result.doc.exits[`${room?.id}:w`]).toMatchObject({ toRoomId: westTarget?.id, direction: 'w' });
@@ -292,6 +294,7 @@ Down   31:100, flags: DOOR NO_MOB, name: trapdoor, key: no-keyhole, pick: 0%,
 `, 1234);
 
         const importedRoom = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:50');
+        expect(importedRoom?.mapId).toBe('5262803');
         const eastTarget = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:60');
         const southTarget = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:51');
         const westTarget = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:40');

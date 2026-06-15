@@ -21,6 +21,8 @@ import { ShaperComTreePanel } from './ShaperComTreePanel';
 import { ShaperLibraryPanel } from './ShaperLibraryPanel';
 import { ShaperWorkspaceTopbar } from './ShaperWorkspaceTopbar';
 import type { ShaperEntityFocusSignal } from './shaperEntityFocus';
+import { useRoomStore } from '../../stores/useRoomStore';
+import { ShaperGameLogPanel } from './ShaperGameLogPanel';
 import { useGame } from '../../context/GameContext';
 import { useShaperEntityStore } from '../model/useShaperEntityStore';
 import './ShaperDatabasePanels.css';
@@ -60,6 +62,21 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
         setFocusEntity({ id: entityId, nonce: Date.now() });
     };
 
+    const playerRoomNum = useRoomStore(s => s.roomNum);
+    const playerMapId = useRoomStore(s => s.mapId);
+
+    const [showGameLog, setShowGameLog] = useState<boolean>(() => {
+        const saved = localStorage.getItem('shaper-show-gamelog');
+        return saved === 'true';
+    });
+
+    const [gameLogWidth, setGameLogWidth] = useState<number>(() => {
+        const saved = localStorage.getItem('shaper-gamelog-width');
+        return saved ? parseInt(saved, 10) : 400;
+    });
+
+    const [isResizingGameLog, setIsResizingGameLog] = useState(false);
+
     const [inspectorWidth, setInspectorWidth] = useState<number>(() => {
         const saved = localStorage.getItem('shaper-inspector-width');
         return saved ? parseInt(saved, 10) : 340;
@@ -71,13 +88,19 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
         setIsResizing(true);
     };
 
+    const handleGameLogMouseDown = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsResizingGameLog(true);
+    };
+
     useEffect(() => {
         if (!isResizing) return;
 
         const handleMouseMove = (e: MouseEvent) => {
             const minWidth = 250;
-            const maxWidth = window.innerWidth - 550; // 260px left panel + 290px center min
-            const newWidth = window.innerWidth - e.clientX;
+            const rightEdge = window.innerWidth - (showGameLog ? gameLogWidth + 6 : 0);
+            const maxWidth = rightEdge - 550; // 260px left panel + 290px center min
+            const newWidth = rightEdge - e.clientX;
             const finalWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
             setInspectorWidth(finalWidth);
             localStorage.setItem('shaper-inspector-width', String(finalWidth));
@@ -93,7 +116,31 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [isResizing]);
+    }, [isResizing, showGameLog, gameLogWidth]);
+
+    useEffect(() => {
+        if (!isResizingGameLog) return;
+
+        const handleMouseMove = (e: MouseEvent) => {
+            const minWidth = 250;
+            const maxWidth = window.innerWidth - 650;
+            const newWidth = window.innerWidth - e.clientX;
+            const finalWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+            setGameLogWidth(finalWidth);
+            localStorage.setItem('shaper-gamelog-width', String(finalWidth));
+        };
+
+        const handleMouseUp = () => {
+            setIsResizingGameLog(false);
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isResizingGameLog]);
 
     const hashHandledRef = useRef(false);
     useEffect(() => {
@@ -142,6 +189,12 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                 onChangeZone={changeActiveZone}
                 onImportLiveRead={workspace.startLiveImport}
                 liveImportStatus={workspace.liveImportStatus}
+                showGameLog={showGameLog}
+                onToggleGameLog={() => {
+                    const next = !showGameLog;
+                    setShowGameLog(next);
+                    localStorage.setItem('shaper-show-gamelog', String(next));
+                }}
                 onClose={onClose}
             />
             {!activeDoc || !workspace.selectedRoom ? (
@@ -160,7 +213,12 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                 />
             ) : (
                 <>
-                    <div className="shaper-main" style={{ gridTemplateColumns: `260px 1fr auto ${inspectorWidth}px` }}>
+                    <div 
+                        className="shaper-main" 
+                        style={{ 
+                            gridTemplateColumns: `260px 1fr auto ${inspectorWidth}px${showGameLog ? ` auto ${gameLogWidth}px` : ''}` 
+                        }}
+                    >
                         <ShaperLeftPanel
                             doc={activeDoc}
                             issueCount={workspace.issues.length}
@@ -197,6 +255,8 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                                     onRemoveRooms={workspace.removeRooms}
                                     showComOverlay={showComOverlay}
                                     onToggleComOverlay={() => setShowComOverlay(!showComOverlay)}
+                                    playerRoomNum={playerRoomNum}
+                                    playerMapId={playerMapId}
                                 />
                             )}
                             {activeTab === 'com' && (
@@ -292,6 +352,20 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                                 isConnected={isConnected}
                                 focusEntity={focusEntity}
                             />
+                        )}
+                        {showGameLog && (
+                            <>
+                                <div 
+                                    className={`shaper-inspector-resize-handle ${isResizingGameLog ? 'resizing' : ''}`}
+                                    onMouseDown={handleGameLogMouseDown}
+                                />
+                                <div style={{ width: `${gameLogWidth}px`, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                                    <ShaperGameLogPanel onClose={() => {
+                                        setShowGameLog(false);
+                                        localStorage.setItem('shaper-show-gamelog', 'false');
+                                    }} />
+                                </div>
+                            </>
                         )}
                     </div>
 

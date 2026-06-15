@@ -24,7 +24,7 @@ export const ShaperDoorCard: React.FC<ShaperDoorCardProps> = ({
 }) => {
     const [expanded, setExpanded] = useState(false);
 
-    const activeAction = doorCom ? (doorCom.fields.doorAction || 'close') : 'none';
+    const activeAction = doorCom ? String(doorCom.fields.doorAction || 'close') : 'none';
 
     const handleActionChange = (action: string) => {
         if (action === 'none') {

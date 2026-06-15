@@ -226,6 +226,7 @@ const patchRoomFromStat = (room: ShaperRoomDraft, output: string, importedAt: nu
     const atIndex = rawName.indexOf('@');
     const preposition = atIndex >= 0 ? rawName.slice(0, atIndex).trim() : '';
     const name = atIndex >= 0 ? rawName.slice(atIndex + 1).trim() : rawName;
+    const mapId = statValue(output, 'MapId');
     return {
         ...room,
         status: 'verified',
@@ -235,6 +236,7 @@ const patchRoomFromStat = (room: ShaperRoomDraft, output: string, importedAt: nu
         sector: sectorValues.has(sector as ShaperSector) ? sector as ShaperSector : room.sector,
         flags: parseFlags(output),
         description: parseDescription(output) || room.description,
+        mapId: mapId || room.mapId,
         liveSnapshot: { ...room.liveSnapshot, importedAt, statRoomFull: output.trim() }
     };
 };

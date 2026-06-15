@@ -6,6 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import { createDefaultShaperDocument } from '../shaperDocument';
 import { buildSelectedRoomDeployPreview, buildZoneDeployPreview } from '../shaperDeployPreview';
+import type { ShaperExitDraft, ShaperDoorFlag } from '../shaperTypes';
 
 // --- Test Section ---
 describe('buildSelectedRoomDeployPreview', () => {
@@ -71,7 +72,7 @@ describe('buildSelectedRoomDeployPreview', () => {
         const doc = createDefaultShaperDocument({ zoneNumber: 300 });
         const room = doc.rooms[doc.selectedRoomId];
         const targetId = 'room-1-0-0';
-        const exits = {
+        const exits: Record<string, ShaperExitDraft> = {
             [`${room.id}:e`]: {
                 id: `${room.id}:e`,
                 fromRoomId: room.id,
@@ -79,7 +80,7 @@ describe('buildSelectedRoomDeployPreview', () => {
                 toRoomId: targetId,
                 isTwoWay: false,
                 doorName: 'gate',
-                doorFlags: ['door', 'closed' as const]
+                doorFlags: ['door', 'closed'] as ShaperDoorFlag[]
             },
             [`${room.id}:s`]: {
                 id: `${room.id}:s`,
@@ -87,7 +88,7 @@ describe('buildSelectedRoomDeployPreview', () => {
                 direction: 's' as const,
                 toRoomId: targetId,
                 isTwoWay: false,
-                doorFlags: ['climb_down' as const],
+                doorFlags: ['climb_down'] as ShaperDoorFlag[],
                 climbDifficulty: 12,
                 climbDamage: 3
             }

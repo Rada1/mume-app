@@ -1,0 +1,133 @@
+/**
+ * @file ShaperGameLogPanel.css
+ * @description Styles for the Shaper live MUD message feed and input panel.
+ */
+
+.shaper-gamelog-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    background: #181717;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.shaper-gamelog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #1e1d1d;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shaper-gamelog-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #eef2f6;
+}
+
+.shaper-gamelog-char {
+    color: #8a99ad;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+.shaper-gamelog-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.shaper-gamelog-status-dot.connected {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.shaper-gamelog-status-dot.disconnected {
+    background: #ef4444;
+}
+
+.shaper-gamelog-close-btn {
+    border: none;
+    background: transparent;
+    color: #8a99ad;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.shaper-gamelog-close-btn:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #eef2f6;
+}
+
+.shaper-gamelog-body {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+    padding: 10px 14px;
+    background: #121111;
+}
+
+/* Scoped adjustments for MessageLog within the side panel */
+.shaper-gamelog-body .message-log-container {
+    max-width: 100% !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    height: 100% !important;
+}
+
+.shaper-gamelog-footer {
+    padding: 10px 14px;
+    background: #1e1d1d;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shaper-gamelog-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    padding: 6px 10px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.shaper-gamelog-form:focus-within {
+    border-color: #f0b45b;
+    box-shadow: 0 0 0 2px rgba(240, 180, 91, 0.15);
+}
+
+.shaper-gamelog-prompt {
+    font-family: 'Iosevka', monospace;
+    font-size: 14px;
+    color: #f0b45b;
+    user-select: none;
+}
+
+.shaper-gamelog-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: #eef2f6;
+    font-family: 'Iosevka', monospace;
+    font-size: 14px;
+    outline: none;
+    padding: 0;
+}
+
+.shaper-gamelog-input::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+}

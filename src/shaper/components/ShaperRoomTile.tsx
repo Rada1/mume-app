@@ -84,6 +84,8 @@ interface ShaperRoomTileProps {
     onHoverEnd?: () => void;
     onSelectEntity?: (roomId: string, entityId: string) => void;
     showComOverlay?: boolean;
+    playerRoomNum?: number | string | null;
+    playerMapId?: number | string | null;
 }
 
 const directions: ShaperDirection[] = ['n', 'e', 's', 'w', 'u', 'd'];
@@ -110,9 +112,15 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
     onHover,
     onHoverEnd,
     onSelectEntity,
-    showComOverlay = false
+    showComOverlay = false,
+    playerRoomNum,
+    playerMapId
 }) => {
     const roomExits = Object.values(exits).filter(exit => exit.fromRoomId === room.id);
+    const isPlayerHere = !!(
+        (room.mapId && playerMapId && String(room.mapId) === String(playerMapId)) ||
+        (!room.mapId && room.roomNumber && String(playerRoomNum) === room.roomNumber)
+    );
     const pathKind: PathKind | null = room.inactive
         ? null
         : (room.sector === 'road' ? 'road' : (room.flags.includes('trail') ? 'trail' : null));
@@ -125,7 +133,7 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
         width: showExits ? SHAPER_TILE : SHAPER_CELL,
         height: showExits ? SHAPER_TILE : SHAPER_CELL,
         transform: dragging && dragOffset ? `translate(${dragOffset.dx / zoom}px, ${dragOffset.dy / zoom}px)` : undefined,
-        zIndex: dragging ? 5 : undefined,
+        zIndex: dragging ? 15 : (isPlayerHere ? 13 : (selected ? 11 : undefined)),
         backgroundImage: backgroundImages.length > 0 ? backgroundImages.join(', ') : undefined,
         backgroundSize: backgroundImages.length > 0 ? backgroundImages.map(() => 'cover').join(', ') : undefined,
         backgroundPosition: backgroundImages.length > 0 ? backgroundImages.map(() => 'center').join(', ') : undefined
@@ -167,6 +175,14 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
                 </svg>
             )}
             <span className="shaper-room-number">{room.roomNumber}</span>
+            {isPlayerHere && (
+                <div className="shaper-player-presence" title="You are here">
+                    <div className="shaper-player-presence-corner tl" />
+                    <div className="shaper-player-presence-corner tr" />
+                    <div className="shaper-player-presence-corner bl" />
+                    <div className="shaper-player-presence-corner br" />
+                </div>
+            )}
             {room.inactive && <span className="shaper-room-name">(inactive)</span>}
             {!room.inactive && <span className="shaper-room-sector">{room.sector || 'unset'}</span>}
             {!room.inactive && doorExits.map(exit => {

@@ -20,6 +20,7 @@ export interface RoomState {
     chars: Record<number, GmcpOccupant>;
     items: GmcpOccupant[];
     roomNum: number;
+    mapId?: number;
     whoList: string[];
     whereList: WhereEntry[];
 
@@ -31,7 +32,7 @@ export interface RoomState {
     setChars: (chars: Record<number, GmcpOccupant> | ((prev: Record<number, GmcpOccupant>) => Record<number, GmcpOccupant>)) => void;
     setWhoList: (list: string[] | ((prev: string[]) => string[])) => void;
     setWhereList: (list: WhereEntry[] | ((prev: WhereEntry[]) => WhereEntry[])) => void;
-    setRoomInfo: (info: Partial<{ roomName: string; roomDesc: string; roomZone: string; terrain: string; roomNum: number }>) => void;
+    setRoomInfo: (info: Partial<{ roomName: string; roomDesc: string; roomZone: string; terrain: string; roomNum: number; mapId?: number }>) => void;
     setRoomName: (name: string | null | ((prev: string) => string)) => void;
     setRoomDesc: (desc: string | null | ((prev: string) => string)) => void;
     setRoomZone: (zone: string | null | ((prev: string) => string)) => void;
@@ -44,7 +45,7 @@ export interface RoomState {
     applyItemsUpdate: (data: GmcpOccupant[]) => void;
 }
 
-export const initialRoomState: Pick<RoomState, 'roomName' | 'roomDesc' | 'roomZone' | 'terrain' | 'exits' | 'rawExits' | 'chars' | 'items' | 'roomNum' | 'whoList' | 'whereList'> = {
+export const initialRoomState: Pick<RoomState, 'roomName' | 'roomDesc' | 'roomZone' | 'terrain' | 'exits' | 'rawExits' | 'chars' | 'items' | 'roomNum' | 'mapId' | 'whoList' | 'whereList'> = {
     roomName: '',
     roomDesc: '',
     roomZone: '',
@@ -54,6 +55,7 @@ export const initialRoomState: Pick<RoomState, 'roomName' | 'roomDesc' | 'roomZo
     chars: {},
     items: [],
     roomNum: 0,
+    mapId: undefined,
     whoList: [],
     whereList: []
 };
@@ -132,6 +134,7 @@ export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, 
                 roomZone: data.zone || data.area || state.roomZone,
                 terrain: data.terrain || state.terrain,
                 roomNum: incomingId !== undefined && incomingId !== null ? Number(incomingId) : state.roomNum,
+                mapId: data.id !== undefined && data.id !== null ? data.id : state.mapId,
                 // SMARTER: Only clear occupants if it's a physical room change
                 chars: isNewPhysicalRoom ? {} : state.chars,
                 items: isNewPhysicalRoom ? [] : state.items,
@@ -200,7 +203,7 @@ export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, 
         });
     },
 
-    setRoomInfo: (info: Partial<{ roomName: string; roomDesc: string; roomZone: string; terrain: string; roomNum: number }>) => {
+    setRoomInfo: (info: Partial<{ roomName: string; roomDesc: string; roomZone: string; terrain: string; roomNum: number; mapId?: number }>) => {
         set((state: RoomState) => ({ ...state, ...info }));
     },
 

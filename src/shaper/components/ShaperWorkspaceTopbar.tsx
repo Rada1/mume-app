@@ -3,7 +3,7 @@
  * @description Header controls for the Shaper workspace shell.
  */
 
-import { Undo2, X } from 'lucide-react';
+import { Undo2, X, Terminal } from 'lucide-react';
 import type { ShaperLiveImportStatus } from '../hooks/useShaperLiveImportRunner';
 import type { ShaperWorkspaceDoc } from '../model/shaperTypes';
 
@@ -16,6 +16,8 @@ interface ShaperWorkspaceTopbarProps {
     onChangeZone: () => void;
     onImportLiveRead: () => void;
     liveImportStatus: ShaperLiveImportStatus;
+    showGameLog: boolean;
+    onToggleGameLog: () => void;
     onClose: () => void;
 }
 
@@ -29,6 +31,8 @@ export const ShaperWorkspaceTopbar: React.FC<ShaperWorkspaceTopbarProps> = ({
     onChangeZone,
     onImportLiveRead,
     liveImportStatus,
+    showGameLog,
+    onToggleGameLog,
     onClose
 }) => {
     return (
@@ -45,6 +49,17 @@ export const ShaperWorkspaceTopbar: React.FC<ShaperWorkspaceTopbarProps> = ({
                 {activeDoc && liveImportStatus.running && <span>{liveImportStatus.completed}/{liveImportStatus.total || '?'}</span>}
                 {activeDoc && liveImportStatus.error && <span>{liveImportStatus.error}</span>}
                 {activeDoc && <span>{issueCount} issues</span>}
+                {activeDoc && (
+                    <button 
+                        type="button" 
+                        onClick={onToggleGameLog} 
+                        className={showGameLog ? 'active' : ''} 
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px' }}
+                        title="Toggle MUD Log"
+                    >
+                        <Terminal size={16} className={showGameLog ? 'text-amber-400' : ''} />
+                    </button>
+                )}
                 <button type="button" onClick={onClose} title="Close Shaper">
                     <X size={18} />
                 </button>

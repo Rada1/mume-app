@@ -90,6 +90,7 @@ export interface ShaperRoomDraft {
     mobs: ShaperMobPlacement[];
     objects: ShaperItemRef[];
     liveSnapshot?: ShaperLiveRoomSnapshot;
+    mapId?: string;
 }
 
 export interface ShaperConnectionSelection {

@@ -47,6 +47,8 @@ interface ShaperCanvasProps {
     onRemoveRooms: (roomIds: ShaperRoomId[]) => void;
     showComOverlay?: boolean;
     onToggleComOverlay?: () => void;
+    playerRoomNum?: number | string | null;
+    playerMapId?: number | string | null;
 }
 
 interface DragState {
@@ -87,7 +89,9 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
     onRemoveRoom,
     onRemoveRooms,
     showComOverlay = false,
-    onToggleComOverlay
+    onToggleComOverlay,
+    playerRoomNum,
+    playerMapId
 }) => {
     const view = useShaperCanvasView();
     // Re-render tiles when the terrain image assets finish loading.
@@ -297,6 +301,8 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                                 onHoverEnd={handleHoverEnd}
                                 onSelectEntity={onSelectEntity}
                                 showComOverlay={showComOverlay}
+                                playerRoomNum={playerRoomNum}
+                                playerMapId={playerMapId}
                             />
                         );
                     })}
