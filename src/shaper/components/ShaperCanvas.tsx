@@ -92,7 +92,7 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
     const view = useShaperCanvasView();
     // Re-render tiles when the terrain image assets finish loading.
     useShaperTerrainAssets();
-    const [showExits, setShowExits] = useState(true);
+    const [showExits, setShowExits] = useState(false);
     const [drag, setDrag] = useState<DragState | null>(null);
     const [roomMenu, setRoomMenu] = useState<ShaperRoomMenuState | null>(null);
     const [connectionDrag, setConnectionDrag] = useState<ShaperConnectionDragState | null>(null);
