@@ -41,6 +41,10 @@ const sectorValues = new Set<ShaperSector>([
     'tunnel', 'cavern'
 ]);
 
+const sectorAliases: Record<string, ShaperSector> = {
+    mountains: 'mountain'
+};
+
 const flagValues = new Set<ShaperRoomFlag>([
     'dark', 'death', 'no_mob', 'indoors', 'no_ride', 'no_freeze',
     'open_root', 'no_magic', 'isolated', 'private', 'random_exits',
@@ -148,6 +152,12 @@ const parseRoomName = (output: string): string => {
 const statValue = (output: string, label: string): string =>
     bracketValue(output, label) || plainValue(output, label);
 
+const parseSector = (output: string, fallback: ShaperSector | ''): ShaperSector | '' => {
+    const raw = statValue(output, 'Sector').toLowerCase().replace(/-/g, '_');
+    const sector = sectorAliases[raw] ?? raw;
+    return sectorValues.has(sector as ShaperSector) ? sector as ShaperSector : fallback;
+};
+
 const parseFlags = (output: string): ShaperRoomFlag[] => {
     const line = output.match(/\bRoom permanent flags:\s*([^\n]+)/i)?.[1] ??
         output.match(/\bFlags:\s*([^\n]+)/i)?.[1] ?? '';
@@ -235,7 +245,6 @@ const parseLiveExits = (output: string): ParsedLiveExit[] => {
 };
 
 const patchRoomFromStat = (room: ShaperRoomDraft, output: string, importedAt: number): ShaperRoomDraft => {
-    const sector = statValue(output, 'Sector').toLowerCase().replace(/-/g, '_');
     // MUME room titles are `<preposition>@<name>` (e.g. `on a@Jagged Crag`). Split
     // on the first `@` so the preposition and name land in the right fields.
     const rawName = parseRoomName(output);
@@ -249,7 +258,7 @@ const patchRoomFromStat = (room: ShaperRoomDraft, output: string, importedAt: nu
         name: name || room.name,
         preposition: preposition || room.preposition,
         owner: statValue(output, 'Owner') || room.owner,
-        sector: sectorValues.has(sector as ShaperSector) ? sector as ShaperSector : room.sector,
+        sector: parseSector(output, room.sector),
         flags: parseFlags(output),
         description: parseDescription(output) || room.description,
         mapId: mapId || room.mapId,

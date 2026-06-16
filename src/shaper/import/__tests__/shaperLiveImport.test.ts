@@ -151,6 +151,26 @@ North 31: 14, flags: none
         expect(room?.description).toBe('');
     });
 
+    it('normalizes live plural mountain sector into the Shaper sector model', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 188 });
+        const result = applyShaperLiveTranscript(doc, `
+/at 188:38 /stat room
+Room 188:38 (19638) - on a@Silent Peak
+Magical key: jobglaeiil, Owner: none, Sector: mountains, MapId: 14000343
+Entrances: 23.48 (0.0001%), Magic: [0.00%,0.00%]
+Room permanent flags: NO_RIDE
+Room temporary flags: none
+Light sources: 0
+Extra description keywords: none
+------ Exits ------
+West  188: 28, flags: none
+`, 1234);
+
+        const room = Object.values(result.doc.rooms).find(item => item.roomNumber === '188:38');
+        expect(room?.sector).toBe('mountain');
+        expect(room?.flags).toEqual(['no_ride']);
+    });
+
     it('parses /com via the room-scoped command form', () => {
         const doc = createDefaultShaperDocument({ zoneNumber: 31 });
         const result = applyShaperLiveTranscript(doc, `

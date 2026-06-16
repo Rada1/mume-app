@@ -24,7 +24,8 @@ export interface ShaperLiveImportStatus {
     error: string | null;
 }
 
-const PACE_MS = 500;
+const COMMAND_SETTLE_MS = 125;
+const MAX_EXIT_DISCOVERY_PASSES = 4;
 
 const sleep = (ms: number): Promise<void> =>
     new Promise(resolve => setTimeout(resolve, ms));
@@ -53,6 +54,25 @@ export const buildShaperZoneInfoListCommand = (zoneNumber: number): string =>
 
 export const buildShaperZoneInfoReadCommand = (zoneNumber: number, keyword: string): string =>
     `/info zone ${zoneNumber} ${keyword} read`;
+
+export const findShaperFollowUpRoomNumbers = (
+    doc: ShaperWorkspaceDoc,
+    importedRoomNumbers: Set<string>,
+    zoneNumber = doc.zoneNumber
+): string[] => {
+    const roomsById = doc.rooms;
+    const roomNumbers = new Set<string>();
+    Object.values(doc.exits).forEach(exit => {
+        const fromRoom = roomsById[exit.fromRoomId];
+        const toRoom = exit.toRoomId ? roomsById[exit.toRoomId] : null;
+        if (!fromRoom?.liveSnapshot?.statRoomFull || !toRoom) return;
+        if (!toRoom.roomNumber.startsWith(`${zoneNumber}:`)) return;
+        if (importedRoomNumbers.has(toRoom.roomNumber)) return;
+        if (toRoom.liveSnapshot?.statRoomFull && toRoom.name.trim() && toRoom.sector) return;
+        roomNumbers.add(toRoom.roomNumber);
+    });
+    return [...roomNumbers].sort((left, right) => Number(left.split(':')[1]) - Number(right.split(':')[1]));
+};
 
 // --- Hook Section ---
 export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveImportRunnerParams) => {
@@ -97,7 +117,7 @@ export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveI
                 }
                 completed += 1;
                 setStatus({ running: true, label: command, completed, total, error: null });
-                await sleep(PACE_MS);
+                await sleep(COMMAND_SETTLE_MS);
             }
         }
         return { doc: nextDoc, completed, failures };
@@ -126,7 +146,7 @@ export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveI
             }
             completed += 1;
             setStatus({ running: true, label: `Read keyword ${keyword}`, completed, total, error: null });
-            await sleep(PACE_MS);
+            await sleep(COMMAND_SETTLE_MS);
         }
         return { doc: nextDoc, completed, failures };
     }, [persist, runCommand, setDoc]);
@@ -174,15 +194,44 @@ export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveI
             // eslint-disable-next-line no-console
             console.warn('[ShaperLiveImport] keyword list failed, skipping zone info auto-import:', commandError);
         }
-        const total = keywords.length + roomNumbers.length * 3;
+        let total = keywords.length + roomNumbers.length * 3;
         setStatus({ running: true, label: `Found ${roomNumbers.length} rooms and ${keywords.length} keywords`, completed: 0, total, error: null });
         const keywordResult = await importZoneInfoKeywords(doc, keywords, 0, total);
-        const { failures } = await importRoomNumbers(keywordResult.doc, roomNumbers, keywordResult.completed, total);
-        const allFailures = discoveryFailures + failures + keywordResult.failures;
+        const importedRoomNumbers = new Set(roomNumbers);
+        let importedDoc = keywordResult.doc;
+        let completed = keywordResult.completed;
+        let readFailures = 0;
+        const initialResult = await importRoomNumbers(importedDoc, roomNumbers, completed, total);
+        importedDoc = initialResult.doc;
+        completed = initialResult.completed;
+        readFailures += initialResult.failures;
+
+        for (let pass = 0; pass < MAX_EXIT_DISCOVERY_PASSES; pass += 1) {
+            const followUpRooms = findShaperFollowUpRoomNumbers(importedDoc, importedRoomNumbers);
+            if (followUpRooms.length === 0) break;
+            followUpRooms.forEach(roomNumber => importedRoomNumbers.add(roomNumber));
+            total += followUpRooms.length * 3;
+            setStatus({
+                running: true,
+                label: `Reading ${followUpRooms.length} exit-linked rooms`,
+                completed,
+                total,
+                error: null
+            });
+            const followUpResult = await importRoomNumbers(importedDoc, followUpRooms, completed, total);
+            importedDoc = followUpResult.doc;
+            completed = followUpResult.completed;
+            readFailures += followUpResult.failures;
+        }
+
+        if (completed !== total) {
+            setStatus({ running: true, label: 'Finalizing live import', completed, total, error: null });
+        }
+        const allFailures = discoveryFailures + readFailures + keywordResult.failures;
         return {
             label: allFailures > 0
-                ? `Imported ${roomNumbers.length} rooms and ${keywords.length} keywords (${allFailures} reads skipped)`
-                : `Imported ${roomNumbers.length} rooms and ${keywords.length} keywords`,
+                ? `Imported ${importedRoomNumbers.size} rooms and ${keywords.length} keywords (${allFailures} reads skipped)`
+                : `Imported ${importedRoomNumbers.size} rooms and ${keywords.length} keywords`,
             completed: total,
             total
         };
