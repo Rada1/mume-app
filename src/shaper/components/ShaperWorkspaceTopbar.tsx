@@ -45,7 +45,7 @@ export const ShaperWorkspaceTopbar: React.FC<ShaperWorkspaceTopbarProps> = ({
                 {activeDoc && <button type="button" onClick={onProjects}>Projects</button>}
                 {activeDoc && <button type="button" onClick={onUndo} disabled={!canUndo} title="Undo (Ctrl+Z)"><Undo2 size={16} /></button>}
                 {activeDoc && <button type="button" onClick={onChangeZone}>Zone {activeDoc.zoneNumber}</button>}
-                {activeDoc && <button type="button" onClick={onImportLiveRead} disabled={liveImportStatus.running}>Import Live Read</button>}
+                {activeDoc && <button type="button" onClick={onImportLiveRead} disabled={liveImportStatus.running}>Import Zone from MUME</button>}
                 {activeDoc && liveImportStatus.running && <span>{liveImportStatus.completed}/{liveImportStatus.total || '?'}</span>}
                 {activeDoc && liveImportStatus.error && <span>{liveImportStatus.error}</span>}
                 {activeDoc && <span>{issueCount} issues</span>}
