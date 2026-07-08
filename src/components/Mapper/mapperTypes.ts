@@ -101,6 +101,15 @@ export interface MapperRef {
     stableRoomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
     serverIdIndexRef?: React.MutableRefObject<Record<string, string>>;
+    /** Live camera (world-space) and canvas element, so callers outside the
+     * mapper can convert the current room's world coords into on-screen pixel
+     * coords (e.g. to draw a leader line from the room card to its map tile). */
+    cameraRef?: React.MutableRefObject<{ x: number; y: number; zoom: number }>;
+    canvasRef?: React.MutableRefObject<HTMLCanvasElement | null>;
+    /** Animated render position (room-grid units) of the player marker — the
+     * same source the current-room corner-bracket highlight uses, so external
+     * overlays can point at exactly the same spot. */
+    playerPosRef?: React.MutableRefObject<{ x: number; y: number; z: number } | null>;
 }
 
 export interface MapperProps {

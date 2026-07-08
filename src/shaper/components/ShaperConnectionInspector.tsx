@@ -188,6 +188,20 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                                 </label>
 
                                 <label className="shaper-field">
+                                    <span>Pick %</span>
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        max={100}
+                                        value={exit.doorPickPercent ?? ''}
+                                        onChange={e => onUpdateExit(exitId, { doorPickPercent: e.target.value ? parseInt(e.target.value, 10) : undefined })}
+                                        placeholder="e.g. 50"
+                                    />
+                                </label>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                                <label className="shaper-field">
                                     <span>Weight</span>
                                     <input
                                         type="number"

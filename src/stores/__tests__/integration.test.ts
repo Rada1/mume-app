@@ -99,6 +99,45 @@ describe('MUME Store Integration Tests', () => {
             expect(state.opponentId).toBe(9);
             expect(state.opponentName).toBe('an orc');
         });
+
+        it('tracks additional room occupants fighting the player as queued opponents', () => {
+            gmcpBus.emit('Room.Chars', [
+                {
+                    id: 9,
+                    name: 'an orc',
+                    short: 'An orc is here.',
+                    type: 'npc',
+                    fighting: 'you',
+                    health: 'Fine'
+                },
+                {
+                    id: 10,
+                    name: 'a warg',
+                    short: 'A warg is here.',
+                    type: 'npc',
+                    fighting: 'you',
+                    health: 'Hurt'
+                }
+            ]);
+
+            const state = useCombatStore.getState();
+            expect(state.opponentId).toBe(9);
+            expect(state.opponentName).toBe('an orc');
+            expect(state.engagedOpponents.map(opponent => opponent.name)).toEqual(['an orc', 'a warg']);
+            expect(state.engagedOpponents[1].healthStatus).toBe('Hurt');
+        });
+
+        it('keeps the current opponent first when room combat has multiple attackers', () => {
+            useCombatStore.getState().setOpponent(10, 'a warg', null);
+
+            gmcpBus.emit('Room.Chars.Combat', [
+                { id: 9, name: 'an orc', fighting: 'you', health: 'Fine' },
+                { id: 10, name: 'a warg', fighting: 'you', health: 'Hurt' }
+            ]);
+
+            const state = useCombatStore.getState();
+            expect(state.engagedOpponents.map(opponent => opponent.name)).toEqual(['a warg', 'an orc']);
+        });
     });
 
     describe('Room Exit Updates', () => {

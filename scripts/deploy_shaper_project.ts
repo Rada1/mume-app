@@ -55,6 +55,10 @@ const roomPreview = (doc: ShaperWorkspaceDoc, roomId: string) => {
 
   const nodes = Object.values(doc.commandNodes || {}).filter(node => node.roomId === roomId).sort((a, b) => a.order - b.order);
   if (nodes.length) commands.push(wrapAt(room.roomNumber, '/com kill all'), ...nodes.map(node => wrapAt(room.roomNumber, formatCom(node))));
+  Object.values(doc.exits || {}).filter(exit => exit.fromRoomId === roomId && exit.doorPickPercent !== undefined).forEach(exit => {
+    const pick = Math.max(0, Math.min(100, Math.round(exit.doorPickPercent || 0)));
+    commands.push(wrapAt(room.roomNumber, `/com add door ${exit.direction} lock ${pick} ${pick}`));
+  });
   
   const libs = Object.values(doc.libraries || {}).filter(lib => lib.targetType === 'room' && lib.targetId === roomId);
   libs.forEach((lib, index) => {

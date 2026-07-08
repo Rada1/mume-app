@@ -1,3 +1,8 @@
+/**
+ * @file ButtonSwipeOverlay.tsx
+ * @description Renders swipe-wheel action previews for held game buttons.
+ */
+
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { CustomButton, SwipeDirection } from '../../../types';
@@ -34,6 +39,23 @@ const colorToRgb = (colorVal: string | undefined, defaultVal: string) => {
     const g = parseInt(fullHex.substring(2, 4), 16);
     const b = parseInt(fullHex.substring(4, 6), 16);
     return !isNaN(r) && !isNaN(g) && !isNaN(b) ? `${r}, ${g}, ${b}` : defaultVal;
+};
+
+export const toSwipeCenterActionLabel = (button: CustomButton): string => {
+    const command = (button.command || '').trim();
+    const normalized = command.toLowerCase();
+    if (!command) return button.label || '';
+
+    if (button.actionType === 'menu') {
+        if (normalized.endsWith('spelllist')) return 'spells';
+        if (normalized.endsWith('skilllist')) return 'skills';
+        if (normalized.endsWith(' list')) return normalized.replace(/\s+list$/, '');
+        return normalized.replace(/list$/, '') || command;
+    }
+
+    const quotedAbility = command.match(/^(?:cast|commune)\s+'([^']+)'/i);
+    if (quotedAbility) return quotedAbility[1];
+    return command;
 };
 
 export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling, buttonRect, rayParams, onSwap }) => {
@@ -102,7 +124,7 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                 })}
                 <div className={`swipe-center ${(activeDir as any) === 'center' ? 'active' : ''}`}>
                     <span className="swipe-center-label">
-                        {button.label || button.command}
+                        {toSwipeCenterActionLabel(button)}
                     </span>
                 </div>
             </div>

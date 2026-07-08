@@ -16,11 +16,27 @@
 
 .tactical-line-wrapper {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
     pointer-events: auto;
     overflow: visible;
+}
+
+.line-cluster-title {
+    margin-bottom: 2px;
+    color: rgba(232, 176, 32, 0.7);
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+.line-cluster-title.clickable-toggle {
+    pointer-events: auto;
 }
 
 .line-cluster-aux {
@@ -136,7 +152,26 @@
 }
 
 .line-cluster-step {
-    display: contents;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 3px;
+    min-width: 32px;
+    line-height: 1;
+}
+
+.line-cluster-caption {
+    max-width: 42px;
+    color: rgba(214, 220, 232, 0.64);
+    font-size: 0.58rem;
+    font-weight: 650;
+    letter-spacing: 0;
+    line-height: 1;
+    text-align: center;
+    text-transform: lowercase;
+    pointer-events: none;
+    white-space: nowrap;
 }
 
 @keyframes tactical-line-cascade-glow {
@@ -290,7 +325,7 @@
     width: fit-content !important;
     justify-content: center !important;
     gap: 18px !important;
-    padding: 2px 10px !important;
+    padding: 3px 10px 4px !important;
     margin: 0 auto;
     min-height: unset !important;
     border-radius: 12px !important;
@@ -333,6 +368,21 @@
     min-height: 16px !important;
 }
 
+.mobile-tactical-buttons-persistent .line-cluster-title {
+    margin-bottom: 1px;
+    font-size: 0.42rem;
+}
+
+.mobile-tactical-buttons-persistent .line-cluster-step {
+    min-width: 22px;
+    gap: 2px;
+}
+
+.mobile-tactical-buttons-persistent .line-cluster-caption {
+    max-width: 34px;
+    font-size: 0.44rem;
+}
+
 .mobile-tactical-buttons-persistent .line-cluster .line-cluster-action-menu {
     width: 16px !important;
     height: 16px !important;
@@ -373,17 +423,17 @@
     transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }
 
+/* Now lives in its own stacked panel (.room-card-drawer-desktop) rather than
+   floating absolutely over the map, since the room card and map are split
+   into separate drawers on desktop. */
 .mapper-header-desktop {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    position: absolute;
-    top: 44px;
-    left: 0;
-    right: 0;
-    z-index: 2800;
-    pointer-events: none;
+    position: relative;
+    z-index: auto;
+    pointer-events: auto;
 }
 
 .mapper-header-desktop .mapper-room-info-container {
@@ -393,17 +443,348 @@
     transform: none !important;
     width: 100% !important;
     max-width: none !important;
-    padding: 10px 10px 0 10px !important;
+    padding: 4px 8px 0 8px !important;
     margin-bottom: 0px !important;
+}
+
+/* --- Unified room card: terrain strip on top, room + entity sections below --- */
+.room-info-card {
+    --terrain-material-height: 12px;
+    --terrain-ceiling-height: 0px;
+    position: relative;
+    width: calc(100% - 14px);
+    max-width: 720px;
+    margin: 0 auto;
+    border-radius: var(--radius-card, 12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    pointer-events: none; /* map stays interactive; inner sections opt back in */
+    overflow: hidden;
+}
+
+/* Desktop: let the room card span the full width of the map drawer instead of
+   capping out at 720px, and give the name/description more room to breathe. */
+@media (min-width: 1025px) {
+    .room-info-card {
+        width: calc(100% - 16px);
+        max-width: none;
+    }
+
+    .room-info-card .mri-name {
+        font-size: 1.3rem;
+        padding: 2px 44px 0;
+    }
+
+    .room-info-card .mri-desc {
+        font-size: 0.92rem;
+        line-height: 1.4;
+        -webkit-line-clamp: 2;
+        max-height: 2.8em;
+    }
+
+    .room-info-card .mapper-room-info-container.expanded .mri-desc {
+        max-height: 1000px;
+    }
+
+    .room-info-card .mri-content {
+        padding: 10px 20px 18px;
+        gap: 6px;
+    }
+}
+
+/* Terrain art header strip — sits above the room text, rounding the top corners. */
+.room-info-card-terrain {
+    position: relative;
+    width: 100%;
+    height: 70px;
+    background-size: cover;
+    background-position: center;
+    border-radius: var(--radius-card, 12px) var(--radius-card, 12px) 0 0;
+    overflow: hidden;
+}
+
+.room-info-card-terrain-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+.room-info-card-terrain-tag {
+    position: absolute;
+    left: 12px;
+    bottom: 6px;
+    pointer-events: none;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Body holds the room info + entity sections on a solid panel background. */
+.room-info-card-body {
+    position: relative;
+    background: rgba(13, 16, 23, 0.62);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--radius-card, 12px);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    overflow: hidden;
+}
+
+.room-info-card.has-terrain .room-info-card-body {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.light-mode .room-info-card-body {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+/* Inner sections render transparent so they share the body's panel background. */
+.room-info-card .mapper-room-info-container {
+    padding: 3px 6px 0 !important;
+    overflow: visible;
+}
+
+.room-info-card .mri-content,
+.room-info-card .mapper-room-info-container.expanded .mri-content {
+    background:
+        radial-gradient(circle at 12% 50%, var(--terrain-glow-color, rgba(255, 255, 255, 0.028)) 0%, rgba(255, 255, 255, 0.028) 100%) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding-top: 6px !important;
+    padding-bottom: 7px !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.room-info-card .mri-content::before,
+.room-info-card .mri-content::after {
+    display: none;
+}
+
+.room-info-card .mri-content::before {
+    top: 0;
+    height: var(--terrain-ceiling-height);
+}
+
+.room-info-card .mri-content::after {
+    bottom: 0;
+    height: var(--terrain-material-height);
+}
+
+.room-info-card .mri-name,
+.room-info-card .mri-desc,
+.room-info-card .mri-corner-flags {
+    position: relative;
+    z-index: 2;
+}
+
+.room-info-card .mri-corner-chip {
+    z-index: 2;
+}
+
+.room-info-card .mri-zone-chip {
+    position: absolute !important;
+    left: auto !important;
+    right: 7px !important;
+    top: 5px !important;
+}
+
+.room-info-card .mri-corner-flags {
+    position: absolute !important;
+    left: 7px !important;
+    right: auto !important;
+    top: 5px !important;
+}
+
+.room-info-card .room-chip-rows {
+    width: 100%;
+    max-width: none;
+    margin-top: 0;
+    padding: 3px 8px 4px;
+    background: rgba(13, 16, 23, 0.82);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0;
+}
+
+.light-mode .room-info-card .room-chip-rows {
+    background: transparent;
+    border-top-color: rgba(0, 0, 0, 0.12);
+}
+
+.room-info-card.room-terrain-forest { --terrain-material-height: 18px; }
+.room-info-card.room-terrain-brush { --terrain-material-height: 15px; }
+.room-info-card.room-terrain-hill { --terrain-material-height: 21px; }
+.room-info-card.room-terrain-mountain { --terrain-material-height: 25px; }
+.room-info-card.room-terrain-city { --terrain-material-height: 15px; }
+.room-info-card.room-terrain-cavern { --terrain-ceiling-height: 14px; --terrain-material-height: 10px; }
+.room-info-card.room-terrain-tunnel { --terrain-ceiling-height: 11px; --terrain-material-height: 9px; }
+.room-info-card.room-terrain-building { --terrain-ceiling-height: 9px; --terrain-material-height: 8px; }
+.room-info-card.room-terrain-underwater { --terrain-material-height: 0px; }
+
+.room-info-card.room-terrain-grass .mri-content::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 12' shape-rendering='crispEdges'%3E%3Crect x='0' y='10' width='48' height='2' fill='%232d6f2f'/%3E%3Crect x='3' y='6' width='2' height='4' fill='%237dcc55'/%3E%3Crect x='7' y='4' width='2' height='6' fill='%234b9c43'/%3E%3Crect x='13' y='7' width='2' height='3' fill='%239ee46d'/%3E%3Crect x='18' y='3' width='2' height='7' fill='%235fad48'/%3E%3Crect x='25' y='5' width='2' height='5' fill='%238bd45b'/%3E%3Crect x='31' y='2' width='2' height='8' fill='%23458f3d'/%3E%3Crect x='38' y='6' width='2' height='4' fill='%2394df62'/%3E%3Crect x='43' y='4' width='2' height='6' fill='%2359a348'/%3E%3C/svg%3E") 0 0 / 48px 12px repeat-x,
+        linear-gradient(0deg, rgba(35, 108, 42, 0.72), rgba(68, 154, 56, 0.28) 45%, transparent 100%);
+}
+
+.room-info-card.room-terrain-forest .mri-content::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 34' shape-rendering='crispEdges'%3E%3Crect x='0' y='30' width='96' height='4' fill='%231b4d2c' opacity='.75'/%3E%3Crect x='10' y='18' width='5' height='13' fill='%23523a25'/%3E%3Crect x='4' y='12' width='17' height='8' fill='%234f8d45'/%3E%3Crect x='1' y='18' width='23' height='8' fill='%233d7439'/%3E%3Crect x='7' y='6' width='11' height='8' fill='%2369a55d'/%3E%3Crect x='37' y='17' width='4' height='14' fill='%234b3322'/%3E%3Crect x='30' y='10' width='19' height='9' fill='%233e7d3e'/%3E%3Crect x='27' y='18' width='25' height='8' fill='%232f6634'/%3E%3Crect x='34' y='4' width='12' height='8' fill='%2356934c'/%3E%3Crect x='66' y='19' width='5' height='12' fill='%23513a28'/%3E%3Crect x='59' y='13' width='20' height='8' fill='%234b8842'/%3E%3Crect x='56' y='20' width='26' height='7' fill='%23346d35'/%3E%3Crect x='63' y='7' width='13' height='7' fill='%23619e55'/%3E%3Crect x='86' y='21' width='4' height='10' fill='%23493525'/%3E%3Crect x='80' y='16' width='15' height='7' fill='%2344773c'/%3E%3Crect x='78' y='22' width='18' height='6' fill='%232f6132'/%3E%3C/svg%3E") 0 0 / 96px 34px repeat-x,
+        linear-gradient(180deg, transparent 0 40%, rgba(21, 69, 33, 0.7));
+}
+
+.room-info-card.room-terrain-water .mri-content::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 14' shape-rendering='crispEdges'%3E%3Crect x='0' y='10' width='96' height='4' fill='%23136f9e' opacity='.82'/%3E%3Crect x='0' y='7' width='18' height='2' fill='%232a9fd0'/%3E%3Crect x='18' y='5' width='10' height='2' fill='%2385ddff'/%3E%3Crect x='28' y='7' width='14' height='2' fill='%235fc7ef'/%3E%3Crect x='50' y='4' width='16' height='2' fill='%239ce8ff'/%3E%3Crect x='66' y='6' width='12' height='2' fill='%2338a8dc'/%3E%3Crect x='78' y='8' width='12' height='2' fill='%236fd3f4'/%3E%3Crect x='9' y='2' width='5' height='1' fill='%23b8f0ff' opacity='.75'/%3E%3Crect x='36' y='3' width='6' height='1' fill='%23b8f0ff' opacity='.65'/%3E%3Crect x='72' y='2' width='5' height='1' fill='%23b8f0ff' opacity='.7'/%3E%3C/svg%3E") 0 0 / 96px 14px repeat-x,
+        linear-gradient(180deg, transparent, rgba(17, 135, 190, 0.56));
+}
+
+.room-info-card.room-terrain-marsh .mri-content::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 16' shape-rendering='crispEdges'%3E%3Crect x='0' y='11' width='96' height='5' fill='%233c3323' opacity='.88'/%3E%3Crect x='4' y='9' width='14' height='2' fill='%236a5a34'/%3E%3Crect x='24' y='10' width='17' height='2' fill='%232e7567'/%3E%3Crect x='50' y='9' width='16' height='2' fill='%235a482d'/%3E%3Crect x='74' y='10' width='15' height='2' fill='%232f6f5e'/%3E%3Crect x='7' y='5' width='2' height='6' fill='%23779a42'/%3E%3Crect x='10' y='2' width='2' height='9' fill='%234f7e38'/%3E%3Crect x='14' y='6' width='2' height='5' fill='%2390a958'/%3E%3Crect x='33' y='4' width='2' height='7' fill='%236d8d3f'/%3E%3Crect x='37' y='2' width='2' height='9' fill='%234d7436'/%3E%3Crect x='58' y='5' width='2' height='6' fill='%23849742'/%3E%3Crect x='62' y='3' width='2' height='8' fill='%235f7d35'/%3E%3Crect x='81' y='5' width='2' height='6' fill='%237f9b4a'/%3E%3Crect x='87' y='7' width='6' height='2' fill='%23428a77'/%3E%3C/svg%3E") 0 0 / 96px 16px repeat-x,
+        linear-gradient(180deg, transparent, rgba(65, 55, 34, 0.62));
+}
+
+.room-info-card.room-terrain-brush .mri-content::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 24' shape-rendering='crispEdges'%3E%3Crect x='0' y='20' width='112' height='4' fill='%232b5f2e' opacity='.82'/%3E%3Crect x='4' y='15' width='12' height='5' fill='%234a8a3d'/%3E%3Crect x='2' y='18' width='17' height='4' fill='%23356f34'/%3E%3Crect x='8' y='11' width='6' height='4' fill='%236fa853'/%3E%3Crect x='25' y='13' width='15' height='7' fill='%233f7d38'/%3E%3Crect x='22' y='17' width='21' height='5' fill='%232f6731'/%3E%3Crect x='30' y='8' width='7' height='5' fill='%235c9848'/%3E%3Crect x='50' y='14' width='13' height='6' fill='%23488a3c'/%3E%3Crect x='47' y='18' width='19' height='4' fill='%23326731'/%3E%3Crect x='55' y='10' width='5' height='4' fill='%2376ad55'/%3E%3Crect x='75' y='12' width='16' height='8' fill='%233f7437'/%3E%3Crect x='72' y='17' width='22' height='5' fill='%232d6330'/%3E%3Crect x='81' y='7' width='6' height='5' fill='%235d9848'/%3E%3Crect x='99' y='15' width='9' height='5' fill='%234f913f'/%3E%3Crect x='97' y='18' width='14' height='4' fill='%23396f34'/%3E%3C/svg%3E") 0 0 / 112px 24px repeat-x,
+        linear-gradient(180deg, transparent 0 28%, rgba(33, 93, 42, 0.62));
+}
+
+.room-info-card.room-terrain-road .mri-content::after {
+    background:
+        linear-gradient(90deg, transparent 0 12px, rgba(217, 178, 113, 0.52) 12px 18px, transparent 18px 28px) 0 5px / 28px 3px repeat-x,
+        linear-gradient(180deg, transparent, rgba(116, 84, 47, 0.46));
+}
+
+.room-info-card.room-terrain-city .mri-content::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 144 24' shape-rendering='crispEdges'%3E%3Crect x='0' y='21' width='144' height='3' fill='%23503a25' opacity='.8'/%3E%3Crect x='4' y='13' width='16' height='8' fill='%23845d35'/%3E%3Crect x='2' y='10' width='20' height='3' fill='%23b87838'/%3E%3Crect x='8' y='16' width='3' height='3' fill='%23f0c36a'/%3E%3Crect x='14' y='16' width='3' height='3' fill='%23311f16'/%3E%3Crect x='26' y='11' width='18' height='10' fill='%236f5238'/%3E%3Crect x='24' y='8' width='22' height='3' fill='%23a46b32'/%3E%3Crect x='30' y='15' width='4' height='3' fill='%23dca85b'/%3E%3Crect x='38' y='15' width='3' height='6' fill='%23281813'/%3E%3Crect x='52' y='8' width='8' height='13' fill='%2370797f'/%3E%3Crect x='50' y='5' width='12' height='3' fill='%239aa2a7'/%3E%3Crect x='52' y='2' width='2' height='3' fill='%23b8c0c4'/%3E%3Crect x='58' y='2' width='2' height='3' fill='%23b8c0c4'/%3E%3Crect x='55' y='13' width='2' height='3' fill='%23ead28a'/%3E%3Crect x='68' y='12' width='15' height='9' fill='%23815c38'/%3E%3Crect x='66' y='9' width='19' height='3' fill='%23bb7a35'/%3E%3Crect x='72' y='16' width='3' height='3' fill='%23f0c36a'/%3E%3Crect x='78' y='16' width='3' height='5' fill='%23271914'/%3E%3Crect x='91' y='10' width='22' height='11' fill='%235e6770'/%3E%3Crect x='89' y='7' width='26' height='3' fill='%23828b92'/%3E%3Crect x='91' y='4' width='3' height='3' fill='%23aeb7bd'/%3E%3Crect x='99' y='4' width='3' height='3' fill='%23aeb7bd'/%3E%3Crect x='107' y='4' width='3' height='3' fill='%23aeb7bd'/%3E%3Crect x='96' y='14' width='3' height='3' fill='%23ead28a'/%3E%3Crect x='105' y='14' width='3' height='7' fill='%23231916'/%3E%3Crect x='121' y='12' width='16' height='9' fill='%23714f30'/%3E%3Crect x='119' y='9' width='20' height='3' fill='%23a86f36'/%3E%3Crect x='125' y='16' width='3' height='3' fill='%23e9bd64'/%3E%3Crect x='132' y='16' width='3' height='5' fill='%23291a12'/%3E%3C/svg%3E") 0 0 / 144px 24px repeat-x,
+        linear-gradient(180deg, transparent 0 20%, rgba(135, 91, 45, 0.56));
+}
+
+.room-info-card.room-terrain-hill .mri-content::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 38' shape-rendering='crispEdges'%3E%3Crect x='0' y='34' width='128' height='4' fill='%233a6b35' opacity='.75'/%3E%3Crect x='0' y='30' width='64' height='4' fill='%235a8f4a'/%3E%3Crect x='8' y='26' width='48' height='4' fill='%236fa25a'/%3E%3Crect x='16' y='22' width='32' height='4' fill='%2385b66a'/%3E%3Crect x='24' y='18' width='16' height='4' fill='%2399c477'/%3E%3Crect x='58' y='32' width='70' height='3' fill='%234a7f40'/%3E%3Crect x='66' y='28' width='54' height='4' fill='%235e914f'/%3E%3Crect x='76' y='24' width='34' height='4' fill='%2375a861'/%3E%3Crect x='86' y='20' width='16' height='4' fill='%238bb96d'/%3E%3C/svg%3E") 0 0 / 128px 38px repeat-x,
+        linear-gradient(180deg, transparent 0 40%, rgba(58, 101, 54, 0.52));
+}
+
+.room-info-card.room-terrain-mountain .mri-content::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 144 46' shape-rendering='crispEdges'%3E%3Crect x='0' y='42' width='144' height='4' fill='%233b4650' opacity='.78'/%3E%3Crect x='8' y='34' width='56' height='8' fill='%235b6873'/%3E%3Crect x='16' y='26' width='40' height='8' fill='%23798792'/%3E%3Crect x='24' y='18' width='24' height='8' fill='%239aa7ae'/%3E%3Crect x='32' y='10' width='8' height='8' fill='%23c5d0d4'/%3E%3Crect x='40' y='18' width='8' height='8' fill='%23d8e2e5' opacity='.7'/%3E%3Crect x='72' y='38' width='64' height='4' fill='%23475460'/%3E%3Crect x='80' y='30' width='48' height='8' fill='%2367737d'/%3E%3Crect x='88' y='22' width='32' height='8' fill='%238b98a0'/%3E%3Crect x='96' y='14' width='16' height='8' fill='%23b3c0c6'/%3E%3Crect x='104' y='6' width='8' height='8' fill='%23d8e2e5'/%3E%3C/svg%3E") 0 0 / 144px 46px repeat-x,
+        linear-gradient(180deg, transparent 0 34%, rgba(58, 68, 77, 0.68));
+}
+
+.room-info-card.room-terrain-cavern .mri-content::before {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 24' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='96' height='5' fill='%233b3d45'/%3E%3Crect x='4' y='5' width='9' height='5' fill='%23555a63'/%3E%3Crect x='8' y='10' width='5' height='7' fill='%23464a52'/%3E%3Crect x='10' y='17' width='3' height='5' fill='%23656b74'/%3E%3Crect x='28' y='5' width='12' height='6' fill='%234c5059'/%3E%3Crect x='32' y='11' width='7' height='7' fill='%23636a73'/%3E%3Crect x='35' y='18' width='3' height='5' fill='%23424750'/%3E%3Crect x='56' y='5' width='10' height='5' fill='%235b6069'/%3E%3Crect x='59' y='10' width='6' height='6' fill='%234b5059'/%3E%3Crect x='62' y='16' width='3' height='6' fill='%2369717b'/%3E%3Crect x='78' y='5' width='14' height='5' fill='%23434850'/%3E%3Crect x='82' y='10' width='7' height='8' fill='%235e6570'/%3E%3C/svg%3E") 0 0 / 96px 24px repeat-x,
+        linear-gradient(180deg, rgba(33, 35, 42, 0.84), transparent);
+}
+
+.room-info-card.room-terrain-cavern .mri-content::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 18' shape-rendering='crispEdges'%3E%3Crect x='0' y='13' width='96' height='5' fill='%232d3037'/%3E%3Crect x='4' y='10' width='14' height='3' fill='%23525962'/%3E%3Crect x='22' y='8' width='10' height='5' fill='%23464b55'/%3E%3Crect x='36' y='11' width='18' height='2' fill='%23656b74'/%3E%3Crect x='58' y='7' width='12' height='6' fill='%233f444d'/%3E%3Crect x='76' y='10' width='15' height='3' fill='%23575d66'/%3E%3C/svg%3E") 0 0 / 96px 18px repeat-x,
+        linear-gradient(180deg, transparent, rgba(40, 43, 50, 0.66));
+}
+
+.room-info-card.room-terrain-tunnel .mri-content::before {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 18' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='80' height='4' fill='%23382c23'/%3E%3Crect x='0' y='4' width='16' height='4' fill='%23503b2b'/%3E%3Crect x='16' y='4' width='18' height='4' fill='%233f3026'/%3E%3Crect x='34' y='4' width='20' height='4' fill='%235b4634'/%3E%3Crect x='54' y='4' width='26' height='4' fill='%23372921'/%3E%3Crect x='8' y='8' width='18' height='4' fill='%23614a37'/%3E%3Crect x='38' y='8' width='24' height='4' fill='%23453329'/%3E%3Crect x='62' y='8' width='10' height='4' fill='%23634c38'/%3E%3C/svg%3E") 0 0 / 80px 18px repeat-x,
+        linear-gradient(180deg, rgba(58, 43, 32, 0.86), transparent);
+}
+
+.room-info-card.room-terrain-tunnel .mri-content::after,
+.room-info-card.room-terrain-building .mri-content::after {
+    background:
+        linear-gradient(90deg, rgba(117, 90, 54, 0.52) 0 30px, rgba(85, 64, 43, 0.48) 30px 60px, rgba(128, 100, 61, 0.52) 60px 96px) 0 6px / 96px 3px repeat-x,
+        linear-gradient(180deg, transparent, rgba(92, 67, 40, 0.5));
+}
+
+.room-info-card.room-terrain-building .mri-content::before {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 14' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='96' height='3' fill='%23513b25'/%3E%3Crect x='8' y='3' width='6' height='11' fill='%23735735'/%3E%3Crect x='34' y='3' width='6' height='11' fill='%234b3522'/%3E%3Crect x='61' y='3' width='6' height='11' fill='%23795c38'/%3E%3Crect x='86' y='3' width='6' height='11' fill='%234c3622'/%3E%3Crect x='0' y='10' width='96' height='2' fill='%23806742' opacity='.65'/%3E%3C/svg%3E") 0 0 / 96px 14px repeat-x,
+        linear-gradient(180deg, rgba(75, 55, 34, 0.72), transparent);
+}
+
+.room-info-card.room-terrain-neutral .mri-content::after {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+}
+
+.room-info-card.room-underwater-backdrop .mri-content,
+.room-info-card.room-underwater-backdrop .room-chip-rows {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 48' shape-rendering='crispEdges'%3E%3Crect x='18' y='7' width='2' height='2' fill='%23c9fbff' opacity='.28'/%3E%3Crect x='22' y='4' width='1' height='1' fill='%23ecfeff' opacity='.36'/%3E%3Crect x='52' y='17' width='2' height='2' fill='%23b5f4ff' opacity='.24'/%3E%3Crect x='93' y='8' width='3' height='3' fill='%23baf7ff' opacity='.2'/%3E%3Crect x='132' y='23' width='2' height='2' fill='%23b9f6ff' opacity='.24'/%3E%3Crect x='8' y='35' width='18' height='1' fill='%236fe8f6' opacity='.1'/%3E%3Crect x='68' y='29' width='24' height='1' fill='%237debf6' opacity='.1'/%3E%3Crect x='116' y='39' width='20' height='1' fill='%237debf6' opacity='.1'/%3E%3C/svg%3E") 0 0 / 160px 48px repeat,
+        radial-gradient(circle at 12% 50%, var(--terrain-glow-color, rgba(20, 184, 166, 0.14)) 0%, rgba(255, 255, 255, 0.028) 100%) !important;
+}
+
+.room-info-card.room-underwater-backdrop .mri-content::after {
+    display: none;
+}
+
+.mobile-room-info-card {
+    width: calc(100% - 10px);
+    max-width: none;
+    border-radius: 8px;
+}
+
+.mobile-room-info-card .mapper-room-info-container {
+    padding: 2px 5px 0 !important;
+}
+
+.mobile-room-info-card .mobile-only-section {
+    display: none !important;
+}
+
+.mobile-room-info-card .mri-content,
+.mobile-room-info-card .mapper-room-info-container.expanded .mri-content {
+    border-radius: 0 !important;
+    gap: 1px;
+    min-height: 0;
+}
+
+.mobile-room-info-card .mri-name {
+    font-size: 0.62rem;
+    line-height: 1;
+    margin-bottom: 0;
+}
+
+.mobile-room-info-card .mri-desc {
+    font-size: 0.5rem;
+    line-height: 1.05;
+    max-height: 1.05em;
+}
+
+.mobile-room-info-card .room-chip-rows {
+    padding: 2px 6px 3px;
+}
+
+.mobile-room-info-card .mri-zone-chip {
+    right: 6px !important;
+    top: 4px !important;
+}
+
+.mobile-room-info-card .mri-corner-flags {
+    left: 6px !important;
+    top: 4px !important;
 }
 
 .desktop-tactical-buttons-persistent {
     position: relative;
-    padding: 8px 4px 12px 4px; /* Added padding to clear the card completely */
+    align-self: flex-end;
+    padding: 8px 4px 8px 12px; /* Added padding to clear the card completely */
     z-index: 20;
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     pointer-events: auto;
 }
 
@@ -416,13 +797,28 @@
 .desktop-tactical-buttons-persistent .line-cluster {
     flex-direction: row !important;
     gap: 18px !important;
-    padding: 2px 10px !important;
+    padding: 4px 10px 5px !important;
     border-radius: 12px !important;
     background: rgba(13, 16, 23, 0.62) !important;
     border: none !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
     box-shadow: none !important;
+}
+
+.desktop-tactical-buttons-persistent .line-cluster-title {
+    margin-bottom: 2px;
+    font-size: 0.46rem;
+}
+
+.desktop-tactical-buttons-persistent .line-cluster-step {
+    min-width: 40px;
+    gap: 3px;
+}
+
+.desktop-tactical-buttons-persistent .line-cluster-caption {
+    max-width: 46px;
+    font-size: 0.52rem;
 }
 
 .desktop-tactical-buttons-persistent .line-cluster .custom-btn {

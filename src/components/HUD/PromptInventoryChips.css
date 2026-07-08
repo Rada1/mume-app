@@ -3,13 +3,150 @@
  * @description Prompt-box worn and inventory object chip rows.
  */
 
+.prompt-gear-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    min-width: 0;
+    margin-top: 2px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(201, 151, 56, 0.18);
+}
+
+.light-mode .prompt-gear-panel {
+    border-top-color: rgba(201, 151, 56, 0.28);
+}
+
+/* Slim divider label — reads as a continuation of the card (like a type-line),
+   not a nested panel of its own. */
+.prompt-gear-card-divider {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+    color: #c99738;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.48rem;
+    font-weight: 850;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.75;
+}
+
+.light-mode .prompt-gear-card-divider {
+    color: #97711f;
+}
+
+.prompt-gear-card-divider-toggle {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+}
+
+.prompt-gear-card-chevron {
+    margin-left: auto;
+    transition: transform 0.15s ease;
+    opacity: 0.7;
+}
+
+.prompt-gear-card-chevron.is-open {
+    transform: rotate(180deg);
+}
+
+.prompt-gear-card-body {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    min-width: 0;
+}
+
+.prompt-gear-card-section + .prompt-gear-card-section {
+    margin-top: 3px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.light-mode .prompt-gear-card-section + .prompt-gear-card-section {
+    border-top-color: rgba(0, 0, 0, 0.07);
+}
+
+/* --- Character portrait (left rail anchor) --- */
+.prompt-character-portrait {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: stretch;
+}
+
+.prompt-character-portrait-frame {
+    position: relative;
+    width: 46px;
+    align-self: stretch;
+    min-height: 46px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.32);
+    box-shadow: inset 0 -14px 18px -10px rgba(0, 0, 0, 0.7);
+}
+
+.prompt-character-portrait-media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Compact inline variant — sits beside the name in the top vitals row instead
+   of anchoring the equipment panel. */
+.prompt-character-portrait.is-compact {
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.prompt-character-portrait.is-compact .prompt-character-portrait-frame {
+    width: 18px;
+    min-height: 18px;
+    align-self: center;
+    border-radius: 4px;
+    border-color: rgba(201, 151, 56, 0.35);
+}
+
+.prompt-character-portrait.is-compact .prompt-character-portrait-mount {
+    display: none;
+}
+
+.prompt-character-portrait-mount {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.36rem;
+    font-weight: 850;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #4ade80;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 4px;
+    padding: 1px 0;
+}
+
 .prompt-inventory-chip-rows {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    width: 100%;
+    flex: 1 1 auto;
     min-width: 0;
-    padding: 1px 0 2px;
+    padding: 0;
 }
 
 .prompt-inventory-chip-row {
@@ -97,6 +234,7 @@
 }
 
 .prompt-inventory-chip {
+    --item-tier-color: transparent;
     flex: 0 0 auto;
     max-width: 88px;
     width: max-content;
@@ -117,6 +255,60 @@
     cursor: pointer;
     touch-action: manipulation;
     transition: border-color 0.12s ease, background 0.12s ease, transform 0.12s ease;
+}
+
+.prompt-inventory-chip[class*="item-tier-"] {
+    background:
+        linear-gradient(90deg, color-mix(in srgb, var(--item-tier-color, transparent) 16%, transparent), transparent 30%),
+        rgba(255, 255, 255, 0.045);
+    box-shadow: inset 2px 0 0 var(--item-tier-color, transparent);
+}
+
+.item-tier-artifact {
+    --item-tier-color: #f6c453;
+}
+
+.item-tier-legendary {
+    --item-tier-color: #c9a4ff;
+}
+
+.item-tier-focus {
+    --item-tier-color: #8bd3ff;
+}
+
+.item-tier-power {
+    --item-tier-color: #f59e0b;
+}
+
+.item-tier-important {
+    --item-tier-color: #f0abfc;
+}
+
+.item-tier-good {
+    --item-tier-color: #7dd3fc;
+}
+
+.item-tier-usable {
+    --item-tier-color: #34d399;
+}
+
+.item-state-pristine {
+    --item-state-color: #8ce99a;
+}
+
+.item-state-stable {
+    --item-state-color: #facc15;
+}
+
+.item-state-worn {
+    --item-state-color: #fb7185;
+}
+
+.prompt-item-condition {
+    margin-left: 0.25em;
+    color: color-mix(in srgb, var(--item-state-color) 36%, rgba(122, 134, 154, 0.54));
+    opacity: 0.58;
+    text-shadow: none;
 }
 
 .prompt-inventory-chip-main {
@@ -190,6 +382,12 @@
     border-color: rgba(0, 0, 0, 0.08);
 }
 
+.light-mode .prompt-inventory-chip[class*="item-tier-"] {
+    background:
+        linear-gradient(90deg, color-mix(in srgb, var(--item-tier-color, transparent) 20%, transparent), transparent 34%),
+        rgba(255, 255, 255, 0.68);
+}
+
 .prompt-container-content-row {
     display: grid;
     grid-template-columns: 54px minmax(0, 1fr);
@@ -231,17 +429,52 @@
     transform: translateY(-1px) scale(1.03);
 }
 
-.prompt-slot-icon {
+/* Equipment worn-slot list — one labeled row per slot (paper-doll style)
+   instead of a flat scrolling chip strip. */
+.prompt-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+    gap: 1px 8px;
+    width: 100%;
+}
+
+.prompt-slot-row {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    min-width: 0;
+    min-height: 15px;
+    padding: 1px 2px;
+    border-radius: 4px;
+    transition: background 0.14s ease, box-shadow 0.14s ease;
+}
+
+.prompt-slot-row.is-drop-target {
+    background: rgba(34, 197, 94, 0.12);
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2), 0 0 12px rgba(34, 197, 94, 0.18);
+}
+
+.prompt-slot-row-icon {
+    flex-shrink: 0;
+    color: color-mix(in srgb, var(--prompt-object-color, rgba(251, 146, 60, 0.95)) 65%, transparent);
+}
+
+.prompt-slot-row-label {
     flex-shrink: 0;
     font-family: var(--font-mono, monospace);
-    font-size: 0.42rem;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: 0.02em;
+    font-size: 0.44rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
     text-transform: uppercase;
-    color: var(--text-faded, rgba(160, 160, 160, 0.7));
-    user-select: none;
+    color: var(--text-faded);
     white-space: nowrap;
+}
+
+.prompt-slot-row .prompt-inventory-chip,
+.prompt-slot-row .prompt-inventory-chip-shell {
+    min-width: 0;
+    max-width: none;
+    flex: 1 1 auto;
 }
 
 @media (min-width: 601px) {
@@ -263,16 +496,50 @@
         font-size: 0.58rem;
     }
 
-    .prompt-slot-icon {
-        font-size: 0.48rem;
+    .prompt-slot-row-label {
+        font-size: 0.5rem;
+    }
+
+    .prompt-slot-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+
+    .prompt-character-portrait-frame {
+        width: 62px;
     }
 }
 
 @media (max-width: 600px) {
+    .prompt-gear-card-body {
+        gap: 6px;
+    }
+
+    .prompt-gear-panel {
+        padding-top: 3px;
+    }
+
+    .prompt-gear-card-divider {
+        font-size: 0.42rem;
+    }
+
+    .prompt-character-portrait-frame {
+        width: 40px;
+        min-height: 40px;
+    }
+
     .prompt-inventory-chip-row {
         grid-template-columns: 50px minmax(0, 1fr);
         gap: 4px;
         min-height: 15px;
+    }
+
+    .prompt-slot-grid {
+        grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+        gap: 1px 5px;
+    }
+
+    .prompt-slot-row-label {
+        font-size: 0.41rem;
     }
 
     .prompt-inventory-chip-label {
@@ -305,4 +572,91 @@
     .prompt-container-content-label {
         font-size: 0.41rem;
     }
+}
+
+/* Sidebar/Character Card Drawer specific layouts: stack equipment slots vertically */
+.character-card .prompt-slot-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2px 0 !important;
+}
+
+.character-card .prompt-slot-row {
+    gap: 8px !important;
+    padding: 1px 4px !important;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.character-card .prompt-slot-row-label {
+    width: 96px !important;
+    text-align: right !important;
+    padding-right: 8px !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    font-size: 0.62rem !important;
+    flex-shrink: 0;
+}
+
+.light-mode .character-card .prompt-slot-row-label {
+    border-right-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.character-card .prompt-slot-row-icon {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+.character-card .prompt-inventory-chip {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 4px;
+    padding: 2px 8px !important;
+    text-align: left !important;
+    font-size: 0.72rem !important;
+    height: auto !important;
+    max-width: none !important;
+    flex: 1 1 auto;
+}
+
+.light-mode .character-card .prompt-inventory-chip {
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.character-card .prompt-inventory-chip-shell {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 4px;
+    padding: 0 4px 0 8px !important;
+    height: auto !important;
+    min-height: 21px !important;
+    display: inline-flex;
+    align-items: center;
+    flex: 1 1 auto;
+    max-width: none !important;
+}
+
+.light-mode .character-card .prompt-inventory-chip-shell {
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.character-card .prompt-inventory-chip-main {
+    flex: 1;
+    text-align: left;
+    font-size: 0.72rem !important;
+    max-width: none !important;
+    padding: 2px 0 !important;
+}
+
+.character-card .prompt-container-toggle {
+    width: 14px !important;
+    height: 14px !important;
+}
+
+.character-card .prompt-inventory-chip[class*="item-tier-"],
+.character-card .prompt-inventory-chip-shell[class*="item-tier-"] {
+    background:
+        linear-gradient(90deg, color-mix(in srgb, var(--item-tier-color, transparent) 14%, transparent), transparent 32%),
+        rgba(255, 255, 255, 0.035) !important;
+    box-shadow: inset 2px 0 0 var(--item-tier-color, transparent) !important;
 }

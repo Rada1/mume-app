@@ -336,7 +336,7 @@ export const useMapAnimation = ({
         }
 
         const showBg = useSettingsStore.getState().showBackgroundImage;
-        const container = (!isMobile && showBg) ? cvs.closest('.mapper-container') as HTMLElement | null : null;
+        const container = showBg ? cvs.closest('.mapper-container') as HTMLElement | null : null;
         if (container) {
             const FACTOR = 0.035;
             const nextParallax = {
@@ -354,6 +354,9 @@ export const useMapAnimation = ({
                 container.style.setProperty('--parallax-x', `${nextParallax.x}px`);
                 container.style.setProperty('--parallax-y', `${nextParallax.y}px`);
                 container.style.setProperty('--parallax-scale', `${nextParallax.scale}`);
+                document.documentElement.style.setProperty('--parallax-x', `${nextParallax.x}px`);
+                document.documentElement.style.setProperty('--parallax-y', `${nextParallax.y}px`);
+                document.documentElement.style.setProperty('--parallax-scale', `${nextParallax.scale}`);
                 lastParallaxRef.current = nextParallax;
             }
         }

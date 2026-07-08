@@ -58,7 +58,8 @@ export function useStatParser(deps: StatParserDeps) {
         }
 
         // --- GOLD PARSER ---
-        const trimmed = content.trim();
+        const cleanContentBase = content.replace(/(\d),(\d)/g, '$1$2');
+        const trimmed = cleanContentBase.trim();
         const isRawNumeric = /^\d+$/.test(trimmed);
         const hasGoldKeywords = contentLower.includes('gold') || contentLower.includes('silver') || contentLower.includes('copper') ||
                               contentLower.includes('lauren') || contentLower.includes('celeb') || contentLower.includes('busc');
@@ -71,7 +72,7 @@ export function useStatParser(deps: StatParserDeps) {
                 return true;
             }
 
-            const cleanContent = content.replace(/[,:]/g, ' '); 
+            const cleanContent = cleanContentBase.replace(/[,:]/g, ' '); 
             const goldM = cleanContent.match(/(\d+)\s*(?:gold|lauren)/i);
             const silverM = cleanContent.match(/(\d+)\s*(?:silver|celeb)/i);
             const copperM = cleanContent.match(/(\d+)\s*(?:copper|busc|pennies?|coins?|coins?)/i);

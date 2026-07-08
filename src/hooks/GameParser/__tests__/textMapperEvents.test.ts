@@ -4,7 +4,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir } from '../textMapperEvents';
+import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir, formatXmlMovementLogText } from '../textMapperEvents';
 
 // --- Logic Section ---
 describe('textMapperEvents', () => {
@@ -45,5 +45,11 @@ describe('textMapperEvents', () => {
         expect(extractXmlMovementDir('<movement dir=south/>')).toBe('s');
         expect(extractXmlMovementDir('&lt;movement dir="northwest"/&gt;')).toBe('nw');
         expect(extractXmlMovementDir('<movement/>')).toBe('');
+    });
+
+    it('formats XML movement directions for the log', () => {
+        expect(formatXmlMovementLogText('w')).toBe('Moved west.');
+        expect(formatXmlMovementLogText('nw')).toBe('Moved northwest.');
+        expect(formatXmlMovementLogText('')).toBe('Movement confirmed.');
     });
 });

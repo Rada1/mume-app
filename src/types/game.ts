@@ -47,7 +47,7 @@ export interface GameStats {
 
 import { Token } from './tokens';
 
-export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'comm-continue' | 'comm-sender' | 'comm-text' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'room-name' | 'equipment-list' | 'inventory-list' | 'room-exits' | 'snoop' | 'snoop-command' | 'snoop-vitals' | 'account-prompt' | 'account-menu-item' | 'account-selection' | 'account-selection-edit' | 'account-stat-edit' | 'account-stat-points' | 'account-character-list' | 'quest-list';
+export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'comm-continue' | 'comm-sender' | 'comm-text' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'room-name' | 'equipment-list' | 'inventory-list' | 'room-exits' | 'snoop' | 'snoop-command' | 'snoop-vitals' | 'account-prompt' | 'account-menu-item' | 'account-selection' | 'account-selection-edit' | 'account-stat-edit' | 'account-stat-points' | 'account-character-list' | 'quest-list' | 'weather' | 'gmcp-event' | 'movement' | 'status-event';
 
 export interface Message {
     id: string;
@@ -64,18 +64,31 @@ export interface Message {
     replyTarget?: string; // Sender name for comm messages — enables the inline reply button
     replyCommand?: string; // Channel command for the reply button (e.g. 'tell', 'say', 'narrate')
     isRoomName?: boolean; // True if this line is a room title/name
+    terrain?: string | null; // The terrain of the room if this is a room name line
     isRoomBlock?: boolean; // True if this line is a room name (with embedded description)
     isRoomBlockStart?: boolean;
     isRoomBlockEnd?: boolean;
+    isRoomContentsStart?: boolean; // First contents line (mob/player/object/exit) after the room description
+    roomSection?: 'objects' | 'mobs' | 'players' | 'exits'; // Which room-contents group this line belongs to
+    isRoomSectionStart?: boolean; // First line of a contents section — render a labelled divider above it
+    isRoomContentsLine?: boolean; // Contents line (or trailing blank) — gets the solid panel background
+
     isCombatBlockStart?: boolean;
     isCommBlockStart?: boolean;
+    isSocialBlockStart?: boolean;
+    isWeatherBlockStart?: boolean;
+    isMovementBlockStart?: boolean;
+    isStatusBlockStart?: boolean;
     isEmpty?: boolean;
     isNarrate?: boolean;
     isUrgent?: boolean; // True if this is a critical non-combat message (arrive/leave/spell)
+    isSocial?: boolean;
     commSender?: string; // Structured sender for bubbles
     commAction?: string; // Structured action (says, tells, etc.)
     commText?: string; // Structured message text
     commColor?: string;
+    commRoomKey?: string; // Room identity (vnum) at the time this comm was said — used to thread vicinity chat by room
+    commRoomName?: string; // Room display name at the time this comm was said
     commSenderTokens?: Token[];
     commTextTokens?: Token[];
     batchId?: number;
@@ -134,6 +147,7 @@ export interface CharacterInfo {
     gold: number;
     description?: string;
     whois?: string;
+    title?: string;
     alignment?: string;
     warPoints?: number;
     actsForWar?: number;
@@ -169,7 +183,7 @@ export interface ActivePrompt {
 export interface ParleyState {
     active: boolean;
     mode?: 'command' | 'parley' | 'help';
-    command: 'tell' | 'whisper' | 'ask' | 'say' | 'narrate' | 'shout' | 'yell' | 'sing' | 'none';
+    command: 'tell' | 'whisper' | 'ask' | 'say' | 'narrate' | 'shout' | 'yell' | 'sing' | 'emote' | 'none';
     target: string | null;
     message: string;
 }

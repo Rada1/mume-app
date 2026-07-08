@@ -366,7 +366,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         }, 600);
     };
 
-    const TARGETLESS_COMMANDS = ['say', 'narrate', 'shout', 'yell', 'sing'];
+    const TARGETLESS_COMMANDS = ['say', 'narrate', 'shout', 'yell', 'sing', 'emote'];
 
     const handleParleyClear = () => {
         initAudio?.();
@@ -601,7 +601,8 @@ const InputArea: React.FC<InputAreaProps> = ({
                             yell: '#a855f7',
                             shout: '#ef4444',
                             narrate: '#eab308',
-                            sing: '#f472b6'
+                            sing: '#f472b6',
+                            emote: '#f472b6'
                         };
                         const commandColor = PARLEY_COLORS[parley.command.toLowerCase()] || 'inherit';
                         const isPillActive = currentMode !== 'command';

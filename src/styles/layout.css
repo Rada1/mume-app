@@ -16,8 +16,8 @@
 
 .app-container.is-map-expanded,
 .app-container.has-drawer-open {
-    --mobile-gutter-height: 50vh;
-    --mobile-gutter-height: 50dvh;
+    --mobile-gutter-height: 42vh;
+    --mobile-gutter-height: 42dvh;
 }
 
 .app-container.state-account.is-mobile:not(.is-landscape) {
@@ -30,17 +30,33 @@
 }
 
 .background-layer {
+    display: block !important;
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    background-size: contain;
-    background-position: center;
+    background-size: cover !important;
+    background-position: center !important;
     background-repeat: no-repeat;
     z-index: -1;
     transition: background-image 0.5s ease-in-out, filter 0.4s ease;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
-    filter: brightness(0.55) contrast(1.1);
+    filter: sepia(0.45) brightness(0.70) contrast(1.08);
+}
+
+.environment-root.back .background-layer {
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    transform: translate(calc(-50% + var(--parallax-x, 0px)), calc(-50% + var(--parallax-y, 0px))) scale(var(--parallax-scale, 1));
+    width: 800%;
+    height: 800%;
+    background-size: contain !important;
+    background-position: center !important;
+    opacity: 0.10;
+    filter: sepia(1) hue-rotate(195deg) saturate(6) brightness(0.9) !important;
+    transition: opacity 300ms ease-in-out, filter 0.4s ease;
 }
 
 .app-content-shaker {
@@ -86,8 +102,20 @@
 }
 
 .log-background-layer {
-    display: none;
+    display: block;
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.55;
+    filter: brightness(0.55) contrast(1.1);
+    transition: background-image 0.5s ease-in-out;
+    border-radius: inherit;
 }
+
 
 /* Desktop layout — log and drawer widths driven by CSS vars for user resizing */
 @media (min-width: 1025px) {
@@ -120,34 +148,7 @@
         background-color: rgba(255, 255, 255, 0.45) !important;
         border: 1px solid rgba(0, 0, 0, 0.08) !important;
     }
-    .log-background-layer {
-        display: block;
-        position: absolute;
-        inset: 0;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        z-index: -1;
-        pointer-events: none;
-        opacity: 0.55;
-        filter: brightness(0.55) contrast(1.1);
-        transition: background-image 0.5s ease-in-out;
-        border-radius: inherit;
-    }
-    .background-layer {
-        display: block !important;
-        background-image: url('/assets/Pictures/UIPics/darkmap.png') !important;
-        background-size: cover !important;
-        background-position: center !important;
-        opacity: 0.07 !important;
-        filter: sepia(0.5) brightness(0.6) contrast(1.1) !important;
-    }
-    /* Drawers fill their 30vw columns — no push needed */
-    body.map-drawer-open .app-content-shaker,
-    body.utility-drawer-open .app-content-shaker {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }
+    /* Cleaned up duplicate background rules, now handled globally */
 }
 
 
@@ -160,6 +161,17 @@
     position: relative;
     background: transparent;
     overflow: visible;
+}
+
+.message-log-wrapper.chat-window-active {
+    flex-direction: column;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .message-log-wrapper.chat-window-active {
+        flex-direction: column !important;
+    }
 }
 
 .content-layer>* {
@@ -215,29 +227,7 @@
     overflow: visible !important;
 }
 
-.force-desktop .log-background-layer {
-    display: block;
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    z-index: -1;
-    pointer-events: none;
-    opacity: 0.55;
-    filter: brightness(0.55) contrast(1.1);
-    transition: background-image 0.5s ease-in-out;
-    border-radius: inherit;
-}
-
-.force-desktop .background-layer {
-    display: block !important;
-    background-image: url('/assets/Pictures/UIPics/darkmap.png') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    opacity: 0.07 !important;
-    filter: sepia(0.5) brightness(0.6) contrast(1.1) !important;
-}
+    /* Cleaned up duplicate background rules, now handled globally */
 
 /* Force Mobile/Portrait Overrides */
 .force-portrait .content-layer,
@@ -251,21 +241,22 @@
 @media (min-width: 1024px) {
     .app-content-shaker {
         box-sizing: border-box;
-        transition: padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding-right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 }
 
 /* Map drawer push (left side) */
 @media (min-width: 1024px) and (max-width: 1850px) {
     body.map-drawer-open .app-content-shaker {
-        padding-left: calc(var(--drawer-width) + var(--drawer-margin) + var(--drawer-gap));
+        padding-left: calc(var(--desktop-map-width, var(--drawer-width)) + var(--drawer-gap));
     }
 }
 
 /* Utility drawer push (right side) — matches map drawer push exactly */
 @media (min-width: 1024px) and (max-width: 1850px) {
-    body.utility-drawer-open .app-content-shaker {
-        padding-right: calc(var(--drawer-width) + var(--drawer-margin) + var(--drawer-gap));
+    body.utility-drawer-open .app-content-shaker,
+    .app-container:not(.state-account) .app-content-shaker {
+        padding-right: calc(var(--desktop-character-width, var(--drawer-width)) + var(--drawer-gap));
     }
 }
 
@@ -494,7 +485,8 @@
 }
 
 /* --- Control Card (Frosted Glass) --- */
-.control-card-wrapper {
+.control-card-wrapper,
+.action-box {
     display: flex;
     flex-direction: column;
     background: rgba(13, 16, 23, 0.62);
@@ -525,14 +517,49 @@
     box-shadow: none !important;
 }
 
-.control-card-wrapper .input-area {
+.prompt-timer-lane {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    min-height: 0;
+    padding: 0 12px 3px;
+    pointer-events: none;
+}
+
+.prompt-timer-lane:empty {
+    display: none;
+}
+
+.prompt-timer-lane .combat-recharge-pill {
+    position: static;
+    top: auto;
+    left: auto;
+    right: auto;
+    flex: 0 0 auto;
+    height: 18px;
+}
+
+.prompt-timer-lane .action-timer-pill {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: min(320px, calc(100vw - 32px));
+}
+
+.mobile-prompt-timer-lane {
+    padding: 0 12px 4px;
+}
+
+.control-card-wrapper .input-area,
+.action-box .input-area {
     margin-top: 0 !important;
     background: transparent !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 @media (min-width: 1025px) {
-    .state-account .control-card-wrapper {
+    .state-account .control-card-wrapper,
+    .state-account .action-box {
         position: absolute !important;
         bottom: 30px !important;
         left: 50% !important;
@@ -542,12 +569,14 @@
         max-width: 800px !important;
     }
 
-    .state-account .control-card-wrapper .input-area {
+    .state-account .control-card-wrapper .input-area,
+    .state-account .action-box .input-area {
         border-top: none !important;
     }
 }
 
-.force-desktop.state-account .control-card-wrapper {
+.force-desktop.state-account .control-card-wrapper,
+.force-desktop.state-account .action-box {
     position: absolute !important;
     bottom: 30px !important;
     left: 50% !important;
@@ -579,12 +608,14 @@
     }
 }
 
-.in-combat .control-card-wrapper {
+.in-combat .control-card-wrapper,
+.in-combat .action-box {
     position: relative;
     overflow: visible !important;
 }
 
-.in-combat .control-card-wrapper::after {
+.in-combat .control-card-wrapper::after,
+.in-combat .action-box::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -1378,7 +1409,8 @@
 }
 
 /* Light mode: control card (prompt box wrapper) */
-.light-mode .control-card-wrapper {
+.light-mode .control-card-wrapper,
+.light-mode .action-box {
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -1395,7 +1427,8 @@
 }
 
 /* Keep the prompt pod on the same lightweight glass as room/tactical pods. */
-.immersion-mode .control-card-wrapper {
+.immersion-mode .control-card-wrapper,
+.immersion-mode .action-box {
     box-shadow: none;
 }
 
@@ -1824,4 +1857,145 @@
     gap: 8px;
     margin-bottom: 10px;
     justify-content: flex-start;
+}
+
+/* Desktop log room card wrapper styling */
+.desktop-log-room-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 0;
+    margin-top: 24px;
+    flex-shrink: 0;
+}
+
+.desktop-log-room-card-wrapper .mobile-only-section {
+    display: none !important;
+}
+
+.desktop-log-room-card-wrapper .desktop-only-section {
+    display: flex !important;
+}
+
+.desktop-log-room-card-wrapper .mapper-room-info-container {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+    max-width: none;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.desktop-log-room-card-wrapper .mri-content {
+    background: rgba(13, 16, 23, 0.65) !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+.desktop-log-room-card-wrapper .room-chip-rows {
+    width: 100%;
+    margin-top: 0;
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    .desktop-log-room-card-wrapper {
+        margin-top: 0;
+        margin-bottom: 6px;
+    }
+
+    .desktop-log-room-card-wrapper .mri-chip-prefix {
+        display: none;
+    }
+}
+
+/* Tiled panel docking layout on desktop: zero margins and borders touching each other */
+@media (min-width: 1025px) {
+    .content-layer {
+        position: absolute !important;
+        left: var(--desktop-map-width, 22vw) !important;
+        right: var(--desktop-character-width, 22vw) !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        height: 100% !important;
+        width: auto !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        z-index: 5000 !important;
+    }
+
+    .header {
+        border-radius: 0 !important;
+        border: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background: rgba(8, 11, 18, 0.24) !important;
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 6px 16px !important;
+    }
+
+    .light-mode .header {
+        border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+        background: rgba(255, 255, 255, 0.24) !important;
+    }
+
+    .message-log-container {
+        border-radius: 0 !important;
+        border: none !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+        padding: 12px 18px !important;
+        max-width: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .message-log-wrapper {
+        gap: 0 !important;
+        margin: 0 !important;
+    }
+
+    .desktop-center-column {
+        max-width: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .control-card-wrapper,
+    .action-box {
+        border-radius: 0 !important;
+        border: none !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background: rgba(13, 16, 23, 0.6) !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+    }
+
+    .light-mode .control-card-wrapper,
+    .light-mode .action-box {
+        border-top-color: rgba(0, 0, 0, 0.08) !important;
+        background: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    /* Outer stacks touch borders exactly */
+    .left-drawer-stack {
+        border-right: none !important;
+    }
+
+    .right-drawer-stack {
+        border-left: none !important;
+    }
+
+    /* Hide redundant middle resizers */
+    .drawer-resize-handle--log-left,
+    .drawer-resize-handle--log-right {
+        display: none !important;
+    }
 }

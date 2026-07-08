@@ -65,7 +65,8 @@
       "Bash(not exist *)",
       "Bash(mkdir -p \"C:\\\\Users\\\\pwetz\\\\Downloads\\\\mume app\\\\.claude\")",
       "mcp__Claude_Preview__preview_start",
-      "Bash(echo \"=== TOTAL: $\\(npx tsc --noEmit 2>&1)"
+      "Bash(echo \"=== TOTAL: $\\(npx tsc --noEmit 2>&1)",
+      "Bash(sed -n '2104,2222p' src/components/Messages/MessageLog.css)"
     ]
   }
 }

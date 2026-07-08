@@ -7,10 +7,17 @@
 import { CombatHealthStatus, GroupMember } from '../../types';
 import { findStatus, normalizeCombatantName } from '../../utils/combatUtils';
 
+export interface EngagedOpponent {
+    id: string | number | null;
+    name: string;
+    healthStatus: CombatHealthStatus | null;
+}
+
 export interface CombatState {
     opponentId: number | null;
     opponentName: string | null;
     opponentHealthStatus: CombatHealthStatus | null;
+    engagedOpponents: EngagedOpponent[];
     bufferName: string | null;
     bufferHealthStatus: CombatHealthStatus | null;
     groupMembers: GroupMember[];
@@ -18,6 +25,7 @@ export interface CombatState {
     setOpponent: (id: number | null, name: string | null, status: CombatHealthStatus | null) => void;
     setBuffer: (name: string | null, status: CombatHealthStatus | null) => void;
     applyRoomCharsCombat: (data: any[]) => void;
+    applyEngagedOpponents: (data: any[]) => void;
     applyGroupUpdate: (update: any) => void;
     applyGroupRemove: (id: string | number) => void;
     applyGroupAdd: (member: GroupMember) => void;
@@ -36,6 +44,7 @@ export const initialCombatState = {
     opponentId: null,
     opponentName: null,
     opponentHealthStatus: null,
+    engagedOpponents: [],
     bufferName: null,
     bufferHealthStatus: null,
     groupMembers: []
@@ -80,12 +89,51 @@ const upsertGroupMember = (members: GroupMember[], update: GroupMember) => {
     return found ? next : [...next, normalizedUpdate as GroupMember];
 };
 
+const isRiddenByPlayer = (char: any) => {
+    const text = [char.name, char.short, char.shortdesc, char.desc, char.description]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+    return text.includes('ridden by you');
+};
+
+const toEngagedOpponent = (char: any): EngagedOpponent | null => {
+    if (!char || String(char.fighting).toLowerCase() !== 'you') return null;
+    if (isRiddenByPlayer(char)) return null;
+    const name = normalizeCombatantName(char.name || char.short || char.keyword);
+    if (!name) return null;
+    return {
+        id: char.id ?? null,
+        name,
+        healthStatus: findStatus(char.health || char.condition || char.hp_status || char.status)
+    };
+};
+
+const orderEngagedOpponents = (
+    opponents: EngagedOpponent[],
+    opponentId: number | null,
+    opponentName: string | null
+) => {
+    if (opponents.length <= 1) return opponents;
+    const primaryIndex = opponents.findIndex(opponent => (
+        (opponentId !== null && opponent.id !== null && String(opponent.id) === String(opponentId)) ||
+        (!!opponentName && opponent.name.toLowerCase() === normalizeCombatantName(opponentName).toLowerCase())
+    ));
+    if (primaryIndex <= 0) return opponents;
+    return [opponents[primaryIndex], ...opponents.slice(0, primaryIndex), ...opponents.slice(primaryIndex + 1)];
+};
+
 /**
  * Creates the combat actions for a Zustand store.
  */
 export const createCombatActions = (set: any, get: any) => ({
     setOpponent: (id: number | null, name: string | null, status: CombatHealthStatus | null) => {
-        set({ opponentId: id, opponentName: name ? normalizeCombatantName(name) : name, opponentHealthStatus: status });
+        set({
+            opponentId: id,
+            opponentName: name ? normalizeCombatantName(name) : name,
+            opponentHealthStatus: status,
+            ...(!id && !name ? { engagedOpponents: [] } : {})
+        });
     },
 
     setOpponentId: (id: string | number | null) => {
@@ -139,6 +187,17 @@ export const createCombatActions = (set: any, get: any) => ({
                 bufferHealthStatus: newBufferHealth || state.bufferHealthStatus
             }));
         }
+    },
+
+    applyEngagedOpponents: (data: any[]) => {
+        if (!Array.isArray(data)) return;
+        set((state: CombatState) => ({
+            engagedOpponents: orderEngagedOpponents(
+                data.map(toEngagedOpponent).filter((opponent): opponent is EngagedOpponent => !!opponent),
+                state.opponentId,
+                state.opponentName
+            )
+        }));
     },
 
     applyGroupUpdate: (update: any) => {

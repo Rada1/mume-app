@@ -12,7 +12,6 @@ import { LiveBufferHUD } from './HUD/LiveBufferHUD';
 import { SpectateQueueHUD } from './HUD/SpectateQueueHUD';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/useMapper';
-import { MumeEditor } from '../Utility/MumeEditor';
 import { MumeArchive } from '../Utility/MumeArchive';
 
 interface HUDClustersLayerProps {
@@ -147,7 +146,6 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
 
             <SpectateQueueHUD />
             <LiveBufferHUD />
-            <MumeEditor />
             <MumeArchive />
         </>
     );

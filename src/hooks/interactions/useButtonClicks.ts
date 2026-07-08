@@ -34,6 +34,9 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             if (button.setId !== 'Tactical' && !wasDraggingRef.current) btn.setEditingButtonId(button.id);
             return;
         }
+
+        const isExamine = button.id.includes('examine') || button.command.startsWith('examine');
+        const isConsider = button.id.includes('consider') || button.command.startsWith('consider');
         
         // --- Redirect Guildmaster Practice to Drawer ---
         if (button.id === 'btn-guildmaster-practice') {
@@ -44,7 +47,18 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         }
 
         const targetEl = (e.currentTarget as HTMLElement);
-        if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'select-container', 'teleport-manage'].includes(button.actionType || '')) setPopoverState(null);
+        if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'select-container', 'teleport-manage'].includes(button.actionType || '') && !isExamine && !isConsider) {
+            setPopoverState(null);
+        }
+        if ((isExamine || isConsider) && popoverState) {
+            setPopoverState({
+                ...popoverState,
+                isCapturingExamine: isExamine ? true : popoverState.isCapturingExamine,
+                isCapturingConsider: isConsider ? true : popoverState.isCapturingConsider,
+                capturedExamineLines: isExamine ? undefined : popoverState.capturedExamineLines,
+                capturedConsiderLines: isConsider ? undefined : popoverState.capturedConsiderLines,
+            });
+        }
         if (targetEl?.classList) { 
             targetEl.classList.remove('btn-glow-active'); 
             void targetEl.offsetWidth; 
@@ -279,7 +293,16 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             }
 
             // EXPLICITLY pass shouldFocus: false to avoid unintentional keyboard pop on mobile
-            setCommandPreview(finalCmd); executeCommand(finalCmd, false, false, false, false, { shouldFocus: false, fromUi: true });
+            const isSilentCapture = isExamine || isConsider;
+            setCommandPreview(finalCmd);
+            executeCommand(
+                finalCmd,
+                isSilentCapture ? true : false,
+                isSilentCapture ? true : false,
+                false,
+                isSilentCapture ? true : false,
+                { shouldFocus: false, fromUi: true }
+            );
 
             // Handle Close Keyboard feature
             if (button.trigger?.closeKeyboard) {

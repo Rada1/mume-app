@@ -6,6 +6,8 @@
 import { useCallback } from 'react';
 import { InlineCategoryConfig, DrawerType } from '../../types';
 import type { GmcpOccupant } from '../../types';
+import { isEnvironmentEventLine } from '../../utils/environmentEventUtils';
+import { hasXmlTag } from '../../utils/xmlTagUtils';
 
 interface RoomItemDetectionOptions {
     isRoomContext?: boolean;
@@ -73,7 +75,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
 
         // --- Sleeping Suppression ---
         if (playerPosition === 'sleeping') {
-            const isWeatherOrLighting = /starts to (rain|snow)|it is (raining|snowing|foggy)|rain stops|snow stops|clouds disappear|starts to fog|fog has (thinned|thickened|lifted|dissipated|disappeared)|thick fog covers|disappears into the fog|flash of lightning|lightning illuminates/i.test(lower);
+            const isWeatherOrLighting = isEnvironmentEventLine(lower);
             if (isWeatherOrLighting) return false;
         }
 
@@ -120,6 +122,8 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         if (lower.startsWith('exits:')) finalType = 'room-exits';
         else if (isSpectateMode && isSnoop && trimmed.startsWith('>') && trimmed.length > 1) finalType = 'snoop-command';
         else if (isMatch && attachedText.length <= 2) finalType = 'prompt';
+        else if (hasXmlTag(cleanLine, 'status')) finalType = 'status-event';
+        else if (isEnvironmentEventLine(lower)) finalType = 'weather';
         else if (lower.startsWith('you go ') || lower.includes(' leaves ') || lower.includes(' arrives from ') || lower.includes(' arrived from ') || lower.includes(' flees ') || lower.includes(' fled ') || lower.includes(' panics') || lower.includes(' attempts') || lower.includes('alas, you cannot go that way') || lower.includes('there is no exit')) finalType = 'move';
 
         return finalType;

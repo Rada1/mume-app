@@ -21,6 +21,8 @@ const isLogBlankTapTarget = (target: EventTarget | null): boolean => {
     );
 };
 
+const stripAnsiCodes = (text: string): string => text.replace(/[\u001b\x1b\u2190]\[[0-9;]*[a-zA-Z]/g, '').trim();
+
 export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>, heldBtnFiredRef?: React.MutableRefObject<boolean>) => {
     const {
         executeCommand, setInput, setTarget, triggerHaptic, btn, joystick, target,
@@ -213,11 +215,44 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         const effectiveContextStr = rawContextStr && keywordOverridesRef.current[rawContextStr] ? keywordOverridesRef.current[rawContextStr] : rawContextStr;
         const isCharacterContext = categoryAxes.isCharacter || !!cmd?.startsWith('npc');
         const contextStr = (isCharacterContext ? formatNpcKeywordTarget(effectiveContextStr) : sanitizeGameTarget(effectiveContextStr)) || effectiveContextStr;
+        const displayName = stripAnsiCodes(targetEl.innerText.trim() || rawContextStr);
 
         const entityId = targetEl.getAttribute('data-id') || '';
 
         const activeHeldButton = heldButtonRef?.current || heldButton;
         const isTargetableInline = targetEl.getAttribute('data-targetable') !== 'false';
+        // Remote allies aren't in the room — "look"/"con" always fail or hang for
+        // them, so identify via "whois" instead.
+        const isRemoteCharacter = categoryAxes.isCharacter && categoryAxes.location === 'none';
+        const getInspectState = () => {
+            const shouldLook = isTargetableInline && action === 'menu' && categoryAxes.isTargetable && (categoryAxes.isObject || categoryAxes.isCharacter) && !isRemoteCharacter;
+            // Consider on both characters (threat assessment) and objects (weapon
+            // stats / weight), so the object popover surfaces "con" output too.
+            const shouldConsider = shouldLook;
+            const shouldWhois = isTargetableInline && action === 'menu' && categoryAxes.isTargetable && isRemoteCharacter;
+            return {
+                isCapturingExamine: shouldLook,
+                isCapturingConsider: shouldConsider,
+                capturedExamineLines: undefined,
+                capturedConsiderLines: undefined,
+                isCapturingWhois: shouldWhois,
+                capturedWhoisLines: undefined,
+            };
+        };
+        const runInspectCommands = () => {
+            const inspect = getInspectState();
+            if (inspect.isCapturingExamine && contextStr) {
+                executeCommand(`look ${contextStr}`, true, true, false, false, { shouldFocus: false, fromUi: true });
+            }
+            if (inspect.isCapturingConsider && contextStr) {
+                setTimeout(() => {
+                    executeCommand(`con ${contextStr}`, true, true, false, false, { shouldFocus: false, fromUi: true });
+                }, 850);
+            }
+            if (inspect.isCapturingWhois && contextStr) {
+                executeCommand(`whois ${contextStr}`, true, true, false, false, { shouldFocus: false, fromUi: true });
+            }
+        };
 
         const sourceButton = activeHeldButton
             ? btn.buttons.find(b => b.id === activeHeldButton.id)
@@ -299,22 +334,45 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
 
             const glowColor = targetEl.style.getPropertyValue('--glow-color').trim();
             const accentColor = glowColor || targetEl.style.color || undefined;
-            if (isTargetHighlight || shopStore.selectedTarget?.id === entityId) {
+            const isAlreadySelected = shopStore.selectedTarget?.id === entityId;
+            const shouldOpenImmediately = tapAxes.isCharacter;
+            if (isTargetHighlight || isAlreadySelected || shouldOpenImmediately) {
+                if (shouldOpenImmediately && !isTargetHighlight && !isAlreadySelected) {
+                    toggleObjectSelection({
+                        id: entityId,
+                        setId: cmd || undefined,
+                        category: category || undefined,
+                        context: contextStr || undefined,
+                        displayName,
+                        keyword: contextStr || undefined,
+                        accentColor,
+                        menuDisplay,
+                        parentNoun,
+                    });
+                    setTarget(contextStr || null);
+                }
                 const rect = targetEl.getBoundingClientRect();
+                const sourceRect = { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
                 setPopoverState({
-                    x: rect.right,
-                    y: rect.top + rect.height / 2,
+                    x: rect.left + rect.width / 2,
+                    y: rect.bottom,
+                    sourceHeight: rect.height,
+                    sourceRect,
                     setId: cmd || category || 'selection',
                     category: category || undefined,
                     context: contextStr || undefined,
+                    displayName,
+                    keyword: contextStr || undefined,
                     entityId,
                     menuDisplay,
                     accentColor,
-                    preferSide: 'right',
-                    parentNoun
+                    preferSide: 'top',
+                    parentNoun,
+                    ...getInspectState()
                 });
                 playEffect('actionmenu');
                 targetEl.classList.add('menu-active');
+                runInspectCommands();
                 triggerHaptic(20);
                 return;
             }
@@ -323,6 +381,8 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 setId: cmd || undefined,
                 category: category || undefined,
                 context: contextStr || undefined,
+                displayName,
+                keyword: contextStr || undefined,
                 accentColor,
                 menuDisplay,
                 parentNoun,
@@ -351,20 +411,27 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
 
             // Coordinate acquisition with safety fallbacks
             const rect = targetEl.getBoundingClientRect();
+            const sourceRect = { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
             setPopoverState({
-                x: rect.right,
-                y: rect.top + rect.height / 2,
+                x: rect.left + rect.width / 2,
+                y: rect.bottom,
+                sourceHeight: rect.height,
+                sourceRect,
                 setId: cmd || 'selection',
                 category: category || undefined,
                 context: context || undefined,
+                displayName,
+                keyword: contextStr || undefined,
                 entityId: entityId || undefined,
                 menuDisplay,
                 accentColor,
-                preferSide: 'right',
-                parentNoun
+                preferSide: 'top',
+                parentNoun,
+                ...getInspectState()
             });
             playEffect('actionmenu');
             targetEl.classList.add('menu-active');
+            runInspectCommands();
             triggerHaptic(20);
 
         } else if ((action === 'command' || action === 'preload') && cmd) {

@@ -33,6 +33,10 @@ export type CaptureType =
   | 'shaper_live_room_stat'
   | 'shaper_live_com_list'
   | 'shaper_live_lib_list'
+  | 'examine'
+  | 'consider'
+  | 'whois'
+  | 'self_title'
   | 'none';
 
 export interface CaptureSession {
@@ -62,6 +66,7 @@ export interface CaptureController {
     setPendingFlags: (isSilent: boolean, fromDrawer: boolean, command?: string) => void;
     isPendingSilent: () => boolean;
     shouldSuppressCommandEcho: (line: string, attachedText?: string) => boolean;
+    shouldSuppressSilentBlank: (line: string) => boolean;
     setLastRequestedContainerId?: (id: string | null) => void;
     getSession?: () => CaptureSession | null;
 }

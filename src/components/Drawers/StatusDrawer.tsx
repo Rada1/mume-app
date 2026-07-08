@@ -12,8 +12,10 @@ import { StatusCharacterCard } from './StatusCharacterCard';
 
 const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
     <div style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.07)',
+        background: 'rgba(8,11,18,0.24)',
+        backdropFilter: 'blur(6px)',
+        WebkitBackdropFilter: 'blur(6px)',
+        border: '1px solid rgba(255,255,255,0.1)',
         borderRadius: 8,
         padding: '10px 12px',
         display: 'flex',
@@ -22,7 +24,7 @@ const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, c
     }}>
         <div style={{
             fontSize: '0.68em', fontWeight: 700, textTransform: 'uppercase',
-            letterSpacing: '1.5px', color: 'rgba(255,255,255,0.22)', marginBottom: 2,
+            letterSpacing: '1.5px', color: 'rgba(255,255,255,0.65)', marginBottom: 2,
         }}>
             {title}
         </div>
@@ -36,10 +38,10 @@ const GREEN_GLOW = 'rgba(74,222,128,0.3)';
 
 const Row: React.FC<{ label: string; value: React.ReactNode; dim?: boolean }> = ({ label, value, dim }) => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
-        <span style={{ fontSize: '0.78em', color: 'rgba(255,255,255,0.36)', flexShrink: 0 }}>{label}</span>
+        <span style={{ fontSize: '0.78em', color: 'rgba(255,255,255,0.72)', flexShrink: 0 }}>{label}</span>
         <span style={{
             fontSize: '1em',
-            color: dim ? 'rgba(255,255,255,0.2)' : GREEN,
+            color: dim ? 'rgba(255,255,255,0.45)' : GREEN,
             textShadow: dim ? 'none' : `0 0 8px ${GREEN_GLOW}`,
             fontWeight: 500, textAlign: 'right', wordBreak: 'break-word',
         }}>{value}</span>
@@ -72,7 +74,7 @@ const BarRow: React.FC<{
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             {/* numbers row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <span style={{ fontSize: '0.78em', color: 'rgba(255,255,255,0.36)', minWidth: 36 }}>{label}</span>
+                <span style={{ fontSize: '0.78em', color: 'rgba(255,255,255,0.72)', minWidth: 36 }}>{label}</span>
                 <span style={{ fontSize: '1em', fontFamily: 'monospace', color: fill, textShadow: `0 0 6px ${fill}` }}>
                     {value}
                     <span style={{ opacity: 0.45 }}> / {max}</span>

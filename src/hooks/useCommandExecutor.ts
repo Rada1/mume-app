@@ -17,6 +17,7 @@ import { SystemCommandMiddleware } from '../services/command/middlewares/SystemC
 import { recordEffectTimerCommand } from '../services/timers/effectTimerParser';
 import { decodeCommandEntities } from '../utils/commandTextUtils';
 import { recordCombatRechargeCommand } from '../stores/useCombatRechargeStore';
+import { recordActionTimerCommand } from '../services/timers/actionTimerParser';
 
 export interface ExecutorDeps {
     telnet: { sendCommand: (cmd: string) => void };
@@ -144,6 +145,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         if (!silent && !isSystem) {
             recordEffectTimerCommand(finalCmd);
             recordCombatRechargeCommand(finalCmd);
+            recordActionTimerCommand(finalCmd);
         }
 
         if (normalizedFinalCmd.startsWith('practice ')) {

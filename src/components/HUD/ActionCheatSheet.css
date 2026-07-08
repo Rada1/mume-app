@@ -1,0 +1,443 @@
+.action-cheatsheet-container {
+    display: flex;
+    flex-direction: column;
+    background: rgba(10, 12, 18, 0.72);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    max-height: 360px;
+    min-height: 120px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.cheatsheet-top-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cheatsheet-config-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.cheatsheet-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-dim, #94a3b8);
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+}
+
+.cheatsheet-toggle-label:hover {
+    color: var(--text-light, #f8fafc);
+}
+
+.cheatsheet-checkbox {
+    cursor: pointer;
+    accent-color: var(--accent, #6366f1);
+    margin: 0;
+    width: 13px;
+    height: 13px;
+}
+
+.active-icon {
+    color: #eab308;
+    filter: drop-shadow(0 0 3px rgba(234, 179, 8, 0.4));
+}
+
+.cheatsheet-notice-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    color: var(--text-dim, #64748b);
+}
+
+.cheatsheet-notice-row strong {
+    color: var(--accent, #a78bfa);
+}
+
+.cheatsheet-body-scroll {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    padding: 12px;
+    display: grid;
+    /* Clean column wrapping: min 200px columns filling up available desktop space */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    align-items: start;
+}
+
+/* Category Cards */
+.cheatsheet-category-section {
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.cheatsheet-category-section:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.cheatsheet-category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.03);
+    user-select: none;
+    color: var(--text-light, #cbd5e1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.cheatsheet-category-header:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
+
+.cheatsheet-category-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.cheatsheet-chips-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Chips Styling */
+.cheatsheet-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: var(--font-main, sans-serif);
+}
+
+.cheatsheet-chip:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.cheatsheet-chip:active {
+    transform: translateY(0);
+}
+
+.chip-label {
+    white-space: nowrap;
+}
+
+.chip-percentage {
+    font-size: 0.65rem;
+    padding: 1px 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    opacity: 0.85;
+}
+
+/* Themes per Character Class */
+/* Ranger - Green */
+.ranger-theme {
+    border-color: rgba(34, 197, 94, 0.15);
+}
+.ranger-theme .cheatsheet-category-header {
+    color: #4ade80;
+    background: rgba(34, 197, 94, 0.04);
+}
+.ranger-theme .cheatsheet-category-header:hover {
+    background: rgba(34, 197, 94, 0.08);
+}
+.ranger-theme .known-chip {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.22);
+    color: #4ade80;
+}
+.ranger-theme .known-chip:hover {
+    background: rgba(34, 197, 94, 0.18);
+    border-color: rgba(34, 197, 94, 0.35);
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.25);
+}
+
+/* Warrior - Red */
+.warrior-theme {
+    border-color: rgba(239, 68, 68, 0.15);
+}
+.warrior-theme .cheatsheet-category-header {
+    color: #f87171;
+    background: rgba(239, 68, 68, 0.04);
+}
+.warrior-theme .cheatsheet-category-header:hover {
+    background: rgba(239, 68, 68, 0.08);
+}
+.warrior-theme .known-chip {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.22);
+    color: #f87171;
+}
+.warrior-theme .known-chip:hover {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.35);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.25);
+}
+
+/* Thief - Purple */
+.thief-theme {
+    border-color: rgba(168, 85, 247, 0.15);
+}
+.thief-theme .cheatsheet-category-header {
+    color: #c084fc;
+    background: rgba(168, 85, 247, 0.04);
+}
+.thief-theme .cheatsheet-category-header:hover {
+    background: rgba(168, 85, 247, 0.08);
+}
+.thief-theme .known-chip {
+    background: rgba(168, 85, 247, 0.1);
+    border-color: rgba(168, 85, 247, 0.22);
+    color: #c084fc;
+}
+.thief-theme .known-chip:hover {
+    background: rgba(168, 85, 247, 0.18);
+    border-color: rgba(168, 85, 247, 0.35);
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.25);
+}
+
+/* Mage - Blue */
+.mage-theme {
+    border-color: rgba(59, 130, 246, 0.15);
+}
+.mage-theme .cheatsheet-category-header {
+    color: #60a5fa;
+    background: rgba(59, 130, 246, 0.04);
+}
+.mage-theme .cheatsheet-category-header:hover {
+    background: rgba(59, 130, 246, 0.08);
+}
+.mage-theme .known-chip {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.22);
+    color: #60a5fa;
+}
+.mage-theme .known-chip:hover {
+    background: rgba(59, 130, 246, 0.18);
+    border-color: rgba(59, 130, 246, 0.35);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.25);
+}
+
+/* Cleric - Gold */
+.cleric-theme {
+    border-color: rgba(245, 158, 11, 0.15);
+}
+.cleric-theme .cheatsheet-category-header {
+    color: #acc12c;
+    background: rgba(245, 158, 11, 0.04);
+}
+.cleric-theme .cheatsheet-category-header:hover {
+    background: rgba(245, 158, 11, 0.08);
+}
+.cleric-theme .known-chip {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.22);
+    color: #acc12c;
+}
+.cleric-theme .known-chip:hover {
+    background: rgba(245, 158, 11, 0.18);
+    border-color: rgba(245, 158, 11, 0.35);
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.25);
+}
+
+/* Dimmed potential skills */
+.potential-chip {
+    opacity: 0.45;
+    background: rgba(255, 255, 255, 0.01);
+}
+.potential-chip:hover {
+    opacity: 0.9;
+}
+
+/* Tooltip Popover styling */
+.cheatsheet-tooltip-popover {
+    z-index: 50000;
+    max-width: 320px;
+    min-width: 240px;
+    max-height: 260px;
+    overflow-y: auto;
+    background: rgba(13, 16, 23, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(232, 176, 32, 0.25); /* Subtle MUME amber border */
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(232, 176, 32, 0.1);
+    color: #d4cdb8; /* MUME parchment color */
+    pointer-events: auto; /* Enable hover/scroll interaction inside tooltip */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    animation: tooltip-fade-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tooltip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+}
+
+.tooltip-title {
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #fff;
+    letter-spacing: 0.03em;
+}
+
+.tooltip-percentage {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #4ade80;
+    padding: 1px 4px;
+    background: rgba(34, 197, 94, 0.1);
+    border-radius: 3px;
+}
+
+.tooltip-content {
+    font-size: 0.7rem;
+    line-height: 1.38;
+    white-space: pre-wrap;
+    font-family: var(--font-mono, monospace);
+    margin: 0;
+    word-break: break-word;
+}
+
+.tooltip-loading-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    color: var(--text-dim, #94a3b8);
+    padding: 12px 4px;
+}
+
+.tooltip-spinner {
+    width: 13px;
+    height: 13px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-top-color: var(--accent, #6366f1);
+    border-radius: 50%;
+    animation: tooltip-spin 0.75s linear infinite;
+    display: inline-block;
+}
+
+.tooltip-no-help {
+    font-size: 0.7rem;
+    color: var(--text-dim, #94a3b8);
+    font-style: italic;
+    padding: 4px;
+}
+
+@keyframes tooltip-fade-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 4px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+@keyframes tooltip-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Passive Skills Styling */
+.passive-chip {
+    cursor: default !important;
+    border-style: dashed !important; /* Segmented border */
+    border-width: 1px !important;
+    background: transparent !important;
+    color: #cbd5e1 !important; /* Grayscale interior text */
+    opacity: 0.9 !important;
+}
+
+.passive-chip:hover {
+    transform: none !important; /* Disable vertical translate */
+    box-shadow: none !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Class-specific Passive Dotted Colors & Text (only for learned skills) */
+.ranger-chip.known-chip.passive-chip {
+    border-color: rgba(34, 197, 94, 0.45) !important;
+}
+
+.warrior-chip.known-chip.passive-chip {
+    border-color: rgba(239, 68, 68, 0.45) !important;
+}
+
+.thief-chip.known-chip.passive-chip {
+    border-color: rgba(168, 85, 247, 0.45) !important;
+}
+
+.mage-chip.known-chip.passive-chip {
+    border-color: rgba(59, 130, 246, 0.45) !important;
+}
+
+.cleric-chip.known-chip.passive-chip {
+    border-color: rgba(245, 158, 11, 0.45) !important;
+}
+
+.tooltip-passive-tag {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #94a3b8;
+    padding: 1px 5px;
+    background: rgba(148, 163, 184, 0.12);
+    border-radius: 3px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+

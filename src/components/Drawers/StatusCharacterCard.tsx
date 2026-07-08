@@ -15,7 +15,7 @@ interface StatusCharacterCardProps {
 
 const MetaRow: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
-        <span style={{ fontSize: '0.78em', color: 'rgba(255,255,255,0.36)', flexShrink: 0 }}>{label}</span>
+        <span style={{ fontSize: '0.78em', color: 'rgba(255,255,255,0.72)', flexShrink: 0 }}>{label}</span>
         <span style={{
             fontSize: '1em',
             color: '#4ade80',
@@ -31,8 +31,10 @@ export const StatusCharacterCard: React.FC<StatusCharacterCardProps> = ({ charac
     <div style={{
         position: 'relative',
         minHeight: 96,
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.07)',
+        background: 'rgba(8,11,18,0.24)',
+        backdropFilter: 'blur(6px)',
+        WebkitBackdropFilter: 'blur(6px)',
+        border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: 8,
         padding: '10px 128px 10px 12px',
         display: 'flex',
@@ -45,7 +47,7 @@ export const StatusCharacterCard: React.FC<StatusCharacterCardProps> = ({ charac
             fontWeight: 700,
             textTransform: 'uppercase',
             letterSpacing: '1.5px',
-            color: 'rgba(255,255,255,0.22)',
+            color: 'rgba(255,255,255,0.65)',
             marginBottom: 2,
         }}>
             Character

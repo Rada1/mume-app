@@ -4,11 +4,9 @@
  */
 
 import React from 'react';
-import { DrawerLine, GmcpOccupant, GroupMember } from '../../types';
+import { DrawerLine, GmcpOccupant } from '../../types';
 import { DrawerType } from '../../context/GameContext/types';
 import { useGame } from '../../context/GameContext';
-import { GroupTableView } from './GroupTableView';
-import { NearbyWhereView } from './NearbyWhereView';
 import { UnifiedView } from './Views/UnifiedView';
 import { StatusDrawer } from './StatusDrawer';
 import { AccountDrawer } from './AccountDrawer';
@@ -19,71 +17,46 @@ import { extractMumeKeyword } from '../../utils/gameUtils';
 import { GearView } from './Views/GearView';
 
 type GearTab = 'worn' | 'inv' | 'vicinity';
-type PlayersTab = 'online' | 'nearby' | 'group';
 type CharacterTab = 'info' | 'quests' | 'skills' | 'achievements';
 
 interface UnifiedDrawerContentProps {
     drawer: DrawerType;
     gearTab: GearTab;
     setGearTab: (tab: GearTab) => void;
-    playersTab: PlayersTab;
-    setPlayersTab: (tab: PlayersTab) => void;
     charTab: CharacterTab;
     setCharTab: (tab: CharacterTab) => void;
     displayInventoryLines: DrawerLine[];
     displayEqLines: DrawerLine[];
     roomItems: GmcpOccupant[];
-    whoLines: DrawerLine[];
-    whereLines: DrawerLine[];
     infoLines: DrawerLine[];
     questLines: DrawerLine[];
     achievementLines: DrawerLine[];
     practiceLines: DrawerLine[];
-    groupMembers: GroupMember[];
     triggerHaptic: (ms: number) => void;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
-    setWhoLines?: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
-    setWhereLines?: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
 }
 
 export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
     drawer,
     gearTab,
     setGearTab,
-    playersTab,
-    setPlayersTab,
     charTab,
     setCharTab,
     displayInventoryLines,
     displayEqLines,
     roomItems,
-    whoLines,
-    whereLines,
     infoLines,
     questLines,
     achievementLines,
     practiceLines,
-    groupMembers,
     triggerHaptic,
-    executeCommand,
-    setWhoLines,
-    setWhereLines
+    executeCommand
 }) => {
-    const lastNearbyRefreshRef = React.useRef(0);
     const { practice } = useGame();
     const practiceTargetLines = React.useMemo<DrawerLine[]>(
         () => buildPracticeDrawerLines(practice.practiceData, practiceLines),
         [practice.practiceData, practiceLines]
     );
-
-
-    const refreshNearby = () => {
-        const now = Date.now();
-        if (now - lastNearbyRefreshRef.current < 1000) return;
-        lastNearbyRefreshRef.current = now;
-        setWhereLines?.([]);
-        executeCommand('where', true, true, false, true);
-    };
 
     const selectGearTab = (tab: GearTab) => {
         triggerHaptic(10);
@@ -91,17 +64,6 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
         else if (tab === 'inv') executeCommand('inv', true, true, false, true);
         else executeCommand('look', true, true, false, true);
         setGearTab(tab);
-    };
-
-    const selectPlayersTab = (tab: PlayersTab) => {
-        triggerHaptic(10);
-        if (tab === 'online') {
-            setWhoLines?.([]);
-            executeCommand('who', true, true, false, true);
-        } else if (tab === 'nearby') {
-            refreshNearby();
-        }
-        setPlayersTab(tab);
     };
 
     const selectCharTab = (tab: CharacterTab) => {
@@ -114,7 +76,7 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
     };
 
     const renderHoldActions = (actions: { id: string; label: string; command: string }[]) => (
-        <div style={{ display: 'flex', gap: '8px', padding: '8px 10px 10px', borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.18)' }}>
+        <div style={{ display: 'flex', gap: '8px', padding: '8px 10px 10px', borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(13,16,23,0.9)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
             {actions.map(action => (
                 <DrawerHoldCommandButton
                     key={action.id}
@@ -129,7 +91,7 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
         return <AccountDrawer />;
     }
 
-    const categories = ['status', 'character', 'players', 'equipment'] as DrawerType[];
+    const categories = ['status', 'character', 'equipment'] as DrawerType[];
     const activeCategoryIndex = categories.indexOf(drawer);
 
     if (activeCategoryIndex === -1) {
@@ -138,24 +100,24 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
 
     return (
         <div className="drawer-category-viewport" style={{ overflow: 'hidden', width: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div 
-                className="drawer-category-track" 
-                style={{ 
-                    display: 'flex', 
-                    flexDirection: 'row', 
-                    width: '400%', 
-                    height: '100%', 
-                    transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)', 
-                    transform: `translateX(-${activeCategoryIndex * 25}%)` 
+            <div
+                className="drawer-category-track"
+                style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    width: '300%',
+                    height: '100%',
+                    transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                    transform: `translateX(-${activeCategoryIndex * (100 / 3)}%)`
                 }}
             >
                 {/* 1. Status View */}
-                <div className="drawer-category-slide" style={{ width: '25%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                <div className="drawer-category-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
                     <StatusDrawer />
                 </div>
 
                 {/* 2. Character View */}
-                <div className="drawer-category-slide" style={{ width: '25%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                <div className="drawer-category-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
                     {(() => {
                         const tabs = ['info', 'quests', 'skills', 'achievements'] as CharacterTab[];
                         const activeIndex = tabs.indexOf(charTab);
@@ -210,67 +172,8 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                     })()}
                 </div>
 
-                {/* 3. Players View */}
-                <div className="drawer-category-slide" style={{ width: '25%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-                    {(() => {
-                        const tabs = ['online', 'nearby', 'group'] as PlayersTab[];
-                        const activeIndex = tabs.indexOf(playersTab);
-                        return (
-                            <>
-                                <DrawerTabBar
-                                    tabs={[{ id: 'online', label: 'Online' }, { id: 'nearby', label: 'Nearby' }, { id: 'group', label: 'Group' }]}
-                                    active={playersTab}
-                                    onChange={(id) => selectPlayersTab(id as PlayersTab)}
-                                />
-                                <div className="drawer-tab-viewport" style={{ overflow: 'hidden', width: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                    <div 
-                                        className="drawer-tab-track" 
-                                        style={{ 
-                                            display: 'flex', 
-                                            flexDirection: 'row', 
-                                            width: '300%', 
-                                            height: '100%', 
-                                            transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)', 
-                                            transform: `translateX(-${activeIndex * (100 / 3)}%)` 
-                                        }}
-                                    >
-                                        <div className="drawer-tab-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-                                            <UnifiedView
-                                                lines={whoLines}
-                                                category="inline-player"
-                                                emptyMessage="No player data. Tap refresh to update."
-                                                onRefresh={() => { triggerHaptic(15); setWhoLines?.([]); executeCommand('who', true, true, false, true); }}
-                                            />
-                                            {renderHoldActions([
-                                                { id: 'drawer-online-whois', label: 'Whois', command: 'whois %n' },
-                                                { id: 'drawer-online-chat', label: 'Chat', command: '__parley__' }
-                                            ])}
-                                        </div>
-                                        <div className="drawer-tab-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-                                            <NearbyWhereView
-                                                lines={whereLines}
-                                                onRefresh={() => {
-                                                    triggerHaptic(15);
-                                                    refreshNearby();
-                                                }}
-                                            />
-                                            {renderHoldActions([
-                                                { id: 'drawer-nearby-whois', label: 'Whois', command: 'whois %n' },
-                                                { id: 'drawer-nearby-chat', label: 'Chat', command: '__parley__' }
-                                            ])}
-                                        </div>
-                                        <div className="drawer-tab-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-                                            <GroupTableView members={groupMembers} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        );
-                    })()}
-                </div>
-
-                {/* 4. Gear View */}
-                <div className="drawer-category-slide" style={{ width: '25%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                {/* 3. Gear View */}
+                <div className="drawer-category-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
                     <GearView
                         gearTab={gearTab}
                         selectGearTab={selectGearTab}

@@ -26,6 +26,7 @@ export interface GmcpHandlers {
     onGroupRemove?: (data: any) => void;
     onGroupSet?: (data: any) => void;
     onMumeEdit?: (data: import('../../types').GmcpMumeEdit) => void;
+    onMumeView?: (data: import('../../types').GmcpMumeView) => void;
     onRoomCharsCombat?: (data: any[]) => void;
     onCharRide?: (data: any) => void;
     onCorePing?: () => void;
@@ -96,6 +97,15 @@ export class GmcpDecoder {
                     }
                 } catch (e) {
                     console.error('[GMCP] Parse error in Mume.Client.Edit:', e, json);
+                }
+            } else if (pkgLower === 'mume.client.view') {
+                try {
+                    const parsed = JSON.parse(json);
+                    if (this.handlers.onMumeView) {
+                        this.handlers.onMumeView(parsed);
+                    }
+                } catch (e) {
+                    console.error('[GMCP] Parse error in Mume.Client.View:', e, json);
                 }
             }
         } else if (pkgLower === 'char.ride') {

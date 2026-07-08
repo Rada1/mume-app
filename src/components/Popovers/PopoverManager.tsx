@@ -81,14 +81,26 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     const theme = useSettingsStore(state => state.theme);
     const [localState, setLocalState] = React.useState<any | null>(null);
     const [isClosing, setIsClosing] = React.useState(false);
+    const lastAudiblePopoverKeyRef = React.useRef<string | null>(null);
 
     React.useEffect(() => {
         if (parentPopoverState) {
             setLocalState(parentPopoverState);
             setIsClosing(false);
-            audioManager.playEffect('actionmenu');
+            const isPreparing = !!(parentPopoverState.openedByHover && (parentPopoverState.isCapturingExamine || parentPopoverState.isCapturingConsider));
+            const popoverKey = [
+                parentPopoverState.type || 'menu',
+                parentPopoverState.entityId || '',
+                parentPopoverState.setId || '',
+                parentPopoverState.context || ''
+            ].join(':');
+            if (!isPreparing && lastAudiblePopoverKeyRef.current !== popoverKey) {
+                audioManager.playEffect('actionmenu');
+                lastAudiblePopoverKeyRef.current = popoverKey;
+            }
         } else if (localState) {
             setIsClosing(true);
+            lastAudiblePopoverKeyRef.current = null;
             const timer = setTimeout(() => {
                 setLocalState(null);
                 setIsClosing(false);
@@ -124,29 +136,72 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     useLayoutEffect(() => {
         if (popoverState && popoverState.type !== 'help-card' && popoverRef.current) {
             const el = popoverRef.current;
-            const rect = el.getBoundingClientRect();
-            const winH = window.innerHeight, winW = window.innerWidth;
-            let top = popoverState.y, left = popoverState.x;
 
-            if (popoverState.type === 'select-parley-target' || popoverState.type === 'select-parley-command') {
-                left = popoverState.x - (rect.width / 2);
-                el.style.bottom = `${winH - popoverState.y + 8}px`;
-                el.style.top = 'auto';
-            } else {
-                el.style.bottom = 'auto';
-                if (popoverState.menuDisplay !== 'dial') {
-                    top = (winH / 2) - (rect.height / 2);
-                    left = (winW / 2) - (rect.width / 2);
+            const positionPopover = () => {
+                const rect = el.getBoundingClientRect();
+                const winH = window.innerHeight, winW = window.innerWidth;
+                let top = popoverState.y, left = popoverState.x;
+                el.style.maxHeight = '';
+
+                if (popoverState.type === 'select-parley-target' || popoverState.type === 'select-parley-command') {
+                    left = popoverState.x - (rect.width / 2);
+                    el.style.bottom = `${winH - popoverState.y + 8}px`;
+                    el.style.top = 'auto';
+                } else {
+                    el.style.bottom = 'auto';
+                    if (popoverState.menuDisplay !== 'dial' && popoverState.sourceRect) {
+                        const source = popoverState.sourceRect;
+                        const gap = 8;
+                        const sourceBottom = source.top + source.height;
+                        const sideSpace = winW - (source.left + source.width) - gap;
+                        const canFitRight = sideSpace >= rect.width;
+                        const canFitLeft = source.left - gap >= rect.width;
+                        if (popoverState.preferSide === 'right' && (canFitRight || canFitLeft)) {
+                            left = canFitRight ? source.left + source.width + gap : source.left - rect.width - gap;
+                            top = source.top + (source.height / 2) - (rect.height / 2);
+                        } else {
+                            left = source.left + (source.width / 2) - (rect.width / 2);
+                            const canFitTop = source.top - rect.height - gap >= 10;
+                            const canFitBottom = sourceBottom + rect.height + gap <= winH - 10;
+                            if (canFitTop) {
+                                top = source.top - rect.height - gap;
+                            } else if (canFitBottom) {
+                                top = sourceBottom + gap;
+                            } else {
+                                if (source.top >= winH - sourceBottom) {
+                                    top = source.top - rect.height - gap;
+                                } else {
+                                    top = sourceBottom + gap;
+                                }
+                            }
+                        }
+                    } else if (popoverState.menuDisplay !== 'dial') {
+                        const rootStyles = getComputedStyle(document.documentElement);
+                        const centerX = parseFloat(rootStyles.getPropertyValue('--wheel-center-x')) || (winW / 2);
+                        const centerY = parseFloat(rootStyles.getPropertyValue('--wheel-center-y')) || (winH / 2);
+                        top = centerY - (rect.height / 2);
+                        left = centerX - (rect.width / 2);
+                    }
+                    if (top < 10) top = 10;
+                    if (top + rect.height > winH - 10) top = Math.max(10, winH - rect.height - 10);
+                    el.style.top = `${top}px`;
                 }
-                if (top < 10) top = 10;
-                if (top + rect.height > winH - 10) top = Math.max(10, winH - rect.height - 10);
-                el.style.top = `${top}px`;
-            }
 
-            if (left < 10) left = 10;
-            if (left + rect.width > winW - 10) left = Math.max(10, winW - rect.width - 10);
-            el.style.left = `${left}px`;
+                if (left < 10) left = 10;
+                if (left + rect.width > winW - 10) left = Math.max(10, winW - rect.width - 10);
+                el.style.left = `${left}px`;
+            };
+
+            positionPopover();
+            const observer = new ResizeObserver(positionPopover);
+            observer.observe(el);
+            window.addEventListener('resize', positionPopover);
+            return () => {
+                observer.disconnect();
+                window.removeEventListener('resize', positionPopover);
+            };
         }
+        return undefined;
     }, [popoverState, popoverRef]);
 
     const lastHoveredIndex = React.useRef<number | null>(null);
@@ -388,10 +443,11 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         );
     }
 
+    const hasCapturedDetails = !!(popoverState.isCapturingExamine || popoverState.isCapturingConsider || popoverState.capturedExamineLines || popoverState.capturedConsiderLines);
     const isParleyType = popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target';
-
+    const isAnchoredDropdown = !!popoverState.sourceRect && !isParleyType && popoverState.type !== 'menu' && popoverState.type !== undefined;
     return (
-        <div className={`popover-menu${isParleyType ? ' parley-dropdown' : ''}${isClosing ? ' closing' : ''}`} ref={popoverRef} style={{
+        <div className={`popover-menu${isParleyType ? ' parley-dropdown' : ''}${isAnchoredDropdown ? ' inline-dropdown' : ''}${isClosing ? ' closing' : ''}${hasCapturedDetails ? ' popover-captured-wide' : ''}`} ref={popoverRef} style={{
             position: 'fixed',
             left: popoverState.x,
             top: popoverState.y,

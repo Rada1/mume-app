@@ -21,6 +21,7 @@ export function useCommParser(deps: CommParserDeps) {
         let commAction: string | undefined;
         let commText: string | undefined;
         let commColor: string | undefined;
+        let isSocial: boolean | undefined;
         let msgType: MessageType = 'game';
 
         const colorNames = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
@@ -93,7 +94,7 @@ export function useCommParser(deps: CommParserDeps) {
         };
 
         const parseXmlComm = () => {
-            const commTags = ['tell', 'say', 'narrate', 'shout', 'yell', 'song', 'sing', 'pray', 'whisper'];
+            const commTags = ['tell', 'say', 'narrate', 'shout', 'yell', 'song', 'sing', 'pray', 'whisper', 'social', 'emote'];
             const tagPattern = commTags.join('|');
             const tagMatch = line.match(new RegExp(`<(${tagPattern})(?:\\s+[^>]*)?>([\\s\\S]*?)<\\/\\1>`, 'i'));
             if (!tagMatch) return false;
@@ -104,7 +105,14 @@ export function useCommParser(deps: CommParserDeps) {
             const leadingOffset = innerPlain.search(/\S/);
             const innerText = leadingOffset === -1 ? '' : innerPlain.substring(leadingOffset).trim();
             const actionMatch = innerText.match(/^(.+?)\s+(tells?\s+the\s+group|tells? you|tells?|whispers?|says?|asks?(?:\s+you)?|exclaims?|narrates?|shouts?|yells?|sings?|prays?)(?:\s+.*?|:\s*|,\s*)(.*)$/i);
-            
+
+            if (tag === 'social' || tag === 'emote') {
+                commText = sanitizeExtractedText(innerRaw).trim() || innerText;
+                commColor = extractColorAtRawIndex(tagMatch.index || 0);
+                isSocial = true;
+                return true;
+            }
+
             const chanMap: Record<string, string> = { song: 'sing' };
             replyCommand = chanMap[tag] ?? tag;
 
@@ -182,7 +190,7 @@ export function useCommParser(deps: CommParserDeps) {
         parseXmlComm();
         if (!replyCommand) parseTaggedPlainComm();
 
-        if (replyCommand) {
+        if (replyCommand || isSocial) {
             msgType = 'comm';
         }
 
@@ -195,6 +203,7 @@ export function useCommParser(deps: CommParserDeps) {
             commAction,
             commText,
             commColor,
+            isSocial,
             lastCommMsgIdRef: deps.lastCommMsgIdRef,
             lastCommTimeRef: deps.lastCommTimeRef,
             lastCommIdBySenderRef: deps.lastCommIdBySenderRef

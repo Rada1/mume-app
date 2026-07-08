@@ -15,6 +15,20 @@ import {
     isPlayerAttemptAvoidedLine,
     isPlayerFailedAttackLine
 } from '../../utils/combatRechargeUtils';
+import { triggerKillPrompt } from '../../stores/useKillPromptStore';
+
+// Pull the dead mob's display name out of a death line so the loot prompt can
+// label its card, e.g. "A Morgundul orc-guard is dead! R.I.P." -> "Morgundul orc-guard".
+const extractDeadMobName = (text: string): string | null => {
+    const t = text.replace(/<[^>]*>/g, '').replace(/^[\s*]+/, '').trim();
+    let m = t.match(/^(?:A|An|The)\s+(.+?)\s+is dead!\s*R\.?I\.?P/i);
+    if (m) return m[1].trim();
+    m = t.match(/^(.+?)\s+is dead!\s*R\.?I\.?P/i);
+    if (m && !/^you\b/i.test(m[1])) return m[1].trim();
+    m = t.match(/you (?:have )?sl(?:ay|ew|ain)\s+(?:the\s+|an?\s+)?(.+?)[.!]/i);
+    if (m) return m[1].trim();
+    return null;
+};
 
 export interface CombatParserDeps {
     inCombatRef: React.RefObject<boolean>;
@@ -137,13 +151,19 @@ export function useCombatParser(deps: CombatParserDeps) {
         return { isMatch: true, side, isImpact, modifier, verb, isPlayerTarget, isMainActor };
     }, [inCombatRef, groupMembers, spectateCharacterName, roomPlayers]);
 
-    const handleCombatExit = useCallback((lower: string, isSnoop: boolean = false) => {
+    const handleCombatExit = useCallback((lower: string, isSnoop: boolean = false, originalText?: string) => {
         if (/\bis dead!\s*r\.?i\.?p/i.test(lower) && !isSnoop) {
             playKillSound?.();
+            // Fire the loot prompt off the R.I.P. line directly — by the time this
+            // line is parsed, GMCP has usually already cleared the fighting position,
+            // so we can't rely on inCombatRef being true here.
+            const deadName = extractDeadMobName(originalText ?? lower);
+            if (deadName) triggerKillPrompt(deadName);
         }
 
         if (inCombatRef.current || (isSnoop && setSpectateInCombat)) {
             const isDeath = /you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) || /\bis dead!\s*r\.?i\.?p/i.test(lower);
+
             if (isDeath ||
                 /^you flee\b/i.test(lower) ||
                 /\bflees\s/i.test(lower) ||
@@ -224,7 +244,7 @@ export function useCombatParser(deps: CombatParserDeps) {
         if (!isSnoop) recordCombatRechargeBlockedLine(textOnly);
 
         // 1. Detect Combat Exit/Death
-        if (handleCombatExit(lower, isSnoop)) return 'game';
+        if (handleCombatExit(lower, isSnoop, textOnly)) return 'game';
 
         // 2. Detect XP Ticker
         if (handleXpTicker(lower, isSnoop)) return 'game';
@@ -260,16 +280,16 @@ export function useCombatParser(deps: CombatParserDeps) {
 
             // Visual FX
             // Removed hitflash triggers
-            if (!isSnoop && (isPlayerAvoidedAttempt || isPlayerFailedAttack)) {
-                recordCombatRechargeConfirmation(match.verb || (hasMissTag || hasAvoidDamageTag ? 'miss' : undefined));
+                        if (!isSnoop && (isPlayerAvoidedAttempt || isPlayerFailedAttack)) {
+                recordCombatRechargeConfirmation(match.verb || (hasMissTag || hasAvoidDamageTag ? 'miss' : undefined), false);
             } else if (!isSnoop && hasAvoidDamageTag) {
-                recordOpponentCombatRechargeConfirmation(match.verb);
+                recordOpponentCombatRechargeConfirmation(match.verb, false);
             } else if (!isSnoop && isOpponentFailedAttack) {
-                recordOpponentCombatRechargeConfirmation(match.verb || 'hit');
+                recordOpponentCombatRechargeConfirmation(match.verb || 'hit', false);
             } else if (!isSnoop && match.side === 'player') {
-                recordCombatRechargeConfirmation(match.verb || (hasMissTag ? 'miss' : undefined));
+                recordCombatRechargeConfirmation(match.verb || (hasMissTag ? 'miss' : undefined), !hasMissTag && !hasAvoidDamageTag);
             } else if (!isSnoop && match.side === 'opponent' && (hasDamageTag || match.isPlayerTarget)) {
-                recordOpponentCombatRechargeConfirmation(match.verb);
+                recordOpponentCombatRechargeConfirmation(match.verb, !hasMissTag && !hasAvoidDamageTag);
             }
 
             return 'combat';

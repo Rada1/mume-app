@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { useGame, useUI, useVitals } from '../../../context/GameContext';
+import { useGame, useUI } from '../../../context/GameContext';
 import { DrawerType } from '../../../context/GameContext/types';
 import { UnifiedDrawerContent } from '../../Drawers/UnifiedDrawerContent';
 
@@ -27,22 +27,15 @@ export const GutterDrawerPanel: React.FC<GutterDrawerPanelProps> = ({ displayDra
         ui,
         displayInventoryLines,
         displayEqLines,
-        whoLines,
-        whereLines,
         infoLines,
         questLines,
         achievementLines,
         practiceLines,
-        setWhoLines,
-        setWhereLines,
         gearTab,
         setGearTab,
-        playersTab,
-        setPlayersTab,
         charTab,
         setCharTab
     } = useUI();
-    const { groupMembers } = useVitals();
 
     const effectiveDrawer = displayDrawer ?? ui.drawer;
     if (effectiveDrawer === 'none') return null;
@@ -61,24 +54,17 @@ export const GutterDrawerPanel: React.FC<GutterDrawerPanelProps> = ({ displayDra
                     drawer={effectiveDrawer}
                     gearTab={gearTab}
                     setGearTab={setGearTab}
-                    playersTab={playersTab}
-                    setPlayersTab={setPlayersTab}
                     charTab={charTab}
                     setCharTab={setCharTab}
                     displayInventoryLines={displayInventoryLines}
                     displayEqLines={displayEqLines}
                     roomItems={roomItems}
-                    whoLines={whoLines}
-                    whereLines={whereLines}
                     infoLines={infoLines}
                     questLines={questLines}
                     achievementLines={achievementLines}
                     practiceLines={practiceLines}
-                    groupMembers={groupMembers}
                     triggerHaptic={triggerHaptic}
                     executeCommand={executeCommand}
-                    setWhoLines={setWhoLines}
-                    setWhereLines={setWhereLines}
                 />
             </div>
         </div>

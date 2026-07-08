@@ -3,7 +3,7 @@
  * @description Displays room character and object keyword chips under the mapper room card.
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useGame, useVitals } from '../../context/GameContext';
 import { useUIStore } from '../../stores/useUIStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -15,6 +15,10 @@ import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
 import { extractMumeKeyword } from '../../utils/gameUtils';
 import { useObjectDragCommands } from '../../hooks/useObjectDragCommands';
 import { targetTextMatchesEntity } from '../../utils/selectionUtils';
+import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
+import { useCharacterCardStore } from '../../stores/useCharacterCardStore';
+import { Box, Swords, Users } from 'lucide-react';
+import { getEntityTypeIcon } from '../Messages/TokenRenderer';
 import './RoomChipRows.css';
 
 type CharacterKind = 'enemy' | 'npc' | 'ally' | 'neutral';
@@ -30,12 +34,7 @@ interface RoomChip {
 
 type OccupantSource = GmcpOccupant | string;
 
-const CHARACTER_ORDER: Record<CharacterKind, number> = {
-    enemy: 0,
-    npc: 1,
-    ally: 2,
-    neutral: 3
-};
+const CHARACTER_ORDER: Record<CharacterKind, number> = { enemy: 0, npc: 1, ally: 2, neutral: 3 };
 
 const getName = (source: OccupantSource): string => (
     typeof source === 'string'
@@ -104,23 +103,27 @@ const withDuplicateOrdinals = (chips: RoomChip[]): RoomChip[] => {
         seen[chip.label] = labelIndex;
         seenIds[chip.entityId] = idIndex;
 
-        return {
-            ...chip,
-            entityId: idTotals[chip.entityId] > 1 ? `${chip.entityId}#${idIndex}` : chip.entityId,
-            label: totals[chip.label] > 1 ? `${labelIndex}.${chip.label}` : chip.label
-        };
+        return { ...chip, entityId: idTotals[chip.entityId] > 1 ? `${chip.entityId}#${idIndex}` : chip.entityId, label: totals[chip.label] > 1 ? `${labelIndex}.${chip.label}` : chip.label };
     });
 };
 
-export const RoomChipRows: React.FC = () => {
+const CONSIDER_DELAY_MS = 850;
+
+interface RoomChipRowsProps {
+    variant?: 'summary' | 'columns' | 'occupants-row' | 'objects-row' | 'terrain-pins';
+}
+
+export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' }) => {
+    const [activeRowId, setActiveRowId] = useState<string | null>(null);
     const {
         characterName, roomChars, roomPlayers, roomNpcs, roomItems,
-        triggerHaptic, inCombat, executeCommand
+        triggerHaptic, inCombat, executeCommand, setPopoverState
     } = useGame();
     const { target, setTarget, opponentId, opponentName } = useVitals();
     const selectedTarget = useUIStore(s => s.selectedTarget);
     const toggleObjectSelection = useUIStore(s => s.toggleObjectSelection);
     const objectDragState = useUIStore(s => s.objectDragState);
+    const openCharacterCard = useCharacterCardStore(s => s.open);
     const startObjectDrag = useObjectDragCommands({ executeCommand, triggerHaptic });
     const colorVars: ChipColorVars = {
         '--enemy-color': useSettingsStore(s => s.enemyColor),
@@ -183,81 +186,269 @@ export const RoomChipRows: React.FC = () => {
         return withDuplicateOrdinals(chips);
     }, [roomItems]);
 
+    const npcChips = useMemo(() => characterChips.filter(c => c.kind === 'npc' || c.kind === 'neutral'), [characterChips]);
+    const allyChips = useMemo(() => characterChips.filter(c => c.kind === 'ally'), [characterChips]);
+    const enemyChips = useMemo(() => characterChips.filter(c => c.kind === 'enemy'), [characterChips]);
+
     const rows = [
-        { id: 'characters', label: 'ppl/npcs', chips: characterChips },
-        { id: 'items', label: 'items', chips: itemChips }
+        {
+            id: 'npcs',
+            label: 'NPCs',
+            icon: <Swords size={11} strokeWidth={2.5} />,
+            sectionClass: 'npcs',
+            chips: npcChips
+        },
+        {
+            id: 'allies',
+            label: 'Allies',
+            icon: <Users size={11} strokeWidth={2.5} />,
+            sectionClass: 'allies',
+            chips: allyChips
+        },
+        {
+            id: 'enemies',
+            label: 'Enemies',
+            icon: <Swords size={11} strokeWidth={2.5} style={{ color: '#ef4444' }} />,
+            sectionClass: 'enemies',
+            chips: enemyChips
+        },
+        {
+            id: 'items',
+            label: 'Objects',
+            icon: <Box size={11} strokeWidth={2.5} />,
+            sectionClass: 'objects',
+            chips: itemChips
+        }
     ].filter(row => row.chips.length > 0);
 
-    if (rows.length === 0) return null;
+    // terrain-pins always renders (even with an empty room) so the player's own
+    // pixel-art pin stays visible on the ground line; skip the early-out for it.
+    if (rows.length === 0 && variant !== 'terrain-pins') return null;
+    const activeRow = rows.find(row => row.id === activeRowId) || null;
+
+    const getChipAccentColor = (kind: ChipKind): string => ({
+        enemy: colorVars['--enemy-color'],
+        npc: colorVars['--npc-color'],
+        object: colorVars['--object-color'],
+        neutral: colorVars['--neutral-color'],
+        ally: colorVars['--player-color']
+    }[kind]);
 
     const selectChip = (event: React.MouseEvent<HTMLButtonElement>, chip: RoomChip) => {
         event.stopPropagation();
         audioManager.playEffect('target', { skipJitter: true });
         triggerHaptic?.(15);
+
+        const rect = event.currentTarget.getBoundingClientRect();
+        const axes = getInlineCategoryAxes(chip.category);
+        const shouldLook = axes.isTargetable && (axes.isObject || axes.isCharacter), shouldConsider = shouldLook && axes.isCharacter;
+
         const currentTarget = useUIStore.getState().selectedTarget;
         const isSame = currentTarget?.id === chip.entityId;
-        toggleObjectSelection({
-            id: chip.entityId,
+        toggleObjectSelection({ id: chip.entityId, setId: chip.category, category: chip.category, context: chip.context });
+        setTarget(isSame ? null : chip.context);
+
+        setPopoverState({
+            x: rect.left + rect.width / 2,
+            y: rect.bottom,
+            sourceHeight: rect.height,
+            sourceRect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
+            type: 'menu',
             setId: chip.category,
             category: chip.category,
             context: chip.context,
+            entityId: chip.entityId,
+            accentColor: getChipAccentColor(chip.kind),
+            menuDisplay: 'list',
+            preferSide: 'top',
+            isCapturingExamine: shouldLook,
+            isCapturingConsider: shouldConsider,
+            capturedExamineLines: undefined,
+            capturedConsiderLines: undefined
         });
-        setTarget(isSame ? null : chip.context);
+
+        if (shouldLook) executeCommand(`look ${chip.context}`, true, true, false, false, { shouldFocus: false, fromUi: true });
+        if (shouldConsider) {
+            setTimeout(() => {
+                executeCommand(`con ${chip.context}`, true, true, false, false, { shouldFocus: false, fromUi: true });
+            }, CONSIDER_DELAY_MS);
+        }
     };
 
-    return (
-        <div className="room-chip-rows" style={colorVars} aria-label="Room entities and objects">
-            {rows.map(row => (
-                <div
-                    className={`room-chip-row${objectDragState?.target?.type === 'row' && objectDragState.target.row === 'room' && row.id === 'items' ? ' is-drop-target' : ''}`}
-                    data-object-drop-row={row.id === 'items' ? 'room' : undefined}
-                    key={row.id}
-                >
-                    <span className="room-chip-row-label">{row.label}</span>
-                    <div className="room-chip-list">
-                        {row.chips.map(chip => {
-                            const isTarget = targetTextMatchesEntity(target, chip.context, chip.label);
-                            const isSelected = selectedTarget?.id === chip.entityId || isTarget;
-                            const isOpponent = !!inCombat && (() => {
-                                const rawIdMatch = chip.entityId.match(/^roomchars:([^#]+)/);
-                                const occupantIdStr = rawIdMatch ? rawIdMatch[1] : '';
-                                if (opponentId && occupantIdStr && String(opponentId) === String(occupantIdStr)) {
-                                    return true;
-                                }
-                                if (opponentName) {
-                                    const normOpponent = opponentName.replace(/^[*-]+|[*-]+$/g, '').replace(/^(a|an|the)\s+/i, '').trim().toLowerCase();
-                                    const cleanLabel = chip.label.replace(/^\d+\./, '');
-                                    const normChipLabel = cleanLabel.replace(/^[*-]+|[*-]+$/g, '').replace(/^(a|an|the)\s+/i, '').trim().toLowerCase();
-                                    if (normOpponent && normChipLabel && (normOpponent === normChipLabel || normOpponent.includes(normChipLabel) || normChipLabel.includes(normOpponent))) {
-                                        return true;
-                                    }
-                                }
-                                return false;
-                            })();
+    const renderChip = (chip: RoomChip, onSelect?: () => void) => {
+        const isTarget = targetTextMatchesEntity(target, chip.context, chip.label);
+        const isSelected = selectedTarget?.id === chip.entityId || isTarget;
+        const isOpponent = !!inCombat && (() => {
+            const rawIdMatch = chip.entityId.match(/^roomchars:([^#]+)/);
+            const occupantIdStr = rawIdMatch ? rawIdMatch[1] : '';
+            if (opponentId && occupantIdStr && String(opponentId) === String(occupantIdStr)) return true;
+            if (!opponentName) return false;
+            const normOpponent = opponentName.replace(/^[*-]+|[*-]+$/g, '').replace(/^(a|an|the)\s+/i, '').trim().toLowerCase();
+            const cleanLabel = chip.label.replace(/^\d+\./, '');
+            const normChipLabel = cleanLabel.replace(/^[*-]+|[*-]+$/g, '').replace(/^(a|an|the)\s+/i, '').trim().toLowerCase();
+            return !!(normOpponent && normChipLabel && (normOpponent === normChipLabel || normOpponent.includes(normChipLabel) || normChipLabel.includes(normOpponent)));
+        })();
 
-                            return (
-                                <button
-                                    key={chip.entityId}
-                                    type="button"
-                                    className={`room-chip room-chip-${chip.kind}${isSelected ? ' is-active is-target' : ''}${isOpponent ? ' is-opponent' : ''}${objectDragState?.target?.type === 'entity' && objectDragState.target.entityId === chip.entityId ? ' is-drop-target' : ''}`}
-                                    onClick={event => selectChip(event, chip)}
-                                    onPointerDown={chip.kind === 'object' ? event => startObjectDrag(event, {
-                                        row: 'room',
-                                        noun: chip.label,
-                                        label: chip.label
-                                    }) : undefined}
-                                    data-object-drop-entity={chip.kind !== 'object' ? chip.entityId : undefined}
-                                    data-object-drop-noun={chip.kind !== 'object' ? chip.label : undefined}
-                                    data-object-drop-label={chip.kind !== 'object' ? chip.label : undefined}
-                                    title={chip.context}
-                                >
-                                    {chip.label}
-                                </button>
-                            );
-                        })}
+        const typeIcon = getEntityTypeIcon(chip.category);
+
+        return (
+            <button
+                key={chip.entityId}
+                type="button"
+                className={`room-chip room-chip-${chip.kind}${isSelected ? ' is-active is-target' : ''}${isOpponent ? ' is-opponent' : ''}${objectDragState?.target?.type === 'entity' && objectDragState.target.entityId === chip.entityId ? ' is-drop-target' : ''}`}
+                onClick={event => {
+                    selectChip(event, chip);
+                    onSelect?.();
+                }}
+                onPointerDown={chip.kind === 'object' ? event => startObjectDrag(event, { row: 'room', noun: chip.label, label: chip.label }) : undefined}
+                data-object-drop-entity={chip.kind !== 'object' ? chip.entityId : undefined}
+                data-object-drop-noun={chip.kind !== 'object' ? chip.label : undefined}
+                data-object-drop-label={chip.kind !== 'object' ? chip.label : undefined}
+                title={chip.context}
+            >
+                {chip.label}
+                {typeIcon && (
+                    <span
+                        className={`inline-entity-type-icon inline-entity-type-${typeIcon.kind}`}
+                        aria-hidden="true"
+                        title={typeIcon.label}
+                        style={{
+                            marginLeft: '5px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            verticalAlign: 'middle',
+                            opacity: 0.85
+                        }}
+                    >
+                        <typeIcon.icon size={12} strokeWidth={2.6} />
+                    </span>
+                )}
+            </button>
+        );
+    };
+
+    if (variant === 'terrain-pins') {
+        const pinChips = [...characterChips, ...itemChips];
+        const openPlayerCard = (event: React.MouseEvent<HTMLButtonElement>) => {
+            event.stopPropagation();
+            triggerHaptic?.(15);
+            openCharacterCard();
+        };
+
+        return (
+            <div className="room-chip-terrain-pins" style={colorVars} aria-label="Room entities and objects">
+                <div className="terrain-pin terrain-pin-player">
+                    <button
+                        type="button"
+                        className="room-chip room-chip-player"
+                        title="Open character panel"
+                        onClick={openPlayerCard}
+                    >
+                        {characterName || 'You'}
+                    </button>
+                    <span className="terrain-pin-line" />
+                    <span className="terrain-pin-sprite terrain-pin-sprite-player" aria-hidden="true">
+                        <span className="terrain-pin-sprite-head" />
+                        <span className="terrain-pin-sprite-body" />
+                    </span>
+                </div>
+                {pinChips.map(chip => (
+                    <div className="terrain-pin" key={chip.entityId}>
+                        {renderChip(chip)}
+                        <span className="terrain-pin-line" />
+                        <span className={`terrain-pin-sprite terrain-pin-sprite-${chip.kind}`} aria-hidden="true">
+                            {chip.kind === 'object' ? (
+                                <span className="terrain-pin-sprite-block" />
+                            ) : (
+                                <>
+                                    <span className="terrain-pin-sprite-head" />
+                                    <span className="terrain-pin-sprite-body" />
+                                </>
+                            )}
+                        </span>
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
+    if (variant === 'occupants-row') {
+        if (characterChips.length === 0) return null;
+        return (
+            <div className="room-chip-occupants-row" style={colorVars} aria-label="Room occupants">
+                {characterChips.map(chip => renderChip(chip))}
+            </div>
+        );
+    }
+
+    if (variant === 'objects-row') {
+        if (itemChips.length === 0) return null;
+        return (
+            <div
+                className={`room-chip-objects-row${objectDragState?.target?.type === 'row' && objectDragState.target.row === 'room' ? ' is-drop-target' : ''}`}
+                style={colorVars}
+                aria-label="Room objects"
+                data-object-drop-row="room"
+            >
+                {itemChips.map(chip => renderChip(chip))}
+            </div>
+        );
+    }
+
+    if (variant === 'columns') {
+        return (
+            <div className="room-chip-columns" style={colorVars} aria-label="Room entities and objects">
+                {rows.map(row => (
+                    <section
+                        key={row.id}
+                        className={`room-chip-column room-chip-section-${row.sectionClass}${objectDragState?.target?.type === 'row' && objectDragState.target.row === 'room' && row.id === 'items' ? ' is-drop-target' : ''}`}
+                        data-object-drop-row={row.id === 'items' ? 'room' : undefined}
+                    >
+                        <div className="room-chip-column-title">
+                            {row.icon}
+                            <span>{row.label}</span>
+                            <span className="room-chip-count-badge">{row.chips.length}</span>
+                        </div>
+                        <div className="room-chip-column-list">
+                            {row.chips.map(chip => renderChip(chip))}
+                        </div>
+                    </section>
+                ))}
+            </div>
+        );
+    }
+
+    return (
+        <div className="room-chip-summary" style={colorVars} aria-label="Room entities and objects">
+            {rows.map(row => (
+                <button
+                    key={row.id}
+                    type="button"
+                    className={`room-chip-summary-button room-chip-section-${row.sectionClass}${activeRowId === row.id ? ' is-open' : ''}${objectDragState?.target?.type === 'row' && objectDragState.target.row === 'room' && row.id === 'items' ? ' is-drop-target' : ''}`}
+                    data-object-drop-row={row.id === 'items' ? 'room' : undefined}
+                    title={`${row.label}: ${row.chips.map(chip => chip.label).join(', ')}`}
+                    aria-label={`${row.label}: ${row.chips.length}`}
+                    onClick={event => {
+                        event.stopPropagation();
+                        triggerHaptic?.(10);
+                        setActiveRowId(prev => prev === row.id ? null : row.id);
+                    }}
+                >
+                    {row.icon}
+                    <span>{row.chips.length}</span>
+                </button>
+            ))}
+            {activeRow && (
+                <div className="room-chip-popover" onClick={event => event.stopPropagation()}>
+                    <div className={`room-chip-popover-title room-chip-section-${activeRow.sectionClass}`}>
+                        {activeRow.icon}
+                        <span>{activeRow.label}</span>
+                    </div>
+                    <div className="room-chip-popover-list">
+                        {activeRow.chips.map(chip => renderChip(chip, () => setActiveRowId(null)))}
                     </div>
                 </div>
-            ))}
+            )}
         </div>
     );
 };

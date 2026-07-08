@@ -165,12 +165,17 @@ export interface GmcpCharInfo {
     isSnooped?: boolean;
 }
 
-export interface GmcpMumeEdit {
+export interface GmcpMumeDocument {
     title: string;
-    text: string;
+    text?: string;
+    content?: string;
+    body?: string;
     key?: string;
     id?: number | string;
 }
+
+export type GmcpMumeEdit = GmcpMumeDocument;
+export type GmcpMumeView = GmcpMumeDocument;
 
 export interface GroupMember {
     id: string | number;

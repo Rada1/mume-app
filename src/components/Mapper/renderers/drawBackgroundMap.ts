@@ -335,11 +335,9 @@ export function drawBackgroundMap(
         ctx.save();
         if (!isTracingMode) {
             // Apply a desaturating and dimming filter so it sits quietly in play mode
-            const blurSlope = visuals.blurMin + (zoom - 0.08) * visuals.blurScale;
-            const backgroundBlur = Math.min(visuals.blurMax, Math.max(visuals.blurMin, blurSlope));
             ctx.filter = isDarkMode
-                ? `hue-rotate(${visuals.hue}deg) saturate(${visuals.saturation * 100}%) grayscale(${visuals.grayscale * 100}%) brightness(${visuals.brightness * 100}%) contrast(${visuals.contrast * 100}%) blur(${backgroundBlur}px)`
-                : `grayscale(100%) brightness(105%) contrast(95%) blur(${backgroundBlur}px)`;
+                ? `hue-rotate(${visuals.hue}deg) saturate(${visuals.saturation * 100}%) grayscale(${visuals.grayscale * 100}%) brightness(${visuals.brightness * 100}%) contrast(${visuals.contrast * 100}%)`
+                : `grayscale(100%) brightness(105%) contrast(95%)`;
             ctx.globalAlpha = bgOpacity * visuals.opacity; // full calibrated opacity in play mode
         } else {
             ctx.globalAlpha = bgOpacity;

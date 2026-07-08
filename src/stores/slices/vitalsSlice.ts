@@ -24,6 +24,7 @@ export interface CharacterInfo {
     gold: number;
     description?: string;
     whois?: string;
+    title?: string;
     affectedBy?: string[];
 }
 

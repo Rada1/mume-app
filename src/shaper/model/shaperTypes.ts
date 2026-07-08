@@ -168,6 +168,7 @@ export interface ShaperExitDraft {
     keyMode?: ShaperDoorKeyMode;
     keyVnum?: string;
     doorFlags?: ShaperDoorFlag[];
+    doorPickPercent?: number;
     doorWeight?: number;
 }
 

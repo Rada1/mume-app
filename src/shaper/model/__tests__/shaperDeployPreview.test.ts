@@ -104,7 +104,8 @@ describe('buildSelectedRoomDeployPreview', () => {
                 toRoomId: targetId,
                 isTwoWay: false,
                 doorName: 'gate',
-                doorFlags: ['door', 'closed'] as ShaperDoorFlag[]
+                doorFlags: ['door', 'closed'] as ShaperDoorFlag[],
+                doorPickPercent: 50
             },
             [`${room.id}:s`]: {
                 id: `${room.id}:s`,
@@ -118,9 +119,23 @@ describe('buildSelectedRoomDeployPreview', () => {
             }
         };
 
-        const preview = buildSelectedRoomDeployPreview(room, doc.rooms, exits, {});
+        const commandNodes = {
+            'com-1': {
+                id: 'com-1',
+                roomId: room.id,
+                parentId: null,
+                order: 0,
+                type: 'mobile' as const,
+                limit: { world: null, zone: null, room: null, chancePercent: 100, raw: '0' },
+                fields: { vnum: '2', name: 'sentinel' },
+                notes: ''
+            }
+        };
+        const preview = buildSelectedRoomDeployPreview(room, doc.rooms, exits, commandNodes);
 
         expect(preview.commands).toContain('/at 300:00 /room dadd e gate');
+        expect(preview.commands).toContain('/at 300:00 /com add door e lock 50 50');
+        expect(preview.commands.indexOf('/at 300:00 /com add door e lock 50 50')).toBeGreaterThan(preview.commands.indexOf('/at 300:00 /com kill all'));
         expect(preview.commands).toContain('/at 300:00 /room cliset s 12 3');
         expect(preview.commands.at(-1)).toBe('/at 300:00 /room save');
     });

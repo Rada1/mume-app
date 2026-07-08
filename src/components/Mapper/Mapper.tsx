@@ -67,7 +67,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const {
         triggerHaptic, executeCommand, btn, joystick, playClickSound,
         setIsTrackpadModifierActive, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode,
-        selectedObjectIds, lighting, inCombat, viewport, gameState
+        selectedObjectIds, lighting, inCombat, viewport, gameState, roomZone
     } = useGame();
     const { isLandscape } = viewport;
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
@@ -148,6 +148,17 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     } = context;
     const [selectedRegionLabelId, setSelectedRegionLabelId] = useState<string | null>(null);
 
+    const currentRoomKey = currentRoomId || '';
+    const roomIdVnum = currentRoomKey.replace(/^m_/, '');
+    const mapRoom = rooms[currentRoomKey] || rooms[`m_${roomIdVnum}`] || rooms[roomIdVnum];
+    const currentVnum = mapRoom?.gmcpId ? String(mapRoom.gmcpId) : roomIdVnum;
+    const preloadedRoom = currentVnum ? preloadedCoordsRef.current?.[currentVnum] : undefined;
+    const rawZone = mapRoom?.zone || preloadedRoom?.[9] || roomZone || '';
+    const displayZone = rawZone
+        .replace(/[_-]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
     const {
         isTracingMode, calibration, setCalibration, vectors, activePath, hoverCoord,
         anchorRegisterState, setAnchorRegisterState, anchors, onTraceClick, onTraceHover,
@@ -188,8 +199,10 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
     const controllerOptions = useMemo(() => ({
         onRecenter: handleCenterOnPlayer,
-        triggerRender
-    }), [handleCenterOnPlayer, triggerRender]);
+        triggerRender,
+        cameraRef,
+        canvasRef
+    }), [handleCenterOnPlayer, triggerRender, cameraRef, canvasRef]);
 
     useMapperController(characterName ?? null, ref, controllerOptions);
 
@@ -539,6 +552,36 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                     opacity: 0.8
                 }}>
                     Z: {viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? (rooms[currentRoomId].z || 0).toFixed(1) : '0.0')}
+                </div>
+            )}
+
+            {!effectiveIsMinimized && !isMobile && (
+                <div className="map-area-indicator" style={{
+                    position: 'absolute',
+                    top: '20px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    color: '#fbbf24',
+                    background: 'rgba(0, 0, 0, 0.55)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    padding: '9px 18px',
+                    zIndex: 9999,
+                    fontSize: '16px',
+                    pointerEvents: 'none',
+                    borderRadius: '7px',
+                    border: '2px solid rgba(255, 255, 255, 0.12)',
+                    fontFamily: 'var(--font-mono, monospace)',
+                    fontWeight: 800,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    boxShadow: '0 6px 18px rgba(0,0,0,0.55)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                }}>
+                    <span style={{ opacity: 0.6 }}>area:</span>
+                    <span style={{ color: '#fff' }}>{displayZone || 'Unknown'}</span>
                 </div>
             )}
 

@@ -14,23 +14,7 @@ import { buildLocalSpatialIndex, didLocalLayoutChange, didCacheRelevantChange } 
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { perfMonitor } from '../../utils/perfMonitor';
 
-const LIGHTING_COLORS: Record<string, [number, number, number, number]> = {
-    sun:        [255, 248, 200, 0.09],
-    moon:       [80,  130, 255, 0.08],
-    artificial: [139, 0, 0, 0.15],
-    dark:       [0,   0,   0,   0],
-    none:       [0,   0,   0,   0],
-    normal:     [0,   0,   0,   0],
-};
-const VIGNETTE_EDGE_ALPHA: Record<string, number> = {
-    sun: 0.32,
-    moon: 0.38,
-    artificial: 0.38,
-    dark: 0.35,
-    none: 0.38,
-    normal: 0.38,
-};
-const LIGHTING_TRANSITION_MS = 1500;
+
 // Flag pop-in animation total (drawAnimatingFlags: delay 100 + animDur 450). The static
 // feature cache skips flags while they're still animating (flagScale = 0), so the
 // exploration bake must wait until the animation finishes — otherwise it bakes a flagless
@@ -218,19 +202,10 @@ export const useMapperRenderer = ({
     showOrganicTerrain = true
 }: RendererProps) => {
 
-    // Lighting transition state for smooth cross-fades
-    const lightingTransRef = useRef<{
-        from: [number, number, number, number];
-        to:   [number, number, number, number];
-        startTime: number;
-        lastLighting: string;
-    }>({ from: [0,0,0,0], to: [0,0,0,0], startTime: 0, lastLighting: lighting });
-
     const zoneFocusGrayscale = useSettingsStore(s => s.zoneFocusGrayscale);
     const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
 
     const layerCacheRef = useRef<MapperLayerCache | null>(null);
-    const vignetteCacheRef = useRef<{ canvas: HTMLCanvasElement, w: number, h: number, edgeAlpha: number } | null>(null);
     const localSpatialIndexRef = useRef<Record<number, Record<string, string[]>>>({});
     const lastRoomsRef = useRef<Record<string, any>>({});
     const processedIconsRef = useRef<Record<string, HTMLCanvasElement>>({});
@@ -853,54 +828,7 @@ export const useMapperRenderer = ({
         ctx.restore();
         drawMarquee(rCtx, marquee);
 
-        // Lighting effects overlay — smooth cross-fade between states
-        const lt = lightingTransRef.current;
-        const litColor = LIGHTING_COLORS[lighting] ?? LIGHTING_COLORS.none;
-        if (lt.lastLighting !== lighting) {
-            lt.from = [...lt.to] as [number, number, number, number];
-            lt.to = [...litColor] as [number, number, number, number];
-            lt.startTime = performance.now();
-            lt.lastLighting = lighting;
-        }
-        const elapsed = performance.now() - lt.startTime;
-        const t = Math.min(elapsed / LIGHTING_TRANSITION_MS, 1);
-        const ease = t < 1 ? 1 - Math.pow(1 - t, 3) : 1; // ease-out cubic
-        const r = lt.from[0] + (lt.to[0] - lt.from[0]) * ease;
-        const g = lt.from[1] + (lt.to[1] - lt.from[1]) * ease;
-        const b = lt.from[2] + (lt.to[2] - lt.from[2]) * ease;
-        const a = lt.from[3] + (lt.to[3] - lt.from[3]) * ease;
-        if (a > 0.001) {
-            ctx.save();
-            ctx.fillStyle = `rgba(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}, ${a.toFixed(4)})`;
-            ctx.fillRect(0, 0, baseW, baseH);
-            ctx.restore();
-        }
-        if (t < 1) triggerRender?.();
 
-        // Vignette overlay (screen space) - on top. Cached: only rebuild when size or lighting changes.
-        const vigEdgeAlpha = isImmersionMode ? (VIGNETTE_EDGE_ALPHA[lighting] ?? VIGNETTE_EDGE_ALPHA.none) : 0;
-        if (vigEdgeAlpha > 0.001) {
-            let vc = vignetteCacheRef.current;
-            if (!vc || vc.w !== baseW || vc.h !== baseH || vc.edgeAlpha !== vigEdgeAlpha) {
-                const off = document.createElement('canvas');
-                off.width = baseW;
-                off.height = baseH;
-                const offCtx = off.getContext('2d');
-                if (offCtx) {
-                    const grad = offCtx.createRadialGradient(
-                        baseW / 2, baseH / 2, Math.min(baseW, baseH) * 0.25,
-                        baseW / 2, baseH / 2, Math.max(baseW, baseH) * 0.75
-                    );
-                    grad.addColorStop(0, 'rgba(0,0,0,0)');
-                    grad.addColorStop(1, `rgba(0,0,0,${vigEdgeAlpha})`);
-                    offCtx.fillStyle = grad;
-                    offCtx.fillRect(0, 0, baseW, baseH);
-                }
-                vc = { canvas: off, w: baseW, h: baseH, edgeAlpha: vigEdgeAlpha };
-                vignetteCacheRef.current = vc;
-            }
-            ctx.drawImage(vc.canvas, 0, 0);
-        }
 
     }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, entitiesRef, serverIdIndexRef, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, walkTargetId, walkPath, activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, selectedRegionLabelId]);
 

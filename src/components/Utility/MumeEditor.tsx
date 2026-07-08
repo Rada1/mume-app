@@ -11,6 +11,7 @@ import './MumeEditor.css';
 export const MumeEditor: React.FC = () => {
     const { mumeEditState, setMumeEditState, handleSaveMumeEdit } = useGame();
     const [text, setText] = useState('');
+    const isViewMode = mumeEditState.mode === 'view';
     
     // Position & sizing state
     const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -70,13 +71,22 @@ export const MumeEditor: React.FC = () => {
     }, [isDragging, isResizing]);
 
     if (!mumeEditState.isOpen) return null;
-    if (mumeEditState.context?.kind === 'archive-reply' || mumeEditState.context?.kind === 'archive-compose') return null;
+    if (
+        mumeEditState.context?.kind === 'archive-reply' ||
+        mumeEditState.context?.kind === 'archive-compose' ||
+        mumeEditState.context?.kind === 'self-description' ||
+        mumeEditState.context?.kind === 'self-whois'
+    ) return null;
 
     const handleCancel = () => {
         setMumeEditState(prev => ({ ...prev, isOpen: false, context: null }));
     };
 
     const handleSave = () => {
+        if (isViewMode) {
+            handleCancel();
+            return;
+        }
         handleSaveMumeEdit(text);
     };
 
@@ -130,16 +140,19 @@ export const MumeEditor: React.FC = () => {
                         value={text}
                         onChange={e => setText(e.target.value)}
                         placeholder="Enter text..."
+                        readOnly={isViewMode}
                         autoFocus
                     />
                 </div>
                 <div className="mume-editor-footer">
                     <button className="mume-editor-btn cancel" onClick={handleCancel}>
-                        Cancel
+                        {isViewMode ? 'Close' : 'Cancel'}
                     </button>
-                    <button className="mume-editor-btn save" onClick={handleSave}>
-                        Save
-                    </button>
+                    {!isViewMode && (
+                        <button className="mume-editor-btn save" onClick={handleSave}>
+                            Save
+                        </button>
+                    )}
                 </div>
                 <div 
                     className="mume-editor-resize-handle" 

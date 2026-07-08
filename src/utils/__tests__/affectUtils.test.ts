@@ -4,7 +4,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { getAffectChipTone, parseAffectedByLines } from '../affectUtils';
+import { getAffectChipTone, parseAffectedByLines, parseStoredSpell, capitalizeWords } from '../affectUtils';
 
 describe('parseAffectedByLines', () => {
     it('extracts affect names from info %f output', () => {
@@ -47,5 +47,24 @@ describe('getAffectChipTone', () => {
         expect(getAffectChipTone('arachnia')).toBe('poison');
         expect(getAffectChipTone('drake-slumber')).toBe('poison');
         expect(getAffectChipTone('poison')).toBe('poison');
+    });
+});
+
+describe('parseStoredSpell', () => {
+    it('correctly parses stored spell strings', () => {
+        expect(parseStoredSpell('stored spell earthquake')).toBe('earthquake');
+        expect(parseStoredSpell('stored earthquake')).toBe('earthquake');
+        expect(parseStoredSpell('STORED SPELL ARMOUR')).toBe('ARMOUR');
+        expect(parseStoredSpell('stored spell detect magic')).toBe('detect magic');
+        expect(parseStoredSpell('armor')).toBeNull();
+        expect(parseStoredSpell('bless')).toBeNull();
+    });
+});
+
+describe('capitalizeWords', () => {
+    it('capitalizes the first letter of each word', () => {
+        expect(capitalizeWords('earthquake')).toBe('Earthquake');
+        expect(capitalizeWords('detect magic')).toBe('Detect Magic');
+        expect(capitalizeWords('armor')).toBe('Armor');
     });
 });

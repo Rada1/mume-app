@@ -14,6 +14,7 @@ import { audioManager } from '../../services/audio/AudioManager';
 import { useObjectDragCommands } from '../../hooks/useObjectDragCommands';
 import { targetTextMatchesEntity } from '../../utils/selectionUtils';
 import { getAffectChipTone } from '../../utils/affectUtils';
+import { classifyItemTier } from '../../utils/itemTier';
 import './PromptInventoryChips.css';
 
 
@@ -21,6 +22,7 @@ type GearChipKind = 'worn' | 'inventory';
 
 interface PromptInventoryChipsProps {
     affects?: string[];
+    variant?: 'prompt' | 'drawer';
 }
 
 interface GearChip {
@@ -185,7 +187,22 @@ const isChipTargeted = (chip: GearChip, selectedTargetId: string | undefined, ta
     selectedTargetId === chip.menuEntityId || targetTextMatchesEntity(target, chip.context, chip.label)
 );
 
-export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affects = [] }) => {
+const getItemDisplayProps = (chipText: string) => {
+    const itemTier = classifyItemTier(chipText);
+    const tierClass = itemTier.tier ? ` item-tier-${itemTier.tier}` : '';
+    const stateClass = itemTier.state ? ` item-state-${itemTier.state}` : '';
+    
+    const conditionBadge = itemTier.stateLabel ? (
+        <span className="prompt-item-condition">({itemTier.stateLabel})</span>
+    ) : null;
+
+    return {
+        extraClasses: `${tierClass}${stateClass}`,
+        conditionBadge
+    };
+};
+
+export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affects = [], variant = 'prompt' }) => {
     const {
         triggerHaptic,
         expandedContainers,
@@ -246,15 +263,17 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                 triggerHaptic?.(10);
             } else {
                 setPopoverState({
-                    x: rect.right,
-                    y: rect.top + rect.height / 2,
+                    x: rect.left + rect.width / 2,
+                    y: rect.bottom,
+                    sourceHeight: rect.height,
+                    sourceRect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
                     setId: chip.category,
                     category: chip.category,
                     context: chip.context,
                     entityId: chip.menuEntityId,
                     accentColor: objectColor,
                     menuDisplay: 'list',
-                    preferSide: 'right',
+                    preferSide: 'top',
                 });
                 audioManager.playEffect('actionmenu');
                 triggerHaptic?.(20);
@@ -315,26 +334,178 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                     {withDuplicateOrdinals(contents
                         .map(line => makeChip(line, 'inventory', 'cat-container-item'))
                         .filter((subChip): subChip is GearChip => !!subChip)
-                    ).map(subChip => (
-                        <button
-                            key={`${chip.line.id}:${subChip.menuEntityId}:${subChip.label}`}
-                            type="button"
-                            className={`prompt-inventory-chip prompt-container-content-chip${isChipTargeted(subChip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
-                            onClick={event => selectChip(event, subChip)}
-                            onPointerDown={event => startObjectDrag(event, {
-                                row: 'inventory',
-                                noun: getChipCommandNoun(subChip),
-                                label: subChip.label
-                            })}
-                            title={subChip.context}
-                        >
-                            {subChip.label}
-                        </button>
-                    ))}
+                    ).map(subChip => {
+                        const { extraClasses, conditionBadge } = getItemDisplayProps(subChip.line.text);
+                        return (
+                            <button
+                                key={`${chip.line.id}:${subChip.menuEntityId}:${subChip.label}`}
+                                type="button"
+                                className={`prompt-inventory-chip prompt-container-content-chip${extraClasses}${isChipTargeted(subChip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
+                                onClick={event => selectChip(event, subChip)}
+                                onPointerDown={event => startObjectDrag(event, {
+                                    row: 'inventory',
+                                    noun: getChipCommandNoun(subChip),
+                                    label: subChip.label
+                                })}
+                                title={subChip.context}
+                            >
+                                {subChip.label}
+                                {conditionBadge}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
         );
     };
+
+    if (variant === 'drawer') {
+        return (
+            <div className="prompt-inventory-chip-rows character-card-gear" style={chipVars} aria-label="Worn and inventory objects">
+                {/* Worn Section */}
+                {wornChips.length > 0 && (
+                    <div className="character-card-gear-section">
+                        <div className="prompt-gear-card-divider">worn</div>
+                        <div className="prompt-slot-grid" data-object-drop-row="worn">
+                            {wornChips.map(chip => {
+                                const isContainer = isItemContainer(chip.line.text);
+                                const isExpanded = expandedContainers.has(chip.line.id);
+                                const isLoading = isExpanded && !containerContents[chip.line.id];
+                                const slotLabel = getSlotLabel(chip.line.prefix);
+                                const { extraClasses, conditionBadge } = getItemDisplayProps(chip.line.text);
+
+                                return (
+                                    <React.Fragment key={`${chip.menuEntityId}:${chip.label}`}>
+                                        <div
+                                            className={`prompt-slot-row${objectDragState?.target?.type === 'row' && objectDragState.target.row === 'worn' && objectDragState.target.slot === slotLabel ? ' is-drop-target' : ''}`}
+                                            data-object-drop-row="worn"
+                                            data-object-drop-slot={slotLabel || undefined}
+                                        >
+                                            {slotLabel && <span className="prompt-slot-row-label">{slotLabel}</span>}
+                                            {isContainer ? (
+                                                <span
+                                                    className={`prompt-inventory-chip prompt-inventory-chip-shell${extraClasses}${isChipTargeted(chip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
+                                                >
+                                                    <button
+                                                        type="button"
+                                                        className="prompt-inventory-chip-main"
+                                                        onClick={event => selectChip(event, chip)}
+                                                        onPointerDown={event => startObjectDrag(event, {
+                                                            row: 'worn',
+                                                            noun: getChipCommandNoun(chip),
+                                                            label: chip.label
+                                                        })}
+                                                        title={chip.context}
+                                                    >
+                                                        {chip.label}
+                                                        {conditionBadge}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className={`prompt-container-toggle${isExpanded ? ' is-expanded' : ''}${isLoading ? ' is-loading' : ''}`}
+                                                        onClick={event => toggleContainer(event, chip, displayEqLines)}
+                                                        aria-label={`${isExpanded ? 'Hide' : 'Look in'} ${chip.context}`}
+                                                        title={`${isExpanded ? 'Hide' : 'Look in'} ${chip.context}`}
+                                                    >
+                                                        {isLoading ? '...' : <ChevronRight size={10} strokeWidth={2.5} />}
+                                                    </button>
+                                                </span>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    className={`prompt-inventory-chip${extraClasses}${isChipTargeted(chip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
+                                                    onClick={event => selectChip(event, chip)}
+                                                    onPointerDown={event => startObjectDrag(event, {
+                                                        row: 'worn',
+                                                        noun: getChipCommandNoun(chip),
+                                                        label: chip.label
+                                                    })}
+                                                    title={chip.context}
+                                                >
+                                                    {chip.label}
+                                                    {conditionBadge}
+                                                </button>
+                                            )}
+                                        </div>
+                                        {renderContainerContents(chip)}
+                                    </React.Fragment>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                {/* Inventory Section */}
+                {inventoryChips.length > 0 && (
+                    <div className="character-card-gear-section" style={{ marginTop: '8px' }}>
+                        <div className="prompt-gear-card-divider">inventory</div>
+                        <div className="prompt-inventory-chip-list" style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
+                            {inventoryChips.map(chip => {
+                                const isContainer = isItemContainer(chip.line.text);
+                                const isExpanded = expandedContainers.has(chip.line.id);
+                                const isLoading = isExpanded && !containerContents[chip.line.id];
+                                const { extraClasses, conditionBadge } = getItemDisplayProps(chip.line.text);
+
+                                return (
+                                    <React.Fragment key={`${chip.menuEntityId}:${chip.label}`}>
+                                        <div style={{ display: 'flex', width: '100%' }}>
+                                            {isContainer ? (
+                                                <span
+                                                    className={`prompt-inventory-chip prompt-inventory-chip-shell${extraClasses}${isChipTargeted(chip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
+                                                    style={{ flex: 1, display: 'inline-flex', justifyContent: 'space-between', alignItems: 'center' }}
+                                                >
+                                                    <button
+                                                        type="button"
+                                                        className="prompt-inventory-chip-main"
+                                                        onClick={event => selectChip(event, chip)}
+                                                        onPointerDown={event => startObjectDrag(event, {
+                                                            row: 'inventory',
+                                                            noun: getChipCommandNoun(chip),
+                                                            label: chip.label
+                                                        })}
+                                                        title={chip.context}
+                                                    >
+                                                        {chip.label}
+                                                        {conditionBadge}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className={`prompt-container-toggle${isExpanded ? ' is-expanded' : ''}${isLoading ? ' is-loading' : ''}`}
+                                                        onClick={event => toggleContainer(event, chip, displayInventoryLines)}
+                                                        aria-label={`${isExpanded ? 'Hide' : 'Look in'} ${chip.context}`}
+                                                        title={`${isExpanded ? 'Hide' : 'Look in'} ${chip.context}`}
+                                                    >
+                                                        {isLoading ? '...' : <ChevronRight size={10} strokeWidth={2.5} />}
+                                                    </button>
+                                                </span>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    className={`prompt-inventory-chip${extraClasses}${isChipTargeted(chip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
+                                                    onClick={event => selectChip(event, chip)}
+                                                    onPointerDown={event => startObjectDrag(event, {
+                                                        row: 'inventory',
+                                                        noun: getChipCommandNoun(chip),
+                                                        label: chip.label
+                                                    })}
+                                                    style={{ flex: 1 }}
+                                                    title={chip.context}
+                                                >
+                                                    {chip.label}
+                                                    {conditionBadge}
+                                                </button>
+                                            )}
+                                        </div>
+                                        {renderContainerContents(chip)}
+                                    </React.Fragment>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    }
 
     return (
         <div className="prompt-inventory-chip-rows" style={chipVars} aria-label="Worn and inventory objects">
@@ -352,8 +523,8 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                                     const isContainer = isItemContainer(chip.line.text);
                                     const isExpanded = expandedContainers.has(chip.line.id);
                                     const isLoading = isExpanded && !containerContents[chip.line.id];
-
                                     const slotLabel = row.id === 'worn' ? getSlotLabel(chip.line.prefix) : null;
+                                    const { extraClasses, conditionBadge } = getItemDisplayProps(chip.line.text);
 
                                     return (
                                         <span
@@ -365,7 +536,7 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                                             {slotLabel && <span className="prompt-slot-icon">{slotLabel}</span>}
                                             {isContainer ? (
                                                 <span
-                                                    className={`prompt-inventory-chip prompt-inventory-chip-shell${isChipTargeted(chip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
+                                                    className={`prompt-inventory-chip prompt-inventory-chip-shell${extraClasses}${isChipTargeted(chip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
                                                 >
                                                     <button
                                                         type="button"
@@ -379,6 +550,7 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                                                         title={chip.context}
                                                     >
                                                         {chip.label}
+                                                        {conditionBadge}
                                                     </button>
                                                     <button
                                                         type="button"
@@ -393,7 +565,7 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                                             ) : (
                                                 <button
                                                     type="button"
-                                                    className={`prompt-inventory-chip${isChipTargeted(chip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
+                                                    className={`prompt-inventory-chip${extraClasses}${isChipTargeted(chip, selectedTarget?.id, target) ? ' is-active is-target' : ''}`}
                                                     onClick={event => selectChip(event, chip)}
                                                     onPointerDown={event => startObjectDrag(event, {
                                                         row: row.id as 'worn' | 'inventory',
@@ -403,6 +575,7 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                                                     title={chip.context}
                                                 >
                                                     {chip.label}
+                                                    {conditionBadge}
                                                 </button>
                                             )}
                                         </span>

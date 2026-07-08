@@ -2,6 +2,8 @@ import { useCallback, useRef, useEffect, useMemo } from 'react';
 import { MessageType, Message } from '../types';
 import { useMessageStore } from '../stores/useMessageStore';
 import { ansiConvert } from '../utils/ansi';
+import { isEnvironmentEventLine } from '../utils/environmentEventUtils';
+import { hasXmlTag } from '../utils/xmlTagUtils';
 
 // ---------------------------------------------------------------------------
 // Regex constants
@@ -15,6 +17,36 @@ export const ROOM_EXIT_REGEX = /^(North|South|East|West|Up|Down|North|Southwest|
 
 export const MOVE_FAILURE_REGEX = /^(The .+ seems to be closed\.|Alas, you cannot go that way\.|You can't go there\.|You are too exhausted\.|You cannot go that way\.|It's closed\.|You can't see to go that way\.|You need a boat\.|It's too dark\.)/i;
 
+// Classify a room-contents line into a section using the highlighter's entity
+// categories (the same data that colors the inline entities), so the log card
+// can group objects / NPCs / players / exits with dividers.
+export type RoomSection = 'objects' | 'mobs' | 'players' | 'exits';
+const ROOM_OBJECT_CATS = new Set(['cat-room-object', 'cat-inventory-object', 'cat-worn-object', 'cat-object', 'cat-container-item']);
+const ROOM_MOB_CATS = new Set(['cat-npc', 'cat-enemy', 'cat-neutral']);
+const ROOM_PLAYER_CATS = new Set(['cat-ally', 'cat-ally-remote']);
+
+const classifyRoomSection = (m: Message): RoomSection | null => {
+    const t = (m.textRaw || '').replace(/\x1b\[[0-9;]*m/g, '').trim();
+    if (ROOM_EXIT_REGEX.test(t) || /^obvious exits\b/i.test(t) ||
+        /^\((?:up|down|north|south|east|west|northeast|northwest|southeast|southwest)\)/i.test(t)) {
+        return 'exits';
+    }
+    let hasPlayer = false, hasMob = false, hasObject = false;
+    for (const tok of (m.tokens || [])) {
+        if (tok.type !== 'entity') continue;
+        const c = (tok as any).metadata?.category as string | undefined;
+        if (!c) continue;
+        if (c === 'cat-exit') return 'exits';
+        if (ROOM_PLAYER_CATS.has(c)) hasPlayer = true;
+        else if (ROOM_MOB_CATS.has(c)) hasMob = true;
+        else if (ROOM_OBJECT_CATS.has(c)) hasObject = true;
+    }
+    if (hasPlayer) return 'players';
+    if (hasMob) return 'mobs';
+    if (hasObject) return 'objects';
+    return null;
+};
+
 // ---------------------------------------------------------------------------
 let lastVibrateTime = 0;
 const USER_LOG_MESSAGE_LIMIT = 500;
@@ -27,7 +59,9 @@ export function useMessageLog(
         npcs: import('../types').GmcpOccupant[],
         items: import('../types').GmcpOccupant[],
         roomName?: string | null,
-        roomDesc?: string | null
+        roomDesc?: string | null,
+        terrain?: string | null,
+        roomNum?: number | null
     },
     lastCommIdBySenderRef: React.MutableRefObject<Map<string, string>>,
     isNewbieMode: boolean,
@@ -83,18 +117,91 @@ export function useMessageLog(
             const isCombatMsg = !!(m.isHitImpact || m.isDamageImpact || m.isAvoidDamageImpact || m.isMissImpact);
             const prevIsCombatMsg = prev ? !!(prev.isHitImpact || prev.isDamageImpact || prev.isAvoidDamageImpact || prev.isMissImpact) : false;
             const isCombatBlockStart = isCombatMsg && !prevIsCombatMsg;
-            const isCommMsg = !!m.isComm;
-            const prevIsCommMsg = prev ? !!prev.isComm : false;
+            const isSocialMsg = !!m.isSocial;
+            const prevIsSocialMsg = prev ? !!prev.isSocial : false;
+            const isCommMsg = !!m.isComm && !isSocialMsg;
+            const prevIsCommMsg = prev ? !!prev.isComm && !prev.isSocial : false;
             const isCommBlockStart = isCommMsg && !prevIsCommMsg;
+            const isSocialBlockStart = isSocialMsg && !prevIsSocialMsg;
+            const isWeatherMsg = m.type === 'weather' || m.type === 'gmcp-event' || isEnvironmentEventLine(m.textOnly || m.textRaw);
+            const prevIsWeatherMsg = prev ? prev.type === 'weather' || prev.type === 'gmcp-event' || isEnvironmentEventLine(prev.textOnly || prev.textRaw) : false;
+            const isWeatherBlockStart = isWeatherMsg && !prevIsWeatherMsg;
+            const isMovementMsg = m.type === 'movement';
+            const prevIsMovementMsg = prev ? prev.type === 'movement' : false;
+            const isMovementBlockStart = isMovementMsg && !prevIsMovementMsg;
+            const isStatusMsg = m.type === 'status-event' || hasXmlTag(m.textRaw, 'status');
+            const prevIsStatusMsg = prev ? prev.type === 'status-event' || hasXmlTag(prev.textRaw, 'status') : false;
+            const isStatusBlockStart = isStatusMsg && !prevIsStatusMsg;
             return {
                 ...m,
                 batchId: currentBatchId,
                 inRoomBatch: hasRoomInBatch,
                 isRoomBlockStart,
                 isCombatBlockStart,
-                isCommBlockStart
+                isCommBlockStart,
+                isSocialBlockStart,
+                isWeatherBlockStart,
+                isMovementBlockStart,
+                isStatusBlockStart
             };
         });
+
+        // Extend the room block to cover the room's contents (mob/player/object/
+        // exit lines) that immediately follow the room name in this batch, so the
+        // log can render the whole room as one card with a divider before the
+        // contents. We stop at the prompt or any non-room line (comm/combat/etc).
+        const roomNameIdx = pending.findIndex(m => m.isRoomName);
+        if (roomNameIdx !== -1) {
+            const roomBlockTerrain = pending[roomNameIdx].terrain;
+            // Description lines sometimes arrive as separate (unmerged) game lines.
+            // Use the known GMCP room description to keep those in the description
+            // section so the divider lands before the actual contents, not the desc.
+            const roomDescNorm = ((roomDescRef && roomDescRef.current) || roomContext.roomDesc || '')
+                .replace(/\x1b\[[0-9;]*m/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+            let markedContentsStart = false;
+            let prevSection: RoomSection | null = null;
+            for (let i = roomNameIdx + 1; i < pending.length; i++) {
+                const m = pending[i];
+                if (
+                    m.type === 'prompt' || m.type === 'user' || m.type === 'snoop-command' ||
+                    m.type === 'weather' || m.type === 'gmcp-event' || m.type === 'movement' ||
+                    m.type === 'status-event' || hasXmlTag(m.textRaw, 'status') ||
+                    isEnvironmentEventLine(m.textOnly || m.textRaw) || m.isComm || m.isSocial || m.isCombat
+                ) break;
+                const lineNorm = (m.textRaw || '')
+                    .replace(/\x1b\[[0-9;]*m/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+                const isDescLine = !!roomDescNorm && lineNorm.length >= 6 && roomDescNorm.includes(lineNorm);
+                const isContents = !m.isEmpty && !isDescLine;
+
+                // Group contents into sections (objects / NPCs / players / exits)
+                // and flag the first line of each section so the card can draw a
+                // labelled divider between the groups.
+                let roomSection: RoomSection | undefined;
+                let isRoomSectionStart = false;
+                if (isContents) {
+                    const section = classifyRoomSection(m) || prevSection || 'objects';
+                    isRoomSectionStart = section !== prevSection;
+                    prevSection = section;
+                    roomSection = section;
+                }
+
+                // Everything from the first contents line onward (including any
+                // trailing blank lines before the prompt) gets the solid panel so
+                // the bottom of the card fills in rather than showing the map.
+                const isRoomContentsLine = isContents || markedContentsStart;
+
+                pending[i] = {
+                    ...m,
+                    isRoomBlock: true,
+                    terrain: m.terrain ?? roomBlockTerrain,
+                    isRoomContentsStart: !markedContentsStart && isContents,
+                    isRoomContentsLine,
+                    roomSection,
+                    isRoomSectionStart
+                };
+                if (isContents) markedContentsStart = true;
+            }
+        }
 
         if (containsPrompt) {
             let lastRoomIdx = -1;
@@ -158,7 +265,8 @@ export function useMessageLog(
         providedIsHitterImpact?: boolean,
         providedIsSnoop?: boolean,
         providedIsSnoopInput?: boolean,
-        providedIsRipMessage?: boolean
+        providedIsRipMessage?: boolean,
+        providedIsSocial?: boolean
     ) => {
         const combatOverride = extra === true || (typeof extra === 'object' && extra?.isCombat);
         let currentText = text;
@@ -171,10 +279,15 @@ export function useMessageLog(
         const combatSide = isCombat
             ? (providedCombatSide || ((currentTextLower.startsWith('you ') || currentTextLower.startsWith('your ')) ? 'player' : 'opponent'))
             : undefined;
-        const isComm = type === 'comm' || !!replyCommand;
+        const isTaggedSocial = /<(social|emote)(?:\s+[^>]*)?>/i.test(currentText) ||
+            /<(social|emote)(?:\s+[^>]*)?>/i.test(String(precalculated?.html || ''));
+        const isSocial = !!providedIsSocial || isTaggedSocial;
+        const isComm = type === 'comm' || !!replyCommand || isSocial;
         const isNarrate = currentTextLower.includes('narrate') || replyCommand === 'narrate';
         const curRoom = roomContext.roomName;
         const curDesc = roomContext.roomDesc;
+        const commRoomKey = roomContext.roomNum ? `#${roomContext.roomNum}` : (curRoom || undefined);
+        const commRoomName = curRoom || undefined;
 
         // --- Removed Surgical Silence (Newbie Mode) ---
         // We no longer strip descriptions or fragments from the log.
@@ -340,9 +453,7 @@ export function useMessageLog(
 
         const rawHtml = (precalculated as any)?.html;
         const html = (typeof rawHtml === 'string' ? rawHtml : rawHtml?.html) || ansiConvert.toHtml(processedText);
-        const tokens = precalculated?.tokens || (typeof rawHtml === 'object' ? rawHtml?.tokens : undefined);
-
-        // Record the message for replay
+        const tokens = precalculated?.tokens || (typeof rawHtml === 'object' ? rawHtml?.tokens : undefined);        // Record the message for replay
         if (recordEntry) {
             recordEntry('rx', {
                 type: finalType,
@@ -352,8 +463,10 @@ export function useMessageLog(
                 mid,
                 isCombat,
                 isComm,
+                isSocial,
                 isNarrate,
                 isRoomName: isActuallyRoomName,
+                terrain: isActuallyRoomName ? roomContext.terrain : undefined,
                 commSender,
                 commAction,
                 commText,
@@ -366,7 +479,7 @@ export function useMessageLog(
             currentTextLower.includes('*** mume ix') ||
             currentTextLower.includes('in progress at fire') ||
             currentTextLower.includes('free internet roleplay experiences') ||
-            currentTextLower.includes('hosted at heig-vd') ||
+            currentTextLower.includes("hosted at heig-vd") ||
             currentTextLower.includes("tolkien's middle-earth") ||
             currentTextLower.includes('maintained by cryhavoc') ||
             currentTextLower.includes('original code dikumud') ||
@@ -394,9 +507,11 @@ export function useMessageLog(
             isWelcomeBlock,
             isWelcomeTitle,
             isComm,
+            isSocial,
             replyTarget,
             replyCommand,
             isRoomName: isActuallyRoomName,
+            terrain: isActuallyRoomName ? roomContext.terrain : undefined,
             isRoomBlock: isActuallyRoomName,
             isRoomBlockStart: isActuallyRoomName,
             isNarrate,
@@ -406,6 +521,8 @@ export function useMessageLog(
             commAction,
             commText,
             commColor,
+            commRoomKey,
+            commRoomName,
             commSenderTokens,
             commTextTokens,
             isHitImpact: providedIsHitImpact,

@@ -9,7 +9,7 @@ import {
     MessageType,
     CombatHealthStatus,
     GroupMember,
-    GmcpMumeEdit
+    GmcpMumeDocument
 } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { useGmcpRoom } from './useGmcpRoom';
@@ -128,6 +128,9 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         return null;
     }, []);
 
+    const getMumeDocumentText = (data: GmcpMumeDocument): string =>
+        data.text ?? data.content ?? data.body ?? '';
+
     const { onCharVitals, onCharInfo, onRoomCharsCombat } = useGmcpVitals({
         ...props,
         setCurrentWeather: props.setWeather,
@@ -166,14 +169,54 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         // the visible line and cause the wrong log entry to become a bubble.
     }, []);
 
+    const getEventText = useCallback((pkgLower: string, data: any): string | null => {
+        const value = data && typeof data === 'object'
+            ? data.what ?? data.text ?? data.message
+            : data;
+        const what = typeof value === 'string' ? value.trim().toLowerCase() : '';
+        const knownText: Record<string, Record<string, string>> = {
+            'event.darkness': {
+                start: "The Necromancer's darkness gathers.",
+                grow: "The Necromancer's darkness grows.",
+                shrink: "The Necromancer's darkness recedes.",
+                'end-soon': "The Necromancer's darkness begins to fade.",
+                end: "The Necromancer's darkness fades."
+            },
+            'event.moon': {
+                rise: 'The moon rises.',
+                set: 'The moon sets.'
+            },
+            'event.sun': {
+                light: 'The light of the sun returns.',
+                rise: 'The sun rises.',
+                set: 'The sun sets.',
+                dark: 'The last light of the sun fades.'
+            }
+        };
+        return knownText[pkgLower]?.[what] || (typeof value === 'string' && value.trim() ? value.trim() : null);
+    }, []);
+
+    const addEnvironmentEventMessage = useCallback((pkgLower: string, data: any) => {
+        const text = getEventText(pkgLower, data);
+        if (!text) return;
+        props.addMessage('gmcp-event', text, false, undefined, false, {
+            textOnly: text,
+            lower: text.toLowerCase()
+        });
+    }, [getEventText, props.addMessage]);
+
     const onEvent = useCallback((pkg: string, data: any) => {
         const pkgLower = pkg.toLowerCase();
         if (pkgLower === 'event.achieved') {
             props.playAchievementSound?.();
         } else if (pkgLower === 'event.move' || pkgLower === 'event.moved') {
             props.playEventMoveSound?.();
+        } else if (pkgLower === 'event.darkness' || pkgLower === 'event.moon') {
+            addEnvironmentEventMessage(pkgLower, data);
         } else if (pkgLower === 'event.sun') {
-            const secondsOfDay = typeof data === 'number' ? data : parseInt(data);
+            addEnvironmentEventMessage(pkgLower, data);
+            const sunValue = data && typeof data === 'object' ? data.seconds ?? data.time ?? data.value ?? data.what : data;
+            const secondsOfDay = typeof sunValue === 'number' ? sunValue : parseInt(sunValue);
             if (!isNaN(secondsOfDay)) {
                 const dayMinutes = secondsOfDay / 60;
                 
@@ -195,7 +238,7 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
                 props.setGameTime(newMumeTime);
             }
         }
-    }, [props.gameTime, props.setGameTime, props.playAchievementSound, props.playEventMoveSound]);
+    }, [addEnvironmentEventMessage, props.gameTime, props.setGameTime, props.playAchievementSound, props.playEventMoveSound]);
 
     const onCharRide = useCallback((data: any) => {
         // console.log('[GMCP] Char.Ride:', data);
@@ -240,18 +283,30 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         onGroupUpdate,
         onGroupRemove,
         onGroupSet,
-        onMumeEdit: (data: GmcpMumeEdit) => {
+        onMumeEdit: (data: GmcpMumeDocument) => {
             const editKey = data.id !== undefined ? String(data.id) : (data.key !== undefined ? String(data.key) : '');
             if (data && editKey) {
                 const context = useArchiveStore.getState().consumePendingEditorContext();
                 props.setMumeEditState({
                     isOpen: true,
                     title: data.title || 'Mume Editor',
-                    text: data.text || '',
+                    text: getMumeDocumentText(data),
                     key: editKey,
+                    mode: 'edit',
                     context
                 });
             }
+        },
+        onMumeView: (data: GmcpMumeDocument) => {
+            if (!data) return;
+            props.setMumeEditState({
+                isOpen: true,
+                title: data.title || 'Mume Viewer',
+                text: getMumeDocumentText(data),
+                key: '',
+                mode: 'view',
+                context: null
+            });
         },
         onDisconnect: () => {
             props.setCharacterName(null);

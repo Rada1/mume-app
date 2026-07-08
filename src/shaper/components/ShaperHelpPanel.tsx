@@ -5,27 +5,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, ChevronDown, ChevronUp } from 'lucide-react';
-
-// @ts-ignore
-import buildersGuide from '../../../docs/builders_guide.md?raw';
-// @ts-ignore
-import comHelp from '../../../docs/com_help.md?raw';
-// @ts-ignore
-import infoZoneHelp from '../../../docs/info_zone_stat_help.md?raw';
-// @ts-ignore
-import libCommandsRef from '../../../docs/lib_commands_reference.md?raw';
-// @ts-ignore
-import libHelp from '../../../docs/lib_help.md?raw';
-// @ts-ignore
-import roomHelp from '../../../docs/room_help.md?raw';
-// @ts-ignore
-import shaperHelp from '../../../docs/shaper.md?raw';
-
-interface GuideOption {
-    id: string;
-    title: string;
-    content: string;
-}
+import { SHAPER_GUIDES } from '../model/shaperGuideCatalog';
 
 interface HeadingLink {
     text: string;
@@ -36,23 +16,13 @@ interface HeadingLink {
 // --- Component Section ---
 export const ShaperHelpPanel: React.FC = () => {
     const listContainerRef = useRef<HTMLDivElement>(null);
-    const guides = useMemo<GuideOption[]>(() => [
-        { id: 'builders_guide', title: "Ariakas' Building Guide", content: buildersGuide },
-        { id: 'room_help', title: 'Room Building Help', content: roomHelp },
-        { id: 'com_help', title: '/com Reset Commands Help', content: comHelp },
-        { id: 'lib_commands_ref', title: '/lib Command Reference', content: libCommandsRef },
-        { id: 'lib_help', title: '/lib Scripts Help', content: libHelp },
-        { id: 'info_zone_stat_help', title: '/info & /stat Help', content: infoZoneHelp },
-        { id: 'shaper', title: 'Shaper Workspace Spec', content: shaperHelp }
-    ], []);
-
     const [activeGuideId, setActiveGuideId] = useState<string>('builders_guide');
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [matchCursor, setMatchCursor] = useState<number>(0);
 
     const activeGuide = useMemo(() => {
-        return guides.find(g => g.id === activeGuideId) || guides[0];
-    }, [guides, activeGuideId]);
+        return SHAPER_GUIDES.find(g => g.id === activeGuideId) || SHAPER_GUIDES[0];
+    }, [activeGuideId]);
 
     const lines = useMemo(() => {
         return activeGuide.content.split('\n');
@@ -206,7 +176,7 @@ export const ShaperHelpPanel: React.FC = () => {
                             font: 'inherit'
                         }}
                     >
-                        {guides.map(g => (
+                        {SHAPER_GUIDES.map(g => (
                             <option key={g.id} value={g.id}>{g.title}</option>
                         ))}
                     </select>

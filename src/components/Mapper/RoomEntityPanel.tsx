@@ -123,8 +123,10 @@ const RoomEntityPanel: React.FC<Props> = ({
                         }
                         const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
                         setPopoverState({
-                            x: rect.right,
-                            y: rect.top + rect.height / 2,
+                            x: rect.left + rect.width / 2,
+                            y: rect.bottom,
+                            sourceHeight: rect.height,
+                            sourceRect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
                             setId: entity.category,
                             kind: entity.kind,
                             location: 'room',
@@ -133,7 +135,7 @@ const RoomEntityPanel: React.FC<Props> = ({
                             entityId: entity.entityId,
                             menuDisplay: 'list',
                             accentColor: entity.color,
-                            preferSide: 'right',
+                            preferSide: 'top',
                         });
                     }}
                 >

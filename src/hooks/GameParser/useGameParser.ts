@@ -32,9 +32,12 @@ import { buildPlayerLineTokens } from './playerLineTokens';
 import { useUIStore } from '../../stores/useUIStore';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { parseEffectTimerLine } from '../../services/timers/effectTimerParser';
+import { parseActionTimerLine } from '../../services/timers/actionTimerParser';
+import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { parseMagicKeyLine, upsertMagicKeyTarget } from '../../utils/magicKeyUtils';
-import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir } from './textMapperEvents';
+import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir, formatXmlMovementArrow } from './textMapperEvents';
 import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
+import { canBootstrapExpectedCapture } from './captureBootstrap';
 
 const decodeTextEntities = (text: string) => text
     .replace(/&gt;/gi, '>')
@@ -157,19 +160,6 @@ const normalizeStageToCaptureType = (stage: unknown) => {
     if (normalized === 'sc') return 'score';
     return normalized;
 };
-
-const SHAPER_CAPTURE_TYPES = [
-    'shaper_mob_find',
-    'shaper_obj_find',
-    'shaper_mob_stat',
-    'shaper_obj_stat',
-    'shaper_mob_info',
-    'shaper_obj_info',
-    'shaper_live_build_list',
-    'shaper_live_room_stat',
-    'shaper_live_com_list',
-    'shaper_live_lib_list'
-];
 
 const addSnoopedPlainLine = (
     addMessage: UseGameParserDeps['addMessage'],
@@ -545,6 +535,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 deps.help.setIsUiRequested(false);
             } else if (isEndPromptLine) {
                 deps.help.setIsUiRequested(false);
+                if (deps.help.handleNoHelpFound) {
+                    deps.help.handleNoHelpFound();
+                }
             }
         }
 
@@ -620,6 +613,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 window.dispatchEvent(new CustomEvent('mume-mapper-move-confirmed', {
                     detail: { dir: xmlMoveDir || undefined, source: 'xml' }
                 }));
+            }
+            if (xmlMoveDir) {
+                const arrow = formatXmlMovementArrow(xmlMoveDir);
+                if (arrow) addSnoopedPlainLine(deps.addMessage, deps.ansiConvert, arrow, undefined, 'movement', false);
             }
 
             const textMapperResult = consumeTextMapperLine(
@@ -755,6 +752,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         if (isSnoop && textOnly.trim().length === 0) return;
+        if (!isSnoop && capture.shouldSuppressSilentBlank(textOnly)) return;
 
         if (!isSnoop) {
             const magicTarget = parseMagicKeyLine(textOnly, deps.roomNameRef.current, useRoomStore.getState().roomZone);
@@ -811,6 +809,12 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         const promptInfo = prompt.parsePrompt(textOnly, isSnoop);
+        if (!isSnoop && promptInfo.isMatch) {
+            const active = useActionTimerStore.getState().activeTimer;
+            if (active && !active.isFinished && Date.now() - active.startedAt > 400) {
+                useActionTimerStore.getState().completeTimer(false);
+            }
+        }
         if (!isSnoop && capture.shouldSuppressCommandEcho(textOnly, promptInfo.attachedText)) {
             return;
         }
@@ -1004,24 +1008,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             !effectiveCaptureBoundary &&
             !capture.hasSession() &&
             !incomingCaptureType &&
-            [
-                'who',
-                'achievement',
-                'equipment',
-                'inventory',
-                'stats',
-                'score',
-                'info',
-                'practice',
-                'quests',
-                'container',
-                'board_list',
-                'board_read',
-                'mail_list',
-                'mail_read',
-                'book_read',
-                ...SHAPER_CAPTURE_TYPES
-            ].includes(expectedCaptureType)
+            canBootstrapExpectedCapture(expectedCaptureType)
         );
         if (canStartExpectedCapture) {
             capture.startSession(expectedCaptureType);
@@ -1073,7 +1060,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         atmosphere.parseAtmosphere(lower, isSnoop);
-        if (!isSnoop) parseEffectTimerLine(textOnly);
+        if (!isSnoop) {
+            parseEffectTimerLine(textOnly);
+            parseActionTimerLine(textOnly);
+        }
         if (time.parseTimeLine(lower)) msgType = 'info' as any;
 
         // --- Magic Sound Effects ---

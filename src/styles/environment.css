@@ -19,6 +19,76 @@
     z-index: 1;
 }
 
+.client-lighting-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s ease-in-out, backdrop-filter 1s ease-in-out;
+}
+
+.client-sun-overlay {
+    z-index: 5;
+    background: radial-gradient(circle at center,
+        rgba(255, 255, 200, 0.24) 0%,
+        rgba(255, 230, 140, 0.11) 45%,
+        transparent 90%
+    );
+    mix-blend-mode: overlay;
+    backdrop-filter: brightness(1.04) saturate(1.12);
+}
+
+.lighting-state-sun .client-sun-overlay {
+    opacity: 0.46;
+}
+
+.client-moon-overlay {
+    z-index: 7;
+    background: radial-gradient(circle at center,
+        rgba(100, 150, 255, 0.22) 0%,
+        rgba(50, 100, 255, 0.09) 45%,
+        transparent 85%
+    );
+    mix-blend-mode: screen;
+    backdrop-filter: brightness(1.05) saturate(1.12);
+}
+
+.lighting-state-moon .client-moon-overlay {
+    opacity: 0.52;
+}
+
+.client-artificial-overlay {
+    z-index: 7;
+    background: radial-gradient(circle at center,
+        rgba(220, 20, 20, 0.24) 0%,
+        rgba(150, 10, 10, 0.09) 45%,
+        transparent 85%
+    );
+    mix-blend-mode: screen;
+}
+
+.lighting-state-artificial .client-artificial-overlay {
+    opacity: 0.52;
+}
+
+.client-dark-overlay {
+    z-index: 6;
+    background: radial-gradient(circle at center, transparent 15%, rgba(0, 0, 15, 0.85) 100%);
+    mix-blend-mode: multiply;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.lighting-state-sun .client-dark-overlay,
+.lighting-state-moon .client-dark-overlay,
+.lighting-state-artificial .client-dark-overlay {
+    opacity: 0.42;
+}
+
+.lighting-state-dark .client-dark-overlay {
+    opacity: 0.72;
+}
+
 /* Light and dark themes stay clean unless the independent immersion toggle is enabled. */
 :is(.light-mode, .dark-mode):not(.immersion-mode) .environment-root.back,
 :is(.light-mode, .dark-mode):not(.immersion-mode) .environment-root.front > * {
@@ -27,11 +97,23 @@
 
 
 .environment-root.front {
+    /* Full-viewport-width, like .app-terrain-strip at the bottom, so clouds/fog/rain
+       stretch across the whole client instead of stopping at the log/map column. */
+    position: fixed;
+    inset: 0;
     z-index: 4500;
 }
 
 .environment-root.front > * {
     transition: opacity 0.22s ease;
+}
+
+.embers-client-layer {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--z-drawer, 9200) + 5);
+    pointer-events: none;
+    overflow: hidden;
 }
 
 /* Motion relief: the front atmosphere overlays (clouds, fog, rain) are
@@ -293,7 +375,11 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
     mix-blend-mode: soft-light;
 }
 
-.weather-cloud {
+/* Scoped to .weather-layer.weather-cloud (always applied together in
+   EnvironmentEffects.tsx) — "weather-cloud" alone also names the unrelated
+   sun/moon/cloud pixel-art strip's weather modifier class, and an unscoped
+   selector here would leak these rules onto that element too. */
+.weather-layer.weather-cloud {
     background: rgba(100, 110, 130, 0.05);
     z-index: 4;
     transition: opacity 5s ease-in-out;
@@ -304,7 +390,7 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
     -webkit-mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 100%);
 }
 
-.weather-cloud::before {
+.weather-layer.weather-cloud::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -313,7 +399,7 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
     z-index: 1;
 }
 
-.weather-cloud::after {
+.weather-layer.weather-cloud::after {
     content: '';
     position: absolute;
     top: 0;
@@ -322,15 +408,13 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
     height: 100%;
     background:
         linear-gradient(to bottom, rgba(180, 180, 190, 0.3) 0%, transparent 100%),
-        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 40%),
-        radial-gradient(circle at 50% 40%, rgba(255,255,255,0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 60%, rgba(255,255,255,0.1) 0%, transparent 45%);
+        radial-gradient(circle at 38% 50%, rgba(255,255,255,0.13) 0%, transparent 30%);
     background-size: 200% 100%;
     background-blend-mode: overlay;
     mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
     -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
     opacity: 0.3;
-    animation: cloud-pulse 10s ease-in-out infinite alternate, cloud-drift 40s linear infinite;
+    animation: cloud-pulse 10s ease-in-out infinite alternate, cloud-drift 340s linear infinite;
     z-index: 2;
     /* Dropped blur(1px): animating a filter:blur() on a continuously-drifting element
        forces a per-frame neighborhood-sampling blur pass, one of the most expensive
@@ -339,16 +423,16 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
     filter: brightness(0.9) grayscale(0.6) contrast(1.6);
 }
 
-.weather-cloud.storm-clouds {
+.weather-layer.weather-cloud.storm-clouds {
     background: rgba(30, 35, 50, 0.4);
 }
 
-.weather-cloud.storm-clouds::before {
+.weather-layer.weather-cloud.storm-clouds::before {
     background: rgba(20, 25, 40, 0.6);
     mix-blend-mode: multiply;
 }
 
-.weather-cloud.storm-clouds::after {
+.weather-layer.weather-cloud.storm-clouds::after {
     /* Blur dropped from the persistent storm state (always-animating = constant blur passes).
        Heavier contrast/grayscale keeps the dense storm look. */
     filter: brightness(0.4) grayscale(0.9) contrast(2);
@@ -356,14 +440,14 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
     transition: filter 0.05s ease-out;
 }
 
-.weather-cloud.lightning-active::after {
+.weather-layer.weather-cloud.lightning-active::after {
     /* Lightning is a brief transient flash, not a sustained animation — a small blur
        here is cheap and adds to the flash, so it's kept. */
     filter: blur(2px) brightness(4) grayscale(0.5) contrast(1.5);
     transition: filter 0.05s ease-out;
 }
 
-.weather-cloud.lightning-active::before {
+.weather-layer.weather-cloud.lightning-active::before {
     /* Use a radial gradient centered at the random X position */
     background: radial-gradient(circle at var(--lightning-x) 50%, rgba(200, 210, 255, 0.8) 0%, transparent 60%);
     mix-blend-mode: color-dodge;
@@ -513,7 +597,10 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
 }
 
 
-.weather-snow {
+/* Scoped to .weather-layer.weather-snow for the same reason as
+   .weather-layer.weather-cloud above — avoids leaking onto the sky-art
+   strip's "weather-snow" modifier class. */
+.weather-layer.weather-snow {
     position: absolute;
     inset: 0;
     background-image:
@@ -531,7 +618,7 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
     z-index: 4;
 }
 
-.weather-snow::before {
+.weather-layer.weather-snow::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -547,7 +634,7 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
     animation: snow-back 8s linear infinite;
 }
 
-.weather-snow::after {
+.weather-layer.weather-snow::after {
     content: '';
     position: absolute;
     inset: 0;

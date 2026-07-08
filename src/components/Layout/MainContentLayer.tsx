@@ -1,24 +1,31 @@
 import React, { FC } from 'react';
 import Header from '../HUD/Header';
 import MessageLog from '../Messages/MessageLog';
+import ChatWindow from '../Messages/ChatWindow';
+import PlayersPanel from '../Players/PlayersPanel';
 import InputArea from '../Controls/InputArea';
 import { useGame, useUI, useVitals, useLog } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
-import { resolveTerrainBackground } from '../../utils/terrainBackgrounds';
 import { LineCluster } from './HUD/LineCluster';
 import PromptBox from '../HUD/PromptBox';
+import ActionBox from '../HUD/ActionBox';
+import { CharacterCard } from '../HUD/CharacterCard';
+import { useCharacterCardStore } from '../../stores/useCharacterCardStore';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import { TokenRenderer } from '../Messages/TokenRenderer';
-import { Embers } from '../Atmosphere/Embers';
 import { ShopPanel } from '../Shop/ShopPanel';
 import { TimerExpiryToast } from '../Timers/TimerExpiryToast';
 import { QuickButtonBar } from '../HUD/QuickButtonBar';
 import { ReplayHUD } from './HUD/ReplayHUD';
 import type { MumeEditState } from '../../stores/useUIStore';
-
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
+import { StickyRoomHeader } from './StickyRoomHeader';
+import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
+import RoomChipRows from '../Mapper/RoomChipRows';
+import { useActiveVitals } from '../../stores/useActiveGameState';
+import { getRoomTerrainVisualKey, getZoneVisualKey } from '../../utils/roomTerrainVisuals';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -49,13 +56,14 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     setMumeEditState,
     wasDraggingRef
 }) => {
-    const { setStats, activePrompt, target } = useVitals() as any;
+    const { setStats } = useVitals() as any;
     const {
         env,
         triggerHaptic,
         btn,
         joystick,
         currentTerrain,
+        roomZone,
         viewport,
         roomName,
         roomDesc,
@@ -77,19 +85,31 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         activeSession,
         spectateTerrain
     } = useGame() as any;
+    const { lighting, weather } = useActiveVitals();
+
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const activeView = useModeStore(s => s.activeView);
     const { processMessageHtml, processMessageTokens } = useLog();
+    const isCharacterCardOpen = useCharacterCardStore(s => s.isOpen);
 
     const manualBgImage = useSettingsStore(s => s.bgImage);
-    const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
+    const showChatWindow = useSettingsStore(s => s.showChatWindow);
+    const showPlayersPanel = useSettingsStore(s => s.showPlayersPanel);
     const isSpectating = activeSession === 'spectate' || activeView === 'target';
-    const activeTerrain = isSpectating ? spectateTerrain : currentTerrain;
+    const roomCardTerrain = isSpectating ? spectateTerrain : currentTerrain;
     const isAccountMode = !!(accountState?.stage && accountState.stage !== 'none');
-    const resolvedBgImage = manualBgImage || (isAccountMode 
-        ? (accountState?.stage === 'login' ? resolveTerrainBackground('account-blue') : '/assets/Pictures/account.png')
-        : resolveTerrainBackground(activeTerrain));
-    
+
+    const resolvedBgImage = manualBgImage || (isAccountMode && accountState?.stage !== 'login'
+        ? '/assets/Pictures/account.png'
+        : null);
+
+    const zoneKey = React.useMemo(() => {
+        if (!roomZone) return 'unknown';
+        return roomZone.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }, [roomZone]);
+    const zoneVisualKey = React.useMemo(() => getZoneVisualKey(roomZone), [roomZone]);
+    const skyLightingClass = lighting === 'sun' ? 'lighting-sun' : 'lighting-none';
+
     const { setPopoverState } = useUI();
 
     const handleWimpyChange = React.useCallback((val: number) => {
@@ -99,6 +119,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         executeCommand(`change wimpy ${val}`, true, true);
     }, [executeCommand, triggerHaptic, setStats]);
     const logContainerRef = React.useRef<HTMLDivElement>(null);
+
     const [headerHeight, setHeaderHeight] = React.useState(0);
 
     React.useLayoutEffect(() => {
@@ -170,6 +191,64 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         };
     }, []);
 
+    // --- Full-width terrain strip alignment ---
+    // The pixel-art terrain border used to be scoped to the log column only. To let it
+    // span the full client width (across the drawers too), a separate fixed-position
+    // element renders it instead — this keeps that element's bottom offset in sync with
+    // the log container's actual bottom edge (which moves with prompt-box/input height).
+    React.useLayoutEffect(() => {
+        const updateBottomOffset = () => {
+            if (!logContainerRef.current) return;
+            const rect = logContainerRef.current.getBoundingClientRect();
+            const offset = Math.max(0, window.innerHeight - rect.bottom);
+            document.documentElement.style.setProperty('--log-terrain-bottom-offset', `${offset}px`);
+        };
+
+        const observer = new ResizeObserver(updateBottomOffset);
+        if (logContainerRef.current) {
+            observer.observe(logContainerRef.current);
+            if (logContainerRef.current.parentElement) {
+                observer.observe(logContainerRef.current.parentElement);
+            }
+        }
+
+        const timeout = setTimeout(updateBottomOffset, 100);
+        window.addEventListener('resize', updateBottomOffset);
+        return () => {
+            clearTimeout(timeout);
+            observer.disconnect();
+            window.removeEventListener('resize', updateBottomOffset);
+        };
+    }, []);
+
+    // --- Full-width sky art strip alignment ---
+    // Same idea as the terrain strip above, but for the sun/moon/cloud row at the top
+    // of the log — keeps the fixed element's top offset in sync with the log's actual
+    // top edge (which moves with the header height).
+    React.useLayoutEffect(() => {
+        const updateTopOffset = () => {
+            if (!logContainerRef.current) return;
+            const rect = logContainerRef.current.getBoundingClientRect();
+            document.documentElement.style.setProperty('--log-sky-top-offset', `${Math.max(0, rect.top)}px`);
+        };
+
+        const observer = new ResizeObserver(updateTopOffset);
+        if (logContainerRef.current) {
+            observer.observe(logContainerRef.current);
+            if (logContainerRef.current.parentElement) {
+                observer.observe(logContainerRef.current.parentElement);
+            }
+        }
+
+        const timeout = setTimeout(updateTopOffset, 100);
+        window.addEventListener('resize', updateTopOffset);
+        return () => {
+            clearTimeout(timeout);
+            observer.disconnect();
+            window.removeEventListener('resize', updateTopOffset);
+        };
+    }, []);
+
     const { getLightingIcon, getWeatherIcon } = env;
     const { isMobile, isLandscape } = viewport;
     const isReplaying = sessionMode === 'replay';
@@ -189,6 +268,32 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     return (
         <div className={`content-layer view-mode-${activeView}`}>
+            {!viewport.isMobile && gameState !== 'account' && (
+                <div
+                    className={`app-terrain-strip log-terrain-${getRoomTerrainVisualKey(roomCardTerrain)} log-lore-${zoneVisualKey}`}
+                    style={{
+                        position: 'fixed',
+                        left: 0,
+                        right: 0,
+                        bottom: 'var(--log-terrain-bottom-offset, 0px)',
+                        zIndex: 4500,
+                        pointerEvents: 'none'
+                    }}
+                />
+            )}
+            {!viewport.isMobile && gameState !== 'account' && (
+                <div
+                    className={`app-sky-art-strip ${skyLightingClass} weather-${weather} terrain-${getRoomTerrainVisualKey(roomCardTerrain)}`}
+                    style={{
+                        position: 'fixed',
+                        left: 0,
+                        right: 0,
+                        top: 'var(--log-sky-top-offset, 0px)',
+                        zIndex: 4500,
+                        pointerEvents: 'none'
+                    }}
+                />
+            )}
             <Header
                 isLandscape={isLandscape}
                 getLightingIcon={getLightingIcon}
@@ -199,87 +304,117 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             </div>
             <ReplayHUD />
 
-            <div className="message-log-wrapper" style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
+            <div className={`message-log-wrapper${showChatWindow && gameState !== 'account' ? ' chat-window-active' : ''}`} style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
+                {isCharacterCardOpen && gameState !== 'account' && viewport.isMobile && <CharacterCard />}
                 <div
-                    className={`message-log-container${isTacticalTargetingActive ? ' tactical-targeting-active' : ''}`}
-                    ref={logContainerRef}
+                    className="desktop-center-column"
                     style={{
+                        display: 'flex',
+                        flexDirection: 'column',
                         flex: 1,
+                        minHeight: 0,
+                        overflow: 'hidden',
                         position: 'relative',
-                        overflow: 'hidden'
-                    } as React.CSSProperties}
+                        maxWidth: viewport.isMobile ? 'none' : 'var(--desktop-log-width, clamp(600px, 38vw, 1000px))',
+                        width: '100%',
+                        margin: viewport.isMobile ? 0 : '0 auto'
+                    }}
                 >
-                    {resolvedBgImage && <div className="log-background-layer" style={{ backgroundImage: `url(${resolvedBgImage})` }} />}
-                    {!viewport.isMobile && <>
-                        <DrawerResizeHandle handleType="log-left" widthVar="--desktop-log-width" />
-                        <DrawerResizeHandle handleType="log-right" widthVar="--desktop-log-width" />
-                    </>}
-                    {isImmersionMode && <Embers count={12} />}
-                    {isNewbieMode && roomName && (
-                        <div className={`sticky-room-header terrain-${String(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">
-                            <div className="room-info-text">
-                                <div className="message-content room-name">
-                                    {processMessageTokens ? <TokenRenderer tokens={processMessageTokens(`\x1b[1;32m${roomName}\x1b[0m`)} metadata={{ id: `room:${String(roomName).toLowerCase()}`, context: roomName, category: 'cat-room', cmd: 'cat-room', action: 'menu' }} /> : <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[1;32m${roomName}\x1b[0m`), 'roomname', true, 'room-name' as any)) }} />}
-                                </div>
-                                {roomDesc && (
-                                    <div className="message-content room-desc">
-                                        {processMessageTokens ? <TokenRenderer tokens={processMessageTokens(`\x1b[0m${roomDesc}`)} /> : <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[0m${roomDesc}`), 'roomdesc', false, 'room-desc' as any)) }} />}
-                                    </div>
-                                )}
+                    <div
+                        className={`message-log-container${isTacticalTargetingActive ? ' tactical-targeting-active' : ''} log-terrain-${getRoomTerrainVisualKey(roomCardTerrain)} log-lighting-${lighting} log-weather-${weather} log-zone-${zoneKey} log-lore-${zoneVisualKey}`}
+                        ref={logContainerRef}
+                        style={{
+                            flex: 1,
+                            position: 'relative',
+                            overflow: 'hidden',
+                        } as React.CSSProperties}
+                    >
+                        {resolvedBgImage && <div className="log-background-layer" style={{ backgroundImage: `url(${resolvedBgImage})` }} />}
+                        {!viewport.isMobile && <>
+                            <DrawerResizeHandle handleType="log-left" widthVar="--desktop-log-width" />
+                            <DrawerResizeHandle handleType="log-right" widthVar="--desktop-log-width" />
+                        </>}
+                        {gameState !== 'account' && roomName && (
+                            <div className="desktop-log-room-card-wrapper">
+                                <MapperRoomInfo section="details" />
                             </div>
-                        </div>
-                    )}
-                    <MessageLog
-                        onLogClick={handleLogClick}
-                        onMouseUp={handleMouseUp}
-                        onPointerDown={handleLogPointerDown}
-                        onPointerUp={handleLogPointerUp}
-                    />
-                    <TimerExpiryToast />
-                    {gameState !== 'account' && <QuickButtonBar />}
-                </div>
+                        )}
+                        <StickyRoomHeader
+                            isNewbieMode={isNewbieMode}
+                            roomName={roomName}
+                            roomDesc={roomDesc}
+                            currentTerrain={currentTerrain}
+                            processMessageTokens={processMessageTokens}
+                            processMessageHtml={processMessageHtml}
+                        />
+                        <MessageLog
+                            onLogClick={handleLogClick}
+                            onMouseUp={handleMouseUp}
+                            onPointerDown={handleLogPointerDown}
+                            onPointerUp={handleLogPointerUp}
+                        />
+                        <TimerExpiryToast />
+                        {gameState !== 'account' && <QuickButtonBar />}
+                        {gameState !== 'account' && roomName && (
+                            <div className="log-terrain-chips-overlay">
+                                <RoomChipRows variant="terrain-pins" />
+                            </div>
+                        )}
+                    </div>
 
-
-                {/* Tactical LineCluster is now in DrawerManager (under the map) on desktop */}
-
-
-                {/* Mobile portrait LineCluster is rendered inside MapperCluster (near the map gutter) */}
-            </div>
-
-            {/* Only render the wrapper if it will contain either the PromptBox or the InputArea */}
-            {(gameState !== 'account' || (shouldShowAccountInput && (isLandscape || !isMobile))) && (
-                <div className="control-card-wrapper">
                     {gameState !== 'account' && (
                         <PromptBox
                             processMessageHtml={processMessageHtml}
                             processMessageTokens={processMessageTokens}
-                            onWimpyChange={!isSpectateMode ? handleWimpyChange : undefined}
+                            onWimpyChange={handleWimpyChange}
+                            heldButton={heldButton}
+                            setHeldButton={setHeldButton}
+                            setCommandPreview={setCommandPreview}
                         />
                     )}
 
-                    {/* Render InputArea only on desktop, landscape mobile, or during account phase on those platforms. 
-                        On mobile portrait, InputArea is rendered within MapperCluster to occupy the gutter. */}
-                    {((shouldShowAccountInput && (isLandscape || !isMobile)) || (gameState !== 'account' && ((!isMobile && !(viewport as any).isForcePortrait) || isLandscape))) && (
-                        <InputArea
-                            onSend={handleSend}
-                            onSwipe={handleInputSwipe}
-                            isMobile={isMobile}
-                            isKeyboardOpen={viewport.isKeyboardOpen}
+                    {!viewport.isMobile && (gameState !== 'account' || shouldShowAccountInput) && (
+                        <ActionBox
+                            handleSend={handleSend}
+                            handleInputSwipe={handleInputSwipe}
                             commandPreview={commandPreview}
-                            terrain={currentTerrain}
-                            spatButtons={spatButtons}
-                            setActiveSet={btn.setActiveSet}
-                            executeCommand={executeCommand}
-                            setSpatButtons={setSpatButtons}
-                            setPopoverState={setPopoverState}
-                            parley={parley}
-                            setParley={setParley}
-                            whoList={whoList}
-                            gameState={gameState}
+                            setCommandPreview={setCommandPreview}
+                            heldButton={heldButton}
+                            setHeldButton={setHeldButton}
+                            wasDraggingRef={wasDraggingRef}
                         />
                     )}
                 </div>
-            )}
+                {showPlayersPanel && gameState !== 'account' && <PlayersPanel />}
+                {showChatWindow && gameState !== 'account' && <ChatWindow />}
+            </div>
+
+            {isMobile ? (
+                /* Mobile Layout: PromptBox and InputArea stacked in control-card-wrapper */
+                (gameState !== 'account' || (shouldShowAccountInput && isLandscape)) && (
+                    <div className="control-card-wrapper">
+                        {((shouldShowAccountInput && isLandscape) || (gameState !== 'account' && isLandscape)) && (
+                            <InputArea
+                                onSend={handleSend}
+                                onSwipe={handleInputSwipe}
+                                isMobile={isMobile}
+                                isKeyboardOpen={viewport.isKeyboardOpen}
+                                commandPreview={commandPreview}
+                                terrain={currentTerrain}
+                                spatButtons={spatButtons}
+                                setActiveSet={btn.setActiveSet}
+                                executeCommand={executeCommand}
+                                setSpatButtons={setSpatButtons}
+                                setPopoverState={setPopoverState}
+                                parley={parley}
+                                setParley={setParley}
+                                whoList={whoList}
+                                gameState={gameState}
+                            />
+                        )}
+                    </div>
+                )
+            ) : null}
         </div>
     );
 };

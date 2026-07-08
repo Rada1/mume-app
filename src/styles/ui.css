@@ -607,6 +607,26 @@
     line-height: 1;
 }
 
+.player-name.level-tier-gold,
+.player-name.level-tier-diamond,
+.player-level.level-tier-gold,
+.player-level.level-tier-diamond {
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    opacity: 1;
+}
+
+.player-name.level-tier-gold,
+.player-level.level-tier-gold {
+    background-image: linear-gradient(90deg, #fff2a8 0%, #ffd700 32%, #c99738 68%, #fff4b8 100%);
+}
+
+.player-name.level-tier-diamond,
+.player-level.level-tier-diamond {
+    background-image: linear-gradient(90deg, #f8fbff 0%, #9ee7ff 28%, #d7f7ff 50%, #8bd3ff 72%, #ffffff 100%);
+}
+
 .player-stats-mini {
     display: flex;
     gap: 6px;

@@ -25,6 +25,7 @@ export interface CombatRechargeTimer {
     staleAt: number;
     durationMs: number;
     confidence: CombatRechargeConfidence;
+    isLanded?: boolean;
 }
 
 interface CombatRechargeStats {
@@ -40,8 +41,8 @@ interface CombatRechargeState {
     opponentStats: Partial<Record<CombatRechargeAction, CombatRechargeStats>>;
     pendingAttempts: PendingCombatAttempt[];
     recordCommandAttempt: (command: string, now?: number) => void;
-    recordCombatConfirmation: (verb?: string, now?: number) => void;
-    recordOpponentCombatConfirmation: (verb?: string, now?: number) => void;
+    recordCombatConfirmation: (verb?: string, isLanded?: boolean, now?: number) => void;
+    recordOpponentCombatConfirmation: (verb?: string, isLanded?: boolean, now?: number) => void;
     recordBlockedLine: (line: string, now?: number) => void;
     clearExpired: (now?: number) => void;
 }
@@ -53,7 +54,7 @@ const MAX_SAMPLES = 9;
 const MIN_READY_MARGIN_MS = 250;
 const MAX_READY_MARGIN_MS = 600;
 const READY_MARGIN_RATIO = 0.08;
-const COMBAT_RECHARGE_ENABLED = false;
+const COMBAT_RECHARGE_ENABLED = true;
 
 // --- Logic Section ---
 
@@ -103,7 +104,7 @@ export const useCombatRechargeStore = create<CombatRechargeState>((set, get) => 
         }));
     },
 
-    recordCombatConfirmation: (verb, now = Date.now()) => {
+    recordCombatConfirmation: (verb, isLanded = true, now = Date.now()) => {
         const pendingAction = [...get().pendingAttempts]
             .reverse()
             .find(attempt => now - attempt.sentAt < PENDING_TTL_MS)?.action;
@@ -126,7 +127,8 @@ export const useCombatRechargeStore = create<CombatRechargeState>((set, get) => 
                 expiresAt: now + chargeDurationMs,
                 staleAt: now + chargeDurationMs + getChargeHoldDuration(chargeDurationMs),
                 durationMs: chargeDurationMs,
-                confidence: prediction.confidence
+                confidence: prediction.confidence,
+                isLanded
             };
 
             return {
@@ -137,7 +139,7 @@ export const useCombatRechargeStore = create<CombatRechargeState>((set, get) => 
         });
     },
 
-    recordOpponentCombatConfirmation: (verb, now = Date.now()) => {
+    recordOpponentCombatConfirmation: (verb, isLanded = true, now = Date.now()) => {
         const action = getCombatRechargeActionFromVerb(verb) || 'hit';
 
         set((state) => {
@@ -156,7 +158,8 @@ export const useCombatRechargeStore = create<CombatRechargeState>((set, get) => 
                 expiresAt: now + chargeDurationMs,
                 staleAt: now + chargeDurationMs + getChargeHoldDuration(chargeDurationMs),
                 durationMs: chargeDurationMs,
-                confidence: prediction.confidence
+                confidence: prediction.confidence,
+                isLanded
             };
 
             return {
@@ -191,11 +194,11 @@ export const useCombatRechargeStore = create<CombatRechargeState>((set, get) => 
 export const recordCombatRechargeCommand = (command: string) =>
     COMBAT_RECHARGE_ENABLED && useCombatRechargeStore.getState().recordCommandAttempt(command);
 
-export const recordCombatRechargeConfirmation = (verb?: string) =>
-    COMBAT_RECHARGE_ENABLED && useCombatRechargeStore.getState().recordCombatConfirmation(verb);
+export const recordCombatRechargeConfirmation = (verb?: string, isLanded?: boolean) =>
+    COMBAT_RECHARGE_ENABLED && useCombatRechargeStore.getState().recordCombatConfirmation(verb, isLanded);
 
-export const recordOpponentCombatRechargeConfirmation = (verb?: string) =>
-    COMBAT_RECHARGE_ENABLED && useCombatRechargeStore.getState().recordOpponentCombatConfirmation(verb);
+export const recordOpponentCombatRechargeConfirmation = (verb?: string, isLanded?: boolean) =>
+    COMBAT_RECHARGE_ENABLED && useCombatRechargeStore.getState().recordOpponentCombatConfirmation(verb, isLanded);
 
 export const recordCombatRechargeBlockedLine = (line: string) =>
     COMBAT_RECHARGE_ENABLED && useCombatRechargeStore.getState().recordBlockedLine(line);

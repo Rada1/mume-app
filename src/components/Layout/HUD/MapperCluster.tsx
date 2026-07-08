@@ -5,20 +5,23 @@ import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useInputStore } from '../../../stores/useInputStore';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { DrawerType, GameContextType, UIContextType } from '../../../context/GameContext/types';
-import { ArrowLeft, BookOpen, CloudFog, Info, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock, Menu, ChevronLeft, HelpCircle } from 'lucide-react';
+import { ArrowLeft, BookOpen, CloudFog, Info, Map as MapIcon, User, Shield, UtensilsCrossed, Droplets, Activity, Clock, Menu, ChevronLeft, HelpCircle } from 'lucide-react';
 import { useMapper } from '../../../context/useMapper';
 import { MapFilterBar } from '../../Mapper/MapFilterBar';
 
 import { useMumeTime } from '../../../hooks/useMumeTime';
 import InputArea from '../../Controls/InputArea';
-import { MapperRoomInfo } from '../../Mapper/MapperRoomInfo';
-import { RoomChipRows } from '../../Mapper/RoomChipRows';
+import OpponentRechargeTimer from '../../Combat/OpponentRechargeTimer';
+import { ActionTimerDisplay } from '../../HUD/ActionTimerDisplay';
 import { UiPositions, SwipeDirection } from '../../../types';
 import { GutterDrawerPanel } from './GutterDrawerPanel';
 import { AccountAnsiLine } from '../../Drawers/AccountAnsiLine';
 
 type CreationOption = { id: string; label: string };
 const EMPTY_CREATION_OPTIONS: CreationOption[] = [];
+const MOBILE_GUTTER_HEIGHT_KEY = 'mume.mobileGutterHeightPx';
+const MIN_MOBILE_GUTTER_HEIGHT = 180;
+const MAX_MOBILE_GUTTER_RATIO = 0.58;
 
 const capitalize = (str: string): string => {
     if (!str) return '';
@@ -62,6 +65,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     const { getLightingIcon, getWeatherIcon, lighting, weather } = env;
     const isExpanded = ui.mapExpanded;
     const { isKeyboardOpen } = viewport;
+    const gutterResizeRef = useRef<{ pointerId: number } | null>(null);
+    const [isGutterResizing, setIsGutterResizing] = useState(false);
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const isDarkMode = useSettingsStore(s => s.theme) === 'dark';
     const { viewZ, currentRoomId, rooms, activeMapFilter, mapSearchQuery, setActiveMapFilter, setMapSearchQuery } = useMapper();
@@ -80,6 +85,70 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     useEffect(() => {
         if (ui.drawer !== 'none') setLastShownDrawer(ui.drawer);
     }, [ui.drawer]);
+
+    useEffect(() => {
+        const app = document.querySelector<HTMLElement>('.app-container');
+        if (!app) return;
+        const isResizableGutterOpen = viewport.isMobile && !viewport.isLandscape && gameState !== 'account' && (ui.mapExpanded || ui.drawer !== 'none');
+        if (!isResizableGutterOpen) {
+            app.style.removeProperty('--mobile-gutter-height');
+            return;
+        }
+
+        const applySavedHeight = () => {
+            const saved = Number(window.localStorage.getItem(MOBILE_GUTTER_HEIGHT_KEY));
+            if (!Number.isFinite(saved) || saved <= 0) return;
+            const maxHeight = Math.round(window.innerHeight * MAX_MOBILE_GUTTER_RATIO);
+            const nextHeight = Math.max(MIN_MOBILE_GUTTER_HEIGHT, Math.min(maxHeight, saved));
+            app.style.setProperty('--mobile-gutter-height', `${nextHeight}px`);
+        };
+
+        applySavedHeight();
+        window.addEventListener('resize', applySavedHeight);
+        return () => window.removeEventListener('resize', applySavedHeight);
+    }, [gameState, ui.drawer, ui.mapExpanded, viewport.isLandscape, viewport.isMobile]);
+
+    const setMobileGutterHeight = React.useCallback((clientY: number) => {
+        const app = document.querySelector<HTMLElement>('.app-container');
+        if (!app) return;
+        const reservedRaw = getComputedStyle(app).getPropertyValue('--mobile-bottom-reserved-space').trim();
+        const reserved = Number.parseFloat(reservedRaw) || 0;
+        const maxHeight = Math.round(window.innerHeight * MAX_MOBILE_GUTTER_RATIO);
+        const desiredHeight = window.innerHeight - clientY - reserved;
+        const nextHeight = Math.max(MIN_MOBILE_GUTTER_HEIGHT, Math.min(maxHeight, Math.round(desiredHeight)));
+        app.style.setProperty('--mobile-gutter-height', `${nextHeight}px`);
+        window.localStorage.setItem(MOBILE_GUTTER_HEIGHT_KEY, String(nextHeight));
+    }, []);
+
+    const handleGutterResizeStart = React.useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+        if (!viewport.isMobile || viewport.isLandscape || isKeyboardOpen || gameState === 'account') return;
+        event.preventDefault();
+        event.stopPropagation();
+        gutterResizeRef.current = { pointerId: event.pointerId };
+        setIsGutterResizing(true);
+        event.currentTarget.setPointerCapture(event.pointerId);
+        setMobileGutterHeight(event.clientY);
+        triggerHaptic?.(10);
+    }, [gameState, isKeyboardOpen, setMobileGutterHeight, triggerHaptic, viewport.isLandscape, viewport.isMobile]);
+
+    const handleGutterResizeMove = React.useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+        if (!gutterResizeRef.current || gutterResizeRef.current.pointerId !== event.pointerId) return;
+        event.preventDefault();
+        event.stopPropagation();
+        setMobileGutterHeight(event.clientY);
+    }, [setMobileGutterHeight]);
+
+    const handleGutterResizeEnd = React.useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+        if (!gutterResizeRef.current || gutterResizeRef.current.pointerId !== event.pointerId) return;
+        event.preventDefault();
+        event.stopPropagation();
+        gutterResizeRef.current = null;
+        setIsGutterResizing(false);
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+            event.currentTarget.releasePointerCapture(event.pointerId);
+        }
+        triggerHaptic?.(6);
+    }, [triggerHaptic]);
 
 
     // --- Sticky options for smooth creation-screen transitions ---
@@ -876,7 +945,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     
     return (
         <div
-            className={`mobile-bottom-gutter ${isShown ? 'map-expanded' : ''}`}
+            className={`mobile-bottom-gutter ${isShown ? 'map-expanded' : ''}${isGutterResizing ? ' is-resizing' : ''}`}
             style={{
                 padding: '0',
                 display: 'flex',
@@ -885,6 +954,18 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 gap: '0'
             }}
         >
+            {gameState !== 'account' && (
+                <div
+                    className="mobile-gutter-resize-handle"
+                    aria-label="Resize map drawer"
+                    role="separator"
+                    aria-orientation="horizontal"
+                    onPointerDown={handleGutterResizeStart}
+                    onPointerMove={handleGutterResizeMove}
+                    onPointerUp={handleGutterResizeEnd}
+                    onPointerCancel={handleGutterResizeEnd}
+                />
+            )}
             {/* Horizontal slide-track holding [drawer | map] so switching between
                 them animates with the same swipe transition used between drawers. */}
             <div
@@ -935,7 +1016,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             touchAction: 'none'
                         }}
                     >
-                        {/* Header Group: Room Info + Tactical Buttons */}
+                        {/* Header Group: Tactical Buttons */}
                         <div style={{
                             position: 'absolute',
                             top: '0',
@@ -947,12 +1028,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             zIndex: 2800,
                             pointerEvents: 'none'
                         }}>
-                            <div style={{ width: '100%' }}>
-                                <MapperRoomInfo />
-                            </div>
-                            <RoomChipRows />
-
-                            {/* Persistent Tactical Buttons - now below the room card */}
+                            {/* Persistent Tactical Buttons */}
                             <div
                                 className="mobile-tactical-buttons-persistent"
                                 style={{
@@ -1118,6 +1194,14 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     </div>
                 )}
 
+                {gameState !== 'account' && (
+                    <div className="prompt-timer-lane mobile-prompt-timer-lane" aria-hidden="true">
+                        <OpponentRechargeTimer lane="player" />
+                        <ActionTimerDisplay />
+                        <OpponentRechargeTimer lane="opponent" />
+                    </div>
+                )}
+
                 <InputArea
                     onSend={handleSend}
                     onSwipe={handleInputSwipe}
@@ -1153,13 +1237,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     >
                         <User className="tab-icon" />
                         <span className="tab-text">Char</span>
-                    </div>
-                    <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('players'); }}
-                    >
-                        <Users className="tab-icon" />
-                        <span className="tab-text">Players</span>
                     </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'equipment' ? 'active' : ''}`}

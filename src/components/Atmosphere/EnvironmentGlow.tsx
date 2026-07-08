@@ -165,7 +165,7 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
             if (logEl) {
                 const logRect = logEl.getBoundingClientRect();
                 const parentRect = container.parentElement?.getBoundingClientRect();
-                const promptRect = document.querySelector('.control-card-wrapper')?.getBoundingClientRect();
+                const promptRect = (document.querySelector('.control-card-wrapper') || document.querySelector('.action-box'))?.getBoundingClientRect();
                 const gutterEl = document.querySelector('.mobile-bottom-gutter');
                 const gutterRect = gutterEl?.getBoundingClientRect();
                 if (parentRect) {

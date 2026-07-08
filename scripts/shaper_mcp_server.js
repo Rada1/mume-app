@@ -220,6 +220,7 @@ const upsertExit = (doc, fromId, spec, touched) => {
       keyMode: spec.keyMode ?? existing.keyMode,
       keyVnum: spec.keyVnum !== undefined ? clean(spec.keyVnum) : existing.keyVnum,
       doorFlags: spec.doorFlags ? asArray(spec.doorFlags).map(clean).filter(Boolean) : existing.doorFlags,
+      doorPickPercent: spec.doorPickPercent ?? existing.doorPickPercent,
       doorWeight: spec.doorWeight ?? existing.doorWeight,
       isClimb: spec.isClimb ?? existing.isClimb,
       climbDifficulty: spec.climbDifficulty ?? existing.climbDifficulty,
@@ -331,6 +332,10 @@ const roomPreview = (doc, roomId) => {
   });
   const nodes = Object.values(doc.commandNodes ?? {}).filter(node => node.roomId === roomId).sort((a, b) => a.order - b.order);
   if (nodes.length) commands.push(wrapAt(room.roomNumber, '/com kill all'), ...nodes.map(node => wrapAt(room.roomNumber, formatCom(node))));
+  Object.values(doc.exits ?? {}).filter(exit => exit.fromRoomId === roomId && exit.doorPickPercent !== undefined).forEach(exit => {
+    const pick = Math.max(0, Math.min(100, Math.round(exit.doorPickPercent || 0)));
+    commands.push(wrapAt(room.roomNumber, `/com add door ${exit.direction} lock ${pick} ${pick}`));
+  });
   const libs = Object.values(doc.libraries ?? {}).filter(lib => lib.targetType === 'room' && lib.targetId === roomId);
   libs.forEach((lib, index) => {
     commands.push(`/lib room ${room.roomNumber} add ${lib.name}`);
@@ -463,7 +468,8 @@ function executeTool(name, args) {
         direction: exit.direction,
         toRoomNumber: doc.rooms[exit.toRoomId]?.roomNumber,
         hasDoor: !!exit.hasDoor,
-        doorName: exit.doorName
+        doorName: exit.doorName,
+        doorPickPercent: exit.doorPickPercent
       }));
       return {
         data: {
@@ -492,6 +498,7 @@ function executeTool(name, args) {
         exitDescription: exit.exitDescription,
         hasDoor: !!exit.hasDoor,
         doorName: exit.doorName,
+        doorPickPercent: exit.doorPickPercent,
         doorFlags: exit.doorFlags,
         isClimb: !!exit.isClimb
       }));
@@ -728,6 +735,7 @@ function handleMessage(line) {
                                 twoWay: { type: 'boolean' },
                                 hasDoor: { type: 'boolean' },
                                 doorName: { type: 'string' },
+                                doorPickPercent: { type: 'number' },
                                 doorFlags: { type: 'array', items: { type: 'string' } }
                               },
                               required: ['direction', 'to']

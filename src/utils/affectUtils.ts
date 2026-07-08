@@ -51,6 +51,15 @@ const POISON_AFFECTS = new Set([
 
 // --- Logic Section ---
 
+export const parseStoredSpell = (affect: string): string | null => {
+    const match = affect.match(/^stored(?:\s+spell)?\s+(.+)$/i);
+    return match ? match[1].trim() : null;
+};
+
+export const capitalizeWords = (str: string): string => {
+    return str.replace(/\b\w/g, c => c.toUpperCase());
+};
+
 export const normalizeAffectName = (affect: string): string => (
     affect
         .toLowerCase()

@@ -910,24 +910,24 @@ export const drawTerrainIcon = (
 
                 const treesList: { xf: number; yf: number; scale: number }[] = [];
                 
-                // Distribute trees using a jittered 3x4 grid to ensure even, standardized coverage
-                for (let row = 0; row < 4; row++) {
-                    for (let col = 0; col < 3; col++) {
-                        // 15% chance to skip a tree to add natural density variance (averages 10-11 trees per tile)
+                // Distribute trees using a jittered 2x2 grid (max 4 trees, averages ~3.4 trees per tile)
+                for (let row = 0; row < 2; row++) {
+                    for (let col = 0; col < 2; col++) {
+                        // 15% chance to skip a tree
                         if (nextRand() < 0.15) continue;
 
                         // Nominal grid center
-                        const nominalX = -0.05 + col * 0.55; // Spans -0.05 to 1.05
-                        const nominalY = 0.10 + row * 0.26;  // Spans 0.10 to 0.88
+                        const nominalX = 0.20 + col * 0.60; // Spans 0.20 to 0.80
+                        const nominalY = 0.20 + row * 0.60; // Spans 0.20 to 0.80
 
                         // Apply random jitter to avoid a rigid appearance
-                        const jitterX = (nextRand() - 0.5) * 0.22;
-                        const jitterY = (nextRand() - 0.5) * 0.14;
+                        const jitterX = (nextRand() - 0.5) * 0.25;
+                        const jitterY = (nextRand() - 0.5) * 0.25;
 
                         treesList.push({
                             xf: nominalX + jitterX,
                             yf: nominalY + jitterY,
-                            scale: 0.35 + nextRand() * 0.15 // Scale ranges 0.35 to 0.50
+                            scale: 0.20 + nextRand() * 0.10 // Scale ranges 0.20 to 0.30
                         });
                     }
                 }
@@ -959,19 +959,19 @@ export const drawTerrainIcon = (
                 type TreeDef = [number, number, number];
                 const treeLayouts: TreeDef[][] = [
                     [
-                        [0.20, 0.12, 0.42], [0.72, 0.10, 0.58],
-                        [0.10, 0.45, 0.62], [0.52, 0.48, 0.45], [0.88, 0.44, 0.55],
-                        [0.35, 0.80, 0.50],
+                        [0.20, 0.12, 0.32],
+                        [0.10, 0.45, 0.30], [0.88, 0.44, 0.34],
+                        [0.35, 0.80, 0.28],
                     ],
                     [
-                        [0.18, 0.10, 0.60], [0.65, 0.12, 0.44],
-                        [0.40, 0.46, 0.55], [0.85, 0.42, 0.63],
-                        [0.12, 0.78, 0.46], [0.60, 0.80, 0.57],
+                        [0.18, 0.10, 0.32],
+                        [0.40, 0.46, 0.30], [0.85, 0.42, 0.34],
+                        [0.12, 0.78, 0.28],
                     ],
                     [
-                        [0.28, 0.10, 0.56], [0.80, 0.13, 0.43],
-                        [0.08, 0.48, 0.64], [0.55, 0.44, 0.48],
-                        [0.30, 0.78, 0.42], [0.82, 0.76, 0.59],
+                        [0.28, 0.10, 0.32],
+                        [0.08, 0.48, 0.30], [0.55, 0.44, 0.34],
+                        [0.82, 0.76, 0.28],
                     ]
                 ];
                 const trees = [...treeLayouts[variant % 3]].sort((a, b) => a[1] - b[1]);

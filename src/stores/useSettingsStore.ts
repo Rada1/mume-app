@@ -90,6 +90,8 @@ interface SettingsState {
     showLegacyButtons: boolean;
     showDeveloperTools: boolean;
     showSpectatePromptInLog: boolean;
+    showChatWindow: boolean;
+    showPlayersPanel: boolean;
     showControls: boolean;
     showOrganicTerrain: boolean;
     hidePrompt: boolean;
@@ -152,6 +154,8 @@ interface SettingsState {
     setShowLegacyButtons: (val: boolean) => void;
     setShowDeveloperTools: (val: boolean) => void;
     setShowSpectatePromptInLog: (val: boolean) => void;
+    setShowChatWindow: (val: boolean) => void;
+    setShowPlayersPanel: (val: boolean) => void;
     setShowControls: (val: boolean) => void;
     setShowOrganicTerrain: (val: boolean) => void;
     setHidePrompt: (val: boolean) => void;
@@ -286,6 +290,8 @@ export const useSettingsStore = create<SettingsState>()(
             showLegacyButtons: false,
             showDeveloperTools: false,
             showSpectatePromptInLog: true,
+            showChatWindow: false,
+            showPlayersPanel: false,
             showControls: true,
             showOrganicTerrain: true,
             hidePrompt: false,
@@ -358,6 +364,8 @@ export const useSettingsStore = create<SettingsState>()(
             setShowLegacyButtons: (showLegacyButtons) => set({ showLegacyButtons }),
             setShowDeveloperTools: (showDeveloperTools) => set({ showDeveloperTools }),
             setShowSpectatePromptInLog: (showSpectatePromptInLog) => set({ showSpectatePromptInLog }),
+            setShowChatWindow: (showChatWindow) => set({ showChatWindow }),
+            setShowPlayersPanel: (showPlayersPanel) => set({ showPlayersPanel }),
             setShowControls: (showControls) => set({ showControls }),
             setShowOrganicTerrain: (showOrganicTerrain) => set({ showOrganicTerrain }),
             setHidePrompt: (hidePrompt) => set({ hidePrompt }),
@@ -664,6 +672,8 @@ export const useSettingsStore = create<SettingsState>()(
                 };
                 merged.showBackgroundImage = merged.showBackgroundImage ?? true;
                 merged.optimisticMovement = merged.optimisticMovement ?? true;
+                merged.showChatWindow = merged.showChatWindow ?? false;
+                merged.showPlayersPanel = merged.showPlayersPanel ?? false;
                 let validFilters = merged.zoneFilters;
                 if (validFilters) {
                     const firstKey = Object.keys(validFilters)[0];

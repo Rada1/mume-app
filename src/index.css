@@ -70,6 +70,47 @@
     border-radius: 32px 32px 0 0;
 }
 
+.mobile-gutter-resize-handle {
+    position: absolute;
+    top: -12px;
+    left: 0;
+    right: 0;
+    height: 24px;
+    z-index: calc(var(--z-hud-interactive) + 8);
+    cursor: ns-resize;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+.mobile-gutter-resize-handle::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 9px;
+    width: 64px;
+    height: 3px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: rgba(232, 176, 32, 0.82);
+    box-shadow: 0 0 12px rgba(232, 176, 32, 0.35);
+    opacity: 0.72;
+}
+
+.mobile-bottom-gutter.is-resizing {
+    transition: none !important;
+}
+
+.mobile-bottom-gutter.is-resizing .mobile-gutter-resize-handle::before {
+    opacity: 1;
+    box-shadow: 0 0 16px rgba(232, 176, 32, 0.55);
+}
+
+.app-container.kb-open .mobile-gutter-resize-handle,
+.app-container.state-account .mobile-gutter-resize-handle,
+.app-container.is-landscape .mobile-gutter-resize-handle {
+    display: none;
+}
+
 .mobile-bottom-gutter::before {
     content: '';
     position: absolute;
@@ -916,7 +957,6 @@
 .light-mode .cmd-prompt-btn.parley-active {
     color: var(--accent) !important;
 }
-
 
 
 

@@ -37,6 +37,20 @@ describe('CaptureMiddleware', () => {
         expect(context.executeCommand).toHaveBeenCalledWith('look mail sent', true, false, false, false);
     });
 
+    it('classifies normal targeted look commands as examine capture', () => {
+        const context = createContext();
+
+        const result = CaptureMiddleware('look orc', context as any, {
+            silent: true,
+            isSystem: false,
+            fromDrawer: false
+        });
+
+        expect(result).toBeUndefined();
+        expect(context.captureStage.current).toBe('examine');
+        expect(context.executeCommand).not.toHaveBeenCalled();
+    });
+
     it('classifies shaper /num and /stat commands correctly', () => {
         const context = createContext();
 

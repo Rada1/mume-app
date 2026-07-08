@@ -59,12 +59,15 @@ export interface PopoverState {
     x: number;
     y: number;
     sourceHeight?: number;
+    sourceRect?: { left: number; top: number; width: number; height: number };
     type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'session-log' | 'help-card';
     setId: string; // The legacy command or set ID. Can still hold standard menu set IDs.
     kind?: EntityKind; 
     location?: EntityLocation; 
     category?: string;
-    context?: string; // Optional context like "Orc" or "Iron Sword"
+    context?: string; // Command keyword/target like "orc" or "sword"
+    displayName?: string; // Exact visible entity/object label from the log
+    keyword?: string; // Resolved command keyword shown separately from displayName
     entityId?: string; // Unique registry ID
     parentNoun?: string; // For things like "Orc corpse"
     accentColor?: string;
@@ -85,6 +88,13 @@ export interface PopoverState {
     helpData?: any;
     teleportId?: string;
     spellCommand?: string;
+    capturedExamineLines?: string[];
+    capturedConsiderLines?: string[];
+    isCapturingExamine?: boolean;
+    isCapturingConsider?: boolean;
+    capturedWhoisLines?: string[];
+    isCapturingWhois?: boolean;
+    openedByHover?: boolean;
 }
 
 export interface ButtonSetSettings {

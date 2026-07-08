@@ -46,7 +46,9 @@ gmcpBus.on('Char.Buffer', (data: any) => {
 
 gmcpBus.on('Room.Chars.Combat', (data: any) => {
     if (data.isSnooped) return;
-    useCombatStore.getState().applyRoomCharsCombat(data);
+    const store = useCombatStore.getState();
+    store.applyRoomCharsCombat(data);
+    store.applyEngagedOpponents(data);
 });
 
 // Use Room.Chars fighting field to pinpoint the exact opponent by GMCP ID.
@@ -69,11 +71,25 @@ const applyFightingYou = (char: any) => {
     if (char.name) store.setOpponentName(char.name);
 };
 
+const applyFightingYouList = (chars: any[]) => {
+    useCombatStore.getState().applyEngagedOpponents(chars);
+    const store = useCombatStore.getState();
+    const current = store.engagedOpponents.find(opponent => (
+        (store.opponentId !== null && opponent.id !== null && String(opponent.id) === String(store.opponentId)) ||
+        (!!store.opponentName && opponent.name.toLowerCase() === store.opponentName.toLowerCase())
+    ));
+    if (current) return;
+    const first = store.engagedOpponents[0];
+    if (!first) return;
+    if (first.id !== null) store.setOpponentId(first.id);
+    store.setOpponentName(first.name);
+};
+
 // Full Room.Chars.Set — scan all chars
 gmcpBus.on('Room.Chars', (data: any) => {
     if (data?.isSnooped) return;
     const rawList = Array.isArray(data) ? data : (data?.chars || data?.char || data?.list || []);
-    if (Array.isArray(rawList)) rawList.forEach(applyFightingYou);
+    if (Array.isArray(rawList)) applyFightingYouList(rawList);
 });
 
 // Per-occupant Add/Update — fires when an NPC enters the room or changes state

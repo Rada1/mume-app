@@ -525,15 +525,17 @@ const PromptBox: FC<PromptBoxProps> = ({
 
         const rect = e.currentTarget.getBoundingClientRect();
         setPopoverState({
-            x: rect.right,
-            y: rect.top + rect.height / 2,
+            x: rect.left + rect.width / 2,
+            y: rect.bottom,
+            sourceHeight: rect.height,
+            sourceRect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
             setId: 'cat-enemy',
             category: 'cat-enemy',
             context: opponentName,
             entityId: opponentEntityId,
             menuDisplay: 'list',
             accentColor: opponentColor || enemyColor,
-            preferSide: 'right'
+            preferSide: 'top'
         });
         triggerHaptic(20);
     }, [enemyColor, opponentColor, opponentEntityId, opponentName, popoverState?.entityId, setPopoverState, triggerHaptic]);

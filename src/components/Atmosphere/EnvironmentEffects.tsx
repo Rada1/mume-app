@@ -5,6 +5,8 @@ import { Embers } from './Embers';
 import { useInputStore } from '../../stores/useInputStore';
 import { EnvironmentGlow } from './EnvironmentGlow';
 
+const BACKGROUND_MAP_OPACITY = 0.10;
+
 interface EnvironmentEffectsProps {
     lighting: LightingType;
     weather: WeatherType;
@@ -20,7 +22,13 @@ interface EnvironmentEffectsProps {
 }
 
 const getLightingTint = (lighting: LightingType): string => {
-    return 'rgba(0, 0, 0, 0)'; // Tints disabled per user request
+    switch (lighting) {
+        case 'sun': return 'rgba(255, 235, 170, 0.22)';
+        case 'moon': return 'rgba(70, 110, 255, 0.4)';
+        case 'artificial': return 'rgba(180, 30, 20, 0.4)';
+        case 'dark': return 'rgba(0, 0, 15, 0.6)';
+        default: return 'rgba(0, 0, 0, 0)';
+    }
 };
 
 export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
@@ -75,13 +83,13 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     return (
         <div style={{ '--lightning-x': `${lightningX}%` } as React.CSSProperties}>
             {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
-            <div className={`environment-root back lighting-state-none terrain-${(terrain || 'default').toLowerCase().replace(/\s+/g, '-')} ${isWater ? 'water-motion-active' : ''} ${isForest ? 'forest-motion-active' : ''}`}>
+            <div className={`environment-root back lighting-state-${lighting || 'none'} terrain-${(terrain || 'default').toLowerCase().replace(/\s+/g, '-')} ${isWater ? 'water-motion-active' : ''} ${isForest ? 'forest-motion-active' : ''}`}>
                 {prevImage && (
                     <div 
                         className="background-layer" 
                         style={{ 
                             backgroundImage: `url(${prevImage})`,
-                            opacity: triggerFade ? 0 : 1,
+                            opacity: triggerFade ? 0 : BACKGROUND_MAP_OPACITY,
                             transition: 'opacity 300ms ease-in-out',
                         }} 
                     >
@@ -100,7 +108,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         className="background-layer" 
                         style={{ 
                             backgroundImage: `url(${currentImage})`,
-                            opacity: prevImage ? (triggerFade ? 1 : 0) : 1,
+                            opacity: prevImage ? (triggerFade ? BACKGROUND_MAP_OPACITY : 0) : BACKGROUND_MAP_OPACITY,
                             transition: prevImage ? 'opacity 300ms ease-in-out' : 'none',
                         }} 
                     >
@@ -114,11 +122,22 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         }} />
                     </div>
                 )}
+                <div className="client-lighting-overlay client-sun-overlay" />
+                <div className="client-lighting-overlay client-moon-overlay" />
+                <div className="client-lighting-overlay client-artificial-overlay" />
+                <div className="client-lighting-overlay client-dark-overlay" />
                 <EnvironmentGlow terrain={terrain || undefined} lighting={lighting} input={input} />
                 {isImmersionMode && (
                     <div className={`storm-overlay-layer ${weather === 'heavy-rain' ? 'active' : ''}`} />
                 )}
             </div>
+
+            {/* --- EMBER LAYER: Full-client particles above the map/drawer surface --- */}
+            {isImmersionMode && (
+                <div className="embers-client-layer">
+                    <Embers count={28} />
+                </div>
+            )}
 
             {/* --- FRONT LAYER: Atmospheric & Interactive [z-index: 4500+] --- */}
             <div className={`environment-root front`}>

@@ -6,7 +6,10 @@ import { useShallow } from 'zustand/react/shallow';
 import { getInlineGlowColor } from '../../utils/inlineActionModel';
 import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
 import { extractMumeKeyword } from '../../utils/gameUtils';
+import { classifyItemTier } from '../../utils/itemTier';
 import { isObjectSelected } from '../../utils/selectionUtils';
+import { Box, DoorOpen, UserRound } from 'lucide-react';
+import { NpcEntityIcon } from './EntityTypeIcons';
 
 import { MessageType } from '../../types';
 
@@ -24,6 +27,37 @@ const buildTargetMatcher = (target: string | null) => {
         value: normalized,
         regex: new RegExp(`(?:^|${TARGET_WORD_PATTERN})(${escapeRegex(normalized)})(?=${TARGET_WORD_PATTERN}|$)`, 'gi')
     };
+};
+
+const renderItemConditionText = (content: string, state?: string, stateLabel?: string): React.ReactNode => {
+    if (!state || !stateLabel) return content;
+
+    const stateText = `(${stateLabel})`;
+    const index = content.toLowerCase().indexOf(stateText);
+    if (index === -1) return content;
+
+    const before = content.slice(0, index);
+    const match = content.slice(index, index + stateText.length);
+    const after = content.slice(index + stateText.length);
+
+    return (
+        <>
+            {before}
+            <span className={`inline-item-condition item-state-${state}`}>{match}</span>
+            {after}
+        </>
+    );
+};
+
+export const getEntityTypeIcon = (categoryId?: string) => {
+    if (!categoryId || categoryId === 'cat-room') return null;
+    if (categoryId === 'cat-exit') return { kind: 'exit', label: 'Exit', icon: DoorOpen };
+    if (['cat-npc', 'cat-enemy', 'cat-neutral'].includes(categoryId)) return { kind: 'npc', label: 'Entity', icon: NpcEntityIcon };
+    if (['cat-ally', 'cat-ally-remote', 'cat-player', 'player'].includes(categoryId)) return { kind: 'ally', label: 'Ally', icon: UserRound };
+    if (categoryId.includes('object') || categoryId.includes('item') || categoryId === 'cat-container-item') {
+        return { kind: 'object', label: 'Object', icon: Box };
+    }
+    return null;
 };
 
 export interface TokenRendererProps {
@@ -169,12 +203,17 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             const entityId = propMetadata?.id || e.entityId;
             const isSelectedEntity = !!entityId && isObjectSelected(selectedObjectIds || new Set(), entityId, tokenCategoryId);
             if (!categoryAxes.isTargetable) isTargetMatch = false;
+            const isItemEntity = categoryAxes.isObject || tokenCategoryId === 'cat-container-item';
+            const itemTier = isItemEntity ? classifyItemTier(content) : undefined;
             
             if (isSelectedEntity) {
                 extraClasses.push('selected');
             } else if (isTargetMatch) {
                 extraClasses.push('is-target');
                 extraClasses.push('target-highlighter');
+            }
+            if (itemTier?.tier) {
+                extraClasses.push(`inline-item-tier-${itemTier.tier}`);
             }
 
             const isRoom = categoryAxes.family === 'room' || e.metadata?.kind === 'room';
@@ -245,32 +284,54 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 style.fontWeight = 'bold';
             }
 
-            return (
+            const typeIcon = getEntityTypeIcon(tokenCategoryId);
+            const button = (
                 <span 
-                    key={idx} 
                     {...props} 
                     style={Object.keys(style).length > 0 ? style : undefined}
                 >
-                    {content}
+                    {renderItemConditionText(content, itemTier?.state, itemTier?.stateLabel)}
+                    {typeIcon && (
+                        <span
+                            className={`inline-entity-type-icon inline-entity-type-${typeIcon.kind}`}
+                            aria-hidden="true"
+                            title={typeIcon.label}
+                            style={{
+                                marginLeft: '3px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                verticalAlign: 'middle',
+                                opacity: 0.85
+                            }}
+                        >
+                            <typeIcon.icon size={10} strokeWidth={2.6} />
+                        </span>
+                    )}
                 </span>
             );
+
+            return React.cloneElement(button, { key: idx });
         }
 
         switch (token.type) {
             case 'ansi':
                 const a = token as AnsiToken;
+                const ansiItemState = classifyItemTier(content);
                 return (
                     <span 
                         key={idx} 
                         style={a.style}
                         {...(isTargetMatch && targetMatcher ? getTargetHighlightProps() : {})}
                     >
-                        {targetMatcher && !isTargetMatch ? renderTextWithTarget(content, idx) : content}
+                        {targetMatcher && !isTargetMatch
+                            ? renderTextWithTarget(content, idx)
+                            : renderItemConditionText(content, ansiItemState.state, ansiItemState.stateLabel)}
                     </span>
                 );
             
             case 'text':
             default:
+                const textItemState = classifyItemTier(content);
                 if (targetMatcher && !isTargetMatch) {
                     return renderTextWithTarget(content, idx);
                 }
@@ -279,7 +340,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                         key={idx} 
                         {...(isTargetMatch && targetMatcher ? getTargetHighlightProps() : {})}
                     >
-                        {content}
+                        {renderItemConditionText(content, textItemState.state, textItemState.stateLabel)}
                     </span>
                 );
         }

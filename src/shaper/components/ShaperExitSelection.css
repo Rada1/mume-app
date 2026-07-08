@@ -1,0 +1,21 @@
+/**
+ * @file ShaperExitSelection.css
+ * @description Click and selected states for Shaper tile exit markers.
+ */
+
+.shaper-room-tile .shaper-mmapper-door,
+.shaper-room-tile .shaper-vert-exit {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.shaper-room-tile .shaper-mmapper-door:hover,
+.shaper-room-tile .shaper-vert-exit:hover {
+    outline: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.shaper-room-tile .shaper-mmapper-door.selected,
+.shaper-room-tile .shaper-vert-exit.selected {
+    outline: 2px solid #38bdf8;
+    z-index: 6;
+}

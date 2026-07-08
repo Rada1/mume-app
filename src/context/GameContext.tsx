@@ -170,7 +170,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Stable message routing: ensure snoop lines always land in the spectate bucket 
     // regardless of which view is currently active. This prevents "leaking" snoop 
     // data into the main log or losing our own tells while viewing the target.
-    const routedAddMessage = React.useCallback((type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: any, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: any, commTextTokens?: any, providedCombatSide?: any, providedIsHitImpact?: boolean, providedIsDamageImpact?: boolean, providedIsAvoidDamageImpact?: boolean, providedIsMissImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => {
+    const routedAddMessage = React.useCallback((type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: any, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: any, commTextTokens?: any, providedCombatSide?: any, providedIsHitImpact?: boolean, providedIsDamageImpact?: boolean, providedIsAvoidDamageImpact?: boolean, providedIsMissImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean, providedIsRipMessage?: boolean, providedIsSocial?: boolean) => {
         const textOnly = (precalculated?.textOnly || text || '').replace(/\x1b\[[0-9;]*m/g, '').trim();
         const looksLikePrompt = textOnly.length <= 80 && (
             type === 'prompt' ||
@@ -190,7 +190,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Bump activity for atmospheric effects
         s.bumpActivity();
 
-        const args = [type, text, extra, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, isSystem, replyTarget, replyCommand, commSender, commAction, commText, commColor, commSenderTokens, commTextTokens, providedCombatSide, providedIsHitImpact, providedIsDamageImpact, providedIsAvoidDamageImpact, providedIsMissImpact, providedIsHitterImpact, providedIsSnoop, providedIsSnoopInput] as const;
+        const args = [type, text, extra, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, isSystem, replyTarget, replyCommand, commSender, commAction, commText, commColor, commSenderTokens, commTextTokens, providedCombatSide, providedIsHitImpact, providedIsDamageImpact, providedIsAvoidDamageImpact, providedIsMissImpact, providedIsHitterImpact, providedIsSnoop, providedIsSnoopInput, providedIsRipMessage, providedIsSocial] as const;
         if (type === 'snoop' || type === 'snoop-command' || type === 'snoop-vitals' || providedIsSnoop) {
             (s.spectateSession.log.addMessage as any)(...args);
         } else {
@@ -218,6 +218,20 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             telnetRef.current.sendGMCP("Mume.Client.Write", {
                 id: isNaN(editId) ? s.mumeEditState.key : editId,
                 text: text
+            });
+        }
+        s.setMumeEditState(prev => ({ ...prev, isOpen: false, context: null }));
+    }, [s.mumeEditState.key, s.setMumeEditState]);
+
+    // Abandons an edit session without saving — releases MUME's server-side edit
+    // lock (unlike just dropping local state, which leaves the session open and
+    // makes the next "change ..." command fail with "You are already editing
+    // that text.").
+    const handleCancelMumeEdit = useCallback(() => {
+        if (s.mumeEditState.key && telnetRef.current) {
+            const editId = Number(s.mumeEditState.key);
+            telnetRef.current.sendGMCP("Mume.Client.CancelEdit", {
+                id: isNaN(editId) ? s.mumeEditState.key : editId
             });
         }
         s.setMumeEditState(prev => ({ ...prev, isOpen: false, context: null }));
@@ -340,9 +354,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     payload.commSender, payload.commAction, payload.commText, payload.commColor,
                     undefined, undefined,
                     payload.providedCombatSide, payload.providedIsHitImpact,
-                    payload.providedIsDamageImpact, payload.isAvoidDamageImpact,
-                    payload.isMissImpact, payload.providedIsHitterImpact,
-                    payload.providedIsSnoop, payload.providedIsSnoopInput
+                    payload.providedIsDamageImpact, payload.providedIsAvoidDamageImpact,
+                    payload.providedIsMissImpact, payload.providedIsHitterImpact,
+                    payload.providedIsSnoop, payload.providedIsSnoopInput,
+                    payload.providedIsRipMessage, payload.providedIsSocial ?? payload.isSocial
                 );
             } else {
                 // Raw text (older logs) — add as plain game message, no parser
@@ -1003,6 +1018,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         parser,
         ...controller,
         handleSaveMumeEdit,
+        handleCancelMumeEdit,
         setRoomChars: s.setRoomChars,
         addMessage,
         btn,
@@ -1056,7 +1072,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         viewport, env, audioCtxRef, initAudio, spatButtons, ui.diagnosticLogs,
         practice, help, quests, keywordOverrides,
         s.userSession.recorder, mapperRef, sessionMode, setSessionMode,
-        discordActivity, handleSaveMumeEdit
+        discordActivity, handleSaveMumeEdit, handleCancelMumeEdit
     ]);
 
     return (

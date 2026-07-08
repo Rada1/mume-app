@@ -1,6 +1,6 @@
 .mapper-room-info-container {
     position: absolute;
-    top: 10px;
+    top: 54px;
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 40px);
@@ -16,10 +16,12 @@
     background: rgba(13, 16, 23, 0.62);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--terrain-glow-color, rgba(255, 255, 255, 0.08));
     padding: 6px 20px 16px; /* Increased bottom padding for better spacing */
     border-radius: var(--radius-card);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    /* Thin inset gold line just inside the outer border, for a light
+       ornamental-frame feel around the whole card. */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 0 24px var(--terrain-glow-color, transparent), inset 0 0 0 1px rgba(232, 176, 32, 0.16);
     text-align: center;
     width: 100%;
     display: flex;
@@ -27,11 +29,40 @@
     gap: 4px;
     pointer-events: auto; /* Enable tapping on the card */
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
 .mapper-room-info-container.expanded .mri-content {
     background: rgba(13, 16, 23, 0.62);
+}
+
+/* Ornamental divider above the room name — flanking gradient lines with a
+   small gold glyph in the center, mirrors the mume.org fantasy chrome. */
+.mri-ornament-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 2px;
+    color: #e8b020;
+    opacity: 0.8;
+}
+
+.mri-ornament-line {
+    flex: 1 1 auto;
+    max-width: 140px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, currentColor, transparent);
+}
+
+.mri-ornament-glyph {
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 3px rgba(232, 176, 32, 0.6));
+}
+
+.light-mode .mri-ornament-divider {
+    color: #97711f;
 }
 
 /* Desktop mode */
@@ -41,12 +72,64 @@
         backdrop-filter: blur(10px) !important;
         -webkit-backdrop-filter: blur(10px) !important;
         border: none !important;
+        border-top: 1px solid var(--terrain-glow-color, rgba(255, 255, 255, 0.08)) !important;
         border-radius: var(--radius-card) !important;
-        box-shadow: none !important;
+        box-shadow: inset 0 0 30px var(--terrain-glow-color, transparent), inset 0 0 0 1px rgba(232, 176, 32, 0.14) !important;
+        padding: 10px 18px 12px !important;
+        gap: 0 !important;
     }
 
     .mapper-room-info-container.expanded .mri-content {
         background: rgba(13, 16, 23, 0.62) !important;
+    }
+
+    .desktop-log-room-card-wrapper .mri-labeled-chip-block {
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    .desktop-log-room-card-wrapper .mri-current-room-block {
+        padding: 0 18px 6px !important;
+    }
+
+    .desktop-log-room-card-wrapper .mri-room-corner {
+        display: none;
+    }
+
+    .desktop-log-room-card-wrapper .mri-name {
+        padding: 0 !important;
+    }
+
+    .desktop-log-room-card-wrapper .mri-desc {
+        margin-top: 0;
+        text-align: center;
+    }
+
+    .desktop-log-room-card-wrapper .mri-room-main-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        align-items: stretch;
+        gap: 14px;
+        width: 100%;
+        min-height: 92px;
+    }
+
+    .desktop-log-room-card-wrapper .mri-room-text-column {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+        gap: 7px;
+    }
+
+    .desktop-log-room-card-wrapper .mri-room-text-column .mri-desc {
+        display: block;
+        max-height: 4.4em;
+        overflow-y: auto;
+        -webkit-line-clamp: unset;
     }
 }
 
@@ -68,11 +151,12 @@
 }
 
 .mri-name {
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: 800;
     letter-spacing: 0.2px;
     text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
     padding: 0 40px; /* Room for the env status on the right */
+    text-align: center;
 }
 
 .mri-env-status {
@@ -132,15 +216,15 @@
 
 .mri-desc {
     font-family: var(--font-main);
-    font-size: 0.72rem;
+    font-size: 0.84rem;
     font-style: italic;
     color: #cbd5e1;
     line-height: 1.25;
-    max-height: 6em; /* Shorter vertical footprint */
+    max-height: 1.25em; /* Shorter vertical footprint */
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 5; /* Capped to 5 lines on desktop */
+    -webkit-line-clamp: 1; /* Capped to 1 line on desktop */
     -webkit-box-orient: vertical;
     opacity: 0.85;
     letter-spacing: -0.01em;
@@ -165,7 +249,7 @@
         top: 0;
         left: 0;
         transform: none;
-        padding: 10px 10px 0 10px;
+        padding: 34px 10px 0 10px;
         box-sizing: border-box;
     }
     
@@ -209,8 +293,8 @@
     .mri-desc { 
         font-size: 0.55rem; 
         line-height: 1.1;
-        -webkit-line-clamp: 3;
-        max-height: 3.4em;
+        -webkit-line-clamp: 1;
+        max-height: 1.1em;
         opacity: 0.9;
         transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -247,4 +331,197 @@
     opacity: 0;
     animation: descWordReveal 1.2s ease both;
     display: inline;
+}
+
+/* Current-room corner brackets — mirrors the white viewfinder corners the map
+   draws around the player's tile, so the room card reads as "you are here" too. */
+.mri-current-room-block {
+    position: relative;
+}
+
+.mri-room-flag-indicator {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: rgba(255, 255, 255, 0.45);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1;
+    pointer-events: auto;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+.desktop-log-room-card-wrapper .mri-room-flag-indicator {
+    left: 18px;
+}
+
+.mri-room-flag-indicator:hover,
+.mri-room-flag-indicator.is-open {
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.mri-room-flag-popover {
+    position: absolute;
+    top: 24px;
+    left: 0;
+    z-index: 6;
+    width: min(220px, 70vw);
+    padding: 8px;
+    border: 1px solid rgba(232, 176, 32, 0.22);
+    border-radius: 6px;
+    background: rgba(9, 12, 18, 0.96);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.42);
+    pointer-events: auto;
+    text-align: left;
+}
+
+.desktop-log-room-card-wrapper .mri-room-flag-popover {
+    left: 18px;
+}
+
+.mri-room-flag-popover-title {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 6px;
+    color: rgba(232, 176, 32, 0.92);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.mri-room-flag-popover-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    max-height: 178px;
+    overflow-y: auto;
+}
+
+.mri-room-flag-popover-chip {
+    padding: 2px 6px;
+    border: 1px solid rgba(232, 176, 32, 0.18);
+    border-radius: 4px;
+    background: rgba(232, 176, 32, 0.08);
+    color: rgba(255, 255, 255, 0.82);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.light-mode .mri-room-flag-popover {
+    background: rgba(244, 244, 244, 0.96);
+    border-color: rgba(168, 122, 42, 0.24);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.16);
+}
+
+.light-mode .mri-room-flag-popover-chip {
+    color: rgba(15, 23, 42, 0.82);
+}
+
+.mri-room-main-grid {
+    width: 100%;
+}
+
+.mri-room-text-column {
+    min-width: 0;
+}
+
+.mri-room-action-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    padding: 2px 18px 0;
+    box-sizing: border-box;
+    pointer-events: auto;
+}
+
+.mri-room-action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 22px;
+    padding: 3px 9px;
+    border: 1px solid color-mix(in srgb, var(--room-action-color, var(--accent)) 42%, transparent);
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--room-action-color, var(--accent)) 13%, transparent);
+    color: color-mix(in srgb, var(--room-action-color, var(--accent)) 88%, white);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.66rem;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.mri-room-action-button:hover {
+    background: color-mix(in srgb, var(--room-action-color, var(--accent)) 22%, transparent);
+    border-color: color-mix(in srgb, var(--room-action-color, var(--accent)) 62%, transparent);
+}
+
+.mri-room-action-button:active {
+    transform: translateY(1px);
+}
+
+.light-mode .mri-room-action-button {
+    color: color-mix(in srgb, var(--room-action-color, #8a6620) 72%, #111827);
+}
+
+.mri-room-corner {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.75));
+}
+
+.mri-room-corner.tl {
+    top: -4px;
+    left: -4px;
+    border-top: 2px solid rgba(255, 255, 255, 0.95);
+    border-left: 2px solid rgba(255, 255, 255, 0.95);
+    border-top-left-radius: 4px;
+}
+
+.mri-room-corner.tr {
+    top: -4px;
+    right: -4px;
+    border-top: 2px solid rgba(255, 255, 255, 0.95);
+    border-right: 2px solid rgba(255, 255, 255, 0.95);
+    border-top-right-radius: 4px;
+}
+
+.mri-room-corner.bl {
+    bottom: -4px;
+    left: -4px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.95);
+    border-left: 2px solid rgba(255, 255, 255, 0.95);
+    border-bottom-left-radius: 4px;
+}
+
+.mri-room-corner.br {
+    bottom: -4px;
+    right: -4px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.95);
+    border-right: 2px solid rgba(255, 255, 255, 0.95);
+    border-bottom-right-radius: 4px;
+}
+
+@media (max-width: 600px) {
+    .mri-room-corner {
+        width: 9px;
+        height: 9px;
+    }
 }

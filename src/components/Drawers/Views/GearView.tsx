@@ -6,7 +6,7 @@
 import React, { useMemo } from 'react';
 import { DrawerLine, GmcpOccupant } from '../../../types';
 import { useVitalsStore } from '../../../stores/useVitalsStore';
-import { resolveRaceBackground } from '../../../utils/raceBackgrounds';
+import { useCharacterAvatar } from '../../../hooks/useCharacterAvatar';
 import { DrawerTabBar } from '../DrawerTabBar';
 import { UnifiedView } from './UnifiedView';
 import { useGame } from '../../../context/GameContext';
@@ -37,50 +37,9 @@ export const GearView: React.FC<GearViewProps> = ({
     renderHoldActions,
 }) => {
     const characterInfo = useVitalsStore(state => state.characterInfo);
-    const position = useVitalsStore(state => state.position);
     const { viewport } = useGame();
 
-    const isMounted = position?.toLowerCase() === 'riding' || position?.toLowerCase() === 'mounted';
-
-    // Resolve avatar from the Avatars folder
-    const avatarSrc = useMemo(() => {
-        if (!characterInfo.race) return null;
-        const normRace = characterInfo.race.toLowerCase().trim();
-
-        // Handle mounted states
-        if (isMounted) {
-            if (normRace === 'dwarf') return '/assets/Pictures/Avatars/dwarfonpony.png';
-            if (normRace === 'elf') return '/assets/Pictures/Avatars/elfonhorse.png';
-            if (normRace === 'man' || normRace === 'numenorean' || normRace === 'númenórean') return '/assets/Pictures/Avatars/manonhorse.png';
-        }
-
-        // Handle specific video test for Elves
-        // Handle specific video test for Elves
-        if (normRace.includes('elf') && !normRace.includes('half')) {
-            return '/assets/Pictures/Avatars/elf.mp4';
-        }
-
-        // Handle gif standard avatars
-        if (normRace.includes('hobbit')) {
-            return '/assets/Pictures/Avatars/hobbit.gif';
-        }
-        if (normRace.includes('man') || normRace.includes('numenorean') || normRace.includes('númenórean') || normRace.includes('ainu') || normRace.includes('ainur')) {
-            return '/assets/Pictures/Avatars/man.gif';
-        }
-        if (normRace.includes('orc')) {
-            const normSub = (characterInfo.subrace || '').toLowerCase();
-            if (normSub.includes('tark') || normSub.includes('black') || normSub.includes('morruhk')) {
-                return '/assets/Pictures/Avatars/blackorc.png';
-            }
-            return '/assets/Pictures/Avatars/orc.gif';
-        }
-        if (normRace.includes('troll')) {
-            return '/assets/Pictures/Avatars/troll.gif';
-        }
-
-        // Fallback to standard race backgrounds mapping
-        return resolveRaceBackground(characterInfo.race);
-    }, [characterInfo.race, characterInfo.subrace, isMounted]);
+    const { src: avatarSrc, isMounted } = useCharacterAvatar();
 
     // Build room object lines for Vicinity tab
     const roomObjectLines = useMemo<DrawerLine[]>(() => {
@@ -130,7 +89,7 @@ export const GearView: React.FC<GearViewProps> = ({
                     }}
                 >
                     {/* 1. Worn Tab with Avatar */}
-                    <div className="drawer-tab-slide" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                    <div className="drawer-tab-slide gear-worn-tab" style={{ width: '33.333%', height: '100%', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
                         <UnifiedView
                             lines={displayEqLines}
                             category="cat-worn-object"
@@ -143,8 +102,10 @@ export const GearView: React.FC<GearViewProps> = ({
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 padding: '16px 10px',
-                                background: 'rgba(0,0,0,0.15)',
-                                borderTop: '1px solid rgba(255,255,255,0.05)',
+                                background: 'rgba(13,16,23,0.9)',
+                                backdropFilter: 'blur(8px)',
+                                WebkitBackdropFilter: 'blur(8px)',
+                                borderTop: '1px solid rgba(255,255,255,0.08)',
                             }}>
                                 <div style={{
                                     position: 'relative',

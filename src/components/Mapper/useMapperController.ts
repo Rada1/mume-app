@@ -7,7 +7,16 @@
 import { useState, useEffect, useImperativeHandle } from 'react';
 import { useMapper } from '../../context/useMapper';
 
-export const useMapperController = (characterName: string | null, ref: React.Ref<any>, options: { onRecenter?: () => void, triggerRender?: () => void } = {}) => {
+export const useMapperController = (
+    characterName: string | null,
+    ref: React.Ref<any>,
+    options: {
+        onRecenter?: () => void,
+        triggerRender?: () => void,
+        cameraRef?: React.MutableRefObject<{ x: number; y: number; zoom: number }>,
+        canvasRef?: React.MutableRefObject<HTMLCanvasElement | null>
+    } = {}
+) => {
     const context = useMapper();
     // console.log('[Mapper] useMapperController re-render', { characterName, hasRef: !!ref });
     const {
@@ -17,7 +26,8 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         handleResetAndSync, handleSyncLocation, handleClearMap,
         handleAddRoom, handleDeleteRoom, pushPendingMove,
         handleMoveConfirmed, handleMoveFailure, preMoveRef,
-        triggerRender: contextTriggerRender, renderVersion
+        triggerRender: contextTriggerRender, renderVersion,
+        playerPosRef
     } = context;
 
     // Instance-specific UI state that doesn't need to be global
@@ -42,7 +52,10 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
             preMoveRef.current = { dir, targetId, time: Date.now() };
             contextTriggerRender();
         },
-    }), [handleRoomInfo, handleUpdateExits, handleTerrain, handleAddRoom, handleDeleteRoom, handleResetAndSync, handleMoveConfirmed, handleMoveFailure, options.onRecenter, currentRoomIdRef, roomsRef, preloadedCoordsRef, pushPendingMove, preMoveRef, contextTriggerRender]);
+        cameraRef: options.cameraRef,
+        canvasRef: options.canvasRef,
+        playerPosRef,
+    }), [handleRoomInfo, handleUpdateExits, handleTerrain, handleAddRoom, handleDeleteRoom, handleResetAndSync, handleMoveConfirmed, handleMoveFailure, options.onRecenter, currentRoomIdRef, roomsRef, preloadedCoordsRef, pushPendingMove, preMoveRef, contextTriggerRender, options.cameraRef, options.canvasRef, playerPosRef]);
 
 
     return {

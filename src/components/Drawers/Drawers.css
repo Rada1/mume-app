@@ -49,11 +49,14 @@
 
 @media (min-width: 1025px) {
     .log-card-drawer {
-        right: var(--desktop-right-right, 1vw);
-        top: var(--desktop-right-top, 6vh);
-        bottom: var(--desktop-right-bottom, 6vh);
+        right: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
         width: var(--desktop-right-width, calc((100vw - clamp(600px, 38vw, 1000px)) / 2 - 2vw));
-        border-radius: var(--radius-card);
+        border-radius: 0 !important;
+        border: none !important;
+        border-left: 1px solid rgba(255, 255, 255, 0.07) !important;
+        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.35) !important;
     }
 }
 
@@ -101,7 +104,7 @@
 
 .drawer-header {
     padding: 10px 16px;
-    border-bottom: 1px solid rgba(212, 170, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -166,6 +169,20 @@
 .drawer-content .pc-highlighter,
 .drawer-content .npc-highlighter {
     font-weight: 800 !important;
+}
+
+/* Worn-equipment list: a soft translucent white rather than the object accent
+   color, so gear reads like a quiet overlay (Valorant-style loadout text)
+   instead of competing for attention like targetable inline entities do. */
+.gear-worn-tab .inline-btn {
+    color: rgba(255, 255, 255, 0.92) !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
+}
+
+.gear-worn-tab .inline-btn.is-target,
+.gear-worn-tab .inline-btn.selected {
+    color: var(--glow-color) !important;
 }
 
 .app-container.drawer-targeting-active .drawer-content .inline-btn,
@@ -385,6 +402,20 @@
 }
 
 /* Map Drawer Desktop (Left Side) */
+.left-drawer-stack {
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    left: var(--drawer-margin);
+    left: max(var(--drawer-margin), calc(50% - var(--log-max-width)/2 - var(--drawer-width) - var(--drawer-gap)));
+    width: var(--drawer-width);
+    z-index: var(--z-drawer);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
 .map-drawer-desktop {
     position: absolute;
     top: 20px;
@@ -423,12 +454,56 @@
 }
 
 @media (min-width: 1025px) {
+    .left-drawer-stack {
+        left: 0 !important;
+        /* Match the log column's actual top/bottom edges instead of the full viewport,
+           so the drawer sits between the sky-art strip and the terrain strip instead of
+           overlapping them. */
+        top: var(--log-sky-top-offset, 0px) !important;
+        bottom: var(--log-terrain-bottom-offset, 0px) !important;
+        width: var(--desktop-map-width, calc((100vw - clamp(600px, 38vw, 1000px)) / 2 - 2vw));
+        gap: 0 !important;
+    }
+
+    .left-drawer-stack .map-drawer-desktop {
+        position: relative;
+        inset: auto;
+        left: auto;
+        top: auto;
+        bottom: auto;
+        width: 100%;
+        flex: 1 1 auto;
+        min-height: 260px;
+        pointer-events: auto;
+        border-radius: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .left-drawer-stack .map-drawer-desktop:not(:last-child) {
+        border-bottom: none !important;
+    }
+
+    /* Room card panel hugs its content instead of splitting space evenly
+       with the map panel below it. */
+    .left-drawer-stack .room-card-drawer-desktop {
+        flex: 0 0 auto;
+        min-height: 0;
+    }
+
     .map-drawer-desktop {
         left: var(--desktop-map-left, 1vw);
         top: var(--desktop-map-top, 6vh);
         bottom: var(--desktop-map-bottom, 6vh);
         width: var(--desktop-map-width, calc((100vw - clamp(600px, 38vw, 1000px)) / 2 - 2vw));
         border-radius: var(--radius-card);
+    }
+
+    .map-drawer-desktop > .drawer-header {
+        display: none !important;
     }
 }
 
@@ -443,29 +518,148 @@
     height: auto;
 }
 
-.map-drawer-desktop .mapper-header-desktop {
-    top: 0;
-}
-
-.map-drawer-desktop .left-shell-tabs {
-    position: relative;
-    left: auto;
-    right: auto;
-    bottom: auto;
-    z-index: 3300;
-    flex-shrink: 0;
-    pointer-events: auto;
-    justify-content: center;
-}
-
-.map-drawer-desktop .left-shell-tabs .desktop-edge-tab {
-    flex: 0 0 auto;
-    width: 25%;
-    min-width: 80px;
-    max-width: 140px;
-}
-
 .map-drawer-desktop.open {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Character Drawer Desktop (Right Side) — mirrors .left-drawer-stack / .map-drawer-desktop */
+.right-drawer-stack {
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    right: var(--drawer-margin);
+    right: max(var(--drawer-margin), calc(50% - var(--log-max-width)/2 - var(--drawer-width) - var(--drawer-gap)));
+    width: var(--drawer-width);
+    z-index: var(--z-drawer);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.character-drawer-desktop {
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    right: var(--drawer-margin);
+    /* Flanking Logic: Aligns left edge of drawer to (center + logRadius + gap) */
+    right: max(var(--drawer-margin), calc(50% - var(--log-max-width)/2 - var(--drawer-width) - var(--drawer-gap)));
+    width: var(--drawer-width);
+    background: #0a0d15;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid rgba(212, 170, 0, 0.2);
+    border-radius: var(--radius-card);
+    z-index: var(--z-drawer);
+    transform: translateX(20px);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, box-shadow 0.8s ease;
+    box-shadow: 0 0 20px rgba(212, 170, 0, 0.35), 0 4px 14px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.character-drawer-desktop > .drawer-header {
+    position: relative;
+    z-index: 3400;
+    flex: 0 0 auto;
+    background: rgba(212, 170, 0, 0.05);
+    border-bottom: 1px solid rgba(212, 170, 0, 0.3);
+    pointer-events: auto;
+}
+
+@media (min-width: 1025px) {
+    .right-drawer-stack {
+        right: 0 !important;
+        /* Mirrors .left-drawer-stack: match the log's actual top/bottom edges so this
+           drawer sits between the sky-art strip and the terrain strip instead of
+           overlapping them. */
+        top: var(--log-sky-top-offset, 0px) !important;
+        bottom: var(--log-terrain-bottom-offset, 0px) !important;
+        width: var(--desktop-character-width, calc((100vw - clamp(600px, 38vw, 1000px)) / 2 - 2vw));
+        gap: 0 !important;
+    }
+
+    .right-drawer-stack .character-drawer-desktop {
+        position: relative;
+        inset: auto;
+        right: auto;
+        top: auto;
+        bottom: auto;
+        width: 100%;
+        flex: 0 0 calc(100% - 96px);
+        margin: 48px 0;
+        min-height: 260px;
+        pointer-events: auto;
+        border-radius: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .character-drawer-desktop {
+        right: var(--desktop-character-right, 1vw);
+        top: var(--desktop-character-top, 6vh);
+        bottom: var(--desktop-character-bottom, 6vh);
+        width: var(--desktop-character-width, calc((100vw - clamp(600px, 38vw, 1000px)) / 2 - 2vw));
+        border-radius: var(--radius-card);
+    }
+
+    .character-drawer-desktop > .drawer-header {
+        display: none !important;
+    }
+}
+
+.character-drawer-desktop .drawer-content {
+    position: relative !important;
+    inset: auto;
+    bottom: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+}
+
+.character-drawer-content {
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+.character-drawer-card-pane {
+    flex: 1 1 56%;
+    min-height: 0;
+    display: flex;
+    overflow: hidden;
+}
+
+.character-drawer-action-pane {
+    flex: 0 0 44%;
+    min-height: 230px;
+    max-height: 50%;
+    display: flex;
+    overflow: hidden;
+    border-top: 1px solid rgba(212, 170, 0, 0.2);
+    background: rgba(7, 10, 16, 0.72);
+}
+
+.character-drawer-action-pane .action-box {
+    height: 100%;
+    min-height: 0;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.character-drawer-desktop.open {
     transform: translateX(0);
     opacity: 1;
     visibility: visible;
@@ -511,10 +705,32 @@
 /* Mume.org-themed backgrounds for desktop drawers */
 @media (min-width: 1025px) {
     .map-drawer-desktop {
-        background: #0a0d15 !important;
         border: none !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .map-drawer-desktop .drawer-content {
+        background: transparent !important;
+    }
+
+    .map-canvas-full-viewport {
+        background: transparent !important;
+    }
+
+    .character-drawer-desktop {
+        border: none !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        box-shadow: none !important;
+    }
+
+    .character-drawer-desktop .drawer-content,
+    .character-drawer-content {
+        background: transparent !important;
     }
 
     .log-card-drawer {
@@ -595,12 +811,41 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
 }
 
+.light-mode .character-drawer-desktop {
+    background: #f2f2f7 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
 .light-mode .log-card-drawer {
     background: rgba(255, 255, 255, 0.6) !important;
     backdrop-filter: blur(16px) saturate(1.8) !important;
     -webkit-backdrop-filter: blur(16px) saturate(1.8) !important;
     border-color: rgba(0, 0, 0, 0.08) !important;
     box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+@media (min-width: 1025px) {
+    .light-mode .left-drawer-stack .map-drawer-desktop {
+        background: transparent !important;
+        border-right-color: transparent !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+    .light-mode .left-drawer-stack .map-drawer-desktop:not(:last-child) {
+        border-bottom-color: transparent !important;
+    }
+    .light-mode .right-drawer-stack .character-drawer-desktop {
+        background: transparent !important;
+        border-left-color: transparent !important;
+        box-shadow: none !important;
+    }
+    .light-mode .log-card-drawer {
+        border-left: 1px solid rgba(0, 0, 0, 0.08) !important;
+    }
 }
 
 .light-mode .portrait-tab-bar {
@@ -614,7 +859,8 @@
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
-.immersion-mode .map-drawer-desktop {
+.immersion-mode .map-drawer-desktop,
+.immersion-mode .character-drawer-desktop {
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
@@ -784,4 +1030,349 @@
 
 .light-mode .drawer-zoom-value {
     color: rgba(0, 0, 0, 0.6);
+}
+
+@media (min-width: 1025px) {
+    /* Hide top/bottom resize handles on desktop drawers since they are full-height */
+    .drawer-resize-handle--top,
+    .drawer-resize-handle--bottom,
+    .drawer-resize-handle--top-left,
+    .drawer-resize-handle--top-right,
+    .drawer-resize-handle--bottom-left,
+    .drawer-resize-handle--bottom-right {
+        display: none !important;
+    }
+
+    /* Hide outer resize handles since drawers hug the screen boundaries */
+    .left-drawer-stack .drawer-resize-handle--left {
+        display: none !important;
+    }
+    .right-drawer-stack .drawer-resize-handle--right,
+    .log-card-drawer .drawer-resize-handle--right {
+        display: none !important;
+    }
+}
+
+/* Pinned map viewport + scrollable room details inside combined Map & Room drawer */
+/* Unified Map & Room scrollable card layout on desktop */
+.left-drawer-scroll-area .mri-section-label {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.56rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    margin-top: 8px;
+    margin-bottom: 3px;
+    user-select: none;
+}
+
+.light-mode .left-drawer-scroll-area .mri-section-label {
+    color: rgba(0, 0, 0, 0.45);
+}
+
+.mri-section-label {
+    display: none; /* hidden on mobile/HUD */
+}
+
+.left-drawer-scroll-area .mri-world-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-faded);
+    margin-top: 2px;
+}
+
+.map-section-viewport-unified {
+    position: relative;
+    height: 280px;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(212, 170, 0, 0.15);
+    background: rgba(0, 0, 0, 0.15);
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+.light-mode .map-section-viewport-unified {
+    border-color: rgba(201, 151, 56, 0.2);
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.left-drawer-scroll-area .room-info-card-unified {
+    width: 100%;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+}
+
+.left-drawer-scroll-area .room-chip-rows {
+    width: 100% !important;
+    max-width: none !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 8px 0 0 0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.left-drawer-scroll-area .room-chip-rows::before {
+    content: 'IN THE ROOM WITH YOU';
+    display: flex;
+    align-items: center;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.45);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    user-select: none;
+    width: 100%;
+}
+
+.light-mode .left-drawer-scroll-area .room-chip-rows::before {
+    color: rgba(0, 0, 0, 0.45);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Labeled Chip Block Styles */
+.left-drawer-scroll-area .mri-labeled-chip-block {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(0, 0, 0, 0.45) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 3px 9px !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.light-mode .left-drawer-scroll-area .mri-labeled-chip-block {
+    background: rgba(220, 220, 220, 0.75) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+.left-drawer-scroll-area .mri-chip-prefix {
+    color: #fbbf24 !important; /* gold */
+    font-family: var(--font-mono, monospace) !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    user-select: none;
+    font-size: 0.56rem !important;
+    margin-top: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.light-mode .left-drawer-scroll-area .mri-chip-prefix {
+    color: #b45309 !important; /* dark amber in light mode */
+}
+
+.left-drawer-scroll-area .mri-chip-value {
+    color: #fff;
+    flex: 1;
+}
+
+.light-mode .left-drawer-scroll-area .mri-chip-value {
+    color: #1f2937 !important;
+}
+
+.left-drawer-scroll-area .mapper-room-info-container {
+    width: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+}
+
+.left-drawer-scroll-area .mri-name {
+    padding: 0 !important;
+}
+
+.left-drawer-scroll-area .mri-desc {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.left-drawer-scroll-area .mri-zone-name {
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.05;
+    color: var(--text-faded);
+    margin-top: 0;
+}
+
+/* Style each occupant row as a labeled chip block */
+.left-drawer-scroll-area .room-chip-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    background: rgba(0, 0, 0, 0.45) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-left: 0 !important;
+}
+
+.light-mode .left-drawer-scroll-area .room-chip-row {
+    background: rgba(220, 220, 220, 0.75) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+.left-drawer-scroll-area .room-chip-row-label {
+    color: #fbbf24 !important; /* gold */
+    font-family: var(--font-mono, monospace) !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    user-select: none;
+    font-size: 0.62rem !important;
+    margin-top: 1px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    min-height: auto !important;
+    margin-bottom: 0 !important;
+}
+
+.light-mode .left-drawer-scroll-area .room-chip-row-label {
+    color: #b45309 !important; /* dark amber in light mode */
+}
+
+.left-drawer-scroll-area .room-chip-list {
+    flex: 1 !important;
+    flex-wrap: wrap !important;
+    display: flex !important;
+    gap: 6px !important;
+    padding: 0 !important;
+}
+
+.left-drawer-scroll-area .room-chip-row-label svg {
+    width: 11px !important;
+    height: 11px !important;
+    opacity: 0.8 !important;
+}
+
+.left-drawer-scroll-area .room-chip-row-label .room-chip-count-badge {
+    opacity: 0.55;
+    font-size: 0.58rem;
+    font-weight: 500;
+    margin-left: 2px;
+}
+
+.left-drawer-scroll-area .room-chip-row::before {
+    display: none !important; /* remove dividers */
+}
+
+.left-drawer-scroll-area .room-chip-row-label {
+    min-height: 0 !important;
+    margin-bottom: 2px !important;
+}
+
+/* Mobile-only vs Desktop-only visibility rules for combined Map & Room drawer */
+.desktop-only-section {
+    display: none;
+}
+
+.left-drawer-scroll-area .mobile-only-section,
+.left-drawer-scroll-area .mobile-only-zone,
+.left-drawer-scroll-area .mobile-only-flags {
+    display: none !important;
+}
+
+.left-drawer-scroll-area .desktop-only-section {
+    display: block !important;
+}
+
+/* Full-height map overlay and scrollbar styling on desktop */
+.left-drawer-hud-overlay {
+    scrollbar-width: none; /* Hide default scrollbar for seamless map look */
+}
+
+.left-drawer-hud-overlay::-webkit-scrollbar {
+    display: none; /* Hide default scrollbar for Chrome */
+}
+
+.map-canvas-full-viewport {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.map-canvas-full-viewport .mume-mapper {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+@media (min-width: 1025px) {
+    .map-canvas-full-viewport .mapper-container,
+    .map-canvas-full-viewport .mume-mapper {
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .map-canvas-full-viewport .mapper-container::before {
+        display: none !important;
+    }
+
+    .map-canvas-full-viewport .mapper-overlay,
+    .map-canvas-full-viewport .mapper-sun-overlay,
+    .map-canvas-full-viewport .mapper-moon-overlay,
+    .map-canvas-full-viewport .mapper-artificial-overlay,
+    .map-canvas-full-viewport .mapper-dark-overlay,
+    .map-canvas-full-viewport .mapper-fog-overlay {
+        display: none !important;
+    }
+
+    .left-drawer-hud-overlay {
+        background: transparent !important;
+    }
+
+    .left-drawer-scroll-area .room-info-card-unified,
+    .left-drawer-scroll-area .mri-labeled-chip-block {
+        background: rgba(8, 11, 18, 0.28) !important;
+        border: 1px solid rgba(255, 255, 255, 0.06) !important;
+        box-shadow: none !important;
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
+    }
 }

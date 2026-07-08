@@ -45,6 +45,10 @@ export type ArchiveEditorContext = {
     view: ArchiveView;
     subject: string;
     body: string;
+} | {
+    kind: 'self-description' | 'self-whois';
+    action: 'read' | 'write';
+    value?: string;
 };
 
 interface ArchiveStoreState {

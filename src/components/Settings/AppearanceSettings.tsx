@@ -56,6 +56,8 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
 }) => {
     const drawerZoom = useSettingsStore(s => s.drawerZoom ?? 1.0);
     const setDrawerZoom = useSettingsStore(s => s.setDrawerZoom);
+    const showChatWindow = useSettingsStore(s => s.showChatWindow);
+    const setShowChatWindow = useSettingsStore(s => s.setShowChatWindow);
 
     return (
         <>
@@ -185,6 +187,14 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                     description="Show block header indicators for combat messages and location changes."
                     value={showBlockHeaders}
                     onToggle={() => setShowBlockHeaders(!showBlockHeaders)}
+                />
+
+                {/* Chat Window */}
+                <ToggleRow
+                    label="Show Chat Window"
+                    description="Show a separate window for tells, says, narrates, and other communication."
+                    value={showChatWindow}
+                    onToggle={() => setShowChatWindow(!showChatWindow)}
                 />
 
                 {/* Text Reveal Effect */}

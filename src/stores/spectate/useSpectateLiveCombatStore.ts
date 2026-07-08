@@ -49,7 +49,10 @@ gmcpBus.on('Char.Buffer', (data: any) => {
 
 gmcpBus.on('Room.Chars.Combat', (data) => {
     if (!isSnooped(data)) return;
-    getSpectateLiveCombat().applyRoomCharsCombat(data as unknown[]);
+    const store = getSpectateLiveCombat();
+    const chars = data as unknown[];
+    store.applyRoomCharsCombat(chars);
+    store.applyEngagedOpponents(chars);
 });
 
 gmcpBus.on('Group.Set', (data) => {

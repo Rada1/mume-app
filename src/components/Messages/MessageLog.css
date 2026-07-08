@@ -359,6 +359,62 @@
         1px 1px 3px rgba(0, 0, 0, 0.48);
 }
 
+.message-content .inline-btn[class*="inline-item-tier-"] {
+    border-radius: 3px;
+    padding: 0 3px;
+    background:
+        linear-gradient(90deg, color-mix(in srgb, var(--inline-item-tier-color) 26%, transparent), transparent 84%),
+        color-mix(in srgb, var(--inline-item-tier-color) 9%, transparent);
+    box-shadow: none;
+}
+
+.inline-item-tier-artifact {
+    --inline-item-tier-color: #f6c453;
+}
+
+.inline-item-tier-legendary {
+    --inline-item-tier-color: #c9a4ff;
+}
+
+.inline-item-tier-focus {
+    --inline-item-tier-color: #8bd3ff;
+}
+
+.inline-item-tier-power {
+    --inline-item-tier-color: #f59e0b;
+}
+
+.inline-item-tier-important {
+    --inline-item-tier-color: #f0abfc;
+}
+
+.inline-item-tier-good {
+    --inline-item-tier-color: #7dd3fc;
+}
+
+.inline-item-tier-usable {
+    --inline-item-tier-color: #34d399;
+}
+
+.inline-item-condition {
+    margin-left: 0.25em;
+    color: color-mix(in srgb, var(--item-state-color) 36%, rgba(122, 134, 154, 0.54));
+    opacity: 0.58;
+    text-shadow: none;
+}
+
+.item-state-pristine {
+    --item-state-color: #8ce99a;
+}
+
+.item-state-stable {
+    --item-state-color: #facc15;
+}
+
+.item-state-worn {
+    --item-state-color: #fb7185;
+}
+
 /* Category-based color mappings */
 .inline-btn[data-category="npc"] { --glow-color: var(--color-npc) !important; }
 .inline-btn[data-category="player"] { --glow-color: var(--color-player) !important; }
@@ -2054,3 +2110,366 @@ span.inline-btn {
 .force-desktop.state-account .message-log {
     padding-bottom: 300px !important;
 }
+
+/* --- Message Log Terrain Pixel Art Borders --- */
+.message-log-container {
+    position: relative;
+}
+
+.message-log-container::before,
+.message-log-container::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    z-index: 10;
+    display: block !important;
+}
+
+.message-log-container::before {
+    top: 0;
+}
+
+.message-log-container::after {
+    bottom: 0;
+}
+
+/* NPC/object chips pinned along the very bottom of the log, standing on top
+   of the terrain pixel-art strip (::after, z-index 10) like little figures
+   on the ground line instead of living inside the room card. */
+.log-terrain-chips-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2px;
+    z-index: 11;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.log-terrain-chips-overlay .room-chip-terrain-pins {
+    pointer-events: auto;
+}
+
+.log-terrain-chips-overlay .room-chip {
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.55));
+}
+
+/* Height configurations for each terrain border in the message log */
+.message-log-container.log-terrain-grass::after { height: 12px; }
+.message-log-container.log-terrain-forest::after { height: 34px; }
+.message-log-container.log-terrain-water::after { height: 14px; }
+.message-log-container.log-terrain-marsh::after { height: 16px; }
+.message-log-container.log-terrain-brush::after { height: 24px; }
+.message-log-container.log-terrain-road::after { height: 24px; }
+.message-log-container.log-terrain-city::after { height: 24px; }
+.message-log-container.log-terrain-hill::after { height: 38px; }
+.message-log-container.log-terrain-mountain::after { height: 46px; }
+.message-log-container.log-terrain-cavern::before { height: 24px; }
+.message-log-container.log-terrain-cavern::after { height: 18px; }
+.message-log-container.log-terrain-tunnel::before { height: 18px; }
+.message-log-container.log-terrain-tunnel::after,
+.message-log-container.log-terrain-building::after { height: 9px; }
+.message-log-container.log-terrain-building::before { height: 14px; }
+
+/* Grass */
+.message-log-container.log-terrain-grass::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 12' shape-rendering='crispEdges'%3E%3Crect x='0' y='10' width='48' height='2' fill='%232d6f2f'/%3E%3Crect x='3' y='6' width='2' height='4' fill='%237dcc55'/%3E%3Crect x='7' y='4' width='2' height='6' fill='%234b9c43'/%3E%3Crect x='13' y='7' width='2' height='3' fill='%239ee46d'/%3E%3Crect x='18' y='3' width='2' height='7' fill='%235fad48'/%3E%3Crect x='25' y='5' width='2' height='5' fill='%238bd45b'/%3E%3Crect x='31' y='2' width='2' height='8' fill='%23458f3d'/%3E%3Crect x='38' y='6' width='2' height='4' fill='%2394df62'/%3E%3Crect x='43' y='4' width='2' height='6' fill='%2359a348'/%3E%3C/svg%3E") 0 0 / 48px 12px repeat-x,
+        linear-gradient(0deg, rgba(35, 108, 42, 0.72), rgba(68, 154, 56, 0.28) 45%, transparent 100%);
+}
+
+/* Forest */
+.message-log-container.log-terrain-forest::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 34' shape-rendering='crispEdges'%3E%3Crect x='0' y='30' width='96' height='4' fill='%231b4d2c' opacity='.75'/%3E%3Crect x='10' y='18' width='5' height='13' fill='%23523a25'/%3E%3Crect x='4' y='12' width='17' height='8' fill='%234f8d45'/%3E%3Crect x='1' y='18' width='23' height='8' fill='%233d7439'/%3E%3Crect x='7' y='6' width='11' height='8' fill='%2369a55d'/%3E%3Crect x='37' y='17' width='4' height='14' fill='%234b3322'/%3E%3Crect x='30' y='10' width='19' height='9' fill='%233e7d3e'/%3E%3Crect x='27' y='18' width='25' height='8' fill='%232f6634'/%3E%3Crect x='34' y='4' width='12' height='8' fill='%2356934c'/%3E%3Crect x='66' y='19' width='5' height='12' fill='%23513a28'/%3E%3Crect x='59' y='13' width='20' height='8' fill='%234b8842'/%3E%3Crect x='56' y='20' width='26' height='7' fill='%23346d35'/%3E%3Crect x='63' y='7' width='13' height='7' fill='%23619e55'/%3E%3Crect x='86' y='21' width='4' height='10' fill='%23493525'/%3E%3Crect x='80' y='16' width='15' height='7' fill='%2344773c'/%3E%3Crect x='78' y='22' width='18' height='6' fill='%232f6132'/%3E%3C/svg%3E") 0 0 / 96px 34px repeat-x,
+        linear-gradient(180deg, transparent 0 40%, rgba(21, 69, 33, 0.7));
+}
+
+/* Water */
+.message-log-container.log-terrain-water::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 14' shape-rendering='crispEdges'%3E%3Crect x='0' y='10' width='96' height='4' fill='%23136f9e' opacity='.82'/%3E%3Crect x='0' y='7' width='18' height='2' fill='%232a9fd0'/%3E%3Crect x='18' y='5' width='10' height='2' fill='%2385ddff'/%3E%3Crect x='28' y='7' width='14' height='2' fill='%235fc7ef'/%3E%3Crect x='50' y='4' width='16' height='2' fill='%239ce8ff'/%3E%3Crect x='66' y='6' width='12' height='2' fill='%2338a8dc'/%3E%3Crect x='78' y='8' width='12' height='2' fill='%236fd3f4'/%3E%3Crect x='9' y='2' width='5' height='1' fill='%23b8f0ff' opacity='.75'/%3E%3Crect x='36' y='3' width='6' height='1' fill='%23b8f0ff' opacity='.65'/%3E%3Crect x='72' y='2' width='5' height='1' fill='%23b8f0ff' opacity='.7'/%3E%3C/svg%3E") 0 0 / 96px 14px repeat-x,
+        linear-gradient(180deg, transparent, rgba(17, 135, 190, 0.56));
+}
+
+/* Marsh */
+.message-log-container.log-terrain-marsh::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 16' shape-rendering='crispEdges'%3E%3Crect x='0' y='11' width='96' height='5' fill='%233c3323' opacity='.88'/%3E%3Crect x='4' y='9' width='14' height='2' fill='%236a5a34'/%3E%3Crect x='24' y='10' width='17' height='2' fill='%232e7567'/%3E%3Crect x='50' y='9' width='16' height='2' fill='%235a482d'/%3E%3Crect x='74' y='10' width='15' height='2' fill='%232f6f5e'/%3E%3Crect x='7' y='5' width='2' height='6' fill='%23779a42'/%3E%3Crect x='10' y='2' width='2' height='9' fill='%234f7e38'/%3E%3Crect x='14' y='6' width='2' height='5' fill='%2390a958'/%3E%3Crect x='33' y='4' width='2' height='7' fill='%236d8d3f'/%3E%3Crect x='37' y='2' width='2' height='9' fill='%234d7436'/%3E%3Crect x='58' y='5' width='2' height='6' fill='%23849742'/%3E%3Crect x='62' y='3' width='2' height='8' fill='%235f7d35'/%3E%3Crect x='81' y='5' width='2' height='6' fill='%237f9b4a'/%3E%3Crect x='87' y='7' width='6' height='2' fill='%23428a77'/%3E%3C/svg%3E") 0 0 / 96px 16px repeat-x,
+        linear-gradient(180deg, transparent, rgba(65, 55, 34, 0.62));
+}
+
+/* Brush */
+.message-log-container.log-terrain-brush::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 24' shape-rendering='crispEdges'%3E%3Crect x='0' y='20' width='112' height='4' fill='%232b5f2e' opacity='.82'/%3E%3Crect x='4' y='15' width='12' height='5' fill='%234a8a3d'/%3E%3Crect x='2' y='18' width='17' height='4' fill='%23356f34'/%3E%3Crect x='8' y='11' width='6' height='4' fill='%236fa853'/%3E%3Crect x='25' y='13' width='15' height='7' fill='%233f7d38'/%3E%3Crect x='22' y='17' width='21' height='5' fill='%232f6731'/%3E%3Crect x='30' y='8' width='7' height='5' fill='%235c9848'/%3E%3Crect x='50' y='14' width='13' height='6' fill='%23488a3c'/%3E%3Crect x='47' y='18' width='19' height='4' fill='%23326731'/%3E%3Crect x='55' y='10' width='5' height='4' fill='%2376ad55'/%3E%3Crect x='75' y='12' width='16' height='8' fill='%233f7437'/%3E%3Crect x='72' y='17' width='22' height='5' fill='%232d6330'/%3E%3Crect x='81' y='7' width='6' height='5' fill='%235d9848'/%3E%3Crect x='99' y='15' width='9' height='5' fill='%234f913f'/%3E%3Crect x='97' y='18' width='14' height='4' fill='%23396f34'/%3E%3C/svg%3E") 0 0 / 112px 24px repeat-x,
+        linear-gradient(180deg, transparent 0 28%, rgba(33, 93, 42, 0.62));
+}
+
+/* Road */
+.message-log-container.log-terrain-road::after {
+    background:
+        linear-gradient(90deg, transparent 0 12px, rgba(217, 178, 113, 0.52) 12px 18px, transparent 18px 28px) 0 5px / 28px 3px repeat-x,
+        linear-gradient(180deg, transparent, rgba(116, 84, 47, 0.46));
+}
+
+/* City */
+.message-log-container.log-terrain-city::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 144 24' shape-rendering='crispEdges'%3E%3Crect x='0' y='21' width='144' height='3' fill='%23503a25' opacity='.8'/%3E%3Crect x='4' y='13' width='16' height='8' fill='%23845d35'/%3E%3Crect x='2' y='10' width='20' height='3' fill='%23b87838'/%3E%3Crect x='8' y='16' width='3' height='3' fill='%23f0c36a'/%3E%3Crect x='14' y='16' width='3' height='3' fill='%23311f16'/%3E%3Crect x='26' y='11' width='18' height='10' fill='%236f5238'/%3E%3Crect x='24' y='8' width='22' height='3' fill='%23a46b32'/%3E%3Crect x='30' y='15' width='4' height='3' fill='%23dca85b'/%3E%3Crect x='38' y='15' width='3' height='6' fill='%23281813'/%3E%3Crect x='52' y='8' width='8' height='13' fill='%2370797f'/%3E%3Crect x='50' y='5' width='12' height='3' fill='%239aa2a7'/%3E%3Crect x='52' y='2' width='2' height='3' fill='%23b8c0c4'/%3E%3Crect x='58' y='2' width='2' height='3' fill='%23b8c0c4'/%3E%3Crect x='55' y='13' width='2' height='3' fill='%23ead28a'/%3E%3Crect x='68' y='12' width='15' height='9' fill='%23815c38'/%3E%3Crect x='66' y='9' width='19' height='3' fill='%23bb7a35'/%3E%3Crect x='72' y='16' width='3' height='3' fill='%23f0c36a'/%3E%3Crect x='78' y='16' width='3' height='5' fill='%23271914'/%3E%3Crect x='91' y='10' width='22' height='11' fill='%235e6770'/%3E%3Crect x='89' y='7' width='26' height='3' fill='%23828b92'/%3E%3Crect x='91' y='4' width='3' height='3' fill='%23aeb7bd'/%3E%3Crect x='99' y='4' width='3' height='3' fill='%23aeb7bd'/%3E%3Crect x='107' y='4' width='3' height='3' fill='%23aeb7bd'/%3E%3Crect x='96' y='14' width='3' height='3' fill='%23ead28a'/%3E%3Crect x='105' y='14' width='3' height='7' fill='%23231916'/%3E%3Crect x='121' y='12' width='16' height='9' fill='%23714f30'/%3E%3Crect x='119' y='9' width='20' height='3' fill='%23a86f36'/%3E%3Crect x='125' y='16' width='3' height='3' fill='%23e9bd64'/%3E%3Crect x='132' y='16' width='3' height='5' fill='%23291a12'/%3E%3C/svg%3E") 0 0 / 144px 24px repeat-x,
+        linear-gradient(180deg, transparent 0 20%, rgba(135, 91, 45, 0.56));
+}
+
+/* Hill */
+.message-log-container.log-terrain-hill::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 38' shape-rendering='crispEdges'%3E%3Crect x='0' y='34' width='128' height='4' fill='%233a6b35' opacity='.75'/%3E%3Crect x='0' y='30' width='64' height='4' fill='%235a8f4a'/%3E%3Crect x='8' y='26' width='48' height='4' fill='%236fa25a'/%3E%3Crect x='16' y='22' width='32' height='4' fill='%2385b66a'/%3E%3Crect x='24' y='18' width='16' height='4' fill='%2399c477'/%3E%3Crect x='58' y='32' width='70' height='3' fill='%234a7f40'/%3E%3Crect x='66' y='28' width='54' height='4' fill='%235e914f'/%3E%3Crect x='76' y='24' width='34' height='4' fill='%2375a861'/%3E%3Crect x='86' y='20' width='16' height='4' fill='%238bb96d'/%3E%3C/svg%3E") 0 0 / 128px 38px repeat-x,
+        linear-gradient(180deg, transparent 0 40%, rgba(58, 101, 54, 0.52));
+}
+
+/* Mountain */
+.message-log-container.log-terrain-mountain::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 144 46' shape-rendering='crispEdges'%3E%3Crect x='0' y='42' width='144' height='4' fill='%233b4650' opacity='.78'/%3E%3Crect x='8' y='34' width='56' height='8' fill='%235b6873'/%3E%3Crect x='16' y='26' width='40' height='8' fill='%23798792'/%3E%3Crect x='24' y='18' width='24' height='8' fill='%239aa7ae'/%3E%3Crect x='32' y='10' width='8' height='8' fill='%23c5d0d4'/%3E%3Crect x='40' y='18' width='8' height='8' fill='%23d8e2e5' opacity='.7'/%3E%3Crect x='72' y='38' width='64' height='4' fill='%23475460'/%3E%3Crect x='80' y='30' width='48' height='8' fill='%2367737d'/%3E%3Crect x='88' y='22' width='32' height='8' fill='%238b98a0'/%3E%3Crect x='96' y='14' width='16' height='8' fill='%23b3c0c6'/%3E%3Crect x='104' y='6' width='8' height='8' fill='%23d8e2e5'/%3E%3C/svg%3E") 0 0 / 144px 46px repeat-x,
+        linear-gradient(180deg, transparent 0 34%, rgba(58, 68, 77, 0.68));
+}
+
+/* Cavern */
+.message-log-container.log-terrain-cavern::before {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 24' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='96' height='5' fill='%233b3d45'/%3E%3Crect x='4' y='5' width='9' height='5' fill='%23555a63'/%3E%3Crect x='8' y='10' width='5' height='7' fill='%23464a52'/%3E%3Crect x='10' y='17' width='3' height='5' fill='%23656b74'/%3E%3Crect x='28' y='5' width='12' height='6' fill='%234c5059'/%3E%3Crect x='32' y='11' width='7' height='7' fill='%23636a73'/%3E%3Crect x='35' y='18' width='3' height='5' fill='%23424750'/%3E%3Crect x='56' y='5' width='10' height='5' fill='%235b6069'/%3E%3Crect x='59' y='10' width='6' height='6' fill='%234b5059'/%3E%3Crect x='62' y='16' width='3' height='6' fill='%2369717b'/%3E%3Crect x='78' y='5' width='14' height='5' fill='%23434850'/%3E%3Crect x='82' y='10' width='7' height='8' fill='%235e6570'/%3E%3C/svg%3E") 0 0 / 96px 24px repeat-x,
+        linear-gradient(180deg, rgba(33, 35, 42, 0.84), transparent);
+}
+
+.message-log-container.log-terrain-cavern::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 18' shape-rendering='crispEdges'%3E%3Crect x='0' y='13' width='96' height='5' fill='%232d3037'/%3E%3Crect x='4' y='10' width='14' height='3' fill='%23525962'/%3E%3Crect x='22' y='8' width='10' height='5' fill='%23464b55'/%3E%3Crect x='36' y='11' width='18' height='2' fill='%23656b74'/%3E%3Crect x='58' y='7' width='12' height='6' fill='%233f444d'/%3E%3Crect x='76' y='10' width='15' height='3' fill='%23575d66'/%3E%3C/svg%3E") 0 0 / 96px 18px repeat-x,
+        linear-gradient(180deg, transparent, rgba(40, 43, 50, 0.66));
+}
+
+/* Tunnel */
+.message-log-container.log-terrain-tunnel::before {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 18' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='80' height='4' fill='%23382c23'/%3E%3Crect x='0' y='4' width='16' height='4' fill='%23503b2b'/%3E%3Crect x='16' y='4' width='18' height='4' fill='%233f3026'/%3E%3Crect x='34' y='4' width='20' height='4' fill='%235b4634'/%3E%3Crect x='54' y='4' width='26' height='4' fill='%23372921'/%3E%3Crect x='8' y='8' width='18' height='4' fill='%23614a37'/%3E%3Crect x='38' y='8' width='24' height='4' fill='%23453329'/%3E%3Crect x='62' y='8' width='10' height='4' fill='%23634c38'/%3E%3C/svg%3E") 0 0 / 80px 18px repeat-x,
+        linear-gradient(180deg, rgba(58, 43, 32, 0.86), transparent);
+}
+
+.message-log-container.log-terrain-tunnel::after,
+.message-log-container.log-terrain-building::after {
+    background:
+        linear-gradient(90deg, rgba(117, 90, 54, 0.52) 0 30px, rgba(85, 64, 43, 0.48) 30px 60px, rgba(128, 100, 61, 0.52) 60px 96px) 0 6px / 96px 3px repeat-x,
+        linear-gradient(180deg, transparent, rgba(92, 67, 40, 0.5));
+}
+
+/* Building */
+.message-log-container.log-terrain-building::before {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 14' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='96' height='3' fill='%23513b25'/%3E%3Crect x='8' y='3' width='6' height='11' fill='%23735735'/%3E%3Crect x='34' y='3' width='6' height='11' fill='%234b3522'/%3E%3Crect x='61' y='3' width='6' height='11' fill='%23795c38'/%3E%3Crect x='86' y='3' width='6' height='11' fill='%234c3622'/%3E%3Crect x='0' y='10' width='96' height='2' fill='%23806742' opacity='.65'/%3E%3C/svg%3E") 0 0 / 96px 14px repeat-x,
+        linear-gradient(180deg, rgba(75, 55, 34, 0.72), transparent);
+}
+
+/* Neutral */
+.message-log-container.log-terrain-neutral::after {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+}
+
+/* --- Full-width bottom frosted-glass backdrop (.app-bottom-glass-strip) ---
+   Same lighter glass look the desktop prompt box itself already uses
+   (.prompt-box-content at min-width:1025px: rgba(8,11,18,0.24) + blur(6px)),
+   sitting behind the stat bar / input box / map & character drawer action
+   slots so that whole bottom band reads as one cohesive glass panel instead
+   of staying fully transparent on desktop. */
+.app-bottom-glass-strip {
+    background: rgba(8, 11, 18, 0.24);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* --- Full-width terrain strip (.app-terrain-strip) ---
+   Same pixel art as the log's own bottom border above, but rendered on a
+   fixed, full-viewport-width element so it spans the whole client (across
+   the drawers too) instead of just the log column. */
+.app-terrain-strip {
+    pointer-events: none;
+}
+
+.app-terrain-strip.log-terrain-grass { height: 12px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 12' shape-rendering='crispEdges'%3E%3Crect x='0' y='10' width='48' height='2' fill='%232d6f2f'/%3E%3Crect x='3' y='6' width='2' height='4' fill='%237dcc55'/%3E%3Crect x='7' y='4' width='2' height='6' fill='%234b9c43'/%3E%3Crect x='13' y='7' width='2' height='3' fill='%239ee46d'/%3E%3Crect x='18' y='3' width='2' height='7' fill='%235fad48'/%3E%3Crect x='25' y='5' width='2' height='5' fill='%238bd45b'/%3E%3Crect x='31' y='2' width='2' height='8' fill='%23458f3d'/%3E%3Crect x='38' y='6' width='2' height='4' fill='%2394df62'/%3E%3Crect x='43' y='4' width='2' height='6' fill='%2359a348'/%3E%3C/svg%3E") 0 0 / 48px 12px repeat-x, linear-gradient(0deg, rgba(35, 108, 42, 0.72), rgba(68, 154, 56, 0.28) 45%, transparent 100%); }
+
+.app-terrain-strip.log-terrain-forest { height: 34px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 34' shape-rendering='crispEdges'%3E%3Crect x='0' y='30' width='96' height='4' fill='%231b4d2c' opacity='.75'/%3E%3Crect x='10' y='18' width='5' height='13' fill='%23523a25'/%3E%3Crect x='4' y='12' width='17' height='8' fill='%234f8d45'/%3E%3Crect x='1' y='18' width='23' height='8' fill='%233d7439'/%3E%3Crect x='7' y='6' width='11' height='8' fill='%2369a55d'/%3E%3Crect x='37' y='17' width='4' height='14' fill='%234b3322'/%3E%3Crect x='30' y='10' width='19' height='9' fill='%233e7d3e'/%3E%3Crect x='27' y='18' width='25' height='8' fill='%232f6634'/%3E%3Crect x='34' y='4' width='12' height='8' fill='%2356934c'/%3E%3Crect x='66' y='19' width='5' height='12' fill='%23513a28'/%3E%3Crect x='59' y='13' width='20' height='8' fill='%234b8842'/%3E%3Crect x='56' y='20' width='26' height='7' fill='%23346d35'/%3E%3Crect x='63' y='7' width='13' height='7' fill='%23619e55'/%3E%3Crect x='86' y='21' width='4' height='10' fill='%23493525'/%3E%3Crect x='80' y='16' width='15' height='7' fill='%2344773c'/%3E%3Crect x='78' y='22' width='18' height='6' fill='%232f6132'/%3E%3C/svg%3E") 0 0 / 96px 34px repeat-x, linear-gradient(180deg, transparent 0 40%, rgba(21, 69, 33, 0.7)); }
+
+.app-terrain-strip.log-terrain-water { height: 14px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 14' shape-rendering='crispEdges'%3E%3Crect x='0' y='10' width='96' height='4' fill='%23136f9e' opacity='.82'/%3E%3Crect x='0' y='7' width='18' height='2' fill='%232a9fd0'/%3E%3Crect x='18' y='5' width='10' height='2' fill='%2385ddff'/%3E%3Crect x='28' y='7' width='14' height='2' fill='%235fc7ef'/%3E%3Crect x='50' y='4' width='16' height='2' fill='%239ce8ff'/%3E%3Crect x='66' y='6' width='12' height='2' fill='%2338a8dc'/%3E%3Crect x='78' y='8' width='12' height='2' fill='%236fd3f4'/%3E%3Crect x='9' y='2' width='5' height='1' fill='%23b8f0ff' opacity='.75'/%3E%3Crect x='36' y='3' width='6' height='1' fill='%23b8f0ff' opacity='.65'/%3E%3Crect x='72' y='2' width='5' height='1' fill='%23b8f0ff' opacity='.7'/%3E%3C/svg%3E") 0 0 / 96px 14px repeat-x, linear-gradient(180deg, transparent, rgba(17, 135, 190, 0.56)); }
+
+.app-terrain-strip.log-terrain-marsh { height: 16px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 16' shape-rendering='crispEdges'%3E%3Crect x='0' y='11' width='96' height='5' fill='%233c3323' opacity='.88'/%3E%3Crect x='4' y='9' width='14' height='2' fill='%236a5a34'/%3E%3Crect x='24' y='10' width='17' height='2' fill='%232e7567'/%3E%3Crect x='50' y='9' width='16' height='2' fill='%235a482d'/%3E%3Crect x='74' y='10' width='15' height='2' fill='%232f6f5e'/%3E%3Crect x='7' y='5' width='2' height='6' fill='%23779a42'/%3E%3Crect x='10' y='2' width='2' height='9' fill='%234f7e38'/%3E%3Crect x='14' y='6' width='2' height='5' fill='%2390a958'/%3E%3Crect x='33' y='4' width='2' height='7' fill='%236d8d3f'/%3E%3Crect x='37' y='2' width='2' height='9' fill='%234d7436'/%3E%3Crect x='58' y='5' width='2' height='6' fill='%23849742'/%3E%3Crect x='62' y='3' width='2' height='8' fill='%235f7d35'/%3E%3Crect x='81' y='5' width='2' height='6' fill='%237f9b4a'/%3E%3Crect x='87' y='7' width='6' height='2' fill='%23428a77'/%3E%3C/svg%3E") 0 0 / 96px 16px repeat-x, linear-gradient(180deg, transparent, rgba(65, 55, 34, 0.62)); }
+
+.app-terrain-strip.log-terrain-brush { height: 24px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 24' shape-rendering='crispEdges'%3E%3Crect x='0' y='20' width='112' height='4' fill='%232b5f2e' opacity='.82'/%3E%3Crect x='4' y='15' width='12' height='5' fill='%234a8a3d'/%3E%3Crect x='2' y='18' width='17' height='4' fill='%23356f34'/%3E%3Crect x='8' y='11' width='6' height='4' fill='%236fa853'/%3E%3Crect x='25' y='13' width='15' height='7' fill='%233f7d38'/%3E%3Crect x='22' y='17' width='21' height='5' fill='%232f6731'/%3E%3Crect x='30' y='8' width='7' height='5' fill='%235c9848'/%3E%3Crect x='50' y='14' width='13' height='6' fill='%23488a3c'/%3E%3Crect x='47' y='18' width='19' height='4' fill='%23326731'/%3E%3Crect x='55' y='10' width='5' height='4' fill='%2376ad55'/%3E%3Crect x='75' y='12' width='16' height='8' fill='%233f7437'/%3E%3Crect x='72' y='17' width='22' height='5' fill='%232d6330'/%3E%3Crect x='81' y='7' width='6' height='5' fill='%235d9848'/%3E%3Crect x='99' y='15' width='9' height='5' fill='%234f913f'/%3E%3Crect x='97' y='18' width='14' height='4' fill='%23396f34'/%3E%3C/svg%3E") 0 0 / 112px 24px repeat-x, linear-gradient(180deg, transparent 0 28%, rgba(33, 93, 42, 0.62)); }
+
+.app-terrain-strip.log-terrain-road { height: 24px; background: linear-gradient(90deg, transparent 0 12px, rgba(217, 178, 113, 0.52) 12px 18px, transparent 18px 28px) 0 5px / 28px 3px repeat-x, linear-gradient(180deg, transparent, rgba(116, 84, 47, 0.46)); }
+
+.app-terrain-strip.log-terrain-city { height: 24px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 144 24' shape-rendering='crispEdges'%3E%3Crect x='0' y='21' width='144' height='3' fill='%23503a25' opacity='.8'/%3E%3Crect x='4' y='13' width='16' height='8' fill='%23845d35'/%3E%3Crect x='2' y='10' width='20' height='3' fill='%23b87838'/%3E%3Crect x='8' y='16' width='3' height='3' fill='%23f0c36a'/%3E%3Crect x='14' y='16' width='3' height='3' fill='%23311f16'/%3E%3Crect x='26' y='11' width='18' height='10' fill='%236f5238'/%3E%3Crect x='24' y='8' width='22' height='3' fill='%23a46b32'/%3E%3Crect x='30' y='15' width='4' height='3' fill='%23dca85b'/%3E%3Crect x='38' y='15' width='3' height='6' fill='%23281813'/%3E%3Crect x='52' y='8' width='8' height='13' fill='%2370797f'/%3E%3Crect x='50' y='5' width='12' height='3' fill='%239aa2a7'/%3E%3Crect x='52' y='2' width='2' height='3' fill='%23b8c0c4'/%3E%3Crect x='58' y='2' width='2' height='3' fill='%23b8c0c4'/%3E%3Crect x='55' y='13' width='2' height='3' fill='%23ead28a'/%3E%3Crect x='68' y='12' width='15' height='9' fill='%23815c38'/%3E%3Crect x='66' y='9' width='19' height='3' fill='%23bb7a35'/%3E%3Crect x='72' y='16' width='3' height='3' fill='%23f0c36a'/%3E%3Crect x='78' y='16' width='3' height='5' fill='%23271914'/%3E%3Crect x='91' y='10' width='22' height='11' fill='%235e6770'/%3E%3Crect x='89' y='7' width='26' height='3' fill='%23828b92'/%3E%3Crect x='91' y='4' width='3' height='3' fill='%23aeb7bd'/%3E%3Crect x='99' y='4' width='3' height='3' fill='%23aeb7bd'/%3E%3Crect x='107' y='4' width='3' height='3' fill='%23aeb7bd'/%3E%3Crect x='96' y='14' width='3' height='3' fill='%23ead28a'/%3E%3Crect x='105' y='14' width='3' height='7' fill='%23231916'/%3E%3Crect x='121' y='12' width='16' height='9' fill='%23714f30'/%3E%3Crect x='119' y='9' width='20' height='3' fill='%23a86f36'/%3E%3Crect x='125' y='16' width='3' height='3' fill='%23e9bd64'/%3E%3Crect x='132' y='16' width='3' height='5' fill='%23291a12'/%3E%3C/svg%3E") 0 0 / 144px 24px repeat-x, linear-gradient(180deg, transparent 0 20%, rgba(135, 91, 45, 0.56)); }
+
+.app-terrain-strip.log-terrain-hill { height: 38px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 38' shape-rendering='crispEdges'%3E%3Crect x='0' y='34' width='128' height='4' fill='%233a6b35' opacity='.75'/%3E%3Crect x='0' y='30' width='64' height='4' fill='%235a8f4a'/%3E%3Crect x='8' y='26' width='48' height='4' fill='%236fa25a'/%3E%3Crect x='16' y='22' width='32' height='4' fill='%2385b66a'/%3E%3Crect x='24' y='18' width='16' height='4' fill='%2399c477'/%3E%3Crect x='58' y='32' width='70' height='3' fill='%234a7f40'/%3E%3Crect x='66' y='28' width='54' height='4' fill='%235e914f'/%3E%3Crect x='76' y='24' width='34' height='4' fill='%2375a861'/%3E%3Crect x='86' y='20' width='16' height='4' fill='%238bb96d'/%3E%3C/svg%3E") 0 0 / 128px 38px repeat-x, linear-gradient(180deg, transparent 0 40%, rgba(58, 101, 54, 0.52)); }
+
+.app-terrain-strip.log-terrain-mountain { height: 46px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 144 46' shape-rendering='crispEdges'%3E%3Crect x='0' y='42' width='144' height='4' fill='%233b4650' opacity='.78'/%3E%3Crect x='8' y='34' width='56' height='8' fill='%235b6873'/%3E%3Crect x='16' y='26' width='40' height='8' fill='%23798792'/%3E%3Crect x='24' y='18' width='24' height='8' fill='%239aa7ae'/%3E%3Crect x='32' y='10' width='8' height='8' fill='%23c5d0d4'/%3E%3Crect x='40' y='18' width='8' height='8' fill='%23d8e2e5' opacity='.7'/%3E%3Crect x='72' y='38' width='64' height='4' fill='%23475460'/%3E%3Crect x='80' y='30' width='48' height='8' fill='%2367737d'/%3E%3Crect x='88' y='22' width='32' height='8' fill='%238b98a0'/%3E%3Crect x='96' y='14' width='16' height='8' fill='%23b3c0c6'/%3E%3Crect x='104' y='6' width='8' height='8' fill='%23d8e2e5'/%3E%3C/svg%3E") 0 0 / 144px 46px repeat-x, linear-gradient(180deg, transparent 0 34%, rgba(58, 68, 77, 0.68)); }
+
+.app-terrain-strip.log-terrain-cavern { height: 18px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 18' shape-rendering='crispEdges'%3E%3Crect x='0' y='13' width='96' height='5' fill='%232d3037'/%3E%3Crect x='4' y='10' width='14' height='3' fill='%23525962'/%3E%3Crect x='22' y='8' width='10' height='5' fill='%23464b55'/%3E%3Crect x='36' y='11' width='18' height='2' fill='%23656b74'/%3E%3Crect x='58' y='7' width='12' height='6' fill='%233f444d'/%3E%3Crect x='76' y='10' width='15' height='3' fill='%23575d66'/%3E%3C/svg%3E") 0 0 / 96px 18px repeat-x, linear-gradient(180deg, transparent, rgba(40, 43, 50, 0.66)); }
+
+.app-terrain-strip.log-terrain-tunnel,
+.app-terrain-strip.log-terrain-building { height: 9px; background: linear-gradient(90deg, rgba(117, 90, 54, 0.52) 0 30px, rgba(85, 64, 43, 0.48) 30px 60px, rgba(128, 100, 61, 0.52) 60px 96px) 0 6px / 96px 3px repeat-x, linear-gradient(180deg, transparent, rgba(92, 67, 40, 0.5)); }
+
+.app-terrain-strip.log-terrain-neutral { height: 12px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent); }
+
+.app-terrain-strip.log-lore-shire { filter: saturate(1.24) brightness(1.08); }
+.app-terrain-strip.log-lore-fangorn,
+.app-terrain-strip.log-lore-old-forest,
+.app-terrain-strip.log-lore-mirkwood { filter: saturate(0.78) brightness(0.66) sepia(0.16); }
+.app-terrain-strip.log-lore-moria { filter: saturate(0.58) brightness(0.72) contrast(1.12); }
+.app-terrain-strip.log-lore-mordor,
+.app-terrain-strip.log-lore-angmar { filter: saturate(0.78) brightness(0.62) sepia(0.28) hue-rotate(-18deg); }
+.app-terrain-strip.log-lore-forochel { filter: saturate(0.66) brightness(1.16) hue-rotate(22deg); }
+
+/* Lore Filters */
+.message-log-container.log-lore-shire::before,
+.message-log-container.log-lore-shire::after { filter: saturate(1.24) brightness(1.08); }
+.message-log-container.log-lore-fangorn::before,
+.message-log-container.log-lore-fangorn::after,
+.message-log-container.log-lore-old-forest::before,
+.message-log-container.log-lore-old-forest::after,
+.message-log-container.log-lore-mirkwood::before,
+.message-log-container.log-lore-mirkwood::after { filter: saturate(0.78) brightness(0.66) sepia(0.16); }
+.message-log-container.log-lore-moria::before,
+.message-log-container.log-lore-moria::after { filter: saturate(0.58) brightness(0.72) contrast(1.12); }
+.message-log-container.log-lore-mordor::before,
+.message-log-container.log-lore-mordor::after,
+.message-log-container.log-lore-angmar::before,
+.message-log-container.log-lore-angmar::after { filter: saturate(0.78) brightness(0.62) sepia(0.28) hue-rotate(-18deg); }
+.message-log-container.log-lore-forochel::before,
+.message-log-container.log-lore-forochel::after { filter: saturate(0.66) brightness(1.16) hue-rotate(22deg); }
+
+/* Desktop: the bottom terrain strip now renders full-width via .app-terrain-strip,
+   so hide the log-scoped copy to avoid a duplicate narrower strip underneath it. */
+@media (min-width: 1025px) {
+    .message-log-container::after {
+        content: none !important;
+    }
+}
+
+/* --- Sky / Lighting & Weather Art Overlay ---
+   .log-sky-art-overlay is scoped to the log column. .app-sky-art-strip is the
+   same art (shared via the selectors below) rendered on a separate, fixed,
+   full-viewport-width element — mirrors .app-terrain-strip at the bottom —
+   so the sun/moon/cloud row spans the whole client instead of just the log. */
+.log-sky-art-overlay,
+.app-sky-art-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 32px;
+    pointer-events: none;
+    z-index: 9;
+    overflow: hidden;
+    display: block;
+}
+
+/* Hide in caves, tunnels, buildings */
+.log-sky-art-overlay.terrain-cavern,
+.app-sky-art-strip.terrain-cavern,
+.log-sky-art-overlay.terrain-tunnel,
+.app-sky-art-strip.terrain-tunnel,
+.log-sky-art-overlay.terrain-building,
+.app-sky-art-strip.terrain-building {
+    display: none;
+}
+
+/* 1. Lighting Conditions (rendered as ::before on the right side) */
+.log-sky-art-overlay::before,
+.app-sky-art-strip::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 16px;
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.85;
+}
+
+.log-sky-art-overlay.lighting-sun::before,
+.app-sky-art-strip.lighting-sun::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' shape-rendering='crispEdges'%3E%3Crect x='11' y='1' width='2' height='3' fill='%23fbbf24'/%3E%3Crect x='11' y='20' width='2' height='3' fill='%23fbbf24'/%3E%3Crect x='1' y='11' width='3' height='2' fill='%23fbbf24'/%3E%3Crect x='20' y='11' width='3' height='2' fill='%23fbbf24'/%3E%3Crect x='4' y='4' width='2' height='2' fill='%23fbbf24'/%3E%3Crect x='18' y='4' width='2' height='2' fill='%23fbbf24'/%3E%3Crect x='4' y='18' width='2' height='2' fill='%23fbbf24'/%3E%3Crect x='18' y='18' width='2' height='2' fill='%23fbbf24'/%3E%3Crect x='8' y='6' width='8' height='12' fill='%23f59e0b'/%3E%3Crect x='6' y='8' width='12' height='8' fill='%23f59e0b'/%3E%3Crect x='9' y='7' width='6' height='10' fill='%23fbbf24'/%3E%3Crect x='7' y='9' width='10' height='6' fill='%23fbbf24'/%3E%3Crect x='9' y='9' width='6' height='6' fill='%23fffbeb'/%3E%3C/svg%3E");
+}
+
+.log-sky-art-overlay.lighting-moon::before,
+.app-sky-art-strip.lighting-moon::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' shape-rendering='crispEdges'%3E%3Crect x='11' y='5' width='5' height='2' fill='%23cbd5e1'/%3E%3Crect x='9' y='7' width='3' height='2' fill='%23cbd5e1'/%3E%3Crect x='8' y='9' width='2' height='6' fill='%23cbd5e1'/%3E%3Crect x='9' y='15' width='3' height='2' fill='%23cbd5e1'/%3E%3Crect x='11' y='17' width='5' height='2' fill='%23cbd5e1'/%3E%3Crect x='13' y='7' width='4' height='2' fill='%23f8fafc'/%3E%3Crect x='10' y='9' width='5' height='6' fill='%23f8fafc'/%3E%3Crect x='13' y='15' width='4' height='2' fill='%23f8fafc'/%3E%3C/svg%3E");
+}
+
+.log-sky-art-overlay.lighting-artificial::before,
+.app-sky-art-strip.lighting-artificial::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' shape-rendering='crispEdges'%3E%3Crect x='11' y='14' width='2' height='8' fill='%2378350f'/%3E%3Crect x='10' y='13' width='4' height='2' fill='%23451a03'/%3E%3Crect x='8' y='4' width='8' height='10' fill='%23ea580c' opacity='0.25'/%3E%3Crect x='9' y='5' width='6' height='8' fill='%23ea580c' opacity='0.4'/%3E%3Crect x='10' y='7' width='4' height='6' fill='%23ea580c'/%3E%3Crect x='11' y='5' width='2' height='6' fill='%23f97316'/%3E%3Crect x='11' y='3' width='2' height='2' fill='%23facc15'/%3E%3C/svg%3E");
+}
+
+/* 2. Weather Conditions (rendered as ::after across the entire top) */
+.log-sky-art-overlay::after,
+.app-sky-art-strip::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+/* Clouds weather: cloud, rain, heavy-rain, snow */
+.log-sky-art-overlay.weather-cloud::after,
+.app-sky-art-strip.weather-cloud::after,
+.log-sky-art-overlay.weather-rain::after,
+.app-sky-art-strip.weather-rain::after,
+.log-sky-art-overlay.weather-heavy-rain::after,
+.app-sky-art-strip.weather-heavy-rain::after,
+.log-sky-art-overlay.weather-snow::after,
+.app-sky-art-strip.weather-snow::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 24' shape-rendering='crispEdges'%3E%3Crect x='10' y='8' width='24' height='8' fill='%23cbd5e1' opacity='0.3'/%3E%3Crect x='14' y='6' width='16' height='8' fill='%23e2e8f0' opacity='0.4'/%3E%3Crect x='18' y='4' width='8' height='4' fill='%23ffffff' opacity='0.5'/%3E%3Crect x='60' y='10' width='32' height='8' fill='%23cbd5e1' opacity='0.3'/%3E%3Crect x='68' y='8' width='20' height='8' fill='%23e2e8f0' opacity='0.4'/%3E%3Crect x='72' y='6' width='10' height='4' fill='%23ffffff' opacity='0.5'/%3E%3C/svg%3E");
+    background-size: 128px 24px;
+    background-repeat: repeat-x;
+    background-position: 0 0;
+    opacity: 0.8;
+}
+
+/* Rain overlay (falling rain streaks below the clouds) */
+.log-sky-art-overlay.weather-rain::after,
+.app-sky-art-strip.weather-rain::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Cline x1='8' y1='4' x2='4' y2='12' stroke='%2338bdf8' stroke-width='1' opacity='0.3'/%3E%3Cline x1='24' y1='8' x2='20' y2='16' stroke='%2338bdf8' stroke-width='1' opacity='0.3'/%3E%3Cline x1='14' y1='18' x2='10' y2='26' stroke='%2338bdf8' stroke-width='1' opacity='0.3'/%3E%3Cline x1='30' y1='20' x2='26' y2='28' stroke='%2338bdf8' stroke-width='1' opacity='0.3'/%3E%3C/svg%3E") repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 24' shape-rendering='crispEdges'%3E%3Crect x='10' y='8' width='24' height='8' fill='%23cbd5e1' opacity='0.3'/%3E%3Crect x='14' y='6' width='16' height='8' fill='%23e2e8f0' opacity='0.4'/%3E%3Crect x='18' y='4' width='8' height='4' fill='%23ffffff' opacity='0.5'/%3E%3Crect x='60' y='10' width='32' height='8' fill='%23cbd5e1' opacity='0.3'/%3E%3Crect x='68' y='8' width='20' height='8' fill='%23e2e8f0' opacity='0.4'/%3E%3Crect x='72' y='6' width='10' height='4' fill='%23ffffff' opacity='0.5'/%3E%3C/svg%3E") repeat-x;
+    background-size: 32px 32px, 128px 24px;
+    background-position: 0 0, 0 0;
+}
+
+/* Heavy rain overlay (darker clouds, heavier rain) */
+.log-sky-art-overlay.weather-heavy-rain::after,
+.app-sky-art-strip.weather-heavy-rain::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Cline x1='8' y1='4' x2='4' y2='12' stroke='%237dd3fc' stroke-width='1' opacity='0.5'/%3E%3Cline x1='24' y1='8' x2='20' y2='16' stroke='%237dd3fc' stroke-width='1' opacity='0.5'/%3E%3Cline x1='14' y1='18' x2='10' y2='26' stroke='%237dd3fc' stroke-width='1' opacity='0.5'/%3E%3Cline x1='30' y1='20' x2='26' y2='28' stroke='%237dd3fc' stroke-width='1' opacity='0.5'/%3E%3C/svg%3E") repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 24' shape-rendering='crispEdges'%3E%3Crect x='10' y='8' width='24' height='8' fill='%2364748b' opacity='0.5'/%3E%3Crect x='14' y='6' width='16' height='8' fill='%2394a3b8' opacity='0.6'/%3E%3Crect x='18' y='4' width='8' height='4' fill='%23cbd5e1' opacity='0.7'/%3E%3Crect x='60' y='10' width='32' height='8' fill='%2364748b' opacity='0.5'/%3E%3Crect x='68' y='8' width='20' height='8' fill='%2394a3b8' opacity='0.6'/%3E%3Crect x='72' y='6' width='10' height='4' fill='%23cbd5e1' opacity='0.7'/%3E%3C/svg%3E") repeat-x;
+    background-size: 32px 32px, 128px 24px;
+    background-position: 0 0, 0 0;
+}
+
+/* Snow overlay */
+.log-sky-art-overlay.weather-snow::after,
+.app-sky-art-strip.weather-snow::after {
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Crect x='6' y='6' width='2' height='2' fill='%23ffffff' opacity='0.6'/%3E%3Crect x='22' y='10' width='2' height='2' fill='%23ffffff' opacity='0.6'/%3E%3Crect x='14' y='20' width='2' height='2' fill='%23ffffff' opacity='0.6'/%3E%3Crect x='28' y='24' width='2' height='2' fill='%23ffffff' opacity='0.6'/%3E%3C/svg%3E") repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 24' shape-rendering='crispEdges'%3E%3Crect x='10' y='8' width='24' height='8' fill='%23cbd5e1' opacity='0.3'/%3E%3Crect x='14' y='6' width='16' height='8' fill='%23e2e8f0' opacity='0.4'/%3E%3Crect x='18' y='4' width='8' height='4' fill='%23ffffff' opacity='0.5'/%3E%3Crect x='60' y='10' width='32' height='8' fill='%23cbd5e1' opacity='0.3'/%3E%3Crect x='68' y='8' width='20' height='8' fill='%23e2e8f0' opacity='0.4'/%3E%3Crect x='72' y='6' width='10' height='4' fill='%23ffffff' opacity='0.5'/%3E%3C/svg%3E") repeat-x;
+    background-size: 32px 32px, 128px 24px;
+    background-position: 0 0, 0 0;
+}
+
+

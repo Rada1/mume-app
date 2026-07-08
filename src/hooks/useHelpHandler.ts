@@ -19,6 +19,7 @@ export function useHelpHandler() {
 
     const [isUiRequested, _setIsUiRequested] = useState(false);
     const isUiRequestedRef = useRef(false);
+    const hoverHelpCallbackRef = useRef<((helpText: string) => void) | null>(null);
 
     const setIsUiRequested = useCallback((val: boolean) => {
         isUiRequestedRef.current = val;
@@ -51,19 +52,34 @@ export function useHelpHandler() {
         console.log('[HelpHandler] Finalizing Help Capture:', { length: helpData.length });
 
         if (helpData.trim().length > 0) {
-            setPopoverState({
-                type: 'help-card',
-                x: window.innerWidth / 2 - 150, // Default position, will be centered by manager
-                y: window.innerHeight / 2 - 200,
-                setId: 'help',
-                helpData
-            });
+            if (hoverHelpCallbackRef.current) {
+                hoverHelpCallbackRef.current(helpData);
+            } else {
+                setPopoverState({
+                    type: 'help-card',
+                    x: window.innerWidth / 2 - 150, // Default position, will be centered by manager
+                    y: window.innerHeight / 2 - 200,
+                    setId: 'help',
+                    helpData
+                });
+            }
         }
 
+        hoverHelpCallbackRef.current = null;
         setIsHelpActive(false);
         setIsUiRequested(false);
         helpBuffer.current = [];
     }, [clearFinalizeTimer, setIsHelpActive, setIsUiRequested]);
+
+    const handleNoHelpFound = useCallback(() => {
+        if (hoverHelpCallbackRef.current) {
+            hoverHelpCallbackRef.current('');
+        }
+        hoverHelpCallbackRef.current = null;
+        setIsHelpActive(false);
+        setIsUiRequested(false);
+        helpBuffer.current = [];
+    }, [setIsHelpActive, setIsUiRequested]);
 
     const scheduleFinalizeHelp = useCallback((
         setPopoverState: (state: PopoverState) => void
@@ -85,6 +101,8 @@ export function useHelpHandler() {
         finalizeHelp,
         scheduleFinalizeHelp,
         isHelpActiveRef,
-        isUiRequestedRef
+        isUiRequestedRef,
+        hoverHelpCallbackRef,
+        handleNoHelpFound
     };
 }

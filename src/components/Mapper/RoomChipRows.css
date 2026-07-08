@@ -8,9 +8,9 @@
     max-width: 720px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 5px 8px;
-    margin-top: 4px;
+    gap: 2px;
+    padding: 4px 8px 5px;
+    margin-top: 0;
     box-sizing: border-box;
     background: rgba(13, 16, 23, 0.62);
     backdrop-filter: blur(10px);
@@ -19,14 +19,269 @@
     pointer-events: auto;
 }
 
-.room-chip-row {
-    display: grid;
-    grid-template-columns: 52px minmax(0, 1fr);
+.room-chip-summary {
+    position: absolute;
+    top: 0;
+    left: 50px;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    pointer-events: auto;
+}
+
+.room-chip-summary-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    height: 18px;
+    padding: 0 2px;
+    border: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.45);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.room-chip-summary-button:hover,
+.room-chip-summary-button.is-open {
+    color: rgba(255, 255, 255, 0.74);
+}
+
+.room-chip-summary-button.is-drop-target {
+    color: rgba(34, 197, 94, 0.95);
+}
+
+.room-chip-popover {
+    position: absolute;
+    top: 24px;
+    left: 0;
+    width: min(240px, 70vw);
+    max-height: 220px;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(8, 11, 18, 0.96);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+}
+
+.room-chip-popover-title {
+    display: flex;
     align-items: center;
     gap: 5px;
-    min-height: 16px;
+    margin-bottom: 6px;
+    color: rgba(255, 255, 255, 0.58);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.58rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.room-chip-popover-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    max-height: 178px;
+    overflow-y: auto;
+}
+
+/* Terrain pins: a tiny blocky sprite standing on the pixel-art ground, with a
+   dashed leader line running up to its floating name chip, flag-marker style. */
+.room-chip-terrain-pins {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    pointer-events: none;
+}
+
+/* The player's own pin — pinned to the left edge, outside the centered flex
+   flow the other room chips use, so it doesn't shift as the room's occupant
+   count changes. */
+.terrain-pin-player {
+    position: absolute;
+    left: 12px;
+    bottom: 0;
+}
+
+.terrain-pin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    pointer-events: auto;
+}
+
+.terrain-pin .room-chip {
+    font-family: var(--font-mono, monospace);
+    cursor: pointer;
+}
+
+.terrain-pin-line {
+    width: 0;
+    height: 12px;
+    border-left: 2px dashed rgba(255, 255, 255, 0.4);
+}
+
+.terrain-pin-sprite {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 8px;
+    color: rgba(255, 255, 255, 0.82);
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
+}
+
+.terrain-pin-sprite-head {
+    width: 6px;
+    height: 4px;
+    background: currentColor;
+}
+
+.terrain-pin-sprite-body {
+    width: 8px;
+    height: 6px;
+    background: currentColor;
+    margin-top: 1px;
+}
+
+.terrain-pin-sprite-block {
+    width: 7px;
+    height: 7px;
+    background: currentColor;
+}
+
+.terrain-pin-sprite-enemy { color: var(--enemy-color, #ef4444); }
+.terrain-pin-sprite-npc { color: var(--npc-color, #facc15); }
+.terrain-pin-sprite-ally { color: var(--player-color, #22c55e); }
+.terrain-pin-sprite-neutral { color: var(--neutral-color, #eab308); }
+.terrain-pin-sprite-object { color: var(--object-color, #38bdf8); }
+.terrain-pin-sprite-player { color: #ffffff; }
+
+.room-chip-occupants-row,
+.room-chip-objects-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 4px;
+    pointer-events: auto;
+}
+
+.room-chip-objects-row.is-drop-target {
+    background: rgba(34, 197, 94, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.4);
+    border-radius: 6px;
+}
+
+.room-chip-occupants-row .room-chip,
+.room-chip-objects-row .room-chip {
+    max-width: 180px;
+    min-height: 30px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    border-width: 1.5px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.room-chip-occupants-row .room-chip:hover,
+.room-chip-objects-row .room-chip:hover {
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateY(-1px);
+}
+
+.room-chip-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
+    gap: 8px;
+    min-width: 0;
+    max-height: 128px;
+    pointer-events: auto;
+}
+
+.room-chip-column {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    padding: 5px 6px 6px;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.room-chip-column.is-drop-target {
+    background: rgba(34, 197, 94, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.45);
+}
+
+.room-chip-column-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 5px;
+    color: rgba(255, 255, 255, 0.52);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.54rem;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.room-chip-column-title svg {
+    flex: 0 0 auto;
+    opacity: 0.78;
+}
+
+.room-chip-column-list {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+}
+
+.room-chip-column-list .room-chip {
+    width: 100%;
+    max-width: none;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.room-chip-row {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: center;
+    gap: 6px;
+    min-height: 0;
     border-radius: 5px;
+    position: relative;
     transition: background 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
+}
+
+.room-chip-row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -2px;
+    height: 1px;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(148, 163, 184, 0.32), rgba(148, 163, 184, 0.1) 42%, transparent 100%);
 }
 
 .room-chip-row.is-drop-target {
@@ -36,13 +291,30 @@
 }
 
 .room-chip-row-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     font-family: var(--font-mono, monospace);
-    font-size: 0.48rem;
-    font-weight: 850;
-    letter-spacing: 0;
+    font-size: 0.56rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
     color: var(--text-faded);
     text-transform: uppercase;
     white-space: nowrap;
+    user-select: none;
+    min-width: 0;
+}
+
+.room-chip-count-badge {
+    opacity: 0.55;
+    margin-left: 2px;
+    font-size: 0.95em;
+    font-weight: 600;
+}
+
+.room-chip-row-label svg {
+    flex: 0 0 auto;
+    opacity: 0.85;
 }
 
 .room-chip-list {
@@ -123,8 +395,28 @@
     color: var(--object-color, #38bdf8);
 }
 
+.room-chip-player {
+    color: #ffffff;
+    cursor: pointer;
+}
+
 .light-mode .room-chip-rows {
     background: rgba(255, 255, 255, 0.68);
+}
+
+.light-mode .room-chip-popover {
+    background: rgba(250, 250, 252, 0.96);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
+.light-mode .room-chip-column {
+    border-left-color: rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.025);
+}
+
+.light-mode .room-chip-column-title {
+    color: rgba(15, 23, 42, 0.58);
 }
 
 .light-mode .room-chip {
@@ -134,7 +426,7 @@
 
 @media (min-width: 601px) {
     .room-chip-row {
-        min-height: 24px;
+        min-height: 20px;
     }
 
     .room-chip-row-label {
@@ -156,13 +448,19 @@
     }
 
     .room-chip-row {
-        grid-template-columns: 48px minmax(0, 1fr);
+        grid-template-columns: max-content minmax(0, 1fr);
         gap: 5px;
         min-height: 16px;
     }
 
     .room-chip-row-label {
-        font-size: 0.45rem;
+        font-size: 0.46rem;
+        gap: 4px;
+    }
+
+    .room-chip-row-label svg {
+        width: 10px;
+        height: 10px;
     }
 
     .room-chip {

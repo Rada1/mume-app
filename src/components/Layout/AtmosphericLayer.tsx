@@ -1,15 +1,16 @@
 /**
  * @file AtmosphericLayer.tsx
  * @description Drives all environmental visual effects. Resolves the active terrain
- * into a background image URL and passes it to EnvironmentEffects.
- * Manual bgImage from settings overrides the terrain-driven image.
+ * into terrain classes while keeping bitmap backgrounds map-based.
+ * Manual bgImage from settings overrides the default map background.
  */
 import React from 'react';
 import { useGame } from '../../context/GameContext';
 import { EnvironmentEffects } from '../Atmosphere/EnvironmentEffects';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
-import { resolveTerrainBackground } from '../../utils/terrainBackgrounds';
+
+const MAP_BACKGROUND_IMAGE = '/assets/Pictures/UIPics/darkmap.png';
 
 export const AtmosphericLayer: React.FC = () => {
     const {
@@ -42,11 +43,10 @@ export const AtmosphericLayer: React.FC = () => {
         ? (isCreationSequence ? 'dark' : 'moon') 
         : lighting;
 
-    // Resolved background image: dynamic terrain, custom manual, or account image
-    const terrainBg = resolveTerrainBackground(effectiveTerrain);
+    // Resolved background image: map texture by default. Terrain bitmap backgrounds stay unhooked.
     const resolvedBgImage = manualBgImage || (isAccountMode 
-        ? (accountState.stage === 'login' ? terrainBg : '/assets/Pictures/account.png')
-        : terrainBg);
+        ? (accountState.stage === 'login' ? MAP_BACKGROUND_IMAGE : '/assets/Pictures/account.png')
+        : MAP_BACKGROUND_IMAGE);
     const resolvedBottomBgImage = manualBgImageBottom;
     const resolvedBottomBgScale = 1;
 

@@ -180,7 +180,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
     // Parallax: update when mapper state wakes instead of running a permanent RAF loop.
     useEffect(() => {
         const showBg = useSettingsStore.getState().showBackgroundImage;
-        if (props.isMobile || !showBg) return;
+        if (!showBg) return;
         const FACTOR = 0.035;
         const container = canvasRef.current?.closest('.mapper-container') as HTMLElement | null;
         if (!container) return;
@@ -189,6 +189,9 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         const zoom = props.camera.current.zoom;
         const bgScale = 1 + (zoom - 1) * 0.05;
         container.style.setProperty('--parallax-scale', `${bgScale}`);
+        document.documentElement.style.setProperty('--parallax-x', `${-props.camera.current.x * FACTOR}px`);
+        document.documentElement.style.setProperty('--parallax-y', `${-props.camera.current.y * FACTOR}px`);
+        document.documentElement.style.setProperty('--parallax-scale', `${bgScale}`);
     }, [canvasRef, props.camera, props.renderVersion, props.isMobile]);
 
     useEffect(() => {

@@ -52,13 +52,15 @@ export const UnifiedView: React.FC<UnifiedViewProps> = ({
     } = useGame();
 
     return (
-        <div style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
             flex: 1,
             minHeight: 0,
             position: 'relative',
-            background: 'rgba(0,0,0,0.1)'
+            background: 'rgba(13,16,23,0.9)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)'
         }}>
             <div style={{ 
                 flex: 1, 
@@ -148,10 +150,10 @@ export const UnifiedView: React.FC<UnifiedViewProps> = ({
                         );
                     })
                 ) : (
-                    <div style={{ 
-                        padding: '40px 20px', 
-                        textAlign: 'center', 
-                        color: 'rgba(255,255,255,0.3)',
+                    <div style={{
+                        padding: '40px 20px',
+                        textAlign: 'center',
+                        color: 'rgba(255,255,255,0.55)',
                         fontStyle: 'italic',
                         fontSize: '0.9rem'
                     }}>

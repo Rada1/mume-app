@@ -6,6 +6,7 @@
 import React from 'react';
 import { useGame } from '../../../context/GameContext';
 import { useUIStore } from '../../../stores/useUIStore';
+import { CustomButton } from '../../../types';
 import './LineCluster.css';
 
 interface LineClusterProps {
@@ -32,17 +33,33 @@ interface LineClusterProps {
     setActiveSet: (setId: string) => void;
     setButtons: (val: any) => void;
     isMobile?: boolean;
+    isCheatSheetExpanded?: boolean;
+    setIsCheatSheetExpanded?: (expanded: boolean) => void;
 }
 
 import { GameButton } from '../../Controls/GameButton/GameButton';
 import { ActionMenuButton } from '../../Controls/ActionMenuButton';
+
+const TACTICAL_CLASS_LABELS: Record<string, string> = {
+    'tactical-ranger': 'ranger',
+    'tactical-cleric': 'cleric',
+    'tactical-thief': 'thief',
+    'tactical-warrior': 'warrior',
+    'tactical-mage': 'mage',
+    'tactical-doors': 'scout'
+};
+
+const getTacticalClassLabel = (button: CustomButton): string => (
+    TACTICAL_CLASS_LABELS[button.id] || button.label.toLowerCase()
+);
 
 export const LineCluster: React.FC<LineClusterProps> = ({
     isEditMode, handleDragStart, buttons, selectedButtonIds, dragState,
     handleButtonClick, wasDraggingRef, triggerHaptic, setPopoverState,
     setEditingButtonId, setSelectedIds, activePrompt, executeCommand,
     setCommandPreview, heldButton, setHeldButton, joystick, target,
-    isGridEnabled, gridSize, setActiveSet, setButtons, isMobile
+    isGridEnabled, gridSize, setActiveSet, setButtons, isMobile,
+    isCheatSheetExpanded = false, setIsCheatSheetExpanded
 }) => {
     const { viewport } = useGame();
     const selectedTarget = useUIStore(state => state.selectedTarget);
@@ -100,6 +117,15 @@ export const LineCluster: React.FC<LineClusterProps> = ({
                     {renderButton(charmieButton, 'default', 'line-btn tactical-charmie auxiliary-charmie')}
                 </div>
             )}
+            <div 
+                className="line-cluster-title clickable-toggle"
+                onClick={() => {
+                    setIsCheatSheetExpanded?.(!isCheatSheetExpanded);
+                }}
+                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', userSelect: 'none' }}
+            >
+                abilities {isCheatSheetExpanded ? '▴' : '▾'}
+            </div>
             <div className="line-cluster">
                 {sortedButtons.map((button, index) => (
                     <div
@@ -108,6 +134,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
                         style={{ '--cascade-delay': `${index * 0.12}s` } as React.CSSProperties}
                     >
                         {renderButton(button, 'diamond', `line-btn ${button.id}`)}
+                        <span className="line-cluster-caption">{getTacticalClassLabel(button)}</span>
                     </div>
                 ))}
                 <div

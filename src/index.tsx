@@ -4,6 +4,8 @@ import { createPortal } from 'react-dom';
 
 import './index.css';
 import './components/Messages/MessageLog.css';
+import './components/Messages/ChatWindow.css';
+import './components/Players/PlayersPanel.css';
 import './components/Controls/Stats.css';
 import './components/Controls/CustomButtons.css';
 import './components/Controls/SwipeWheel.css';
@@ -29,6 +31,7 @@ import SwipeFeedbackOverlay from './components/Overlay/SwipeFeedbackOverlay';
 import ObjectDragOverlay from './components/Overlay/ObjectDragOverlay';
 import { AgentHUD } from './components/Utility/AgentHUD';
 import { PerfHUD } from './components/Utility/PerfHUD';
+import { MumeEditor } from './components/Utility/MumeEditor';
 import { useSettingsStore } from './stores/useSettingsStore';
 import { useDisplayMode } from './hooks/useDisplayMode';
 import { normalizeTerrain } from './utils/terrainUtils';
@@ -368,6 +371,13 @@ const MudClient = () => {
                         isEditorOpen={mumeEditState.isOpen}
                         onSaveEditor={handleSaveMumeEdit}
                     />
+                </ErrorBoundary>,
+                document.body
+            )}
+
+            {typeof document !== 'undefined' && createPortal(
+                <ErrorBoundary name="MUME Editor">
+                    <MumeEditor />
                 </ErrorBoundary>,
                 document.body
             )}

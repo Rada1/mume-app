@@ -12,6 +12,8 @@ export interface SelectedTargetInfo {
     setId?: string;
     category?: string;
     context?: string;
+    displayName?: string;
+    keyword?: string;
     accentColor?: string;
     menuDisplay?: 'list' | 'dial';
     parentNoun?: string;
@@ -22,6 +24,7 @@ export interface MumeEditState {
     title: string;
     text: string;
     key: string;
+    mode: 'edit' | 'view';
     context: ArchiveEditorContext | null;
 }
 
@@ -123,6 +126,7 @@ const defaultMumeEditState: MumeEditState = {
     title: '',
     text: '',
     key: '',
+    mode: 'edit',
     context: null
 };
 

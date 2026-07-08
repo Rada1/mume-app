@@ -13,6 +13,7 @@ import { useArchiveStore } from '../../stores/useArchiveStore';
 import { getArchiveListExpectedCount, mergeArchiveEntries, parseArchiveList, parseArchiveRead } from '../../utils/archiveAdapters';
 import { useShaperEntityStore } from '../../shaper/model/useShaperEntityStore';
 import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
+import { useUIStore } from '../../stores/useUIStore';
 
 export interface CaptureParserDeps {
     captureSession: CaptureSession | null;
@@ -53,6 +54,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
     const sessionRef = useRef<CaptureSession | null>(null);
     const pendingFlagsRef = useRef<{ isSilent: boolean, fromDrawer: boolean, command?: string }>({ isSilent: false, fromDrawer: false });
     const pendingSilentCommandsRef = useRef<string[]>([]);
+    const lastSilentCaptureEndedAtRef = useRef(0);
     const lastRequestedContainerIdRef = useRef<string | null>(null);
 
     const setLastRequestedContainerId = useCallback((id: string | null) => {
@@ -297,6 +299,10 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     setEqLines(lines);
                     break;
                 case 'stats':
+                    {
+                        const affectedBy = parseAffectedByLines(lines);
+                        if (affectedBy) setCharacterInfo?.({ affectedBy });
+                    }
                     setStatsLines(lines);
                     break;
                 case 'who':
@@ -329,6 +335,52 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 case 'achievement':
                     setAchievementLines(lines);
                     break;
+                case 'examine': {
+                    const store = useUIStore.getState();
+                    const currentPopover = store.popoverState;
+                    if (currentPopover) {
+                        store.setPopoverState({
+                            ...currentPopover,
+                            capturedExamineLines: lines.map(l => l.html || l.text),
+                            isCapturingExamine: false
+                        });
+                    }
+                    break;
+                }
+                case 'consider': {
+                    const store = useUIStore.getState();
+                    const currentPopover = store.popoverState;
+                    if (currentPopover) {
+                        store.setPopoverState({
+                            ...currentPopover,
+                            capturedConsiderLines: lines.map(l => l.html || l.text),
+                            isCapturingConsider: false
+                        });
+                    }
+                    break;
+                }
+                case 'whois': {
+                    const store = useUIStore.getState();
+                    const currentPopover = store.popoverState;
+                    if (currentPopover) {
+                        store.setPopoverState({
+                            ...currentPopover,
+                            capturedWhoisLines: lines.map(l => l.html || l.text),
+                            isCapturingWhois: false
+                        });
+                    }
+                    break;
+                }
+                case 'self_title': {
+                    const text = lines.map(l => l.text).join(' ');
+                    const match = text.match(/current title is\s+(.+?)\.?\s*$/i) || text.match(/title is now\s+(.+?)\.?\s*$/i);
+                    // If MUME refused the request (e.g. another edit session was
+                    // still open), don't clobber the title with the error text.
+                    if (!match) break;
+                    const title = match[1].trim();
+                    setCharacterInfo?.({ title: /^none$/i.test(title) ? '' : title });
+                    break;
+                }
                 case 'container': {
                     const containerId = session.metadata?.containerId;
                     if (containerId && setContainerContents) {
@@ -594,6 +646,11 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             console.error(`[Capture] Error updating ${session.type} lines:`, err);
         }
 
+        const endedSilentCapture = !!session.isSilent;
+        if (endedSilentCapture) {
+            lastSilentCaptureEndedAtRef.current = Date.now();
+        }
+
         sessionRef.current = null;
         setCaptureSession(null);
 
@@ -651,6 +708,12 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         return true;
     }, [normalizeCommandEcho]);
 
+    const shouldSuppressSilentBlank = useCallback((line: string) => {
+        if (line.trim().length > 0) return false;
+        if (sessionRef.current?.isSilent || pendingFlagsRef.current.isSilent) return true;
+        return Date.now() - lastSilentCaptureEndedAtRef.current < 900;
+    }, []);
+
     const getSession = useCallback(() => sessionRef.current, [sessionRef]);
 
     return {
@@ -665,6 +728,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         setPendingFlags,
         isPendingSilent,
         shouldSuppressCommandEcho,
+        shouldSuppressSilentBlank,
         setLastRequestedContainerId,
         getSession
     };

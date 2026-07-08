@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, DraftingCompass } from 'lucide-react';
+import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, DraftingCompass, MessageSquare, Users } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
 import { formatCompactNumber } from '../../utils/gameUtils';
@@ -16,6 +16,12 @@ interface HeaderProps {
     getLightingIcon: () => React.ReactNode;
     getWeatherIcon: () => React.ReactNode;
 }
+
+const levelTierClass = (level: number | undefined): string => {
+    if (!level || level <= 20) return 'level-tier-standard';
+    if (level <= 25) return 'level-tier-gold';
+    return 'level-tier-diamond';
+};
 
 const Header: React.FC<HeaderProps> = () => {
     const {
@@ -50,6 +56,10 @@ const Header: React.FC<HeaderProps> = () => {
     const setArchiveView = useArchiveStore(state => state.setActiveView);
     const setArchivePanelMode = useArchiveStore(state => state.setPanelMode);
     const showDeveloperTools = useSettingsStore(state => state.showDeveloperTools ?? false);
+    const showChatWindow = useSettingsStore(state => state.showChatWindow);
+    const setShowChatWindow = useSettingsStore(state => state.setShowChatWindow);
+    const showPlayersPanel = useSettingsStore(state => state.showPlayersPanel);
+    const setShowPlayersPanel = useSettingsStore(state => state.setShowPlayersPanel);
 
     const [isEnteringTarget, setIsEnteringTarget] = useState(false);
     const [manualTargetInput, setManualTargetInput] = useState('');
@@ -213,8 +223,8 @@ const Header: React.FC<HeaderProps> = () => {
                 {!isAccountScreen && (
                     <div className="player-status-hud" onClick={() => setUI(prev => ({ ...prev, drawer: 'character' }))}>
                         <div className="player-identity">
-                            <span className="player-name">{characterInfo.name || (status === 'connected' ? '...' : 'MUME')}</span>
-                            <span className="player-level">{characterInfo.level > 0 ? `Lv.${characterInfo.level}` : ''}</span>
+                            <span className={`player-name ${levelTierClass(characterInfo.level)}`}>{characterInfo.name || (status === 'connected' ? '...' : 'MUME')}</span>
+                            <span className={`player-level ${levelTierClass(characterInfo.level)}`}>{characterInfo.level > 0 ? `Lv.${characterInfo.level}` : ''}</span>
                         </div>
                         <div className="player-stats-mini">
                             <div className="stat-pill xp">
@@ -453,20 +463,46 @@ const Header: React.FC<HeaderProps> = () => {
                 )}
 
                 {!isAccountScreen && (
-                    <button
-                        className="menu-toggle-btn"
-                        onClick={() => {
-                            setArchivePanelMode('mail');
-                            setArchiveView('mail-inbox');
-                            openArchive(true);
-                            executeCommand('look mail', true, true, false, true);
-                            triggerHaptic?.(10);
-                        }}
-                        title="Mailbox"
-                        style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
-                    >
-                        <Mail size={17} />
-                    </button>
+                    <>
+                        <button
+                            className="menu-toggle-btn"
+                            onClick={() => {
+                                setArchivePanelMode('mail');
+                                setArchiveView('mail-inbox');
+                                openArchive(true);
+                                executeCommand('look mail', true, true, false, true);
+                                triggerHaptic?.(10);
+                            }}
+                            title="Mailbox"
+                            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
+                        >
+                            <Mail size={17} />
+                        </button>
+
+                        <button
+                            className={`menu-toggle-btn${showPlayersPanel ? ' active' : ''}`}
+                            onClick={() => {
+                                setShowPlayersPanel(!showPlayersPanel);
+                                triggerHaptic?.(10);
+                            }}
+                            title="Toggle Players Panel"
+                            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
+                        >
+                            <Users size={17} />
+                        </button>
+
+                        <button
+                            className={`menu-toggle-btn${showChatWindow ? ' active' : ''}`}
+                            onClick={() => {
+                                setShowChatWindow(!showChatWindow);
+                                triggerHaptic?.(10);
+                            }}
+                            title="Toggle Chat Panel"
+                            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
+                        >
+                            <MessageSquare size={17} />
+                        </button>
+                    </>
                 )}
 
                 {isEditMode && !viewport.isLandscape && (

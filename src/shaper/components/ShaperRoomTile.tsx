@@ -13,20 +13,13 @@ import { listShaperComRoomEntities } from '../model/shaperComCommands';
 import { hasShaperExitClimb, hasShaperExitDoor, hasShaperExitFlag } from '../model/shaperExitFlags';
 import { ROAD_COLOR_DARK, PATH_COLOR_DARK } from '../../components/Mapper/mapperUtils';
 import type { ShaperHoverContent } from './ShaperHoverCard';
-
+import './ShaperExitSelection.css';
 type PathDir = 'n' | 'e' | 's' | 'w';
 type PathKind = 'road' | 'trail';
-
-// Procedural road/trail path: mirrors the real map, which draws road segments
-// from a room centre toward each connected road/trail neighbour (drawFeatures).
 const DIR_DELTAS: Record<PathDir, [number, number]> = { n: [0, -1], e: [1, 0], s: [0, 1], w: [-1, 0] };
-const DIR_OPPOSITE: Record<PathDir, PathDir> = { n: 's', e: 'w', s: 'n', w: 'e' };
-// Edge midpoints inside the 0..100 tile viewBox the overlay renders into.
+const DIR_OPPOSITE: Record<ShaperDirection, ShaperDirection> = { n: 's', e: 'w', s: 'n', w: 'e', u: 'd', d: 'u' };
 const DIR_EDGE: Record<PathDir, [number, number]> = { n: [50, 0], e: [100, 50], s: [50, 100], w: [0, 50] };
 const pathCardinals: PathDir[] = ['n', 'e', 's', 'w'];
-
-// Coordinate index is rebuilt only when the rooms object reference changes, so
-// all tiles in a single render share one map instead of each scanning O(n).
 let roadCoordCache: { rooms: unknown; map: Map<string, ShaperRoomDraft> } | null = null;
 const getRoadCoordMap = (rooms: Record<string, ShaperRoomDraft>): Map<string, ShaperRoomDraft> => {
     if (roadCoordCache && roadCoordCache.rooms === rooms) return roadCoordCache.map;
@@ -40,9 +33,6 @@ const getRoadCoordMap = (rooms: Record<string, ShaperRoomDraft>): Map<string, Sh
 
 const roomMatchesPathKind = (room: ShaperRoomDraft, kind: PathKind): boolean =>
     kind === 'road' ? room.sector === 'road' : (room.flags.includes('trail') || room.sector === 'road');
-
-// Returns the cardinal directions in which this road/trail room is connected to
-// a like neighbour, so the overlay can draw a segment toward each shared edge.
 const getShaperRoadDirs = (
     room: ShaperRoomDraft,
     rooms: Record<string, ShaperRoomDraft>,
@@ -61,7 +51,6 @@ const getShaperRoadDirs = (
     }
     return dirs;
 };
-
 interface ShaperRoomTileProps {
     room: ShaperRoomDraft;
     rooms: Record<string, ShaperRoomDraft>;
@@ -89,12 +78,8 @@ interface ShaperRoomTileProps {
     playerRoomNum?: number | string | null;
     playerMapId?: number | string | null;
 }
-
 const directions: ShaperDirection[] = ['n', 'e', 's', 'w', 'u', 'd'];
-
-// Selecting a door selects its underlying connection (same as clicking the
-// connection line), preferring an actual reverse exit for the B->A direction.
-const buildDoorConnectionSelection = (
+const buildExitConnectionSelection = (
     exit: ShaperExitDraft,
     exits: Record<string, ShaperExitDraft>
 ): ShaperConnectionSelection | null => {
@@ -108,8 +93,19 @@ const buildDoorConnectionSelection = (
     }
     return { aId: exit.fromRoomId, bId: exit.toRoomId, dirAB: exit.direction, dirBA };
 };
-
-// --- Component Section ---
+const selectExitConnection = (
+    event: ReactPointerEvent<HTMLElement>,
+    exit: ShaperExitDraft,
+    exits: Record<string, ShaperExitDraft>,
+    onSelectConnection?: (conn: ShaperConnectionSelection | null) => void
+) => {
+    if (!onSelectConnection) return;
+    const selection = buildExitConnectionSelection(exit, exits);
+    if (!selection) return;
+    event.stopPropagation();
+    onSelectConnection(selection);
+};
+const stopExitPointer = (event: ReactPointerEvent<HTMLElement>) => event.stopPropagation();
 export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
     room,
     rooms,
@@ -165,9 +161,7 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
     const isVerticalExit = (exit: ShaperExitDraft) => exit.direction === 'u' || exit.direction === 'd';
     // Cardinal doors/climbs keep the edge frame; up/down render as ▲/▼ markers like the live map.
     const doorExits = roomExits.filter(exit => !isVerticalExit(exit) && (hasShaperExitDoor(exit) || hasShaperExitClimb(exit)));
-    const verticalExits = roomExits.filter(exit =>
-        isVerticalExit(exit) && (exit.toRoomId || hasShaperExitDoor(exit) || hasShaperExitClimb(exit)));
-
+    const verticalExits = roomExits.filter(exit => isVerticalExit(exit) && (exit.toRoomId || hasShaperExitDoor(exit) || hasShaperExitClimb(exit)));
     return (
         <div
             style={tileStyle}
@@ -198,10 +192,7 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
             <span className="shaper-room-number">{room.roomNumber}</span>
             {isPlayerHere && (
                 <div className="shaper-player-presence" title="You are here">
-                    <div className="shaper-player-presence-corner tl" />
-                    <div className="shaper-player-presence-corner tr" />
-                    <div className="shaper-player-presence-corner bl" />
-                    <div className="shaper-player-presence-corner br" />
+                    {['tl', 'tr', 'bl', 'br'].map(corner => <div key={corner} className={`shaper-player-presence-corner ${corner}`} />)}
                 </div>
             )}
             {room.inactive && <span className="shaper-room-name">(inactive)</span>}
@@ -213,9 +204,11 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
                     return (
                         <span
                             key={`${exit.id}:climb`}
-                            className={`shaper-mmapper-door door-${exit.direction}`}
+                            className={`shaper-mmapper-door door-${exit.direction}${selectedConnectionIds?.has(exit.id) ? ' selected' : ''}`}
                             style={{ backgroundImage: `url(${getShaperDoorTile(exit.direction, true)})` }}
                             title={`Climb ${exit.direction.toUpperCase()}`}
+                            onPointerDown={event => selectExitConnection(event, exit, exits, onSelectConnection)}
+                            onPointerUp={stopExitPointer}
                         />
                     );
                 }
@@ -226,12 +219,8 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
                         className={`shaper-door-frame door-${exit.direction}${isDoorSelected ? ' selected' : ''}`}
                         title={`Door ${exit.direction.toUpperCase()}`}
                         onMouseMove={event => { event.stopPropagation(); onHover?.({ kind: 'door', exit }, event); }}
-                        onPointerDown={onSelectConnection ? (event => {
-                            const selection = buildDoorConnectionSelection(exit, exits);
-                            if (!selection) return;
-                            event.stopPropagation();
-                            onSelectConnection(selection);
-                        }) : undefined}
+                        onPointerDown={event => selectExitConnection(event, exit, exits, onSelectConnection)}
+                        onPointerUp={stopExitPointer}
                     >
                         <span className="shaper-door-post post-a" />
                         <span className="shaper-door-bar" />
@@ -242,28 +231,31 @@ export const ShaperRoomTile: React.FC<ShaperRoomTileProps> = ({
             {!room.inactive && verticalExits.map(exit => {
                 const isClimb = hasShaperExitClimb(exit);
                 const hasDoor = hasShaperExitDoor(exit);
-                // Pure climb (no door) keeps its dedicated climb pixmap.
                 if (isClimb && !hasDoor) {
                     return (
                         <span
                             key={`${exit.id}:climb`}
-                            className={`shaper-mmapper-door door-${exit.direction}`}
+                            className={`shaper-mmapper-door door-${exit.direction}${selectedConnectionIds?.has(exit.id) ? ' selected' : ''}`}
                             style={{ backgroundImage: `url(${getShaperDoorTile(exit.direction, true)})` }}
                             title={`Climb ${exit.direction.toUpperCase()}`}
+                            onPointerDown={event => selectExitConnection(event, exit, exits, onSelectConnection)}
+                            onPointerUp={stopExitPointer}
                         />
                     );
                 }
                 const isUp = exit.direction === 'u';
                 const isClosed = hasShaperExitFlag(exit, 'closed');
-                // Door: yellow (filled when closed, outline when open). Plain exit: solid grey.
                 const fill = hasDoor ? (isClosed ? '#ffcc00' : 'none') : 'rgba(148, 163, 184, 0.95)';
                 const stroke = hasDoor && !isClosed ? '#ffcc00' : 'none';
+                const isSelected = !!selectedConnectionIds?.has(exit.id);
                 return (
                     <span
                         key={`${exit.id}:vert`}
-                        className={`shaper-vert-exit dir-${exit.direction}`}
+                        className={`shaper-vert-exit dir-${exit.direction}${isSelected ? ' selected' : ''}`}
                         title={`${hasDoor ? 'Door' : 'Exit'} ${isUp ? 'Up' : 'Down'}`}
                         onMouseMove={hasDoor ? (event => { event.stopPropagation(); onHover?.({ kind: 'door', exit }, event); }) : undefined}
+                        onPointerDown={event => selectExitConnection(event, exit, exits, onSelectConnection)}
+                        onPointerUp={stopExitPointer}
                     >
                         <svg viewBox="0 0 10 10" aria-hidden="true">
                             <polygon

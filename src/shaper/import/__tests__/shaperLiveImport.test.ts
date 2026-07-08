@@ -452,8 +452,42 @@ Down   31:100, flags: DOOR NO_MOB, name: trapdoor, key: no-keyhole, pick: 0%,
             hasDoor: true,
             doorName: 'trapdoor',
             keyMode: 'no_keyhole',
+            doorPickPercent: 0,
             doorWeight: 1
         });
         expect(Object.values(result.doc.exits).filter(exit => exit.fromRoomId === importedRoom?.id)).toHaveLength(5);
+    });
+
+    it('imports exit descriptions from /stat room exit blocks', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const result = applyShaperLiveTranscript(doc, `
+/at 31:50 /stat room
+Room 31:50 (3150) - at@The Old Road Lookout
+Magical key: nthhobnigoo, Owner: none, Sector: hills, MapId: 5262803
+Entrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]
+Room permanent flags: BUILD SUNLIT
+Room temporary flags: none
+Light sources: 0
+Extra description keywords: none
+------- Exits -------
+East   31: 60, flags: none
+Description:
+  test
+  
+South  31: 51, flags: none
+West   31: 40, flags: none
+Up     31:101, flags: none
+Down   31:100, flags: DOOR CLOSED LOCKED NO_MOB, name: trapdoor, key: none,
+               pick: 50%, weight: 1
+Description:
+  there somethign there
+`, 1234);
+
+        const importedRoom = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:50');
+        const east = result.doc.exits[`${importedRoom?.id}:e`];
+        const down = result.doc.exits[`${importedRoom?.id}:d`];
+        expect(importedRoom?.description).toBe('');
+        expect(east).toMatchObject({ exitDescription: 'test' });
+        expect(down).toMatchObject({ exitDescription: 'there somethign there', doorPickPercent: 50, doorWeight: 1 });
     });
 });

@@ -25,7 +25,14 @@ const COMMAND_CAPTURE_TYPES: Record<string, import('../../../types/capture').Cap
     who: 'who',
     where: 'where',
     achievement: 'achievement',
-    achievements: 'achievement'
+    achievements: 'achievement',
+    examine: 'examine',
+    ex: 'examine',
+    exa: 'examine',
+    consider: 'consider',
+    con: 'consider',
+    cons: 'consider',
+    whois: 'whois'
 };
 
 export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isSystem, fromDrawer }) => {
@@ -89,19 +96,30 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
         const firstWord = words[0];
         const lastWord = words[words.length - 1];
 
+        // --- Self-inspection panel (character card avatar popover) ---
+        // Bare "change title" reads your title. Description/whois reads go
+        // through the GMCP editor protocol instead (see onMumeEdit), since
+        // "change description"/"change whois" open a real edit session.
+        if (firstWord === 'change' && words[1] === 'title' && words.length === 2) {
+            captureType = 'self_title';
+        }
+
         const isLook = firstWord === 'look' || firstWord === 'l';
         const isTail = firstWord === 'tail';
         const isBoardNoun = lastWord === 'board' || lastWord === 'b' || lastWord === 'bulletin';
 
+        const isPopoverInspect = silent && isSystem && !fromDrawer;
+
         // Match "look ... board", "look ... b", "look ... bulletin", "tail ...", "tail"
-        const isBoardListCommand = 
+        const isBoardListCommand = !isPopoverInspect && (
             (isLook && isBoardNoun) ||
             lowerCmd === 'look threads' ||
             lowerCmd === 'look all threads' ||
             /^look\s+thread\s+\d+$/i.test(lowerCmd) ||
             (isTail && useArchiveStore.getState().activeView === 'board') ||
             (lowerCmd.startsWith('look at ') && isBoardNoun) ||
-            (lowerCmd.startsWith('look all ') && isBoardNoun);
+            (lowerCmd.startsWith('look all ') && isBoardNoun)
+        );
 
         if (!captureType && isBoardListCommand) {
             useArchiveStore.getState().setPanelMode('board');
@@ -109,32 +127,39 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
             captureType = 'board_list';
         }
 
-        const isBoardReadCommand = 
+        const isBoardReadCommand = !isPopoverInspect && (
             /^(?:read|view)\s+\d+$/i.test(lowerCmd) ||
             /^(?:read|view)\s+\d+\s+(?:board|b)$/i.test(lowerCmd) ||
-            /^read\s+thread\s+\d+(?:\s+(?:next|whole))?$/i.test(lowerCmd);
+            /^read\s+thread\s+\d+(?:\s+(?:next|whole))?$/i.test(lowerCmd)
+        );
 
         if (!captureType && isBoardReadCommand) {
             captureType = useArchiveStore.getState().activeView.startsWith('board') ? 'board_read' : 'mail_read';
         }
         const isSentMailListCommand = /^look\s+(?:sent\s+mail|mail\s+sent)(?:\s+seen)?$/i.test(lowerCmd) ||
             /^look\s+(?:seen\s+sent\s+mail|sent\s+seen\s+mail|mail\s+sent\s+seen)$/i.test(lowerCmd);
-        const isMailListCommand =
+        const isMailListCommand = !isPopoverInspect && (
             lowerCmd === 'look mail' || lowerCmd === 'tail' || /^tail\s+\d+$/i.test(lowerCmd) ||
             lowerCmd === 'look seen mail' || isSentMailListCommand ||
-            lowerCmd.startsWith('search mail ') || lowerCmd.startsWith('search sent mail ');
+            lowerCmd.startsWith('search mail ') || lowerCmd.startsWith('search sent mail ')
+        );
         if (!captureType && isMailListCommand) {
             useArchiveStore.getState().setPanelMode('mail');
             useArchiveStore.getState().setActiveView(isSentMailListCommand || lowerCmd.startsWith('search sent mail ') ? 'mail-sent' : 'mail-inbox');
             captureType = 'mail_list';
         }
-        if (!captureType && /^read\s+sent\s+\d+$/i.test(lowerCmd)) {
+        if (!captureType && isLook && words.length > 1) {
+            captureType = 'examine';
+        }
+        const isMailReadCommand = !isPopoverInspect && /^read\s+sent\s+\d+$/i.test(lowerCmd);
+        if (!captureType && isMailReadCommand) {
             useArchiveStore.getState().setPanelMode('mail');
             useArchiveStore.getState().setActiveView('mail-sent');
             captureType = 'mail_read';
         }
         const isBookReadCommand =
             !captureType &&
+            !isPopoverInspect &&
             /^(?:read|view)\s+(?!\d+\b|sent\b|thread\b|next\b|last\b|forward\b|origin\b).+/i.test(lowerCmd);
         if (isBookReadCommand) {
             const title = cmd.trim().replace(/^(?:read|view)\s+/i, '').trim();

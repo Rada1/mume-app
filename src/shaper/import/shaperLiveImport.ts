@@ -178,15 +178,17 @@ const DESCRIPTION_TERMINATOR =
 
 const parseDescription = (output: string): string => {
     const lines = output.split('\n');
-    const start = lines.findIndex(line => /^Description:/i.test(line.trim()));
+    const exitsStart = lines.findIndex(line => /^-+\s*Exits\s*-+$/i.test(line.trim()) || /^Exits:/i.test(line.trim()));
+    const searchLines = exitsStart >= 0 ? lines.slice(0, exitsStart) : lines;
+    const start = searchLines.findIndex(line => /^Description:/i.test(line.trim()));
     if (start < 0) return '';
 
-    const inline = lines[start].replace(/^\s*Description:\s*/i, '').trim();
+    const inline = searchLines[start].replace(/^\s*Description:\s*/i, '').trim();
     if (/^<none>$/i.test(inline)) return '';
 
     const body: string[] = [];
     if (inline) body.push(inline);
-    for (const line of lines.slice(start + 1)) {
+    for (const line of searchLines.slice(start + 1)) {
         const trimmed = line.trim();
         if (DESCRIPTION_TERMINATOR.test(trimmed) || /^-{3,}/.test(trimmed)) break;
         body.push(line.trim());
@@ -209,17 +211,21 @@ interface ParsedLiveExit {
     doorFlags: ShaperDoorFlag[];
     doorName?: string;
     keyMode?: 'latch' | 'no_keyhole' | 'none';
+    doorPickPercent?: number;
     doorWeight?: number;
+    exitDescription?: string;
 }
 
 const parseLiveExits = (output: string): ParsedLiveExit[] => {
     const exits: ParsedLiveExit[] = [];
     let active: ParsedLiveExit | null = null;
+    let readingDescription = false;
     output.split('\n').forEach(line => {
         const trimmed = line.trim();
         const match = trimmed.match(/^(North|East|South|West|Up|Down)\s+(\d+\s*:\s*\d+),\s*flags:\s*([^,\n]*)(.*)$/i);
         if (match) {
             const direction = directionMap[match[1].toLowerCase()];
+            readingDescription = false;
             active = {
                 direction,
                 targetRoomNumber: normalizeRoomNumber(match[2]),
@@ -228,17 +234,36 @@ const parseLiveExits = (output: string): ParsedLiveExit[] => {
             const rest = match[4] ?? '';
             const name = rest.match(/\bname:\s*([^,]+)/i)?.[1]?.trim();
             const key = rest.match(/\bkey:\s*([^,]+)/i)?.[1]?.trim();
+            const pick = rest.match(/\bpick:\s*(\d+)%/i)?.[1];
             const weight = rest.match(/\bweight:\s*(\d+)/i)?.[1];
             if (name) active.doorName = name;
             if (key === 'no-keyhole') active.keyMode = 'no_keyhole';
             else if (key === 'latch') active.keyMode = 'latch';
             else if (key === 'none') active.keyMode = 'none';
+            if (pick) active.doorPickPercent = Number(pick);
             if (weight) active.doorWeight = Number(weight);
             exits.push(active);
             return;
         }
         if (!active) return;
-        const weight = trimmed.match(/^weight:\s*(\d+)/i)?.[1];
+        if (/^-{3,}/.test(trimmed)) {
+            readingDescription = false;
+            active = null;
+            return;
+        }
+        const description = trimmed.match(/^Description:\s*(.*)$/i)?.[1];
+        if (description !== undefined) {
+            active.exitDescription = /^<none>$/i.test(description.trim()) ? '' : description.trim();
+            readingDescription = true;
+            return;
+        }
+        if (readingDescription) {
+            active.exitDescription = `${active.exitDescription ? `${active.exitDescription}\n` : ''}${line.trim()}`.trim();
+            return;
+        }
+        const pick = trimmed.match(/\bpick:\s*(\d+)%/i)?.[1];
+        const weight = trimmed.match(/\bweight:\s*(\d+)/i)?.[1];
+        if (pick) active.doorPickPercent = Number(pick);
         if (weight) active.doorWeight = Number(weight);
     });
     return exits;
@@ -533,7 +558,9 @@ const replaceRoomExits = (
             hasDoor: liveExit.doorFlags.includes('door'),
             doorName: liveExit.doorName,
             keyMode: liveExit.keyMode,
-            doorWeight: liveExit.doorWeight
+            doorPickPercent: liveExit.doorPickPercent,
+            doorWeight: liveExit.doorWeight,
+            exitDescription: liveExit.exitDescription
         };
         nextDoc = { ...nextDoc, exits: { ...nextDoc.exits, [id]: exit } };
     });

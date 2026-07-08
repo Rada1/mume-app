@@ -319,7 +319,7 @@ export function useCommandController(deps: CommandControllerDeps) {
         if (currentMode === 'help' && cmd) {
             finalCmd = `help ${cmd}`;
         } else if (currentMode === 'parley' && cmd) {
-            const TARGETLESS = ['say', 'narrate', 'shout', 'yell', 'sing'];
+            const TARGETLESS = ['say', 'narrate', 'shout', 'yell', 'sing', 'emote'];
             const isTargetless = TARGETLESS.includes(deps.parley.command);
             if (isTargetless) {
                 finalCmd = `${deps.parley.command} ${cmd}`;

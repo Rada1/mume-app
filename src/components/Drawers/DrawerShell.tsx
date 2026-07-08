@@ -4,7 +4,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import { X, User, Shield, Users, Activity, LogIn } from 'lucide-react';
+import { X, User, Shield, Activity, LogIn } from 'lucide-react';
 import { useUI, useGame } from '../../context/GameContext';
 import { useInputStore } from '../../stores/useInputStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -21,7 +21,6 @@ interface DrawerShellProps {
 const SIDEBAR_TABS = [
     { id: 'status',    label: 'Status',  Icon: Activity },
     { id: 'character', label: 'Char',    Icon: User },
-    { id: 'players',   label: 'Players', Icon: Users },
     { id: 'equipment', label: 'Gear',    Icon: Shield },
 ];
 

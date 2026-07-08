@@ -7,7 +7,7 @@ export type PracticeClassKey = 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief
 
 // --- Logic Section ---
 
-const PRACTICE_CLASS_SKILLS: Record<PracticeClassKey, string[]> = {
+export const PRACTICE_CLASS_SKILLS: Record<PracticeClassKey, string[]> = {
     ranger: [
         'Awareness', 'Bandage', 'Climb', 'Command', 'Dark Oath',
         'Leadership', 'Ride', 'Swim', 'Track', 'Wilderness'

@@ -41,7 +41,8 @@ export interface UseGameParserDeps {
         providedIsHitterImpact?: boolean,
         providedIsSnoop?: boolean,
         providedIsSnoopInput?: boolean,
-        providedIsRipMessage?: boolean
+        providedIsRipMessage?: boolean,
+        providedIsSocial?: boolean
     ) => void;
     addSystemMessage: (msg: string) => void;
     executeCommandRef: MutableRefObject<ExecuteCommand | null>;

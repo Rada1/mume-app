@@ -65,6 +65,17 @@ const buildComCommands = (
     ];
 };
 
+const buildExitComCommands = (
+    room: ShaperRoomDraft,
+    exits: Record<string, ShaperExitDraft>
+): string[] => Object.values(exits)
+    .filter(exit => exit.fromRoomId === room.id && exit.doorPickPercent !== undefined)
+    .sort((a, b) => a.direction.localeCompare(b.direction))
+    .map(exit => {
+        const pick = Math.max(0, Math.min(100, Math.round(exit.doorPickPercent ?? 0)));
+        return wrapAt(room.roomNumber, `/com add door ${exit.direction} lock ${pick} ${pick}`);
+    });
+
 const doorKeyArg = (exit: ShaperExitDraft): string => {
     if (exit.keyMode === 'latch') return ' latch';
     if (exit.keyMode === 'no_keyhole') return ' no_keyhole';
@@ -139,6 +150,7 @@ export const buildSelectedRoomDeployPreview = (
         ...buildRoomCommands(room),
         ...buildExitCommands(room, rooms, exits),
         ...buildComCommands(room, commandNodes),
+        ...buildExitComCommands(room, exits),
         ...buildRoomLibraryCommands(room, commandNodes, libraries)
     ];
     const commands = [
@@ -164,6 +176,9 @@ export const buildSelectedRoomDeployPreview = (
         }
         if (exit.exitType?.trim()) {
             warnings.push(`Exit ${exit.direction.toUpperCase()} type note is not a direct /room command yet.`);
+        }
+        if (exit.doorPickPercent !== undefined) {
+            warnings.push(`Exit ${exit.direction.toUpperCase()} pick percent deploys as a /com door lock reset.`);
         }
         if (exit.climbDirection) {
             warnings.push(`Exit ${exit.direction.toUpperCase()} climb direction is noted for review; /room cliset uses the exit direction.`);

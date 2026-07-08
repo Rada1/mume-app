@@ -17,7 +17,7 @@ export const ParleySection: React.FC<ParleySectionProps> = ({
     type, parley, setParley, favorites, setFavorites, whoList, triggerHaptic, setPopoverState
 }) => {
     if (type === 'command') {
-        const COMMANDS = ['tell', 'whisper', 'ask', 'say', 'narrate', 'shout', 'yell', 'sing'];
+        const COMMANDS = ['tell', 'whisper', 'ask', 'say', 'narrate', 'shout', 'yell', 'sing', 'emote'];
         const favCmds = COMMANDS.filter(c => favorites.includes(`parley-cmd-${c}`));
         const otherCmds = COMMANDS.filter(c => !favorites.includes(`parley-cmd-${c}`));
 

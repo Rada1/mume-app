@@ -19,6 +19,8 @@ import { useMessageStore } from '../../stores/useMessageStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { decodeCommandEntities } from '../../utils/commandTextUtils';
+import { useActionTimerStore } from '../../stores/useActionTimerStore';
+import { getRoomTerrainVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -50,6 +52,190 @@ interface MessageLogProps {
     onDragEnd?: (e: React.DragEvent) => void;
     onWheel?: (e: React.WheelEvent) => void;
 }
+
+const UserCommandBubbleWithTimer: React.FC<{
+    msg: Message;
+    isAwaitingResponse?: boolean;
+    commandBloomPhase: string;
+}> = ({ msg, isAwaitingResponse, commandBloomPhase }) => {
+    const active = useActionTimerStore(state => state.activeTimer);
+    const cleanMsgCmd = (msg.textRaw || '').trim().toLowerCase();
+    const cleanTimerCmd = (active?.name || '').trim().toLowerCase();
+    
+    // Check if this timer matches our command
+    const isMatchingTimer = active && (
+        cleanMsgCmd === cleanTimerCmd || 
+        (cleanTimerCmd.startsWith('casting:') && cleanMsgCmd.includes(cleanTimerCmd.substring(8).trim()))
+    );
+
+    const [progress, setProgress] = React.useState(0);
+    const [elapsedMs, setElapsedMs] = React.useState(0);
+
+    // Commit active timer completion to the message's persistent timerInfo
+    React.useEffect(() => {
+        if (!isMatchingTimer || !active) return;
+
+        if (active.isFinished) {
+            const finalElapsed = active.elapsedMs || (Date.now() - active.startedAt);
+            const status = active.isInterrupted ? 'interrupted' : 'completed';
+            useMessageStore.getState().setUserMessages(prev =>
+                prev.map(m => m.id === msg.id ? {
+                    ...m,
+                    timerInfo: {
+                        durationMs: active.durationMs,
+                        elapsedMs: finalElapsed,
+                        status
+                    }
+                } : m)
+            );
+        }
+    }, [isMatchingTimer, active?.id, active?.isFinished, active?.isInterrupted, msg.id]);
+
+    React.useEffect(() => {
+        if (!isMatchingTimer || !active || active.isFinished) {
+            setProgress(0);
+            setElapsedMs(0);
+            return;
+        }
+
+        const start = active.startedAt;
+        const duration = active.durationMs;
+
+        const update = () => {
+            const now = Date.now();
+            const elapsed = now - start;
+            const currentRatio = Math.max(0, Math.min(1, elapsed / duration));
+            
+            setElapsedMs(elapsed);
+            
+            if (duration <= 1000 && elapsed >= duration) {
+                setProgress(1.0);
+                setElapsedMs(duration);
+                useActionTimerStore.getState().completeTimer(false);
+                return;
+            }
+
+            if (elapsed > duration) {
+                setProgress(0.99);
+            } else {
+                setProgress(currentRatio);
+            }
+
+            const currentActive = useActionTimerStore.getState().activeTimer;
+            if (currentActive && !currentActive.isFinished && currentActive.id === active.id) {
+                requestAnimationFrame(update);
+            }
+        };
+
+        const animationFrame = requestAnimationFrame(update);
+        return () => {
+            cancelAnimationFrame(animationFrame);
+        };
+    }, [isMatchingTimer, active?.id, active?.isFinished]);
+
+    const bubbleText = <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />;
+
+    const hasPersisted = !!msg.timerInfo;
+    
+    if (!isMatchingTimer && !hasPersisted) {
+        return (
+            <div className={`user-command-bubble${isAwaitingResponse ? ' awaiting-response' : ''}${commandBloomPhase !== 'off' ? ` bloom-${commandBloomPhase}` : ''}`}>
+                {bubbleText}
+            </div>
+        );
+    }
+
+    let finalProgress = progress;
+    let finalElapsed = elapsedMs;
+    let statusText = 'Attempting';
+    let statusColor = '#eab308'; // yellow
+    let isFinished = false;
+    let isInterrupted = false;
+
+    if (hasPersisted && msg.timerInfo) {
+        isFinished = true;
+        isInterrupted = msg.timerInfo.status === 'interrupted';
+        finalProgress = 1.0;
+        finalElapsed = msg.timerInfo.elapsedMs;
+        statusText = msg.timerInfo.status;
+        statusColor = isInterrupted ? '#ef4444' : '#22c55e';
+    } else if (active) {
+        isFinished = active.isFinished;
+        isInterrupted = active.isInterrupted;
+        if (isFinished) {
+            statusText = isInterrupted ? 'interrupted' : 'completed';
+            statusColor = isInterrupted ? '#ef4444' : '#22c55e';
+            finalProgress = 1.0;
+        } else if (active.type === 'spell') {
+            statusText = 'casting';
+            statusColor = '#c084fc';
+        }
+    }
+
+    const stopwatchText = `${(finalElapsed / 1000).toFixed(2)}s`;
+
+    return (
+        <div 
+            className={`user-command-bubble${isFinished ? (isInterrupted ? ' interrupted' : ' completed') : ' active-timer'}${commandBloomPhase !== 'off' ? ` bloom-${commandBloomPhase}` : ''}`}
+            style={{
+                position: 'relative',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+                padding: '4px 10px',
+                borderRadius: '6px',
+                background: isFinished 
+                    ? (isInterrupted ? 'rgba(239, 68, 68, 0.12)' : 'rgba(34, 197, 94, 0.12)') 
+                    : 'rgba(13, 16, 23, 0.85)',
+                border: `1px solid ${isFinished ? (isInterrupted ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)') : 'rgba(255, 255, 255, 0.15)'}`,
+                boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                transition: 'all 0.2s ease',
+                pointerEvents: 'none',
+                overflow: 'hidden'
+            }}
+        >
+            <span style={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>{bubbleText}</span>
+            <div 
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.3px',
+                    borderLeft: '1px solid rgba(255, 255, 255, 0.15)',
+                    paddingLeft: '8px'
+                }}
+            >
+                <span style={{ color: statusColor }}>{statusText}</span>
+                <span style={{ fontFamily: 'monospace', color: '#fff', opacity: 0.8 }}>{stopwatchText}</span>
+            </div>
+            
+            <div 
+                style={{
+                    position: 'absolute',
+                    left: 0,
+                    bottom: 0,
+                    width: '100%',
+                    height: '2px',
+                    background: 'rgba(255, 255, 255, 0.05)'
+                }}
+            >
+                <div 
+                    style={{
+                        height: '100%',
+                        width: `${finalProgress * 100}%`,
+                        background: isFinished 
+                            ? (isInterrupted ? '#ef4444' : '#22c55e') 
+                            : (active?.type === 'spell' ? '#c084fc' : '#eab308'),
+                        transition: isFinished ? 'width 0.2s ease-out' : 'none'
+                    }}
+                />
+            </div>
+        </div>
+    );
+};
 
 const MessageItem = React.memo(({
     msg,
@@ -173,10 +359,13 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${isRecentEntry && isTextRevealEnabled ? ' recent-entry' : ''}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}`}
-            style={{ '--reveal-delay': `${batchOffset * 15}ms` } as React.CSSProperties}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${isRecentEntry && isTextRevealEnabled ? ' recent-entry' : ''}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}`}
+            style={{ 
+                '--reveal-delay': `${batchOffset * 15}ms`,
+                '--terrain-glow-color': msg.isRoomBlock && !msg.isRoomContentsLine ? getRoomTerrainGlowColor(msg.terrain) : undefined
+            } as React.CSSProperties}
         >
-            {showBlockHeaders && msg.isRoomBlock && (
+            {showBlockHeaders && msg.isRoomBlockStart && (
                 <div className="room-block-header">
                     {formatTimestamp(msg.timestamp)} LOCATION
                 </div>
@@ -191,10 +380,14 @@ const MessageItem = React.memo(({
                     {formatTimestamp(msg.timestamp)} COMMUNICATION
                 </div>
             )}
-            {msg.type === 'user' || msg.type === 'snoop-command' ? (
-                <div 
-                    className={msg.type === 'user' ? `user-command-bubble${isAwaitingResponse ? ' awaiting-response' : ''}${commandBloomPhase !== 'off' ? ` bloom-${commandBloomPhase}` : ''}` : "snoop-command-bubble"}
-                >
+            {msg.type === 'user' ? (
+                <UserCommandBubbleWithTimer 
+                    msg={msg} 
+                    isAwaitingResponse={isAwaitingResponse} 
+                    commandBloomPhase={commandBloomPhase} 
+                />
+            ) : msg.type === 'snoop-command' ? (
+                <div className="snoop-command-bubble">
                     <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />
                 </div>
             ) : msg.type === 'prompt' ? (
@@ -684,7 +877,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             let h = lineCount * (viewport.logFontSizePx * 1.1) + (isComm ? 48 : 4);
             if (msg.type === 'user') h += 24;
             if (msg.isCombat) h += 10;
-            if (showBlockHeaders && msg.isRoomBlock) h += 24;
+            if (showBlockHeaders && msg.isRoomBlockStart) h += 24;
             if (showBlockHeaders && msg.isCombatBlockStart) h += 24;
             if (showBlockHeaders && msg.isCommBlockStart) h += 24;
             return h;
@@ -748,7 +941,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const virtualItems = virtualizer.getVirtualItems();
 
     return (
-        <div className="message-log-layout" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden' }}>
+        <div className="message-log-layout" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
             <div
                 className={`message-log${inCombat ? ' combat-mode' : ''}${isSpectateMode ? ' spectate-mode' : ''}`}
                 ref={scrollContainerRef}
@@ -818,7 +1011,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                     });
                     })()}
                 </div>
-                <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: '12px', flexShrink: 0 }} />
+                <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: '30px', flexShrink: 0 }} />
             </div>
         </div>
     );
