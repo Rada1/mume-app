@@ -45,6 +45,7 @@ export class AudioManager {
     private silenceTimeout: NodeJS.Timeout | null = null;
     private zoneEndedListeners: Set<(key: string) => void> = new Set();
     private pageAudioPaused: boolean = false;
+    private lastScheduledTimes: Map<string, number> = new Map();
 
     // Atmosphere state
     private atmosphereState = {
@@ -182,9 +183,10 @@ export class AudioManager {
 
     private getEffectiveVolume(baseVolume: number, isMusic: boolean = false): number {
         const settings = useSettingsStore.getState();
-        const master = settings.masterVolume;
-        const subVolume = isMusic ? settings.musicVolume : settings.sfxVolume;
-        return baseVolume * master * subVolume * (isMusic ? 0.8 : 3.0);
+        // Map linear slider values [0, 1] to exponential curve for natural volume perception
+        const master = Math.pow(settings.masterVolume, 2);
+        const subVolume = Math.pow(isMusic ? settings.musicVolume : settings.sfxVolume, 2);
+        return baseVolume * master * subVolume * (isMusic ? 1.2 : 3.0);
     }
 
     private normalizeTerrainKey(key: string): string {
@@ -233,6 +235,17 @@ export class AudioManager {
         if (!buffer) return;
 
         const ctx = this.audioCtx;
+        const now = ctx.currentTime;
+        let playTime = now;
+
+        if (key === 'enter' || key === 'exit') {
+            const minDelay = 0.1;
+            const lastTime = this.lastScheduledTimes.get(key) ?? 0;
+            if (lastTime > now - 0.01) {
+                playTime = Math.max(lastTime + minDelay, now);
+            }
+            this.lastScheduledTimes.set(key, playTime);
+        }
 
         let actualBuffer = buffer;
         if (options?.reverse) {
@@ -270,7 +283,7 @@ export class AudioManager {
         }
 
         gainNode.connect(ctx.destination);
-        source.start(0);
+        source.start(playTime);
     }
 
     public async setAmbient(type: 'terrain' | 'weather' | 'zone', options: AmbientOptions) {
@@ -321,11 +334,15 @@ export class AudioManager {
         } else if (type === 'zone') {
             isLoop = loop ?? false;
             let configUrls: string | string[] | undefined = undefined;
+            const manifestConfig = (AUDIO_MANIFEST.ambient as any).zones[key];
+            const zoneVolumeMultiplier = (manifestConfig && typeof manifestConfig.volume === 'number')
+                ? manifestConfig.volume
+                : 1.0;
+
             if (dynamicUrls && dynamicUrls.length > 0) {
                  configUrls = dynamicUrls;
             } else {
-                 const config = (AUDIO_MANIFEST.ambient as any).zones[key];
-                 if (config) configUrls = config.url as string;
+                 if (manifestConfig) configUrls = manifestConfig.url;
             }
 
             if (configUrls) {
@@ -339,9 +356,9 @@ export class AudioManager {
             if (key === 'account') {
                 targetVolume = 1.2;
             } else if (inCombat) {
-                targetVolume = 0.035;
+                targetVolume = 0.035 * zoneVolumeMultiplier;
             } else {
-                targetVolume = 0.045;
+                targetVolume = 0.045 * zoneVolumeMultiplier;
             }
         }
 
