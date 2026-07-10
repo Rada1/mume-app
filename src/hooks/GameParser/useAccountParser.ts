@@ -8,6 +8,7 @@ import { useCallback, useRef } from 'react';
 import { gmcpBus } from '../../events/gmcpBus';
 import { CharacterEntry } from '../../types';
 import { useUIStore } from '../../stores/useUIStore';
+import { useModeStore } from '../../stores/useModeStore';
 import { escapeHtml } from '../../utils/securityUtils';
 
 // --- Logic Section: Types ---
@@ -218,6 +219,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         // Fire login setup commands regardless of current game state (handles reconnects too)
         if (trimmedLine.includes('Welcome to the land of Middle-earth') || trimmedLine.toLowerCase().includes('reconnecting')) {
             console.log('[AccountParser] Login detected via welcome line');
+            useModeStore.getState().stopSpectate();
             setGameState('playing');
             setAccountState(prev => ({
                 ...prev,

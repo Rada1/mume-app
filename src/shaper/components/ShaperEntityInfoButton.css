@@ -1,0 +1,93 @@
+/**
+ * @file ShaperEntityInfoButton.css
+ * @description Styles for Shaper mob/object stat popovers.
+ */
+
+/* --- Button Section --- */
+.shaper-entity-info {
+    position: relative;
+    display: inline-flex;
+    flex: 0 0 auto;
+    z-index: 30;
+}
+
+.shaper-entity-info-trigger {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border: 1px solid rgba(142, 203, 240, 0.32);
+    border-radius: 999px;
+    background: rgba(142, 203, 240, 0.09);
+    color: #a9d9f7;
+    cursor: pointer;
+    padding: 0;
+}
+
+.shaper-entity-info-trigger:hover {
+    border-color: rgba(142, 203, 240, 0.65);
+    background: rgba(142, 203, 240, 0.16);
+}
+
+/* --- Popover Section --- */
+.shaper-entity-info-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    display: grid;
+    gap: 7px;
+    width: min(460px, 74vw);
+    max-height: 420px;
+    padding: 10px;
+    overflow: auto;
+    border: 1px solid rgba(142, 203, 240, 0.34);
+    border-radius: 8px;
+    background: #101416;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+    color: #dbe5ef;
+    text-align: left;
+}
+
+.shaper-entity-info-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.shaper-entity-info-head strong,
+.shaper-entity-info-label {
+    color: #f0b45b;
+    font-size: 12px;
+}
+
+.shaper-entity-info-head button {
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #dbe5ef;
+    cursor: pointer;
+}
+
+.shaper-entity-info-name {
+    color: #eef2f6;
+    font-size: 13px;
+}
+
+.shaper-entity-info-loading,
+.shaper-entity-info-empty {
+    color: #aab7c4;
+    font-size: 12px;
+}
+
+.shaper-entity-info-popover pre {
+    max-height: 180px;
+    margin: 0;
+    overflow: auto;
+    white-space: pre-wrap;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 11px;
+    line-height: 1.45;
+}

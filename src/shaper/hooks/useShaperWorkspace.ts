@@ -9,6 +9,7 @@ import {
     addShaperGridRoom,
     addShaperRoomAt,
     moveShaperRoom,
+    moveShaperRoomToLayer,
     moveShaperRooms,
     removeShaperRoom,
     removeShaperRooms,
@@ -226,6 +227,10 @@ export const useShaperWorkspace = ({ sendCommand }: ShaperWorkspaceOptions) => {
     const addRoomAt = (x: number, y: number, z: number) => setDoc(current => current ? persist(addShaperRoomAt(current, x, y, z)) : current);
     const moveRoom = (roomId: ShaperRoomId, x: number, y: number, z: number) =>
         setDoc(current => current ? persist(moveShaperRoom(current, roomId, x, y, z)) : current);
+    const moveRoomToLayer = (roomId: ShaperRoomId, z: number) => {
+        setDoc(current => current ? persist(moveShaperRoomToLayer(current, roomId, z)) : current);
+        setViewZ(z);
+    };
     const removeRoom = (roomId: ShaperRoomId) => setDoc(current => current ? persist(removeShaperRoom(current, roomId)) : current);
     const moveRooms = (roomIds: ShaperRoomId[], dx: number, dy: number, z: number) =>
         setDoc(current => current ? persist(moveShaperRooms(current, roomIds, dx, dy, z)) : current);
@@ -271,6 +276,7 @@ export const useShaperWorkspace = ({ sendCommand }: ShaperWorkspaceOptions) => {
         addExtraRoom,
         addRoomAt,
         moveRoom,
+        moveRoomToLayer,
         moveRooms,
         removeRoom,
         removeRooms,

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { SessionMode } from '../types';
+import { useMessageStore } from './useMessageStore';
 
 interface ModeState {
     mode: SessionMode;
@@ -34,7 +35,12 @@ export const useModeStore = create<ModeState>((set) => ({
     setIsSpectating: (val) => set({ isSpectating: val }),
     setSpectateTarget: (target) => set({ spectateTarget: target }),
     startSpectate: (target) => set({ isSpectating: true, spectateTarget: target, lastSnoopStartTime: Date.now(), activeView: 'target' }),
-    stopSpectate: () => set({ isSpectating: false, spectateTarget: null, spectateQueue: [], lastSnoopStartTime: null, activeView: 'self' }),
+    stopSpectate: () => {
+        // Clear the snoop buffer too, or the LiveBufferHUD (DVR) resurfaces from
+        // stale snoop messages even though we're no longer spectating.
+        useMessageStore.getState().clearSpectateMessages();
+        set({ isSpectating: false, spectateTarget: null, spectateQueue: [], lastSnoopStartTime: null, activeView: 'self' });
+    },
     setActiveCharacter: (name) => set({ activeCharacter: name }),
     setSpectateQueue: (update) => set((state) => ({ 
         spectateQueue: typeof update === 'function' ? update(state.spectateQueue) : update 

@@ -114,7 +114,7 @@
         align-items: stretch;
         gap: 14px;
         width: 100%;
-        min-height: 92px;
+        min-height: 0;
     }
 
     .desktop-log-room-card-wrapper .mri-room-text-column {
@@ -126,6 +126,14 @@
     }
 
     .desktop-log-room-card-wrapper .mri-room-text-column .mri-desc {
+        display: -webkit-box;
+        max-height: 1.4em;
+        overflow: hidden;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+    }
+
+    .desktop-log-room-card-wrapper .mapper-room-info-container.expanded .mri-room-text-column .mri-desc {
         display: block;
         max-height: 4.4em;
         overflow-y: auto;
@@ -448,27 +456,31 @@
     pointer-events: auto;
 }
 
+/* Unified with the bottom-bar CommandDeck slot styling: flat dark fill,
+   hairline border, gold hover. */
 .mri-room-action-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 22px;
-    padding: 3px 9px;
-    border: 1px solid color-mix(in srgb, var(--room-action-color, var(--accent)) 42%, transparent);
-    border-radius: 4px;
-    background: color-mix(in srgb, var(--room-action-color, var(--accent)) 13%, transparent);
-    color: color-mix(in srgb, var(--room-action-color, var(--accent)) 88%, white);
+    min-height: 26px;
+    padding: 4px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 7px;
+    background: rgba(22, 27, 38, 0.85);
+    color: #cbd5e1;
     font-family: var(--font-mono, monospace);
-    font-size: 0.66rem;
-    font-weight: 800;
+    font-size: 0.68rem;
+    font-weight: 700;
     line-height: 1;
     cursor: pointer;
     white-space: nowrap;
+    transition: background 0.14s ease, border-color 0.14s ease, transform 0.1s ease;
 }
 
 .mri-room-action-button:hover {
-    background: color-mix(in srgb, var(--room-action-color, var(--accent)) 22%, transparent);
-    border-color: color-mix(in srgb, var(--room-action-color, var(--accent)) 62%, transparent);
+    background: rgba(30, 36, 49, 0.95);
+    border-color: rgba(232, 176, 32, 0.4);
+    color: #ffffff;
 }
 
 .mri-room-action-button:active {
@@ -476,7 +488,9 @@
 }
 
 .light-mode .mri-room-action-button {
-    color: color-mix(in srgb, var(--room-action-color, #8a6620) 72%, #111827);
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #475569;
 }
 
 .mri-room-corner {

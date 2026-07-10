@@ -9,7 +9,7 @@ import { X } from 'lucide-react';
 import './MumeEditor.css';
 
 export const MumeEditor: React.FC = () => {
-    const { mumeEditState, setMumeEditState, handleSaveMumeEdit } = useGame();
+    const { mumeEditState, setMumeEditState, handleSaveMumeEdit, handleCancelMumeEdit } = useGame();
     const [text, setText] = useState('');
     const isViewMode = mumeEditState.mode === 'view';
     
@@ -78,13 +78,21 @@ export const MumeEditor: React.FC = () => {
         mumeEditState.context?.kind === 'self-whois'
     ) return null;
 
-    const handleCancel = () => {
+    const handleClose = () => {
         setMumeEditState(prev => ({ ...prev, isOpen: false, context: null }));
+    };
+
+    const handleCancel = () => {
+        if (isViewMode) {
+            handleClose();
+            return;
+        }
+        handleCancelMumeEdit();
     };
 
     const handleSave = () => {
         if (isViewMode) {
-            handleCancel();
+            handleClose();
             return;
         }
         handleSaveMumeEdit(text);

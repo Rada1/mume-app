@@ -62,6 +62,7 @@ describe('buildSelectedRoomDeployPreview', () => {
         expect(preview.commands).toContain('/at 300:00 /room desc');
         expect(preview.commands).toContain('  A clean test room waits here.');
         expect(preview.commands).toContain('/at 300:00 /room kadd sign notice');
+        expect(preview.commands).toContain('/at 300:00 /room kdesc sign');
         expect(preview.commands).toContain('/at 300:00 /room edescription e');
         expect(preview.commands).toContain('/at 300:00 /com add mobile 2 0');
         expect(preview.commands).toContain('/at 300:00 /room owner builder');

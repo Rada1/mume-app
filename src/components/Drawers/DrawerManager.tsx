@@ -191,7 +191,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 rather than nested inside .left-drawer-stack, so it isn't at the mercy of that
                 ancestor's percentage-height resolution — it fills the gap below the map drawer
                 (between its bottom edge and the terrain strip) with its own explicit sizing. */}
-            {!viewport.isMobile && gameState !== 'account' && (
+            {!viewport.isMobile && (
                 // Frosted-glass backdrop for the whole bottom band (stat bar + input box +
                 // the map/character drawer gap-fillers). Rendered at this same top level
                 // (rather than inside .content-layer, which sits at z-index 5000 as a whole
@@ -207,23 +207,6 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                         height: 'var(--log-terrain-bottom-offset, 0px)',
                         zIndex: 2000,
                         pointerEvents: 'none'
-                    }}
-                />
-            )}
-
-            {!viewport.isMobile && gameState !== 'account' && (
-                <div
-                    id="map-drawer-actions-slot"
-                    style={{
-                        position: 'fixed',
-                        left: 0,
-                        bottom: 0,
-                        width: 'var(--desktop-map-width, calc((100vw - clamp(600px, 38vw, 1000px)) / 2 - 2vw))',
-                        height: 'var(--log-terrain-bottom-offset, 0px)',
-                        zIndex: 2800,
-                        pointerEvents: 'auto',
-                        display: 'flex',
-                        alignItems: 'center'
                     }}
                 />
             )}
@@ -245,10 +228,12 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 </div>
             )}
 
-            {/* Account Drawer */}
-            <DrawerShell id="account" side="right" title="Account">
-                <AccountDrawer />
-            </DrawerShell>
+            {/* Account Drawer — mobile only; desktop uses the AccountDeck in the bottom bar. */}
+            {viewport.isMobile && (
+                <DrawerShell id="account" side="right" title="Account">
+                    <AccountDrawer />
+                </DrawerShell>
+            )}
 
         </>
     );

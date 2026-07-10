@@ -7,6 +7,7 @@ import React from 'react';
 import { hasShaperExitClimb, hasShaperExitDoor } from '../model/shaperExitFlags';
 import type { ShaperDirection, ShaperDoorFlag, ShaperExitDraft, ShaperRoomDraft, ShaperRoomId, ShaperWorkspaceDoc } from '../model/shaperTypes';
 import { AIGenerateButton } from './AIGenerateButton';
+import { ShaperContextHelpButton } from './ShaperContextHelpButton';
 
 interface ShaperConnectionInspectorProps {
     doc: ShaperWorkspaceDoc;
@@ -29,6 +30,17 @@ const EXIT_FLAGS: ShaperDoorFlag[] = [
     'hidden', 'locked', 'nobash', 'noblock', 'nobreak', 'noflee',
     'not_shown', 'no_mob', 'pickproof', 'plural', 'stream', 'transient'
 ];
+
+const EXIT_PLACEHOLDERS = {
+    type: 'climb, random, trail, swim',
+    description: 'The planks beneath your feet seem to develop more cracks every inch of the way ahead.',
+    climbDifficulty: '0-99, e.g. 10',
+    climbDamage: 'HP damage, e.g. 5',
+    doorName: 'trapdoor, oak-door, gate',
+    keyVnum: '3012 or blank for generic',
+    pick: '0-100, e.g. 50',
+    weight: '1'
+};
 
 export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps> = ({
     doc,
@@ -89,7 +101,7 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                     <input
                         value={exit.exitType || ''}
                         onChange={e => onUpdateExit(exitId, { exitType: e.target.value })}
-                        placeholder="e.g. climb, random, trail, swim"
+                        placeholder={EXIT_PLACEHOLDERS.type}
                     />
                 </label>
 
@@ -115,7 +127,7 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                     <textarea
                         value={exit.exitDescription || ''}
                         onChange={e => onUpdateExit(exitId, { exitDescription: e.target.value })}
-                        placeholder="e.g. A steep path leads downwards..."
+                        placeholder={EXIT_PLACEHOLDERS.description}
                         rows={2}
                         style={{ width: '100%', resize: 'vertical', background: '#0f172a', border: '1px solid #334155', borderRadius: 4, padding: 6, color: '#f8fafc', fontSize: 13 }}
                     />
@@ -149,7 +161,7 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                                     type="number"
                                     value={exit.climbDifficulty ?? ''}
                                     onChange={e => onUpdateExit(exitId, { climbDifficulty: e.target.value ? parseInt(e.target.value, 10) : undefined })}
-                                    placeholder="e.g. 10"
+                                    placeholder={EXIT_PLACEHOLDERS.climbDifficulty}
                                 />
                             </label>
                             <label className="shaper-field">
@@ -158,7 +170,7 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                                     type="number"
                                     value={exit.climbDamage ?? ''}
                                     onChange={e => onUpdateExit(exitId, { climbDamage: e.target.value ? parseInt(e.target.value, 10) : undefined })}
-                                    placeholder="e.g. 5"
+                                    placeholder={EXIT_PLACEHOLDERS.climbDamage}
                                 />
                             </label>
                         </div>
@@ -173,7 +185,7 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                                 <input
                                     value={exit.doorName || ''}
                                     onChange={e => onUpdateExit(exitId, { doorName: e.target.value })}
-                                    placeholder="e.g. gate, oak-door"
+                                    placeholder={EXIT_PLACEHOLDERS.doorName}
                                 />
                             </label>
 
@@ -183,7 +195,7 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                                     <input
                                         value={exit.keyVnum || ''}
                                         onChange={e => onUpdateExit(exitId, { keyVnum: e.target.value })}
-                                        placeholder="e.g. 3012"
+                                        placeholder={EXIT_PLACEHOLDERS.keyVnum}
                                     />
                                 </label>
 
@@ -195,7 +207,7 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                                         max={100}
                                         value={exit.doorPickPercent ?? ''}
                                         onChange={e => onUpdateExit(exitId, { doorPickPercent: e.target.value ? parseInt(e.target.value, 10) : undefined })}
-                                        placeholder="e.g. 50"
+                                        placeholder={EXIT_PLACEHOLDERS.pick}
                                     />
                                 </label>
                             </div>
@@ -207,7 +219,7 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
                                         type="number"
                                         value={exit.doorWeight ?? ''}
                                         onChange={e => onUpdateExit(exitId, { doorWeight: e.target.value ? parseFloat(e.target.value) : undefined })}
-                                        placeholder="e.g. 100"
+                                        placeholder={EXIT_PLACEHOLDERS.weight}
                                     />
                                 </label>
                             </div>
@@ -229,6 +241,7 @@ export const ShaperConnectionInspector: React.FC<ShaperConnectionInspectorProps>
             <div className="shaper-panel-heading" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
                     <span>One-Way Exit Inspector</span>
+                    <ShaperContextHelpButton topic="exit" label="Exit help" />
                     <strong>{roomA.roomNumber} {dirAB.toUpperCase()} to {roomB.roomNumber}</strong>
                 </div>
                 <button

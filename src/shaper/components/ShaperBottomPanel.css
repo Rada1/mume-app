@@ -48,6 +48,57 @@
     white-space: pre-wrap;
 }
 
+.shaper-command-selector {
+    display: grid;
+    gap: 6px;
+    max-height: 118px;
+    overflow: auto;
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.shaper-command-selector ul {
+    display: grid;
+    gap: 3px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.shaper-command-selector li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.shaper-command-selector code {
+    overflow: hidden;
+    color: #dbe5ef;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1 1 auto;
+}
+
+.shaper-command-selector li button {
+    flex: 0 0 auto;
+    padding: 2px 8px;
+    border: 1px solid rgba(96, 220, 130, 0.45);
+    border-radius: 5px;
+    background: rgba(96, 220, 130, 0.14);
+    color: #8ef0ad;
+    font-size: 11px;
+}
+
+.shaper-command-selector li button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
 .shaper-deploy-warnings {
     display: grid;
     gap: 3px;

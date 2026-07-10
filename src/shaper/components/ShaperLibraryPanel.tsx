@@ -13,6 +13,7 @@ import type {
     ShaperRoomDraft,
     ShaperWorkspaceDoc
 } from '../model/shaperTypes';
+import { ShaperContextHelpButton } from './ShaperContextHelpButton';
 import './ShaperLibraryPanel.css';
 
 interface ShaperLibraryPanelProps {
@@ -27,6 +28,22 @@ interface ShaperLibraryPanelProps {
 }
 
 const TARGET_TYPES: ShaperLibraryTargetType[] = ['room', 'mobile', 'object'];
+const PARAM_PLACEHOLDERS: Record<string, string> = {
+    object: 'obj 9902 or 9902',
+    mobile: 'mob 6113 or 6113',
+    keywords: 'watchtower tower',
+    'short-desc': 'a watchtower is here',
+    'long-desc': 'A crumbling watchtower rises above the hills.',
+    'plural-desc': 'watchtowers',
+    'full-desc': 'A withered wooden watchtower slumps beside the old road.',
+    ptype: 'the, a, an',
+    direction: 'n, e, s, w, u, d',
+    delay: '0',
+    act: 'Message or action text'
+};
+
+const placeholderForParam = (key: string): string =>
+    PARAM_PLACEHOLDERS[key] ?? 'value';
 
 // --- Param Editor Section ---
 export const ShaperLibraryInstallCard: React.FC<{
@@ -57,6 +74,7 @@ export const ShaperLibraryInstallCard: React.FC<{
         <div className="shaper-lib-install">
             <div className="shaper-lib-install-head">
                 <strong>{install.name}</strong>
+                <ShaperContextHelpButton topic={`library-${install.targetType}`} label="Help" />
                 {install.requiresSupervisorReview && <span className="shaper-lib-badge review">supervisor review</span>}
                 <button type="button" className="shaper-lib-remove" onClick={() => onRemoveLibrary(install.id)}>Remove</button>
             </div>
@@ -74,11 +92,13 @@ export const ShaperLibraryInstallCard: React.FC<{
                             <textarea
                                 value={String(install.parameters[paramKey] ?? '')}
                                 rows={paramKey === 'full-desc' ? 3 : 2}
+                                placeholder={placeholderForParam(paramKey)}
                                 onChange={event => onSetParam(install.id, paramKey, event.target.value)}
                             />
                         ) : (
                             <input
                                 value={String(install.parameters[paramKey] ?? '')}
+                                placeholder={placeholderForParam(paramKey)}
                                 onChange={event => onSetParam(install.id, paramKey, event.target.value)}
                             />
                         )}
@@ -147,6 +167,7 @@ export const ShaperLibraryPanel: React.FC<ShaperLibraryPanelProps> = ({
                         {type}
                     </button>
                 ))}
+                <ShaperContextHelpButton topic={`library-${targetType}`} label="Lib help" />
             </div>
 
             <div className="shaper-lib-target-id">
@@ -184,6 +205,7 @@ export const ShaperLibraryPanel: React.FC<ShaperLibraryPanelProps> = ({
                     <div className="shaper-lib-catalog">
                         <div className="shaper-lib-catalog-head">
                             <h4>{targetType} catalog</h4>
+                            <ShaperContextHelpButton topic={`library-${targetType}`} label="Catalog help" />
                             <input placeholder="Search" value={search} onChange={event => setSearch(event.target.value)} />
                         </div>
                         {catalog.map(entry => (

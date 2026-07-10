@@ -4,7 +4,7 @@
  */
 
 import React, { memo, FC, useState, useRef, useCallback, useEffect } from 'react';
-import { Swords, Heart, Zap, Footprints, Info, Sliders, ChevronUp } from 'lucide-react';
+import { Swords, Heart, Zap, Info, Sliders, ChevronUp } from 'lucide-react';
 import './PromptBox.css';
 import { GameStats, CharacterInfo, CombatHealthStatus } from '../../types';
 import { useGame, useUI } from '../../context/GameContext';
@@ -37,6 +37,27 @@ const SPEED_OPTIONS = ['quick', 'fast', 'normal', 'careful', 'thorough'];
 const SPEED_LABELS = ['QUIC', 'FAST', 'NORM', 'CARE', 'THOR'];
 const ALERT_OPTIONS = ['normal', 'careful', 'attentive', 'vigilant', 'paranoid'];
 const ALERT_LABELS = ['NORM', 'CARE', 'ATTE', 'VIGI', 'PARA'];
+
+const RunnerIcon: React.FC<{ size?: number; className?: string }> = ({ size = 11, className }) => (
+    <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+        aria-hidden="true"
+    >
+        <circle cx="13" cy="4" r="2" />
+        <path d="M12 7l-3 4 4 2 3 3" />
+        <path d="M10 13l-2 7" />
+        <path d="M16 16l4 2" />
+        <path d="M9 11l-5 1" />
+    </svg>
+);
 
 const HEALTH_MAP: Record<string, { percent: number; color: string }> = {
     'Healthy': { percent: 100, color: '#22c55e' },
@@ -171,10 +192,10 @@ const ConditionBadge: React.FC<{
                     })}
                 </div>
                 
-                {wimpyRatio !== undefined && (
-                    <div 
-                        className="wimpy-tick" 
-                        style={{ 
+                {wimpyRatio !== undefined && isDragging && (
+                    <div
+                        className="wimpy-tick"
+                        style={{
                             left: `${wimpyRatio * 100}%`,
                             position: 'absolute',
                             top: '-3px',
@@ -486,6 +507,13 @@ const PromptBox: FC<PromptBoxProps> = ({
 
     const mpStatus = manaStatusFromGmcp ?? getTierStatus(manaPercent, MANA_TIERS);
     const stStatus = moveStatusFromGmcp ?? getTierStatus(movePercent, MOVE_TIERS);
+    const characterInfo = activeVitals.characterInfo;
+    const xpPercent = characterInfo?.xpMax > 0
+        ? Math.max(0, Math.min(100, (characterInfo.xp / characterInfo.xpMax) * 100))
+        : 0;
+    const tpPercent = characterInfo?.tpMax > 0
+        ? Math.max(0, Math.min(100, (characterInfo.tp / characterInfo.tpMax) * 100))
+        : 0;
 
     const getPositionIcon = () => {
         if (inCombat) return <Swords size={14} className="combat-divider-icon" />;
@@ -570,64 +598,93 @@ const PromptBox: FC<PromptBoxProps> = ({
                 <div className="prompt-vitals-row-ascii">
                     {/* Player Side */}
                     <div className="vitals-side-container side-left">
-                        <div className="player-vitals-stack">
-                            <div className="prompt-top-stats-row">
-                                <PromptCombatStatsLine />
-                                <button
-                                    className={`pos-combat-square-btn disposition-square-btn ${activeSlider === 'disposition' ? 'active' : ''}`}
-                                    onClick={!isSpectateMode ? handleDispositionClick : undefined}
-                                    style={{ cursor: isSpectateMode ? 'default' : 'pointer' }}
-                                    title={`Disposition: ${mood || 'normal'} / ${spellSpeed || 'normal'} / ${alertness || 'normal'}`}
-                                >
-                                    <Sliders size={13} strokeWidth={2.6} />
-                                </button>
+                        <div className="prompt-player-hud">
+                            <div className="prompt-avatar-module">
+                                <div className="prompt-avatar-pixel" aria-hidden="true">
+                                    <div className="terrain-pin-sprite-head" />
+                                    <div className="terrain-pin-sprite-body" />
+                                </div>
+                                <div className="prompt-level-badge">{characterInfo?.level || '?'}</div>
+                                <div className="prompt-progress-rails" aria-label="Level progress">
+                                    <div className="prompt-progress-rail xp" title={`${characterInfo?.xp ?? 0} XP`}>
+                                        <span style={{ height: `${xpPercent}%` }} />
+                                    </div>
+                                    <div className="prompt-progress-rail tp" title={`${characterInfo?.tp ?? 0} TP`}>
+                                        <span style={{ height: `${tpPercent}%` }} />
+                                    </div>
+                                </div>
                             </div>
-                            <div className="player-stats-group">
-                                <Heart size={11} className="vitals-icon hp-icon" strokeWidth={3} />
-                                <div ref={hpBarRef} style={{ flex: 1, display: 'flex', minWidth: 0 }}>
+
+                            <div className="player-vitals-stack">
+                              <div className="prompt-top-stats-row player-top-stats-row">
+                                <div className="name-label prompt-player-name prompt-inline-name">
+                                    {characterName || ''}
+                                </div>
+                                <div className="prompt-combat-stat-stack">
+                                    <PromptCombatStatsLine />
+                                    <button
+                                        className={`pos-combat-square-btn disposition-square-btn ${activeSlider === 'disposition' ? 'active' : ''}`}
+                                        onClick={!isSpectateMode ? handleDispositionClick : undefined}
+                                        style={{ cursor: isSpectateMode ? 'default' : 'pointer' }}
+                                        title={`Disposition: ${mood || 'normal'} / ${spellSpeed || 'normal'} / ${alertness || 'normal'}`}
+                                    >
+                                        <Sliders size={13} strokeWidth={2.6} />
+                                    </button>
+                                </div>
+                              </div>
+                              <div className="player-stats-group player-stats-stack">
+                                <div className="prompt-vital-row">
+                                    <Heart size={11} className="vitals-icon hp-icon" strokeWidth={3} />
+                                    <div ref={hpBarRef} className="prompt-vital-bar-shell">
+                                        <ConditionBadge
+                                            status={playerHealthStatus || 'Healthy'}
+                                            percent={normalizeTierStatus(playerHealthStatus, HEALTH_TIERS)
+                                                ? (HEALTH_MAP[normalizeTierStatus(playerHealthStatus, HEALTH_TIERS)!]?.percent ?? 0)
+                                                : (maxHp > 0 ? (hp / maxHp) * 100 : 0)
+                                            }
+                                            colorClass="hp"
+                                            segments={HEALTH_SEGMENTS}
+                                            tiers={HEALTH_TIERS}
+                                            onClick={triggerNumbers}
+                                            showAlt={showNumbers || isDragging}
+                                            altStatus={isDragging ? `` : `${hp}/${maxHp}`}
+                                            isFighting={inCombat}
+                                            onPointerDown={handleHpPointerDown}
+                                            wimpyRatio={wimpyRatio}
+                                            isDragging={isDragging}
+                                            dragVal={dragVal}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="prompt-vital-row">
+                                    <Zap size={11} className="vitals-icon mana-icon" strokeWidth={3} />
                                     <ConditionBadge
-                                        status={playerHealthStatus || 'Healthy'}
-                                        percent={normalizeTierStatus(playerHealthStatus, HEALTH_TIERS) 
-                                            ? (HEALTH_MAP[normalizeTierStatus(playerHealthStatus, HEALTH_TIERS)!]?.percent ?? 0)
-                                            : (maxHp > 0 ? (hp / maxHp) * 100 : 0)
-                                        }
-                                        colorClass="hp"
-                                        segments={HEALTH_SEGMENTS}
-                                        tiers={HEALTH_TIERS}
-                                        onClick={triggerNumbers}
-                                        showAlt={showNumbers || isDragging}
-                                        altStatus={isDragging ? `` : `${hp}/${maxHp}`}
+                                        status={mpStatus}
+                                        percent={manaPercent}
+                                        colorClass="mana"
+                                        segments={MANA_SEGMENTS}
+                                        tiers={MANA_TIERS}
+                                        onClick={() => handleTabClick('status')}
+                                        showAlt={showNumbers}
+                                        altStatus={`${mana}/${maxMana}`}
                                         isFighting={inCombat}
-                                        onPointerDown={handleHpPointerDown}
-                                        wimpyRatio={wimpyRatio}
-                                        isDragging={isDragging}
-                                        dragVal={dragVal}
                                     />
                                 </div>
-                                <Zap size={11} className="vitals-icon mana-icon" strokeWidth={3} />
-                                <ConditionBadge 
-                                    status={mpStatus} 
-                                    percent={manaPercent}
-                                    colorClass="mana" 
-                                    segments={MANA_SEGMENTS}
-                                    tiers={MANA_TIERS}
-                                    onClick={() => handleTabClick('status')}
-                                    showAlt={showNumbers}
-                                    altStatus={`${mana}/${maxMana}`}
-                                    isFighting={inCombat}
-                                />
-                                <Footprints size={11} className="vitals-icon move-icon" strokeWidth={3} />
-                                <ConditionBadge 
-                                    status={stStatus} 
-                                    percent={movePercent}
-                                    colorClass="move" 
-                                    segments={MOVE_SEGMENTS}
-                                    tiers={MOVE_TIERS}
-                                    onClick={() => handleTabClick('status')}
-                                    showAlt={showNumbers}
-                                    altStatus={`${move}/${maxMove}`}
-                                    isFighting={inCombat}
-                                />
+                                <div className="prompt-vital-row">
+                                    <RunnerIcon size={11} className="vitals-icon move-icon" />
+                                    <ConditionBadge
+                                        status={stStatus}
+                                        percent={movePercent}
+                                        colorClass="move"
+                                        segments={MOVE_SEGMENTS}
+                                        tiers={MOVE_TIERS}
+                                        onClick={() => handleTabClick('status')}
+                                        showAlt={showNumbers}
+                                        altStatus={`${move}/${maxMove}`}
+                                        isFighting={inCombat}
+                                    />
+                                </div>
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -658,6 +715,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                     {/* Opponent Side */}
                     <div className="vitals-side-container side-right">
                         {inCombat && opponentName && (
+                          <>
                             <div className="opponent-vitals-stack animate-combat-mini">
                                 <div className="prompt-top-stats-row opponent-top-stats-row">
                                     <div className="name-label opponent-name prompt-inline-name">
@@ -674,7 +732,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     mirrored
                                     isFighting={inCombat}
                                 />
-                                <Footprints size={11} className="vitals-icon move-icon placeholder" strokeWidth={3} />
+                                <RunnerIcon size={11} className="vitals-icon move-icon placeholder" />
 
                                 <ConditionBadge 
                                     status="Unknown" 
@@ -699,6 +757,15 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     <Heart size={11} className="vitals-icon hp-icon is-mirrored" strokeWidth={3} />
                                 </div>
                             </div>
+                            <div
+                                className="prompt-avatar-pixel prompt-opponent-avatar-pixel"
+                                aria-hidden="true"
+                                title={opponentName}
+                            >
+                                <div className="terrain-pin-sprite-head" />
+                                <div className="terrain-pin-sprite-body" />
+                            </div>
+                          </>
                         )}
                     </div>
                 </div>

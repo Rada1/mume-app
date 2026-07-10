@@ -41,11 +41,14 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 import { canAccessShaper } from './shaper/access/shaperAccess';
 import { ShaperAccessDialog } from './shaper/components/ShaperAccessDialog';
 import { ShaperWorkspace } from './shaper/components/ShaperWorkspace';
+import { cleanupDevServiceWorkers } from './utils/devServiceWorkerCleanup';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
 import { useEffectTimerStore } from './stores/useEffectTimerStore';
 import { useVitalsStore } from './stores/useVitalsStore';
+
+cleanupDevServiceWorkers();
 
 if (typeof window !== 'undefined') {
     (window as any).useEffectTimerStore = useEffectTimerStore;

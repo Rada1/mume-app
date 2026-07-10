@@ -109,6 +109,7 @@ const LIGHTING_COLORS: Record<string, HSLColor> = {
     dark:       { h: 260, s: 22, l: 28 }, // deep void violet
     none:       { h: 220, s: 18, l: 38 },
 };
+const LIGHT_WAVE_HEIGHT_MULTIPLIER = 1.5;
 
 const adjustForTheme = (color: HSLColor, isLightMode: boolean): HSLColor => {
     let { h, s, l } = color;
@@ -350,7 +351,7 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
             // Use CSS height (not canvas pixels) so amplitude stays correct at half resolution
             const cssH = h / CANVAS_SCALE;
             const screenScale = Math.min(3.0, Math.max(0.6, cssH / 350));
-            const finalAmp = cur.amplitude * screenScale * (1.0 + act * 0.45) * flicker;
+            const finalAmp = cur.amplitude * screenScale * LIGHT_WAVE_HEIGHT_MULTIPLIER * (1.0 + act * 0.45) * flicker;
 
             // Typing brightness/saturation boost is now a soft wash rather than a sharp flash
             const brightnessBoost = act * 6;

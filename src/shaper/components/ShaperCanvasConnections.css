@@ -88,6 +88,11 @@
     transition: opacity 0.15s ease, stroke 0.15s ease, stroke-width 0.15s ease, filter 0.15s ease;
 }
 
+.shaper-connection-line.dotted {
+    stroke-dasharray: 10 10;
+    stroke-linecap: round;
+}
+
 .shaper-connection-group:hover .shaper-connection-line {
     opacity: 1;
     stroke: #60a5fa;

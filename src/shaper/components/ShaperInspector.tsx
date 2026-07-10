@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, RefreshCw, X } from 'lucide-react';
 import { listShaperComRoomEntities } from '../model/shaperComCommands';
 import { hasShaperExitDoor } from '../model/shaperExitFlags';
 import type { ShaperAnnotation, ShaperCommandNode, ShaperRoomDraft, ShaperRoomFlag, ShaperSector, ShaperValidationIssue, ShaperExitDraft, ShaperLibraryInstall, ShaperWorkspaceDoc } from '../model/shaperTypes';
@@ -14,6 +14,7 @@ import { ShaperAnnotations } from './ShaperAnnotations';
 import { ShaperRoomEntities } from './ShaperRoomEntities';
 import { ShaperDoorCard } from './ShaperDoorCard';
 import { ShaperLibraryInstallCard } from './ShaperLibraryPanel';
+import { ShaperContextHelpButton } from './ShaperContextHelpButton';
 import type { ShaperEntityFocusSignal } from './shaperEntityFocus';
 
 interface ShaperInspectorProps {
@@ -24,6 +25,7 @@ interface ShaperInspectorProps {
     issues: ShaperValidationIssue[];
     selectionCount: number;
     onUpdateRoom: (patch: Partial<ShaperRoomDraft>) => void;
+    onMoveRoomToLayer: (roomId: string, z: number) => void;
     onAddAnnotation: (annotation: ShaperAnnotation) => void;
     onRemoveAnnotation: (annotationId: string) => void;
     onAddMob: (vnum: string, name: string) => void;
@@ -50,6 +52,7 @@ interface ShaperInspectorProps {
     isImporting: boolean;
     isConnected: boolean;
     focusEntity?: ShaperEntityFocusSignal | null;
+    onClose: () => void;
 }
 
 const sectors: ShaperSector[] = [
@@ -63,6 +66,13 @@ const flags: ShaperRoomFlag[] = [
     'silent', 'sunlit', 'trail'
 ];
 
+const PLACEHOLDERS = {
+    prep: 'in, on, at, among',
+    name: 'A Vine-Choked Forest Thicket',
+    description: 'The forest grows deeper and tighter here, with thick vines coiling around trunks and hanging low from the branches.',
+    notes: 'Builder-only notes, review questions, or live-room reminders'
+};
+
 // --- Component Section ---
 export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
     doc,
@@ -72,6 +82,7 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
     issues,
     selectionCount,
     onUpdateRoom,
+    onMoveRoomToLayer,
     onAddAnnotation,
     onRemoveAnnotation,
     onAddMob,
@@ -97,7 +108,8 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
     onReimportRoom,
     isImporting,
     isConnected,
-    focusEntity
+    focusEntity,
+    onClose
 }) => {
     const [flagsCollapsed, setFlagsCollapsed] = useState(false);
     const [libsCollapsed, setLibsCollapsed] = useState(true);
@@ -130,16 +142,44 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
         <aside className="shaper-inspector">
             <div className="shaper-panel-heading">
                 <span>Room Inspector</span>
+                <ShaperContextHelpButton topic="room-basics" label="Room help" />
                 <strong>{room.roomNumber}</strong>
                 <small>{room.kind === 'extra' ? 'Extra room' : 'Grid room'} / Layer {room.z}</small>
+                <div className="shaper-layer-stepper" aria-label="Move selected room between Z levels">
+                    <button
+                        type="button"
+                        onClick={() => onMoveRoomToLayer(room.id, room.z - 1)}
+                        title="Move this room down one Z level"
+                    >
+                        Z-
+                    </button>
+                    <span>Z: {room.z}</span>
+                    <button
+                        type="button"
+                        onClick={() => onMoveRoomToLayer(room.id, room.z + 1)}
+                        title="Move this room up one Z level"
+                    >
+                        Z+
+                    </button>
+                </div>
                 <button
                     type="button"
                     className="shaper-reimport-room"
                     onClick={onReimportRoom}
                     disabled={isImporting || !isConnected}
                     title={!isConnected ? 'Connect to MUME to re-import' : isImporting ? 'Import in progress…' : `Re-read ${room.roomNumber} from MUME`}
+                    aria-label={!isConnected ? 'Connect to MUME to refresh this room' : isImporting ? 'Refreshing room from MUME' : `Refresh room ${room.roomNumber} from MUME`}
                 >
-                    {isImporting ? 'Importing…' : 'Re-import'}
+                    <RefreshCw size={14} className={isImporting ? 'is-spinning' : undefined} />
+                </button>
+                <button
+                    type="button"
+                    className="shaper-inspector-close"
+                    onClick={onClose}
+                    title="Close Room Inspector"
+                    aria-label="Close Room Inspector"
+                >
+                    <X size={16} />
                 </button>
             </div>
 
@@ -179,7 +219,7 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
                     <input 
                         value={room.preposition} 
                         onChange={event => onUpdateRoom({ preposition: event.target.value })} 
-                        placeholder="in" 
+                        placeholder={PLACEHOLDERS.prep}
                     />
                 </label>
                 <div className="shaper-field" style={{ flex: 1, marginBottom: 0 }}>
@@ -198,7 +238,7 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
                     <input 
                         value={room.name} 
                         onChange={event => onUpdateRoom({ name: event.target.value })} 
-                        placeholder="Draft room" 
+                        placeholder={PLACEHOLDERS.name}
                     />
                 </div>
             </div>
@@ -208,6 +248,7 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
             <div className="shaper-field">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
                     <span>Description</span>
+                    <ShaperContextHelpButton topic="room-description" label="Desc help" />
                     <AIGenerateButton
                         target="room-description"
                         doc={doc}
@@ -222,7 +263,7 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
                     value={room.description}
                     onChange={event => onUpdateRoom({ description: event.target.value })}
                     rows={8}
-                    placeholder="Enter description..."
+                    placeholder={PLACEHOLDERS.description}
                 />
             </div>
 
@@ -281,6 +322,7 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
                 >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
                         <span>Room Libraries</span>
+                        <ShaperContextHelpButton topic="library-room" label="Lib help" />
                         {libsCollapsed && roomInstalls.length > 0 && (
                             <div className="shaper-inspector-chips">
                                 {roomInstalls.map(i => (
@@ -383,7 +425,12 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
 
             <label className="shaper-field">
                 <span>Notes</span>
-                <textarea value={room.notes} onChange={event => onUpdateRoom({ notes: event.target.value })} rows={4} />
+                <textarea
+                    value={room.notes}
+                    onChange={event => onUpdateRoom({ notes: event.target.value })}
+                    rows={4}
+                    placeholder={PLACEHOLDERS.notes}
+                />
             </label>
 
             <ShaperAnnotations annotations={room.annotations} onAdd={onAddAnnotation} onRemove={onRemoveAnnotation} />

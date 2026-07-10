@@ -116,6 +116,37 @@ describe('useCaptureParser shaper triggers and parsing', () => {
         ]);
     });
 
+    it('parses live object stats with V-number and Short description labels', () => {
+        const deps = createMockDeps();
+        const mockSetObjectStatResult = vi.fn();
+        
+        vi.spyOn(useShaperEntityStore, 'getState').mockReturnValue({
+            setObjectStatResult: mockSetObjectStatResult
+        } as any);
+
+        const { result } = renderHook(() => useCaptureParser(deps));
+
+        act(() => {
+            result.current.startSession('shaper_obj_stat');
+            result.current.accumulateLine('Keywords: (the) [canoe], V-number: [9002] Item type: BOAT,');
+            result.current.accumulateLine('Short description: a canoe');
+            result.current.accumulateLine('Weight: 16.00 kg, Cost: 10 s = 1,000 c, Rent: 5 c/day, Timer: 0,');
+            result.current.accumulateLine('Extra flags: none');
+        });
+
+        act(() => {
+            result.current.finalizeSession();
+        });
+
+        expect(mockSetObjectStatResult).toHaveBeenCalledWith(expect.objectContaining({
+            vnum: 9002,
+            name: 'a canoe',
+            type: 'BOAT',
+            weight: 16,
+            extraFlags: []
+        }));
+    });
+
     it('correctly parses mobile stats and attributes', () => {
         const deps = createMockDeps();
         const mockSetMobileStatResult = vi.fn();

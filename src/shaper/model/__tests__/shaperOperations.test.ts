@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { createDefaultShaperDocument } from '../shaperDocument';
-import { addShaperRoomAt, moveShaperRoom, removeShaperRoom } from '../shaperOperations';
+import { addShaperExtraRoom, addShaperRoomAt, moveShaperRoom, moveShaperRoomToLayer, removeShaperRoom } from '../shaperOperations';
 
 // --- Test Section ---
 describe('shaper room operations', () => {
@@ -64,5 +64,27 @@ describe('shaper room operations', () => {
 
         expect(room.roomNumber).toBe('31:101');
         expect(Object.values(moved.rooms).filter(item => item.roomNumber === '31:60')).toHaveLength(1);
+    });
+
+    it('moves extra rooms between layers without placing them on the grid', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const withExtra = addShaperExtraRoom(doc, 0);
+        const extraId = withExtra.selectedRoomId;
+        const moved = moveShaperRoomToLayer(withExtra, extraId, -1);
+        const room = moved.rooms[extraId];
+
+        expect(room.kind).toBe('extra');
+        expect(room.z).toBe(-1);
+        expect(room.roomNumber).toBe(withExtra.rooms[extraId].roomNumber);
+    });
+
+    it('keeps grid room numbers when moving only between layers', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const moved = moveShaperRoomToLayer(doc, 'room-9-9-0', 1);
+        const room = moved.rooms['room-9-9-0'];
+
+        expect(room.kind).toBe('grid');
+        expect(room.z).toBe(1);
+        expect(room.roomNumber).toBe('31:99');
     });
 });

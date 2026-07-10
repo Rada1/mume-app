@@ -223,19 +223,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         s.setMumeEditState(prev => ({ ...prev, isOpen: false, context: null }));
     }, [s.mumeEditState.key, s.setMumeEditState]);
 
-    // Abandons an edit session without saving — releases MUME's server-side edit
-    // lock (unlike just dropping local state, which leaves the session open and
-    // makes the next "change ..." command fail with "You are already editing
-    // that text.").
+    // Abandons an edit session without saving. MUME's editor exits with %q;
+    // dropping local state alone leaves the server-side edit session open.
     const handleCancelMumeEdit = useCallback(() => {
-        if (s.mumeEditState.key && telnetRef.current) {
-            const editId = Number(s.mumeEditState.key);
-            telnetRef.current.sendGMCP("Mume.Client.CancelEdit", {
-                id: isNaN(editId) ? s.mumeEditState.key : editId
-            });
-        }
+        telnetRef.current?.sendCommand('%q');
         s.setMumeEditState(prev => ({ ...prev, isOpen: false, context: null }));
-    }, [s.mumeEditState.key, s.setMumeEditState]);
+    }, [s.setMumeEditState]);
 
     const gmcpHandlers = useGmcpHandlers({
         mapperRef: mapperRef, roomDescRef: s.userSession.game.roomDescRef,
@@ -443,6 +436,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const spectateBuffer = useSpectateBuffer();
     const noopSound = useCallback(() => {}, []);
+
+    useEffect(() => {
+        if (!mode.isSpectating) {
+            spectateBuffer.clear();
+        }
+    }, [mode.isSpectating, spectateBuffer.clear]);
 
     // --- DVR: sync vitals/weather/audio state with buffer position ---
     const { recordHit, recordOof, recordClick } = useSpectateBufferSync({

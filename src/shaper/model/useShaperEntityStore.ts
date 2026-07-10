@@ -8,6 +8,12 @@ import { createShaperEntityLookupTimers } from './shaperEntityLookupTimers';
 
 const LOOKUP_TIMEOUT_MS = 10000;
 
+const extractVnumQuery = (query: string, prefix: 'm' | 'o'): number | null => {
+    const trimmed = query.trim();
+    const match = trimmed.match(new RegExp(`^(?:${prefix}\\s+)?(\\d+)$`, 'i'));
+    return match ? Number(match[1]) : null;
+};
+
 export interface MobileEntity {
     vnum: number;
     name: string;
@@ -63,6 +69,8 @@ interface ShaperEntityState {
     searchObjects: (query: string) => void;
     loadMobileStats: (vnum: number) => void;
     loadObjectStats: (vnum: number) => void;
+    loadMobileInfo: (vnum: number) => void;
+    loadObjectInfo: (vnum: number) => void;
 
     // Callback handlers invoked by the capture parser
     setMobilesResult: (results: { vnum: number; name: string }[]) => void;
@@ -99,6 +107,25 @@ export const useShaperEntityStore = create<ShaperEntityState>((set, get) => {
     searchMobiles: (query) => {
         const trimmed = query.trim();
         set({ mobilesQuery: query });
+        const vnum = extractVnumQuery(trimmed, 'm');
+        if (vnum !== null) {
+            timers.clearMobiles();
+            const cached = get().mobileStats[vnum];
+            set({
+                mobiles: [cached || {
+                    vnum,
+                    name: `m ${vnum}`,
+                    level: 0,
+                    class: 'UNKNOWN',
+                    align: 0,
+                    rawText: 'Loading details...'
+                }],
+                loadingMobiles: false,
+                mobilesError: null
+            });
+            get().loadMobileStats(vnum);
+            return;
+        }
         if (trimmed.length < 3) {
             timers.clearMobiles();
             set({ mobiles: [], loadingMobiles: false, mobilesError: null });
@@ -117,6 +144,27 @@ export const useShaperEntityStore = create<ShaperEntityState>((set, get) => {
     searchObjects: (query) => {
         const trimmed = query.trim();
         set({ objectsQuery: query });
+        const vnum = extractVnumQuery(trimmed, 'o');
+        if (vnum !== null) {
+            timers.clearObjects();
+            const cached = get().objectStats[vnum];
+            set({
+                objects: [cached || {
+                    vnum,
+                    name: `o ${vnum}`,
+                    type: 'UNKNOWN',
+                    weight: 0,
+                    value: 0,
+                    extraFlags: [],
+                    wearFlags: [],
+                    rawText: 'Loading details...'
+                }],
+                loadingObjects: false,
+                objectsError: null
+            });
+            get().loadObjectStats(vnum);
+            return;
+        }
         if (trimmed.length < 3) {
             timers.clearObjects();
             set({ objects: [], loadingObjects: false, objectsError: null });
@@ -158,6 +206,20 @@ export const useShaperEntityStore = create<ShaperEntityState>((set, get) => {
             });
             cmd(`/stat o ${vnum}`, true, false, false, true);
         }
+    },
+
+    loadMobileInfo: (vnum) => {
+        const existing = get().mobileStats[vnum];
+        if (existing?.info !== undefined && existing.info !== null) return;
+        const cmd = get().executeCommand;
+        if (cmd) cmd(`/info m ${vnum} r`, true, false, false, true);
+    },
+
+    loadObjectInfo: (vnum) => {
+        const existing = get().objectStats[vnum];
+        if (existing?.info !== undefined && existing.info !== null) return;
+        const cmd = get().executeCommand;
+        if (cmd) cmd(`/info o ${vnum} r`, true, false, false, true);
     },
 
     setMobilesResult: (results) => {

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Play, Pause, Zap } from 'lucide-react';
-import { useGame, useUI } from '../../../context/GameContext';
+import { useUI } from '../../../context/GameContext';
 import { useModeStore } from '../../../stores/useModeStore';
 import { useMessageStore } from '../../../stores/useMessageStore';
 
@@ -66,11 +66,10 @@ export const LiveBufferHUD: React.FC = () => {
         return messages.length > 0 ? (messages[0] as any).timestamp as number : Date.now();
     }, [messages]);
 
-    // Also show when there are snoop messages, even if isSpectating flag isn't set yet.
-    const hasSnoopMessages = useMemo(() =>
-        messages.some((m: any) => m.isSnoop || m.type === 'snoop' || m.type === 'snoop-command'),
-    [messages]);
-
+    // Fallback so the DVR appears at the very start of a spectate before the
+    // isSpectating flag flips — but only for a *recent* snoop. Stale snoop
+    // messages lingering in the buffer must not resurrect the HUD when we're
+    // not spectating (that was the "DVR randomly starts" bug).
     const sessionDurationMs = Date.now() - sessionStart;
 
     const currentPositionMs = spectateBuffer.isLive
@@ -95,7 +94,7 @@ export const LiveBufferHUD: React.FC = () => {
         }
     }, [sessionStart, sessionDurationMs, spectateBuffer]);
 
-    if (!isSpectating && !hasSnoopMessages) return null;
+    if (!isSpectating) return null;
 
     const containerStyle: React.CSSProperties = {
         position: 'absolute',

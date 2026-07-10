@@ -478,14 +478,17 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     let name = '';
 
                     for (const l of lines) {
-                        const idMatch = l.text.match(/^Id:[{\[](\d+)[}\]]/i) || l.text.match(/vnum\s+(\d+)\b/i);
+                        const idMatch = l.text.match(/^Id:[{\[](\d+)[}\]]/i)
+                            || l.text.match(/\bV-number:\s*\[?(\d+)\]?/i)
+                            || l.text.match(/vnum\s+(\d+)\b/i);
                         if (idMatch) {
                             vnum = parseInt(idMatch[1], 10);
                         }
 
-                        const nameMatch = l.text.match(/Short desc:\[([^\]]*)\]/i) || l.text.match(/^Mobile\s+'([^']*)'/i);
+                        const nameMatch = l.text.match(/Short desc(?:ription)?:\s*(?:\[([^\]]*)\]|(.+))/i)
+                            || l.text.match(/^Mobile\s+'([^']*)'/i);
                         if (nameMatch) {
-                            name = nameMatch[1].trim();
+                            name = (nameMatch[1] || nameMatch[2]).trim();
                         }
                     }
 
@@ -536,14 +539,17 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     let name = '';
 
                     for (const l of lines) {
-                        const idMatch = l.text.match(/^Id:[{\[](\d+)[}\]]/i) || l.text.match(/vnum\s+(\d+)\b/i);
+                        const idMatch = l.text.match(/^Id:[{\[](\d+)[}\]]/i)
+                            || l.text.match(/\bV-number:\s*\[?(\d+)\]?/i)
+                            || l.text.match(/vnum\s+(\d+)\b/i);
                         if (idMatch) {
                             vnum = parseInt(idMatch[1], 10);
                         }
 
-                        const nameMatch = l.text.match(/Short desc:\[([^\]]*)\]/i) || l.text.match(/^Object\s+'([^']*)'/i);
+                        const nameMatch = l.text.match(/Short desc(?:ription)?:\s*(?:\[([^\]]*)\]|(.+))/i)
+                            || l.text.match(/^Object\s+'([^']*)'/i);
                         if (nameMatch) {
-                            name = nameMatch[1].trim();
+                            name = (nameMatch[1] || nameMatch[2]).trim();
                         }
                     }
 

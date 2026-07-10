@@ -196,6 +196,16 @@ const parseDescription = (output: string): string => {
     return body.join('\n').trim();
 };
 
+const parseExtraDescriptionKeywords = (output: string): string[] => {
+    const match = output.match(/^Extra description keywords:\s*(.*)$/im);
+    const raw = match?.[1]?.trim() ?? '';
+    if (!raw || /^none$/i.test(raw)) return [];
+    return raw
+        .split(/[\s,]+/)
+        .map(keyword => keyword.trim())
+        .filter(Boolean);
+};
+
 const normalizeRoomNumber = (value: string): string =>
     value.replace(/\s+/g, '');
 
@@ -216,32 +226,39 @@ interface ParsedLiveExit {
     exitDescription?: string;
 }
 
+const EXIT_ROW_PATTERN =
+    /^(North|East|South|West|Up|Down|N|E|S|W|U|D)\s+(\d+\s*:\s*\d+)\s*,?\s*(?:flags:\s*([^,\n]*))?(.*)$/i;
+
+const applyExitMetadata = (exit: ParsedLiveExit, text: string): void => {
+    const name = text.match(/\bname:\s*([^,]+)/i)?.[1]?.trim();
+    const key = text.match(/\bkey:\s*([^,]+)/i)?.[1]?.trim();
+    const pick = text.match(/\bpick:\s*(\d+)%/i)?.[1];
+    const weight = text.match(/\bweight:\s*(\d+)/i)?.[1];
+    if (name) exit.doorName = name;
+    if (key === 'no-keyhole' || key === 'no_keyhole') exit.keyMode = 'no_keyhole';
+    else if (key === 'latch') exit.keyMode = 'latch';
+    else if (key === 'none') exit.keyMode = 'none';
+    if (pick) exit.doorPickPercent = Number(pick);
+    if (weight) exit.doorWeight = Number(weight);
+};
+
 const parseLiveExits = (output: string): ParsedLiveExit[] => {
     const exits: ParsedLiveExit[] = [];
     let active: ParsedLiveExit | null = null;
     let readingDescription = false;
     output.split('\n').forEach(line => {
         const trimmed = line.trim();
-        const match = trimmed.match(/^(North|East|South|West|Up|Down)\s+(\d+\s*:\s*\d+),\s*flags:\s*([^,\n]*)(.*)$/i);
+        const match = trimmed.match(EXIT_ROW_PATTERN);
         if (match) {
             const direction = directionMap[match[1].toLowerCase()];
+            if (!direction) return;
             readingDescription = false;
             active = {
                 direction,
                 targetRoomNumber: normalizeRoomNumber(match[2]),
-                doorFlags: parseDoorFlags(match[3]),
+                doorFlags: parseDoorFlags(match[3] ?? 'none'),
             };
-            const rest = match[4] ?? '';
-            const name = rest.match(/\bname:\s*([^,]+)/i)?.[1]?.trim();
-            const key = rest.match(/\bkey:\s*([^,]+)/i)?.[1]?.trim();
-            const pick = rest.match(/\bpick:\s*(\d+)%/i)?.[1];
-            const weight = rest.match(/\bweight:\s*(\d+)/i)?.[1];
-            if (name) active.doorName = name;
-            if (key === 'no-keyhole') active.keyMode = 'no_keyhole';
-            else if (key === 'latch') active.keyMode = 'latch';
-            else if (key === 'none') active.keyMode = 'none';
-            if (pick) active.doorPickPercent = Number(pick);
-            if (weight) active.doorWeight = Number(weight);
+            applyExitMetadata(active, match[4] ?? '');
             exits.push(active);
             return;
         }
@@ -261,10 +278,7 @@ const parseLiveExits = (output: string): ParsedLiveExit[] => {
             active.exitDescription = `${active.exitDescription ? `${active.exitDescription}\n` : ''}${line.trim()}`.trim();
             return;
         }
-        const pick = trimmed.match(/\bpick:\s*(\d+)%/i)?.[1];
-        const weight = trimmed.match(/\bweight:\s*(\d+)/i)?.[1];
-        if (pick) active.doorPickPercent = Number(pick);
-        if (weight) active.doorWeight = Number(weight);
+        applyExitMetadata(active, trimmed);
     });
     return exits;
 };
@@ -286,6 +300,11 @@ const patchRoomFromStat = (room: ShaperRoomDraft, output: string, importedAt: nu
         sector: parseSector(output, room.sector),
         flags: parseFlags(output),
         description: parseDescription(output) || room.description,
+        keywords: parseExtraDescriptionKeywords(output).map(keyword => ({
+            id: `live-edesc-${keyword}`,
+            keywords: [keyword],
+            description: room.keywords.find(item => item.keywords.includes(keyword))?.description ?? ''
+        })),
         mapId: mapId || room.mapId,
         liveSnapshot: { ...room.liveSnapshot, importedAt, statRoomFull: output.trim() }
     };
@@ -417,7 +436,7 @@ const targetNodeForLibrary = (
     const match = nodes.find(node => {
         const nodeVnum = String(node.fields.vnum ?? '');
         if (nodeVnum !== vnum) return false;
-        if (wantsObject) return node.type === 'object' || node.type === 'hide';
+        if (wantsObject) return node.type === 'object' || node.type === 'hide' || node.type === 'put' || node.type === 'give' || node.type === 'equip';
         if (wantsMobile) return node.type === 'mobile' || node.type === 'follow';
         return false;
     });

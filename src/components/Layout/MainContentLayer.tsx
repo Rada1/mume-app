@@ -97,11 +97,10 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const showPlayersPanel = useSettingsStore(s => s.showPlayersPanel);
     const isSpectating = activeSession === 'spectate' || activeView === 'target';
     const roomCardTerrain = isSpectating ? spectateTerrain : currentTerrain;
-    const isAccountMode = !!(accountState?.stage && accountState.stage !== 'none');
 
-    const resolvedBgImage = manualBgImage || (isAccountMode && accountState?.stage !== 'login'
-        ? '/assets/Pictures/account.png'
-        : null);
+    // Account mode keeps the log transparent (environment shows through) like the
+    // in-game view, rather than a dark account splash behind the menu text.
+    const resolvedBgImage = manualBgImage || null;
 
     const zoneKey = React.useMemo(() => {
         if (!roomZone) return 'unknown';
@@ -200,7 +199,11 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         const updateBottomOffset = () => {
             if (!logContainerRef.current) return;
             const rect = logContainerRef.current.getBoundingClientRect();
-            const offset = Math.max(0, window.innerHeight - rect.bottom);
+            const measured = Math.max(0, window.innerHeight - rect.bottom);
+            // On the account/login screen there's no bottom control bar to reserve
+            // space, so floor the offset to give a visible frosted band with the
+            // forest terrain line sitting on top of it.
+            const offset = gameState === 'account' ? Math.max(measured, 52) : measured;
             document.documentElement.style.setProperty('--log-terrain-bottom-offset', `${offset}px`);
         };
 
@@ -219,7 +222,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             observer.disconnect();
             window.removeEventListener('resize', updateBottomOffset);
         };
-    }, []);
+    }, [gameState]);
 
     // --- Full-width sky art strip alignment ---
     // Same idea as the terrain strip above, but for the sun/moon/cloud row at the top
@@ -268,9 +271,9 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     return (
         <div className={`content-layer view-mode-${activeView}`}>
-            {!viewport.isMobile && gameState !== 'account' && (
+            {!viewport.isMobile && (
                 <div
-                    className={`app-terrain-strip log-terrain-${getRoomTerrainVisualKey(roomCardTerrain)} log-lore-${zoneVisualKey}`}
+                    className={`app-terrain-strip log-terrain-${getRoomTerrainVisualKey(gameState === 'account' ? 'forest' : roomCardTerrain)} log-lore-${gameState === 'account' ? 'default' : zoneVisualKey}`}
                     style={{
                         position: 'fixed',
                         left: 0,
@@ -284,6 +287,19 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             {!viewport.isMobile && gameState !== 'account' && (
                 <div
                     className={`app-sky-art-strip ${skyLightingClass} weather-${weather} terrain-${getRoomTerrainVisualKey(roomCardTerrain)}`}
+                    style={{
+                        position: 'fixed',
+                        left: 0,
+                        right: 0,
+                        top: 'var(--log-sky-top-offset, 0px)',
+                        zIndex: 4500,
+                        pointerEvents: 'none'
+                    }}
+                />
+            )}
+            {!viewport.isMobile && gameState !== 'account' && (
+                <div
+                    className={`app-ceiling-strip log-terrain-${getRoomTerrainVisualKey(roomCardTerrain)} log-lore-${zoneVisualKey}`}
                     style={{
                         position: 'fixed',
                         left: 0,

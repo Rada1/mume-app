@@ -3,8 +3,9 @@
  * @description Displays room character and object keyword chips under the mapper room card.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useGame, useVitals } from '../../context/GameContext';
+import { useCombatRechargeStore, CombatRechargeTimer } from '../../stores/useCombatRechargeStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { audioManager } from '../../services/audio/AudioManager';
@@ -35,6 +36,33 @@ interface RoomChip {
 type OccupantSource = GmcpOccupant | string;
 
 const CHARACTER_ORDER: Record<CharacterKind, number> = { enemy: 0, npc: 1, ally: 2, neutral: 3 };
+
+const getLatestSwing = (timers: Partial<Record<string, CombatRechargeTimer>>): { startedAt: number; isLanded: boolean } => {
+    let startedAt = 0;
+    let isLanded = false;
+    for (const timer of Object.values(timers)) {
+        if (timer && timer.startedAt > startedAt) {
+            startedAt = timer.startedAt;
+            isLanded = timer.isLanded !== false;
+        }
+    }
+    return { startedAt, isLanded };
+};
+
+// Briefly toggles a boolean on (after a frame so a rapid re-trigger restarts the
+// CSS animation), then off after `ms`. Returns a cleanup for the effect.
+const pulseState = (setter: (value: boolean) => void, ms: number): (() => void) => {
+    setter(false);
+    let timeoutId = 0;
+    const frameId = window.requestAnimationFrame(() => {
+        setter(true);
+        timeoutId = window.setTimeout(() => setter(false), ms);
+    });
+    return () => {
+        window.cancelAnimationFrame(frameId);
+        if (timeoutId) window.clearTimeout(timeoutId);
+    };
+};
 
 const getName = (source: OccupantSource): string => (
     typeof source === 'string'
@@ -132,6 +160,48 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
         '--neutral-color': useSettingsStore(s => s.neutralColor),
         '--object-color': useSettingsStore(s => s.objectColor),
         '--target-color': useSettingsStore(s => s.targetColor)
+    };
+
+    // --- Directional combat lunge + damage flash for the terrain-pin avatars in the log ---
+    const activeTimers = useCombatRechargeStore(state => state.active);
+    const opponentTimers = useCombatRechargeStore(state => state.opponentActive);
+    const playerSwing = useMemo(() => getLatestSwing(activeTimers), [activeTimers]);
+    const opponentSwing = useMemo(() => getLatestSwing(opponentTimers), [opponentTimers]);
+    const [isPlayerLunging, setIsPlayerLunging] = useState(false);
+    const [isOpponentLunging, setIsOpponentLunging] = useState(false);
+    const [isPlayerHit, setIsPlayerHit] = useState(false);
+    const [isOpponentHit, setIsOpponentHit] = useState(false);
+
+    // You swing -> your pin nudges toward the enemy; if it lands, the enemy pin flashes red.
+    useEffect(() => {
+        if (!playerSwing.startedAt) return;
+        return pulseState(setIsPlayerLunging, 280);
+    }, [playerSwing.startedAt]);
+    useEffect(() => {
+        if (!playerSwing.startedAt || !playerSwing.isLanded) return;
+        return pulseState(setIsOpponentHit, 450);
+    }, [playerSwing.startedAt]);
+
+    // Opponent swings -> its pin nudges toward you; if it lands, your pin flashes red.
+    useEffect(() => {
+        if (!opponentSwing.startedAt) return;
+        return pulseState(setIsOpponentLunging, 280);
+    }, [opponentSwing.startedAt]);
+    useEffect(() => {
+        if (!opponentSwing.startedAt || !opponentSwing.isLanded) return;
+        return pulseState(setIsPlayerHit, 450);
+    }, [opponentSwing.startedAt]);
+
+    const isChipOpponent = (chip: RoomChip): boolean => {
+        if (!inCombat) return false;
+        const rawIdMatch = chip.entityId.match(/^roomchars:([^#]+)/);
+        const occupantIdStr = rawIdMatch ? rawIdMatch[1] : '';
+        if (opponentId && occupantIdStr && String(opponentId) === String(occupantIdStr)) return true;
+        if (!opponentName) return false;
+        const normOpponent = opponentName.replace(/^[*-]+|[*-]+$/g, '').replace(/^(a|an|the)\s+/i, '').trim().toLowerCase();
+        const cleanLabel = chip.label.replace(/^\d+\./, '');
+        const normChipLabel = cleanLabel.replace(/^[*-]+|[*-]+$/g, '').replace(/^(a|an|the)\s+/i, '').trim().toLowerCase();
+        return !!(normOpponent && normChipLabel && (normOpponent === normChipLabel || normOpponent.includes(normChipLabel) || normChipLabel.includes(normOpponent)));
     };
 
     const characterChips = useMemo(() => {
@@ -278,16 +348,7 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
     const renderChip = (chip: RoomChip, onSelect?: () => void) => {
         const isTarget = targetTextMatchesEntity(target, chip.context, chip.label);
         const isSelected = selectedTarget?.id === chip.entityId || isTarget;
-        const isOpponent = !!inCombat && (() => {
-            const rawIdMatch = chip.entityId.match(/^roomchars:([^#]+)/);
-            const occupantIdStr = rawIdMatch ? rawIdMatch[1] : '';
-            if (opponentId && occupantIdStr && String(opponentId) === String(occupantIdStr)) return true;
-            if (!opponentName) return false;
-            const normOpponent = opponentName.replace(/^[*-]+|[*-]+$/g, '').replace(/^(a|an|the)\s+/i, '').trim().toLowerCase();
-            const cleanLabel = chip.label.replace(/^\d+\./, '');
-            const normChipLabel = cleanLabel.replace(/^[*-]+|[*-]+$/g, '').replace(/^(a|an|the)\s+/i, '').trim().toLowerCase();
-            return !!(normOpponent && normChipLabel && (normOpponent === normChipLabel || normOpponent.includes(normChipLabel) || normChipLabel.includes(normOpponent)));
-        })();
+        const isOpponent = isChipOpponent(chip);
 
         const typeIcon = getEntityTypeIcon(chip.category);
 
@@ -335,28 +396,46 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
             openCharacterCard();
         };
 
+        // Clicking your own pin targets yourself (toggle). Double-click still
+        // opens the character card.
+        const selfContext = characterName || 'self';
+        const selfEntityId = 'roomchars:self';
+        const isSelfTarget = selectedTarget?.id === selfEntityId
+            || targetTextMatchesEntity(target, selfContext, characterName || 'You');
+        const selectSelf = (event: React.MouseEvent<HTMLButtonElement>) => {
+            event.stopPropagation();
+            audioManager.playEffect('target', { skipJitter: true });
+            triggerHaptic?.(15);
+            const isSame = useUIStore.getState().selectedTarget?.id === selfEntityId;
+            toggleObjectSelection({ id: selfEntityId, setId: 'cat-ally', category: 'cat-ally', context: selfContext });
+            setTarget(isSame ? null : selfContext);
+        };
+
         return (
             <div className="room-chip-terrain-pins" style={colorVars} aria-label="Room entities and objects">
                 <div className="terrain-pin terrain-pin-player">
                     <button
                         type="button"
-                        className="room-chip room-chip-player"
-                        title="Open character panel"
-                        onClick={openPlayerCard}
+                        className={`room-chip room-chip-player${isSelfTarget ? ' is-active is-target' : ''}`}
+                        title={isSelfTarget ? 'Clear yourself as target (double-click for character panel)' : 'Target yourself (double-click for character panel)'}
+                        onClick={selectSelf}
+                        onDoubleClick={openPlayerCard}
                     >
                         {characterName || 'You'}
                     </button>
                     <span className="terrain-pin-line" />
-                    <span className="terrain-pin-sprite terrain-pin-sprite-player" aria-hidden="true">
+                    <span className={`terrain-pin-sprite terrain-pin-sprite-player${isPlayerLunging ? ' is-player-lunging' : ''}${isPlayerHit ? ' is-hit' : ''}`} aria-hidden="true">
                         <span className="terrain-pin-sprite-head" />
                         <span className="terrain-pin-sprite-body" />
                     </span>
                 </div>
-                {pinChips.map(chip => (
+                {pinChips.map(chip => {
+                    const chipIsOpponent = isChipOpponent(chip);
+                    return (
                     <div className="terrain-pin" key={chip.entityId}>
                         {renderChip(chip)}
                         <span className="terrain-pin-line" />
-                        <span className={`terrain-pin-sprite terrain-pin-sprite-${chip.kind}`} aria-hidden="true">
+                        <span className={`terrain-pin-sprite terrain-pin-sprite-${chip.kind}${chipIsOpponent && isOpponentLunging ? ' is-opponent-lunging' : ''}${chipIsOpponent && isOpponentHit ? ' is-hit' : ''}`} aria-hidden="true">
                             {chip.kind === 'object' ? (
                                 <span className="terrain-pin-sprite-block" />
                             ) : (
@@ -367,7 +446,8 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
                             )}
                         </span>
                     </div>
-                ))}
+                    );
+                })}
             </div>
         );
     }

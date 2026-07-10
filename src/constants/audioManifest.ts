@@ -103,6 +103,8 @@ export const AUDIO_MANIFEST = {
             'the trollshaws': { url: '/assets/Sounds/ZoneSounds/TrollShaws.mp3' },
             'troll warrens': { url: '/assets/Sounds/ZoneSounds/warrens.mp3' },
             'the troll warrens': { url: '/assets/Sounds/ZoneSounds/warrens.mp3' },
+            'warrens': { url: '/assets/Sounds/ZoneSounds/warrens.mp3' },
+            'the warrens': { url: '/assets/Sounds/ZoneSounds/warrens.mp3' },
             'weathertop': { url: '/assets/Sounds/ZoneSounds/Weathertop.mp3' },
             'the weathertop': { url: '/assets/Sounds/ZoneSounds/Weathertop.mp3' },
             'valinor': { url: '/assets/Sounds/ZoneSounds/Valinor.mp3' },

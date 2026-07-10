@@ -138,57 +138,65 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             const el = popoverRef.current;
 
             const positionPopover = () => {
-                const rect = el.getBoundingClientRect();
                 const winH = window.innerHeight, winW = window.innerWidth;
-                let top = popoverState.y, left = popoverState.x;
                 el.style.maxHeight = '';
+                // Measure with offset* (layout box) rather than getBoundingClientRect,
+                // whose width/height are distorted by the scale() bounce-in animation.
+                const popW = el.offsetWidth, popH = el.offsetHeight;
+                let top = popoverState.y, left = popoverState.x;
 
                 if (popoverState.type === 'select-parley-target' || popoverState.type === 'select-parley-command') {
-                    left = popoverState.x - (rect.width / 2);
+                    left = popoverState.x - (popW / 2);
                     el.style.bottom = `${winH - popoverState.y + 8}px`;
                     el.style.top = 'auto';
+                    el.style.transformOrigin = 'center bottom';
                 } else {
                     el.style.bottom = 'auto';
+                    el.style.top = 'auto';
                     if (popoverState.menuDisplay !== 'dial' && popoverState.sourceRect) {
                         const source = popoverState.sourceRect;
                         const gap = 8;
                         const sourceBottom = source.top + source.height;
                         const sideSpace = winW - (source.left + source.width) - gap;
-                        const canFitRight = sideSpace >= rect.width;
-                        const canFitLeft = source.left - gap >= rect.width;
+                        const canFitRight = sideSpace >= popW;
+                        const canFitLeft = source.left - gap >= popW;
                         if (popoverState.preferSide === 'right' && (canFitRight || canFitLeft)) {
-                            left = canFitRight ? source.left + source.width + gap : source.left - rect.width - gap;
-                            top = source.top + (source.height / 2) - (rect.height / 2);
+                            left = canFitRight ? source.left + source.width + gap : source.left - popW - gap;
+                            top = source.top + (source.height / 2) - (popH / 2);
+                            if (top < 10) top = 10;
+                            if (top + popH > winH - 10) top = Math.max(10, winH - popH - 10);
+                            el.style.top = `${top}px`;
+                            el.style.transformOrigin = canFitRight ? 'left center' : 'right center';
                         } else {
-                            left = source.left + (source.width / 2) - (rect.width / 2);
-                            const canFitTop = source.top - rect.height - gap >= 10;
-                            const canFitBottom = sourceBottom + rect.height + gap <= winH - 10;
-                            if (canFitTop) {
-                                top = source.top - rect.height - gap;
-                            } else if (canFitBottom) {
-                                top = sourceBottom + gap;
+                            left = source.left + (source.width / 2) - (popW / 2);
+                            const spaceAbove = source.top - gap - 10;
+                            const spaceBelow = winH - sourceBottom - gap - 10;
+                            const placeAbove = popH <= spaceAbove || (popH > spaceBelow && spaceAbove >= spaceBelow);
+                            if (placeAbove) {
+                                // Anchor the bottom edge just above the button: the popover
+                                // never overlaps it, and stays put as async content (e.g.
+                                // captured examine/consider lines) grows it upward.
+                                el.style.bottom = `${Math.max(10, winH - (source.top - gap))}px`;
+                                el.style.transformOrigin = 'center bottom';
                             } else {
-                                if (source.top >= winH - sourceBottom) {
-                                    top = source.top - rect.height - gap;
-                                } else {
-                                    top = sourceBottom + gap;
-                                }
+                                el.style.top = `${Math.min(sourceBottom + gap, Math.max(10, winH - popH - 10))}px`;
+                                el.style.transformOrigin = 'center top';
                             }
                         }
                     } else if (popoverState.menuDisplay !== 'dial') {
                         const rootStyles = getComputedStyle(document.documentElement);
                         const centerX = parseFloat(rootStyles.getPropertyValue('--wheel-center-x')) || (winW / 2);
                         const centerY = parseFloat(rootStyles.getPropertyValue('--wheel-center-y')) || (winH / 2);
-                        top = centerY - (rect.height / 2);
-                        left = centerX - (rect.width / 2);
+                        top = centerY - (popH / 2);
+                        left = centerX - (popW / 2);
+                        if (top < 10) top = 10;
+                        if (top + popH > winH - 10) top = Math.max(10, winH - popH - 10);
+                        el.style.top = `${top}px`;
                     }
-                    if (top < 10) top = 10;
-                    if (top + rect.height > winH - 10) top = Math.max(10, winH - rect.height - 10);
-                    el.style.top = `${top}px`;
                 }
 
                 if (left < 10) left = 10;
-                if (left + rect.width > winW - 10) left = Math.max(10, winW - rect.width - 10);
+                if (left + popW > winW - 10) left = Math.max(10, winW - popW - 10);
                 el.style.left = `${left}px`;
             };
 

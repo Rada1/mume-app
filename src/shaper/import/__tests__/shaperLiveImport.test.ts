@@ -134,6 +134,37 @@ West   31: 10, flags: none
         expect(room?.description).not.toContain('Exits');
     });
 
+    it('imports extra description keyword names without dropping existing text', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const room = Object.values(doc.rooms).find(item => item.roomNumber === '31:20')!;
+        const seeded = {
+            ...doc,
+            rooms: {
+                ...doc.rooms,
+                [room.id]: {
+                    ...room,
+                    keywords: [{ id: 'old', keywords: ['webbing'], description: 'Old sticky strands cling here.' }]
+                }
+            }
+        };
+        const result = applyShaperLiveTranscript(seeded, `
+/at 31:20 /stat room full
+Room 31:20 (3120) - in@a Shadowy Forest by the River
+Magical key: seamnebobvi, Owner: none, Sector: forest, MapId: 15019284
+Room permanent flags: BUILD
+Description:
+The trees press close here.
+Extra description keywords: webbing strands
+------- Exits -------
+`, 1234);
+
+        const imported = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:20');
+        expect(imported?.keywords).toEqual([
+            { id: 'live-edesc-webbing', keywords: ['webbing'], description: 'Old sticky strands cling here.' },
+            { id: 'live-edesc-strands', keywords: ['strands'], description: '' }
+        ]);
+    });
+
     it('treats Description: <none> as an empty import (keeps existing desc)', () => {
         const doc = createDefaultShaperDocument({ zoneNumber: 31 });
         const result = applyShaperLiveTranscript(doc, `
@@ -312,6 +343,29 @@ Commands on room 31:50 (hills by a watchtower):
         });
     });
 
+    it('retargets redress object libraries to nested put commands', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const result = applyShaperLiveTranscript(doc, `
+/at 31:50 /com list
+1    Object  6042 (a wooden crate) (--/--/1/100%)
+> 2  Put     2090 (a fishing net) in 6042 (crate) (--/--/1/100%)
+/lib room 31:50 list
+Commands on room 31:50 (hills by a watchtower):
+1: redress-obj
+  object:      obj 2090 (a fishing net)
+  keywords:    net fishing
+  short-desc:  a fishing net lies coiled inside
+`, 1234);
+
+        const putNode = Object.values(result.doc.commandNodes).find(node => node.type === 'put');
+        const library = Object.values(result.doc.libraries)[0];
+        expect(library).toMatchObject({
+            targetType: 'object',
+            targetId: putNode?.id,
+            name: 'redress-obj'
+        });
+    });
+
     it('parses the /com list table form for names and decoded load counts', () => {
         const doc = createDefaultShaperDocument({ zoneNumber: 31 });
         const result = applyShaperLiveTranscript(doc, `
@@ -456,6 +510,39 @@ Down   31:100, flags: DOOR NO_MOB, name: trapdoor, key: no-keyhole, pick: 0%,
             doorWeight: 1
         });
         expect(Object.values(result.doc.exits).filter(exit => exit.fromRoomId === importedRoom?.id)).toHaveLength(5);
+    });
+
+    it('imports live exits with abbreviated directions and loose comma spacing', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const result = applyShaperLiveTranscript(doc, `
+/at 31:44 /stat room
+Room 31:44 (3144) - in@A Test Junction
+Room permanent flags: BUILD
+Extra description keywords: none
+----- Exits -----
+N 31: 34 flags: none
+E 31:45, flags: DOOR CLOSED
+       name: gate, key: no_keyhole, pick: 25%,
+       weight: 3
+S 31:54, flags:
+`, 1234);
+
+        const importedRoom = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:44');
+        const northTarget = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:34');
+        const eastTarget = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:45');
+        const southTarget = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:54');
+        expect(result.doc.exits[`${importedRoom?.id}:n`]).toMatchObject({ toRoomId: northTarget?.id, direction: 'n' });
+        expect(result.doc.exits[`${importedRoom?.id}:s`]).toMatchObject({ toRoomId: southTarget?.id, direction: 's' });
+        expect(result.doc.exits[`${importedRoom?.id}:e`]).toMatchObject({
+            toRoomId: eastTarget?.id,
+            direction: 'e',
+            doorFlags: ['door', 'closed'],
+            hasDoor: true,
+            doorName: 'gate',
+            keyMode: 'no_keyhole',
+            doorPickPercent: 25,
+            doorWeight: 3
+        });
     });
 
     it('imports exit descriptions from /stat room exit blocks', () => {

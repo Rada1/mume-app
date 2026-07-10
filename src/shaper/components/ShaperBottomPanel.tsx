@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import type { ShaperDeployAuditEntry, ShaperDeployCommand } from '../deployment/shaperDeployTypes';
 import type { ShaperRoomDraft, ShaperRoomId, ShaperValidationIssue } from '../model/shaperTypes';
+import { ShaperDeployCommandSelector } from './ShaperDeployCommandSelector';
 import './ShaperBottomPanel.css';
 
 interface ShaperBottomPanelProps {
@@ -24,7 +25,7 @@ interface ShaperBottomPanelProps {
     selectedRoomId?: string;
     rooms: Record<ShaperRoomId, ShaperRoomDraft>;
     onSelectRoom: (roomId: string) => void;
-    onStartDeploy: () => void;
+    onStartDeploy: (commands: string[]) => void;
     zoneDeployCommands: string[];
     onStartZoneDeploy: () => void;
     onAbortDeploy: () => void;
@@ -188,7 +189,15 @@ export const ShaperBottomPanel: React.FC<ShaperBottomPanelProps> = ({
                         )}
                         {copyState === 'failed' && <span className="shaper-copy-failed">Clipboard access failed.</span>}
                         {deployCommands.length > 0 ? (
-                            <pre>{deployCommands.join('\n')}</pre>
+                            <>
+                                <ShaperDeployCommandSelector
+                                    commands={deployCommands}
+                                    onPush={onStartDeploy}
+                                    disabled={isDeploying || !!deployBlockedReason}
+                                    disabledReason={isDeploying ? 'Deploy already running.' : deployBlockedReason}
+                                />
+                                <pre>{deployCommands.join('\n')}</pre>
+                            </>
                         ) : (
                             <span>No selected-room deploy commands yet.</span>
                         )}
@@ -204,7 +213,7 @@ export const ShaperBottomPanel: React.FC<ShaperBottomPanelProps> = ({
                                         <button
                                             type="button"
                                             className="shaper-deploy-send"
-                                            onClick={onStartDeploy}
+                                            onClick={() => onStartDeploy(deployCommands)}
                                             disabled={!!deployBlockedReason}
                                             title={deployBlockedReason}
                                         >

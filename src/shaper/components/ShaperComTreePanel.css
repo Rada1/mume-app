@@ -34,8 +34,9 @@
 
 .shaper-com-add {
     display: grid;
-    grid-template-columns: 120px 90px minmax(180px, 1fr) 36px;
+    grid-template-columns: 120px auto 90px minmax(180px, 1fr) 36px;
     gap: 8px;
+    align-items: center;
 }
 
 .shaper-com-add select,
@@ -121,8 +122,9 @@
 
 .shaper-com-node-editor {
     display: grid;
-    grid-template-columns: 120px 120px minmax(180px, 1fr);
+    grid-template-columns: 120px auto 120px minmax(180px, 1fr);
     gap: 6px;
+    align-items: end;
 }
 
 .shaper-com-node-editor label {

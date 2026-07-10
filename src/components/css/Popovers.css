@@ -113,30 +113,33 @@
 }
 
 /* Compact Action Chips */
-.popover-action-chip {
-    animation: chip-pulse-glow 3s ease-in-out infinite;
-    background:
-        linear-gradient(180deg, rgba(255, 194, 66, 0.18), rgba(184, 112, 15, 0.1)) !important;
-    border-color: rgba(255, 177, 45, 0.48) !important;
-    box-shadow:
-        0 0 8px rgba(212, 134, 20, 0.22),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-    color: #ffd28a !important;
-    font-weight: 800;
-    transition: transform 0.16s ease, background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+/* Unified with the bottom-bar CommandDeck slot styling: flat dark fill, hairline
+   border, gold hover. (The red .fight-btn keeps its own styling.) */
+.popover-action-chip:not(.fight-btn) {
+    animation: none !important;
+    background: rgba(22, 27, 38, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 7px !important;
+    box-shadow: none !important;
+    color: #cbd5e1 !important;
+    font-weight: 700;
+    transition: transform 0.14s ease, background 0.14s ease, border-color 0.14s ease !important;
 }
 
-.popover-action-chip:hover,
-.popover-action-chip:active {
-    animation: none;
-    background:
-        linear-gradient(180deg, rgba(255, 208, 89, 0.3), rgba(212, 134, 20, 0.18)) !important;
-    border-color: rgba(255, 205, 83, 0.82) !important;
-    box-shadow:
-        0 0 14px rgba(255, 190, 67, 0.58),
-        inset 0 0 10px rgba(255, 224, 138, 0.12) !important;
-    color: #fff3c4 !important;
+.popover-action-chip:not(.fight-btn):hover,
+.popover-action-chip:not(.fight-btn):active {
+    animation: none !important;
+    background: rgba(30, 36, 49, 0.95) !important;
+    border-color: rgba(232, 176, 32, 0.4) !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
     transform: translateY(-1px);
+}
+
+.light-mode .popover-action-chip:not(.fight-btn) {
+    background: rgba(255, 255, 255, 0.7) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    color: #475569 !important;
 }
 
 /* Popover Menu Styles */
@@ -149,7 +152,7 @@
     border-radius: 16px;
     padding: 10px;
     z-index: 60000;
-    box-shadow: 0 0 20px rgba(212, 170, 0, 0.35), 0 40px 100px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 20px rgba(212, 170, 0, 0.35);
     display: flex;
     flex-direction: column;
     gap: 6px;

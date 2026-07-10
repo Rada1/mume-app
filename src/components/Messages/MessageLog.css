@@ -2143,7 +2143,7 @@ span.inline-btn {
     left: 0;
     right: 0;
     bottom: 2px;
-    z-index: 11;
+    z-index: 4600; /* Layered on top of .app-terrain-strip (z-index 4500) and ::after (z-index 10) */
     display: flex;
     justify-content: center;
     pointer-events: none;
@@ -2154,7 +2154,27 @@ span.inline-btn {
 }
 
 .log-terrain-chips-overlay .room-chip {
+    background: rgba(8, 10, 15, 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
     filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.55));
+}
+
+.log-terrain-chips-overlay .room-chip:hover,
+.log-terrain-chips-overlay .room-chip.is-active {
+    background: rgba(12, 15, 22, 0.88);
+}
+
+.light-mode .log-terrain-chips-overlay .room-chip {
+    background: rgba(240, 240, 243, 0.78);
+    border-color: rgba(0, 0, 0, 0.16);
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.15));
+}
+
+.light-mode .log-terrain-chips-overlay .room-chip:hover,
+.light-mode .log-terrain-chips-overlay .room-chip.is-active {
+    background: rgba(225, 225, 230, 0.90);
 }
 
 /* Height configurations for each terrain border in the message log */
@@ -2349,13 +2369,57 @@ span.inline-btn {
 .message-log-container.log-lore-forochel::before,
 .message-log-container.log-lore-forochel::after { filter: saturate(0.66) brightness(1.16) hue-rotate(22deg); }
 
-/* Desktop: the bottom terrain strip now renders full-width via .app-terrain-strip,
-   so hide the log-scoped copy to avoid a duplicate narrower strip underneath it. */
+/* Desktop: the terrain strips now render full-width via .app-terrain-strip
+   (bottom) and .app-ceiling-strip (top), so hide the log-scoped copies to avoid
+   duplicate narrower strips underneath them. */
 @media (min-width: 1025px) {
-    .message-log-container::after {
+    .message-log-container::after,
+    .message-log-container::before {
         content: none !important;
     }
 }
+
+/* --- Full-width top ceiling strip (.app-ceiling-strip) ---
+   Mirrors .app-terrain-strip at the bottom: a fixed, full-viewport-width element
+   carrying the indoor "ceiling" pixel-art (cavern/tunnel/building) that the
+   log-scoped .message-log-container::before used to draw at log width only.
+   Outdoor terrains have no ceiling art here — the sky/weather row (.app-sky-art-strip)
+   covers those. */
+.app-ceiling-strip {
+    height: 0;
+    pointer-events: none;
+    background-position: top;
+}
+
+.app-ceiling-strip.log-terrain-cavern {
+    height: 24px;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 24' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='96' height='5' fill='%233b3d45'/%3E%3Crect x='4' y='5' width='9' height='5' fill='%23555a63'/%3E%3Crect x='8' y='10' width='5' height='7' fill='%23464a52'/%3E%3Crect x='10' y='17' width='3' height='5' fill='%23656b74'/%3E%3Crect x='28' y='5' width='12' height='6' fill='%234c5059'/%3E%3Crect x='32' y='11' width='7' height='7' fill='%23636a73'/%3E%3Crect x='35' y='18' width='3' height='5' fill='%23424750'/%3E%3Crect x='56' y='5' width='10' height='5' fill='%235b6069'/%3E%3Crect x='59' y='10' width='6' height='6' fill='%234b5059'/%3E%3Crect x='62' y='16' width='3' height='6' fill='%2369717b'/%3E%3Crect x='78' y='5' width='14' height='5' fill='%23434850'/%3E%3Crect x='82' y='10' width='7' height='8' fill='%235e6570'/%3E%3C/svg%3E") 0 0 / 96px 24px repeat-x,
+        linear-gradient(180deg, rgba(33, 35, 42, 0.84), transparent);
+}
+
+.app-ceiling-strip.log-terrain-tunnel {
+    height: 18px;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 18' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='80' height='4' fill='%23382c23'/%3E%3Crect x='0' y='4' width='16' height='4' fill='%23503b2b'/%3E%3Crect x='16' y='4' width='18' height='4' fill='%233f3026'/%3E%3Crect x='34' y='4' width='20' height='4' fill='%235b4634'/%3E%3Crect x='54' y='4' width='26' height='4' fill='%23372921'/%3E%3Crect x='8' y='8' width='18' height='4' fill='%23614a37'/%3E%3Crect x='38' y='8' width='24' height='4' fill='%23453329'/%3E%3Crect x='62' y='8' width='10' height='4' fill='%23634c38'/%3E%3C/svg%3E") 0 0 / 80px 18px repeat-x,
+        linear-gradient(180deg, rgba(58, 43, 32, 0.86), transparent);
+}
+
+.app-ceiling-strip.log-terrain-building {
+    height: 14px;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 14' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='96' height='3' fill='%23513b25'/%3E%3Crect x='8' y='3' width='6' height='11' fill='%23735735'/%3E%3Crect x='34' y='3' width='6' height='11' fill='%234b3522'/%3E%3Crect x='61' y='3' width='6' height='11' fill='%23795c38'/%3E%3Crect x='86' y='3' width='6' height='11' fill='%234c3622'/%3E%3Crect x='0' y='10' width='96' height='2' fill='%23806742' opacity='.65'/%3E%3C/svg%3E") 0 0 / 96px 14px repeat-x,
+        linear-gradient(180deg, rgba(75, 55, 34, 0.72), transparent);
+}
+
+.app-ceiling-strip.log-lore-shire { filter: saturate(1.24) brightness(1.08); }
+.app-ceiling-strip.log-lore-fangorn,
+.app-ceiling-strip.log-lore-old-forest,
+.app-ceiling-strip.log-lore-mirkwood { filter: saturate(0.78) brightness(0.66) sepia(0.16); }
+.app-ceiling-strip.log-lore-moria { filter: saturate(0.58) brightness(0.72) contrast(1.12); }
+.app-ceiling-strip.log-lore-mordor,
+.app-ceiling-strip.log-lore-angmar { filter: saturate(0.78) brightness(0.62) sepia(0.28) hue-rotate(-18deg); }
+.app-ceiling-strip.log-lore-forochel { filter: saturate(0.66) brightness(1.16) hue-rotate(22deg); }
 
 /* --- Sky / Lighting & Weather Art Overlay ---
    .log-sky-art-overlay is scoped to the log column. .app-sky-art-strip is the

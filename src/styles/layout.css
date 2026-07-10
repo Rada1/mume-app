@@ -586,6 +586,23 @@
     max-width: 800px !important;
 }
 
+/* The new account bar (AccountDeck + login) is a full-width, in-flow bottom bar
+   like the in-game action box — it must reserve space below the log (so the
+   terrain strip sits above it), not float as a centered card. Overrides the
+   absolute/centered rules above for account-mode. */
+@media (min-width: 1025px) {
+    .state-account .action-box.account-mode,
+    .force-desktop.state-account .action-box.account-mode {
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        transform: none !important;
+        width: 100vw !important;
+        max-width: none !important;
+        margin-left: calc(-1 * var(--desktop-map-width, 22vw)) !important;
+    }
+}
+
 
 /* On mobile portrait, we apply a refined, balanced floating card styling */
 @media (max-width: 1024px) and (orientation: portrait) {
@@ -606,24 +623,6 @@
         border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
         padding: 0 10px 4px 10px !important;
     }
-}
-
-.in-combat .control-card-wrapper,
-.in-combat .action-box {
-    position: relative;
-    overflow: visible !important;
-}
-
-.in-combat .control-card-wrapper::after,
-.in-combat .action-box::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    z-index: 10;
-    border: 1.5px solid #ef4444;
-    box-shadow: 0 0 12px rgba(239, 68, 68, 0.65), inset 0 0 8px rgba(239, 68, 68, 0.35);
 }
 
 @media (max-width: 1024px) {

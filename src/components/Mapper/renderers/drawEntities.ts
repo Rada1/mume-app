@@ -68,6 +68,41 @@ const groupMemberIsInActiveRoom = (member: GroupMember, activeRoomKeys: Set<stri
 
 const getGroupMemberDisplayName = (member: GroupMember): string | undefined => member.name || member.label;
 
+const getCombatLungeProgress = (rCtx: RenderContext, direction: 'outgoing' | 'incoming'): number => {
+    const pulse = [...(rCtx.combatPulsesRef?.current || [])]
+        .reverse()
+        .find(p => p.direction === direction);
+    if (!pulse) return 0;
+
+    const elapsed = rCtx.now - pulse.time;
+    const duration = 320;
+    if (elapsed < 0 || elapsed > duration) return 0;
+
+    return Math.sin((elapsed / duration) * Math.PI);
+};
+
+const getLungedPoint = (
+    x: number,
+    y: number,
+    targetX: number,
+    targetY: number,
+    progress: number,
+    zoom: number
+) => {
+    if (progress <= 0) return { x, y };
+
+    const dx = targetX - x;
+    const dy = targetY - y;
+    const len = Math.hypot(dx, dy);
+    if (len < 1) return { x, y };
+
+    const amount = Math.min(5 / Math.max(zoom, 0.75), len * 0.28) * progress;
+    return {
+        x: x + (dx / len) * amount,
+        y: y + (dy / len) * amount
+    };
+};
+
 const occupantMatchesGroupMember = (occupant: GmcpOccupant, member: GroupMember): boolean => {
     if (member.id !== undefined && occupant.id !== undefined && String(occupant.id) === String(member.id)) return true;
     const occupantName = (occupant.name || occupant.short || occupant.shortdesc || occupant.keyword || '').toLowerCase();
@@ -411,12 +446,19 @@ export const drawRoomOccupants = (
             const isSelectedTarget = targetTextMatchesEntity(rCtx.targetName, occ.commandTarget, occ.name);
             const isCombatant = isOpponent || (occ.id != null && combatantIds.has(String(occ.id)));
             const isGroupOcc = occ.ring === 'inner';
-            drawDot(orbX, orbY, occ.color, alpha, occ.name, occ.radius, anim, isSelectedTarget, isOccupantActive(occ), isCombatant, isGroupOcc);
+            const playerLunge = !!rCtx.inCombat && (occ.kind === 'self' || occ.kind === 'player')
+                ? getLungedPoint(orbX, orbY, px, py, getCombatLungeProgress(rCtx, 'outgoing'), camera.zoom)
+                : { x: orbX, y: orbY };
+            const combatPoint = isOpponent
+                ? getLungedPoint(orbX, orbY, px, py, getCombatLungeProgress(rCtx, 'incoming'), camera.zoom)
+                : playerLunge;
+
+            drawDot(combatPoint.x, combatPoint.y, occ.color, alpha, occ.name, occ.radius, anim, isSelectedTarget, isOccupantActive(occ), isCombatant, isGroupOcc);
 
             // Opponent tether. Name fallback is allowed only when it resolves to
             // exactly one visible occupant; duplicate names require GMCP ID.
             if (isOpponent) {
-                drawCombatTether(px, py, orbX, orbY, alpha, true);
+                drawCombatTether(px, py, combatPoint.x, combatPoint.y, alpha, true);
             }
         });
     };

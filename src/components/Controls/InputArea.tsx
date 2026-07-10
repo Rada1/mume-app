@@ -28,6 +28,7 @@ interface InputAreaProps {
     setParley: React.Dispatch<React.SetStateAction<import('../../types').ParleyState>>;
     whoList: string[];
     gameState: import('../../types').GameState;
+    rightSlot?: React.ReactNode;
 }
 
 import { normalizeTerrain } from '../../utils/terrainUtils';
@@ -53,7 +54,7 @@ const EXAMPLE_COMMANDS = [
 
 const InputArea: React.FC<InputAreaProps> = ({
     onSend, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
-    spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState, parley, setParley, whoList, gameState
+    spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState, parley, setParley, whoList, gameState, rightSlot
 }) => {
     const input = useInputStore(s => s.input);
     const setInput = useInputStore(s => s.setInput);
@@ -749,6 +750,12 @@ const InputArea: React.FC<InputAreaProps> = ({
 
                     {gameState === 'playing' && (
                         <div className="input-actions-container">
+                            {rightSlot && (
+                                <div className="input-right-slot">
+                                    {rightSlot}
+                                </div>
+                            )}
+
                             {shouldShowSpat && (
                                 <SpatButtons
                                     spatButtons={spatButtons}

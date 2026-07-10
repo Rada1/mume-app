@@ -1,0 +1,93 @@
+.movement-pad {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 31px);
+    grid-template-rows: repeat(3, 31px);
+    gap: 4px;
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 7px;
+    background: rgba(12, 15, 22, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    pointer-events: auto;
+    align-self: flex-start;
+    margin: 6px 0 6px 10px;
+}
+
+.movement-pad-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 7px;
+    background: rgba(22, 27, 38, 0.85);
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease, transform 0.1s ease;
+    min-width: 0;
+    min-height: 0;
+}
+
+.movement-pad-cell:hover {
+    border-color: rgba(232, 176, 32, 0.42);
+    background: rgba(30, 36, 49, 0.95);
+    color: #e8b020;
+}
+
+.movement-pad-cell:active {
+    transform: scale(0.94);
+    background: rgba(232, 176, 32, 0.18);
+    border-color: rgba(232, 176, 32, 0.55);
+    color: #e8b020;
+}
+
+/* Cardinal directions get the gold accent; look/exits/scan stay neutral. */
+.movement-pad-cell.pad-n,
+.movement-pad-cell.pad-s,
+.movement-pad-cell.pad-e,
+.movement-pad-cell.pad-w,
+.movement-pad-cell.pad-u,
+.movement-pad-cell.pad-d {
+    color: #e8b020;
+}
+
+.movement-pad-cell.pad-look {
+    color: #cbd5e1;
+}
+
+.light-mode .movement-pad {
+    background: rgba(255, 255, 255, 0.72);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.light-mode .movement-pad-cell {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #475569;
+}
+
+.light-mode .movement-pad-cell.pad-n,
+.light-mode .movement-pad-cell.pad-s,
+.light-mode .movement-pad-cell.pad-e,
+.light-mode .movement-pad-cell.pad-w,
+.light-mode .movement-pad-cell.pad-u,
+.light-mode .movement-pad-cell.pad-d {
+    color: #8a6620;
+}
+
+@media (min-width: 1025px) {
+    .movement-pad {
+        grid-template-columns: repeat(3, 46px);
+        grid-template-rows: repeat(3, 46px);
+        gap: 4px;
+        padding: 3px;
+        background: rgba(8, 11, 18, 0.44);
+    }
+}
+
+@media (max-width: 760px) {
+    .movement-pad {
+        margin: 6px 10px 0;
+    }
+}

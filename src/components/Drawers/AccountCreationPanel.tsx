@@ -77,6 +77,33 @@ export const AccountCreationPanel: React.FC<AccountCreationPanelProps> = ({ acco
         executeCommand(id);
     };
 
+    // Free-text prompts in creation (name, password, etc.) need their own input —
+    // the generic command bar is hidden in account mode. Placeholder adapts to the
+    // current MUME prompt.
+    const [creationInput, setCreationInput] = React.useState('');
+    const promptText = (accountState.currentPrompt || '').toLowerCase();
+    const isPasswordPrompt = promptText.includes('password');
+    const inputPlaceholder = promptText.includes('name') ? 'Enter a name…'
+        : isPasswordPrompt ? 'Enter a password…'
+        : /option|which|choose|select/.test(promptText) ? 'Type a choice, or use the buttons…'
+        : 'Type your response…';
+    const submitCreationInput = () => {
+        const value = creationInput.trim();
+        if (!value) return;
+        triggerHaptic(15);
+        executeCommand(value);
+        setCreationInput('');
+    };
+
+    // From within character creation, back out to the account menu with two blank
+    // returns, then send "menu" to display it.
+    const goMainMenu = () => {
+        triggerHaptic(15);
+        executeCommand('');
+        setTimeout(() => executeCommand(''), 150);
+        setTimeout(() => executeCommand('menu'), 300);
+    };
+
     const adjustStat = (id: string, delta: number, currentValue?: number) => {
         if (currentValue === undefined) return;
         triggerHaptic(10);
@@ -117,10 +144,23 @@ export const AccountCreationPanel: React.FC<AccountCreationPanelProps> = ({ acco
                     options.map(opt => <CreationOptionButton key={opt.id} option={opt} onSelect={selectOption} />)
                 )}
             </div>
+            {!isStatStage && (
+                <div className="account-form-row account-creation-input-row">
+                    <input
+                        className="account-input"
+                        type={isPasswordPrompt ? 'password' : 'text'}
+                        value={creationInput}
+                        onChange={e => setCreationInput(e.target.value)}
+                        placeholder={inputPlaceholder}
+                        onKeyDown={e => { if (e.key === 'Enter') submitCreationInput(); }}
+                    />
+                    <button className="account-btn account-btn-primary" disabled={!creationInput.trim()} onClick={submitCreationInput}>Enter</button>
+                </div>
+            )}
             {accountState.stage !== 'account-confirmation' && (
                 <div className="creation-nav-buttons" style={{ display: 'flex', gap: 8, padding: 12 }}>
                     <button className="account-menu-btn no-arrow" onClick={() => selectOption('back')}>Back</button>
-                    <button className="account-menu-btn no-arrow" onClick={() => selectOption('menu')}>Main Menu</button>
+                    <button className="account-menu-btn no-arrow" onClick={goMainMenu}>Main Menu</button>
                     <button className="account-menu-btn no-arrow" onClick={() => selectOption('?')}>?</button>
                 </div>
             )}

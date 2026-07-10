@@ -24,6 +24,7 @@ import { getEntityDragData, hasEntityKind } from './shaperEntityDrag';
 import { ShaperObjectCard } from './ShaperObjectCard';
 import { ShaperEntityAddForm } from './ShaperEntityAddForm';
 import { ShaperEntityLibraries } from './ShaperEntityLibraries';
+import { ShaperEntityInfoButton } from './ShaperEntityInfoButton';
 
 interface ShaperMobCardProps {
     mob: ShaperMobPlacement;
@@ -125,6 +126,7 @@ export const ShaperMobCard: React.FC<ShaperMobCardProps> = ({
                     )}
                     {totalCount > 0 && <span className="shaper-entity-count">{totalCount}</span>}
                 </button>
+                <ShaperEntityInfoButton kind="mob" vnum={mob.vnum} />
                 <button
                     type="button"
                     className="shaper-entity-remove"

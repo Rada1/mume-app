@@ -110,15 +110,72 @@
 .shaper-reimport-room {
     position: absolute;
     top: 0;
-    right: 0;
-    padding: 3px 10px;
-    font-size: 11px;
-    font-weight: 600;
+    right: 34px;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
     border-radius: 4px;
     border: 1px solid rgba(142, 203, 240, 0.5);
     background: rgba(142, 203, 240, 0.14);
     color: #aedcff;
     cursor: pointer;
+}
+
+.shaper-reimport-room.is-spinning,
+.shaper-reimport-room .is-spinning {
+    animation: shaper-refresh-spin 0.85s linear infinite;
+}
+
+.shaper-inspector-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: #aab7c4;
+    cursor: pointer;
+}
+
+.shaper-inspector-close:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+}
+
+.shaper-layer-stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.shaper-layer-stepper button {
+    min-height: 24px;
+    padding: 0 8px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #e2e8f0;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.shaper-layer-stepper button:hover {
+    border-color: rgba(240, 180, 91, 0.55);
+    color: #f0b45b;
+}
+
+.shaper-layer-stepper span {
+    color: #aab7c4;
+    font-size: 11px;
+    font-weight: 700;
 }
 
 .shaper-reimport-room:hover:not(:disabled) {
@@ -128,6 +185,12 @@
 .shaper-reimport-room:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+}
+
+@keyframes shaper-refresh-spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .shaper-panel-heading span,
@@ -254,6 +317,35 @@
     color: #f0b45b;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+}
+
+.shaper-pane-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.shaper-grid-inspector-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 28px;
+    padding: 0 10px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #dce7f0;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.shaper-grid-inspector-toggle:hover,
+.shaper-grid-inspector-toggle.active {
+    border-color: rgba(240, 180, 91, 0.55);
+    background: rgba(240, 180, 91, 0.12);
+    color: #f0b45b;
 }
 
 .shaper-pane-close {
@@ -506,4 +598,3 @@
     white-space: nowrap;
     line-height: 1.2;
 }
-

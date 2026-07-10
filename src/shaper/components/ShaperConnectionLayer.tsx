@@ -36,6 +36,7 @@ interface RenderedExit {
     posA: ShaperPoint;
     posB: ShaperPoint;
     hasReverse: boolean;
+    isDotted: boolean;
     offset: number;
 }
 
@@ -76,10 +77,29 @@ const ClimbMark: React.FC<{ a: ShaperPoint; b: ShaperPoint }> = ({ a, b }) => {
     );
 };
 
-const ArrowLine: React.FC<{ a: ShaperPoint; b: ShaperPoint; isClimb: boolean; isSelected: boolean }> = ({ a, b, isClimb, isSelected }) => (
+const cardinalOffsets: Partial<Record<ShaperDirection, { dx: number; dy: number }>> = {
+    n: { dx: 0, dy: -1 },
+    s: { dx: 0, dy: 1 },
+    e: { dx: 1, dy: 0 },
+    w: { dx: -1, dy: 0 }
+};
+
+const isCardinalNeighborExit = (roomA: ShaperRoomDraft, roomB: ShaperRoomDraft, direction: ShaperDirection): boolean => {
+    const offset = cardinalOffsets[direction];
+    if (!offset || roomA.z !== roomB.z) return false;
+    return roomB.x === roomA.x + offset.dx && roomB.y === roomA.y + offset.dy;
+};
+
+const ArrowLine: React.FC<{ a: ShaperPoint; b: ShaperPoint; isClimb: boolean; isSelected: boolean; isDotted: boolean }> = ({
+    a,
+    b,
+    isClimb,
+    isSelected,
+    isDotted
+}) => (
     <>
         <line
-            className="shaper-connection-line"
+            className={`shaper-connection-line${isDotted ? ' dotted' : ''}`}
             x1={a.x}
             y1={a.y}
             x2={b.x}
@@ -169,7 +189,8 @@ export const ShaperConnectionLayer: React.FC<ShaperConnectionLayerProps> = ({
             const roomA = rooms[exit.fromRoomId];
             const roomB = rooms[exit.toRoomId];
             if (!roomA || !roomB) continue;
-            if (roomA.z !== viewZ || roomB.z !== viewZ || roomA.kind !== 'grid' || roomB.kind !== 'grid') continue;
+            if (roomA.inactive || roomB.inactive) continue;
+            if (roomA.z !== viewZ && roomB.z !== viewZ) continue;
 
             let dirBA = getOppositeDirection(exit.direction);
             let hasReverse = false;
@@ -191,6 +212,7 @@ export const ShaperConnectionLayer: React.FC<ShaperConnectionLayerProps> = ({
                 posA: getNodePosition(roomA.x, roomA.y, exit.direction),
                 posB: getNodePosition(roomB.x, roomB.y, dirBA),
                 hasReverse,
+                isDotted: !isCardinalNeighborExit(roomA, roomB, exit.direction),
                 offset: hasReverse ? 14 : 0
             });
         }
@@ -385,6 +407,7 @@ export const ShaperConnectionLayer: React.FC<ShaperConnectionLayerProps> = ({
                             b={to}
                             isClimb={hasClimb}
                             isSelected={isSelected}
+                            isDotted={conn.isDotted}
                         />
                     </g>
                 );

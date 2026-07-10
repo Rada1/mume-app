@@ -22,6 +22,41 @@ interface UseShaperDeployQueueParams {
 const DEFAULT_PACE_MS = 600;
 const EDITOR_POLL_MS = 150;
 const EDITOR_TIMEOUT_MS = 5000;
+const EDITOR_PREFLIGHT_COMMAND = 'change editor external';
+const EDITOR_PREFLIGHT_DELAY_MS = 600;
+const LINE_EDITOR_SAVE_COMMAND = '%e';
+const LINE_EDITOR_JUSTIFY_COMMAND = '%j';
+const LINE_EDITOR_PACE_MS = 80;
+const JUSTIFY_WIDTH = 80;
+
+interface PendingEditorBlock {
+    stepId: string;
+    body: string;
+    deadline: number;
+}
+
+const justifyParagraph = (paragraph: string): string => {
+    const words = paragraph.trim().split(/\s+/).filter(Boolean);
+    const lines: string[] = [];
+    let current = '';
+    words.forEach(word => {
+        const next = current ? `${current} ${word}` : word;
+        if (next.length > JUSTIFY_WIDTH && current) {
+            lines.push(current);
+            current = word;
+        } else {
+            current = next;
+        }
+    });
+    if (current) lines.push(current);
+    return lines.join('\n');
+};
+
+const justifyEditorBody = (body: string): string =>
+    body
+        .split(/\n{2,}/)
+        .map(paragraph => paragraph.trim() ? justifyParagraph(paragraph) : '')
+        .join('\n\n');
 
 // --- Hook Section ---
 export const useShaperDeployQueue = ({
@@ -41,7 +76,7 @@ export const useShaperDeployQueue = ({
     const connectedRef = useRef(isConnected);
     const editorOpenRef = useRef(isEditorOpen);
     const saveEditorRef = useRef(saveEditor);
-    const pendingEditorRef = useRef<{ stepId: string; body: string; deadline: number } | null>(null);
+    const pendingEditorRef = useRef<PendingEditorBlock | null>(null);
 
     useEffect(() => { sendRef.current = send; }, [send]);
     useEffect(() => { connectedRef.current = isConnected; }, [isConnected]);
@@ -64,32 +99,57 @@ export const useShaperDeployQueue = ({
 
     const processNextRef = useRef<() => void>(() => {});
 
-    // Wait for the GMCP editor to open, then write the body. Falls back to a
-    // manual-apply failure if the editor never opens within the timeout.
-    const waitForEditor = useCallback(() => {
-        const pending = pendingEditorRef.current;
-        if (!pending) return;
-        const stepText = stepsRef.current.find(step => step.id === pending.stepId)?.text ?? pending.stepId;
+    const finishEditorStep = useCallback((stepId: string, stepText: string, auditText = stepText) => {
+        patch(stepId, { status: 'sent' });
+        log(auditText, 'sent');
+        pendingEditorRef.current = null;
+        timerRef.current = setTimeout(() => processNextRef.current(), paceMs);
+    }, [patch, log, paceMs]);
 
-        if (editorOpenRef.current && saveEditorRef.current) {
-            saveEditorRef.current(pending.body);
-            patch(pending.stepId, { status: 'sent' });
-            log(stepText, 'sent');
-            pendingEditorRef.current = null;
-            timerRef.current = setTimeout(() => processNextRef.current(), paceMs);
-            return;
-        }
-
-        if (Date.now() > pending.deadline) {
-            patch(pending.stepId, { status: 'failed', error: 'Editor did not open; apply this block manually.' });
+    const sendLineEditorFallback = useCallback((pending: PendingEditorBlock, stepText: string) => {
+        const sendLine = sendRef.current;
+        if (!sendLine) {
+            patch(pending.stepId, { status: 'failed', error: 'Editor command path unavailable.' });
             log(stepText, 'failed');
             pendingEditorRef.current = null;
             timerRef.current = setTimeout(() => processNextRef.current(), 0);
             return;
         }
 
+        const lines = [...pending.body.split('\n'), LINE_EDITOR_JUSTIFY_COMMAND, LINE_EDITOR_SAVE_COMMAND];
+        const sendAt = (index: number) => {
+            if (pendingEditorRef.current?.stepId !== pending.stepId) return;
+            if (index >= lines.length) {
+                finishEditorStep(pending.stepId, stepText, `${stepText} (line editor fallback)`);
+                return;
+            }
+            sendLine(lines[index]);
+            timerRef.current = setTimeout(() => sendAt(index + 1), LINE_EDITOR_PACE_MS);
+        };
+
+        sendAt(0);
+    }, [finishEditorStep, patch, log]);
+
+    // Wait for the GMCP editor to open, then write the body. If MUME is still
+    // using its line editor, drive that editor directly so deploys keep moving.
+    const waitForEditor = useCallback(() => {
+        const pending = pendingEditorRef.current;
+        if (!pending) return;
+        const stepText = stepsRef.current.find(step => step.id === pending.stepId)?.text ?? pending.stepId;
+
+        if (editorOpenRef.current && saveEditorRef.current) {
+            saveEditorRef.current(justifyEditorBody(pending.body));
+            finishEditorStep(pending.stepId, stepText);
+            return;
+        }
+
+        if (Date.now() > pending.deadline) {
+            sendLineEditorFallback(pending, stepText);
+            return;
+        }
+
         timerRef.current = setTimeout(waitForEditor, EDITOR_POLL_MS);
-    }, [patch, log, paceMs]);
+    }, [finishEditorStep, sendLineEditorFallback]);
 
     // Send the next queued step, then schedule the following one.
     const processNext = useCallback(() => {
@@ -109,13 +169,16 @@ export const useShaperDeployQueue = ({
         patch(next.id, { status: 'sending' });
 
         if (next.requiresEditor) {
-            sendRef.current(next.text);
-            pendingEditorRef.current = {
-                stepId: next.id,
-                body: extractEditorBody(next.lines),
-                deadline: Date.now() + EDITOR_TIMEOUT_MS
-            };
-            timerRef.current = setTimeout(waitForEditor, EDITOR_POLL_MS);
+            sendRef.current(EDITOR_PREFLIGHT_COMMAND);
+            timerRef.current = setTimeout(() => {
+                sendRef.current?.(next.text);
+                pendingEditorRef.current = {
+                    stepId: next.id,
+                    body: extractEditorBody(next.lines),
+                    deadline: Date.now() + EDITOR_TIMEOUT_MS
+                };
+                timerRef.current = setTimeout(waitForEditor, EDITOR_POLL_MS);
+            }, EDITOR_PREFLIGHT_DELAY_MS);
             return;
         }
 

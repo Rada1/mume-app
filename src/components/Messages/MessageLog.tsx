@@ -520,7 +520,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     } = useBaseGame() as any;
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const activeView = useModeStore(s => s.activeView);
-    const { replayer, spectateBuffer } = useUI() as any;
+    const { ui, replayer, spectateBuffer } = useUI() as any;
     const userMessages = useMessageStore(s => s.user);
     const spectateMessages = useMessageStore(s => s.spectate);
     const messages = (isSpectateMode && activeView === 'target') ? spectateMessages : userMessages;
@@ -885,6 +885,26 @@ const MessageLog: React.FC<MessageLogProps> = ({
         overscan: 12,
         rangeExtractor,
     });
+
+    const wasShaperOpenRef = useRef(!!ui.isShaperOpen);
+    useEffect(() => {
+        const wasOpen = wasShaperOpenRef.current;
+        const isOpen = !!ui.isShaperOpen;
+        wasShaperOpenRef.current = isOpen;
+        if (!wasOpen || isOpen) return;
+
+        const resyncLogLayout = () => {
+            virtualizer.measure();
+            if (viewport.isLockedToBottomRef.current) {
+                viewport.scrollToBottom(true, true, 'ShaperClosed');
+            }
+        };
+
+        requestAnimationFrame(() => {
+            resyncLogLayout();
+            requestAnimationFrame(resyncLogLayout);
+        });
+    }, [ui.isShaperOpen, virtualizer, viewport]);
 
     const lastScrollCallRef = React.useRef(0);
     const lastMessagesRef = React.useRef(messages);

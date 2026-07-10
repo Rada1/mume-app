@@ -1,6 +1,6 @@
 .header {
     display: grid;
-    grid-template-columns: minmax(180px, auto) 1fr auto;
+    grid-template-columns: 1fr auto;
     align-items: center;
     width: 100%;
     background: #000000;
@@ -22,7 +22,7 @@
 
 
 .mobile-header {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 1fr auto;
     background: #0d0d0d !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -547,141 +547,6 @@
 .map-drawer-desktop *::-webkit-scrollbar-thumb:hover,
 .floating-card-container *::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.2);
-}
-
-/* --- Player Status HUD in Header --- */
-.player-status-hud {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 2px 10px;
-    background: rgba(13, 16, 23, 0.62);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    flex-shrink: 0; /* CRITICAL: Prevent HUD from disappearing on narrow screens */
-    pointer-events: auto;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    user-select: none;
-    max-width: 220px;
-}
-
-.player-status-hud:hover {
-    background: #0d1120;
-    border-color: rgba(232, 176, 32, 0.2);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
-}
-
-.player-status-hud:active {
-    transform: scale(0.98);
-}
-
-.player-identity {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-width: 0;
-}
-
-.player-name {
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: var(--text-primary, #ffffff);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-transform: uppercase;
-    line-height: 1.1;
-}
-
-.player-level {
-    font-size: 0.65rem;
-    font-weight: 800;
-    color: var(--ansi-green, #4ade80);
-    opacity: 0.9;
-    letter-spacing: 0.3px;
-    line-height: 1;
-}
-
-.player-name.level-tier-gold,
-.player-name.level-tier-diamond,
-.player-level.level-tier-gold,
-.player-level.level-tier-diamond {
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-    opacity: 1;
-}
-
-.player-name.level-tier-gold,
-.player-level.level-tier-gold {
-    background-image: linear-gradient(90deg, #fff2a8 0%, #ffd700 32%, #c99738 68%, #fff4b8 100%);
-}
-
-.player-name.level-tier-diamond,
-.player-level.level-tier-diamond {
-    background-image: linear-gradient(90deg, #f8fbff 0%, #9ee7ff 28%, #d7f7ff 50%, #8bd3ff 72%, #ffffff 100%);
-}
-
-.player-stats-mini {
-    display: flex;
-    gap: 6px;
-    flex-shrink: 0;
-}
-
-.player-status-hud .stat-pill {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 2px 6px;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    min-width: 42px;
-    transition: all 0.2s ease;
-}
-
-.player-status-hud .stat-pill .pill-label {
-    font-size: 0.5rem;
-    font-weight: 900;
-    color: var(--text-dim, #94a3b8);
-    opacity: 0.6;
-    line-height: 1;
-    margin-bottom: 1px;
-    text-transform: uppercase;
-}
-
-.player-status-hud .stat-pill .pill-value {
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: #f8fafc;
-    line-height: 1;
-    font-family: 'JetBrains Mono', monospace;
-}
-
-.player-status-hud .stat-pill.xp .pill-value {
-    color: var(--ansi-green, #4ade80);
-    text-shadow: 0 0 8px rgba(74, 222, 128, 0.3);
-}
-
-.player-status-hud .stat-pill.tp .pill-value {
-    color: var(--ansi-green, #4ade80);
-    text-shadow: 0 0 8px rgba(74, 222, 128, 0.3);
-}
-
-@media (max-width: 480px) {
-    .player-status-hud {
-        gap: 6px;
-        padding: 3px 8px;
-        max-width: none;
-    }
-    .player-name {
-        font-size: 0.75rem;
-    }
 }
 
 .light-mode .header {

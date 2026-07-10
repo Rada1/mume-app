@@ -102,6 +102,11 @@ export const MapperRoomInfo: React.FC<MapperRoomInfoProps> = () => {
     );
     const isNewlyExplored = !!(mapper as any).newlyExploredRoomId && (mapper as any).newlyExploredRoomId === mapper.currentRoomId;
 
+    React.useEffect(() => {
+        setIsExpanded(false);
+        setIsFlagsOpen(false);
+    }, [currentRoomKey]);
+
     const roomEntityId = roomName ? `room:${roomName.toLowerCase()}` : '';
 
     // Same button set as the cat-room popover opened by tapping the room name.

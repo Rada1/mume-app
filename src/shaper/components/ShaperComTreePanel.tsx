@@ -10,6 +10,7 @@ import { listShaperComTree } from '../model/shaperComCommands';
 import { buildShaperComPreview } from '../model/shaperComPreview';
 import type { ShaperCommandLimit, ShaperCommandNode, ShaperCommandType, ShaperRoomDraft } from '../model/shaperTypes';
 import { ShaperComNodeFields } from './ShaperComNodeFields';
+import { ShaperContextHelpButton } from './ShaperContextHelpButton';
 import './ShaperComTreePanel.css';
 
 interface ShaperComTreePanelProps {
@@ -70,6 +71,7 @@ export const ShaperComTreePanel: React.FC<ShaperComTreePanelProps> = ({ room, co
         <section className="shaper-com-panel">
             <div className="shaper-com-heading">
                 <span>/com Trees</span>
+                <ShaperContextHelpButton topic="com" label="/com help" />
                 <strong>{room.roomNumber}</strong>
             </div>
 
@@ -77,6 +79,7 @@ export const ShaperComTreePanel: React.FC<ShaperComTreePanelProps> = ({ room, co
                 <select value={type} onChange={event => setType(event.target.value as ShaperCommandType)}>
                     {commandTypes.map(item => <option key={item} value={item}>{item}</option>)}
                 </select>
+                <ShaperContextHelpButton topic={`com-${type}`} label="Type help" />
                 <input
                     value={vnum}
                     onChange={event => setVnum(event.target.value)}
@@ -130,6 +133,7 @@ export const ShaperComTreePanel: React.FC<ShaperComTreePanelProps> = ({ room, co
                                                 {commandTypes.map(item => <option key={item} value={item}>{item}</option>)}
                                             </select>
                                         </label>
+                                        <ShaperContextHelpButton topic={`com-${node.type}`} label="Help" />
                                         <label>Vnum
                                             <input
                                                 value={String(node.fields.vnum ?? '')}

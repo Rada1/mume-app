@@ -267,11 +267,8 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
 
         if (context.action === 'read') {
             vitals.setCharacterInfo({ [field]: mumeEditState.text } as any);
-            // MUME only allows one active edit session at a time — a real cancel
-            // (Mume.Client.CancelEdit) is what actually releases the server-side
-            // lock. Just dropping local state (or resaving unchanged text) leaves
-            // it open, so the next "change ..." command comes back
-            // "You are already editing that text."
+            // MUME only allows one active edit session at a time; send the real
+            // editor quit command so the next queued read can open cleanly.
             handleCancelMumeEdit();
             runNextAvatarFetch();
         } else {
@@ -304,8 +301,6 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
         () => buildPracticeDrawerLines(practice.practiceData, practiceLines || []),
         [practice.practiceData, practiceLines]
     );
-
-    if (!isOpen && !forceOpen) return null;
 
     const info = vitals.characterInfo;
     const { gold: goldCoins, silver, copper } = useMemo(() => {
@@ -344,6 +339,10 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
     const isRidingOrMounted = vitals.position === 'riding' || vitals.position === 'mounted';
     const hasConditions = vitals.isHidden || !!vitals.sneak || !!vitals.climb || vitals.isSwimming || vitals.isRidden || isRidingOrMounted;
     const hasCombatInfo = !!combat.opponentName || !!combat.bufferName;
+    const combatAvatarName = combat.opponentName || combat.bufferName;
+
+    if (!isOpen && !forceOpen) return null;
+
     const refreshInfo = () => {
         triggerHaptic?.(15);
         executeCommand('info', true, true, false, true);
@@ -370,7 +369,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
                 )}
 
                 <div 
-                    className="character-card-header"
+                    className={`character-card-header${combatAvatarName ? ' has-combat-avatar' : ''}`}
                     style={{
                         '--terrain-glow-color': (info?.level ?? 0) >= 26
                             ? 'rgba(232, 176, 32, 0.24)'
@@ -589,8 +588,8 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
                             ))}
                         </div>
                     </div>
-                    <div 
-                        className="character-card-gold" 
+                    <div
+                        className="character-card-gold"
                         title={`Total: ${goldCoins.toLocaleString()} Gold, ${silver} Silver, ${copper} Copper`}
                     >
                         <Coins size={12} strokeWidth={2.5} />

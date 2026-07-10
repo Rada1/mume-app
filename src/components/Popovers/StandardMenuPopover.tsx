@@ -325,10 +325,10 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', flex: 1 }}>
                         {CategoryIcon && <CategoryIcon size={16} style={{ flexShrink: 0, opacity: 0.8 }} />}
                         <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
-                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            <span style={{ fontSize: '1.18rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {isSetManager ? 'Main Menu' : (cleanDisplayName ? cleanDisplayName : (popoverState.direction ? `${formatSetLabel(safeSetId).toUpperCase()} (${popoverState.direction.toUpperCase()})` : formatSetLabel(safeSetId).toUpperCase()))}
                             </span>
-                            <span style={{ fontSize: '0.6rem', opacity: 0.6, fontWeight: 'normal', marginTop: '1px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>{renderHeaderSubtitle()}</span>
+                            <span style={{ fontSize: '0.9rem', opacity: 0.6, fontWeight: 'normal', marginTop: '2px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>{renderHeaderSubtitle()}</span>
                         </div>
                     </div>
                     {!isSetManager && categoryAxes.isInlineAction && (

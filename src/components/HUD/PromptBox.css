@@ -54,9 +54,12 @@
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
         border: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
         border-radius: 0 !important;
         box-shadow: none !important;
+        padding-bottom: 5px;
     }
+
 }
 
 /* --- Row 2: Unified Vitals (Horizontal) --- */
@@ -112,8 +115,10 @@
     box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.65) !important;
 }
 
-.player-name {
+.prompt-player-name {
     text-align: left;
+    font-family: var(--font-mono, monospace);
+    letter-spacing: 0.04em;
 }
 
 .opponent-name {
@@ -133,12 +138,202 @@
     width: 100%;
 }
 
+.prompt-player-hud {
+    display: grid;
+    grid-template-columns: auto minmax(180px, 1fr);
+    align-items: center;
+    gap: 8px;
+    width: min(100%, 560px);
+    min-width: 0;
+}
+
+.prompt-avatar-module {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 3px;
+    min-width: 0;
+    flex-shrink: 0;
+}
+
+/* Pixel-art block figure — matches the character-card avatar */
+.prompt-avatar-pixel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 34px;
+    background: rgba(13, 16, 23, 0.85);
+    border: 1px solid rgba(201, 151, 56, 0.5);
+    border-radius: 5px;
+    box-shadow: inset 0 -10px 16px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.45);
+    flex-shrink: 0;
+}
+
+.prompt-avatar-pixel .terrain-pin-sprite-head {
+    width: 12px;
+    height: 8px;
+    background: #ffffff;
+    border-radius: 1px;
+}
+
+.prompt-avatar-pixel .terrain-pin-sprite-body {
+    width: 16px;
+    height: 11px;
+    background: #ffffff;
+    margin-top: 2px;
+    border-radius: 1px;
+}
+
+/* Opponent block figure — sits on the far-right of the combat vitals */
+.prompt-opponent-avatar-pixel {
+    align-self: flex-end;
+    margin-left: 6px;
+    border-color: rgba(239, 68, 68, 0.4);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.32), 0 0 10px rgba(239, 68, 68, 0.12);
+}
+
+.prompt-opponent-avatar-pixel .terrain-pin-sprite-head {
+    background: #ffb3a3;
+}
+
+.prompt-opponent-avatar-pixel .terrain-pin-sprite-body {
+    background: #ef4444;
+}
+
+.prompt-level-badge {
+    position: absolute;
+    right: -3px;
+    bottom: -3px;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: #0b1018;
+    border: 1px solid rgba(250, 204, 21, 0.58);
+    color: #f8e7a0;
+    font-family: var(--font-mono, monospace);
+    font-size: 9px;
+    font-weight: 900;
+    line-height: 1;
+    z-index: 3;
+}
+
+/* XP / TP rails stood vertical along the right edge of the portrait (LoL style) */
+.prompt-progress-rails {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 2px;
+    height: 34px;
+    min-width: 0;
+}
+
+.prompt-progress-rail {
+    position: relative;
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
+    overflow: hidden;
+    background: rgba(8, 12, 18, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.prompt-progress-rail span {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    border-radius: inherit;
+}
+
+.prompt-progress-rail.xp span {
+    background: linear-gradient(0deg, #facc15, #fef08a);
+}
+
+.prompt-progress-rail.tp span {
+    background: linear-gradient(0deg, #38bdf8, #a5f3fc);
+}
+
+.prompt-combat-stat-stack {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+}
+
+.prompt-combat-stat-stack .prompt-combat-stats-line {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    font-size: 9px;
+    min-height: 0;
+}
+
+.prompt-combat-stat-stack .prompt-combat-stat {
+    gap: 3px;
+}
+
+.prompt-combat-stat-stack .stat-icon-wrapper svg {
+    width: 10px;
+    height: 10px;
+}
+
+.player-stats-stack {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.prompt-vital-row {
+    display: grid;
+    grid-template-columns: 12px minmax(40px, 1fr);
+    align-items: center;
+    gap: 3px;
+    min-width: 0;
+    flex: 1 1 0;
+}
+
+.prompt-vital-bar-shell {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+}
+
 .player-vitals-stack {
     display: flex;
     flex-direction: column;
     gap: 2px;
     flex: 1;
     min-width: 0;
+}
+
+.player-top-stats-row {
+    justify-content: flex-start;
+    min-height: 14px;
+}
+
+.player-top-stats-row .prompt-inline-name {
+    flex: 0 1 auto;
+    max-width: 100%;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.player-top-stats-row .prompt-inline-name .inline-btn {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .prompt-top-stats-row {
@@ -245,6 +440,25 @@
 
 .combat-recharge-pill.is-charged .opponent-recharge-fill {
     animation: prompt-charge-ready 0.9s ease-in-out infinite;
+}
+
+.prompt-timer-lane .combat-recharge-pill {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: auto !important;
+    min-width: 128px;
+    max-width: 220px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 8px;
+    border-radius: 5px;
+    background: rgba(8, 11, 18, 0.54);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 @keyframes prompt-charge-ready {
@@ -382,17 +596,17 @@
     position: relative;
     display: flex;
     align-items: center;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px; /* Slightly tighter for slanted look */
-    height: 14px;
+    background: transparent;
+    border: 0;
+    border-radius: 3px;
+    height: 9px;
     width: 100%;
-    overflow: visible;
-    margin: 0 1px;
-    padding: 1px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
     transition: all 0.3s ease;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
-    transform: skewX(15deg); /* Slant the entire bar */
+    box-shadow: none;
+    transform: none;
 }
 
 .status-bar-segments-grid {
@@ -407,14 +621,16 @@
 .bar-segment-block {
     flex: 1;
     height: 100%;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(75, 85, 99, 0.34);
+    border: 1px solid rgba(148, 163, 184, 0.2);
     border-radius: 2px;
     position: relative;
     overflow: hidden;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.42);
 }
 
 .status-bar-segment.is-mirrored {
-    transform: skewX(-15deg); /* Opposite slant for opponent side */
+    transform: none;
 }
 
 .status-bar-fill {
@@ -422,10 +638,10 @@
     top: 0;
     bottom: 0;
     transition: width 0.2s ease-out;
-    background-color: currentColor;
+    background: linear-gradient(180deg, color-mix(in srgb, currentColor 88%, #ffffff 12%), color-mix(in srgb, currentColor 86%, #000000 14%));
     border-radius: 1px;
     z-index: 2;
-    box-shadow: 0 0 4px currentColor; /* Outer glow for the block */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 0 5px color-mix(in srgb, currentColor 45%, transparent);
 }
 
 .status-bar-ghost {
@@ -443,27 +659,37 @@
 .opponent .status-bar-ghost { background-color: #ff0000 !important; box-shadow: 0 0 5px rgba(255, 0, 0, 0.4); }
 
 .hp .status-bar-fill { color: #ff8080; }
-.hp .status-bar-segment { border-color: rgba(255, 128, 128, 0.5); }
+.hp .status-bar-segment { border-color: transparent; }
 
 .mana .status-bar-fill { color: #c084fc; }
-.mana .status-bar-segment { border-color: rgba(192, 132, 252, 0.5); }
+.mana .status-bar-segment { border-color: transparent; }
 
 .move .status-bar-fill { color: #86efac; }
-.move .status-bar-segment { border-color: rgba(134, 239, 172, 0.5); }
+.move .status-bar-segment { border-color: transparent; }
 
 .opponent .status-bar-fill { color: #ff8080; }
-.opponent .status-bar-segment { border-color: rgba(255, 128, 128, 0.5); }
+.opponent .status-bar-segment { border-color: transparent; }
 
 /* Placeholder bars (unknown data) */
 .placeholder .status-bar-fill {
-    color: #4b5563 !important; /* Cool Gray 600 */
-    opacity: 0.3 !important;
-    box-shadow: none !important;
+    color: #94a3b8 !important;
+    opacity: 0.42;
     filter: grayscale(1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 0 4px rgba(148, 163, 184, 0.16);
+}
+
+.placeholder .status-bar-ghost {
+    display: none;
+}
+
+.placeholder .bar-segment-block {
+    background: rgba(75, 85, 99, 0.3);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.5);
 }
 
 .placeholder.vitals-icon {
-    opacity: 0.3 !important;
+    opacity: 0.42 !important;
     filter: grayscale(0.8);
 }
 

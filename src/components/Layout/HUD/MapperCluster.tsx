@@ -1198,7 +1198,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     <div className="prompt-timer-lane mobile-prompt-timer-lane" aria-hidden="true">
                         <OpponentRechargeTimer lane="player" />
                         <ActionTimerDisplay />
-                        <OpponentRechargeTimer lane="opponent" />
                     </div>
                 )}
 

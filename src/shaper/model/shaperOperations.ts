@@ -264,6 +264,38 @@ export const moveShaperRooms = (
     return { ...doc, rooms, exits };
 };
 
+export const moveShaperRoomToLayer = (
+    doc: ShaperWorkspaceDoc,
+    roomId: ShaperRoomId,
+    z: number
+): ShaperWorkspaceDoc => {
+    const room = doc.rooms[roomId];
+    if (!room || room.z === z) return doc;
+    if (room.kind === 'grid' && !isShaperCellFree(doc, room.x, room.y, z, roomId)) return doc;
+
+    const rooms = {
+        ...doc.rooms,
+        [roomId]: {
+            ...room,
+            z
+        }
+    };
+
+    const clearedExits = room.kind === 'grid'
+        ? clearRoomCardinals(doc.exits, roomId)
+        : doc.exits;
+    const exits = room.kind === 'grid'
+        ? autoConnectRoom(rooms, clearedExits, roomId)
+        : clearedExits;
+
+    return {
+        ...doc,
+        selectedRoomId: roomId,
+        rooms,
+        exits
+    };
+};
+
 // --- Remove Section ---
 export const removeShaperRooms = (doc: ShaperWorkspaceDoc, roomIds: ShaperRoomId[]): ShaperWorkspaceDoc => {
     const removing = new Set(roomIds.filter(id => doc.rooms[id]));

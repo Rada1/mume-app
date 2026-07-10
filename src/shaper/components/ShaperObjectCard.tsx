@@ -18,6 +18,7 @@ const collectItemDescendantIds = (item: ShaperItemRef): Set<string> => {
 import { getEntityDragData, hasEntityKind } from './shaperEntityDrag';
 import { ShaperEntityAddForm } from './ShaperEntityAddForm';
 import { ShaperEntityLibraries } from './ShaperEntityLibraries';
+import { ShaperEntityInfoButton } from './ShaperEntityInfoButton';
 
 interface ShaperObjectCardProps {
     item: ShaperItemRef;
@@ -127,6 +128,7 @@ export const ShaperObjectCard: React.FC<ShaperObjectCardProps> = ({
                         )}
                     </div>
                 )}
+                <ShaperEntityInfoButton kind="object" vnum={item.vnum} />
                 <button
                     type="button"
                     className="shaper-entity-remove"

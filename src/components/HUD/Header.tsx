@@ -3,25 +3,17 @@ import { createPortal } from 'react-dom';
 import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, DraftingCompass, MessageSquare, Users } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
-import { formatCompactNumber } from '../../utils/gameUtils';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useSessionStore } from '../../stores/useSessionStore';
 import { useArchiveStore } from '../../stores/useArchiveStore';
 import { canAccessShaper } from '../../shaper/access/shaperAccess';
-import XpTicker from '../Combat/XpTicker';
 
 interface HeaderProps {
     isLandscape?: boolean;
     getLightingIcon: () => React.ReactNode;
     getWeatherIcon: () => React.ReactNode;
 }
-
-const levelTierClass = (level: number | undefined): string => {
-    if (!level || level <= 20) return 'level-tier-standard';
-    if (level <= 25) return 'level-tier-gold';
-    return 'level-tier-diamond';
-};
 
 const Header: React.FC<HeaderProps> = () => {
     const {
@@ -218,45 +210,7 @@ const Header: React.FC<HeaderProps> = () => {
 
     return (
         <header className={`header ${viewport.isMobile ? 'mobile-header' : ''}`}>
-            {/* Left: Player Status HUD */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'visible', position: 'relative' }}>
-                {!isAccountScreen && (
-                    <div className="player-status-hud" onClick={() => setUI(prev => ({ ...prev, drawer: 'character' }))}>
-                        <div className="player-identity">
-                            <span className={`player-name ${levelTierClass(characterInfo.level)}`}>{characterInfo.name || (status === 'connected' ? '...' : 'MUME')}</span>
-                            <span className={`player-level ${levelTierClass(characterInfo.level)}`}>{characterInfo.level > 0 ? `Lv.${characterInfo.level}` : ''}</span>
-                        </div>
-                        <div className="player-stats-mini">
-                            <div className="stat-pill xp">
-                                <span className="pill-label">XP</span>
-                                <span className="pill-value">{formatCompactNumber(characterInfo.xp)}</span>
-                            </div>
-                            <div className="stat-pill tp">
-                                <span className="pill-label">TP</span>
-                                <span className="pill-value">{formatCompactNumber(characterInfo.tp)}</span>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                {!isAccountScreen && (
-                    <div style={{ 
-                        position: viewport.isMobile && !viewport.isLandscape ? 'absolute' : 'relative',
-                        left: viewport.isMobile && !viewport.isLandscape ? 'calc(100% + 8px)' : 'auto',
-                        top: viewport.isMobile && !viewport.isLandscape ? '50%' : 'auto',
-                        transform: viewport.isMobile && !viewport.isLandscape ? 'translateY(-50%)' : 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        zIndex: 9999,
-                        pointerEvents: 'none'
-                    }}>
-                        <XpTicker variant="header" isLandscape={viewport.isLandscape} />
-                        <XpTicker variant="header" isLandscape={viewport.isLandscape} kind="tp" />
-                    </div>
-                )}
-            </div>
-
-            {/* Middle: Flexible spacer */}
+            {/* Flexible spacer */}
             <div style={{ flex: 1 }} />
 
             <div className="header-right-cluster">

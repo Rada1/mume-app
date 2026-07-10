@@ -477,16 +477,17 @@
     .room-info-card .mri-desc {
         font-size: 0.92rem;
         line-height: 1.4;
-        -webkit-line-clamp: 2;
-        max-height: 2.8em;
+        -webkit-line-clamp: 1;
+        max-height: 1.4em;
     }
 
     .room-info-card .mapper-room-info-container.expanded .mri-desc {
         max-height: 1000px;
+        -webkit-line-clamp: unset;
     }
 
     .room-info-card .mri-content {
-        padding: 10px 20px 18px;
+        padding: 8px 20px 10px;
         gap: 6px;
     }
 }

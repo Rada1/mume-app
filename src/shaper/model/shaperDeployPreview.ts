@@ -44,7 +44,7 @@ const buildRoomCommands = (room: ShaperRoomDraft): string[] => {
         const keys = (keyword.keywords ?? []).map(item => textValue(item).trim()).filter(Boolean);
         if (keys.length === 0) return;
         commands.push(wrapAt(room.roomNumber, `/room kadd ${keys.join(' ')}`));
-        commands.push(...editorBlock(room.roomNumber, `/room kdescription ${keys[0]}`, keyword.description));
+        commands.push(...editorBlock(room.roomNumber, `/room kdesc ${keys[0]}`, keyword.description));
     });
     const owner = textValue(room.owner).trim();
     if (owner && owner.toLowerCase() !== 'none') {

@@ -3,7 +3,7 @@
  * @description Main privileged Shaper workspace shell and tab routing.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { X } from 'lucide-react';
+import { PanelRight, X } from 'lucide-react';
 import { useShaperPresence } from '../collaboration/shaperPresence';
 import { readShareCodeFromHash, useShaperSharedProjects } from '../collaboration/shaperSharedProjects';
 import { useShaperWorkspace } from '../hooks/useShaperWorkspace';
@@ -162,6 +162,11 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
         return saved === 'true';
     });
 
+    const [showInspector, setShowInspector] = useState<boolean>(() => {
+        const saved = localStorage.getItem('shaper-show-inspector');
+        return saved !== 'false';
+    });
+
     const [gameLogWidth, setGameLogWidth] = useState<number>(() => {
         const saved = localStorage.getItem('shaper-gamelog-width');
         return saved ? parseInt(saved, 10) : 400;
@@ -281,6 +286,11 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
         if (!Number.isInteger(parsedZone) || parsedZone < 0) window.alert('Zone number must be a non-negative whole number.');
         else if (parsedZone !== activeDoc.zoneNumber) workspace.changeProjectZone(activeDoc.id, parsedZone);
     };
+    const toggleInspector = () => {
+        const next = !showInspector;
+        setShowInspector(next);
+        localStorage.setItem('shaper-show-inspector', String(next));
+    };
     return (
         <div className="shaper-workspace" role="dialog" aria-label="Shaper workspace">
             <ShaperWorkspaceTopbar
@@ -319,7 +329,7 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                     <div 
                         className="shaper-main" 
                         style={{ 
-                            gridTemplateColumns: `260px 1fr auto ${inspectorWidth}px${showGameLog ? ` auto ${gameLogWidth}px` : ''}` 
+                            gridTemplateColumns: `260px 1fr${showInspector ? ` auto ${inspectorWidth}px` : ''}${showGameLog ? ` auto ${gameLogWidth}px` : ''}`
                         }}
                     >
                         <ShaperLeftPanel
@@ -370,9 +380,21 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                                                     <>
                                                         <div className="shaper-pane-header">
                                                             <h3>Concept Grid</h3>
-                                                            <button type="button" className="shaper-pane-close" onClick={() => togglePanel('grid')}>
-                                                                <X size={14} />
-                                                            </button>
+                                                            <div className="shaper-pane-actions">
+                                                                <button
+                                                                    type="button"
+                                                                    className={`shaper-grid-inspector-toggle${showInspector ? ' active' : ''}`}
+                                                                    onClick={toggleInspector}
+                                                                    title={showInspector ? 'Hide Room Inspector' : 'Show Room Inspector'}
+                                                                    aria-pressed={showInspector}
+                                                                >
+                                                                    <PanelRight size={14} />
+                                                                    <span>Inspector</span>
+                                                                </button>
+                                                                <button type="button" className="shaper-pane-close" onClick={() => togglePanel('grid')}>
+                                                                    <X size={14} />
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                         <div className="shaper-pane-content" style={{ padding: 0 }}>
                                                             <ShaperCanvas
@@ -538,7 +560,9 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                                 });
                             })()}
                         </main>
-                        <div 
+                        {showInspector && (
+                        <>
+                        <div
                             className={`shaper-inspector-resize-handle ${isResizing ? 'resizing' : ''}`}
                             onMouseDown={handleMouseDown}
                         />
@@ -568,6 +592,7 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                                 issues={workspace.selectedIssues}
                                 selectionCount={workspace.selectedRoomIds.size}
                                 onUpdateRoom={workspace.updateRoom}
+                                onMoveRoomToLayer={workspace.moveRoomToLayer}
                                 onAddAnnotation={workspace.addAnnotation}
                                 onRemoveAnnotation={workspace.removeAnnotation}
                                 onAddMob={workspace.addMob}
@@ -594,7 +619,13 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                                 isImporting={workspace.liveImportStatus.running}
                                 isConnected={isConnected}
                                 focusEntity={focusEntity}
+                                onClose={() => {
+                                    setShowInspector(false);
+                                    localStorage.setItem('shaper-show-inspector', 'false');
+                                }}
                             />
+                        )}
+                        </>
                         )}
                         {showGameLog && (
                             <>
@@ -626,7 +657,7 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                         selectedRoomId={selectedRoomId}
                         rooms={activeDoc.rooms}
                         onSelectRoom={workspace.selectRoom}
-                        onStartDeploy={() => deploy.start(deployPreview.commands)}
+                        onStartDeploy={commands => deploy.start(commands)}
                         zoneDeployCommands={zoneDeployPreview.commands}
                         onStartZoneDeploy={() => deploy.start(zoneDeployPreview.commands)}
                         onAbortDeploy={deploy.abort}
