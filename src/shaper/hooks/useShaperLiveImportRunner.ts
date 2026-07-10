@@ -38,16 +38,40 @@ const toMumeRoom = (roomNumber: string): string => {
     return room !== undefined && /^\d+$/.test(room) ? `${zone}:${Number(room)}` : roomNumber;
 };
 
-export const buildShaperRoomLiveImportCommands = (roomNumber: string): string[] => {
+export const buildShaperRoomLiveImportCommands = (
+    roomNumber: string,
+    includeResetReads = true
+): string[] => {
     const mume = toMumeRoom(roomNumber);
-    return [
-        // `full` is required: the short `/stat room` output omits the
-        // Description block, so the room description never imports without it.
-        `/at ${mume} /stat room full`,
-        `/at ${mume} /com list`,
-        `/lib room ${mume} list`
+    const commands = [
+        // `/stat room <n> full` is an Mc-level read that targets a room by number
+        // without the `/at` teleport (which also avoids its <movement/> noise).
+        // `full` is required or the Description block is omitted.
+        `/stat room ${mume} full`
     ];
+    if (includeResetReads) {
+        // `/com` and `/lib` are Mb-phase commands. Mc builders (in the
+        // room-building phase) don't have them yet — and have no reset/library
+        // data to read anyway — so these are attempted best-effort and dropped
+        // for the rest of the run once MUME refuses them. See isResetReadDenied.
+        commands.push(`/at ${mume} /com list`);
+        commands.push(`/lib room ${mume} list`);
+    }
+    return commands;
 };
+
+// True for the Mb-only reset/library reads whose refusal should degrade the run.
+const RESET_READ_COMMAND = /\/com\s+list\b|\/lib\s+room\b/i;
+
+// MUME rejects commands above the player's builder level. Detect that refusal so
+// a single probe is enough to stop re-sending Mb-only reads for the whole run.
+// These patterns only ever appear in a refusal, never in real /com or /lib data.
+export const isResetReadDenied = (output: string): boolean =>
+    /\bhuh\?/i.test(output) ||
+    /you (?:do not|don't) have (?:access|permission)/i.test(output) ||
+    /you (?:can'?t|cannot|are not allowed|may not)/i.test(output) ||
+    /permission denied/i.test(output) ||
+    /not a (?:known|valid) command/i.test(output);
 
 export const buildShaperZoneInfoListCommand = (zoneNumber: number): string =>
     `/info zone ${zoneNumber} list`;
@@ -85,6 +109,11 @@ export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveI
     });
     const [keywordOptions, setKeywordOptions] = useState<string[]>([]);
     const runningRef = useRef(false);
+    // Whether the Mb-only /com and /lib reads are still worth sending this run.
+    // Flips false on the first refusal (Mc-level account) so the rest of the run
+    // reads rooms only. `resetDeniedRef` records that it happened for the summary.
+    const resetReadsAvailableRef = useRef(true);
+    const resetDeniedRef = useRef(false);
 
     const runCommand = useCallback(async (command: string) => {
         const waiter = useShaperLiveImportStore.getState().waitForCommand(command);
@@ -104,10 +133,20 @@ export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveI
         let failures = 0;
         let nextDoc = startDoc;
         for (const roomNumber of roomNumbers) {
-            for (const command of buildShaperRoomLiveImportCommands(roomNumber)) {
+            const roomCommands = buildShaperRoomLiveImportCommands(roomNumber, resetReadsAvailableRef.current);
+            for (const command of roomCommands) {
                 setStatus({ running: true, label: command, completed, total, error: null });
                 try {
                     const result = await runCommand(command);
+                    if (RESET_READ_COMMAND.test(command) && isResetReadDenied(result.output)) {
+                        // This account lacks Mb access: stop reading /com and /lib
+                        // for the rest of the run and don't apply the refusal text.
+                        resetReadsAvailableRef.current = false;
+                        resetDeniedRef.current = true;
+                        completed += 1;
+                        setStatus({ running: true, label: command, completed, total, error: null });
+                        break;
+                    }
                     nextDoc = applyShaperLiveTranscript(nextDoc, `${command}\n${result.output}`).doc;
                     setDoc(persist(nextDoc));
                 } catch (commandError) {
@@ -157,6 +196,9 @@ export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveI
     ) => {
         if (runningRef.current) return;
         runningRef.current = true;
+        // Re-probe Mb access on every fresh run.
+        resetReadsAvailableRef.current = true;
+        resetDeniedRef.current = false;
         useShaperLiveImportStore.getState().clearWaiters();
         // Suppress raw output display and route lines through the import collector.
         useShaperLiveImportStore.getState().setImporting(true);
@@ -175,12 +217,14 @@ export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveI
 
     // Whole-zone import: discover rooms via the build list, then read each.
     const start = useCallback((doc: ShaperWorkspaceDoc) => runImport(async () => {
-        setStatus({ running: true, label: 'Reading build list', completed: 0, total: 0, error: null });
-        const buildList = await runCommand(`/misc build ${doc.zoneNumber} list`);
-        const roomNumbers = parseShaperBuildListRooms(buildList.output, doc.zoneNumber);
+        setStatus({ running: true, label: 'Reading zone room list', completed: 0, total: 0, error: null });
+        // `/zone <n> list` is Mc-level and lists every room in the zone, so it
+        // works for room-phase builders who don't yet have the Mb `/misc` command.
+        const zoneList = await runCommand(`/zone ${doc.zoneNumber} list`);
+        const roomNumbers = parseShaperBuildListRooms(zoneList.output, doc.zoneNumber);
         if (roomNumbers.length === 0) {
-            const snippet = buildList.output.replace(/\s+/g, ' ').trim().slice(0, 80);
-            throw new Error(`No rooms found for zone ${doc.zoneNumber} (captured ${buildList.output.length} chars: "${snippet}").`);
+            const snippet = zoneList.output.replace(/\s+/g, ' ').trim().slice(0, 80);
+            throw new Error(`No rooms found for zone ${doc.zoneNumber} (captured ${zoneList.output.length} chars: "${snippet}").`);
         }
         let discoveryFailures = 0;
         setStatus({ running: true, label: 'Reading zone keyword list', completed: 0, total: 0, error: null });
@@ -228,10 +272,11 @@ export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveI
             setStatus({ running: true, label: 'Finalizing live import', completed, total, error: null });
         }
         const allFailures = discoveryFailures + readFailures + keywordResult.failures;
+        // Mc-level accounts import rooms only; note that resets/libraries were skipped.
+        const resetNote = resetDeniedRef.current ? ' — rooms only (/com and /lib need Mb access)' : '';
+        const skippedNote = allFailures > 0 ? ` (${allFailures} reads skipped)` : '';
         return {
-            label: allFailures > 0
-                ? `Imported ${importedRoomNumbers.size} rooms and ${keywords.length} keywords (${allFailures} reads skipped)`
-                : `Imported ${importedRoomNumbers.size} rooms and ${keywords.length} keywords`,
+            label: `Imported ${importedRoomNumbers.size} rooms and ${keywords.length} keywords${skippedNote}${resetNote}`,
             completed: total,
             total
         };

@@ -45,6 +45,54 @@
     letter-spacing: 0;
 }
 
+.shaper-topbar-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 2px 0 0;
+    font-size: 22px;
+    letter-spacing: 0;
+}
+
+.shaper-topbar-name {
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.shaper-topbar-edit-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    padding: 3px;
+    border-radius: 4px;
+    cursor: pointer;
+    min-height: unset !important;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.shaper-topbar-edit-icon:hover {
+    color: #f0b45b !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.shaper-topbar-zone-info {
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px;
+    font-weight: normal;
+    color: #aab7c4;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 3px 10px;
+    margin-left: 8px;
+}
+
 .shaper-topbar-status {
     display: flex;
     align-items: center;
@@ -60,6 +108,36 @@
     min-height: 32px;
     cursor: pointer;
     font: inherit;
+}
+
+.shaper-topbar button {
+    padding: 0 12px;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.shaper-topbar button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.shaper-topbar button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.shaper-topbar button.active {
+    background: rgba(240, 180, 91, 0.15) !important;
+    border-color: #f0b45b !important;
+    color: #f0b45b !important;
+}
+
+.shaper-topbar-icon-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
 }
 
 .shaper-main {

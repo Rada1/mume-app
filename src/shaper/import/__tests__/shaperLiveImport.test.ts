@@ -466,6 +466,27 @@ West   31: 2, flags: none
         expect(result.doc.exits[`${room?.id}:w`]).toMatchObject({ toRoomId: westTarget?.id, direction: 'w' });
     });
 
+    it('imports the Mc-level bare `/stat room <n> full` form (no /at teleport)', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 31 });
+        const result = applyShaperLiveTranscript(doc, `
+/stat room 31:8 full
+Room 31:8 (3108) - on a@Jagged Crag
+Magical key: none, Owner: none, Sector: hills, MapId: 42
+Room permanent flags: BUILD
+Extra description keywords: none
+----- Exits -----
+West   31: 2, flags: none
+`, 1234);
+
+        const room = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:08');
+        expect(room?.name).toBe('Jagged Crag');
+        expect(room?.preposition).toBe('on a');
+        expect(room?.sector).toBe('hills');
+        expect(room?.mapId).toBe('42');
+        const westTarget = Object.values(result.doc.rooms).find(item => item.roomNumber === '31:02');
+        expect(result.doc.exits[`${room?.id}:w`]).toMatchObject({ toRoomId: westTarget?.id, direction: 'w' });
+    });
+
     it('replaces stale concept-grid exits with live /stat room exit rows', () => {
         const doc = createDefaultShaperDocument({ zoneNumber: 31 });
         const room = Object.values(doc.rooms).find(item => item.roomNumber === '31:50');

@@ -11,6 +11,12 @@ import { generateShaperObjectsReport } from '../model/shaperObjectsKeyword';
 import { useShaperEntityStore } from '../model/useShaperEntityStore';
 import './ShaperZoneInfoPanel.css';
 
+// Pacing for the auto-stat sweep that precedes a mobs/objects report so the
+// generated level/type data is correct instead of defaulting to level 0 / OTHER.
+const STAT_FETCH_PACE_MS = 500;
+const STAT_FETCH_MAX_WAIT_MS = 20000;
+const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
+
 interface ShaperZoneInfoPanelProps {
     doc: ShaperWorkspaceDoc;
     viewZ: number;
@@ -89,6 +95,10 @@ export const ShaperZoneInfoPanel: React.FC<ShaperZoneInfoPanelProps> = ({
     // Form states
     const [formKeyword, setFormKeyword] = useState('');
     const [formBody, setFormBody] = useState('');
+
+    // Tracks an in-progress auto-stat sweep for the mobs/objects report buttons.
+    const [generatingKind, setGeneratingKind] = useState<null | 'mobs' | 'objects'>(null);
+    const [statProgress, setStatProgress] = useState<{ done: number; total: number } | null>(null);
 
     const keywordsList = useMemo(() => {
         return Object.values(doc.zoneInfoKeywords ?? {}).sort((a, b) =>
@@ -186,6 +196,61 @@ export const ShaperZoneInfoPanel: React.FC<ShaperZoneInfoPanelProps> = ({
             setFormKeyword(selectedItem.keyword);
             setFormBody(selectedItem.body);
         }
+    };
+
+    // Generate a mobs/objects report, first `/stat`-ing any entities we don't yet
+    // have cached so the report carries real level/type data (rather than
+    // defaulting mobs to level 0 and objects to OTHER). Falls back to generating
+    // with whatever is cached when offline or after the fetch times out.
+    const generateReportWithStats = async (kind: 'mobs' | 'objects', item: ShaperZoneInfoKeyword) => {
+        if (generatingKind) return;
+        const isMobs = kind === 'mobs';
+        const vnums = isMobs ? uniqueMobVnums : uniqueObjVnums;
+        const cacheFor = (vnum: number) => (isMobs
+            ? useShaperEntityStore.getState().mobileStats
+            : useShaperEntityStore.getState().objectStats)[vnum];
+        const loadStat = isMobs ? loadMobileStats : loadObjectStats;
+        const remainingVnums = () => vnums.filter(vnum => !cacheFor(vnum));
+
+        const emitReport = () => {
+            const reportText = isMobs ? generateShaperMobsReport(doc) : generateShaperObjectsReport(doc);
+            startEdit(item);
+            setFormBody(reportText);
+        };
+
+        const missing = remainingVnums();
+        // Offline, or everything is already cached: generate immediately.
+        if (!isConnected || missing.length === 0) {
+            emitReport();
+            return;
+        }
+
+        setGeneratingKind(kind);
+        setStatProgress({ done: vnums.length - missing.length, total: vnums.length });
+        try {
+            // Fire a /stat for each missing entity, paced to avoid flooding the MUD.
+            for (const vnum of missing) {
+                loadStat(vnum);
+                await sleep(STAT_FETCH_PACE_MS);
+            }
+            // Wait for the results to land (or time out), updating the progress label.
+            const deadline = Date.now() + STAT_FETCH_MAX_WAIT_MS;
+            while (Date.now() < deadline) {
+                const remaining = remainingVnums();
+                setStatProgress({ done: vnums.length - remaining.length, total: vnums.length });
+                if (remaining.length === 0) break;
+                await sleep(200);
+            }
+        } finally {
+            emitReport();
+            setGeneratingKind(null);
+            setStatProgress(null);
+        }
+    };
+
+    const generateButtonLabel = (kind: 'mobs' | 'objects'): string => {
+        if (generatingKind !== kind) return 'Generate from Grid';
+        return statProgress ? `Statting… ${statProgress.done}/${statProgress.total}` : 'Generating…';
     };
 
     return (
@@ -368,13 +433,11 @@ export const ShaperZoneInfoPanel: React.FC<ShaperZoneInfoPanelProps> = ({
                                             <button
                                                 type="button"
                                                 className="shaper-btn shaper-btn-primary"
-                                                onClick={() => {
-                                                    const reportText = generateShaperMobsReport(doc);
-                                                    startEdit(selectedItem);
-                                                    setFormBody(reportText);
-                                                }}
+                                                disabled={generatingKind !== null}
+                                                onClick={() => generateReportWithStats('mobs', selectedItem)}
+                                                title={isConnected ? 'Auto-/stat mobiles for correct levels, then generate' : 'Generate from cached data (connect to auto-/stat)'}
                                             >
-                                                Generate from Grid
+                                                {generateButtonLabel('mobs')}
                                             </button>
                                         </>
                                     )}
@@ -401,13 +464,11 @@ export const ShaperZoneInfoPanel: React.FC<ShaperZoneInfoPanelProps> = ({
                                             <button
                                                 type="button"
                                                 className="shaper-btn shaper-btn-primary"
-                                                onClick={() => {
-                                                    const reportText = generateShaperObjectsReport(doc);
-                                                    startEdit(selectedItem);
-                                                    setFormBody(reportText);
-                                                }}
+                                                disabled={generatingKind !== null}
+                                                onClick={() => generateReportWithStats('objects', selectedItem)}
+                                                title={isConnected ? 'Auto-/stat objects for herb/plant/food/equipment types, then generate' : 'Generate from cached data (connect to auto-/stat)'}
                                             >
-                                                Generate from Grid
+                                                {generateButtonLabel('objects')}
                                             </button>
                                         </>
                                     )}

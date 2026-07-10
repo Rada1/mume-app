@@ -687,7 +687,10 @@ export const applyShaperLiveTranscript = (
             return;
         }
 
-        const statCommand = block.command.match(/^\/at\s+(\S+)\s+\/stat\s+room(?:\s+full)?/i);
+        // Live reads use the Mc-level `/stat room <n> full`; older transcripts (and
+        // Mb `/at` runs) use `/at <room> /stat room full`. Accept both.
+        const statCommand = block.command.match(/^\/at\s+(\S+)\s+\/stat\s+room(?:\s+full)?/i)
+            ?? block.command.match(/^\/stat\s+room\s+(\d+(?::\d+)?)(?:\s+full)?/i);
         // Live reads send `/at <room> /com list -com`; the `/com room …` form is
         // also accepted for older transcripts. The `-com`/`-commands` flag and the
         // padded/unpadded room id (`31:0` vs `31:00`) are both tolerated.

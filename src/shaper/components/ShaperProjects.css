@@ -64,6 +64,43 @@
     gap: 4px;
     padding: 12px;
     text-align: left;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #eef2f6;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.shaper-project-open:hover {
+    border-color: #f0b45b;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.shaper-project-open strong,
+.shaper-project-zone-info {
+    display: inline-flex;
+    align-items: center;
+}
+
+.shaper-edit-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    padding: 2px;
+    margin-left: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    vertical-align: middle;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.shaper-edit-icon-btn:hover {
+    color: #f0b45b !important;
+    background: rgba(255, 255, 255, 0.08) !important;
 }
 
 .shaper-project-actions {
@@ -79,40 +116,18 @@
     min-height: 32px;
 }
 
-.shaper-open-shared-heading {
+.shaper-import-heading {
     margin-top: 22px !important;
     padding-top: 16px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.shaper-sync-warning {
-    margin: 0 0 12px;
-    padding: 8px 10px;
-    border: 1px solid rgba(240, 180, 91, 0.4);
-    border-radius: 6px;
-    background: rgba(240, 180, 91, 0.1);
-    color: #f0b45b !important;
-    font-size: 12px;
-    line-height: 1.4;
-}
-
-.shaper-sync-warning code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 11px;
 }
 
 .shaper-file-input {
     display: none;
 }
 
-.shaper-project-open:hover,
 .shaper-project-create button:hover {
     border-color: #f0b45b;
-}
-
-.shaper-project-rename:hover {
-    border-color: #3b82f6;
-    color: #eff6ff;
 }
 
 .shaper-project-delete:hover {
@@ -125,20 +140,7 @@
     color: #aab7c4;
 }
 
-.shaper-project-shared-tag {
-    display: inline-block;
-    margin-left: 8px;
-    padding: 2px 7px;
-    border: 1px solid rgba(240, 180, 91, 0.4);
-    border-radius: 6px;
-    background: rgba(240, 180, 91, 0.12);
-    color: #f0b45b !important;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    vertical-align: middle;
-}
+
 
 @media (max-width: 860px) {
     .shaper-project-dashboard {

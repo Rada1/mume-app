@@ -563,7 +563,10 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                         let wearFlags: string[] = [];
 
                         for (const l of lines) {
-                            const typeMatch = l.text.match(/Type:\s*(?:\[([^\]]+)\]|([^,\n]+))/i);
+                            // MUME prints the object type as "Item type: FOOD"; keep
+                            // the looser "Type:" form as a fallback for other outputs.
+                            const typeMatch = l.text.match(/\bItem type:\s*(?:\[([^\]]+)\]|([^,\n]+))/i)
+                                || l.text.match(/\bType:\s*(?:\[([^\]]+)\]|([^,\n]+))/i);
                             if (typeMatch) objType = (typeMatch[1] || typeMatch[2]).trim();
 
                             const extraMatch = l.text.match(/Extra flags:\s*(?:\[([^\]]+)\]|([^,\n]+))/i);
@@ -574,8 +577,19 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                                 }
                             }
 
+                            // MUME prints wear locations as "Can be worn on: take legs"
+                            // — this is the definitive source for the TAKE flag and
+                            // wear slots. Fall back to the older "Wear flags:" label.
+                            const wornMatch = l.text.match(/Can be worn on:\s*([^\n]+)/i);
+                            if (wornMatch) {
+                                const wornText = wornMatch[1].trim();
+                                if (wornText && !/^(none|nothing)$/i.test(wornText)) {
+                                    wearFlags = wornText.split(/[\s,]+/).map(f => f.trim()).filter(Boolean);
+                                }
+                            }
+
                             const wearMatch = l.text.match(/Wear flags:\s*(?:\[([^\]]+)\]|([^.\n]+))/i);
-                            if (wearMatch) {
+                            if (wearMatch && wearFlags.length === 0) {
                                 const flagsText = (wearMatch[1] || wearMatch[2]).trim();
                                 if (flagsText.toLowerCase() !== 'none') {
                                     wearFlags = flagsText.split(/[\s,]+/).map(f => f.trim()).filter(Boolean);

@@ -4,7 +4,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PanelRight, X } from 'lucide-react';
-import { readShareCodeFromHash, useShaperSharedProjects } from '../collaboration/shaperSharedProjects';
+
 import { useShaperWorkspace } from '../hooks/useShaperWorkspace';
 import { useShaperDeployQueue } from '../hooks/useShaperDeployQueue';
 import { useShaperKeyboardUndo } from '../hooks/useShaperKeyboardUndo';
@@ -49,7 +49,7 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
     const { executeCommand } = useGame();
     const workspace = useShaperWorkspace({ sendCommand: executeCommand });
     const activeDoc = workspace.doc;
-    const { pullProject } = useShaperSharedProjects(workspace.openProject);
+
     
     const [openPanels, setOpenPanels] = useState<Record<string, boolean>>(() => {
         const saved = localStorage.getItem('shaper-open-panels');
@@ -237,15 +237,7 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
         };
     }, [isResizingGameLog]);
 
-    const hashHandledRef = useRef(false);
-    useEffect(() => {
-        if (hashHandledRef.current) return;
-        const code = readShareCodeFromHash();
-        if (!code) return;
-        hashHandledRef.current = true;
-        pullProject(code, () =>
-            window.alert('Could not load the shared project from the link. The relay may be offline or the project was unshared.'));
-    }, [pullProject]);
+
     // 2+ rooms selected → "Send Room to MUME" pushes every selected room.
     const isMultiRoomDeploy = workspace.selectedRoomIds.size > 1;
     const deployPreview = activeDoc
@@ -284,6 +276,13 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
         if (!Number.isInteger(parsedZone) || parsedZone < 0) window.alert('Zone number must be a non-negative whole number.');
         else if (parsedZone !== activeDoc.zoneNumber) workspace.changeProjectZone(activeDoc.id, parsedZone);
     };
+    const renameActiveProject = () => {
+        if (!activeDoc) return;
+        const newName = window.prompt(`Rename project "${activeDoc.name}" to:`, activeDoc.name);
+        if (newName && newName.trim() && newName.trim() !== activeDoc.name) {
+            workspace.renameProject(activeDoc.id, newName.trim());
+        }
+    };
     const toggleInspector = () => {
         const next = !showInspector;
         setShowInspector(next);
@@ -298,6 +297,7 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                 onProjects={workspace.closeProject}
                 onUndo={workspace.undo}
                 onChangeZone={changeActiveZone}
+                onRenameProject={renameActiveProject}
                 onImportLiveRead={workspace.startLiveImport}
                 liveImportStatus={workspace.liveImportStatus}
                 showGameLog={showGameLog}
@@ -313,9 +313,6 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                     projects={workspace.projects}
                     onCreateProject={workspace.createProject}
                     onOpenProject={workspace.openProject}
-                    onPullProject={pullProject}
-                    onShareProject={workspace.shareProject}
-                    onUnshareProject={workspace.unshareProject}
                     onDeleteProject={workspace.deleteProject}
                     onRenameProject={workspace.renameProject}
                     onChangeProjectZone={workspace.changeProjectZone}

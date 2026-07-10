@@ -13,6 +13,7 @@ const commandPatterns = [
     /^\/zone\s+\d+\s+list\b/i,
     /^\/info\s+(?:z|zone)\s+\d+\s+\S+/i,
     /^\/at\s+\S+\s+\/stat\s+room(?:\s+full)?\b/i,
+    /^\/stat\s+room\s+\d+(?::\d+)?(?:\s+full)?\b/i,
     /^\/com\s+room\s+\S+\s+list\b/i,
     /^\/at\s+\S+\s+\/com\s+list\b/i,
     /^\/com\s+list\b/i,

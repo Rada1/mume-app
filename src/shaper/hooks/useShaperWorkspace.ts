@@ -28,7 +28,7 @@ import {
 } from '../model/shaperProjectStore';
 import { downloadShaperProjectFile, parseShaperProjectFile } from '../model/shaperProjectFiles';
 import { changeShaperProjectZone } from '../model/shaperProjectZone';
-import { publishRawSocketMessage } from '../model/shaperProjectSync';
+
 import { validateShaperDocument } from '../model/shaperValidation';
 import { useShaperComActions } from './useShaperComActions';
 import { useShaperEntityActions } from './useShaperEntityActions';
@@ -149,20 +149,7 @@ export const useShaperWorkspace = ({ sendCommand }: ShaperWorkspaceOptions) => {
         setDoc(loadedDoc);
     };
     const closeProject = () => setDoc(null);
-    const setProjectShared = (projectId: string, shared: boolean) => {
-        setDoc(current => {
-            const target = current?.id === projectId ? current : loadShaperProject(projectId);
-            if (!target) return current;
-            const nextTarget = { ...target, shared };
-            saveShaperProject(nextTarget);
-            if (!shared) publishRawSocketMessage({ type: 'project-unshare', projectId });
-            setProjects(listShaperProjects());
-            return current?.id === projectId ? nextTarget : current;
-        });
-    };
 
-    const shareProject = (projectId: string) => setProjectShared(projectId, true);
-    const unshareProject = (projectId: string) => setProjectShared(projectId, false);
     const selectRoom = (roomId: ShaperRoomId) => {
         setSelectedConnection(null);
         setSelectedConnectionIds(new Set());
@@ -291,8 +278,7 @@ export const useShaperWorkspace = ({ sendCommand }: ShaperWorkspaceOptions) => {
         startRoomLiveImport: (roomNumber: string) => { if (doc) void liveImport.startRoom(doc, roomNumber); },
         startKeywordLiveImport: (keyword: string) => { if (doc) void liveImport.startKeyword(doc, keyword); },
         startKeywordListLiveImport: () => { if (doc) void liveImport.startKeywordList(doc); },
-        shareProject,
-        unshareProject,
+
         closeProject,
         selectRoom,
         toggleSelectRoom,

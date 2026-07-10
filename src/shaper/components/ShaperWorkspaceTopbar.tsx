@@ -3,7 +3,7 @@
  * @description Header controls for the Shaper workspace shell.
  */
 
-import { Undo2, X, Terminal } from 'lucide-react';
+import { Undo2, X, Terminal, Pencil } from 'lucide-react';
 import type { ShaperLiveImportStatus } from '../hooks/useShaperLiveImportRunner';
 import type { ShaperWorkspaceDoc } from '../model/shaperTypes';
 
@@ -14,6 +14,7 @@ interface ShaperWorkspaceTopbarProps {
     onProjects: () => void;
     onUndo: () => void;
     onChangeZone: () => void;
+    onRenameProject: () => void;
     onImportLiveRead: () => void;
     liveImportStatus: ShaperLiveImportStatus;
     showGameLog: boolean;
@@ -29,6 +30,7 @@ export const ShaperWorkspaceTopbar: React.FC<ShaperWorkspaceTopbarProps> = ({
     onProjects,
     onUndo,
     onChangeZone,
+    onRenameProject,
     onImportLiveRead,
     liveImportStatus,
     showGameLog,
@@ -39,12 +41,47 @@ export const ShaperWorkspaceTopbar: React.FC<ShaperWorkspaceTopbarProps> = ({
         <header className="shaper-topbar">
             <div>
                 <span className="shaper-kicker">Builder Workspace</span>
-                <h1>Shaper Mode</h1>
+                {activeDoc ? (
+                    <h1 className="shaper-topbar-title">
+                        <span className="shaper-topbar-name">{activeDoc.name}</span>
+                        <button
+                            type="button"
+                            className="shaper-topbar-edit-icon"
+                            onClick={onRenameProject}
+                            title="Rename project"
+                        >
+                            <Pencil size={12} />
+                        </button>
+                        <span className="shaper-topbar-zone-info">
+                            Zone {activeDoc.zoneNumber}
+                            <button
+                                type="button"
+                                className="shaper-topbar-edit-icon"
+                                style={{ marginLeft: '4px' }}
+                                onClick={onChangeZone}
+                                title="Change zone number"
+                            >
+                                <Pencil size={10} />
+                            </button>
+                        </span>
+                    </h1>
+                ) : (
+                    <h1>Shaper Mode</h1>
+                )}
             </div>
             <div className="shaper-topbar-status">
                 {activeDoc && <button type="button" onClick={onProjects}>Projects</button>}
-                {activeDoc && <button type="button" onClick={onUndo} disabled={!canUndo} title="Undo (Ctrl+Z)"><Undo2 size={16} /></button>}
-                {activeDoc && <button type="button" onClick={onChangeZone}>Zone {activeDoc.zoneNumber}</button>}
+                {activeDoc && (
+                    <button
+                        type="button"
+                        onClick={onUndo}
+                        disabled={!canUndo}
+                        className="shaper-topbar-icon-btn"
+                        title="Undo (Ctrl+Z)"
+                    >
+                        <Undo2 size={18} />
+                    </button>
+                )}
                 {activeDoc && <button type="button" onClick={onImportLiveRead} disabled={liveImportStatus.running}>Import Zone from MUME</button>}
                 {activeDoc && liveImportStatus.running && <span>{liveImportStatus.completed}/{liveImportStatus.total || '?'}</span>}
                 {activeDoc && liveImportStatus.error && <span>{liveImportStatus.error}</span>}
@@ -53,14 +90,13 @@ export const ShaperWorkspaceTopbar: React.FC<ShaperWorkspaceTopbarProps> = ({
                     <button 
                         type="button" 
                         onClick={onToggleGameLog} 
-                        className={showGameLog ? 'active' : ''} 
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px' }}
+                        className={`shaper-topbar-icon-btn ${showGameLog ? 'active' : ''}`} 
                         title="Toggle MUD Log"
                     >
-                        <Terminal size={16} className={showGameLog ? 'text-amber-400' : ''} />
+                        <Terminal size={18} className={showGameLog ? 'text-amber-400' : ''} />
                     </button>
                 )}
-                <button type="button" onClick={onClose} title="Close Shaper">
+                <button type="button" onClick={onClose} className="shaper-topbar-icon-btn" title="Close Shaper">
                     <X size={18} />
                 </button>
             </div>
