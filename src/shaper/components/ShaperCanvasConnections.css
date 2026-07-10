@@ -93,6 +93,15 @@
     stroke-linecap: round;
 }
 
+.shaper-connection-hint {
+    stroke: rgba(226, 232, 240, 0.62);
+    stroke-width: 3px;
+    stroke-dasharray: 4 7;
+    stroke-linecap: round;
+    fill: none;
+    pointer-events: none;
+}
+
 .shaper-connection-group:hover .shaper-connection-line {
     opacity: 1;
     stroke: #60a5fa;

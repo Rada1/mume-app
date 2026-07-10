@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Merriweather:ital,wght@0,300..900;1,300..900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Inconsolata:wght@200..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Mono:ital,wght@0,100..700;1,100..700&family=Anonymous+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Merriweather:ital,wght@0,300..900;1,300..900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Inconsolata:wght@200..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Mono:ital,wght@0,100..700;1,100..700&family=Anonymous+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.cdnfonts.com/css/aniron');
 @import url('https://fonts.cdnfonts.com/css/google-sans');
 @import url('https://cdn.jsdelivr.net/npm/@fontsource/iosevka@5/400.css');
@@ -678,32 +678,34 @@
 }
 
 .login-btn {
-    background: linear-gradient(135deg, #c99738 0%, #b3832b 100%);
-    border: 1px solid #c99738;
-    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(232, 176, 32, 0.16);
+    border: 1px solid rgba(232, 176, 32, 0.5);
+    border-radius: 7px;
     padding: 0 24px;
     height: 38px;
-    color: #fff;
-    font-family: var(--font-title);
-    font-weight: 800;
-    font-size: 0.95rem;
+    color: #e8b020;
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
     cursor: pointer;
     flex-shrink: 0;
     margin-right: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-    letter-spacing: 1px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
+    transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease, transform 0.1s ease;
 }
 
 .login-btn:hover {
-    background: linear-gradient(135deg, #ffd700 0%, #c99738 100%);
-    border-color: #ffd700;
-    box-shadow: 0 0 12px rgba(255, 215, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.35);
-    transform: scale(1.02);
+    background: rgba(232, 176, 32, 0.24);
+    border-color: rgba(232, 176, 32, 0.7);
+    color: #ffe6a3;
 }
 
 .login-btn:active {
-    transform: scale(0.97);
+    transform: translateY(1px);
 }
 
 

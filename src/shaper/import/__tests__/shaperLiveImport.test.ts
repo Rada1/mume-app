@@ -418,12 +418,12 @@ Commands on room 31:50 (hills by a watchtower):
         expect(commands[1]).toMatchObject({
             type: 'put',
             parentId: commands[0].id,
-            fields: { vnum: '2090', name: 'a fishing net' }
+            fields: { vnum: '2090', name: 'a fishing net', container: '6042', containerName: 'crate' }
         });
         expect(commands[2]).toMatchObject({
             type: 'follow',
             parentId: null,
-            fields: { vnum: '3800', name: 'a small termite' }
+            fields: { vnum: '3800', name: 'a small termite', master: '3801', masterName: 'termite' }
         });
     });
 

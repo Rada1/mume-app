@@ -146,6 +146,50 @@
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.shaper-entity-edit-grid {
+    display: grid;
+    grid-template-columns: minmax(90px, 0.45fr) minmax(160px, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+    padding: 0 4px;
+}
+
+.shaper-entity-edit-grid label {
+    display: grid;
+    gap: 3px;
+    color: #aab7c4;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* Match the vnum/name inputs to the dark inspector field styling instead of the
+   browser default white boxes. */
+.shaper-entity-edit-grid input,
+.shaper-entity-edit-grid .shaper-entity-name-input {
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 6px;
+    background: #0e0e0e;
+    color: #eef2f6;
+    padding: 8px 9px;
+    font: inherit;
+    font-size: 12px;
+}
+
+.shaper-entity-edit-grid input::placeholder {
+    color: #6b7688;
+}
+
+.shaper-entity-edit-grid input:focus {
+    outline: none;
+    border-color: rgba(240, 180, 91, 0.5);
+    background: #14181d;
+}
+
 .shaper-entity-libraries {
     display: grid;
     gap: 6px;

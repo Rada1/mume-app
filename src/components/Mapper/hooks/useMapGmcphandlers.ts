@@ -9,6 +9,7 @@ import { useRoomInfoHandler } from './useRoomInfoHandler';
 import { useUpdateExitsHandler } from './useUpdateExitsHandler';
 import { useTerrainHandler } from './useTerrainHandler';
 import { DIRS, getExitTargetId } from '../mapperUtils';
+import { formatMovementArrow, normalizeMovementDirection } from '../../../utils/movementDirections';
 
 interface UseMapGmcphandlersProps {
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
@@ -42,27 +43,13 @@ interface UseMapGmcphandlersProps {
 }
 
 // --- Logic Section ---
-const dirShortNames: Record<string, string> = {
-    north: 'n',
-    south: 's',
-    east: 'e',
-    west: 'w',
-    up: 'u',
-    down: 'd',
-    northeast: 'ne',
-    northwest: 'nw',
-    southeast: 'se',
-    southwest: 'sw'
-};
-
 const normalizeMoveDir = (dir: string | null | undefined): string | null => {
-    if (!dir) return null;
-    const normalized = dir.trim().toLowerCase();
-    return dirShortNames[normalized] || normalized;
+    return normalizeMovementDirection(dir);
 };
 
 export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
     const lastXmlMovementRef = useRef<{ dir: string | null; time: number } | null>(null);
+    const lastMovementLogRef = useRef<{ dir: string; time: number } | null>(null);
     // Set by the GMCP room-info handler whenever it authoritatively consumes a queued
     // move. The XML/text move-confirmed handler checks this to avoid a redundant second
     // consume of the same physical move (lit rooms fire BOTH a GMCP and an XML event).
@@ -70,6 +57,20 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
 
     const pushPendingMove = (dir: string) => {
         props.pendingMovesRef.current.push({ dir, time: Date.now() });
+    };
+
+    const emitMovementLog = (dir: string | null | undefined) => {
+        const normalized = normalizeMovementDirection(dir);
+        const arrow = formatMovementArrow(normalized);
+        if (!arrow) return;
+
+        const now = Date.now();
+        if (lastMovementLogRef.current?.dir === arrow && now - lastMovementLogRef.current.time < 500) {
+            return;
+        }
+
+        lastMovementLogRef.current = { dir: arrow, time: now };
+        props.addMessage?.('movement', normalized || arrow);
     };
 
     const handleMoveConfirmed = (e?: any) => {
@@ -191,6 +192,10 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
             props.pendingMovesRef.current.shift();
         }
 
+        if (confirmedDir) {
+            emitMovementLog(confirmedDir);
+        }
+
         // Pass the dead-reckoned targetId (if any) — NOT currentRoomIdRef.current, which is
         // stale here because setCurrentRoomId above is async and the ref hasn't synced yet.
         // For non-dead-reckoned events (plain text room-name match), pass null so the reconciler
@@ -222,6 +227,7 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         triggerRender: props.triggerRender,
         onRoomInfoProcessed: props.onRoomInfoProcessed,
         onFirstVisitLoadFlag: props.onFirstVisitLoadFlag,
+        onMoveConfirmed: emitMovementLog,
         addMessage: props.addMessage,
         showDebugEchoes: props.showDebugEchoes,
         preMoveRef: props.preMoveRef,

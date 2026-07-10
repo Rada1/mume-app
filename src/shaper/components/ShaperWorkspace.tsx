@@ -4,7 +4,6 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PanelRight, X } from 'lucide-react';
-import { useShaperPresence } from '../collaboration/shaperPresence';
 import { readShareCodeFromHash, useShaperSharedProjects } from '../collaboration/shaperSharedProjects';
 import { useShaperWorkspace } from '../hooks/useShaperWorkspace';
 import { useShaperDeployQueue } from '../hooks/useShaperDeployQueue';
@@ -50,7 +49,6 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
     const { executeCommand } = useGame();
     const workspace = useShaperWorkspace({ sendCommand: executeCommand });
     const activeDoc = workspace.doc;
-    const { peers } = useShaperPresence(activeDoc?.id ?? null);
     const { pullProject } = useShaperSharedProjects(workspace.openProject);
     
     const [openPanels, setOpenPanels] = useState<Record<string, boolean>>(() => {
@@ -336,7 +334,6 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                             doc={activeDoc}
                             issueCount={workspace.issues.length}
                             openPanels={openPanels}
-                            peers={peers}
                             onTogglePanel={togglePanel}
                         />
                         <main className="shaper-center">
@@ -419,6 +416,7 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                                                                 onSetViewZ={workspace.setViewZ}
                                                                 onAddRoomAt={workspace.addRoomAt}
                                                                 onMoveRoom={workspace.moveRoom}
+                                                                onMoveRoomToLayer={workspace.moveRoomToLayer}
                                                                 onMoveRooms={workspace.moveRooms}
                                                                 onRemoveRoom={workspace.removeRoom}
                                                                 onRemoveRooms={workspace.removeRooms}
@@ -592,7 +590,6 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                                 issues={workspace.selectedIssues}
                                 selectionCount={workspace.selectedRoomIds.size}
                                 onUpdateRoom={workspace.updateRoom}
-                                onMoveRoomToLayer={workspace.moveRoomToLayer}
                                 onAddAnnotation={workspace.addAnnotation}
                                 onRemoveAnnotation={workspace.removeAnnotation}
                                 onAddMob={workspace.addMob}

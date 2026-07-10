@@ -348,6 +348,20 @@ const parseLimitField = (field: string): number | null => {
     return clean === '' || clean === '--' ? null : Number(clean);
 };
 
+const parseComTableRelationFields = (
+    type: ShaperCommandType,
+    extra: string
+): Partial<ShaperCommandNode['fields']> => {
+    const relation = extra.match(/\b(?:in|to|on|follows)\s+(\d+)\s+\((.*?)\)/i);
+    if (!relation) return {};
+    const vnum = relation[1];
+    const name = relation[2].trim();
+    if (type === 'put' || type === 'container') return { container: vnum, containerName: name };
+    if (type === 'follow') return { master: vnum, masterName: name };
+    if (type === 'give' || type === 'equip' || type === 'exec') return { target: vnum, targetName: name };
+    return {};
+};
+
 const parseComListTable = (output: string, roomId: ShaperRoomId): ShaperCommandNode[] => {
     const nodes: ShaperCommandNode[] = [];
     let lastRootId: string | null = null;
@@ -390,7 +404,8 @@ const parseComListTable = (output: string, roomId: ShaperRoomId): ShaperCommandN
                 target: 'parent',
                 container: 'parent',
                 master: 'parent',
-                position: ''
+                position: '',
+                ...parseComTableRelationFields(resolvedType, match[5] ?? '')
             },
             notes: ''
         });

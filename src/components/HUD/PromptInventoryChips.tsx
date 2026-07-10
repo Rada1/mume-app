@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Box } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useUIStore } from '../../stores/useUIStore';
 import type { DrawerLine } from '../../types';
@@ -93,6 +93,23 @@ const getSlotSortWeight = (prefix: string | undefined): number => {
     const idx = SLOT_SORT_ORDER.indexOf(letter);
     return idx === -1 ? 999 : idx;
 };
+
+const ObjectIcon = () => (
+    <span
+        className="inline-entity-type-icon inline-entity-type-object"
+        aria-hidden="true"
+        title="Object"
+        style={{
+            marginLeft: '3px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            verticalAlign: 'middle',
+            opacity: 0.85
+        }}
+    >
+        <Box size={10} strokeWidth={2.6} />
+    </span>
+);
 
 const cleanItemText = (line: DrawerLine): string => (
     line.text
@@ -350,6 +367,7 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                                 title={subChip.context}
                             >
                                 {subChip.label}
+                                {variant === 'drawer' && <ObjectIcon />}
                                 {conditionBadge}
                             </button>
                         );
@@ -398,6 +416,7 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                                                         title={chip.context}
                                                     >
                                                         {chip.label}
+                                                        <ObjectIcon />
                                                         {conditionBadge}
                                                     </button>
                                                     <button
@@ -423,6 +442,7 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                                                     title={chip.context}
                                                 >
                                                     {chip.label}
+                                                    <ObjectIcon />
                                                     {conditionBadge}
                                                 </button>
                                             )}
@@ -466,6 +486,7 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                                                         title={chip.context}
                                                     >
                                                         {chip.label}
+                                                        <ObjectIcon />
                                                         {conditionBadge}
                                                     </button>
                                                     <button
@@ -492,6 +513,7 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
                                                     title={chip.context}
                                                 >
                                                     {chip.label}
+                                                    <ObjectIcon />
                                                     {conditionBadge}
                                                 </button>
                                             )}

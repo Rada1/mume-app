@@ -9,6 +9,7 @@ import type React from 'react';
 import { Token, EntityToken, AnsiToken, TextToken, InlineCategoryConfig, GmcpOccupant } from '../../types';
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
 import { toCategoryId } from '../../utils/inlineActionModel';
+import { extractMumeKeyword } from '../../utils/gameUtils';
 
 export interface TokenizerContext {
     target?: string | null;
@@ -43,6 +44,9 @@ export class Tokenizer {
     private currentParent: string | null = null;
     private currentStyle: React.CSSProperties = {};
     private occupantMatchCounts: Record<string, number> = {};
+    private pendingEquipmentSlot = false;
+    private pendingEquipmentText = '';
+    private pendingEquipmentStyle: React.CSSProperties = {};
 
     // Cache for occupant regex
     private cachedOccupants: any[] = [];
@@ -68,6 +72,9 @@ export class Tokenizer {
         this.currentLocation = loc;
         this.currentParent = null;
         this.currentStyle = {};
+        this.pendingEquipmentSlot = false;
+        this.pendingEquipmentText = '';
+        this.pendingEquipmentStyle = {};
     }
 
     public resetOccupantMatches() {
@@ -173,6 +180,7 @@ export class Tokenizer {
             this.handleText(textToScan.substring(lastIndex), tokens, this.currentStyle, activeEntity, context);
         }
         
+        this.flushPendingEquipment(tokens, true);
         if (activeEntity) this.emitEntity(activeEntity, tokens, context);
 
         return tokens;
@@ -206,7 +214,7 @@ export class Tokenizer {
         activeEntity: any,
         context?: TokenizerContext
     ) {
-        const decoded = this.decodeEntities(content);
+        let decoded = this.decodeEntities(content);
         const lower = decoded.toLowerCase();
 
         // --- STATE MACHINE: Context Inference (Handles both tagged and plain text headers) ---
@@ -218,7 +226,35 @@ export class Tokenizer {
         else if (lower.includes('obvious exits')) this.currentLocation = 'room';
 
         if (activeEntity) {
+            // MUME sometimes tags only the noun, leaving its leading article outside
+            // the tag. Keep that article as text instead of turning "a" into a
+            // separate equipment object.
+            this.flushPendingEquipment(tokens, false);
             activeEntity.content += decoded;
+            return;
+        }
+
+        // Equipment command output uses visible slot markers rather than <object> tags,
+        // e.g. "<wielded> a sword". Preserve the marker, then promote its item text to
+        // the same worn-object entity used by the character drawer. Markers and the item
+        // often arrive in separate ANSI spans, so keep a small per-line state flag.
+        if (this.currentLocation === 'worn' && this.isEquipmentSlotMarker(decoded)) {
+            this.pendingEquipmentSlot = true;
+            this.pushText(decoded, tokens, style);
+            return;
+        }
+
+        if (this.currentLocation === 'worn' && this.pendingEquipmentSlot && decoded) {
+            const leadingWhitespace = this.pendingEquipmentText ? '' : (decoded.match(/^\s+/)?.[0] || '');
+            if (leadingWhitespace) {
+                this.pushText(leadingWhitespace, tokens, style);
+                decoded = decoded.slice(leadingWhitespace.length);
+            }
+            if (!decoded) return;
+            if (!this.pendingEquipmentText) {
+                this.pendingEquipmentStyle = { ...style };
+            }
+            this.pendingEquipmentText += decoded;
             return;
         }
 
@@ -282,6 +318,43 @@ export class Tokenizer {
         }
 
         this.pushText(decoded, tokens, style);
+    }
+
+    private isEquipmentSlotMarker(content: string): boolean {
+        return /^<\s*(?:wielded|held in (?:weapon|shield) hand|worn (?:as|on|about|across|around))\b[^>]*>\s*$/i.test(content);
+    }
+
+    private flushPendingEquipment(tokens: Token[], asEntity: boolean) {
+        if (!this.pendingEquipmentSlot) return;
+
+        const content = this.pendingEquipmentText;
+        const style = this.pendingEquipmentStyle;
+        this.pendingEquipmentSlot = false;
+        this.pendingEquipmentText = '';
+        this.pendingEquipmentStyle = {};
+
+        if (!content) return;
+        if (!asEntity) {
+            this.pushText(content, tokens, style);
+            return;
+        }
+
+        const context = extractMumeKeyword(content) || content.trim();
+        const entityId = `equipment-${context.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+
+        tokens.push({
+            type: 'entity',
+            content,
+            entityId,
+            metadata: {
+                kind: 'object',
+                category: 'cat-worn-object',
+                context,
+                location: 'worn',
+                action: 'menu',
+                style: { ...style }
+            }
+        } as EntityToken);
     }
 
     private tokenizeKnownOccupants(

@@ -19,6 +19,7 @@ import { getEntityDragData, hasEntityKind } from './shaperEntityDrag';
 import { ShaperEntityAddForm } from './ShaperEntityAddForm';
 import { ShaperEntityLibraries } from './ShaperEntityLibraries';
 import { ShaperEntityInfoButton } from './ShaperEntityInfoButton';
+import { ShaperEntityIdentityFields } from './ShaperEntityIdentityFields';
 
 interface ShaperObjectCardProps {
     item: ShaperItemRef;
@@ -141,6 +142,15 @@ export const ShaperObjectCard: React.FC<ShaperObjectCardProps> = ({
 
             {expanded && isCollapsible && (
                 <div className="shaper-entity-children font-sans">
+                    <div className="shaper-entity-edit-grid">
+                        <ShaperEntityIdentityFields
+                            kind="object"
+                            vnum={item.vnum}
+                            name={item.name}
+                            onChange={patch => onUpdateComFields(item.id, patch)}
+                        />
+                    </div>
+
                     {/* Limit / Chance Row */}
                     <div className="shaper-com-limits" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '8px', padding: '0 4px' }}>
                         <label className="shaper-field mb-0">

@@ -46,6 +46,30 @@ export const shouldDetectRoomItemsFromLine = (
         /\b(?:is|are|lies|lie|rests|rest|sits|sit|has been left|have been left)\s+here\b/i.test(line);
 };
 
+export const classifyRoutedMessageType = (
+    msgType: string,
+    textOnly: string,
+    lower: string,
+    cleanLine: string,
+    attachedText: string,
+    isMatch: boolean,
+    isSpectateMode: boolean,
+    isSnoop?: boolean
+) => {
+    let finalType = msgType;
+    const trimmed = textOnly.trim();
+
+    if (lower.startsWith('exits:')) finalType = 'room-exits';
+    else if (isSpectateMode && isSnoop && trimmed.startsWith('>') && trimmed.length > 1) finalType = 'snoop-command';
+    else if (isMatch && attachedText.length <= 2) finalType = 'prompt';
+    else if (hasXmlTag(cleanLine, 'weather')) finalType = 'weather';
+    else if (hasXmlTag(cleanLine, 'status')) finalType = 'status-event';
+    else if (isEnvironmentEventLine(lower)) finalType = 'weather';
+    else if (lower.startsWith('you go ') || lower.includes(' leaves ') || lower.includes(' arrives from ') || lower.includes(' arrived from ') || lower.includes(' flees ') || lower.includes(' fled ') || lower.includes(' panics') || lower.includes(' attempts') || lower.includes('alas, you cannot go that way') || lower.includes('there is no exit')) finalType = 'move';
+
+    return finalType;
+};
+
 interface MessageRouterDeps {
     capture: import('../../types/capture').CaptureController;
     drawer: DrawerType;
@@ -116,17 +140,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
     }, [capture, playerPosition]);
 
     const routeMessage = useCallback((msgType: string, textOnly: string, lower: string, cleanLine: string, attachedText: string, isMatch: boolean, isSnoop?: boolean) => {
-        let finalType = msgType;
-        const trimmed = textOnly.trim();
-        
-        if (lower.startsWith('exits:')) finalType = 'room-exits';
-        else if (isSpectateMode && isSnoop && trimmed.startsWith('>') && trimmed.length > 1) finalType = 'snoop-command';
-        else if (isMatch && attachedText.length <= 2) finalType = 'prompt';
-        else if (hasXmlTag(cleanLine, 'status')) finalType = 'status-event';
-        else if (isEnvironmentEventLine(lower)) finalType = 'weather';
-        else if (lower.startsWith('you go ') || lower.includes(' leaves ') || lower.includes(' arrives from ') || lower.includes(' arrived from ') || lower.includes(' flees ') || lower.includes(' fled ') || lower.includes(' panics') || lower.includes(' attempts') || lower.includes('alas, you cannot go that way') || lower.includes('there is no exit')) finalType = 'move';
-
-        return finalType;
+        return classifyRoutedMessageType(msgType, textOnly, lower, cleanLine, attachedText, isMatch, isSpectateMode, isSnoop);
     }, [isSpectateMode]);
 
     const normalizeRoomObjectName = useCallback((name: string) => {

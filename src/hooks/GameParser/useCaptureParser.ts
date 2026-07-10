@@ -474,6 +474,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 }
                 case 'shaper_mob_stat': {
                     const text = lines.map(l => l.text).join('\n');
+                    const rawText = lines.map(l => l.rawText || l.text).join('\n');
                     let vnum = NaN;
                     let name = '';
 
@@ -514,7 +515,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                             level,
                             class: mobClass,
                             align,
-                            rawText: text
+                            rawText
                         });
                     } else {
                         const cmdText = session.metadata?.command || '';
@@ -527,7 +528,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                                 level: 0,
                                 class: 'UNKNOWN',
                                 align: 0,
-                                rawText: text || 'Template not found on MUD.'
+                                rawText: rawText || 'Template not found on MUD.'
                             });
                         }
                     }
@@ -535,6 +536,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 }
                 case 'shaper_obj_stat': {
                     const text = lines.map(l => l.text).join('\n');
+                    const rawText = lines.map(l => l.rawText || l.text).join('\n');
                     let vnum = NaN;
                     let name = '';
 
@@ -595,7 +597,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                             value,
                             extraFlags,
                             wearFlags,
-                            rawText: text
+                            rawText
                         });
                     } else {
                         const cmdText = session.metadata?.command || '';
@@ -610,14 +612,14 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                                 value: 0,
                                 extraFlags: [],
                                 wearFlags: [],
-                                rawText: text || 'Template not found on MUD.'
+                                rawText: rawText || 'Template not found on MUD.'
                             });
                         }
                     }
                     break;
                 }
                 case 'shaper_mob_info': {
-                    const text = lines.map(l => l.text).join('\n');
+                    const text = lines.map(l => l.rawText || l.text).join('\n');
                     const cmdText = session.metadata?.command || '';
                     const cmdMatch = cmdText.match(/\/info\s+[a-z]\s+(\d+)/i);
                     if (cmdMatch) {
@@ -627,7 +629,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     break;
                 }
                 case 'shaper_obj_info': {
-                    const text = lines.map(l => l.text).join('\n');
+                    const text = lines.map(l => l.rawText || l.text).join('\n');
                     const cmdText = session.metadata?.command || '';
                     const cmdMatch = cmdText.match(/\/info\s+[a-z]\s+(\d+)/i);
                     if (cmdMatch) {

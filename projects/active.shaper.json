@@ -2,8 +2,8 @@
   "id": "c208e55d-e5ac-4ada-8c66-3f1ab6aa2c3b",
   "name": "New Concept Zone",
   "zoneNumber": 31,
-  "updatedAt": 1783655939900,
-  "selectedRoomId": "room-0-0-0",
+  "updatedAt": 1783716519518,
+  "selectedRoomId": "room-0-8-0",
   "rooms": {
     "room-0-0-0": {
       "id": "room-0-0-0",
@@ -1169,8 +1169,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655508303,
-        "statRoomFull": "Room 31:8 (3108) - on@a Jagged Crag\nMagical key: macchaaerhy, Owner: none, Sector: hills, MapId: 5184203\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  Scattered boulders and splintered branches choke this narrow, rocky hollow,\n  where the mountain terrain transitions into the low hills. A murky, stagnant\n  pond is nestled tightly between old roots, its dark water reflecting the grim\n  cliffs above. High overhead, wide thermal currents trace the sky, watched by\n  distant, unseen eyes waiting for signs of weakness below. Fresh, heavy tracks\n  deep in the soft mud along the water's edge give clear warning of what roams.\nExtra description keywords: none\n------- Chars present -------\n  a scrawny Durbûk-hai orc (2996)\n  a scrawny Durbûk-hai orc (2996)\n  Ellessar (player 695470)\n--------- Contents ---------\n  fir tree (6029)\n  a brown pond (6515)\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  7, flags: NO_MOB",
+        "importedAt": 1783714921243,
+        "statRoomFull": "Room 31:8 (3108) - on@a Jagged Crag\nMagical key: rabszecyodd, Owner: none, Sector: hills, MapId: 5184203\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  Scattered boulders and splintered branches choke this narrow, rocky hollow,\n  where the mountain terrain transitions into the low hills. A murky, stagnant\n  pond is nestled tightly between old roots, its dark water reflecting the grim\n  cliffs above. High overhead, wide thermal currents trace the sky, watched by\n  distant, unseen eyes waiting for signs of weakness below. Fresh, heavy tracks\n  deep in the soft mud along the water's edge give clear warning of what roams.\nExtra description keywords: none\n------- Chars present -------\n  a scrawny Durbûk-hai orc (2996)\n  a scrawny Durbûk-hai orc (2996)\n  Ellessar (player 695470)\n--------- Contents ---------\n  fir tree (6029)\n  a brown pond (6515)\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  7, flags: NO_MOB",
         "comListCommands": "1   Object  6515 (a brown pond) (--/1/1/100%)\n2   Mobile  2996 (a scrawny Durbûk-hai orc) (--/--/2/100%)\n3   Object  6029 (an apple tree) (--/--/1/100%)\n4   Put     6001 (a large sack) in 6029 (tree) (--/--/1/100%)\n5   Put     8002 (a small piece of raw meat) in 6001 (sack) (--/--/2/100%)\n6   Put     2104 (a pan) in 6001 (sack) (--/--/1/100%)",
         "libRoomCommands": "Commands on room 31:8 (a Jagged Crag):\n1: redress-obj\n  object:       obj 6029 (an apple tree)\n  keywords:     tree\n  short-desc:   fir tree\n  long-desc:    A fir tree with claw marks on it is here.\n  plural-desc:  fir trees\n  full-desc:    a thick fir tree with claw marks on its trunk grows here,\n                majestic in its solitude.\n  ptype:        the"
       },
@@ -1410,17 +1410,6 @@
       "fromRoomId": "room-0-7-0",
       "direction": "s",
       "toRoomId": "room-0-8-0",
-      "isTwoWay": false,
-      "doorFlags": [
-        "no_mob"
-      ],
-      "hasDoor": false
-    },
-    "room-0-8-0:n": {
-      "id": "room-0-8-0:n",
-      "fromRoomId": "room-0-8-0",
-      "direction": "n",
-      "toRoomId": "room-0-7-0",
       "isTwoWay": false,
       "doorFlags": [
         "no_mob"
@@ -2185,6 +2174,17 @@
       "isTwoWay": false,
       "doorFlags": [],
       "hasDoor": false
+    },
+    "room-0-8-0:n": {
+      "id": "room-0-8-0:n",
+      "fromRoomId": "room-0-8-0",
+      "direction": "n",
+      "toRoomId": "room-0-7-0",
+      "isTwoWay": false,
+      "doorFlags": [
+        "no_mob"
+      ],
+      "hasDoor": false
     }
   },
   "commandNodes": {
@@ -2250,144 +2250,6 @@
       "fields": {
         "vnum": "2138",
         "name": "a bear cub",
-        "target": "parent",
-        "container": "parent",
-        "master": "parent",
-        "position": ""
-      },
-      "notes": ""
-    },
-    "room-mreefpzn-4": {
-      "id": "room-mreefpzn-4",
-      "roomId": "room-0-8-0",
-      "parentId": null,
-      "order": 0,
-      "type": "object",
-      "limit": {
-        "world": null,
-        "zone": 1,
-        "room": 1,
-        "chancePercent": 100,
-        "raw": "10100"
-      },
-      "fields": {
-        "vnum": "6515",
-        "name": "a brown pond",
-        "target": "parent",
-        "container": "parent",
-        "master": "parent",
-        "position": ""
-      },
-      "notes": ""
-    },
-    "room-mreefpzn-5": {
-      "id": "room-mreefpzn-5",
-      "roomId": "room-0-8-0",
-      "parentId": null,
-      "order": 1,
-      "type": "mobile",
-      "limit": {
-        "world": null,
-        "zone": null,
-        "room": 2,
-        "chancePercent": 100,
-        "raw": "200"
-      },
-      "fields": {
-        "vnum": "2996",
-        "name": "a scrawny Durbûk-hai orc",
-        "target": "parent",
-        "container": "parent",
-        "master": "parent",
-        "position": ""
-      },
-      "notes": ""
-    },
-    "room-mreefpzn-6": {
-      "id": "room-mreefpzn-6",
-      "roomId": "room-0-8-0",
-      "parentId": null,
-      "order": 2,
-      "type": "object",
-      "limit": {
-        "world": null,
-        "zone": null,
-        "room": 1,
-        "chancePercent": 100,
-        "raw": "100"
-      },
-      "fields": {
-        "vnum": "6029",
-        "name": "an apple tree",
-        "target": "parent",
-        "container": "parent",
-        "master": "parent",
-        "position": ""
-      },
-      "notes": ""
-    },
-    "room-mreefpzn-7": {
-      "id": "room-mreefpzn-7",
-      "roomId": "room-0-8-0",
-      "parentId": null,
-      "order": 3,
-      "type": "put",
-      "limit": {
-        "world": null,
-        "zone": null,
-        "room": 1,
-        "chancePercent": 100,
-        "raw": "100"
-      },
-      "fields": {
-        "vnum": "6001",
-        "name": "a large sack",
-        "target": "parent",
-        "container": "parent",
-        "master": "parent",
-        "position": ""
-      },
-      "notes": ""
-    },
-    "room-mreefpzn-8": {
-      "id": "room-mreefpzn-8",
-      "roomId": "room-0-8-0",
-      "parentId": null,
-      "order": 4,
-      "type": "put",
-      "limit": {
-        "world": null,
-        "zone": null,
-        "room": 2,
-        "chancePercent": 100,
-        "raw": "200"
-      },
-      "fields": {
-        "vnum": "8002",
-        "name": "a small piece of raw meat",
-        "target": "parent",
-        "container": "parent",
-        "master": "parent",
-        "position": ""
-      },
-      "notes": ""
-    },
-    "room-mreefpzn-9": {
-      "id": "room-mreefpzn-9",
-      "roomId": "room-0-8-0",
-      "parentId": null,
-      "order": 5,
-      "type": "put",
-      "limit": {
-        "world": null,
-        "zone": null,
-        "room": 1,
-        "chancePercent": 100,
-        "raw": "100"
-      },
-      "fields": {
-        "vnum": "2104",
-        "name": "a pan",
         "target": "parent",
         "container": "parent",
         "master": "parent",
@@ -2946,6 +2808,169 @@
         "position": ""
       },
       "notes": ""
+    },
+    "room-mrfdt5b5-1": {
+      "id": "room-mrfdt5b5-1",
+      "roomId": "room-0-8-0",
+      "parentId": null,
+      "order": 0,
+      "type": "object",
+      "limit": {
+        "world": null,
+        "zone": 1,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "10100"
+      },
+      "fields": {
+        "vnum": "6515",
+        "name": "a brown pond",
+        "target": "parent",
+        "container": "parent",
+        "master": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mrfdt5b5-2": {
+      "id": "room-mrfdt5b5-2",
+      "roomId": "room-0-8-0",
+      "parentId": null,
+      "order": 1,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 2,
+        "chancePercent": 100,
+        "raw": "200"
+      },
+      "fields": {
+        "vnum": "2996",
+        "name": "a scrawny Durbûk-hai orc",
+        "target": "parent",
+        "container": "parent",
+        "master": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mrfdt5b5-3": {
+      "id": "room-mrfdt5b5-3",
+      "roomId": "room-0-8-0",
+      "parentId": null,
+      "order": 2,
+      "type": "object",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "6029",
+        "name": "an apple tree",
+        "target": "parent",
+        "container": "parent",
+        "master": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mrfdt5b5-4": {
+      "id": "room-mrfdt5b5-4",
+      "roomId": "room-0-8-0",
+      "parentId": null,
+      "order": 3,
+      "type": "put",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "6001",
+        "name": "a large sack",
+        "target": "parent",
+        "container": "6029",
+        "master": "parent",
+        "position": "",
+        "containerName": "tree"
+      },
+      "notes": ""
+    },
+    "room-mrfdt5b5-5": {
+      "id": "room-mrfdt5b5-5",
+      "roomId": "room-0-8-0",
+      "parentId": null,
+      "order": 4,
+      "type": "put",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 2,
+        "chancePercent": 100,
+        "raw": "200"
+      },
+      "fields": {
+        "vnum": "8002",
+        "name": "a small piece of raw meat",
+        "target": "parent",
+        "container": "6001",
+        "master": "parent",
+        "position": "",
+        "containerName": "sack"
+      },
+      "notes": ""
+    },
+    "room-mrfdt5b5-6": {
+      "id": "room-mrfdt5b5-6",
+      "roomId": "room-0-8-0",
+      "parentId": null,
+      "order": 5,
+      "type": "put",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "2104",
+        "name": "a pan",
+        "target": "parent",
+        "container": "6001",
+        "master": "parent",
+        "position": "",
+        "containerName": "sack"
+      },
+      "notes": ""
+    },
+    "room-mrfdwjtn-8": {
+      "id": "room-mrfdwjtn-8",
+      "roomId": "room-0-8-0",
+      "parentId": "room-mrfdt5b5-2",
+      "order": 0,
+      "type": "equip",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "3013",
+        "name": "a pair of soft leather trousers",
+        "target": "parent",
+        "container": "parent",
+        "position": "legs"
+      },
+      "notes": ""
     }
   },
   "libraries": {
@@ -3168,6 +3193,24 @@
         "long-desc": "The redressed object is here.",
         "plural-desc": "redressed objects",
         "full-desc": "",
+        "ptype": "the"
+      },
+      "requiresSupervisorReview": false,
+      "requiresLoad": true,
+      "notes": ""
+    },
+    "room-mrfdt5p8-7": {
+      "id": "room-mrfdt5p8-7",
+      "targetType": "object",
+      "targetId": "room-mrfdt5b5-3",
+      "name": "redress-obj",
+      "parameters": {
+        "object": "obj 6029 (an apple tree)",
+        "keywords": "tree",
+        "short-desc": "fir tree",
+        "long-desc": "A fir tree with claw marks on it is here.",
+        "plural-desc": "fir trees",
+        "full-desc": "a thick fir tree with claw marks on its trunk grows here,\n                majestic in its solitude.",
         "ptype": "the"
       },
       "requiresSupervisorReview": false,

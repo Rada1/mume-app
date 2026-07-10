@@ -120,6 +120,8 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                         <option value="'Anonymous Pro', monospace">Anonymous Pro</option>
                         <option value="'Aniron', serif">Aniron (Elven)</option>
                         <option value="'Google Sans', sans-serif">Google Sans</option>
+                        <option value="'Roboto', sans-serif">Roboto</option>
+                        <option value="sans-serif">Sans Serif</option>
                     </select>
                 </div>
 

@@ -17,6 +17,7 @@ const directions = ['n', 'e', 's', 'w', 'u', 'd'];
 // --- Component Section ---
 export const ShaperComNodeFields: React.FC<ShaperComNodeFieldsProps> = ({ node, onUpdateFields }) => {
     const update = (key: string, value: string) => onUpdateFields(node.id, { [key]: value || null });
+    const parentImplied = (key: string): boolean => valueOf(node, key) === 'parent';
 
     if (node.type === 'mobile') {
         return (
@@ -38,7 +39,7 @@ export const ShaperComNodeFields: React.FC<ShaperComNodeFieldsProps> = ({ node, 
     if (node.type === 'follow') {
         return (
             <div className="shaper-com-fields">
-                <label>Master mob<input value={valueOf(node, 'master')} onChange={event => update('master', event.target.value)} placeholder="parent or vnum" /></label>
+                {!parentImplied('master') && <label>Master mob<input value={valueOf(node, 'master')} onChange={event => update('master', event.target.value)} placeholder="mob vnum" /></label>}
                 <label>Mode
                     <select value={valueOf(node, 'followMode')} onChange={event => update('followMode', event.target.value)}>
                         <option value="">follower</option>
@@ -51,13 +52,14 @@ export const ShaperComNodeFields: React.FC<ShaperComNodeFieldsProps> = ({ node, 
     }
 
     if (node.type === 'give') {
+        if (parentImplied('target')) return null;
         return <div className="shaper-com-fields"><label>To mob<input value={valueOf(node, 'target')} onChange={event => update('target', event.target.value)} placeholder="parent or mob vnum" /></label></div>;
     }
 
     if (node.type === 'equip') {
         return (
             <div className="shaper-com-fields">
-                <label>To mob<input value={valueOf(node, 'target')} onChange={event => update('target', event.target.value)} placeholder="parent or mob vnum" /></label>
+                {!parentImplied('target') && <label>To mob<input value={valueOf(node, 'target')} onChange={event => update('target', event.target.value)} placeholder="mob vnum" /></label>}
                 <label>Position<input value={valueOf(node, 'position')} onChange={event => update('position', event.target.value)} placeholder="wield, body, head..." /></label>
             </div>
         );
@@ -66,7 +68,7 @@ export const ShaperComNodeFields: React.FC<ShaperComNodeFieldsProps> = ({ node, 
     if (node.type === 'put') {
         return (
             <div className="shaper-com-fields">
-                <label>Container<input value={valueOf(node, 'container')} onChange={event => update('container', event.target.value)} placeholder="parent or object vnum" /></label>
+                {!parentImplied('container') && <label>Container<input value={valueOf(node, 'container')} onChange={event => update('container', event.target.value)} placeholder="object vnum" /></label>}
                 <label>Need object<input value={valueOf(node, 'needObject')} onChange={event => update('needObject', event.target.value)} placeholder="optional legacy flag" /></label>
             </div>
         );
@@ -94,7 +96,7 @@ export const ShaperComNodeFields: React.FC<ShaperComNodeFieldsProps> = ({ node, 
     if (node.type === 'container') {
         return (
             <div className="shaper-com-fields">
-                <label>Container object<input value={valueOf(node, 'container')} onChange={event => update('container', event.target.value)} placeholder="parent or object vnum" /></label>
+                {!parentImplied('container') && <label>Container object<input value={valueOf(node, 'container')} onChange={event => update('container', event.target.value)} placeholder="object vnum" /></label>}
                 <label>Action
                     <select value={valueOf(node, 'containerAction') || 'close'} onChange={event => update('containerAction', event.target.value)}>
                         {actions.map(action => <option key={action} value={action}>{action}</option>)}
@@ -140,7 +142,7 @@ export const ShaperComNodeFields: React.FC<ShaperComNodeFieldsProps> = ({ node, 
     if (node.type === 'exec') {
         return (
             <div className="shaper-com-fields">
-                <label>Character<input value={valueOf(node, 'character')} onChange={event => update('character', event.target.value)} placeholder="parent or mobile vnum" /></label>
+                {!parentImplied('character') && <label>Character<input value={valueOf(node, 'character')} onChange={event => update('character', event.target.value)} placeholder="mobile vnum" /></label>}
                 <label>Command<input value={valueOf(node, 'command')} onChange={event => update('command', event.target.value)} placeholder="command to run" /></label>
             </div>
         );

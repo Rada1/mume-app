@@ -33,7 +33,7 @@ export const createGridRoom = (
     roomNumber: formatRoomNumber(zoneNumber, x, y),
     status: 'new-draft',
     name: '',
-    preposition: 'in',
+    preposition: '',
     description: '',
     sector: '',
     flags: [],

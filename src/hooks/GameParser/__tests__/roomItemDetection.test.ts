@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import { isEnvironmentEventLine } from '../../../utils/environmentEventUtils';
 import { hasXmlTag } from '../../../utils/xmlTagUtils';
-import { shouldDetectRoomItemsFromLine } from '../useMessageRouter';
+import { classifyRoutedMessageType, shouldDetectRoomItemsFromLine } from '../useMessageRouter';
 
 // --- Logic Section ---
 describe('shouldDetectRoomItemsFromLine', () => {
@@ -49,5 +49,29 @@ describe('hasXmlTag', () => {
         expect(hasXmlTag('<status>dark</status>', 'status')).toBe(true);
         expect(hasXmlTag('&lt;status&gt;dark&lt;/status&gt;', 'status')).toBe(true);
         expect(hasXmlTag('<room>dark</room>', 'status')).toBe(false);
+    });
+});
+
+describe('useMessageRouter', () => {
+    it('routes raw and escaped weather XML tags as weather messages', () => {
+        expect(classifyRoutedMessageType(
+            'game',
+            'It starts to rain.',
+            'it starts to rain.',
+            '<weather>It starts to rain.</weather>',
+            '',
+            false,
+            false
+        )).toBe('weather');
+
+        expect(classifyRoutedMessageType(
+            'game',
+            'The air grows colder.',
+            'the air grows colder.',
+            '&lt;weather&gt;The air grows colder.&lt;/weather&gt;',
+            '',
+            false,
+            false
+        )).toBe('weather');
     });
 });

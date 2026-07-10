@@ -6,6 +6,8 @@
 import { useMemo, useState } from 'react';
 import { Info, X } from 'lucide-react';
 import { useShaperEntityStore } from '../model/useShaperEntityStore';
+import { ansiConvert } from '../../utils/ansi';
+import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import './ShaperEntityInfoButton.css';
 
 interface ShaperEntityInfoButtonProps {
@@ -16,6 +18,15 @@ interface ShaperEntityInfoButtonProps {
 const parseVnum = (value: string): number | null => {
     const parsed = Number(value.trim());
     return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+};
+
+const stripMumeMarkupTags = (text: string): string => text
+    .replace(/&lt;\/?(?:status|worn|object|header|roomname|prompt|mume|ansi)\b[^&]*?&gt;/gi, '')
+    .replace(/<\/?(?:status|worn|object|header|roomname|prompt|mume|ansi)\b[^>]*?>/gi, '');
+
+const AnsiBlock: React.FC<{ text: string }> = ({ text }) => {
+    const html = useMemo(() => sanitizeMumeHtml(ansiConvert.toHtml(stripMumeMarkupTags(text))), [text]);
+    return <pre className="shaper-entity-info-ansi" dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
 // --- Component Section ---
@@ -81,11 +92,11 @@ export const ShaperEntityInfoButton: React.FC<ShaperEntityInfoButtonProps> = ({ 
                             {stats.info && (
                                 <>
                                     <strong className="shaper-entity-info-label">/info</strong>
-                                    <pre>{stats.info}</pre>
+                                    <AnsiBlock text={stats.info} />
                                 </>
                             )}
                             <strong className="shaper-entity-info-label">/stat</strong>
-                            <pre>{stats.rawText || 'No /stat output captured yet.'}</pre>
+                            <AnsiBlock text={stats.rawText || 'No /stat output captured yet.'} />
                         </>
                     ) : (
                         <span className="shaper-entity-info-empty">No cached data yet. Connect to MUME to load it.</span>

@@ -148,36 +148,6 @@
     color: #e2e8f0;
 }
 
-.shaper-layer-stepper {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 4px;
-}
-
-.shaper-layer-stepper button {
-    min-height: 24px;
-    padding: 0 8px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.06);
-    color: #e2e8f0;
-    cursor: pointer;
-    font-size: 11px;
-    font-weight: 700;
-}
-
-.shaper-layer-stepper button:hover {
-    border-color: rgba(240, 180, 91, 0.55);
-    color: #f0b45b;
-}
-
-.shaper-layer-stepper span {
-    color: #aab7c4;
-    font-size: 11px;
-    font-weight: 700;
-}
-
 .shaper-reimport-room:hover:not(:disabled) {
     background: rgba(142, 203, 240, 0.24);
 }
@@ -196,7 +166,7 @@
 .shaper-panel-heading span,
 .shaper-field span,
 .shaper-room-issues span,
-.shaper-presence-card span {
+.shaper-validation-card span {
     color: #aab7c4;
     font-size: 11px;
     font-weight: 700;
@@ -225,7 +195,7 @@
     cursor: default;
 }
 
-.shaper-presence-card,
+.shaper-validation-card,
 .shaper-room-issues {
     padding: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -234,48 +204,12 @@
     margin-bottom: 12px;
 }
 
-.shaper-presence-card p,
+.shaper-validation-card p,
 .shaper-room-issues p {
     margin: 8px 0 0;
     color: #c9d3dd;
     font-size: 13px;
     line-height: 1.4;
-}
-
-.shaper-peer-list {
-    margin: 8px 0 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    gap: 7px;
-}
-
-.shaper-peer-item {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 13px;
-    color: #c9d3dd;
-}
-
-.shaper-peer-dot {
-    flex-shrink: 0;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #4ade80;
-}
-
-.shaper-peer-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.shaper-peer-here {
-    flex-shrink: 0;
-    color: #f0b45b;
-    font-size: 11px;
 }
 
 .shaper-center {
@@ -483,6 +417,14 @@
     color: #eef2f6;
     padding: 8px 9px;
     font: inherit;
+}
+
+.shaper-field input:focus,
+.shaper-field select:focus,
+.shaper-field textarea:focus {
+    outline: none;
+    border-color: rgba(240, 180, 91, 0.5);
+    background: #14181d;
 }
 
 .shaper-field textarea {

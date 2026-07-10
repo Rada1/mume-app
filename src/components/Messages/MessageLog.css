@@ -221,7 +221,9 @@
 
 .room-block-header,
 .combat-block-header,
-.comm-block-header {
+.comm-block-header,
+.weather-block-header,
+.movement-block-header {
     font-size: 0.8em;
     opacity: 0.6;
     color: var(--text-primary, #d4cdb8);
@@ -237,9 +239,94 @@
 
 .message.combat-block-start,
 .message.room-block-start,
-.message.comm-block-start {
+.message.comm-block-start,
+.message.movement-block-start {
     flex-direction: column !important;
     align-items: stretch !important;
+}
+
+.message.movement {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 0 2px !important;
+}
+
+.message.weather,
+.message.gmcp-event {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 0 2px !important;
+}
+
+.message.weather .content-row,
+.message.gmcp-event .content-row {
+    margin-top: 3px;
+}
+
+.movement-event-row {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    margin-top: 3px;
+}
+
+.movement-event-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 30px;
+    padding: 3px 12px 3px 9px;
+    border: 1px solid rgba(232, 176, 32, 0.34);
+    border-radius: 7px;
+    background:
+        radial-gradient(circle at 18px 50%, rgba(232, 176, 32, 0.22), transparent 60%),
+        rgba(8, 11, 18, 0.54);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+        0 0 18px rgba(232, 176, 32, 0.12);
+    color: #e8b020;
+    font-family: var(--font-mono, monospace);
+    user-select: none;
+}
+
+.movement-event-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    min-width: 20px;
+    font-size: 1.08em;
+    line-height: 1;
+    color: #e8b020;
+    text-shadow: 0 0 10px rgba(232, 176, 32, 0.48);
+}
+
+.movement-event-label {
+    font-size: 0.72em;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 236, 182, 0.92);
+}
+
+.light-mode .movement-event-chip {
+    border-color: rgba(138, 102, 32, 0.34);
+    background:
+        radial-gradient(circle at 18px 50%, rgba(138, 102, 32, 0.16), transparent 60%),
+        rgba(255, 255, 255, 0.7);
+    color: #8a6620;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.32);
+}
+
+.light-mode .movement-event-arrow {
+    color: #8a6620;
+    text-shadow: none;
+}
+
+.light-mode .movement-event-label {
+    color: rgba(64, 48, 20, 0.86);
 }
 
 .message.room-description {

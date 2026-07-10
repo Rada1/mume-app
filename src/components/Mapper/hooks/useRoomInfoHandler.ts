@@ -24,6 +24,7 @@ interface RoomInfoProps {
     triggerRender?: () => void;
     onRoomInfoProcessed?: (confirmedRoomId?: string | null) => void;
     onFirstVisitLoadFlag?: (roomId: string) => void;
+    onMoveConfirmed?: (dir: string) => void;
     addMessage?: (type: string, msg: string) => void;
     showDebugEchoes?: boolean;
     preMoveRef?: React.MutableRefObject<{ dir: string; targetId: string; time: number } | null>;
@@ -44,7 +45,7 @@ interface RoomInfoProps {
 export const useRoomInfoHandler = ({
     roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, spatialIndexRef,
     nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef,
-    firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, addMessage, showDebugEchoes, preMoveRef,
+    firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, onMoveConfirmed, addMessage, showDebugEchoes, preMoveRef,
     deathRoomId, setDeathRoomId, baseMapExitsRef, lastGmcpMoveTimeRef, activeView, mapEditMode
 }: RoomInfoProps) => {
 
@@ -223,6 +224,10 @@ export const useRoomInfoHandler = ({
             // accounted for and won't consume a second pending entry for it.
             if (lastGmcpMoveTimeRef && pendingMovesRef.current.length < pendingLenBeforeConsume) {
                 lastGmcpMoveTimeRef.current = Date.now();
+            }
+
+            if (dirUsed && pendingMovesRef.current.length < pendingLenBeforeConsume) {
+                onMoveConfirmed?.(dirUsed);
             }
 
             // --- MATCHING HIERARCHY (Only if it's a move) ---
@@ -775,7 +780,7 @@ export const useRoomInfoHandler = ({
                 }
             }
         }
-    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, addMessage, showDebugEchoes, preMoveRef, activeView, mapEditMode]);
+    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, onMoveConfirmed, addMessage, showDebugEchoes, preMoveRef, activeView, mapEditMode]);
 
     return { handleRoomInfo };
 };

@@ -14,6 +14,11 @@ describe('classifyItemTier', () => {
         expect(classifyItemTier('a rough wooden horn').tier).toBe('usable');
     });
 
+    it('classifies server-tagged noun phrases without their leading article', () => {
+        expect(classifyItemTier('yew longbow').tier).toBe('good');
+        expect(classifyItemTier('pitch-black robe').tier).toBe('legendary');
+    });
+
     it('normalizes tags, accents, and item state markers', () => {
         expect(classifyItemTier('<wielded> a Dúnadan blade (well-maintained)')).toMatchObject({
             tier: 'important',

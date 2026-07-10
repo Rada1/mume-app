@@ -7,6 +7,7 @@ import type { ShaperExitState } from '../model/shaperExits';
 import { hasShaperExitDoor } from '../model/shaperExitFlags';
 import type { ShaperDirection, ShaperExitDraft, ShaperRoomDraft, ShaperRoomId } from '../model/shaperTypes';
 import type { ShaperConnectionMenuState, ShaperRoomMenuState } from './ShaperCanvasGeometry';
+import { Minus, Plus, X } from 'lucide-react';
 
 interface MenuPositionProps {
     viewport: HTMLDivElement | null;
@@ -17,6 +18,7 @@ interface RoomContextMenuProps extends MenuPositionProps {
     selectedRoomIds: Set<ShaperRoomId>;
     viewZ: number;
     onAddRoomAt: (x: number, y: number, z: number) => void;
+    onMoveRoomToLayer: (roomId: ShaperRoomId, z: number) => void;
     onRemoveRoom: (roomId: ShaperRoomId) => void;
     onRemoveRooms: (roomIds: ShaperRoomId[]) => void;
     onClose: () => void;
@@ -59,21 +61,35 @@ export const ShaperRoomContextMenu: React.FC<RoomContextMenuProps> = ({
     viewZ,
     viewport,
     onAddRoomAt,
+    onMoveRoomToLayer,
     onRemoveRoom,
     onRemoveRooms,
     onClose
 }) => (
-    <div className="shaper-context-menu" style={styleFor(viewport, menu.screenX, menu.screenY)} onPointerDown={event => event.stopPropagation()}>
+    <div className="shaper-context-menu shaper-room-context-menu" style={styleFor(viewport, menu.screenX, menu.screenY)} onPointerDown={event => event.stopPropagation()}>
         {menu.roomId ? (
-            selectedRoomIds.has(menu.roomId) && selectedRoomIds.size > 1 ? (
-                <button type="button" onClick={() => { onRemoveRooms([...selectedRoomIds]); onClose(); }}>
-                    Remove {selectedRoomIds.size} rooms
-                </button>
-            ) : (
-                <button type="button" onClick={() => { onRemoveRoom(menu.roomId!); onClose(); }}>
-                    Remove room
-                </button>
-            )
+            <>
+                <div className="shaper-room-layer-control" aria-label="Move room between Z levels">
+                    <span className="shaper-room-layer-label">Z <strong>{viewZ}</strong></span>
+                    <button type="button" onClick={() => { onMoveRoomToLayer(menu.roomId!, viewZ - 1); onClose(); }} title="Move room down one Z level">
+                        <Minus size={15} strokeWidth={2.4} />
+                    </button>
+                    <button type="button" onClick={() => { onMoveRoomToLayer(menu.roomId!, viewZ + 1); onClose(); }} title="Move room up one Z level">
+                        <Plus size={15} strokeWidth={2.4} />
+                    </button>
+                </div>
+                {selectedRoomIds.has(menu.roomId) && selectedRoomIds.size > 1 ? (
+                    <button type="button" className="shaper-room-remove-action" onClick={() => { onRemoveRooms([...selectedRoomIds]); onClose(); }}>
+                        <span aria-hidden="true"><X size={13} strokeWidth={3} /></span>
+                        Remove {selectedRoomIds.size} rooms
+                    </button>
+                ) : (
+                    <button type="button" className="shaper-room-remove-action" onClick={() => { onRemoveRoom(menu.roomId!); onClose(); }}>
+                        <span aria-hidden="true"><X size={13} strokeWidth={3} /></span>
+                        Remove room
+                    </button>
+                )}
+            </>
         ) : (
             <button type="button" onClick={() => { onAddRoomAt(menu.cellX, menu.cellY, viewZ); onClose(); }}>
                 Add room here

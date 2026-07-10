@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, DraftingCompass, MessageSquare, Users } from 'lucide-react';
+import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, DraftingCompass, MessageSquare, Users, Clock, UtensilsCrossed, Droplets, CloudFog } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
 import { useModeStore } from '../../stores/useModeStore';
@@ -8,6 +8,7 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useSessionStore } from '../../stores/useSessionStore';
 import { useArchiveStore } from '../../stores/useArchiveStore';
 import { canAccessShaper } from '../../shaper/access/shaperAccess';
+import { useMumeTime } from '../../hooks/useMumeTime';
 
 interface HeaderProps {
     isLandscape?: boolean;
@@ -15,7 +16,7 @@ interface HeaderProps {
     getWeatherIcon: () => React.ReactNode;
 }
 
-const Header: React.FC<HeaderProps> = () => {
+const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
     const {
         btn,
         teleportTargets,
@@ -27,7 +28,10 @@ const Header: React.FC<HeaderProps> = () => {
         clearObjectSelection,
         roomNpcs,
         executeCommand,
-        addMessage
+        addMessage,
+        env,
+        isFoggy,
+        gameTime
     } = useGame() as any;
 
     const { setActiveMapFilter } = useMapper();
@@ -36,7 +40,7 @@ const Header: React.FC<HeaderProps> = () => {
     const mode = useModeStore();
     const isSpectating = mode.isSpectating;
     const { spectateTarget, activeView, setActiveView } = mode;
-    const { target, setTarget, characterInfo } = useVitals();
+    const { target, setTarget, characterInfo, stats } = useVitals() as any;
     const {
         ui, setUI, setIsSettingsOpen, setPopoverState,
         setSettingsTab, replayer
@@ -61,6 +65,15 @@ const Header: React.FC<HeaderProps> = () => {
     const displayedSpectateName = isSpectating
         ? (activeView === 'target' ? (characterInfo.name || spectateTarget) : spectateTarget)
         : null;
+    const currentTime = useMumeTime(gameTime);
+    const shouldShowEnvStatus = !isAccountScreen && (
+        env?.lighting !== 'none' ||
+        env?.weather !== 'none' ||
+        isFoggy ||
+        stats?.conditions?.hungry ||
+        stats?.conditions?.thirsty ||
+        currentTime
+    );
 
     // Auto-focus the input when it appears
     useEffect(() => {
@@ -214,6 +227,35 @@ const Header: React.FC<HeaderProps> = () => {
             <div style={{ flex: 1 }} />
 
             <div className="header-right-cluster">
+            {shouldShowEnvStatus && (
+                <div className="header-env-indicator" aria-label="Time, lighting, and weather">
+                    {currentTime && (
+                        <div className="header-env-time">
+                            <Clock size={11} className="header-env-muted-icon" />
+                            <span>
+                                {currentTime.hour === 0 ? '12' : (currentTime.hour > 12 ? currentTime.hour - 12 : currentTime.hour)}
+                                :{currentTime.minute < 10 ? `0${currentTime.minute}` : currentTime.minute}
+                                {currentTime.hour >= 12 ? ' PM' : ' AM'}
+                            </span>
+                        </div>
+                    )}
+                    {stats?.conditions?.hungry && (
+                        <UtensilsCrossed size={12} className="header-env-hungry" />
+                    )}
+                    {stats?.conditions?.thirsty && (
+                        <Droplets size={12} className="header-env-thirsty" />
+                    )}
+                    <div className="header-env-icons">
+                        {getLightingIcon()}
+                        {getWeatherIcon()}
+                        {isFoggy && <CloudFog size={12} className="header-env-muted-icon" />}
+                    </div>
+                    <span className="header-env-label">
+                        {env?.lighting && env.lighting !== 'none' ? env.lighting : ''}
+                        {env?.weather && env.weather !== 'none' && env.weather !== 'clear' ? ` | ${String(env.weather).replace('-', ' ')}` : ''}
+                    </span>
+                </div>
+            )}
 
             {/* Theater Mode Banner */}
             {replayer.state.isVisible && replayer.log && (

@@ -35,7 +35,7 @@ import { parseEffectTimerLine } from '../../services/timers/effectTimerParser';
 import { parseActionTimerLine } from '../../services/timers/actionTimerParser';
 import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { parseMagicKeyLine, upsertMagicKeyTarget } from '../../utils/magicKeyUtils';
-import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir, formatXmlMovementArrow } from './textMapperEvents';
+import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir } from './textMapperEvents';
 import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
 import { canBootstrapExpectedCapture } from './captureBootstrap';
 
@@ -614,11 +614,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                     detail: { dir: xmlMoveDir || undefined, source: 'xml' }
                 }));
             }
-            if (xmlMoveDir) {
-                const arrow = formatXmlMovementArrow(xmlMoveDir);
-                if (arrow) addSnoopedPlainLine(deps.addMessage, deps.ansiConvert, arrow, undefined, 'movement', false);
-            }
-
             const textMapperResult = consumeTextMapperLine(
                 textMapperStateRef.current,
                 lineToParse,

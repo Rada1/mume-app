@@ -25,7 +25,6 @@ interface ShaperInspectorProps {
     issues: ShaperValidationIssue[];
     selectionCount: number;
     onUpdateRoom: (patch: Partial<ShaperRoomDraft>) => void;
-    onMoveRoomToLayer: (roomId: string, z: number) => void;
     onAddAnnotation: (annotation: ShaperAnnotation) => void;
     onRemoveAnnotation: (annotationId: string) => void;
     onAddMob: (vnum: string, name: string) => void;
@@ -82,7 +81,6 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
     issues,
     selectionCount,
     onUpdateRoom,
-    onMoveRoomToLayer,
     onAddAnnotation,
     onRemoveAnnotation,
     onAddMob,
@@ -144,24 +142,6 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
                 <span>Room Inspector</span>
                 <ShaperContextHelpButton topic="room-basics" label="Room help" />
                 <strong>{room.roomNumber}</strong>
-                <small>{room.kind === 'extra' ? 'Extra room' : 'Grid room'} / Layer {room.z}</small>
-                <div className="shaper-layer-stepper" aria-label="Move selected room between Z levels">
-                    <button
-                        type="button"
-                        onClick={() => onMoveRoomToLayer(room.id, room.z - 1)}
-                        title="Move this room down one Z level"
-                    >
-                        Z-
-                    </button>
-                    <span>Z: {room.z}</span>
-                    <button
-                        type="button"
-                        onClick={() => onMoveRoomToLayer(room.id, room.z + 1)}
-                        title="Move this room up one Z level"
-                    >
-                        Z+
-                    </button>
-                </div>
                 <button
                     type="button"
                     className="shaper-reimport-room"
@@ -243,7 +223,7 @@ export const ShaperInspector: React.FC<ShaperInspectorProps> = ({
                 </div>
             </div>
 
-            <div className="shaper-helper">You are {room.preposition || '...'} {room.name || '...'}</div>
+            <div className="shaper-helper">You are {room.preposition ? `${room.preposition} ` : ''}{room.name || '...'}</div>
 
             <div className="shaper-field">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>

@@ -1147,7 +1147,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 )}
 
                 {/* Mobile Portrait Env Indicator - Bottom Right above command bar */}
-                {isShown && (lighting !== 'none' || weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty || currentTime) && (
+                {isMobile && !isLandscape && isShown && (lighting !== 'none' || weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty || currentTime) && (
                     <div className="mobile-portrait-env-indicator" style={{
                         position: 'absolute',
                         bottom: 'calc(100% - 4px)',

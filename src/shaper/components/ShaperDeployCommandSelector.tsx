@@ -35,7 +35,7 @@ export const ShaperDeployCommandSelector: React.FC<ShaperDeployCommandSelectorPr
                     const key = keyFor(index, block.lines);
                     return (
                         <li key={key}>
-                            <code>{block.requiresEditor ? `${block.text} (editor)` : block.text}</code>
+                            <code>{block.requiresEditor ? `${block.text}  (editor block)` : block.text}</code>
                             <button
                                 type="button"
                                 onClick={() => onPush(block.lines)}

@@ -76,6 +76,58 @@
     flex-wrap: nowrap;
 }
 
+.header-env-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 7px;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.34);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--text-faded);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.58rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.header-env-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-right: 2px;
+    padding-right: 6px;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-env-icons {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    transform: scale(0.88);
+    transform-origin: center;
+}
+
+.header-env-label {
+    opacity: 0.82;
+}
+
+.header-env-muted-icon {
+    opacity: 0.7;
+}
+
+.header-env-hungry {
+    color: #fbbf24;
+}
+
+.header-env-thirsty {
+    color: #60a5fa;
+}
+
 .title {
     font-family: 'Menlo', monospace;
     font-size: 1.4rem;
@@ -557,6 +609,15 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
+.light-mode .header-env-indicator {
+    background: rgba(255, 255, 255, 0.62);
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+.light-mode .header-env-time {
+    border-right-color: rgba(0, 0, 0, 0.12);
+}
+
 .light-mode .mobile-header {
     background: rgba(220, 220, 220, 0.75) !important;
     backdrop-filter: blur(24px) saturate(1.8) !important;
@@ -566,5 +627,19 @@
 
 .immersion-mode .header {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+}
+
+@media (min-width: 1025px) {
+    .header:not(.mobile-header),
+    .light-mode .header:not(.mobile-header),
+    .immersion-mode .header:not(.mobile-header) {
+        width: 100% !important;
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
 }
 

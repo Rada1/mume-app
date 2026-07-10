@@ -81,7 +81,7 @@ const normalizeRoom = (room: ShaperRoomDraft): ShaperRoomDraft => ({
     kind: room.kind ?? 'grid',
     anchorRoomId: room.anchorRoomId ?? null,
     name: normalizeText(room.name),
-    preposition: normalizeText(room.preposition) || 'in',
+    preposition: normalizeText(room.preposition),
     description: normalizeText(room.description),
     sector: room.sector ?? '',
     flags: room.flags ?? [],

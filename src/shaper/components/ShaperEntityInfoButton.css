@@ -82,10 +82,15 @@
     font-size: 12px;
 }
 
-.shaper-entity-info-popover pre {
+.shaper-entity-info-ansi {
     max-height: 180px;
     margin: 0;
+    padding: 7px 8px;
     overflow: auto;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.18);
+    color: #dbe5ef;
     white-space: pre-wrap;
     font-family: Consolas, "Courier New", monospace;
     font-size: 11px;

@@ -336,7 +336,7 @@ export const addShaperExtraRoom = (doc: ShaperWorkspaceDoc, z: number): ShaperWo
         roomNumber: nextAvailableRoomNumber(doc),
         status: 'new-draft',
         name: '',
-        preposition: 'in',
+        preposition: '',
         description: '',
         sector: '',
         flags: [],

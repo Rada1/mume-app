@@ -141,6 +141,75 @@ describe('buildSelectedRoomDeployPreview', () => {
         expect(preview.commands.at(-1)).toBe('/at 300:00 /room save');
     });
 
+    it('omits parent placeholders from nested equip commands', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 300 });
+        const room = doc.rooms[doc.selectedRoomId];
+        const commandNodes = {
+            mob: {
+                id: 'mob',
+                roomId: room.id,
+                parentId: null,
+                order: 0,
+                type: 'mobile' as const,
+                limit: { world: null, zone: 2, room: null, chancePercent: 100, raw: '200' },
+                fields: { vnum: '2996', name: 'orc' },
+                notes: ''
+            },
+            pants: {
+                id: 'pants',
+                roomId: room.id,
+                parentId: 'mob',
+                order: 0,
+                type: 'equip' as const,
+                limit: { world: null, zone: null, room: 1, chancePercent: 100, raw: '100' },
+                fields: { vnum: '242', target: 'parent', position: 'legs' },
+                notes: ''
+            }
+        };
+
+        const preview = buildSelectedRoomDeployPreview(room, doc.rooms, {}, commandNodes);
+
+        // The equip is a child of the mobile at /com list line 1, so it addresses
+        // that parent explicitly (`/com add 1 +`) rather than relying on the
+        // positional `+` "last command" flag.
+        expect(preview.commands).toContain('/at 300:00 /com add 1 + equip 242 100 legs');
+        expect(preview.commands).not.toContain('/at 300:00 /com add 1 + equip 242 100 parent legs');
+        expect(preview.commands).not.toContain('/at 300:00 /com add + equip 242 100 legs');
+    });
+
+    it('addresses each nested command by its parent /com list line across multiple levels', () => {
+        const doc = createDefaultShaperDocument({ zoneNumber: 300 });
+        const room = doc.rooms[doc.selectedRoomId];
+        const node = (id: string, parentId: string | null, order: number, type: any, fields: any) => ({
+            id, roomId: room.id, parentId, order, type,
+            limit: { world: null, zone: null, room: 1, chancePercent: 100, raw: '100' },
+            fields, notes: ''
+        });
+        // object 6515 / mobile 2996 (+ equip 3013) / object 6029 (+ put 6001 (+ put 8002, + put 2104))
+        const commandNodes = {
+            objA: node('objA', null, 0, 'object', { vnum: '6515' }),
+            mob: node('mob', null, 1, 'mobile', { vnum: '2996' }),
+            equip: node('equip', 'mob', 0, 'equip', { vnum: '3013', target: 'parent', position: 'legs' }),
+            objB: node('objB', null, 2, 'object', { vnum: '6029' }),
+            sack: node('sack', 'objB', 0, 'put', { vnum: '6001', container: 'parent' }),
+            meat: node('meat', 'sack', 0, 'put', { vnum: '8002', container: 'parent' }),
+            pan: node('pan', 'sack', 1, 'put', { vnum: '2104', container: 'parent' })
+        };
+
+        const preview = buildSelectedRoomDeployPreview(room, doc.rooms, {}, commandNodes as any);
+
+        // Emission order → line numbers: 1 objA, 2 mob, 3 equip, 4 objB, 5 sack, 6 meat, 7 pan.
+        expect(preview.commands).toContain('/at 300:00 /com add object 6515 100');
+        expect(preview.commands).toContain('/at 300:00 /com add mobile 2996 100');
+        expect(preview.commands).toContain('/at 300:00 /com add 2 + equip 3013 100 legs'); // child of mob (line 2)
+        expect(preview.commands).toContain('/at 300:00 /com add object 6029 100');
+        expect(preview.commands).toContain('/at 300:00 /com add 4 + put 6001 100'); // child of objB (line 4)
+        expect(preview.commands).toContain('/at 300:00 /com add 5 + put 8002 100'); // child of sack (line 5)
+        expect(preview.commands).toContain('/at 300:00 /com add 5 + put 2104 100'); // child of sack (line 5)
+        // No bare positional `+` children remain.
+        expect(preview.commands.some(c => /\/com add \+ /.test(c))).toBe(false);
+    });
+
     it('pushes entity-attached redress libraries as room library commands', () => {
         const doc = createDefaultShaperDocument({ zoneNumber: 300 });
         const room = doc.rooms[doc.selectedRoomId];

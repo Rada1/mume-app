@@ -30,9 +30,16 @@ export const listShaperComTree = (
         .filter(node => node.parentId === parentId)
         .sort((a, b) => a.order - b.order);
     const result: ShaperComTreeNode[] = [];
+    // 1-based `/com list` line number each node will occupy once deployed in this
+    // depth-first order. Because every node is appended as the last child of its
+    // parent (whose earlier descendants are already emitted), its live line number
+    // equals its emission position — so children can address their parent by index.
+    const indexById = new Map<string, number>();
     const walk = (parentId: string | null, depth: number) => {
         childrenOf(parentId).forEach(node => {
-            result.push({ ...node, depth, command: formatShaperComCommand(node) });
+            indexById.set(node.id, result.length + 1);
+            const parentIndex = node.parentId ? indexById.get(node.parentId) : undefined;
+            result.push({ ...node, depth, command: formatShaperComCommand(node, parentIndex) });
             walk(node.id, depth + 1);
         });
     };

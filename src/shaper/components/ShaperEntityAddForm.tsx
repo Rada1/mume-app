@@ -20,8 +20,11 @@ export const ShaperEntityAddForm: React.FC<ShaperEntityAddFormProps> = ({ kind, 
     const [vnum, setVnum] = useState('');
     const [name, setName] = useState('');
     const [focused, setFocused] = useState(false);
-    const catalog = useShaperEntityCatalog(kind, name || vnum);
-    const suggestions = useMemo(() => matchShaperCatalogEntries(catalog, name || vnum), [catalog, name, vnum]);
+    const { entries, catalogQuery } = useShaperEntityCatalog(kind, name || vnum);
+    const suggestions = useMemo(
+        () => matchShaperCatalogEntries(entries, name || vnum, catalogQuery),
+        [entries, catalogQuery, name, vnum]
+    );
 
     const submit = () => {
         if (!name.trim() && !vnum.trim()) return;

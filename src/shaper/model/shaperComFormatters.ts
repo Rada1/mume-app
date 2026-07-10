@@ -12,9 +12,22 @@ const limitRaw = (node: ShaperCommandNode): string => node.limit?.raw || '0';
 
 const joinCommand = (parts: string[]): string => parts.filter(Boolean).join(' ');
 
+const optionalTargetField = (node: ShaperCommandNode, key: string, fallback = 'parent'): string => {
+    const value = field(node, key, fallback);
+    return value === 'parent' ? '' : value;
+};
+
 // --- Command Formatting Section ---
-export const formatShaperComCommand = (node: ShaperCommandNode): string => {
-    const prefix = node.parentId ? '/com add +' : '/com add';
+// `parentIndex` is the 1-based position of this node's parent in the deployed
+// `/com list`. MUME's bare `+` flag means "child of the *last* command", which
+// only holds during a full in-order replay — pushing a single nested command in
+// isolation would attach it to whatever command is currently last (yielding a
+// "bad parent"). Addressing the parent explicitly with `/com add <index> +`
+// makes every child command position-independent. See `/help com add`.
+export const formatShaperComCommand = (node: ShaperCommandNode, parentIndex?: number): string => {
+    const prefix = node.parentId
+        ? (parentIndex ? `/com add ${parentIndex} +` : '/com add +')
+        : '/com add';
     const limit = limitRaw(node);
     const vnum = field(node, 'vnum', `<${node.type}>`);
     switch (node.type) {
@@ -27,11 +40,11 @@ export const formatShaperComCommand = (node: ShaperCommandNode): string => {
         case 'hide':
             return joinCommand([prefix, 'hide', vnum, limit]);
         case 'give':
-            return joinCommand([prefix, 'give', vnum, limit, field(node, 'target', 'parent')]);
+            return joinCommand([prefix, 'give', vnum, limit, optionalTargetField(node, 'target')]);
         case 'equip':
-            return joinCommand([prefix, 'equip', vnum, limit, field(node, 'target', 'parent'), field(node, 'position', '<position>')]);
+            return joinCommand([prefix, 'equip', vnum, limit, optionalTargetField(node, 'target'), field(node, 'position', '<position>')]);
         case 'put':
-            return joinCommand([prefix, 'put', vnum, limit, field(node, 'container', 'parent'), field(node, 'needObject')]);
+            return joinCommand([prefix, 'put', vnum, limit, optionalTargetField(node, 'container'), field(node, 'needObject')]);
         case 'door':
             return joinCommand([prefix, 'door', field(node, 'direction', 'n'), field(node, 'doorAction', 'close'), field(node, 'minDifficulty'), field(node, 'maxDifficulty')]);
         case 'container':
@@ -43,7 +56,7 @@ export const formatShaperComCommand = (node: ShaperCommandNode): string => {
         case 'eqclass':
             return joinCommand([prefix, 'eqclass', field(node, 'eqclass', '<eqclass>'), limit]);
         case 'exec':
-            return joinCommand([prefix, 'exec', field(node, 'character', 'parent'), field(node, 'command', '<command>')]);
+            return joinCommand([prefix, 'exec', optionalTargetField(node, 'character'), field(node, 'command', '<command>')]);
         case 'liquid':
             return joinCommand([prefix, 'liquid', field(node, 'liquid', 'water'), field(node, 'amount')]);
         case 'money':

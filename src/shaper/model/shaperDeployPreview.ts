@@ -30,8 +30,11 @@ const buildRoomCommands = (room: ShaperRoomDraft): string[] => {
     const commands: string[] = [];
     const name = textValue(room.name).trim();
     if (name) {
-        const preposition = textValue(room.preposition).trim() || 'in';
-        commands.push(wrapAt(room.roomNumber, `/room name ${preposition}@${name}`));
+        // Preposition is optional: `/room name [<prep>@]<name>`. When it's blank,
+        // omit the `<prep>@` prefix entirely rather than forcing a default.
+        const preposition = textValue(room.preposition).trim();
+        const nameArg = preposition ? `${preposition}@${name}` : name;
+        commands.push(wrapAt(room.roomNumber, `/room name ${nameArg}`));
     }
     if (room.sector) {
         commands.push(wrapAt(room.roomNumber, `/room sector ${room.sector}`));

@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from 'react';
+import type { PointerEvent as ReactPointerEvent } from 'react';
 
 // --- Constants Section ---
 // SHAPER_CELL is the grid pitch (spacing between room centres); SHAPER_TILE is
@@ -18,6 +18,7 @@ export const SHAPER_GUTTER = (SHAPER_CELL - SHAPER_TILE) / 2;
 const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 2.4;
 const ZOOM_SENSITIVITY = 0.0015;
+const LAYER_WHEEL_THRESHOLD = 60;
 
 export interface ShaperCamera {
     x: number;
@@ -27,11 +28,17 @@ export interface ShaperCamera {
 
 const clampZoom = (zoom: number): number => Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom));
 
+interface ShaperCanvasViewOptions {
+    onStepLayer?: (delta: number) => void;
+}
+
 // --- Hook Section ---
-export const useShaperCanvasView = () => {
+export const useShaperCanvasView = (options: ShaperCanvasViewOptions = {}) => {
+    const { onStepLayer } = options;
     const viewportRef = useRef<HTMLDivElement>(null);
     const [camera, setCamera] = useState<ShaperCamera>({ x: 40, y: 40, zoom: 1 });
     const panRef = useRef<{ pointerId: number; startX: number; startY: number; camX: number; camY: number } | null>(null);
+    const layerWheelRef = useRef(0);
     const [isPanning, setIsPanning] = useState(false);
 
     // Convert a client point to its grid cell, accounting for camera + cell size.
@@ -53,6 +60,15 @@ export const useShaperCanvasView = () => {
         const onWheel = (e: WheelEvent) => {
             e.preventDefault();
             e.stopPropagation();
+            if (e.ctrlKey && onStepLayer) {
+                layerWheelRef.current += e.deltaY;
+                if (Math.abs(layerWheelRef.current) >= LAYER_WHEEL_THRESHOLD) {
+                    onStepLayer(layerWheelRef.current < 0 ? 1 : -1);
+                    layerWheelRef.current = 0;
+                }
+                return;
+            }
+            layerWheelRef.current = 0;
             const rect = el.getBoundingClientRect();
             const sx = e.clientX - rect.left;
             const sy = e.clientY - rect.top;
@@ -69,7 +85,7 @@ export const useShaperCanvasView = () => {
 
         el.addEventListener('wheel', onWheel, { passive: false });
         return () => el.removeEventListener('wheel', onWheel);
-    }, []);
+    }, [onStepLayer]);
 
     const handlePanStart = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
         panRef.current = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, camX: camera.x, camY: camera.y };

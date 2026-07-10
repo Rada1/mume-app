@@ -4,7 +4,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir, formatXmlMovementLogText } from '../textMapperEvents';
+import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir, formatXmlMovementArrow, formatXmlMovementLogText } from '../textMapperEvents';
 
 // --- Logic Section ---
 describe('textMapperEvents', () => {
@@ -51,5 +51,11 @@ describe('textMapperEvents', () => {
         expect(formatXmlMovementLogText('w')).toBe('Moved west.');
         expect(formatXmlMovementLogText('nw')).toBe('Moved northwest.');
         expect(formatXmlMovementLogText('')).toBe('Movement confirmed.');
+    });
+
+    it('formats vertical movement as stacked arrows', () => {
+        expect(formatXmlMovementArrow('n')).toBe('\u2191');
+        expect(formatXmlMovementArrow('up')).toBe('\u21c8');
+        expect(formatXmlMovementArrow('down')).toBe('\u21ca');
     });
 });

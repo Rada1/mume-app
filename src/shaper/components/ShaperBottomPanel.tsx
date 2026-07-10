@@ -189,15 +189,12 @@ export const ShaperBottomPanel: React.FC<ShaperBottomPanelProps> = ({
                         )}
                         {copyState === 'failed' && <span className="shaper-copy-failed">Clipboard access failed.</span>}
                         {deployCommands.length > 0 ? (
-                            <>
-                                <ShaperDeployCommandSelector
-                                    commands={deployCommands}
-                                    onPush={onStartDeploy}
-                                    disabled={isDeploying || !!deployBlockedReason}
-                                    disabledReason={isDeploying ? 'Deploy already running.' : deployBlockedReason}
-                                />
-                                <pre>{deployCommands.join('\n')}</pre>
-                            </>
+                            <ShaperDeployCommandSelector
+                                commands={deployCommands}
+                                onPush={onStartDeploy}
+                                disabled={isDeploying || !!deployBlockedReason}
+                                disabledReason={isDeploying ? 'Deploy already running.' : deployBlockedReason}
+                            />
                         ) : (
                             <span>No selected-room deploy commands yet.</span>
                         )}

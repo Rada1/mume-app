@@ -60,8 +60,10 @@
 }
 
 .shaper-com-tree {
+    position: relative;
     display: grid;
-    gap: 8px;
+    gap: 5px;
+    padding-left: 2px;
 }
 
 .shaper-com-tree-root {
@@ -74,15 +76,35 @@
 
 .shaper-com-node {
     position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 8px;
-    align-items: center;
+    align-items: start;
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 7px;
-    background: rgba(255, 255, 255, 0.045);
-    padding: 10px 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, rgba(142, 203, 240, 0.055), rgba(255, 255, 255, 0.035));
+    padding: 6px 8px;
     cursor: grab;
+}
+
+.shaper-com-node.root-node {
+    border-left: 3px solid rgba(240, 180, 91, 0.72);
+    margin-top: 5px;
+}
+
+.shaper-com-node.starts-branch {
+    margin-top: 16px;
+}
+
+.shaper-com-node.child-node {
+    border-left: 3px solid rgba(142, 203, 240, 0.62);
+    background: linear-gradient(90deg, rgba(142, 203, 240, 0.075), rgba(255, 255, 255, 0.03));
+}
+
+.shaper-com-node.relation-active {
+    border-color: rgba(74, 222, 128, 0.68);
+    box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.2), 0 0 18px rgba(74, 222, 128, 0.08);
 }
 
 .shaper-com-node:active {
@@ -101,28 +123,153 @@
 
 .shaper-com-node::before {
     position: absolute;
-    left: -12px;
-    top: 50%;
-    width: 10px;
+    left: -22px;
+    top: 18px;
+    width: 19px;
     height: 1px;
-    background: rgba(240, 180, 91, 0.45);
+    background: rgba(142, 203, 240, 0.5);
     content: "";
 }
 
-.shaper-com-node div {
+.shaper-com-node.child-node::after {
+    position: absolute;
+    left: -22px;
+    top: -6px;
+    width: 1px;
+    height: 25px;
+    background: rgba(142, 203, 240, 0.34);
+    content: "";
+}
+
+.shaper-com-node.root-node::before {
+    display: none;
+}
+
+.shaper-com-node-body,
+.shaper-com-node-details {
     display: grid;
     gap: 5px;
+    min-width: 0;
+}
+
+.shaper-com-node-summary {
+    display: grid;
+    grid-template-columns: 22px auto auto auto minmax(90px, 0.75fr) auto minmax(110px, 1fr);
+    gap: 6px;
+    align-items: center;
+    min-width: 0;
 }
 
 .shaper-com-node code {
     color: #b8c6d4;
     font-size: 12px;
-    white-space: pre-wrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.shaper-com-expand {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 1px solid rgba(142, 203, 240, 0.28);
+    border-radius: 5px;
+    background: rgba(142, 203, 240, 0.08);
+    color: #aedcff;
+    cursor: pointer;
+}
+
+.shaper-com-expand:hover {
+    border-color: rgba(142, 203, 240, 0.58);
+    background: rgba(142, 203, 240, 0.16);
+}
+
+.shaper-com-type-pill,
+.shaper-com-vnum-pill,
+.shaper-com-number-pill,
+.shaper-com-relation-chip {
+    min-height: 20px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0 8px;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.shaper-com-number-pill {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbd5df;
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+.shaper-com-type-pill {
+    border: 1px solid rgba(240, 180, 91, 0.35);
+    background: rgba(240, 180, 91, 0.12);
+    color: #ffd082;
+    text-transform: uppercase;
+}
+
+.shaper-com-vnum-pill {
+    border: 1px solid rgba(142, 203, 240, 0.28);
+    background: rgba(142, 203, 240, 0.1);
+    color: #c8e7ff;
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+.shaper-com-name {
+    min-width: 0;
+    overflow: hidden;
+    color: #e7edf4;
+    font-size: 12px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.shaper-com-name.missing {
+    color: #73808c;
+    font-weight: 600;
+    font-style: italic;
+}
+
+.shaper-com-relation-chip {
+    gap: 4px;
+    border: 1px dashed rgba(74, 222, 128, 0.42);
+    background: rgba(74, 222, 128, 0.09);
+    color: #b7f7cd;
+    cursor: pointer;
+}
+
+.shaper-com-relation-chip strong {
+    color: #e3ffed;
+    font: inherit;
+}
+
+.shaper-com-relation-chip:hover {
+    border-color: rgba(74, 222, 128, 0.86);
+    background: rgba(74, 222, 128, 0.16);
+}
+
+.shaper-com-relation-chip.missing {
+    border-color: rgba(247, 198, 106, 0.48);
+    background: rgba(247, 198, 106, 0.1);
+    color: #f7d694;
+}
+
+.shaper-com-node-details {
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .shaper-com-node-editor {
     display: grid;
-    grid-template-columns: 120px auto 120px minmax(180px, 1fr);
+    grid-template-columns: 120px auto 120px minmax(180px, 1fr) minmax(180px, 1.2fr);
     gap: 6px;
     align-items: end;
 }
@@ -148,8 +295,24 @@
 }
 
 .shaper-com-actions {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 28px);
     gap: 4px;
+}
+
+.shaper-com-actions button {
+    min-height: 28px;
+    padding: 0;
+}
+
+.shaper-com-actions button:last-child {
+    border-color: rgba(239, 68, 68, 0.28);
+    color: #ff9a9a;
+}
+
+.shaper-com-actions button:last-child:hover {
+    border-color: rgba(239, 68, 68, 0.6);
+    background: rgba(239, 68, 68, 0.12);
 }
 
 .shaper-com-limits {

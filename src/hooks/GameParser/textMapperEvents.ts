@@ -4,6 +4,7 @@
  */
 
 import { GmcpExitInfo } from '../../components/Mapper/mapperTypes';
+import { formatMovementArrow, getMovementDirectionLabel, normalizeMovementDirection } from '../../utils/movementDirections';
 
 // --- Types Section ---
 export interface TextMapperRoomEvent {
@@ -46,19 +47,6 @@ const dirMap: Record<string, string> = {
     sw: 'sw', southwest: 'sw'
 };
 
-const dirLabelMap: Record<string, string> = {
-    n: 'north',
-    s: 'south',
-    e: 'east',
-    w: 'west',
-    u: 'up',
-    d: 'down',
-    ne: 'northeast',
-    nw: 'northwest',
-    se: 'southeast',
-    sw: 'southwest'
-};
-
 export const createTextMapperState = (): TextMapperState => ({
     descLines: [],
     exitLines: [],
@@ -92,20 +80,13 @@ export const extractXmlMovementDir = (line: string): string | null => {
 
     const dir = getAttr(attrs, 'dir');
     if (!dir) return '';
-    return dirMap[dir.toLowerCase()] || dir.toLowerCase();
+    return normalizeMovementDirection(dir) || dir.toLowerCase();
 };
 
 export const formatXmlMovementLogText = (dir: string): string => (
-    dir ? `Moved ${dirLabelMap[dir] || dir}.` : 'Movement confirmed.'
+    dir ? `Moved ${getMovementDirectionLabel(dir)}.` : 'Movement confirmed.'
 );
-
-const dirArrowMap: Record<string, string> = {
-    n: '↑', s: '↓', e: '→', w: '←',
-    ne: '↗', nw: '↖', se: '↘', sw: '↙',
-    u: '▲', d: '▼'
-};
-
-export const formatXmlMovementArrow = (dir: string): string => dirArrowMap[dir] || '';
+export const formatXmlMovementArrow = (dir: string): string => formatMovementArrow(dir);
 
 const parseExitLines = (lines: string[]): Record<string, GmcpExitInfo> | undefined => {
     const exits: Record<string, GmcpExitInfo> = {};

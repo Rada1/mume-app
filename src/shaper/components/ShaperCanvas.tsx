@@ -18,6 +18,7 @@ import { ShaperRoomTile } from './ShaperRoomTile';
 import { useShaperTerrainAssets } from './shaperTerrainTile';
 import './ShaperCanvas.css';
 import './ShaperCanvasConnections.css';
+import './ShaperCanvasMenus.css';
 import './ShaperTerrain.css';
 
 interface ShaperCanvasProps {
@@ -42,6 +43,7 @@ interface ShaperCanvasProps {
     onSetViewZ: (z: number) => void;
     onAddRoomAt: (x: number, y: number, z: number) => void;
     onMoveRoom: (roomId: ShaperRoomId, x: number, y: number, z: number) => void;
+    onMoveRoomToLayer: (roomId: ShaperRoomId, z: number) => void;
     onMoveRooms: (roomIds: ShaperRoomId[], dx: number, dy: number, z: number) => void;
     onRemoveRoom: (roomId: ShaperRoomId) => void;
     onRemoveRooms: (roomIds: ShaperRoomId[]) => void;
@@ -85,6 +87,7 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
     onSetViewZ,
     onAddRoomAt,
     onMoveRoom,
+    onMoveRoomToLayer,
     onMoveRooms,
     onRemoveRoom,
     onRemoveRooms,
@@ -93,7 +96,10 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
     playerRoomNum,
     playerMapId
 }) => {
-    const view = useShaperCanvasView();
+    const handleStepLayer = useCallback((delta: number) => {
+        onSetViewZ(viewZ + delta);
+    }, [onSetViewZ, viewZ]);
+    const view = useShaperCanvasView({ onStepLayer: handleStepLayer });
     // Re-render tiles when the terrain image assets finish loading.
     useShaperTerrainAssets();
     const [showExits, setShowExits] = useState(false);
@@ -329,6 +335,7 @@ export const ShaperCanvas: React.FC<ShaperCanvasProps> = ({
                         selectedRoomIds={selectedRoomIds}
                         viewZ={viewZ}
                         onAddRoomAt={onAddRoomAt}
+                        onMoveRoomToLayer={onMoveRoomToLayer}
                         onRemoveRoom={onRemoveRoom}
                         onRemoveRooms={onRemoveRooms}
                         onClose={() => setRoomMenu(null)}

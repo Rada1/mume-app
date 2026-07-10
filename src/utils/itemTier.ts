@@ -138,6 +138,8 @@ const normalizeItemText = (text: string): string => (
         .toLowerCase()
 );
 
+const withoutLeadingArticle = (text: string): string => text.replace(/^(?:a|an|the)\s+/i, '');
+
 const stateFromText = (normalized: string): Pick<ItemTierResult, 'state' | 'stateLabel'> => {
     for (const [state, words] of Object.entries(stateWords) as Array<[ItemStateTier, string[]]>) {
         const match = words.find(word => normalized.includes(`(${word})`));
@@ -151,7 +153,9 @@ export const classifyItemTier = (text: string): ItemTierResult => {
     const result: ItemTierResult = stateFromText(normalized);
 
     for (const group of tierItems) {
-        if (group.items.some(item => normalized.includes(item))) {
+        if (group.items.some(item => (
+            normalized.includes(item) || normalized.includes(withoutLeadingArticle(item))
+        ))) {
             result.tier = group.tier;
             result.label = tierLabels[group.tier];
             return result;

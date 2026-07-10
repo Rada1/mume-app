@@ -245,6 +245,33 @@ describe('Tokenizer — char inline button assignment (GMCP source-of-truth cont
             expect(ent?.metadata?.category).toBe('cat-worn-object');
         });
 
+        it('promotes raw ANSI equipment rows to worn-object entities', () => {
+            const tokens = Tokenizer.tokenize(
+                '<worn across back> \x1b[33ma yew longbow\x1b[0m (good)',
+                makeContext([]),
+                'worn'
+            );
+            const textOnly = tokens.map(token => token.content).join('');
+            const ent = tokens.find((token): token is EntityToken => (
+                token.type === 'entity' && token.content === 'a yew longbow (good)'
+            ));
+
+            expect(textOnly).toBe('<worn across back> a yew longbow (good)');
+            expect(ent?.metadata?.category).toBe('cat-worn-object');
+            expect(ent?.metadata?.context).toBe('longbow');
+        });
+
+        it('does not turn an equipment article before an object tag into its own entity', () => {
+            const tokens = Tokenizer.tokenize(
+                '<wielded> a <object>falchion</object>',
+                makeContext([]),
+                'worn'
+            );
+            const entities = tokens.filter((token): token is EntityToken => token.type === 'entity');
+
+            expect(entities.map(entity => entity.content)).toEqual(['falchion']);
+        });
+
         it('preserves single-letter who-list display markers', () => {
             const tokens = Tokenizer.tokenize(
                 '*[ A] &lt;E&gt; Imago the Ainu of Win & Great Success',

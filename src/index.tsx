@@ -304,6 +304,7 @@ const MudClient = () => {
         >
             <div className={`app-content-shaker ${rumble ? 'rumble-active' : ''}`} style={{ flex: 1, position: 'relative' }}>
                 <AtmosphericLayer />
+                <div className="app-header-glass-strip" aria-hidden="true" />
 
                 <ErrorBoundary name="Main Content">
                     <MainContentLayer

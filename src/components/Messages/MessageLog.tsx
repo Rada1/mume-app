@@ -21,10 +21,34 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 import { decodeCommandEntities } from '../../utils/commandTextUtils';
 import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { getRoomTerrainVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
+import { formatMovementArrow, getMovementDirectionLabel, normalizeMovementDirection } from '../../utils/movementDirections';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
     return `[${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}]`;
+};
+
+const arrowToDirection: Record<string, string> = {
+    '\u2191': 'n',
+    '\u2193': 's',
+    '\u2192': 'e',
+    '\u2190': 'w',
+    '\u2197': 'ne',
+    '\u2196': 'nw',
+    '\u2198': 'se',
+    '\u2199': 'sw',
+    '\u21c8': 'u',
+    '\u21ca': 'd',
+    '\u25b2': 'u',
+    '\u25bc': 'd'
+};
+
+const getMovementDisplay = (raw: string) => {
+    const trimmed = raw.trim();
+    const direction = normalizeMovementDirection(trimmed) || normalizeMovementDirection(arrowToDirection[trimmed]);
+    const arrow = direction ? formatMovementArrow(direction) : trimmed;
+    const label = direction ? getMovementDirectionLabel(direction) : 'movement';
+    return { arrow, label };
 };
 
 const ReplyButton = ({ msg, setParley, onReply }: { msg: Message, setParley: (p: any) => void, onReply: (e: React.MouseEvent) => void }) => {
@@ -346,7 +370,11 @@ const MessageItem = React.memo(({
         }, 50);
     }, [msg.replyCommand, msg.replyTarget, setParley, triggerHaptic, playClickSound]);
 
-    const showTimestamp = isTimestampEnabled && !msg.isRoomName && msg.type !== 'room-description';
+    const showTimestamp = isTimestampEnabled &&
+        !msg.isRoomName &&
+        msg.type !== 'room-description' &&
+        msg.type !== 'weather' &&
+        msg.type !== 'gmcp-event';
     const timestampEl = showTimestamp ? (
         <span className="message-timestamp">{formatTimestamp(msg.timestamp)}</span>
     ) : null;
@@ -359,7 +387,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${isRecentEntry && isTextRevealEnabled ? ' recent-entry' : ''}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}`}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${isRecentEntry && isTextRevealEnabled ? ' recent-entry' : ''}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}`}
             style={{ 
                 '--reveal-delay': `${batchOffset * 15}ms`,
                 '--terrain-glow-color': msg.isRoomBlock && !msg.isRoomContentsLine ? getRoomTerrainGlowColor(msg.terrain) : undefined
@@ -367,17 +395,27 @@ const MessageItem = React.memo(({
         >
             {showBlockHeaders && msg.isRoomBlockStart && (
                 <div className="room-block-header">
-                    {formatTimestamp(msg.timestamp)} LOCATION
+                    LOCATION
                 </div>
             )}
             {showBlockHeaders && msg.isCombatBlockStart && (
                 <div className="combat-block-header">
-                    {formatTimestamp(msg.timestamp)} COMBAT
+                    COMBAT
                 </div>
             )}
             {showBlockHeaders && msg.isCommBlockStart && (
                 <div className="comm-block-header">
-                    {formatTimestamp(msg.timestamp)} COMMUNICATION
+                    COMMUNICATION
+                </div>
+            )}
+            {(msg.type === 'weather' || msg.type === 'gmcp-event') && (
+                <div className="weather-block-header">
+                    WEATHER
+                </div>
+            )}
+            {msg.type === 'movement' && (
+                <div className="movement-block-header">
+                    MOVEMENT
                 </div>
             )}
             {msg.type === 'user' ? (
@@ -392,7 +430,17 @@ const MessageItem = React.memo(({
                 </div>
             ) : msg.type === 'prompt' ? (
                 <span><TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''))} /></span>
-            ) : msg.type === 'practice-skill' && msg.practiceSkill ? (
+            ) : msg.type === 'movement' ? (() => {
+                const movement = getMovementDisplay(msg.textRaw || '');
+                return (
+                    <div className="movement-event-row">
+                        <div className="movement-event-chip" aria-label={`Moved ${movement.label}`}>
+                            <span className="movement-event-arrow">{movement.arrow}</span>
+                            <span className="movement-event-label">{movement.label}</span>
+                        </div>
+                    </div>
+                );
+            })() : msg.type === 'practice-skill' && msg.practiceSkill ? (
                 <PracticeSkillCard skill={msg.practiceSkill} />
             ) : msg.type === 'practice-header' && msg.practiceHeader ? (
                 <PracticeHeaderCard sessionsLeft={msg.practiceHeader.sessionsLeft} />
@@ -869,6 +917,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             if (msg.type === 'practice-header') return 52;
             if (msg.type === 'practice-class-header') return 32;
             if (msg.type === 'practice-column-header') return 80;
+            if (msg.type === 'movement') return showBlockHeaders && msg.isMovementBlockStart ? 64 : 36;
             if (msg.type === 'prompt') return Math.ceil(viewport.logFontSizePx * 1.25 + 6);
 
             const charCount = (msg.textRaw || msg.commText || '').length;

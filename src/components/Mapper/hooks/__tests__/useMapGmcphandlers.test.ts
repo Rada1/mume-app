@@ -34,14 +34,15 @@ const renderHandlers = (
 ) => {
     const roomsRef = makeRef<Record<string, MapperRoom>>({
         m_1: makeRoom('m_1', {
-            e: { target: 'm_2', closed: false },
-            n: { target: 'm_3', closed: false }
+            e: { target: 'm_2', gmcpDestId: 2, closed: false },
+            n: { target: 'm_3', gmcpDestId: 3, closed: false }
         }),
         m_2: makeRoom('m_2', {}),
         m_3: makeRoom('m_3', {})
     });
     const pendingMovesRef = makeRef(pendingMoves);
     const clientPredictionsRef = makeRef(predictions);
+    const addMessage = vi.fn();
     const setCurrentRoomId = vi.fn((id: string | null) => {
         currentRoomIdRef.current = id;
     });
@@ -71,12 +72,13 @@ const renderHandlers = (
         firstExploredAtRef: makeRef({}),
         triggerRender: vi.fn(),
         onRoomInfoProcessed: reconcilePrediction,
+        addMessage,
         clientPredictionsRef,
         characterName: 'Tester',
         activeView: 'self'
     }));
 
-    return { hook, pendingMovesRef, clientPredictionsRef, setCurrentRoomId };
+    return { hook, pendingMovesRef, clientPredictionsRef, setCurrentRoomId, addMessage };
 };
 
 describe('useMapGmcphandlers movement confirmation', () => {
@@ -96,7 +98,7 @@ describe('useMapGmcphandlers movement confirmation', () => {
     });
 
     it('consumes the queue head for directed XML moves', () => {
-        const { hook, pendingMovesRef, clientPredictionsRef, setCurrentRoomId } = renderHandlers(
+        const { hook, pendingMovesRef, clientPredictionsRef, setCurrentRoomId, addMessage } = renderHandlers(
             [{ dir: 'e', time: 0 }, { dir: 'n', time: 0 }],
             [{ dir: 'e' }, { dir: 'n' }]
         );
@@ -106,6 +108,7 @@ describe('useMapGmcphandlers movement confirmation', () => {
         });
 
         expect(setCurrentRoomId).toHaveBeenCalledWith('m_2');
+        expect(addMessage).toHaveBeenCalledWith('movement', 'e');
         expect(pendingMovesRef.current.map(move => move.dir)).toEqual(['n']);
         expect(clientPredictionsRef.current.map(move => move.dir)).toEqual(['n']);
     });
@@ -123,5 +126,24 @@ describe('useMapGmcphandlers movement confirmation', () => {
         expect(setCurrentRoomId).toHaveBeenCalledWith('m_2');
         expect(pendingMovesRef.current).toEqual([]);
         expect(clientPredictionsRef.current).toEqual([]);
+    });
+
+    it('logs an arrow when GMCP room info confirms a queued move', () => {
+        const { hook, pendingMovesRef, addMessage } = renderHandlers(
+            [{ dir: 'e', time: Date.now() }],
+            [{ dir: 'e' }]
+        );
+
+        act(() => {
+            hook.result.current.handleRoomInfo({
+                num: 2,
+                name: 'm_2',
+                area: 'test',
+                terrain: 'Field'
+            });
+        });
+
+        expect(addMessage).toHaveBeenCalledWith('movement', 'e');
+        expect(pendingMovesRef.current).toEqual([]);
     });
 });
