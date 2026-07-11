@@ -11,6 +11,7 @@ import { useGame, useLog, useUI, useVitals, useBaseGame } from '../../context/Ga
 import { useMapper } from '../../context/useMapper';
 import { TokenRenderer } from '../Messages/TokenRenderer';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
+import { resolveActionIcon } from '../../utils/actionIcons';
 import { getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 import './MapperRoomInfo.css';
 import './MapperRoomMeta.css';
@@ -109,6 +110,13 @@ export const MapperRoomInfo: React.FC<MapperRoomInfoProps> = () => {
 
     const roomEntityId = roomName ? `room:${roomName.toLowerCase()}` : '';
 
+    // `watch` (climb a watchtower to survey the area) only works in rooms carrying
+    // the TOWER load flag, so the button is gated on that map flag being present.
+    const hasTowerFlag = useMemo(() => {
+        const loadFlags = [...(preloadedRoom?.[8] || []), ...(mapRoom?.loadFlags || [])];
+        return loadFlags.some((flag: string) => String(flag).toUpperCase() === 'TOWER');
+    }, [mapRoom, preloadedRoom]);
+
     // Same button set as the cat-room popover opened by tapping the room name.
     const actionButtons = useMemo(() => {
         const buttons = btn?.buttons || [];
@@ -117,11 +125,13 @@ export const MapperRoomInfo: React.FC<MapperRoomInfoProps> = () => {
         const seen = new Set<string>();
         return buttons.filter(b => {
             if (seen.has(b.command)) return false;
+            const verb = String(b.command || '').trim().toLowerCase().split(/\s+/)[0];
+            if (verb === 'watch' && !hasTowerFlag) return false;
             if (!isButtonValidForEntity(b, roomEntityId, ROOM_CATEGORY_ID, filterDeps, ROOM_CATEGORY_ID, roomName)) return false;
             seen.add(b.command);
             return true;
         });
-    }, [btn?.buttons, inlineCategories, roomNpcs, entities, characterInfo, roomEntityId, roomName]);
+    }, [btn?.buttons, inlineCategories, roomNpcs, entities, characterInfo, roomEntityId, roomName, hasTowerFlag]);
 
     if (!roomName) return null;
 
@@ -255,18 +265,23 @@ export const MapperRoomInfo: React.FC<MapperRoomInfoProps> = () => {
                 {/* Inline action strip — same actions as tapping the room name. */}
                 {!isMobilePortrait && actionButtons.length > 0 && (
                     <div className="mri-room-action-strip" onClick={e => e.stopPropagation()}>
-                        {actionButtons.map(button => (
-                            <button
-                                key={button.id}
-                                type="button"
-                                className="mri-room-action-button"
-                                style={{ '--room-action-color': button.color } as React.CSSProperties}
-                                onClick={e => fireAction(e, button.command)}
-                                title={button.command}
-                            >
-                                {button.label}
-                            </button>
-                        ))}
+                        {actionButtons.map(button => {
+                            const Icon = resolveActionIcon(button.command, button.label);
+                            return (
+                                <button
+                                    key={button.id}
+                                    type="button"
+                                    className="mri-room-action-button"
+                                    onClick={e => fireAction(e, button.command)}
+                                    title={button.command}
+                                >
+                                    {button.icon
+                                        ? <img src={button.icon} alt="" className="mri-room-action-icon" />
+                                        : <Icon size={13} strokeWidth={2} />}
+                                    <span>{button.label}</span>
+                                </button>
+                            );
+                        })}
                     </div>
                 )}
             </div>

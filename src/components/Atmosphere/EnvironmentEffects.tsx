@@ -24,7 +24,7 @@ interface EnvironmentEffectsProps {
 const getLightingTint = (lighting: LightingType): string => {
     switch (lighting) {
         case 'sun': return 'rgba(255, 235, 170, 0.22)';
-        case 'moon': return 'rgba(70, 110, 255, 0.4)';
+        case 'moon': return 'rgba(28, 48, 115, 0.48)';
         case 'artificial': return 'rgba(180, 30, 20, 0.4)';
         case 'dark': return 'rgba(0, 0, 15, 0.6)';
         default: return 'rgba(0, 0, 0, 0)';

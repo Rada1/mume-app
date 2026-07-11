@@ -138,16 +138,14 @@
 }
 
 .line-cluster .line-cluster-action-menu {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
-    border-radius: 0 !important;
-    transform: rotate(45deg) !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+    border-radius: 7px !important;
 }
 
 .line-cluster .line-cluster-action-menu .action-menu-button__icon {
-    transform: rotate(-45deg) !important;
     display: inline-block;
 }
 
@@ -213,10 +211,34 @@
     animation-fill-mode: backwards;
 }
 
+/* Deck-slot theme: flat slate rounded-rect slots with gold icons, matching the
+   bottom-bar CommandDeck buttons (the swipe-wheel gestures are unchanged). */
 .tactical-line-wrapper .line-btn {
-    border-color: rgba(232, 176, 32, 0.2) !important;
-    border-width: 0.75px !important;
-    box-shadow: 0 0 0 1px rgba(232, 176, 32, 0.08) !important;
+    background: rgba(22, 27, 38, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 7px !important;
+    box-shadow: none !important;
+    transition: background 0.14s ease, border-color 0.14s ease, transform 0.12s ease !important;
+}
+
+.tactical-line-wrapper .line-btn:hover {
+    background: rgba(30, 36, 49, 0.95) !important;
+    border-color: rgba(232, 176, 32, 0.4) !important;
+}
+
+.tactical-line-wrapper .line-btn .custom-btn-icon-node {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+}
+
+.tactical-line-wrapper .line-btn .custom-btn-icon-node svg {
+    color: #e8b020;
+}
+
+.tactical-line-wrapper .line-btn:hover .custom-btn-icon-node svg {
+    color: #ffd98a;
 }
 
 .tactical-line-wrapper .line-btn:not(.triggered):not(:active):not(.is-swiping) .button-icon,
@@ -329,22 +351,22 @@
     margin: 0 auto;
     min-height: unset !important;
     border-radius: 12px !important;
-    background: rgba(10, 13, 21, 0.72) !important;
-    border: 1px solid rgba(255, 255, 255, 0.07) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     overflow: visible !important;
     z-index: 1;
 }
 
 @media (max-width: 1024px) and (orientation: portrait) {
     .mobile-tactical-buttons-persistent .line-cluster {
-        background: rgba(13, 16, 23, 0.62) !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
         border: none !important;
-        border-radius: var(--radius-card) !important;
+        border-radius: 0 !important;
         box-shadow: none !important;
     }
 }
@@ -362,15 +384,14 @@
 }
 
 .mobile-tactical-buttons-persistent .line-cluster .custom-btn {
-    width: 16px !important;
-    height: 16px !important;
-    min-width: 16px !important;
-    min-height: 16px !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
 }
 
 .mobile-tactical-buttons-persistent .line-cluster-title {
-    margin-bottom: 1px;
-    font-size: 0.42rem;
+    display: none;
 }
 
 .mobile-tactical-buttons-persistent .line-cluster-step {
@@ -384,14 +405,15 @@
 }
 
 .mobile-tactical-buttons-persistent .line-cluster .line-cluster-action-menu {
-    width: 16px !important;
-    height: 16px !important;
-    min-width: 16px !important;
-    min-height: 16px !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    border-radius: 7px !important;
 }
 
 .mobile-tactical-buttons-persistent .line-cluster .line-cluster-action-menu .action-menu-button__icon {
-    font-size: 0.6rem !important;
+    font-size: 0.85rem !important;
 }
 
 .mobile-tactical-buttons-persistent .line-cluster .custom-btn .button-icon {
@@ -418,7 +440,7 @@
 
 .mobile-bottom-gutter .line-cluster .custom-btn:active,
 .mobile-bottom-gutter .line-cluster .custom-btn.is-swiping {
-    transform: rotate(45deg) scale(2.0) !important;
+    transform: scale(1.1) translateY(1px) !important;
     z-index: 30 !important;
     transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }
@@ -747,7 +769,10 @@
 
 .mobile-room-info-card .mri-content,
 .mobile-room-info-card .mapper-room-info-container.expanded .mri-content {
+    background: rgba(13, 16, 23, 0.62) !important;
+    border-top: 1px solid var(--terrain-glow-color, rgba(255, 255, 255, 0.08)) !important;
     border-radius: 0 !important;
+    box-shadow: inset 0 0 30px var(--terrain-glow-color, transparent), inset 0 0 0 1px rgba(232, 176, 32, 0.14) !important;
     gap: 1px;
     min-height: 0;
 }
@@ -776,6 +801,10 @@
 .mobile-room-info-card .mri-corner-flags {
     left: 6px !important;
     top: 4px !important;
+}
+
+.mobile-room-info-card .mri-room-corner {
+    display: none;
 }
 
 .desktop-tactical-buttons-persistent {
@@ -823,58 +852,43 @@
 }
 
 .desktop-tactical-buttons-persistent .line-cluster .custom-btn {
-    width: 22px !important;
-    height: 22px !important;
-    min-width: 22px !important;
-    min-height: 22px !important;
-    transition: transform 0.14s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.14s ease !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+    transition: transform 0.14s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.14s ease, border-color 0.14s ease !important;
 }
 
 .desktop-tactical-buttons-persistent .line-cluster .line-cluster-action-menu {
-    width: 22px !important;
-    height: 22px !important;
-    min-width: 22px !important;
-    min-height: 22px !important;
-    border-radius: 0 !important;
-    transform: rotate(45deg) !important;
-    transition: transform 0.14s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.14s ease !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+    border-radius: 7px !important;
+    transition: transform 0.14s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.14s ease, border-color 0.14s ease !important;
 }
 
 .desktop-tactical-buttons-persistent .line-cluster .line-cluster-action-menu:not(.is-disabled):hover {
-    transform: rotate(45deg) scale(1.6) !important;
+    transform: scale(1.12) !important;
     z-index: 30 !important;
 }
 
 .desktop-tactical-buttons-persistent .line-cluster .line-cluster-action-menu:not(.is-disabled):active {
-    transform: rotate(45deg) scale(2.0) !important;
+    transform: scale(1.06) translateY(1px) !important;
     z-index: 30 !important;
 }
 
 .desktop-tactical-buttons-persistent .line-cluster .line-cluster-action-menu .action-menu-button__icon {
-    font-size: 0.78rem !important;
+    font-size: 0.95rem !important;
 }
 
 .desktop-tactical-buttons-persistent .line-cluster .custom-btn:hover {
-    transform: rotate(45deg) scale(1.6) !important;
+    transform: scale(1.12) !important;
     z-index: 30 !important;
 }
 
 .desktop-tactical-buttons-persistent .line-cluster .custom-btn:active,
 .desktop-tactical-buttons-persistent .line-cluster .custom-btn.is-swiping {
-    transform: rotate(45deg) scale(2.0) !important;
+    transform: scale(1.06) translateY(1px) !important;
     z-index: 30 !important;
-}
-
-.desktop-tactical-buttons-persistent .line-cluster .custom-btn .button-icon {
-    font-size: 0.78rem !important;
-}
-
-.desktop-tactical-buttons-persistent .line-cluster .custom-btn .button-label {
-    font-size: 0.46rem !important;
-    max-width: 22px;
-}
-
-/* Make persistent tactical line buttons inside the map drawer have the same dark gold background as selected tabs */
-.desktop-tactical-buttons-persistent .tactical-line-wrapper .line-btn {
-    background-color: rgba(232, 176, 32, 0.12) !important;
 }

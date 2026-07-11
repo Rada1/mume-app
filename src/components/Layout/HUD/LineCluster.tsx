@@ -4,10 +4,21 @@
  */
 
 import React from 'react';
+import { Trees, Sparkles, VenetianMask, Swords, Wand, DoorOpen, Users } from 'lucide-react';
 import { useGame } from '../../../context/GameContext';
 import { useUIStore } from '../../../stores/useUIStore';
 import { CustomButton } from '../../../types';
 import './LineCluster.css';
+
+// Gold lucide icons per tactical button, matching the bottom-bar icon language.
+const TACTICAL_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
+    'tactical-ranger': Trees,
+    'tactical-cleric': Sparkles,
+    'tactical-thief': VenetianMask,
+    'tactical-warrior': Swords,
+    'tactical-mage': Wand,
+    'tactical-doors': DoorOpen
+};
 
 interface LineClusterProps {
     isEditMode: boolean;
@@ -79,12 +90,15 @@ export const LineCluster: React.FC<LineClusterProps> = ({
     // Check if we should be hidden (redundant with Layer but safe)
     if (isMobile && !isLandscape && viewport.isKeyboardOpen && !isEditMode) return null;
 
-    const renderButton = (button: any, variant: 'default' | 'diamond', className: string) => (
+    const renderButton = (button: any, variant: 'default' | 'diamond', className: string) => {
+        const IconCmp = TACTICAL_ICONS[button.id];
+        return (
         <GameButton
             key={button.id}
             button={button}
             className={className}
             variant={variant}
+            iconNode={IconCmp ? <IconCmp size={17} strokeWidth={2} /> : undefined}
             useDefaultPositioning={false}
             isEditMode={isEditMode}
             isGridEnabled={isGridEnabled}
@@ -108,7 +122,8 @@ export const LineCluster: React.FC<LineClusterProps> = ({
             setButtons={setButtons}
             isMobile={isMobile}
         />
-    );
+        );
+    };
 
     return (
         <div className={`tactical-line-wrapper${selectedTarget ? ' is-targeting' : ''}`}>
@@ -133,7 +148,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
                         className="line-cluster-step"
                         style={{ '--cascade-delay': `${index * 0.12}s` } as React.CSSProperties}
                     >
-                        {renderButton(button, 'diamond', `line-btn ${button.id}`)}
+                        {renderButton(button, 'default', `line-btn ${button.id}`)}
                         <span className="line-cluster-caption">{getTacticalClassLabel(button)}</span>
                     </div>
                 ))}

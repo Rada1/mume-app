@@ -45,17 +45,18 @@ const RunnerIcon: React.FC<{ size?: number; className?: string }> = ({ size = 11
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="2.7"
         strokeLinecap="round"
         strokeLinejoin="round"
         className={className}
         aria-hidden="true"
     >
-        <circle cx="13" cy="4" r="2" />
-        <path d="M12 7l-3 4 4 2 3 3" />
-        <path d="M10 13l-2 7" />
-        <path d="M16 16l4 2" />
-        <path d="M9 11l-5 1" />
+        <circle cx="15" cy="4.5" r="2.2" />
+        <path d="M13.6 7.3l-3.2 4 3.9 2.6" />
+        <path d="M12.9 8.2l3.2 1.1 2.7-1" />
+        <path d="M10.4 11.3l-4 .7" />
+        <path d="M14.3 13.9l2.7 2.8 3 .8" />
+        <path d="M12.1 13.1l-2.1 3.8-3.1 2.6" />
     </svg>
 );
 
@@ -124,7 +125,7 @@ const ConditionBadge: React.FC<{
     status: string; 
     percent: number;
     colorClass: string; 
-    onClick?: () => void;
+    onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
     altStatus?: string;
     showAlt?: boolean;
     mirrored?: boolean;
@@ -445,6 +446,20 @@ const PromptBox: FC<PromptBoxProps> = ({
         }, 1000);
     }, [triggerHaptic]);
 
+    const handleHpBarClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        triggerNumbers();
+    }, [triggerNumbers]);
+
+    const handleResourceBarClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        if (viewport.isMobile) {
+            triggerNumbers();
+            return;
+        }
+        handleTabClick('status');
+    }, [handleTabClick, triggerNumbers, viewport.isMobile]);
+
     const handlePosClick = useCallback((e: React.MouseEvent) => {
         triggerHaptic(10);
         const rect = e.currentTarget.getBoundingClientRect();
@@ -620,17 +635,30 @@ const PromptBox: FC<PromptBoxProps> = ({
                                 <div className="name-label prompt-player-name prompt-inline-name">
                                     {characterName || ''}
                                 </div>
-                                <div className="prompt-combat-stat-stack">
+                                <button
+                                    type="button"
+                                    className={`prompt-combat-stat-stack disposition-stat-button ${activeSlider === 'disposition' ? 'active' : ''}`}
+                                    onClick={!isSpectateMode ? handleDispositionClick : undefined}
+                                    style={{ cursor: isSpectateMode ? 'default' : 'pointer' }}
+                                    title={`Disposition: ${mood || 'normal'} / ${spellSpeed || 'normal'} / ${alertness || 'normal'}`}
+                                >
                                     <PromptCombatStatsLine />
+                                    {!inCombat && (
+                                        <span className="disposition-square-btn disposition-stat-icon" aria-hidden="true">
+                                            <Sliders size={13} strokeWidth={2.6} />
+                                        </span>
+                                    )}
+                                </button>
+                                {!inCombat && (
                                     <button
-                                        className={`pos-combat-square-btn disposition-square-btn ${activeSlider === 'disposition' ? 'active' : ''}`}
-                                        onClick={!isSpectateMode ? handleDispositionClick : undefined}
+                                        className={`pos-combat-square-btn ${activeSlider === 'pos' ? 'active' : ''}`}
+                                        onClick={!isSpectateMode ? handlePosClick : undefined}
                                         style={{ cursor: isSpectateMode ? 'default' : 'pointer' }}
-                                        title={`Disposition: ${mood || 'normal'} / ${spellSpeed || 'normal'} / ${alertness || 'normal'}`}
+                                        title={`Position: ${playerPosition}`}
                                     >
-                                        <Sliders size={13} strokeWidth={2.6} />
+                                        {getPositionIcon()}
                                     </button>
-                                </div>
+                                )}
                               </div>
                               <div className="player-stats-group player-stats-stack">
                                 <div className="prompt-vital-row">
@@ -645,7 +673,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                                             colorClass="hp"
                                             segments={HEALTH_SEGMENTS}
                                             tiers={HEALTH_TIERS}
-                                            onClick={triggerNumbers}
+                                            onClick={handleHpBarClick}
                                             showAlt={showNumbers || isDragging}
                                             altStatus={isDragging ? `` : `${hp}/${maxHp}`}
                                             isFighting={inCombat}
@@ -664,7 +692,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                                         colorClass="mana"
                                         segments={MANA_SEGMENTS}
                                         tiers={MANA_TIERS}
-                                        onClick={() => handleTabClick('status')}
+                                        onClick={handleResourceBarClick}
                                         showAlt={showNumbers}
                                         altStatus={`${mana}/${maxMana}`}
                                         isFighting={inCombat}
@@ -678,7 +706,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                                         colorClass="move"
                                         segments={MOVE_SEGMENTS}
                                         tiers={MOVE_TIERS}
-                                        onClick={() => handleTabClick('status')}
+                                        onClick={handleResourceBarClick}
                                         showAlt={showNumbers}
                                         altStatus={`${move}/${maxMove}`}
                                         isFighting={inCombat}
@@ -690,7 +718,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                     </div>
 
                     {/* Center Anchor */}
-                    <div className="vitals-center-anchor" style={{ position: 'relative' }}>
+                    {inCombat && <div className="vitals-center-anchor" style={{ position: 'relative' }}>
                         <ChevronUp 
                             size={11} 
                             className={`prompt-expand-chevron ${isExpanded ? 'is-expanded' : ''}`} 
@@ -710,7 +738,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                         >
                             {getPositionIcon()}
                         </button>
-                    </div>
+                    </div>}
 
                     {/* Opponent Side */}
                     <div className="vitals-side-container side-right">

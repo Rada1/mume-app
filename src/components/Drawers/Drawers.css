@@ -199,8 +199,7 @@
 }
 
 /* Mume.org theme palette — scoped to drawer tabs */
-.desktop-drawer-tabs,
-.portrait-tab-bar {
+.desktop-drawer-tabs {
     --tab-accent: #e8b020;
     --tab-accent-rgb: 232, 176, 32;
     --tab-bg: rgba(12, 12, 18, 0.78);
@@ -668,40 +667,6 @@
 /* Repositioned above in main tabs block for cleaner logic */
 
 /* Mobile Portrait Gutter Tab Bar */
-.portrait-tab-bar {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    background: var(--tab-bg);
-    backdrop-filter: blur(24px) saturate(1.2);
-    -webkit-backdrop-filter: blur(24px) saturate(1.2);
-    border-top: 1px solid var(--tab-border);
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.35);
-    height: calc(52px + var(--mobile-bottom-reserved-space, 0px));
-    min-height: calc(52px + var(--mobile-bottom-reserved-space, 0px));
-    flex-shrink: 0;
-    padding: 0 10px var(--mobile-bottom-reserved-space, 0px);
-    z-index: 10;
-}
-
-.portrait-tab-bar .desktop-edge-tab {
-    flex: 1;
-    height: 100%;
-    width: auto;
-    flex-direction: row;
-    gap: 6px;
-}
-
-.portrait-tab-bar .desktop-edge-tab .tab-icon {
-    width: 16px;
-    height: 16px;
-}
-
-.portrait-tab-bar .desktop-edge-tab .tab-text {
-    font-size: 0.6rem;
-}
-
 /* Mume.org-themed backgrounds for desktop drawers */
 @media (min-width: 1025px) {
     .map-drawer-desktop {
@@ -776,8 +741,7 @@
     --border-color: rgba(168, 122, 42, 0.3);
 }
 
-.light-mode .desktop-drawer-tabs,
-.light-mode .portrait-tab-bar {
+.light-mode .desktop-drawer-tabs {
     --tab-accent: #a87a2a;
     --tab-accent-rgb: 168, 122, 42;
     --tab-bg: #f5efe2;
@@ -846,12 +810,6 @@
     .light-mode .log-card-drawer {
         border-left: 1px solid rgba(0, 0, 0, 0.08) !important;
     }
-}
-
-.light-mode .portrait-tab-bar {
-    background: var(--tab-bg);
-    border-top-color: var(--tab-border);
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
 }
 
 /* Immersion mode: restore depth shadows */

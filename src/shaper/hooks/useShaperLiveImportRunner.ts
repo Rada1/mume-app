@@ -8,6 +8,7 @@ import { applyShaperLiveTranscript } from '../import/shaperLiveImport';
 import { parseShaperBuildListRooms } from '../import/shaperLiveRoomDiscovery';
 import { parseShaperZoneInfoKeywords } from '../import/shaperZoneInfoDiscovery';
 import { useShaperLiveImportStore } from '../import/useShaperLiveImportStore';
+import { useVitalsStore } from '../../stores/useVitalsStore';
 import type { ShaperWorkspaceDoc } from '../model/shaperTypes';
 
 interface ShaperLiveImportRunnerParams {
@@ -26,6 +27,11 @@ export interface ShaperLiveImportStatus {
 
 const COMMAND_SETTLE_MS = 125;
 const MAX_EXIT_DISCOVERY_PASSES = 4;
+
+// MUME immortal ranks are numeric: 101 Maia, 102 Maia Cartographer (Mc — /zone,
+// /stat, /info zone), 103 Maia Builder (Mb — adds /misc, /com, /lib), 104 Wright…
+const MC_CARTOGRAPHER_LEVEL = 102;
+const MB_BUILDER_LEVEL = 103;
 
 const sleep = (ms: number): Promise<void> =>
     new Promise(resolve => setTimeout(resolve, ms));
@@ -215,17 +221,54 @@ export const useShaperLiveImportRunner = ({ send, persist, setDoc }: ShaperLiveI
         }
     }, []);
 
-    // Whole-zone import: discover rooms via the build list, then read each.
+    // Whole-zone import: discover rooms, then read each. The GMCP character level
+    // tells us which commands the account can run (ranks are numeric — see the
+    // level constants above):
+    //   - 103+ (Maia Builder and above): privileged `/misc build <zone> list`
+    //     discovery (curated build set — fewer rooms, faster) plus the Mb-only
+    //     /com and /lib reads.
+    //   - 102 (Maia Cartographer): rooms only, via the Mc-level `/zone <zone> list`.
+    //   - unknown (GMCP level not received yet): probe `/misc`, fall back to
+    //     `/zone`, and gate the reset/library reads on whether `/misc` was allowed.
     const start = useCallback((doc: ShaperWorkspaceDoc) => runImport(async () => {
-        setStatus({ running: true, label: 'Reading zone room list', completed: 0, total: 0, error: null });
-        // `/zone <n> list` is Mc-level and lists every room in the zone, so it
-        // works for room-phase builders who don't yet have the Mb `/misc` command.
-        const zoneList = await runCommand(`/zone ${doc.zoneNumber} list`);
-        const roomNumbers = parseShaperBuildListRooms(zoneList.output, doc.zoneNumber);
-        if (roomNumbers.length === 0) {
-            const snippet = zoneList.output.replace(/\s+/g, ' ').trim().slice(0, 80);
-            throw new Error(`No rooms found for zone ${doc.zoneNumber} (captured ${zoneList.output.length} chars: "${snippet}").`);
+        const level = useVitalsStore.getState().characterInfo.level ?? 0;
+        const isCartographer = level === MC_CARTOGRAPHER_LEVEL;
+        const isBuilderPlus = level >= MB_BUILDER_LEVEL;
+
+        let roomNumbers: string[] = [];
+        let resetReadsAvailable = false;
+
+        if (isCartographer) {
+            // Maia Cartographer: `/misc` is unavailable — go straight to `/zone list`.
+            setStatus({ running: true, label: 'Reading zone room list', completed: 0, total: 0, error: null });
+            const zoneList = await runCommand(`/zone ${doc.zoneNumber} list`);
+            roomNumbers = parseShaperBuildListRooms(zoneList.output, doc.zoneNumber);
+        } else {
+            // Maia Builder and above (or unknown level): try the faster `/misc` first.
+            setStatus({
+                running: true,
+                label: isBuilderPlus ? 'Reading build list' : 'Detecting builder access',
+                completed: 0, total: 0, error: null
+            });
+            const buildList = await runCommand(`/misc build ${doc.zoneNumber} list`);
+            const miscRefused = isResetReadDenied(buildList.output);
+            resetReadsAvailable = !miscRefused;
+            roomNumbers = miscRefused ? [] : parseShaperBuildListRooms(buildList.output, doc.zoneNumber);
+            if (roomNumbers.length === 0) {
+                // `/misc` refused (below Mb) or empty (fully-built zone): use `/zone list`.
+                setStatus({ running: true, label: 'Reading zone room list', completed: 0, total: 0, error: null });
+                const zoneList = await runCommand(`/zone ${doc.zoneNumber} list`);
+                roomNumbers = parseShaperBuildListRooms(zoneList.output, doc.zoneNumber);
+            }
         }
+
+        if (roomNumbers.length === 0) {
+            throw new Error(`No rooms found for zone ${doc.zoneNumber}. Check that you're in a builder session with access to this zone.`);
+        }
+
+        // Reset/library reads need Mb access; skip them entirely for cartographers.
+        resetReadsAvailableRef.current = resetReadsAvailable;
+        resetDeniedRef.current = !resetReadsAvailable;
         let discoveryFailures = 0;
         setStatus({ running: true, label: 'Reading zone keyword list', completed: 0, total: 0, error: null });
         const keywordListCommand = buildShaperZoneInfoListCommand(doc.zoneNumber);

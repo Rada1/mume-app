@@ -37,6 +37,9 @@ interface GameButtonProps {
     manaRatio?: number;
     moveRatio?: number;
     variant?: 'default' | 'diamond';
+    /** Optional content rendered inside the button in place of the text/image label
+     *  (e.g. a lucide icon for the tactical deck-slot buttons). */
+    iconNode?: React.ReactNode;
 }
 
 export const GameButton: React.FC<GameButtonProps> = ({
@@ -66,7 +69,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
     hpRatio,
     manaRatio,
     moveRatio,
-    variant = 'default'
+    variant = 'default',
+    iconNode
 }) => {
     const [activeDir, setActiveDir] = React.useState<any>(null);
     const [isCancelling, setIsCancelling] = React.useState(false);
@@ -247,7 +251,9 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     onSwap={handleSwap}
                 />
             )}
-            <ButtonLabel button={button} />
+            {iconNode
+                ? <span className="custom-btn-icon-node">{iconNode}</span>
+                : <ButtonLabel button={button} />}
 
             {isEditMode && button.setId !== 'Tactical' && (
                 <div

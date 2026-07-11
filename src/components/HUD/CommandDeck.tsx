@@ -4,13 +4,13 @@
  * action box below the log. Loadout tabs page a uniform grid of action slots
  * (combat, social, utility). Movement lives on the MovementPad (under the map)
  * and class skills live on the SkillsDeck (under the character drawer). Mobile
- * keeps LineCluster; this is desktop-only.
+ * can reuse this deck in the map gutter for the center action buttons.
  */
 
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import {
     Swords, MessageSquare, Wrench,
-    Sword, ShieldPlus, Zap, HeartPulse, Footprints, Target, ScrollText
+    Sword, HeartPulse, Footprints, Target, ScrollText
 } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
@@ -27,10 +27,10 @@ interface DeckItem {
 
 const STATIC: Record<TabKey, { label: string; cmd: string }[]> = {
     combat: [
-        { label: 'Kill', cmd: 'kill ' }, { label: 'Bash', cmd: 'bash ' },
-        { label: 'Kick', cmd: 'kick ' }, { label: 'Rescue', cmd: 'rescue ' },
-        { label: 'Flee', cmd: 'flee' }, { label: 'Consider', cmd: 'consider ' },
-        { label: 'Wimpy', cmd: 'wimpy' }, { label: 'Assist', cmd: 'assist ' }
+        { label: 'Kill', cmd: 'kill ' },
+        { label: 'Flee', cmd: 'flee' },
+        { label: 'Consider', cmd: 'consider ' },
+        { label: 'Assist', cmd: 'assist ' }
     ],
     social: [
         { label: 'Say', cmd: 'say ' }, { label: 'Narrate', cmd: 'narrate ' },
@@ -52,7 +52,7 @@ const TABS: { key: TabKey; label: string; icon: React.ComponentType<{ size?: num
 ];
 
 const LABEL_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
-    Kill: Sword, Bash: ShieldPlus, Kick: Zap, Rescue: HeartPulse, Flee: Footprints,
+    Kill: Sword, Flee: Footprints,
     Consider: Target, Assist: HeartPulse
 };
 

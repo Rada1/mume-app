@@ -13,6 +13,7 @@ import { useGame } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
 import { PRACTICE_CLASS_SKILLS, PracticeClassKey } from '../../utils/practiceClassCatalog';
+import { SkillClassIcon } from './SkillClassIcon';
 import './CommandDeck.css';
 
 interface SkillItem {
@@ -145,6 +146,7 @@ export const SkillsDeck: FC = () => {
                                 title={targetReady ? `${item.cmd} ${target}` : item.cmd}
                             >
                                 {item.pct !== undefined && <span className="deck-slot-pct">{item.pct}%</span>}
+                                <SkillClassIcon classKey={skillClass} size={17} />
                                 <span className="deck-slot-label deck-slot-label-lg">{item.label}</span>
                             </button>
                         );

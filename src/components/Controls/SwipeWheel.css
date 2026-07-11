@@ -70,8 +70,8 @@
     transform: translate(-50%, -50%);
     width: 70px;
     height: 70px;
-    background: color-mix(in srgb, var(--set-accent, var(--accent)) 12%, #08080a);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(22, 27, 38, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     display: flex;
     flex-direction: column;
@@ -79,22 +79,23 @@
     justify-content: center;
     z-index: 25;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.05);
+    gap: 2px;
+    box-shadow: inset 0 0 14px rgba(255, 255, 255, 0.04), 0 4px 14px rgba(0, 0, 0, 0.38);
 }
 
 .swipe-center.active {
-    background: color-mix(in srgb, var(--set-accent, var(--accent)) 45%, #08080a);
+    background: color-mix(in srgb, var(--set-accent, var(--accent)) 22%, rgba(22, 27, 38, 0.98));
     border-color: var(--set-accent, var(--accent));
     transform: translate(-50%, -50%) scale(1.1);
     box-shadow: 0 0 25px rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.45), inset 0 0 15px rgba(255, 255, 255, 0.25);
 }
 
 .swipe-center-label {
-    font-size: 0.6rem;
-    font-weight: 900;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.58rem;
+    font-weight: 750;
+    color: #cbd5e1;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0;
     text-align: center;
     max-width: 60px;
     overflow: hidden;
@@ -126,17 +127,13 @@
     opacity: 1;
     scale: 1;
     animation: swipe-wheel-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border-radius: 20px;
-    background: #000000;
+    border-radius: 12px;
+    background: transparent;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     overflow: hidden;
-    border: 1px solid rgba(212, 170, 0, 0.2);
-    box-shadow:
-        0 0 32px rgba(0, 0, 0, 0.5),
-        0 0 5px var(--set-accent, var(--accent)),
-        0 0 16px color-mix(in srgb, var(--set-accent, var(--accent)) 46%, transparent),
-        0 0 46px color-mix(in srgb, var(--set-accent, var(--accent)) 24%, transparent);
+    border: none;
+    box-shadow: none;
 }
 
 @keyframes swipe-wheel-pop {
@@ -178,18 +175,12 @@
 
 .swipe-slice.active {
     z-index: 20;
-    /* Match the tighter tactical button glow instead of blooming across the whole wheel. */
-    filter: drop-shadow(0 0 6px var(--set-accent, var(--accent)));
+    filter: none;
 }
 
 .swipe-slice.active::before {
-    /* Linear gradient ensures the color doesn't fade out as it approaches the center */
-    background: linear-gradient(to left,
-            color-mix(in srgb, var(--set-accent, var(--accent)) 45%, transparent) 0%,
-            color-mix(in srgb, var(--set-accent, var(--accent)) 15%, transparent) 100%);
-    box-shadow:
-        inset -10px 0 16px color-mix(in srgb, var(--set-accent, var(--accent)) 25%, transparent),
-        0 0 15px color-mix(in srgb, var(--set-accent, var(--accent)) 30%, transparent);
+    background: transparent;
+    box-shadow: none;
 }
 
 .slice-separator {
@@ -198,44 +189,43 @@
     left: 50%;
     width: 75%;
     height: 2px;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.34) 100%);
+    background: transparent;
     transform-origin: left center;
     transform: rotate(-22.5deg);
     pointer-events: none;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    box-shadow: none;
+    display: none;
 }
 
 .swipe-sq-label {
     position: absolute;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.65rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: #cbd5e1;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0;
     white-space: normal;
     line-height: 1.2;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    transition: color 0.2s ease, letter-spacing 0.2s ease, text-shadow 0.2s ease;
+    transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
     z-index: 15;
     pointer-events: none;
-    max-width: 64px;
+    max-width: 72px;
 }
 
 .swipe-sq-label.active {
     color: #fff;
-    letter-spacing: 1.5px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.9);
 }
 
 .swipe-sq-label[data-dir="up"] {
-    top: 12px;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
 }
 
 .swipe-sq-label[data-dir="down"] {
-    bottom: 12px;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
@@ -243,41 +233,41 @@
 
 .swipe-sq-label[data-dir="left"] {
     top: 50%;
-    left: 10px;
+    left: 8px;
     transform: translateY(-50%);
     text-align: center;
-    max-width: 58px;
+    max-width: 72px;
 }
 
 .swipe-sq-label[data-dir="right"] {
     top: 50%;
-    right: 10px;
+    right: 8px;
     transform: translateY(-50%);
     text-align: center;
-    max-width: 58px;
+    max-width: 72px;
 }
 
 .swipe-sq-label[data-dir="ne"] {
-    top: 12px;
-    right: 12px;
+    top: 10px;
+    right: 10px;
     text-align: right;
 }
 
 .swipe-sq-label[data-dir="nw"] {
-    top: 12px;
-    left: 12px;
+    top: 10px;
+    left: 10px;
     text-align: left;
 }
 
 .swipe-sq-label[data-dir="se"] {
-    bottom: 12px;
-    right: 12px;
+    bottom: 10px;
+    right: 10px;
     text-align: right;
 }
 
 .swipe-sq-label[data-dir="sw"] {
-    bottom: 12px;
-    left: 12px;
+    bottom: 10px;
+    left: 10px;
     text-align: left;
 }
 

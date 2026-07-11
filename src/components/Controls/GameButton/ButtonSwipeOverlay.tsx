@@ -6,6 +6,9 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { CustomButton, SwipeDirection } from '../../../types';
+import { SkillClassIcon } from '../../HUD/SkillClassIcon';
+import { getClassKeyFromSetId, getSkillPresentation } from '../../../utils/skillPresentation';
+import './ButtonSwipeOverlay.css';
 
 interface ButtonSwipeOverlayProps {
     button: CustomButton;
@@ -69,6 +72,8 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
     const centerY = buttonRect ? (buttonRect.top + buttonRect.height / 2) : 0;
     const wheelAccent = rayParams.color || button.style.borderColor || button.style.backgroundColor || 'var(--set-accent, var(--accent))';
     const wheelAccentRgb = colorToRgb(wheelAccent, colorToRgb(button.style.borderColor || button.style.backgroundColor, 'var(--set-accent-rgb, var(--accent-rgb))'));
+    const buttonClassKey = getClassKeyFromSetId(button.command) || getClassKeyFromSetId(button.setId);
+    const centerPresentation = getSkillPresentation(button.command || '', button.label || '', buttonClassKey);
 
     return createPortal(
         <div style={{
@@ -112,26 +117,31 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                     const cmdVal = (button.swipeCommands?.[d as SwipeDirection] || '').trim();
                     if (!cmdVal) return null;
                     const isActive = activeDir === d;
+                    const presentation = getSkillPresentation(cmdVal, cmdVal, buttonClassKey);
                     return (
                         <span
                             key={`label-${d}`}
                             className={`swipe-sq-label ${isActive ? 'active' : ''}`}
                             data-dir={d}
                         >
-                            {cmdVal}
+                            <span className="swipe-action-card">
+                                {presentation.classKey && <SkillClassIcon classKey={presentation.classKey} size={15} />}
+                                <span className="swipe-action-text">{presentation.label}</span>
+                            </span>
                         </span>
                     );
                 })}
                 <div className={`swipe-center ${(activeDir as any) === 'center' ? 'active' : ''}`}>
+                    {centerPresentation.classKey && <SkillClassIcon classKey={centerPresentation.classKey} size={18} />}
                     <span className="swipe-center-label">
                         {toSwipeCenterActionLabel(button)}
                     </span>
                 </div>
             </div>
             {(() => {
-                const label = button.label || button.command || '';
+                const label = centerPresentation.label || button.label || button.command || '';
                 if (!label) return null;
-                const knownClass = CLASS_COLORS[label.toLowerCase()];
+                const knownClass = centerPresentation.classKey ? CLASS_COLORS[centerPresentation.classKey] : CLASS_COLORS[label.toLowerCase()];
                 const color = knownClass || wheelAccent;
                 return (
                     <div className="class-indicator" style={{ '--class-color': color } as React.CSSProperties}>

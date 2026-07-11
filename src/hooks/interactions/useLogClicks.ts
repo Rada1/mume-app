@@ -321,7 +321,6 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
 
         // --- First tap: select a targetable entity ---
         const tapAxes = getInlineCategoryAxes(category);
-        const isTargetHighlight = targetEl.classList.contains('target-highlighter') || targetEl.classList.contains('is-target');
         const isEntityTap =
             isTargetableInline &&
             entityId &&
@@ -342,22 +341,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             const glowColor = targetEl.style.getPropertyValue('--glow-color').trim();
             const accentColor = glowColor || targetEl.style.color || undefined;
             const isAlreadySelected = shopStore.selectedTarget?.id === entityId;
-            const shouldOpenImmediately = tapAxes.isCharacter;
-            if (isTargetHighlight || isAlreadySelected || shouldOpenImmediately) {
-                if (shouldOpenImmediately && !isTargetHighlight && !isAlreadySelected) {
-                    toggleObjectSelection({
-                        id: entityId,
-                        setId: cmd || undefined,
-                        category: category || undefined,
-                        context: contextStr || undefined,
-                        displayName,
-                        keyword: resolvedKeyword || undefined,
-                        accentColor,
-                        menuDisplay,
-                        parentNoun,
-                    });
-                    setTarget(contextStr || null);
-                }
+            if (isAlreadySelected) {
                 const rect = targetEl.getBoundingClientRect();
                 const sourceRect = { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
                 setPopoverState({
@@ -408,6 +392,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         if (action === 'menu') {
             const glowColor = targetEl.style.getPropertyValue('--glow-color').trim();
             const accentColor = glowColor || targetEl.style.color || undefined;
+            const isTargetHighlight = targetEl.classList.contains('target-highlighter') || targetEl.classList.contains('is-target');
 
             // Toggle logic: If clicking the same non-highlight button, close the popover
             if (!isTargetHighlight && popoverState && popoverState.entityId === entityId && popoverState.setId === (cmd || 'selection')) {

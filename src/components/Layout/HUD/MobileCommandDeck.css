@@ -1,0 +1,93 @@
+/**
+ * @file MobileCommandDeck.css
+ * @description Compact mobile placement for the shared center command deck.
+ */
+
+.mobile-command-deck-persistent {
+    width: min(94vw, 430px);
+    padding: 6px 8px 0;
+    box-sizing: border-box;
+    pointer-events: auto;
+}
+
+.mobile-command-deck-persistent .command-deck {
+    gap: 4px;
+    padding: 0;
+}
+
+.mobile-command-deck-persistent .deck-target-hint {
+    top: -4px;
+    max-width: calc(100vw - 28px);
+    font-size: 0.58rem;
+    padding: 4px 8px;
+}
+
+.mobile-command-deck-persistent .deck-tab-rail {
+    justify-content: center;
+    gap: 4px;
+}
+
+.mobile-command-deck-persistent .deck-tab {
+    min-height: 24px;
+    padding: 3px 8px;
+    border-radius: 7px;
+    background: rgba(22, 27, 38, 0.78);
+    font-size: 0.56rem;
+}
+
+.mobile-command-deck-persistent .deck-tab svg {
+    width: 11px;
+    height: 11px;
+}
+
+.mobile-command-deck-persistent .deck-grid-wrap {
+    min-height: 0;
+}
+
+.mobile-command-deck-persistent .deck-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+    max-height: 92px;
+    overflow-y: auto;
+    padding: 0 1px 2px;
+}
+
+.mobile-command-deck-persistent .deck-slot {
+    min-height: 38px;
+    padding: 4px 3px;
+    border-radius: 7px;
+    background: rgba(22, 27, 38, 0.82);
+}
+
+.mobile-command-deck-persistent .deck-slot svg {
+    width: 14px;
+    height: 14px;
+}
+
+.mobile-command-deck-persistent .deck-slot-label {
+    font-size: 0.52rem;
+}
+
+.mobile-command-deck-persistent .deck-slot-key {
+    display: none;
+}
+
+.mobile-command-deck-persistent + .mobile-tactical-buttons-persistent {
+    margin-top: 3px !important;
+}
+
+@media (max-width: 380px) {
+    .mobile-command-deck-persistent {
+        width: min(96vw, 360px);
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+
+    .mobile-command-deck-persistent .deck-grid {
+        gap: 4px;
+    }
+
+    .mobile-command-deck-persistent .deck-tab span {
+        display: none;
+    }
+}

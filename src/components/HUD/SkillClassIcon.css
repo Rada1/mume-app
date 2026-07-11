@@ -1,0 +1,33 @@
+/**
+ * @file SkillClassIcon.css
+ * @description Shared class + skill glyph styling.
+ */
+
+.skill-class-icon {
+    position: relative;
+    width: 20px;
+    height: 17px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #e8b020;
+}
+
+.skill-class-icon-primary {
+    color: currentColor;
+    filter: drop-shadow(0 0 5px rgba(232, 176, 32, 0.16));
+}
+
+.deck-slot.state-dim .skill-class-icon,
+.deck-slot.state-passive .skill-class-icon {
+    color: #7a8496;
+}
+
+.deck-slot.target-ready .skill-class-icon {
+    color: #f09595;
+}
+
+.light-mode .skill-class-icon {
+    color: #8a6620;
+}

@@ -302,7 +302,6 @@
     padding: 4px 5px;
 }
 
-/* Skill slots have no icon, so labels get the room to wrap to two lines. */
 .deck-slot-label-lg {
     white-space: normal;
     font-size: 0.6rem;

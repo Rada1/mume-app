@@ -104,7 +104,7 @@ const TERRAIN_CONFIGS: Record<string, TerrainConfig> = {
 // into terrain hues. Keeping them separate lets both flows read clearly side by side.
 const LIGHTING_COLORS: Record<string, HSLColor> = {
     sun:        { h: 200, s: 32, l: 94 }, // bright pale sky blue
-    moon:       { h: 215, s: 45, l: 48 }, // silver-blue
+    moon:       { h: 222, s: 58, l: 32 }, // deep moonlit blue
     artificial: { h: 28,  s: 75, l: 46 }, // torch amber
     dark:       { h: 260, s: 22, l: 28 }, // deep void violet
     none:       { h: 220, s: 18, l: 38 },

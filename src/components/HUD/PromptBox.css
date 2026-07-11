@@ -266,6 +266,38 @@
     min-width: 0;
 }
 
+.disposition-stat-button {
+    min-height: 22px;
+    flex: 0 1 auto;
+    width: fit-content;
+    max-width: 100%;
+    padding: 2px 5px 2px 7px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 7px;
+    background: rgba(22, 27, 38, 0.85);
+    color: #cbd5e1;
+    box-shadow: none;
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease, transform 0.1s ease;
+}
+
+.disposition-stat-button:hover {
+    background: rgba(30, 36, 49, 0.95);
+    border-color: rgba(232, 176, 32, 0.4);
+}
+
+.disposition-stat-button:active {
+    transform: translateY(1px);
+}
+
+.disposition-stat-button.active {
+    background: rgba(232, 176, 32, 0.16);
+    border-color: rgba(232, 176, 32, 0.5);
+    box-shadow: 0 0 0 1px rgba(232, 176, 32, 0.18);
+}
+
 .prompt-combat-stat-stack .prompt-combat-stats-line {
     display: flex;
     flex-wrap: nowrap;
@@ -277,6 +309,10 @@
     min-height: 0;
 }
 
+.disposition-stat-button .prompt-combat-stats-line {
+    pointer-events: none;
+}
+
 .prompt-combat-stat-stack .prompt-combat-stat {
     gap: 3px;
 }
@@ -284,6 +320,20 @@
 .prompt-combat-stat-stack .stat-icon-wrapper svg {
     width: 10px;
     height: 10px;
+}
+
+.disposition-stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    color: #e8b020;
+    line-height: 0;
+}
+
+.disposition-stat-button:hover .disposition-stat-icon,
+.disposition-stat-button.active .disposition-stat-icon {
+    color: #ffd98a;
 }
 
 .player-stats-stack {
@@ -801,45 +851,48 @@
 }
 
 .pos-combat-square-btn {
-    width: 22px;
-    height: 18px;
+    width: 24px;
+    height: 22px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(201, 151, 56, 0.05);
-    border: 1px solid rgba(201, 151, 56, 0.25);
-    border-radius: 5px;
-    color: rgba(255, 255, 255, 0.75);
+    background: rgba(22, 27, 38, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 7px;
+    color: #e8b020;
     cursor: pointer;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease, transform 0.1s ease;
     padding: 0;
+    flex-shrink: 0;
 }
 
 .pos-combat-square-btn:hover {
-    background: rgba(201, 151, 56, 0.15);
-    border-color: rgba(201, 151, 56, 0.6);
-    color: #ffffff;
-    box-shadow: 0 0 8px rgba(201, 151, 56, 0.25);
+    background: rgba(30, 36, 49, 0.95);
+    border-color: rgba(232, 176, 32, 0.4);
+    color: #ffd98a;
+}
+
+.pos-combat-square-btn:active {
+    transform: translateY(1px);
 }
 
 .pos-combat-square-btn.active {
-    background: rgba(201, 151, 56, 0.25);
-    color: #ffd700;
-    border-color: #ffd700;
-    box-shadow: 
-        0 0 12px rgba(201, 151, 56, 0.4),
-        inset 0 0 4px rgba(201, 151, 56, 0.3);
+    background: rgba(232, 176, 32, 0.16);
+    color: #e8b020;
+    border-color: rgba(232, 176, 32, 0.5);
+    box-shadow: 0 0 0 1px rgba(232, 176, 32, 0.18);
 }
 
 .disposition-square-btn {
-    color: #fff;
+    color: #e8b020;
 }
 
 .disposition-square-btn:hover {
-    color: #fff;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+    color: #ffd98a;
+    text-shadow: none;
 }
 
 .disposition-popout-backdrop {
@@ -958,16 +1011,16 @@
 }
 
 .pos-combat-square-btn.is-fighting {
-    background: rgba(239, 68, 68, 0.05);
-    border-color: rgba(239, 68, 68, 0.4);
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.2);
-    color: #ef4444;
+    background: rgba(226, 74, 74, 0.12);
+    border-color: rgba(226, 74, 74, 0.5);
+    box-shadow: none;
+    color: #f09595;
 }
 
 .pos-combat-square-btn.is-fighting:hover {
-    background: rgba(239, 68, 68, 0.15);
-    border-color: rgba(239, 68, 68, 0.8);
-    box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+    background: rgba(226, 74, 74, 0.18);
+    border-color: rgba(226, 74, 74, 0.68);
+    box-shadow: none;
 }
 
 .combat-divider-icon {
@@ -1032,13 +1085,140 @@
 
 @media (max-width: 768px) {
     .prompt-box-content {
-        padding: 4px 10px;
+        padding: 2px 6px;
+        min-height: 36px;
+    }
+    .prompt-vitals-row-ascii {
+        gap: 4px;
+        padding: 0;
+        min-width: 0;
+    }
+    .vitals-side-container {
+        min-width: 0;
+    }
+    .vitals-side-container.side-right:empty {
+        display: none;
+        flex: 0 0 0;
+    }
+    .prompt-player-hud {
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 4px;
+        width: 100%;
+        min-width: 0;
+    }
+    .prompt-avatar-module {
+        gap: 2px;
+    }
+    .prompt-avatar-pixel {
+        width: 28px;
+        height: 25px;
+        border-radius: 4px;
+    }
+    .prompt-avatar-pixel .terrain-pin-sprite-head {
+        width: 9px;
+        height: 6px;
+    }
+    .prompt-avatar-pixel .terrain-pin-sprite-body {
+        width: 12px;
+        height: 8px;
+        margin-top: 1px;
+    }
+    .prompt-level-badge {
+        right: -2px;
+        bottom: -2px;
+        min-width: 12px;
+        height: 12px;
+        padding: 0 2px;
+        font-size: 7px;
+    }
+    .prompt-progress-rails {
+        height: 25px;
+        gap: 1px;
+    }
+    .prompt-progress-rail {
+        width: 3px;
+    }
+    .player-vitals-stack {
+        gap: 1px;
+    }
+    .prompt-top-stats-row {
+        gap: 3px;
+        min-height: 12px;
+    }
+    .player-top-stats-row .prompt-inline-name {
+        max-width: 48px;
+        font-size: 8px;
+    }
+    .prompt-combat-stat-stack {
+        gap: 3px;
+    }
+    .disposition-stat-button {
+        flex: 0 1 auto;
+        min-height: 18px;
+        padding: 1px 4px 1px 5px;
+        border-radius: 6px;
+    }
+    .prompt-combat-stat-stack .prompt-combat-stats-line {
+        gap: 4px;
+        font-size: 7px;
+    }
+    .prompt-combat-stat-stack .prompt-combat-stat {
+        gap: 1px;
+    }
+    .prompt-combat-stat-stack .stat-icon-wrapper svg {
+        width: 8px;
+        height: 8px;
+    }
+    .disposition-stat-icon svg {
+        width: 11px;
+        height: 11px;
+    }
+    .pos-combat-square-btn {
+        width: 20px;
+        height: 18px;
+        border-radius: 6px;
+    }
+    .pos-combat-square-btn svg {
+        width: 12px;
+        height: 12px;
+    }
+    .vitals-center-anchor {
+        width: 22px;
+        margin: 0 1px;
+        gap: 0;
+    }
+    .prompt-expand-chevron {
+        width: 9px;
+        height: 9px;
     }
     .player-stats-group {
-        gap: 4px;
+        gap: 3px;
     }
     .condition-badge {
-        font-size: 0.7rem;
+        font-size: 0.62rem;
+        padding: 6px 0;
+        margin: -6px 0;
+    }
+    .status-bar-segment {
+        height: 7px;
+    }
+    .status-bar-segments-grid {
+        gap: 1px;
+    }
+    .bar-segment-block {
+        border-width: 0;
+        border-radius: 1px;
+    }
+    .prompt-vital-row {
+        grid-template-columns: 8px minmax(18px, 1fr);
+        gap: 1px;
+    }
+    .prompt-vital-row .vitals-icon {
+        width: 8px;
+        height: 8px;
+    }
+    .player-stats-stack {
+        gap: 3px;
     }
     .prompt-combat-stats-line {
         gap: 4px;

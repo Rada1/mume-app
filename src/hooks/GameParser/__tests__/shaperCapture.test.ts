@@ -147,6 +147,67 @@ describe('useCaptureParser shaper triggers and parsing', () => {
         }));
     });
 
+    it('reads wear flags from the real "Can be worn on:" label and Item type', () => {
+        const deps = createMockDeps();
+        const mockSetObjectStatResult = vi.fn();
+
+        vi.spyOn(useShaperEntityStore, 'getState').mockReturnValue({
+            setObjectStatResult: mockSetObjectStatResult
+        } as any);
+
+        const { result } = renderHook(() => useCaptureParser(deps));
+
+        // Real /stat o 8002 (a small piece of raw meat) shape from live MUME.
+        act(() => {
+            result.current.startSession('shaper_obj_stat');
+            result.current.accumulateLine('Keywords: (the) [meat small raw piece], V-number: [8002] Item type: FOOD,');
+            result.current.accumulateLine('Short description: a small piece of raw meat');
+            result.current.accumulateLine('Can be worn on: take');
+            result.current.accumulateLine('Extra flags: none');
+            result.current.accumulateLine('Weight: 0.76 kg, Cost: 5 c, Rent: 1 c/day, Timer: 0, Drop Timer: 0');
+        });
+
+        act(() => {
+            result.current.finalizeSession();
+        });
+
+        // FOOD (not defaulted) and a TAKE wear flag so it classifies as food, not immobile.
+        expect(mockSetObjectStatResult).toHaveBeenCalledWith(expect.objectContaining({
+            vnum: 8002,
+            type: 'FOOD',
+            wearFlags: ['take']
+        }));
+    });
+
+    it('reads multiple wear locations for equipment (e.g. trousers)', () => {
+        const deps = createMockDeps();
+        const mockSetObjectStatResult = vi.fn();
+
+        vi.spyOn(useShaperEntityStore, 'getState').mockReturnValue({
+            setObjectStatResult: mockSetObjectStatResult
+        } as any);
+
+        const { result } = renderHook(() => useCaptureParser(deps));
+
+        act(() => {
+            result.current.startSession('shaper_obj_stat');
+            result.current.accumulateLine('Keywords: (the) [trousers leather], V-number: [3013] Item type: ARMOR,');
+            result.current.accumulateLine('Short description: a pair of soft leather trousers');
+            result.current.accumulateLine('Can be worn on: take legs');
+            result.current.accumulateLine('Extra flags: none');
+        });
+
+        act(() => {
+            result.current.finalizeSession();
+        });
+
+        expect(mockSetObjectStatResult).toHaveBeenCalledWith(expect.objectContaining({
+            vnum: 3013,
+            type: 'ARMOR',
+            wearFlags: ['take', 'legs']
+        }));
+    });
+
     it('correctly parses mobile stats and attributes', () => {
         const deps = createMockDeps();
         const mockSetMobileStatResult = vi.fn();

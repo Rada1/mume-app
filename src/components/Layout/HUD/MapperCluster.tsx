@@ -1,21 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
+import { CommandDeck } from '../../HUD/CommandDeck';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useInputStore } from '../../../stores/useInputStore';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { DrawerType, GameContextType, UIContextType } from '../../../context/GameContext/types';
-import { ArrowLeft, BookOpen, CloudFog, Info, Map as MapIcon, User, Shield, UtensilsCrossed, Droplets, Activity, Clock, Menu, ChevronLeft, HelpCircle } from 'lucide-react';
+import { ArrowLeft, BookOpen, Info, UtensilsCrossed, Droplets, Menu, ChevronLeft, HelpCircle } from 'lucide-react';
 import { useMapper } from '../../../context/useMapper';
 import { MapFilterBar } from '../../Mapper/MapFilterBar';
 
-import { useMumeTime } from '../../../hooks/useMumeTime';
 import InputArea from '../../Controls/InputArea';
 import OpponentRechargeTimer from '../../Combat/OpponentRechargeTimer';
 import { ActionTimerDisplay } from '../../HUD/ActionTimerDisplay';
 import { UiPositions, SwipeDirection } from '../../../types';
 import { GutterDrawerPanel } from './GutterDrawerPanel';
 import { AccountAnsiLine } from '../../Drawers/AccountAnsiLine';
+import './MobileCommandDeck.css';
 
 type CreationOption = { id: string; label: string };
 const EMPTY_CREATION_OPTIONS: CreationOption[] = [];
@@ -54,15 +55,13 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     const {
         triggerHaptic, viewport, btn, handleButtonClick, executeCommand, joystick,
         spatButtons, setSpatButtons, parley, setParley, whoList,
-        inlineCategories, env, isFoggy, gameState, currentTerrain, gameTime, accountState, setAccountState,
+        inlineCategories, gameState, currentTerrain, accountState, setAccountState,
     } = useGame() as GameContextType;
     const { target, activePrompt, stats } = useVitals();
-    const currentTime = useMumeTime(gameTime);
     const {
         ui, setPopoverState,
         handleTabClick, toggleMap
     } = useUI() as UIContextType;
-    const { getLightingIcon, getWeatherIcon, lighting, weather } = env;
     const isExpanded = ui.mapExpanded;
     const { isKeyboardOpen } = viewport;
     const gutterResizeRef = useRef<{ pointerId: number } | null>(null);
@@ -1028,6 +1027,9 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             zIndex: 2800,
                             pointerEvents: 'none'
                         }}>
+                            <div className="mobile-command-deck-persistent">
+                                <CommandDeck />
+                            </div>
                             {/* Persistent Tactical Buttons */}
                             <div
                                 className="mobile-tactical-buttons-persistent"
@@ -1146,8 +1148,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     </div>
                 )}
 
-                {/* Mobile Portrait Env Indicator - Bottom Right above command bar */}
-                {isMobile && !isLandscape && isShown && (lighting !== 'none' || weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty || currentTime) && (
+                {/* Mobile portrait condition indicator. Time and lighting live in the header. */}
+                {isMobile && !isLandscape && isShown && (stats.conditions?.hungry || stats.conditions?.thirsty) && (
                     <div className="mobile-portrait-env-indicator" style={{
                         position: 'absolute',
                         bottom: 'calc(100% - 4px)',
@@ -1166,31 +1168,12 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         transform: 'scale(0.9)',
                         transformOrigin: 'bottom right'
                     }}>
-                        {currentTime && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginRight: '2px', borderRight: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.12)', paddingRight: '4px' }}>
-                                <Clock size={11} style={{ opacity: 0.7 }} />
-                                <span style={{ fontSize: '0.55rem', fontWeight: 800 }}>
-                                    {currentTime.hour === 0 ? '12' : (currentTime.hour > 12 ? currentTime.hour - 12 : currentTime.hour)}
-                                    :{currentTime.minute < 10 ? `0${currentTime.minute}` : currentTime.minute}
-                                    {currentTime.hour >= 12 ? ' PM' : ' AM'}
-                                </span>
-                            </div>
-                        )}
                         {stats.conditions?.hungry && (
                             <UtensilsCrossed size={12} style={{ color: '#fbbf24' }} />
                         )}
                         {stats.conditions?.thirsty && (
                             <Droplets size={12} style={{ color: '#60a5fa' }} />
                         )}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', transform: 'scale(0.85)' }}>
-                            {getLightingIcon()}
-                            {getWeatherIcon()}
-                            {isFoggy && <CloudFog size={12} style={{ opacity: 0.6 }} />}
-                        </div>
-                        <span style={{ fontSize: '0.55rem', fontWeight: 600, letterSpacing: '0.01em', textTransform: 'uppercase', opacity: 0.8 }}>
-                            {lighting && lighting !== 'none' ? lighting : ''}
-                            {weather && weather !== 'none' && weather !== 'clear' ? ` | ${weather.replace('-', ' ')}` : ''}
-                        </span>
                     </div>
                 )}
 
@@ -1219,40 +1202,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     terrain={currentTerrain}
                 />
             </div>
-
-            {/* Bottom Tab Bar */}
-            {!isKeyboardOpen && gameState !== 'disconnected' && (
-                <div className="portrait-tab-bar">
-                    <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'status' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('status'); }}
-                    >
-                        <Activity className="tab-icon" />
-                        <span className="tab-text">Status</span>
-                    </div>
-                    <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('character'); }}
-                    >
-                        <User className="tab-icon" />
-                        <span className="tab-text">Char</span>
-                    </div>
-                    <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'equipment' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('equipment'); }}
-                    >
-                        <Shield className="tab-icon" />
-                        <span className="tab-text">Gear</span>
-                    </div>
-                    <div
-                        className={`desktop-edge-tab right ${isShown ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); toggleMap(); }}
-                    >
-                        <MapIcon className="tab-icon" />
-                        <span className="tab-text">Map</span>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

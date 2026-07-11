@@ -6,7 +6,6 @@
 import React from 'react';
 import { Sword, Shield } from 'lucide-react';
 import { useActiveVitals } from '../../stores/useActiveGameState';
-import { useUI } from '../../context/GameContext';
 
 // --- Logic Section ---
 
@@ -56,7 +55,6 @@ const DodgeBonusIcon: React.FC<{ size?: number }> = ({ size = 12 }) => (
 
 const PromptCombatStatsLine: React.FC = () => {
     const stats = useActiveVitals();
-    const { handleTabClick } = useUI();
     const fmt = (value: number | undefined) => value !== undefined ? `${value}%` : '--';
     
     const statPairs = [
@@ -70,7 +68,6 @@ const PromptCombatStatsLine: React.FC = () => {
         <div 
             className="prompt-combat-stats-line" 
             aria-label="Combat stats"
-            onClick={() => handleTabClick('status')}
         >
             {statPairs.map(({ id, label, value, icon }) => (
                 <span key={id} className="prompt-combat-stat" title={label}>
