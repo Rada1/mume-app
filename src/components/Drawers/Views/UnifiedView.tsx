@@ -58,9 +58,7 @@ export const UnifiedView: React.FC<UnifiedViewProps> = ({
             flex: 1,
             minHeight: 0,
             position: 'relative',
-            background: 'rgba(13,16,23,0.9)',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)'
+            background: 'transparent'
         }}>
             <div style={{ 
                 flex: 1, 

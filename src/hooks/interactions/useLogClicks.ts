@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { EntityCapability } from '../../types';
 import { getButtonCommand } from '../../utils/buttonUtils';
-import { formatNpcKeywordTarget, sanitizeGameTarget } from '../../utils/gameUtils';
+import { formatMumeTarget, formatNpcKeywordTarget, sanitizeGameTarget } from '../../utils/gameUtils';
+import { getEffectiveKeyword } from '../../utils/keywordUtils';
 import { getInlineCategoryAxes, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 import { useUIStore } from '../../stores/useUIStore';
 import { audioManager } from '../../services/audio/AudioManager';
@@ -213,11 +214,17 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         const menuDisplay = targetEl.getAttribute('data-menu-display') as 'dial' | 'list' || undefined;
         const rawContextStr = context || targetEl.innerText.trim();
         const effectiveContextStr = rawContextStr && keywordOverridesRef.current[rawContextStr] ? keywordOverridesRef.current[rawContextStr] : rawContextStr;
-        const isCharacterContext = categoryAxes.isCharacter || !!cmd?.startsWith('npc');
-        const contextStr = (isCharacterContext ? formatNpcKeywordTarget(effectiveContextStr) : sanitizeGameTarget(effectiveContextStr)) || effectiveContextStr;
+        const contextStr = formatMumeTarget(effectiveContextStr) || effectiveContextStr;
         const displayName = stripAnsiCodes(targetEl.innerText.trim() || rawContextStr);
 
         const entityId = targetEl.getAttribute('data-id') || '';
+
+        const resolvedKeyword = getEffectiveKeyword(
+            displayName,
+            targetEl.innerHTML,
+            entityId ? entities[entityId] : undefined,
+            keywordOverridesRef.current
+        );
 
         const activeHeldButton = heldButtonRef?.current || heldButton;
         const isTargetableInline = targetEl.getAttribute('data-targetable') !== 'false';
@@ -344,7 +351,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                         category: category || undefined,
                         context: contextStr || undefined,
                         displayName,
-                        keyword: contextStr || undefined,
+                        keyword: resolvedKeyword || undefined,
                         accentColor,
                         menuDisplay,
                         parentNoun,
@@ -362,7 +369,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                     category: category || undefined,
                     context: contextStr || undefined,
                     displayName,
-                    keyword: contextStr || undefined,
+                    keyword: resolvedKeyword || undefined,
                     entityId,
                     menuDisplay,
                     accentColor,
@@ -382,7 +389,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 category: category || undefined,
                 context: contextStr || undefined,
                 displayName,
-                keyword: contextStr || undefined,
+                keyword: resolvedKeyword || undefined,
                 accentColor,
                 menuDisplay,
                 parentNoun,
@@ -421,7 +428,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 category: category || undefined,
                 context: context || undefined,
                 displayName,
-                keyword: contextStr || undefined,
+                keyword: resolvedKeyword || undefined,
                 entityId: entityId || undefined,
                 menuDisplay,
                 accentColor,

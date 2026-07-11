@@ -14,20 +14,14 @@ import { UnifiedView } from '../Drawers/Views/UnifiedView';
 import { NearbyWhereView } from '../Drawers/NearbyWhereView';
 import { GroupTableView } from '../Drawers/GroupTableView';
 
+import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
+
 type PlayersTab = 'online' | 'nearby' | 'group';
 
 // --- Component Section ---
 
-const HoldActions: React.FC<{ actions: { id: string; label: string; command: string }[] }> = ({ actions }) => (
-    <div className="players-panel-actions">
-        {actions.map(action => (
-            <DrawerHoldCommandButton key={action.id} label={action.label} command={action.command} />
-        ))}
-    </div>
-);
-
 const PlayersPanel: React.FC = () => {
-    const { triggerHaptic, executeCommand } = useGame() as any;
+    const { triggerHaptic, executeCommand, viewport } = useGame() as any;
     const { playersTab, setPlayersTab, whoLines, whereLines, setWhoLines, setWhereLines } = useUI();
     const { groupMembers } = useVitals();
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
@@ -57,6 +51,7 @@ const PlayersPanel: React.FC = () => {
 
     return (
         <aside className={`players-panel${showChatWindow ? ' with-chat' : ''}`} aria-label="Players panel">
+            {!viewport?.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-players-width" minWidth={15} maxWidth={60} />}
             <div className="players-panel-header">
                 <span>Players</span>
             </div>
@@ -77,20 +72,12 @@ const PlayersPanel: React.FC = () => {
                             emptyMessage="No player data. Tap refresh to update."
                             onRefresh={() => { triggerHaptic(15); setWhoLines?.([]); executeCommand('who', true, true, false, true); }}
                         />
-                        <HoldActions actions={[
-                            { id: 'players-panel-online-whois', label: 'Whois', command: 'whois %n' },
-                            { id: 'players-panel-online-chat', label: 'Chat', command: '__parley__' }
-                        ]} />
                     </div>
                     <div className="players-panel-slide">
                         <NearbyWhereView
                             lines={whereLines}
                             onRefresh={() => { triggerHaptic(15); refreshNearby(); }}
                         />
-                        <HoldActions actions={[
-                            { id: 'players-panel-nearby-whois', label: 'Whois', command: 'whois %n' },
-                            { id: 'players-panel-nearby-chat', label: 'Chat', command: '__parley__' }
-                        ]} />
                     </div>
                     <div className="players-panel-slide">
                         <GroupTableView members={groupMembers} />

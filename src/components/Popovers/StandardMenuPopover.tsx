@@ -9,7 +9,7 @@ import { isButtonValidForEntity } from '../../utils/actionUtils';
 import { getButtonIdsForTraits, getCategoryConfig, getResolvedTraitSections, getTraitsForName as getInlineActionTraits } from '../../utils/inlineActionModel';
 import { getInlineCategoryAxes, getInlineCategoryLabel, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 import { formatMumeTarget, sanitizeGameTarget } from '../../utils/gameUtils';
-import { User, Users, Skull, GraduationCap, Store, Coins, Sword, Trash2, Package, Utensils, Droplets, Flame, BookOpen, Shield, Box } from 'lucide-react';
+import { User, Users, Skull, GraduationCap, Store, Coins, Sword, Trash2, Package, Utensils, Droplets, Flame, BookOpen, Shield, Box, Pencil } from 'lucide-react';
 
 // --- Sub-components ---
 import { TraitToggleSection } from './StandardMenu/TraitToggleSection';
@@ -271,8 +271,6 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     })();
     const stopKeywordEvent = (event: React.SyntheticEvent) => {
         event.stopPropagation();
-        event.preventDefault();
-        event.nativeEvent.stopImmediatePropagation?.();
     };
 
     const editKeyword = (event: React.MouseEvent | React.KeyboardEvent) => {
@@ -305,10 +303,14 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                             color: 'var(--accent)',
                             opacity: 0.92,
                             textDecoration: openKeywordEdit ? 'underline' : 'none',
-                            textUnderlineOffset: '2px'
+                            textUnderlineOffset: '2px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            marginLeft: '4px'
                         }}
                     >
-                        ({cleanKeyword})
+                        ({cleanKeyword} <Pencil size={10} style={{ opacity: 0.8 }} />)
                     </span>
                 )}
             </>

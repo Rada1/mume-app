@@ -65,7 +65,7 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         if (!arrow) return;
 
         const now = Date.now();
-        if (lastMovementLogRef.current?.dir === arrow && now - lastMovementLogRef.current.time < 500) {
+        if (lastMovementLogRef.current?.dir === arrow && now - lastMovementLogRef.current.time < 150) {
             return;
         }
 

@@ -102,9 +102,7 @@ export const GearView: React.FC<GearViewProps> = ({
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 padding: '16px 10px',
-                                background: 'rgba(13,16,23,0.9)',
-                                backdropFilter: 'blur(8px)',
-                                WebkitBackdropFilter: 'blur(8px)',
+                                background: 'transparent',
                                 borderTop: '1px solid rgba(255,255,255,0.08)',
                             }}>
                                 <div style={{

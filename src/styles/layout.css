@@ -489,7 +489,7 @@
 .action-box {
     display: flex;
     flex-direction: column;
-    background: rgba(13, 16, 23, 0.62);
+    background: rgba(36, 38, 43, 0.72);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.07);
@@ -607,7 +607,7 @@
 /* On mobile portrait, we apply a refined, balanced floating card styling */
 @media (max-width: 1024px) and (orientation: portrait) {
     .control-card-wrapper {
-        background: rgba(13, 16, 23, 0.62) !important;
+        background: rgba(36, 38, 43, 0.72) !important;
         backdrop-filter: blur(10px) !important;
         -webkit-backdrop-filter: blur(10px) !important;
         border: none !important;
@@ -1936,7 +1936,7 @@
         right: 0;
         height: 40px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(8, 11, 18, 0.24);
+        background: rgba(36, 38, 43, 0.28);
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
         pointer-events: none;
@@ -1991,7 +1991,7 @@
         border-radius: 0 !important;
         border: none !important;
         border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-        background: rgba(13, 16, 23, 0.6) !important;
+        background: rgba(36, 38, 43, 0.68) !important;
         box-shadow: none !important;
         margin: 0 !important;
         padding: 0 !important;

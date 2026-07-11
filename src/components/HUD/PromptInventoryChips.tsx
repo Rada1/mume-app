@@ -221,6 +221,7 @@ const getItemDisplayProps = (chipText: string) => {
 
 export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affects = [], variant = 'prompt' }) => {
     const {
+        gameState,
         triggerHaptic,
         expandedContainers,
         setExpandedContainers,
@@ -376,6 +377,27 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
             </div>
         );
     };
+
+    if (gameState === 'account' && variant === 'drawer') {
+        const placeholderSlots = ['wielded', 'shield', 'head', 'body', 'about body', 'arms', 'hands', 'legs', 'feet'];
+        return (
+            <div className="prompt-inventory-chip-rows character-card-gear placeholder-slots" aria-label="Worn and inventory objects">
+                <div className="character-card-gear-section">
+                    <div className="prompt-gear-card-divider">worn</div>
+                    <div className="prompt-slot-grid">
+                        {placeholderSlots.map(slot => (
+                            <div key={slot} className="prompt-slot-row is-placeholder" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                                <span className="prompt-slot-row-label">{slot}</span>
+                                <span className="prompt-inventory-chip is-empty">
+                                    empty
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     if (variant === 'drawer') {
         return (

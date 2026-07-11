@@ -1,0 +1,128 @@
+/**
+ * @file PlaceholderDrawers.css
+ * @description Premium styling for Map & Character drawer placeholders/overlays
+ * during the pre-login / account phase.
+ */
+
+/* Pulsing skeleton animations */
+@keyframes placeholder-pulse {
+    0% { opacity: 0.35; }
+    50% { opacity: 0.65; }
+    100% { opacity: 0.35; }
+}
+
+.placeholder-pulse-element {
+    animation: placeholder-pulse 2s infinite ease-in-out;
+}
+
+/* Inactive states for drawers */
+.character-card.is-account-phase {
+    opacity: 0.55;
+    filter: grayscale(40%) saturate(0.6);
+    pointer-events: none !important;
+    user-select: none;
+}
+
+.light-mode .character-card.is-account-phase {
+    opacity: 0.6;
+    filter: grayscale(30%) saturate(0.7);
+}
+
+/* Frosted glass overlays */
+.character-card-locked-overlay,
+.map-placeholder-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    background: rgba(10, 13, 21, 0.45);
+    backdrop-filter: blur(8px) saturate(1.2);
+    -webkit-backdrop-filter: blur(8px) saturate(1.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px;
+    text-align: center;
+    pointer-events: auto;
+}
+
+.light-mode .character-card-locked-overlay,
+.light-mode .map-placeholder-overlay {
+    background: rgba(250, 248, 244, 0.5);
+    backdrop-filter: blur(6px) saturate(1.2);
+    -webkit-backdrop-filter: blur(6px) saturate(1.2);
+}
+
+/* Overlay elements */
+.character-card-locked-icon-ring,
+.map-placeholder-icon-ring {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px dashed rgba(212, 170, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent, #ffd700);
+    background: rgba(212, 170, 0, 0.08);
+    box-shadow: 0 0 12px rgba(212, 170, 0, 0.15);
+}
+
+.character-card-locked-title,
+.map-placeholder-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--accent, #ffd700);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.light-mode .character-card-locked-title,
+.light-mode .map-placeholder-title {
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.character-card-locked-subtitle,
+.map-placeholder-subtitle {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.6);
+    max-width: 220px;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+.light-mode .character-card-locked-subtitle,
+.light-mode .map-placeholder-subtitle {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+/* Empty slots for gear placeholder in account mode */
+.prompt-slot-row.is-placeholder {
+    opacity: 0.5;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+    padding: 6px 0;
+}
+
+.light-mode .prompt-slot-row.is-placeholder {
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+.prompt-inventory-chip.is-empty {
+    background: rgba(255, 255, 255, 0.01) !important;
+    border: 1px dashed rgba(255, 255, 255, 0.12) !important;
+    color: rgba(255, 255, 255, 0.25) !important;
+    font-style: italic;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    box-shadow: none !important;
+}
+
+.light-mode .prompt-inventory-chip.is-empty {
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+    color: rgba(0, 0, 0, 0.4) !important;
+}

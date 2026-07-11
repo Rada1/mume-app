@@ -224,6 +224,9 @@
 .comm-block-header,
 .weather-block-header,
 .movement-block-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     font-size: 0.8em;
     opacity: 0.6;
     color: var(--text-primary, #d4cdb8);
@@ -2191,11 +2194,11 @@ span.inline-btn {
 /* Scroll padding for absolutely positioned login card on desktop */
 @media (min-width: 1025px) {
     .state-account .message-log {
-        padding-bottom: 300px !important;
+        padding-bottom: 20px !important;
     }
 }
 .force-desktop.state-account .message-log {
-    padding-bottom: 300px !important;
+    padding-bottom: 20px !important;
 }
 
 /* --- Message Log Terrain Pixel Art Borders --- */
@@ -2390,7 +2393,7 @@ span.inline-btn {
    slots so that whole bottom band reads as one cohesive glass panel instead
    of staying fully transparent on desktop. */
 .app-bottom-glass-strip {
-    background: rgba(8, 11, 18, 0.24);
+    background: rgba(36, 38, 43, 0.28);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border-top: 1px solid rgba(255, 255, 255, 0.08);

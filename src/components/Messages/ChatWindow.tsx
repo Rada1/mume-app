@@ -11,6 +11,7 @@ import { getChatMessageDetails, getChatWindowMessages, parseOutgoingChatCommand 
 import { useGame } from '../../context/GameContext';
 import { ChatEntry } from './ChatEntry';
 import { Send } from 'lucide-react';
+import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
 
 // --- Logic Section ---
 
@@ -111,11 +112,12 @@ const ChatWindow: React.FC = () => {
         }
     }, [chatThreads, selectedThread]);
 
-    const { setParley, triggerHaptic, playClickSound, executeCommand } = useGame() as {
+    const { setParley, triggerHaptic, playClickSound, executeCommand, viewport } = useGame() as {
         setParley?: (val: unknown) => void;
         triggerHaptic?: (ms: number) => void;
         playClickSound?: () => void;
         executeCommand?: (cmd: string) => void;
+        viewport?: any;
     };
 
     const handleParley = React.useCallback((msg: Message, e: React.MouseEvent) => {
@@ -196,6 +198,7 @@ const ChatWindow: React.FC = () => {
 
     return (
         <aside className="chat-window-panel" aria-label="Chat window">
+            {!viewport?.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-chat-width" minWidth={15} maxWidth={60} />}
             <div className="chat-window-header">
                 <span>Chat</span>
                 <span className="chat-window-count">{chatMessages.length}</span>

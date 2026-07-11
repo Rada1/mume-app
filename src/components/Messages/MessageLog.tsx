@@ -5,6 +5,12 @@
 
 // --- Logic Section ---
 import React, { useCallback, useMemo, useEffect, useRef } from 'react';
+import { 
+    Compass, Swords, MessageSquare, CloudSun, Footprints,
+    ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
+    ChevronsUp, ChevronsDown,
+    ArrowUpLeft, ArrowUpRight, ArrowDownLeft, ArrowDownRight 
+} from 'lucide-react';
 import { Message } from '../../types';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
@@ -48,7 +54,24 @@ const getMovementDisplay = (raw: string) => {
     const direction = normalizeMovementDirection(trimmed) || normalizeMovementDirection(arrowToDirection[trimmed]);
     const arrow = direction ? formatMovementArrow(direction) : trimmed;
     const label = direction ? getMovementDirectionLabel(direction) : 'movement';
-    return { arrow, label };
+    return { arrow, label, direction };
+};
+
+const renderMovementArrowIcon = (direction: string | null, fallback: string) => {
+    if (!direction) return fallback;
+    switch (direction) {
+        case 'n': return <ArrowUp size={11} strokeWidth={2.4} />;
+        case 's': return <ArrowDown size={11} strokeWidth={2.4} />;
+        case 'w': return <ArrowLeft size={11} strokeWidth={2.4} />;
+        case 'e': return <ArrowRight size={11} strokeWidth={2.4} />;
+        case 'u': return <ChevronsUp size={11} strokeWidth={2.4} />;
+        case 'd': return <ChevronsDown size={11} strokeWidth={2.4} />;
+        case 'nw': return <ArrowUpLeft size={11} strokeWidth={2.4} />;
+        case 'ne': return <ArrowUpRight size={11} strokeWidth={2.4} />;
+        case 'sw': return <ArrowDownLeft size={11} strokeWidth={2.4} />;
+        case 'se': return <ArrowDownRight size={11} strokeWidth={2.4} />;
+        default: return fallback;
+    }
 };
 
 const ReplyButton = ({ msg, setParley, onReply }: { msg: Message, setParley: (p: any) => void, onReply: (e: React.MouseEvent) => void }) => {
@@ -395,26 +418,31 @@ const MessageItem = React.memo(({
         >
             {showBlockHeaders && msg.isRoomBlockStart && (
                 <div className="room-block-header">
+                    <Compass size={11} strokeWidth={2.5} />
                     LOCATION
                 </div>
             )}
             {showBlockHeaders && msg.isCombatBlockStart && (
                 <div className="combat-block-header">
+                    <Swords size={11} strokeWidth={2.5} />
                     COMBAT
                 </div>
             )}
             {showBlockHeaders && msg.isCommBlockStart && (
                 <div className="comm-block-header">
+                    <MessageSquare size={11} strokeWidth={2.5} />
                     COMMUNICATION
                 </div>
             )}
             {(msg.type === 'weather' || msg.type === 'gmcp-event') && (
                 <div className="weather-block-header">
+                    <CloudSun size={11} strokeWidth={2.5} />
                     WEATHER
                 </div>
             )}
             {msg.type === 'movement' && (
                 <div className="movement-block-header">
+                    <Footprints size={11} strokeWidth={2.5} />
                     MOVEMENT
                 </div>
             )}
@@ -435,7 +463,7 @@ const MessageItem = React.memo(({
                 return (
                     <div className="movement-event-row">
                         <div className="movement-event-chip" aria-label={`Moved ${movement.label}`}>
-                            <span className="movement-event-arrow">{movement.arrow}</span>
+                            <span className="movement-event-arrow">{renderMovementArrowIcon(movement.direction, movement.arrow)}</span>
                             <span className="movement-event-label">{movement.label}</span>
                         </div>
                     </div>

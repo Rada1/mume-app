@@ -119,6 +119,110 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     }, [executeCommand, triggerHaptic, setStats]);
     const logContainerRef = React.useRef<HTMLDivElement>(null);
 
+    // --- Terrain Strip Cross-Fade State & Effects ---
+    const currentTerrainKey = getRoomTerrainVisualKey(gameState === 'account' ? 'forest' : roomCardTerrain);
+    const currentLoreKey = gameState === 'account' ? 'default' : zoneVisualKey;
+
+    const [terrainState, setTerrainState] = React.useState({
+        currentTerrain: currentTerrainKey,
+        currentLore: currentLoreKey,
+        prevTerrain: null as string | null,
+        prevLore: null as string | null,
+        triggerFade: false
+    });
+
+    React.useLayoutEffect(() => {
+        if (currentTerrainKey !== terrainState.currentTerrain || currentLoreKey !== terrainState.currentLore) {
+            setTerrainState(prev => ({
+                currentTerrain: currentTerrainKey,
+                currentLore: currentLoreKey,
+                prevTerrain: prev.currentTerrain,
+                prevLore: prev.currentLore,
+                triggerFade: false
+            }));
+        }
+    }, [currentTerrainKey, currentLoreKey, terrainState.currentTerrain, terrainState.currentLore]);
+
+    React.useEffect(() => {
+        if (terrainState.prevTerrain && !terrainState.triggerFade) {
+            const raf = requestAnimationFrame(() => {
+                setTerrainState(prev => ({ ...prev, triggerFade: true }));
+            });
+            return () => cancelAnimationFrame(raf);
+        }
+    }, [terrainState.prevTerrain, terrainState.triggerFade]);
+
+    React.useEffect(() => {
+        if (terrainState.triggerFade) {
+            const timer = setTimeout(() => {
+                setTerrainState(prev => ({
+                    ...prev,
+                    prevTerrain: null,
+                    prevLore: null,
+                    triggerFade: false
+                }));
+            }, 150); // Cross-fade quickly (150ms)
+            return () => clearTimeout(timer);
+        }
+    }, [terrainState.triggerFade]);
+
+    // --- Sky Art Strip Cross-Fade State & Effects ---
+    const currentSkyLighting = skyLightingClass;
+    const currentSkyWeather = weather;
+    const currentSkyTerrain = getRoomTerrainVisualKey(roomCardTerrain);
+
+    const [skyState, setSkyState] = React.useState({
+        currentLighting: currentSkyLighting,
+        currentWeather: currentSkyWeather,
+        currentTerrain: currentSkyTerrain,
+        prevLighting: null as string | null,
+        prevWeather: null as string | null,
+        prevTerrain: null as string | null,
+        triggerFade: false
+    });
+
+    React.useLayoutEffect(() => {
+        if (
+            currentSkyLighting !== skyState.currentLighting ||
+            currentSkyWeather !== skyState.currentWeather ||
+            currentSkyTerrain !== skyState.currentTerrain
+        ) {
+            setSkyState(prev => ({
+                currentLighting: currentSkyLighting,
+                currentWeather: currentSkyWeather,
+                currentTerrain: currentSkyTerrain,
+                prevLighting: prev.currentLighting,
+                prevWeather: prev.currentWeather,
+                prevTerrain: prev.currentTerrain,
+                triggerFade: false
+            }));
+        }
+    }, [currentSkyLighting, currentSkyWeather, currentSkyTerrain, skyState.currentLighting, skyState.currentWeather, skyState.currentTerrain]);
+
+    React.useEffect(() => {
+        if (skyState.prevTerrain && !skyState.triggerFade) {
+            const raf = requestAnimationFrame(() => {
+                setSkyState(prev => ({ ...prev, triggerFade: true }));
+            });
+            return () => cancelAnimationFrame(raf);
+        }
+    }, [skyState.prevTerrain, skyState.triggerFade]);
+
+    React.useEffect(() => {
+        if (skyState.triggerFade) {
+            const timer = setTimeout(() => {
+                setSkyState(prev => ({
+                    ...prev,
+                    prevLighting: null,
+                    prevWeather: null,
+                    prevTerrain: null,
+                    triggerFade: false
+                }));
+            }, 150); // Cross-fade quickly (150ms)
+            return () => clearTimeout(timer);
+        }
+    }, [skyState.triggerFade]);
+
     const [headerHeight, setHeaderHeight] = React.useState(0);
 
     React.useLayoutEffect(() => {
@@ -273,42 +377,106 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         <div className={`content-layer view-mode-${activeView}`}>
             {!viewport.isMobile && (
                 <div
-                    className={`app-terrain-strip log-terrain-${getRoomTerrainVisualKey(gameState === 'account' ? 'forest' : roomCardTerrain)} log-lore-${gameState === 'account' ? 'default' : zoneVisualKey}`}
                     style={{
                         position: 'fixed',
                         left: 0,
                         right: 0,
                         bottom: 'var(--log-terrain-bottom-offset, 0px)',
                         zIndex: 4500,
-                        pointerEvents: 'none'
+                        pointerEvents: 'none',
+                        height: '46px'
                     }}
-                />
+                >
+                    {terrainState.prevTerrain && (
+                        <div
+                            className={`app-terrain-strip log-terrain-${terrainState.prevTerrain} log-lore-${terrainState.prevLore}`}
+                            style={{
+                                position: 'absolute',
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                transition: 'opacity 150ms ease-in-out',
+                                opacity: terrainState.triggerFade ? 0 : 1,
+                            }}
+                        />
+                    )}
+                    <div
+                        className={`app-terrain-strip log-terrain-${terrainState.currentTerrain} log-lore-${terrainState.currentLore}`}
+                        style={{
+                            position: 'absolute',
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            transition: terrainState.prevTerrain ? 'opacity 150ms ease-in-out' : 'none',
+                            opacity: terrainState.prevTerrain ? (terrainState.triggerFade ? 1 : 0) : 1,
+                        }}
+                    />
+                </div>
             )}
             {!viewport.isMobile && gameState !== 'account' && (
                 <div
-                    className={`app-sky-art-strip ${skyLightingClass} weather-${weather} terrain-${getRoomTerrainVisualKey(roomCardTerrain)}`}
                     style={{
                         position: 'fixed',
                         left: 0,
                         right: 0,
                         top: 'var(--log-sky-top-offset, 0px)',
                         zIndex: 4500,
-                        pointerEvents: 'none'
+                        pointerEvents: 'none',
+                        height: '32px'
                     }}
-                />
-            )}
-            {!viewport.isMobile && gameState !== 'account' && (
-                <div
-                    className={`app-ceiling-strip log-terrain-${getRoomTerrainVisualKey(roomCardTerrain)} log-lore-${zoneVisualKey}`}
-                    style={{
-                        position: 'fixed',
-                        left: 0,
-                        right: 0,
-                        top: 'var(--log-sky-top-offset, 0px)',
-                        zIndex: 4500,
-                        pointerEvents: 'none'
-                    }}
-                />
+                >
+                    {/* Sky Art Strip */}
+                    {skyState.prevTerrain && (
+                        <div
+                            className={`app-sky-art-strip ${skyState.prevLighting} weather-${skyState.prevWeather} terrain-${skyState.prevTerrain}`}
+                            style={{
+                                position: 'absolute',
+                                left: 0,
+                                right: 0,
+                                top: 0,
+                                transition: 'opacity 150ms ease-in-out',
+                                opacity: skyState.triggerFade ? 0 : 1,
+                            }}
+                        />
+                    )}
+                    <div
+                        className={`app-sky-art-strip ${skyState.currentLighting} weather-${skyState.currentWeather} terrain-${skyState.currentTerrain}`}
+                        style={{
+                            position: 'absolute',
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            transition: skyState.prevTerrain ? 'opacity 150ms ease-in-out' : 'none',
+                            opacity: skyState.prevTerrain ? (skyState.triggerFade ? 1 : 0) : 1,
+                        }}
+                    />
+
+                    {/* Ceiling Strip */}
+                    {terrainState.prevTerrain && (
+                        <div
+                            className={`app-ceiling-strip log-terrain-${terrainState.prevTerrain} log-lore-${terrainState.prevLore}`}
+                            style={{
+                                position: 'absolute',
+                                left: 0,
+                                right: 0,
+                                top: 0,
+                                transition: 'opacity 150ms ease-in-out',
+                                opacity: terrainState.triggerFade ? 0 : 1,
+                            }}
+                        />
+                    )}
+                    <div
+                        className={`app-ceiling-strip log-terrain-${terrainState.currentTerrain} log-lore-${terrainState.currentLore}`}
+                        style={{
+                            position: 'absolute',
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            transition: terrainState.prevTerrain ? 'opacity 150ms ease-in-out' : 'none',
+                            opacity: terrainState.prevTerrain ? (terrainState.triggerFade ? 1 : 0) : 1,
+                        }}
+                    />
+                </div>
             )}
             <Header
                 isLandscape={isLandscape}

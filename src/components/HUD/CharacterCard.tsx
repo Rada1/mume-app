@@ -208,7 +208,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
     const characterName = useActiveCharacter();
     const vitals = useActiveVitals();
     const combat = useActiveCombat();
-    const { triggerHaptic, practice, executeCommand, mood, mumeEditState, handleSaveMumeEdit, handleCancelMumeEdit } = useGame();
+    const { gameState, triggerHaptic, practice, executeCommand, mood, mumeEditState, handleSaveMumeEdit, handleCancelMumeEdit } = useGame();
     const { infoLines, questLines, achievementLines, practiceLines } = useUI();
     const setPendingEditorContext = useArchiveStore(s => s.setPendingEditorContext);
     const lastRefreshRef = useRef(0);
@@ -222,6 +222,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
     // Refresh drawer-backed character data whenever the card opens, throttled.
     useEffect(() => {
         if (!isOpen && !forceOpen) return;
+        if (gameState === 'account') return;
         const now = Date.now();
         if (now - lastRefreshRef.current < 5000) return;
         lastRefreshRef.current = now;
@@ -229,7 +230,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
         executeCommand('quest', true, true, false, true);
         executeCommand('practice', true, true, false, true);
         executeCommand('achievement', true, true, false, true);
-    }, [isOpen, forceOpen, executeCommand]);
+    }, [isOpen, forceOpen, gameState, executeCommand]);
 
     const runNextAvatarFetch = () => {
         const next = avatarFetchQueueRef.current.shift();
@@ -296,7 +297,16 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
         executeCommand('change whois', true, true, false, true);
     };
 
-    const attributes = useMemo(() => parseAttributesFromLines(infoLines || []), [infoLines]);
+    const attributes = useMemo(() => {
+        const parsed = parseAttributesFromLines(infoLines || []);
+        if (gameState === 'account' || Object.keys(parsed).length === 0) {
+            return STAT_ORDER.reduce((acc, key) => {
+                acc[key] = { current: 0 };
+                return acc;
+            }, {} as Record<string, AttributeScore>);
+        }
+        return parsed;
+    }, [infoLines, gameState]);
     const practiceTargetLines = useMemo(
         () => buildPracticeDrawerLines(practice.practiceData, practiceLines || []),
         [practice.practiceData, practiceLines]
@@ -361,7 +371,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
     };
 
     return (
-        <aside className={`character-card character-card-dock${embedded ? ' character-card-embedded' : ''}`} aria-label="Character card">
+        <aside className={`character-card character-card-dock${embedded ? ' character-card-embedded' : ''}${gameState === 'account' ? ' is-account-phase' : ''}`} aria-label="Character card">
                 {!embedded && (
                     <button className="character-card-close" onClick={handleClose} aria-label="Close character card">
                         <X size={16} strokeWidth={2.5} />
@@ -629,7 +639,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
                                         >
                                             <span className="char-card-attribute-label">{STAT_LABELS[key]}</span>
                                             <span className="char-card-attribute-value">
-                                                {stat.current}
+                                                {stat.current === 0 ? '--' : stat.current}
                                                 {hasBaseChange && <span className="char-card-attribute-base">({stat.base})</span>}
                                             </span>
                                         </div>

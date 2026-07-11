@@ -4,15 +4,15 @@
  */
 
 import React from 'react';
-import { useGame, useUI, useVitals } from '../../context/GameContext';
+import { useGame, useUI } from '../../context/GameContext';
 import { DrawerShell } from './DrawerShell';
 import { Mapper } from '../Mapper/Mapper';
 import { MapperRef } from '../Mapper/mapperTypes';
-import { useMumeTime } from '../../hooks/useMumeTime';
-import { UtensilsCrossed, Droplets, CloudFog, Clock } from 'lucide-react';
+import { Lock, Compass } from 'lucide-react';
 import { DrawerResizeHandle } from './DrawerResizeHandle';
 import { AccountDrawer } from './AccountDrawer';
 import { CharacterCard } from '../HUD/CharacterCard';
+import './PlaceholderDrawers.css';
 
 interface DrawerManagerProps {
     heldButton: any;
@@ -29,13 +29,10 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 }) => {
     const {
         characterName, viewport, gameState,
-        env, isFoggy, gameTime,
         sessionMode
     } = useGame() as any;
-    const currentTime = useMumeTime(gameTime);
     const mapperDesktopRef = React.useRef<MapperRef>(null);
     const { ui, setUI } = useUI();
-    const { stats } = useVitals();
 
     // Body classes for desktop layout
     React.useEffect(() => {
@@ -133,52 +130,15 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                                     setCommandPreview={setCommandPreview}
                                 />
 
-                                {/* Desktop Env Indicator - Bottom Right corner of map section */}
-                                {(env.lighting !== 'none' || env.weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty || currentTime) && (
-                                    <div className="desktop-env-indicator" style={{
-                                        position: 'absolute',
-                                        bottom: '12px',
-                                        right: '12px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        padding: '4px 10px',
-                                        background: 'rgba(0, 0, 0, 0.45)',
-                                        backdropFilter: 'blur(8px)',
-                                        borderRadius: '6px',
-                                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                                        zIndex: 2800,
-                                        pointerEvents: 'none',
-                                        color: 'var(--text-faded)',
-                                        textShadow: '0 1px 4px rgba(0,0,0,0.5)'
-                                    }}>
-                                        {currentTime && (
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginRight: '4px', borderRight: '1px solid rgba(255,255,255,0.1)', paddingRight: '8px' }}>
-                                                <Clock size={12} style={{ opacity: 0.8 }} />
-                                                <span style={{ fontSize: '0.7rem', fontWeight: 800 }}>
-                                                    {currentTime.hour === 0 ? '12' : (currentTime.hour > 12 ? currentTime.hour - 12 : currentTime.hour)}
-                                                    :{currentTime.minute < 10 ? `0${currentTime.minute}` : currentTime.minute}
-                                                    {currentTime.hour >= 12 ? ' PM' : ' AM'}
-                                                </span>
-                                            </div>
-                                        )}
-                                        {stats.conditions?.hungry && (
-                                            <UtensilsCrossed size={12} style={{ color: '#fbbf24' }} />
-                                        )}
-                                        {stats.conditions?.thirsty && (
-                                            <Droplets size={12} style={{ color: '#60a5fa' }} />
-                                        )}
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                            {env.getLightingIcon()}
-                                            {env.getWeatherIcon()}
-                                            {isFoggy && <CloudFog size={12} style={{ opacity: 0.8 }} />}
+                                {gameState === 'account' && (
+                                    <div className="map-placeholder-overlay">
+                                        <div className="map-placeholder-icon-ring">
+                                            <Compass size={24} className="placeholder-pulse-element" />
                                         </div>
-                                        <span style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.03em', textTransform: 'uppercase' }}>
-                                            {env.lighting && env.lighting !== 'none' ? env.lighting : ''}
-                                            {env.weather && env.weather !== 'none' && env.weather !== 'clear' ? ` | ${env.weather.replace('-', ' ')}` : ''}
-                                        </span>
+                                        <span className="map-placeholder-title">Map & Navigation</span>
+                                        <span className="map-placeholder-subtitle">Log in to activate navigation map</span>
                                     </div>
-                                )}
+                                 )}
                             </div>
 
                         </div>
@@ -211,7 +171,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 />
             )}
 
-            {!viewport.isMobile && gameState !== 'account' && (
+            {!viewport.isMobile && (
                 <div className="right-drawer-stack open">
                     <div className="character-drawer-desktop open">
                         <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" />
@@ -221,8 +181,17 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                                 Character
                             </span>
                         </div>
-                        <div className="drawer-content character-drawer-content">
+                        <div className="drawer-content character-drawer-content" style={{ position: 'relative' }}>
                             <CharacterCard embedded forceOpen />
+                            {gameState === 'account' && (
+                                <div className="character-card-locked-overlay">
+                                    <div className="character-card-locked-icon-ring">
+                                        <Lock size={20} />
+                                    </div>
+                                    <span className="character-card-locked-title">Character Status</span>
+                                    <span className="character-card-locked-subtitle">Log in to activate character profile</span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

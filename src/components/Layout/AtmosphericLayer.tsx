@@ -44,9 +44,7 @@ export const AtmosphericLayer: React.FC = () => {
         : lighting;
 
     // Resolved background image: map texture by default. Terrain bitmap backgrounds stay unhooked.
-    const resolvedBgImage = manualBgImage || (isAccountMode 
-        ? (accountState.stage === 'login' ? MAP_BACKGROUND_IMAGE : '/assets/Pictures/account.png')
-        : MAP_BACKGROUND_IMAGE);
+    const resolvedBgImage = manualBgImage || MAP_BACKGROUND_IMAGE;
     const resolvedBottomBgImage = manualBgImageBottom;
     const resolvedBottomBgScale = 1;
 

@@ -7,6 +7,7 @@ import { DrawerManager } from '../Drawers/DrawerManager';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { KeywordEditModal } from '../Modals/KeywordEditModal';
 import { LibraryModal } from '../Modals/LibraryModal';
+import { extractMumeKeyword } from '../../utils/gameUtils';
 
 
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -347,7 +348,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 <KeywordEditModal
                     context={keywordEditState.context}
                     displayText={keywordEditState.displayText}
-                    currentKeyword={keywordOverrides?.[keywordEditState.context] ?? keywordEditState.context}
+                    currentKeyword={keywordOverrides?.[keywordEditState.context] ?? extractMumeKeyword(keywordEditState.context)}
                     hasOverride={!!(keywordOverrides?.[keywordEditState.context])}
                     onSave={(kw: string) => { setKeywordOverride(keywordEditState.context, kw); setKeywordEditState(null); }}
                     onReset={() => { removeKeywordOverride(keywordEditState.context); setKeywordEditState(null); }}
