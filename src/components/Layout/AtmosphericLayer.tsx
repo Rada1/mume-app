@@ -20,9 +20,10 @@ export const AtmosphericLayer: React.FC = () => {
         lightningEnabled,
         isImmersionMode,
         viewport,
-        activeSession,
         currentTerrain,
+        roomZone,
         spectateTerrain,
+        spectateRoomZone,
         accountState,
     } = useGame();
 
@@ -32,9 +33,12 @@ export const AtmosphericLayer: React.FC = () => {
     // --- Terrain Resolution ---
     const isAccountMode = accountState.stage !== 'none';
     const activeView = useModeStore(state => state.activeView);
-    const isSpectating = activeSession === 'spectate' || activeView === 'target';
-    const activeTerrain = isSpectating ? spectateTerrain : currentTerrain;
+    const isSpectating = useModeStore(state => state.isSpectating);
+    const isViewingSpectateTarget = isSpectating && activeView === 'target';
+    const activeTerrain = isViewingSpectateTarget ? spectateTerrain : currentTerrain;
+    const activeZone = isViewingSpectateTarget ? spectateRoomZone : roomZone;
     const effectiveTerrain = isAccountMode ? 'account-blue' : activeTerrain;
+    const effectiveZone = isAccountMode ? null : activeZone;
 
     // Account Mode Overrides: Stage-aware lighting and background
     const isCreationSequence = ['character-creation', 'stat-editing', 'account-confirmation'].includes(accountState.stage);
@@ -60,6 +64,7 @@ export const AtmosphericLayer: React.FC = () => {
             bgImageBottom={resolvedBottomBgImage}
             bgImageBottomScale={resolvedBottomBgScale}
             terrain={effectiveTerrain}
+            zone={effectiveZone}
         />
     );
 };

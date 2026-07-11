@@ -223,6 +223,33 @@
     z-index: 3;
 }
 
+/* Wrapper for level badge and vertical progress rails */
+.prompt-level-progress-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    align-self: flex-end;
+    margin-left: -5px;
+    margin-bottom: -3px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.prompt-level-progress-wrapper .prompt-progress-rails {
+    height: 24px;
+    margin-bottom: -1px;
+    z-index: 2;
+    gap: 0px;
+}
+
+.prompt-level-progress-wrapper .prompt-level-badge {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    z-index: 3;
+}
+
 /* XP / TP rails stood vertical along the right edge of the portrait (LoL style) */
 .prompt-progress-rails {
     display: flex;
@@ -239,8 +266,9 @@
     height: 100%;
     border-radius: 2px;
     overflow: hidden;
-    background: rgba(8, 12, 18, 0.88);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .prompt-progress-rail span {

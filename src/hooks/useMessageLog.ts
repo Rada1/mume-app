@@ -266,7 +266,8 @@ export function useMessageLog(
         providedIsSnoop?: boolean,
         providedIsSnoopInput?: boolean,
         providedIsRipMessage?: boolean,
-        providedIsSocial?: boolean
+        providedIsSocial?: boolean,
+        resourceGain?: import('../types').ResourceGain
     ) => {
         const combatOverride = extra === true || (typeof extra === 'object' && extra?.isCombat);
         let currentText = text;
@@ -470,7 +471,8 @@ export function useMessageLog(
                 commSender,
                 commAction,
                 commText,
-                commColor
+                commColor,
+                resourceGain
             });
         }
 
@@ -532,7 +534,8 @@ export function useMessageLog(
             isHitterImpact: providedIsHitterImpact,
             isSnoop: providedIsSnoop,
             isSnoopInput: providedIsSnoopInput,
-            isRipMessage: providedIsRipMessage
+            isRipMessage: providedIsRipMessage,
+            resourceGain
         };
 
         if (isCombat) {

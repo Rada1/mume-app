@@ -5,6 +5,7 @@
 
 import { useCallback } from 'react';
 import { GameStats, CharacterInfo } from '../../types';
+import { useVitalsStore } from '../../stores/useVitalsStore';
 
 export interface StatParserDeps {
     setMood: (val: string) => void;
@@ -26,6 +27,39 @@ export function useStatParser(deps: StatParserDeps) {
     } = deps;
 
     const parseGlobalStatus = useCallback((content: string, contentLower: string) => {
+        // --- LEVEL COMMAND PARSER ---
+        const levelMatch = content.match(/^Level\s+(\d+)\s+([\d,]+)\s+exp,\s+([\d,]+)\s+tp/i);
+        if (levelMatch) {
+            const lvl = parseInt(levelMatch[1], 10);
+            const expVal = parseInt(levelMatch[2].replace(/,/g, ''), 10);
+            const tpVal = parseInt(levelMatch[3].replace(/,/g, ''), 10);
+            
+            const charName = useVitalsStore.getState().characterInfo.name;
+            if (charName) {
+                const storageKey = `mume_level_bounds_${charName}`;
+                let bounds: { xpMin: Record<number, number>; tpMin: Record<number, number> } = {
+                    xpMin: { 1: 0, 2: 1000, 3: 3000, 4: 7000, 5: 14500 },
+                    tpMin: { 1: 0, 2: 100, 3: 300, 4: 600, 5: 1000 }
+                };
+                try {
+                    const saved = localStorage.getItem(storageKey);
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        bounds.xpMin = { ...bounds.xpMin, ...parsed.xpMin };
+                        bounds.tpMin = { ...bounds.tpMin, ...parsed.tpMin };
+                    }
+                } catch (e) {}
+                
+                bounds.xpMin[lvl] = expVal;
+                bounds.tpMin[lvl] = tpVal;
+                
+                try {
+                    localStorage.setItem(storageKey, JSON.stringify(bounds));
+                } catch (e) {}
+            }
+            return true;
+        }
+
         if (contentLower.startsWith('your ob ') || contentLower.startsWith('your mood ') || contentLower.startsWith('your armor ') || contentLower.startsWith('your armour ') || /\b(ob|db|pb|mood|armor|armour|arm)\b/i.test(contentLower)) {
             const obMatch = content.match(/\bOb\s*(?:=|:|is)?\s*(-?\d+)(?:%)?/i);
             const dbMatch = content.match(/\bDb\s*(?:=|:|is)?\s*(-?\d+)(?:%)?/i);

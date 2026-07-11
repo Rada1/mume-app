@@ -5,10 +5,12 @@
 
 import React, { useMemo } from 'react';
 import { useGame } from '../../context/GameContext';
+import { getZoneEmberColor } from '../../utils/zoneAlignment';
 import '../../styles/environment.css';
 
 interface EmbersProps {
     count?: number;
+    zone?: string | null;
 }
 
 /**
@@ -16,7 +18,7 @@ interface EmbersProps {
  * Creates glowing, floating particles that drift in random directions.
  * Speed is dynamically linked to message activity in the game.
  */
-export const Embers: React.FC<EmbersProps> = ({ count }) => {
+export const Embers: React.FC<EmbersProps> = ({ count, zone }) => {
     const { messageActivity, isImmersionMode, env, viewport } = useGame() as any;
     const { lighting } = env;
     const isMobile = viewport?.isMobile;
@@ -32,6 +34,7 @@ export const Embers: React.FC<EmbersProps> = ({ count }) => {
     const activityMultiplier = 1 + (messageActivity * 2.2); // 1x to 3.2x speed
     const containerRef = React.useRef<HTMLDivElement>(null);
     const animationsRef = React.useRef<Animation[]>([]);
+    const colorProfile = useMemo(() => getZoneEmberColor(zone), [zone]);
 
     const embers = useMemo(() => {
         if (!isImmersionMode) return [];
@@ -43,14 +46,17 @@ export const Embers: React.FC<EmbersProps> = ({ count }) => {
             duration: 6 + Math.random() * 8, // Base duration
             delay: Math.random() * 10,
             opacity: 0.7 + Math.random() * 0.3,
-            hue: 30 + Math.random() * 18, // Warm amber/gold (30-48 range)
+            hue: colorProfile.hue + (Math.random() - 0.5) * 10,
+            saturation: colorProfile.saturation,
+            lightness: colorProfile.lightness + (Math.random() - 0.5) * 6,
+            glowLightness: colorProfile.glowLightness,
             scale: 0.6 + Math.random() * (isMobile ? 1.4 : 2.2), // Vary scale wider on desktop
             destX: `${(Math.random() - 0.5) * 20}vw`,
             destY: `${(Math.random() - 0.5) * 30}vh`,
             swayX: `${(Math.random() - 0.5) * 40}px`,
             swayY: `${(Math.random() - 0.5) * 40}px`,
         }));
-    }, [emberCount, isImmersionMode]);
+    }, [colorProfile, emberCount, isImmersionMode, isMobile]);
 
     React.useEffect(() => {
         if (!isImmersionMode || !containerRef.current || embers.length === 0) return;
@@ -106,8 +112,8 @@ export const Embers: React.FC<EmbersProps> = ({ count }) => {
                         '--start-y': ember.startY,
                         width: `${ember.size}px`,
                         height: `${ember.size}px`,
-                        backgroundColor: `hsl(${ember.hue}, 100%, 70%)`,
-                        boxShadow: `0 0 2px hsl(${ember.hue}, 100%, 50%)`,
+                        backgroundColor: `hsl(${ember.hue}, ${ember.saturation}%, ${ember.lightness}%)`,
+                        boxShadow: `0 0 2px hsl(${ember.hue}, ${ember.saturation}%, ${ember.glowLightness}%)`,
                         opacity: ember.opacity,
                         '--scale': ember.scale,
                         '--dest-x': ember.destX,

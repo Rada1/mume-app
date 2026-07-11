@@ -385,6 +385,34 @@
     pointer-events: auto !important;
 }
 
+.resource-gain-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.35em;
+    margin-left: 0.55em;
+    padding: 0 0.45em;
+    border: 1px solid rgba(250, 204, 21, 0.45);
+    border-radius: 5px;
+    background: rgba(24, 18, 5, 0.74);
+    color: #facc15;
+    font-size: 0.78em;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.25;
+    white-space: nowrap;
+    text-shadow: 0 0 6px rgba(250, 204, 21, 0.35);
+    vertical-align: 0.08em;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18), 0 0 10px rgba(250, 204, 21, 0.18);
+}
+
+.resource-gain-badge.tp {
+    border-color: rgba(56, 189, 248, 0.45);
+    background: rgba(4, 18, 29, 0.74);
+    color: #67e8f9;
+    text-shadow: 0 0 6px rgba(103, 232, 249, 0.35);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18), 0 0 10px rgba(56, 189, 248, 0.18);
+}
+
 /* Dim everything in combat unless it's an urgent line or combat output */
 .dimmedInCombat .message-content {
     filter: opacity(0.25);

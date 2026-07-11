@@ -145,7 +145,7 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
     const [activeRowId, setActiveRowId] = useState<string | null>(null);
     const {
         characterName, roomChars, roomPlayers, roomNpcs, roomItems,
-        triggerHaptic, inCombat, executeCommand, setPopoverState
+        triggerHaptic, inCombat, executeCommand, setPopoverState, popoverState
     } = useGame();
     const { target, setTarget, opponentId, opponentName } = useVitals();
     const selectedTarget = useUIStore(s => s.selectedTarget);
@@ -306,42 +306,53 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
 
     const selectChip = (event: React.MouseEvent<HTMLButtonElement>, chip: RoomChip) => {
         event.stopPropagation();
-        audioManager.playEffect('target', { skipJitter: true });
-        triggerHaptic?.(15);
 
         const rect = event.currentTarget.getBoundingClientRect();
         const axes = getInlineCategoryAxes(chip.category);
         const shouldLook = axes.isTargetable && (axes.isObject || axes.isCharacter), shouldConsider = shouldLook && axes.isCharacter;
 
         const currentTarget = useUIStore.getState().selectedTarget;
-        const isSame = currentTarget?.id === chip.entityId;
+        const isAlreadySelected = currentTarget?.id === chip.entityId;
+
+        if (isAlreadySelected) {
+            audioManager.playEffect('actionmenu');
+            triggerHaptic?.(20);
+
+            setPopoverState({
+                x: rect.left + rect.width / 2,
+                y: rect.bottom,
+                sourceHeight: rect.height,
+                sourceRect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
+                type: 'menu',
+                setId: chip.category,
+                category: chip.category,
+                context: chip.context,
+                entityId: chip.entityId,
+                accentColor: getChipAccentColor(chip.kind),
+                menuDisplay: 'list',
+                preferSide: 'top',
+                isCapturingExamine: shouldLook,
+                isCapturingConsider: shouldConsider,
+                capturedExamineLines: undefined,
+                capturedConsiderLines: undefined
+            });
+
+            if (shouldLook) executeCommand(`look ${chip.context}`, true, true, false, false, { shouldFocus: false, fromUi: true });
+            if (shouldConsider) {
+                setTimeout(() => {
+                    executeCommand(`con ${chip.context}`, true, true, false, false, { shouldFocus: false, fromUi: true });
+                }, CONSIDER_DELAY_MS);
+            }
+            return;
+        }
+
+        audioManager.playEffect('target', { skipJitter: true });
+        triggerHaptic?.(40);
         toggleObjectSelection({ id: chip.entityId, setId: chip.category, category: chip.category, context: chip.context });
-        setTarget(isSame ? null : chip.context);
+        setTarget(chip.context);
 
-        setPopoverState({
-            x: rect.left + rect.width / 2,
-            y: rect.bottom,
-            sourceHeight: rect.height,
-            sourceRect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
-            type: 'menu',
-            setId: chip.category,
-            category: chip.category,
-            context: chip.context,
-            entityId: chip.entityId,
-            accentColor: getChipAccentColor(chip.kind),
-            menuDisplay: 'list',
-            preferSide: 'top',
-            isCapturingExamine: shouldLook,
-            isCapturingConsider: shouldConsider,
-            capturedExamineLines: undefined,
-            capturedConsiderLines: undefined
-        });
-
-        if (shouldLook) executeCommand(`look ${chip.context}`, true, true, false, false, { shouldFocus: false, fromUi: true });
-        if (shouldConsider) {
-            setTimeout(() => {
-                executeCommand(`con ${chip.context}`, true, true, false, false, { shouldFocus: false, fromUi: true });
-            }, CONSIDER_DELAY_MS);
+        if (popoverState && popoverState.entityId !== chip.entityId) {
+            setPopoverState(null);
         }
     };
 

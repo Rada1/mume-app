@@ -15,6 +15,7 @@ import {
     isPlayerAttemptAvoidedLine,
     isPlayerFailedAttackLine
 } from '../../utils/combatRechargeUtils';
+import { parseResourceGainLine } from '../../utils/resourceGainUtils';
 import { triggerKillPrompt } from '../../stores/useKillPromptStore';
 
 // Pull the dead mob's display name out of a death line so the loot prompt can
@@ -201,20 +202,24 @@ export function useCombatParser(deps: CombatParserDeps) {
     }, [inCombatRef, setOpponentHealthStatus, setOpponentName, setDeathRoomId, mapperRef, setSpectateInCombat, setSpectateOpponentStatus, setSpectateOpponentName, playKillSound]);
 
     const handleXpTicker = useCallback((lower: string, isSnoop: boolean = false) => {
-        const xpTextMatch = lower.match(/you receive (\d+) experience/i);
-        const tpTextMatch = lower.match(/you (?:receive|gain) (\d+) (?:tp|tps|travel points?)/i);
+        const resourceGain = parseResourceGainLine(lower);
 
-        if (xpTextMatch) {
-            const delta = parseInt(xpTextMatch[1], 10);
+        if (resourceGain?.kind === 'xp') {
+            const delta = resourceGain.amount;
             if (delta > 0 && !isSnoop) {
-                setCharacterInfo(prev => ({ 
-                    ...prev, 
-                    xp: prev.xp + delta 
-                }));
+                setCharacterInfo(prev => {
+                    const nextXp = prev.xp + delta;
+                    triggerXpTicker?.(nextXp);
+                    return {
+                        ...prev,
+                        xp: nextXp,
+                        tnl: Math.max(0, prev.tnl - delta)
+                    };
+                });
             }
             return true;
-        } else if (tpTextMatch) {
-            const delta = parseInt(tpTextMatch[1], 10);
+        } else if (resourceGain?.kind === 'tp') {
+            const delta = resourceGain.amount;
             if (delta > 0 && !isSnoop) {
                 setCharacterInfo(prev => {
                     const nextTp = prev.tp + delta;

@@ -42,7 +42,8 @@ export interface UseGameParserDeps {
         providedIsSnoop?: boolean,
         providedIsSnoopInput?: boolean,
         providedIsRipMessage?: boolean,
-        providedIsSocial?: boolean
+        providedIsSocial?: boolean,
+        resourceGain?: import('../../types').ResourceGain
     ) => void;
     addSystemMessage: (msg: string) => void;
     executeCommandRef: MutableRefObject<ExecuteCommand | null>;

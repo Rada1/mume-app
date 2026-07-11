@@ -49,6 +49,11 @@ import { Token } from './tokens';
 
 export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'comm-continue' | 'comm-sender' | 'comm-text' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'room-name' | 'equipment-list' | 'inventory-list' | 'room-exits' | 'snoop' | 'snoop-command' | 'snoop-vitals' | 'account-prompt' | 'account-menu-item' | 'account-selection' | 'account-selection-edit' | 'account-stat-edit' | 'account-stat-points' | 'account-character-list' | 'quest-list' | 'weather' | 'gmcp-event' | 'movement' | 'status-event';
 
+export interface ResourceGain {
+    kind: 'xp' | 'tp';
+    amount: number;
+}
+
 export interface Message {
     id: string;
     html: string; // Pre-converted ANSI html
@@ -100,6 +105,7 @@ export interface Message {
     isMissImpact?: boolean;
     isHitterImpact?: boolean;
     isRipMessage?: boolean;
+    resourceGain?: ResourceGain;
     isSnoop?: boolean;
     isSnoopInput?: boolean;
     isSpacer?: boolean;

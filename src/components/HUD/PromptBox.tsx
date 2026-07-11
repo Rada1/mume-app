@@ -352,6 +352,77 @@ const PromptBox: FC<PromptBoxProps> = ({
     const opponentId = activeCombat.opponentId;
     const opponentHealthStatus = activeCombat.opponentHealthStatus;
     const characterName = useActiveCharacter();
+    const characterInfo = activeVitals.characterInfo;
+    const level = characterInfo?.level ?? 0;
+    const xp = characterInfo?.xp ?? 0;
+    const xpMax = characterInfo?.xpMax ?? 0;
+    const tp = characterInfo?.tp ?? 0;
+    const tpMax = characterInfo?.tpMax ?? 0;
+
+    // --- Level bounds tracking ---
+    const prevLevelRef = useRef<number>(level);
+    const prevXpMaxRef = useRef<number>(xpMax);
+    const prevTpMaxRef = useRef<number>(tpMax);
+
+    useEffect(() => {
+        if (!characterName) return;
+        
+        const storageKey = `mume_level_bounds_${characterName}`;
+        let bounds: { xpMin: Record<number, number>; tpMin: Record<number, number> } = {
+            xpMin: { 1: 0, 2: 1000, 3: 3000, 4: 7000, 5: 14500 },
+            tpMin: { 1: 0, 2: 100, 3: 300, 4: 600, 5: 1000 }
+        };
+        try {
+            const saved = localStorage.getItem(storageKey);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                bounds.xpMin = { ...bounds.xpMin, ...parsed.xpMin };
+                bounds.tpMin = { ...bounds.tpMin, ...parsed.tpMin };
+            }
+        } catch (e) {
+            console.error('Failed to parse level bounds', e);
+        }
+
+        let changed = false;
+
+        if (level > prevLevelRef.current && prevLevelRef.current > 0) {
+            if (prevXpMaxRef.current > 0) {
+                bounds.xpMin[level] = prevXpMaxRef.current;
+                changed = true;
+            }
+            if (prevTpMaxRef.current > 0) {
+                bounds.tpMin[level] = prevTpMaxRef.current;
+                changed = true;
+            }
+        }
+
+        if (level > 0 && xpMax > 0) {
+            const nextLevel = level + 1;
+            if (bounds.xpMin[nextLevel] !== xpMax) {
+                bounds.xpMin[nextLevel] = xpMax;
+                changed = true;
+            }
+        }
+        if (level > 0 && tpMax > 0) {
+            const nextLevel = level + 1;
+            if (bounds.tpMin[nextLevel] !== tpMax) {
+                bounds.tpMin[nextLevel] = tpMax;
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(bounds));
+            } catch (e) {
+                console.error('Failed to save level bounds', e);
+            }
+        }
+
+        prevLevelRef.current = level;
+        prevXpMaxRef.current = xpMax;
+        prevTpMaxRef.current = tpMax;
+    }, [characterName, level, xpMax, tpMax]);
     const isSpectateMode = useModeStore(state => state.isSpectating);
 
     const [activeSlider, setActiveSlider] = useState<'pos' | 'disposition' | null>(null);
@@ -522,13 +593,84 @@ const PromptBox: FC<PromptBoxProps> = ({
 
     const mpStatus = manaStatusFromGmcp ?? getTierStatus(manaPercent, MANA_TIERS);
     const stStatus = moveStatusFromGmcp ?? getTierStatus(movePercent, MOVE_TIERS);
-    const characterInfo = activeVitals.characterInfo;
-    const xpPercent = characterInfo?.xpMax > 0
-        ? Math.max(0, Math.min(100, (characterInfo.xp / characterInfo.xpMax) * 100))
-        : 0;
-    const tpPercent = characterInfo?.tpMax > 0
-        ? Math.max(0, Math.min(100, (characterInfo.tp / characterInfo.tpMax) * 100))
-        : 0;
+    const estimatePrevXpMax = (lvl: number, nextXpMax: number): number => {
+        if (lvl <= 1) return 0;
+        if (lvl === 2) return 1000;
+        if (lvl === 3) return 3000;
+        if (lvl === 4) return 7000;
+        if (lvl === 5) return 14500;
+        
+        // For lvl > 5, estimate ratio = 1.1 + 0.9 * exp(-0.1 * (lvl - 5))
+        const ratio = 1.1 + 0.9 * Math.exp(-0.1 * (lvl - 5));
+        return Math.round(nextXpMax / ratio);
+    };
+
+    const estimatePrevTpMax = (lvl: number, nextTpMax: number): number => {
+        if (lvl <= 1) return 0;
+        if (lvl < 25) {
+            return 50 * (lvl - 1) * lvl;
+        }
+        return Math.max(30000, 4000 * (lvl - 1) - 37500);
+    };
+
+    const getXpPercent = () => {
+        if (!characterInfo || xpMax <= 0) return 0;
+        
+        let minXp = 0;
+        if (level > 1) {
+            if (characterName) {
+                const storageKey = `mume_level_bounds_${characterName}`;
+                try {
+                    const saved = localStorage.getItem(storageKey);
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        if (parsed.xpMin && parsed.xpMin[level] !== undefined) {
+                            minXp = parsed.xpMin[level];
+                        }
+                    }
+                } catch (e) {}
+            }
+            if (minXp === 0) {
+                minXp = estimatePrevXpMax(level, xpMax);
+            }
+        }
+        
+        const safeMinXp = Math.min(minXp, xpMax - 1);
+        const range = xpMax - safeMinXp;
+        const currentProgress = xp - safeMinXp;
+        return Math.max(0, Math.min(100, (currentProgress / range) * 100));
+    };
+
+    const getTpPercent = () => {
+        if (!characterInfo || tpMax <= 0) return 0;
+        
+        let minTp = 0;
+        if (level > 1) {
+            if (characterName) {
+                const storageKey = `mume_level_bounds_${characterName}`;
+                try {
+                    const saved = localStorage.getItem(storageKey);
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        if (parsed.tpMin && parsed.tpMin[level] !== undefined) {
+                            minTp = parsed.tpMin[level];
+                        }
+                    }
+                } catch (e) {}
+            }
+            if (minTp === 0) {
+                minTp = estimatePrevTpMax(level, tpMax);
+            }
+        }
+        
+        const safeMinTp = Math.min(minTp, tpMax - 1);
+        const range = tpMax - safeMinTp;
+        const currentProgress = tp - safeMinTp;
+        return Math.max(0, Math.min(100, (currentProgress / range) * 100));
+    };
+
+    const xpPercent = getXpPercent();
+    const tpPercent = getTpPercent();
 
     const getPositionIcon = () => {
         if (inCombat) return <Swords size={14} className="combat-divider-icon" />;
@@ -619,14 +761,16 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     <div className="terrain-pin-sprite-head" />
                                     <div className="terrain-pin-sprite-body" />
                                 </div>
-                                <div className="prompt-level-badge">{characterInfo?.level || '?'}</div>
-                                <div className="prompt-progress-rails" aria-label="Level progress">
-                                    <div className="prompt-progress-rail xp" title={`${characterInfo?.xp ?? 0} XP`}>
-                                        <span style={{ height: `${xpPercent}%` }} />
+                                <div className="prompt-level-progress-wrapper">
+                                    <div className="prompt-progress-rails" aria-label="Level progress">
+                                        <div className="prompt-progress-rail xp" title={`${characterInfo?.xp ?? 0} XP`}>
+                                            <span style={{ height: `${xpPercent}%` }} />
+                                        </div>
+                                        <div className="prompt-progress-rail tp" title={`${characterInfo?.tp ?? 0} TP`}>
+                                            <span style={{ height: `${tpPercent}%` }} />
+                                        </div>
                                     </div>
-                                    <div className="prompt-progress-rail tp" title={`${characterInfo?.tp ?? 0} TP`}>
-                                        <span style={{ height: `${tpPercent}%` }} />
-                                    </div>
+                                    <div className="prompt-level-badge">{characterInfo?.level || '?'}</div>
                                 </div>
                             </div>
 

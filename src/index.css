@@ -797,6 +797,170 @@
     font-family: 'Iosevka', monospace !important;
 }
 
+.input-area.command-suggestions-open {
+    z-index: var(--z-popover-dial);
+}
+
+.input-area.command-suggestions-open .input-main-container {
+    z-index: 2;
+}
+
+.command-input-wrap {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    cursor: text;
+}
+
+.command-input-highlight {
+    position: absolute;
+    inset: 0;
+    display: block;
+    overflow: hidden;
+    white-space: pre-wrap;
+    word-break: break-word;
+    pointer-events: none;
+    color: var(--text-primary);
+    font-family: 'Iosevka', monospace;
+    font-size: var(--dynamic-log-size, 16px);
+    line-height: 1.5;
+    min-height: 1.4em;
+}
+
+.input-field.command-highlight-source {
+    color: transparent !important;
+    caret-color: var(--text-primary);
+    position: relative;
+    z-index: 2;
+}
+
+.input-field.command-highlight-source::selection {
+    background: rgba(232, 176, 32, 0.28);
+}
+
+.command-input-token-valid {
+    color: #e8b020;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(232, 176, 32, 0.28);
+}
+
+.command-input-token-plain {
+    color: rgba(255, 255, 255, 0.94);
+}
+
+.command-input-autocomplete {
+    color: rgba(232, 176, 32, 0.34);
+    font-weight: 700;
+    text-shadow: none;
+}
+
+.command-suggestion-popup {
+    position: fixed;
+    transform: translateY(-100%);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: var(--z-modals-layer);
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    border: 1px solid rgba(232, 176, 32, 0.24);
+    border-radius: 7px;
+    background: rgba(5, 8, 14, 0.985);
+    box-shadow:
+        0 16px 40px rgba(0, 0, 0, 0.42),
+        0 0 18px rgba(232, 176, 32, 0.12);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.command-suggestion-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: #cbd5e1;
+    font-family: var(--font-mono, monospace);
+    font-size: 12px;
+    line-height: 1.2;
+    text-align: left;
+    cursor: pointer;
+}
+
+.command-suggestion-option:hover,
+.command-suggestion-option:focus-visible {
+    background: rgba(232, 176, 32, 0.12);
+    outline: none;
+}
+
+.command-suggestion-option.is-selected {
+    background: rgba(232, 176, 32, 0.16);
+    box-shadow: inset 3px 0 0 #e8b020;
+}
+
+.command-suggestion-name {
+    color: #e8b020;
+    font-weight: 800;
+}
+
+.command-suggestion-full {
+    color: #748096;
+    font-size: 11px;
+}
+
+.command-suggestion-option.is-selected .command-suggestion-full {
+    color: rgba(232, 176, 32, 0.84);
+    font-weight: 700;
+}
+
+.light-mode .command-input-token-valid,
+.light-mode .command-suggestion-name {
+    color: #8a6620;
+    text-shadow: none;
+}
+
+.light-mode .command-input-token-plain {
+    color: #1f2937;
+}
+
+.light-mode .command-input-autocomplete {
+    color: rgba(138, 102, 32, 0.36);
+}
+
+.light-mode .command-suggestion-popup {
+    border-color: rgba(138, 102, 32, 0.28);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.16);
+}
+
+.light-mode .command-suggestion-option {
+    color: #334155;
+}
+
+.light-mode .command-suggestion-option:hover,
+.light-mode .command-suggestion-option:focus-visible {
+    background: rgba(138, 102, 32, 0.12);
+}
+
+.light-mode .command-suggestion-option.is-selected {
+    background: rgba(138, 102, 32, 0.14);
+    box-shadow: inset 3px 0 0 #8a6620;
+}
+
+.light-mode .command-suggestion-full {
+    color: #64748b;
+}
+
+.light-mode .command-suggestion-option.is-selected .command-suggestion-full {
+    color: rgba(138, 102, 32, 0.86);
+}
+
 
 
 
@@ -959,6 +1123,3 @@
 .light-mode .cmd-prompt-btn.parley-active {
     color: var(--accent) !important;
 }
-
-
-

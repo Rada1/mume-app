@@ -45,6 +45,82 @@ const drawArrowhead = (ctx: CanvasRenderingContext2D, x: number, y: number, angl
     ctx.restore();
 };
 
+const strokeRoundedRect = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    radius: number
+) => {
+    ctx.beginPath();
+    if (typeof (ctx as any).roundRect === 'function') {
+        (ctx as any).roundRect(x, y, w, h, radius);
+    } else {
+        ctx.rect(x, y, w, h);
+    }
+    ctx.stroke();
+};
+
+const drawDoorVisualOutline = (
+    ctx: CanvasRenderingContext2D,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    isClosed: boolean
+) => {
+    const ddx = x2 - x1;
+    const ddy = y2 - y1;
+    const pad = 2.5;
+    const radius = 2.5;
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.34)';
+    ctx.lineWidth = 1;
+
+    if (isClosed) {
+        const sx = x1 + ddx * 0.25;
+        const sy = y1 + ddy * 0.25;
+        const ex = x2 - ddx * 0.25;
+        const ey = y2 - ddy * 0.25;
+        const left = Math.min(sx, ex) - pad;
+        const top = Math.min(sy, ey) - pad;
+        const width = Math.max(Math.abs(ex - sx), 1) + pad * 2;
+        const height = Math.max(Math.abs(ey - sy), 1) + pad * 2;
+        strokeRoundedRect(ctx, left, top, width, height, radius);
+    } else {
+        const sqSize = 4.0;
+        const points = ddx === 0
+            ? [
+                { x: x1 - sqSize / 2, y: y1 + ddy * 0.25 },
+                { x: x1 - sqSize / 2, y: y1 + ddy * 0.75 - sqSize }
+            ]
+            : [
+                { x: x1 + ddx * 0.25, y: y1 - sqSize / 2 },
+                { x: x1 + ddx * 0.75 - sqSize, y: y1 - sqSize / 2 }
+            ];
+        for (const point of points) {
+            strokeRoundedRect(ctx, point.x - pad, point.y - pad, sqSize + pad * 2, sqSize + pad * 2, radius);
+        }
+    }
+    ctx.restore();
+};
+
+const drawDoorIndicatorOutline = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number
+) => {
+    const size = 14;
+    const half = size / 2;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.34)';
+    ctx.lineWidth = 1;
+    strokeRoundedRect(ctx, x - half, y - half, size, size, 3);
+    ctx.restore();
+};
+
 
 // Pre-render common indicators for performance
 const indicatorIcons: Record<string, HTMLCanvasElement> = {};
@@ -1255,6 +1331,7 @@ export const drawFeatures = (
                             // Clip to this room's tile so the door doesn't bleed into the neighbor
                             ctx.save();
                             ctx.beginPath(); ctx.rect(wx, wy, s, s); ctx.clip();
+                            if (isActive) drawDoorVisualOutline(ctx, x1, y1, x2, y2, isClosed);
                             // Brown post segments (no drop shadow)
                             ctx.save();
                             ctx.strokeStyle = currentWallColor;
@@ -1390,6 +1467,7 @@ export const drawFeatures = (
                             const icon = getIndicatorIcon('▲', finalColor, isOutline, 7, true, true, arrowSize);
                             ctx.save();
                             ctx.globalAlpha = isExplored ? (hasDoor ? 1.0 : exploredAlphaMul * 0.5) : 0.2;
+                            if (hasDoor && isActive) drawDoorIndicatorOutline(ctx, anchorX - cOff, anchorY - cOff);
                             ctx.drawImage(icon, anchorX - cOff - icon.width / 2, anchorY - cOff - icon.height / 2);
                             ctx.restore();
                         }
@@ -1400,6 +1478,7 @@ export const drawFeatures = (
                             const icon = getIndicatorIcon('▼', finalColor, isOutline, 7, true, true, arrowSize);
                             ctx.save();
                             ctx.globalAlpha = isExplored ? (hasDoor ? 1.0 : exploredAlphaMul * 0.5) : 0.2;
+                            if (hasDoor && isActive) drawDoorIndicatorOutline(ctx, anchorX + cOff, anchorY + cOff);
                             ctx.drawImage(icon, anchorX + cOff - icon.width / 2, anchorY + cOff - icon.height / 2);
                             ctx.restore();
                         }
@@ -1450,6 +1529,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
         const vnum = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;
         if (preloaded[vnum]) continue;
         if (Math.abs((room.z || 0) - currentZ) > 1.5) continue;
+        const isActiveRoom = !!rCtx.activeId && vnum === String(rCtx.activeId).replace(/^m_/, '');
         const wx = room.x * s, wy = room.y * s, cX = wx + s / 2, cY = wy + s / 2;
         const zoneName = room.zone || '';
         const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
@@ -1533,6 +1613,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 const icon = getIndicatorIcon('▲', finalColor, isOutline, 7, true, true, arrowSize);
                 ctx.save();
                 ctx.globalAlpha = hasDoor ? 1.0 : 0.5;
+                if (hasDoor && isActiveRoom) drawDoorIndicatorOutline(ctx, cX - 12, cY - 12);
                 ctx.drawImage(icon, cX - 12 - icon.width / 2, cY - 12 - icon.height / 2);
                 ctx.restore();
             }
@@ -1543,6 +1624,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 const icon = getIndicatorIcon('▼', finalColor, isOutline, 7, true, true, arrowSize);
                 ctx.save();
                 ctx.globalAlpha = hasDoor ? 1.0 : 0.5;
+                if (hasDoor && isActiveRoom) drawDoorIndicatorOutline(ctx, cX + 12, cY + 12);
                 ctx.drawImage(icon, cX + 12 - icon.width / 2, cY + 12 - icon.height / 2);
                 ctx.restore();
             }
@@ -1573,6 +1655,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
         for (const room of localRooms) {
             const vnum = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;
             if (preloaded[vnum] || Math.abs((room.z || 0) - currentZ) > 1.5) continue;
+            const isActiveRoom = !!rCtx.activeId && vnum === String(rCtx.activeId).replace(/^m_/, '');
             const wx = room.x * s, wy = room.y * s;
             const zoneName = room.zone || '';
             const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
@@ -1591,6 +1674,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                     // Clip to this room's tile so the door doesn't bleed into the neighbor
                     ctx.save();
                     ctx.beginPath(); ctx.rect(wx, wy, s, s); ctx.clip();
+                    if (isActiveRoom) drawDoorVisualOutline(ctx, x1, y1, x2, y2, isClosed);
                     // Brown post segments (no drop shadow)
                     ctx.save();
                     ctx.strokeStyle = currentWallColor; ctx.lineWidth = 3.5;

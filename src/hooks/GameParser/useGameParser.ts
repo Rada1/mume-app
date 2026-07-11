@@ -35,6 +35,7 @@ import { parseEffectTimerLine } from '../../services/timers/effectTimerParser';
 import { parseActionTimerLine } from '../../services/timers/actionTimerParser';
 import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { parseMagicKeyLine, upsertMagicKeyTarget } from '../../utils/magicKeyUtils';
+import { parseResourceGainLine } from '../../utils/resourceGainUtils';
 import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir } from './textMapperEvents';
 import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
 import { canBootstrapExpectedCapture } from './captureBootstrap';
@@ -770,6 +771,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         
         // 3. Sub-Parser Dispatch
         let msgType: MessageType = 'game';
+        const resourceGain = parseResourceGainLine(textOnly);
         
         const combatType = combat.parseCombatLine(textOnly, lineToParse, isSnoop);
         if (combatType) msgType = combatType;
@@ -1143,7 +1145,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 commResult.replyTarget, commResult.replyCommand, commResult.commSender, commResult.commAction, commResult.commText, commResult.commColor,
                 commResult.commSender ? tokenizeFresh(commResult.commSender) : undefined,
                 commResult.commText ? tokenizeFresh(commResult.commText) : undefined,
-                undefined, hasHitTag, hasDamageTag, hasAvoidDamageTag, hasMissTag, undefined, isSnoop, undefined, isRipMessage
+                undefined, hasHitTag, hasDamageTag, hasAvoidDamageTag, hasMissTag,
+                undefined, isSnoop, undefined, isRipMessage, undefined, resourceGain || undefined
             );
         }
 

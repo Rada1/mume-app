@@ -19,6 +19,7 @@ interface EnvironmentEffectsProps {
     bgImageBottom?: string | null;
     bgImageBottomScale?: number;
     terrain?: string | null;
+    zone?: string | null;
 }
 
 const getLightingTint = (lighting: LightingType): string => {
@@ -40,7 +41,8 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     isImmersionMode,
     isMobile,
     bgImage,
-    terrain
+    terrain,
+    zone
 }) => {
     const input = useInputStore(s => s.input);
 
@@ -135,7 +137,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
             {/* --- EMBER LAYER: Full-client particles above the map/drawer surface --- */}
             {isImmersionMode && (
                 <div className="embers-client-layer">
-                    <Embers count={28} />
+                    <Embers count={28} zone={zone} />
                 </div>
             )}
 

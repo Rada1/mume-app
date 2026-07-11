@@ -457,8 +457,9 @@ export const drawRoomOccupants = (
 
             // Opponent tether. Name fallback is allowed only when it resolves to
             // exactly one visible occupant; duplicate names require GMCP ID.
+            // (Disabled to hide combat red/cyan lines on the map when hitting/taking damage)
             if (isOpponent) {
-                drawCombatTether(px, py, combatPoint.x, combatPoint.y, alpha, true);
+                // drawCombatTether(px, py, combatPoint.x, combatPoint.y, alpha, true);
             }
         });
     };

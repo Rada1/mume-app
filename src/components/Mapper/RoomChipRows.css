@@ -405,6 +405,36 @@
     box-shadow:
         inset 0 -8px 0 color-mix(in srgb, currentColor, transparent 84%),
         0 0 0 1px color-mix(in srgb, currentColor, transparent 80%);
+    max-width: none;
+    overflow: visible;
+}
+
+.room-chip.is-target:not(.room-chip-player)::after {
+    content: 'tap again';
+    display: inline-block;
+    margin-left: 0.35em;
+    padding: 1px 4px;
+    border: 1px solid color-mix(in srgb, currentColor, transparent 45%);
+    border-radius: 999px;
+    background: color-mix(in srgb, currentColor, transparent 88%);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.62em;
+    font-weight: 800;
+    line-height: 1;
+    vertical-align: 0.12em;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    opacity: 0.9;
+    color: currentColor;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .room-chip.is-target:not(.room-chip-player)::after {
+        content: 'menu';
+        font-size: 0.68em;
+        padding: 1px 3px;
+    }
 }
 
 .room-chip.is-drop-target {

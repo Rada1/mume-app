@@ -89,6 +89,16 @@ const ReplyButton = ({ msg, setParley, onReply }: { msg: Message, setParley: (p:
     );
 };
 
+const ResourceGainBadge = ({ gain }: { gain?: Message['resourceGain'] }) => {
+    if (!gain || gain.amount <= 0) return null;
+    const label = gain.kind.toUpperCase();
+    return (
+        <span className={`resource-gain-badge ${gain.kind}`} aria-label={`Gained ${gain.amount} ${label}`}>
+            +{gain.amount.toLocaleString()} {label}
+        </span>
+    );
+};
+
 
 interface MessageLogProps {
     onLogClick: (e: React.MouseEvent) => void;
@@ -504,6 +514,7 @@ const MessageItem = React.memo(({
                         <div className="combat-bubble">
                             <div className="message-content hit-sheen-container">
                                 <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
+                                <ResourceGainBadge gain={msg.resourceGain} />
                                 {msg.isHitImpact && sheenActive && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
                                         <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
@@ -537,6 +548,7 @@ const MessageItem = React.memo(({
                                         action: 'menu'
                                     } : undefined}
                                 />
+                                <ResourceGainBadge gain={msg.resourceGain} />
                                 {msg.isHitImpact && sheenActive && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
                                         <TokenRenderer
@@ -682,6 +694,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                         commAction: data.commAction,
                         commText: data.commText,
                         commColor: data.commColor,
+                        resourceGain: data.resourceGain,
                     });
                 }
                 // { length: N } entries from useTelnet are silently skipped
