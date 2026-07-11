@@ -836,6 +836,15 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         charTab: ui.charTab,
         setCharTab: ui.setCharTab,
         handleTabClick: (drawer: 'none' | 'account' | 'character' | 'players' | 'equipment' | 'status') => {
+            if (viewport.isMobile) {
+                if (drawer === 'account') {
+                    ui.setDrawer('account');
+                } else {
+                    ui.setDrawer('none');
+                    ui.setMapExpanded(true);
+                }
+                return;
+            }
             if (drawer === 'none') {
                 const defaultDrawer = s.gameState === 'account' && s.userSession.mode !== 'replay' ? 'account' : 'status';
                 ui.setDrawer(viewport.isMobile ? 'none' : defaultDrawer);

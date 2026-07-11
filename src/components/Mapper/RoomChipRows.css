@@ -89,25 +89,41 @@
 }
 
 /* Terrain pins: a tiny blocky sprite standing on the pixel-art ground, with a
-   dashed leader line running up to its floating name chip, flag-marker style. */
-.room-chip-terrain-pins {
+   dashed leader line running up to its floating name chip, flag-marker style.
+   The player's own pin is pinned to the left; the room's occupants/objects live
+   in a horizontally-scrollable "focus lane" that never wraps onto stacked rows. */
+.room-chip-terrain-pins-wrap {
     position: relative;
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
     width: 100%;
     pointer-events: none;
 }
 
-/* The player's own pin — pinned to the left edge, outside the centered flex
-   flow the other room chips use, so it doesn't shift as the room's occupant
-   count changes. */
+/* The carousel lane. Every pin is absolutely positioned into the fixed lane
+   width by JS (a fisheye layout), so all pins stay on screen at every focus
+   position — dragging/wheeling just moves which ones are magnified. The
+   magnified centre spreads out + reveals title chips; the shoulders compress
+   into a dense sprite clump but never leave the screen. */
+.room-chip-terrain-pins {
+    position: relative;
+    width: 100%;
+    height: 48px;
+    pointer-events: auto;
+    /* horizontal handled by the JS drag; vertical still scrolls the log */
+    touch-action: pan-y;
+    overflow: visible;
+}
+
+/* The player's own pin — pinned to the left gutter, outside the carousel flow,
+   so it stays visible and doesn't shift as the occupant count changes. */
 .terrain-pin-player {
     position: absolute;
     left: 12px;
     bottom: 0;
+    z-index: 2;
+    pointer-events: auto;
 }
 
 .terrain-pin {
@@ -116,6 +132,67 @@
     align-items: center;
     gap: 2px;
     pointer-events: auto;
+}
+
+/* Carousel pins: JS sets `left` every frame; --pin-focus (1 at centre → 0 at the
+   shoulders) drives a subtle scale + dim so the focus reads as the foreground.
+   No CSS transition on transform/left — the JS animator supplies the motion, so
+   the carousel stays crisp instead of floating. Origin at the ground line. */
+.room-chip-terrain-pins .terrain-pin {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    --pin-focus: 0;
+    transform: translateX(-50%) scale(calc(0.9 + 0.16 * var(--pin-focus)));
+    transform-origin: bottom center;
+    opacity: calc(0.6 + 0.4 * var(--pin-focus));
+    will-change: left, transform, opacity;
+}
+
+/* Background pins are just their pixel-art sprite — the title chip + leader stem
+   collapse so the shoulders pack densely. Because carousel pins are absolutely
+   positioned, a revealed chip floats over its neighbours instead of shoving the
+   row wider. */
+.room-chip-terrain-pins .terrain-pin .room-chip {
+    max-width: 0;
+    padding-inline: 0;
+    border-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    white-space: nowrap;
+    transition: max-width 0.16s ease-out, opacity 0.14s ease-out, padding 0.16s ease-out;
+}
+
+.room-chip-terrain-pins .terrain-pin .terrain-pin-line {
+    height: 0;
+    opacity: 0;
+    transition: height 0.16s ease-out, opacity 0.14s ease-out;
+}
+
+/* Pins spread into the magnified foreground reveal their title chip + stem so
+   they can be read and tapped by name. */
+.room-chip-terrain-pins .terrain-pin.is-foreground .room-chip {
+    /* Cap must equal CHIP_W in RoomChipRows.tsx so chips can't overlap neighbours. */
+    max-width: 84px;
+    box-sizing: border-box;
+    padding-inline: 5px;
+    border-width: 1px;
+    opacity: 1;
+    overflow: hidden;
+    pointer-events: auto;
+}
+
+.room-chip-terrain-pins .terrain-pin.is-foreground .terrain-pin-line {
+    height: 12px;
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .room-chip-terrain-pins .terrain-pin .room-chip,
+    .room-chip-terrain-pins .terrain-pin .terrain-pin-line {
+        transition: none;
+    }
 }
 
 .terrain-pin .room-chip {

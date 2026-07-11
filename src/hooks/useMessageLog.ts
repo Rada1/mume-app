@@ -47,6 +47,28 @@ const classifyRoomSection = (m: Message): RoomSection | null => {
     return null;
 };
 
+// A message is a valid "trigger" line for a resource gain if it's real game output —
+// not a prompt, echoed command, system notice, comm/social line, blank line, or a
+// meta status/weather/movement line.
+const isResourceGainTriggerLine = (m: Message): boolean =>
+    !m.isEmpty &&
+    m.type !== 'prompt' && m.type !== 'user' && m.type !== 'system' &&
+    m.type !== 'weather' && m.type !== 'gmcp-event' && m.type !== 'movement' &&
+    m.type !== 'status-event' &&
+    !m.isComm && !m.isSocial;
+
+// Fold queued gains (summed per kind) onto a message's resourceGain badge.
+const mergeResourceGains = <T extends Message>(m: T, gains: import('../types').ResourceGain[]): T => {
+    let resourceGain = m.resourceGain;
+    for (const g of gains) {
+        if (!g || g.amount <= 0) continue;
+        resourceGain = resourceGain && resourceGain.kind === g.kind
+            ? { ...resourceGain, amount: resourceGain.amount + g.amount }
+            : g;
+    }
+    return resourceGain === m.resourceGain ? m : { ...m, resourceGain } as T;
+};
+
 // ---------------------------------------------------------------------------
 let lastVibrateTime = 0;
 const USER_LOG_MESSAGE_LIMIT = 500;
@@ -88,6 +110,12 @@ export function useMessageLog(
     const addedMidSetRef = useRef<Set<string>>(new Set());
 
     const batchIdRef = useRef(0);
+
+    // Resource gains (XP/TP) arrive via GMCP, sometimes just *before* the combat line
+    // that earned them. We queue them and attach to the next action line that flushes;
+    // a short fallback timer covers the tail case (last kill with no line after it).
+    const pendingGainsRef = useRef<import('../types').ResourceGain[]>([]);
+    const pendingGainTimerRef = useRef<NodeJS.Timeout | null>(null);
 
     const isCombatLine = useCallback((text: string) => {
         const lower = text.toLowerCase();
@@ -145,6 +173,20 @@ export function useMessageLog(
                 isStatusBlockStart
             };
         });
+
+        // Attach any queued resource gains (GMCP arrived just before this text) to the
+        // first real action line in this batch — the line that actually earned them.
+        if (pendingGainsRef.current.length > 0) {
+            const idx = pending.findIndex(isResourceGainTriggerLine);
+            if (idx !== -1) {
+                pending[idx] = mergeResourceGains(pending[idx], pendingGainsRef.current);
+                pendingGainsRef.current = [];
+                if (pendingGainTimerRef.current) {
+                    clearTimeout(pendingGainTimerRef.current);
+                    pendingGainTimerRef.current = null;
+                }
+            }
+        }
 
         // Extend the room block to cover the room's contents (mob/player/object/
         // exit lines) that immediately follow the room name in this batch, so the
@@ -615,13 +657,58 @@ export function useMessageLog(
         });
     }, [setMessages, messageLimit]);
 
+    // Fallback: attach any still-unclaimed gains to the most recent action line
+    // already in the buffer or committed store. Used when no new text line follows
+    // the gain (e.g. the final kill of a fight), so the badge doesn't wait forever.
+    const flushPendingGainsToLast = useCallback(() => {
+        const gains = pendingGainsRef.current;
+        if (gains.length === 0) return;
+        pendingGainsRef.current = [];
+
+        const buf = messageBufferRef.current;
+        for (let i = buf.length - 1; i >= 0; i--) {
+            if (isResourceGainTriggerLine(buf[i])) {
+                buf[i] = mergeResourceGains(buf[i], gains);
+                return;
+            }
+        }
+        setMessages(prev => {
+            for (let i = prev.length - 1; i >= 0; i--) {
+                if (isResourceGainTriggerLine(prev[i])) {
+                    const copy = prev.slice();
+                    copy[i] = mergeResourceGains(prev[i], gains);
+                    return copy;
+                }
+            }
+            return prev;
+        });
+    }, [setMessages]);
+
+    // Queue a resource gain (XP/TP) to be badged onto the line that earned it. On this
+    // server the GMCP gain often arrives just before that line, so we wait for the next
+    // action line to flush; if none comes within the window, we fall back to the last line.
+    const registerPendingResourceGain = useCallback((gain: import('../types').ResourceGain) => {
+        if (!gain || gain.amount <= 0) return;
+        const arr = pendingGainsRef.current;
+        const existing = arr.find(g => g.kind === gain.kind);
+        if (existing) existing.amount += gain.amount;
+        else arr.push({ ...gain });
+
+        if (pendingGainTimerRef.current) clearTimeout(pendingGainTimerRef.current);
+        pendingGainTimerRef.current = setTimeout(() => {
+            pendingGainTimerRef.current = null;
+            flushPendingGainsToLast();
+        }, 400);
+    }, [flushPendingGainsToLast]);
+
     return useMemo(() => ({
         addMessage,
         addSystemMessage,
+        registerPendingResourceGain,
         flushMessages,
         isCombatLine,
         clearLog
     }), [
-        addMessage, addSystemMessage, flushMessages, isCombatLine, clearLog
+        addMessage, addSystemMessage, registerPendingResourceGain, flushMessages, isCombatLine, clearLog
     ]);
 }

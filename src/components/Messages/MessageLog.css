@@ -1336,8 +1336,9 @@
     }
 
     .mobile-gutter-input-wrapper .cmd-prompt,
-    .mobile-gutter-input-wrapper .input-field {
-        font-size: max(16px, calc(var(--dynamic-log-size, 16px) + 1px));
+    .mobile-gutter-input-wrapper .input-field,
+    .mobile-gutter-input-wrapper .command-input-highlight {
+        font-size: max(16px, calc(var(--dynamic-log-size, 16px) + 1px)) !important;
     }
 
     .mobile-gutter-input-wrapper .input-actions-container {
@@ -2276,6 +2277,11 @@ span.inline-btn {
     z-index: 4600; /* Layered on top of .app-terrain-strip (z-index 4500) and ::after (z-index 10) */
     display: flex;
     justify-content: center;
+    pointer-events: none;
+}
+
+.log-terrain-chips-overlay .room-chip-terrain-pins,
+.log-terrain-chips-overlay .room-chip-terrain-pins-wrap {
     pointer-events: none;
 }
 

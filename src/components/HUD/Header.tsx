@@ -7,6 +7,7 @@ import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useSessionStore } from '../../stores/useSessionStore';
 import { useArchiveStore } from '../../stores/useArchiveStore';
+import { useUIStore } from '../../stores/useUIStore';
 import { canAccessShaper } from '../../shaper/access/shaperAccess';
 import { useMumeTime } from '../../hooks/useMumeTime';
 
@@ -27,11 +28,14 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
         gameState,
         clearObjectSelection,
         roomNpcs,
+        roomPlayers,
+        roomItems,
         executeCommand,
         addMessage,
         env,
         isFoggy,
-        gameTime
+        gameTime,
+        entities
     } = useGame() as any;
 
     const { setActiveMapFilter } = useMapper();
@@ -45,6 +49,8 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
         ui, setUI, setIsSettingsOpen, setPopoverState,
         setSettingsTab, replayer
     } = useUI();
+
+    const selectedTarget = useUIStore(state => state.selectedTarget);
 
     const isReplayHUDMinimized = useSessionStore(state => state.isReplayHUDMinimized);
     const setIsReplayHUDMinimized = useSessionStore(state => state.setIsReplayHUDMinimized);
@@ -66,6 +72,83 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
         ? (activeView === 'target' ? (characterInfo.name || spectateTarget) : spectateTarget)
         : null;
     const currentTime = useMumeTime(gameTime);
+
+    const getTargetColor = () => {
+        if (!target) return null;
+        
+        const normTarget = target.trim().toLowerCase();
+
+        // 1. Try matching with selectedTarget from the UIStore
+        if (selectedTarget) {
+            const isMatch = 
+                selectedTarget.context?.toLowerCase() === normTarget ||
+                selectedTarget.keyword?.toLowerCase() === normTarget ||
+                selectedTarget.displayName?.toLowerCase().includes(normTarget);
+            if (isMatch && selectedTarget.accentColor) {
+                return selectedTarget.accentColor;
+            }
+        }
+
+        // 2. If no direct match in selectedTarget, search the entities registry
+        if (entities) {
+            // Find an entity in the registry that matches the target keyword
+            const matchingEntity = Object.values(entities).find((entity: any) => {
+                return (
+                    entity.noun?.toLowerCase() === normTarget ||
+                    entity.name?.toLowerCase() === normTarget ||
+                    entity.name?.toLowerCase().includes(normTarget)
+                );
+            });
+
+            if (matchingEntity) {
+                const id = matchingEntity.id || '';
+                if (id.startsWith('roomplayers') || id.startsWith('player')) {
+                    return 'var(--color-player)';
+                }
+                if (id.startsWith('roomnpcs') || id.startsWith('npc')) {
+                    return 'var(--color-npc)';
+                }
+                if (id.startsWith('roomitems') || id.startsWith('inv') || id.startsWith('eq') || id.startsWith('item')) {
+                    return 'var(--color-obj)';
+                }
+            }
+        }
+
+        // 3. Fallbacks for room lists (if entity wasn't in registry yet)
+        if (roomNpcs) {
+            const npcMatch = roomNpcs.find((npc: any) => {
+                const npcName = (npc.name || npc.short || '').toLowerCase();
+                return npcName.includes(normTarget);
+            });
+            if (npcMatch) {
+                return 'var(--color-npc)';
+            }
+        }
+
+        if (roomPlayers) {
+            const playerMatch = roomPlayers.find((p: any) => {
+                const pName = (p.name || p.short || '').toLowerCase();
+                return pName.includes(normTarget);
+            });
+            if (playerMatch) {
+                return 'var(--color-player)';
+            }
+        }
+
+        if (roomItems) {
+            const itemMatch = roomItems.find((i: any) => {
+                const iName = (i.name || i.short || '').toLowerCase();
+                return iName.includes(normTarget);
+            });
+            if (itemMatch) {
+                return 'var(--color-obj)';
+            }
+        }
+
+        // 4. Default fallback to Target Gold
+        return 'var(--color-target, #facc15)';
+    };
+
     const shouldShowEnvStatus = !isAccountScreen && (
         env?.lighting !== 'none' ||
         env?.weather !== 'none' ||
@@ -347,22 +430,13 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
 
                 {!isAccountScreen && (
                 <div
-                    className={`status-indicator ${!target ? 'clickable-target' : ''}`}
+                    className={`status-indicator target-selector ${target ? 'has-target' : ''} ${isEnteringTarget ? 'entering-target' : ''} ${!target ? 'clickable-target' : ''}`}
                     style={{
-                        color: target ? 'var(--map-accent)' : 'var(--text-faded)',
-                        gap: 4, padding: '4px 6px',
-                        cursor: 'pointer',
-                        opacity: target ? 1 : 0.8,
-                        border: target ? '1px solid var(--map-accent)' : '1px solid var(--border-color)',
                         maxWidth: viewport.isMobile ? (isEnteringTarget ? '100px' : '80px') : 'none',
                         minWidth: viewport.isMobile ? '40px' : '90px',
                         overflow: 'hidden',
-                        height: '28px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        transition: 'all 0.2s ease',
-                        background: isEnteringTarget ? 'rgba(var(--map-accent-rgb, 20, 184, 166), 0.1)' : 'transparent'
-                    }}
+                        '--glow-color': getTargetColor() || undefined
+                    } as React.CSSProperties}
                     title={target ? "Current Target (Click to clear)" : "Click to set target"}
                     onClick={() => {
                         if (target) {
@@ -410,7 +484,7 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
                                 style={{
                                     background: 'transparent',
                                     border: 'none',
-                                    color: 'var(--map-accent)',
+                                    color: 'inherit',
                                     outline: 'none',
                                     width: '100%',
                                     fontSize: '0.75rem',

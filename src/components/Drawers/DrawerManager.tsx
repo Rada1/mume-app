@@ -74,8 +74,11 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         }
 
         if (isPortrait && ui.drawer === 'none' && !ui.mapExpanded) {
-            const defaultDrawer = gameState === 'account' && sessionMode !== 'replay' ? 'account' : 'status';
-            setUI(prev => ({ ...prev, drawer: defaultDrawer }));
+            if (gameState === 'account' && sessionMode !== 'replay') {
+                setUI(prev => ({ ...prev, drawer: 'account' }));
+            } else {
+                setUI(prev => ({ ...prev, mapExpanded: true }));
+            }
         }
     }, [ui.drawer, ui.mapExpanded, viewport.isMobile, viewport.isLandscape, gameState, sessionMode, setUI]);
 

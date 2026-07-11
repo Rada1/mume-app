@@ -643,3 +643,55 @@
     }
 }
 
+/* Header Target Selector Styling (Themed like selected inline log buttons) */
+.status-indicator.target-selector {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px; /* Matches inline-btn border-radius */
+}
+
+/* Selected/Active target state */
+.status-indicator.target-selector.has-target {
+    border: 0;
+    color: var(--color-target, #facc15) !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-target, #facc15), transparent 18%) !important;
+    background: color-mix(in srgb, var(--color-target, #facc15), transparent 90%) !important;
+    box-shadow:
+        inset 0 -8px 0 color-mix(in srgb, var(--color-target, #facc15), transparent 84%),
+        0 0 0 1px color-mix(in srgb, var(--color-target, #facc15), transparent 80%) !important;
+}
+
+/* No active target state */
+.status-indicator.target-selector:not(.has-target) {
+    color: var(--text-faded) !important;
+    border: 1px solid var(--border-color, rgba(212, 170, 0, 0.4)) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    opacity: 0.8;
+}
+
+.status-indicator.target-selector:not(.has-target):hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* When manually typing/entering target */
+.status-indicator.target-selector.entering-target {
+    border: 0 !important;
+    color: var(--color-target, #facc15) !important;
+    background: color-mix(in srgb, var(--color-target, #facc15), transparent 85%) !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-target, #facc15), transparent 18%) !important;
+    box-shadow:
+        inset 0 -8px 0 color-mix(in srgb, var(--color-target, #facc15), transparent 80%),
+        0 0 0 1px color-mix(in srgb, var(--color-target, #facc15), transparent 75%) !important;
+}
+
+

@@ -196,19 +196,15 @@ export const useSessionState = (
         _setTpEvent(prev => prev + 1);
     }, []);
 
-    // Sync XP/TP changes from the store (GMCP) to the ticker state
+    // Baselines for GMCP-driven gain detection. Null until the first value for the
+    // current character arrives, so we don't log the login snap or a char switch as a "gain".
+    const xpGainBaselineRef = useRef<number | null>(null);
+    const tpGainBaselineRef = useRef<number | null>(null);
     useEffect(() => {
-        const currentXp = vStore.characterInfo.xp;
-        if (currentXp !== undefined && currentXp !== xpHistory.new) {
-            triggerXpTicker(currentXp);
-        }
-    }, [vStore.characterInfo.xp, xpHistory.new, triggerXpTicker]);
-    useEffect(() => {
-        const currentTp = vStore.characterInfo.tp;
-        if (currentTp !== undefined && currentTp !== tpHistory.new) {
-            triggerTpTicker(currentTp);
-        }
-    }, [vStore.characterInfo.tp, tpHistory.new, triggerTpTicker]);
+        // A different character (or a fresh login) means a fresh baseline.
+        xpGainBaselineRef.current = null;
+        tpGainBaselineRef.current = null;
+    }, [characterName]);
 
     useEffect(() => { roomNameRef.current = roomName; }, [roomName]);
 
@@ -273,6 +269,46 @@ export const useSessionState = (
         audioTriggers?.playCommMessageSound,
         isSpectateSession
     );
+
+    // Sync XP/TP changes from the store (GMCP) to the ticker state, and emit a log line
+    // for positive gains (the server drives these via Char.Vitals with no accompanying text).
+    useEffect(() => {
+        const currentXp = vStore.characterInfo.xp;
+        if (currentXp === undefined) return;
+
+        // Baseline tracks characterInfo.xp itself so it can never drift out of sync,
+        // even if the text parser path also bumps xp.
+        const prev = xpGainBaselineRef.current;
+        if (prev === currentXp) return;
+        xpGainBaselineRef.current = currentXp;
+
+        if (currentXp !== xpHistory.new) triggerXpTicker(currentXp);
+
+        // Only log once we have a real prior baseline (skips login snap / char switch).
+        if (prev !== null && !isSpectateSession) {
+            const delta = currentXp - prev;
+            if (delta > 0) {
+                log.registerPendingResourceGain({ kind: 'xp', amount: delta });
+            }
+        }
+    }, [vStore.characterInfo.xp, xpHistory.new, triggerXpTicker, isSpectateSession, log]);
+    useEffect(() => {
+        const currentTp = vStore.characterInfo.tp;
+        if (currentTp === undefined) return;
+
+        const prev = tpGainBaselineRef.current;
+        if (prev === currentTp) return;
+        tpGainBaselineRef.current = currentTp;
+
+        if (currentTp !== tpHistory.new) triggerTpTicker(currentTp);
+
+        if (prev !== null && !isSpectateSession) {
+            const delta = currentTp - prev;
+            if (delta > 0) {
+                log.registerPendingResourceGain({ kind: 'tp', amount: delta });
+            }
+        }
+    }, [vStore.characterInfo.tp, tpHistory.new, triggerTpTicker, isSpectateSession, log]);
 
     // --- Parser State ---
     const [inventoryLines, setInventoryLines] = useState<DrawerLine[]>([]);

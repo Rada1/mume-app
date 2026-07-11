@@ -330,7 +330,6 @@ export const drawRoomOccupants = (
         }
     }
 
-    const zoomFactor = (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
     const pulse = (Math.sin(now / 400) + 1) / 2;
     const activeEntityIds = new Set(rCtx.selectedObjectIds || []);
     if (rCtx.activeInlineEntityId) activeEntityIds.add(rCtx.activeInlineEntityId);
@@ -354,65 +353,9 @@ export const drawRoomOccupants = (
         if (occ.fighting !== 'you') combatantIds.add(String(occ.fighting));
     });
 
-    const drawCombatTether = (fromX: number, fromY: number, toX: number, toY: number, alpha = 1, includePulses = false) => {
-        const zoom = camera.zoom || 1;
-        const dx = toX - fromX;
-        const dy = toY - fromY;
-        const len = Math.hypot(dx, dy);
-        if (len < 1) return;
-        const ux = dx / len;
-        const uy = dy / len;
-
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        ctx.lineCap = 'round';
-
-        ctx.shadowBlur = 10 / zoom;
-        ctx.shadowColor = '#ef4444';
-        ctx.beginPath();
-        ctx.moveTo(fromX, fromY);
-        ctx.lineTo(toX, toY);
-        ctx.strokeStyle = 'rgba(127, 29, 29, 0.92)';
-        ctx.lineWidth = Math.max(1.1, 2.1 / zoomFactor);
-        ctx.setLineDash([Math.max(2, 4 / zoom), Math.max(2, 5 / zoom)]);
-        ctx.lineDashOffset = -now / 70;
-        ctx.stroke();
-        ctx.restore();
-
-        if (!includePulses || !rCtx.combatPulsesRef?.current.length) return;
-
-        const pulseDuration = 340;
-        const pulses = rCtx.combatPulsesRef.current.filter(pulse => now - pulse.time < pulseDuration);
-        if (pulses.length !== rCtx.combatPulsesRef.current.length) {
-            rCtx.combatPulsesRef.current = pulses;
-        }
-
-        pulses.forEach(pulse => {
-            const progress = Math.max(0, Math.min(1, (now - pulse.time) / pulseDuration));
-            const directedProgress = pulse.direction === 'outgoing' ? progress : 1 - progress;
-            const pulseLen = Math.min(len * 0.45, Math.max(8 / zoom, 14));
-            const centerX = fromX + dx * directedProgress;
-            const centerY = fromY + dy * directedProgress;
-            const tailX = centerX - ux * pulseLen * 0.5;
-            const tailY = centerY - uy * pulseLen * 0.5;
-            const headX = centerX + ux * pulseLen * 0.5;
-            const headY = centerY + uy * pulseLen * 0.5;
-            const color = pulse.direction === 'outgoing' ? 'rgba(34, 211, 238, 0.95)' : 'rgba(248, 113, 113, 0.95)';
-
-            ctx.save();
-            ctx.globalAlpha = alpha * Math.sin(progress * Math.PI);
-            ctx.lineCap = 'round';
-            ctx.shadowBlur = 12 / zoom;
-            ctx.shadowColor = pulse.direction === 'outgoing' ? '#22d3ee' : '#ef4444';
-            ctx.strokeStyle = color;
-            ctx.lineWidth = Math.max(1.6, 3.2 / zoomFactor);
-            ctx.beginPath();
-            ctx.moveTo(tailX, tailY);
-            ctx.lineTo(headX, headY);
-            ctx.stroke();
-            ctx.restore();
-        });
-    };
+    // Combat tethers (the red/cyan dashed lines drawn between fighting entities)
+    // have been removed from the map — see the NPC-vs-NPC and opponent draw sites
+    // below, both now disabled.
 
     const drawDot = (orbX: number, orbY: number, color: string, alpha: number, name?: string, radius = GRID_SIZE * 0.09, anim?: import('../occupantAnimStore').OccupantAnimEntry, isTarget = false, isActive = false, isCombatant = false, isGroupMember = false) => {
         drawOccupantDot(rCtx, orbX, orbY, color, alpha, name, radius, anim, isTarget, isActive, isCombatant, isGroupMember, isHeldActive);
@@ -455,12 +398,7 @@ export const drawRoomOccupants = (
 
             drawDot(combatPoint.x, combatPoint.y, occ.color, alpha, occ.name, occ.radius, anim, isSelectedTarget, isOccupantActive(occ), isCombatant, isGroupOcc);
 
-            // Opponent tether. Name fallback is allowed only when it resolves to
-            // exactly one visible occupant; duplicate names require GMCP ID.
-            // (Disabled to hide combat red/cyan lines on the map when hitting/taking damage)
-            if (isOpponent) {
-                // drawCombatTether(px, py, combatPoint.x, combatPoint.y, alpha, true);
-            }
+            // Opponent combat tether removed — no combat lines are drawn on the map.
         });
     };
 
@@ -468,20 +406,7 @@ export const drawRoomOccupants = (
     drawRing(otherOccupants);
     drawRing(groupOccupants);
 
-    // 4.1 Draw NPC-vs-NPC combat tethers using GMCP fighting IDs
-    const drawnPairs = new Set<string>();
-    allOccupants.forEach(occ => {
-        if (occ.fighting == null || occ.fighting === 'you' || occ.fighting === 'Someone') return;
-        if (occ.id == null) return;
-        const target = allOccupants.find(t => t.id != null && String(t.id) === String(occ.fighting));
-        if (!target) return;
-        const pairKey = [String(occ.id), String(target.id)].sort().join('-');
-        if (drawnPairs.has(pairKey)) return;
-        drawnPairs.add(pairKey);
-        drawCombatTether(occ.x, occ.y, target.x, target.y, 0.78);
-    });
-
-
+    // 4.1 NPC-vs-NPC combat tethers removed — combat tethers no longer render on the map.
 
     // 5. Draw exit-animating occupants
     for (const { key } of exitAnims) {

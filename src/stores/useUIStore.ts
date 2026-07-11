@@ -191,7 +191,13 @@ export const useUIStore = create<UIState>((set) => ({
     setPlayersTab: (tab) => set({ playersTab: tab }),
     setCharTab: (tab) => set({ charTab: tab }),
 
-    setDrawer: (drawer) => set({ drawer }),
+    setDrawer: (drawer) => set((state) => {
+        const isMob = typeof window !== 'undefined' && (window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+        if (isMob && drawer !== 'none' && drawer !== 'account') {
+            return { drawer: 'none', mapExpanded: true };
+        }
+        return { drawer };
+    }),
     setIsDrawerPeeking: (peeking) => set({ isDrawerPeeking: peeking }),
     setMapExpanded: (expanded) => set({ mapExpanded: expanded }),
 
@@ -230,7 +236,18 @@ export const useUIStore = create<UIState>((set) => ({
     setManagerSelectedSet: (setId) => set({ managerSelectedSet: setId }),
     setIsSetManagerOpen: (open) => set({ setManagerOpen: open }),
 
-    setUI: (updater) => set((state) => (typeof updater === 'function' ? updater(state) : (updater as any))),
+    setUI: (updater) => set((state) => {
+        const nextState = typeof updater === 'function' ? updater(state) : (updater as any);
+        const isMob = typeof window !== 'undefined' && (window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+        if (isMob && nextState.drawer && nextState.drawer !== 'none' && nextState.drawer !== 'account') {
+            return {
+                ...nextState,
+                drawer: 'none',
+                mapExpanded: true
+            };
+        }
+        return nextState;
+    }),
 
     closeAllPanels: () => set({
         drawer: 'none',

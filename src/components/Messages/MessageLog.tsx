@@ -302,7 +302,7 @@ const MessageItem = React.memo(({
     setParley,
     triggerHaptic,
     playClickSound,
-    brightBatchFloor,
+    isOldBatchDim = false,
     isTimestampEnabled,
     isNewbieMode,
     currentRoomName,
@@ -311,7 +311,6 @@ const MessageItem = React.memo(({
     isAwaitingResponse,
     batchOffset = 0,
     colors,
-    maxBatchId = -1,
 }: {
     msg: Message,
     executeCommand: (cmd: string, silent?: boolean) => void,
@@ -320,7 +319,7 @@ const MessageItem = React.memo(({
     setParley?: (p: any) => void;
     triggerHaptic?: (ms: number) => void;
     playClickSound?: () => void;
-    brightBatchFloor?: number;
+    isOldBatchDim?: boolean;
     isTimestampEnabled?: boolean;
     isNewbieMode?: boolean;
     currentRoomName?: string | null,
@@ -337,7 +336,6 @@ const MessageItem = React.memo(({
         objectColor?: string;
         roomColor?: string;
     };
-    maxBatchId?: number;
 }) => {
     const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
     const content = msg.html;
@@ -346,8 +344,6 @@ const MessageItem = React.memo(({
     // log-word wrappers and shifts inline button positions.
     const [isRecent] = React.useState(() => Date.now() - msg.timestamp < 2000);
     const [isRecentEntry] = React.useState(() => Date.now() - msg.timestamp < 600);
-    const isLatestBatch = msg.batchId === undefined || msg.batchId === maxBatchId;
-    const isOldBatchDim = brightBatchFloor !== undefined && (msg.batchId === undefined || msg.batchId < brightBatchFloor);
     const [commandBloomPhase, setCommandBloomPhase] = React.useState<'off' | 'active' | 'exiting'>(isAwaitingResponse ? 'active' : 'off');
     
     // local state to handle the cleanup of the hit sheen animation
@@ -782,18 +778,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
         return undefined;
     }, [displayMessages]);
 
-    const maxBatchId = useMemo(() => {
-        let max = -1;
-        for (let i = displayMessages.length - 1; i >= 0; i--) {
-            const bId = displayMessages[i].batchId;
-            if (bId !== undefined) {
-                max = bId;
-                break;
-            }
-        }
-        return max;
-    }, [displayMessages]);
-
     const handlePointerDownInternal = useCallback((e: React.PointerEvent) => {
         if (onPointerDown) onPointerDown(e);
     }, [onPointerDown]);
@@ -1105,7 +1089,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     setParley={setParley}
                                     triggerHaptic={triggerHaptic}
                                     playClickSound={playClickSound}
-                                    brightBatchFloor={brightBatchFloor}
+                                    isOldBatchDim={brightBatchFloor !== undefined && (msg.batchId === undefined || msg.batchId < brightBatchFloor)}
                                     isTimestampEnabled={isTimestampEnabled}
                                     isNewbieMode={isNewbieMode}
                                     currentRoomName={roomName}
@@ -1114,7 +1098,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     isAwaitingResponse={msg.type === 'user' && msg.id === awaitingResponseUserId}
                                     batchOffset={batchOffset}
                                     colors={colors}
-                                    maxBatchId={maxBatchId}
                                 />
                             </div>
                         );

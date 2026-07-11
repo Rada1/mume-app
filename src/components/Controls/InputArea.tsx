@@ -95,6 +95,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const commandInputWrapRef = useRef<HTMLDivElement>(null);
+    const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const glowRafRef = useRef<number | null>(null);
     const startPos = useRef<{ x: number, y: number } | null>(null);
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
@@ -102,6 +103,14 @@ const InputArea: React.FC<InputAreaProps> = ({
     const [commandIndex, setCommandIndex] = useState(0);
     const [isCommandInputFocused, setIsCommandInputFocused] = useState(false);
     const [commandPopupStyle, setCommandPopupStyle] = useState<React.CSSProperties>({});
+
+    useEffect(() => {
+        return () => {
+            if (blurTimeoutRef.current) {
+                clearTimeout(blurTimeoutRef.current);
+            }
+        };
+    }, []);
 
     const chars = useRoomStore(s => s.chars);
     const items = useRoomStore(s => s.items);
@@ -545,7 +554,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                         key={entry.key}
                         type="button"
                         className={`command-suggestion-option target-suggestion-option${selectedTargetSuggestion?.key === entry.key ? ' is-selected' : ''}`}
-                        onMouseDown={event => {
+                        onPointerDown={event => {
                             event.preventDefault();
                             setInput(replaceCommandArgumentToken(input, entry.value));
                             requestAnimationFrame(() => inputRef.current?.focus());
@@ -562,7 +571,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                         key={entry.display}
                         type="button"
                         className={`command-suggestion-option${mumeCommandMatch.entry?.full === entry.full ? ' is-selected' : ''}`}
-                        onMouseDown={event => {
+                        onPointerDown={event => {
                             event.preventDefault();
                             setInput(replaceMumeCommandToken(input, entry));
                             requestAnimationFrame(() => inputRef.current?.focus());
@@ -914,11 +923,21 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 }
                             }}
                             onFocus={() => {
+                                if (blurTimeoutRef.current) {
+                                    clearTimeout(blurTimeoutRef.current);
+                                    blurTimeoutRef.current = null;
+                                }
                                 setIsCommandInputFocused(true);
                                 containerRef.current?.classList.add('focused');
                             }}
                             onBlur={() => {
-                                setIsCommandInputFocused(false);
+                                if (blurTimeoutRef.current) {
+                                    clearTimeout(blurTimeoutRef.current);
+                                }
+                                blurTimeoutRef.current = setTimeout(() => {
+                                    setIsCommandInputFocused(false);
+                                    blurTimeoutRef.current = null;
+                                }, 150);
                                 containerRef.current?.classList.remove('focused');
                             }}
                             onClick={(e) => {
