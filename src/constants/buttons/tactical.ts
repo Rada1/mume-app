@@ -112,7 +112,7 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
     }),
     withAssignLongActions({
         id: "tactical-doors",
-        label: "Scout",
+        label: "Doors",
         command: "doors",
         setId: "tactical",
         actionType: "menu",

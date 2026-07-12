@@ -10,6 +10,10 @@ const NUMPAD_MAP: Record<string, string> = {
     Numpad5: 'look',
 };
 
+const emitNumpadCommandPress = (cmd: string) => {
+    window.dispatchEvent(new CustomEvent('mume:numpad-command-press', { detail: { cmd } }));
+};
+
 export function useNumpadControls(
     executeCommand: (cmd: string) => void,
     getExitState?: (dir: string) => { hasDoor: boolean; isClosed: boolean } | null
@@ -50,6 +54,7 @@ export function useNumpadControls(
             }
 
             e.preventDefault();
+            emitNumpadCommandPress(dir);
 
             // Alt+numpad: toggle open/close on the exit in that direction
             if (e.altKey && dir !== 'look' && getExitState) {

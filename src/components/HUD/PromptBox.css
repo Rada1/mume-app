@@ -44,12 +44,14 @@
 
 @media (min-width: 1025px) {
     .message-log-container > .prompt-box-container,
-    .desktop-center-column > .prompt-box-container {
+    .desktop-center-column > .prompt-box-container,
+    .action-box-prompt-cell > .prompt-box-container {
         margin-bottom: 0;
     }
 
     .message-log-container > .prompt-box-container .prompt-box-content,
-    .desktop-center-column > .prompt-box-container .prompt-box-content {
+    .desktop-center-column > .prompt-box-container .prompt-box-content,
+    .action-box-prompt-cell > .prompt-box-container .prompt-box-content {
         background: transparent !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
@@ -1275,7 +1277,7 @@
 
 /* --- Prompt box expand/collapse --- */
 .prompt-box-content {
-    cursor: pointer;
+    cursor: default;
 }
 
 .prompt-box-content:hover .prompt-expand-chevron {
@@ -1285,6 +1287,12 @@
 .prompt-box-content button,
 .prompt-box-content [role="button"] {
     cursor: pointer;
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    .prompt-character-trigger {
+        cursor: pointer;
+    }
 }
 
 .prompt-inventory-chip-rows {

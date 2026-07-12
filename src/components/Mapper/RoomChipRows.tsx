@@ -379,6 +379,7 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
                     focusRef.current = target;
                     animRaf = 0;
                     layout();
+                    triggerHaptic?.(15); // Settle haptic tick when animation completes
                     return;
                 }
                 focusRef.current = cur + diff * 0.22;
@@ -392,6 +393,7 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
         let dragging = false;
         let startX = 0;
         let startFocus = 0;
+        let lastTickFocus = Math.round(focusRef.current);
         let moved = false;
         let activePointer = -1;
 
@@ -402,6 +404,7 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
             activePointer = e.pointerId;
             startX = e.clientX;
             startFocus = focusRef.current;
+            lastTickFocus = Math.round(startFocus);
             stopAnim();
         };
         const onPointerMove = (e: PointerEvent) => {
@@ -413,7 +416,16 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
             }
             const n = pinCount();
             const perPin = lane.getBoundingClientRect().width / Math.max(1, n * 0.9);
-            focusRef.current = clampFocus(startFocus - dx / perPin);
+            const newFocus = clampFocus(startFocus - dx / perPin);
+            focusRef.current = newFocus;
+
+            // Trigger a light haptic tick when crossing integer boundaries
+            const currentRounded = Math.round(newFocus);
+            if (currentRounded !== lastTickFocus) {
+                lastTickFocus = currentRounded;
+                triggerHaptic?.(8);
+            }
+
             schedule();
         };
         const endDrag = (e: PointerEvent, cancelled: boolean) => {
@@ -451,7 +463,8 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
             e.preventDefault();
             e.stopPropagation();
             stopAnim();
-            focusRef.current = clampFocus(focusRef.current + delta * 0.01);
+            const newFocus = clampFocus(focusRef.current + delta * 0.01);
+            focusRef.current = newFocus;
             schedule();
             if (wheelSettle) clearTimeout(wheelSettle);
             wheelSettle = window.setTimeout(() => animateTo(Math.round(focusRef.current)), 150);
@@ -477,7 +490,7 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
             if (animRaf) cancelAnimationFrame(animRaf);
             if (wheelSettle) clearTimeout(wheelSettle);
         };
-    }, [variant, pinChipsKey]);
+    }, [variant, pinChipsKey, triggerHaptic]);
 
     const rows = [
         {

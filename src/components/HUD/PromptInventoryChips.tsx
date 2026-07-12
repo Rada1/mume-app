@@ -23,6 +23,7 @@ type GearChipKind = 'worn' | 'inventory';
 interface PromptInventoryChipsProps {
     affects?: string[];
     variant?: 'prompt' | 'drawer';
+    showGear?: boolean;
 }
 
 interface GearChip {
@@ -219,7 +220,7 @@ const getItemDisplayProps = (chipText: string) => {
     };
 };
 
-export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affects = [], variant = 'prompt' }) => {
+export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affects = [], variant = 'prompt', showGear = true }) => {
     const {
         gameState,
         triggerHaptic,
@@ -261,10 +262,10 @@ export const PromptInventoryChips: React.FC<PromptInventoryChipsProps> = ({ affe
         affects.map(affect => affect.trim()).filter(Boolean)
     )), [affects]);
 
-    const rows = [
+    const rows = showGear ? [
         { id: 'worn', label: 'worn:', chips: wornChips },
         { id: 'inventory', label: 'inventory', chips: inventoryChips }
-    ].filter(row => row.chips.length > 0);
+    ].filter(row => row.chips.length > 0) : [];
 
     if (rows.length === 0 && affectChips.length === 0) return null;
 

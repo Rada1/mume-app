@@ -24,12 +24,16 @@ interface ActionBoxProps {
     heldButton: unknown;
     setHeldButton: React.Dispatch<React.SetStateAction<unknown>>;
     wasDraggingRef: React.RefObject<boolean>;
+    // Desktop: the PromptBox rendered inside the action-box grid (center top cell)
+    // so the whole bottom bar reads as one gapless block. Null in account mode.
+    promptSlot?: React.ReactNode;
 }
 
 export const ActionBox: FC<ActionBoxProps> = ({
     handleSend,
     handleInputSwipe,
-    commandPreview
+    commandPreview,
+    promptSlot
 }) => {
     const {
         executeCommand,
@@ -70,6 +74,7 @@ export const ActionBox: FC<ActionBoxProps> = ({
         <div className={`action-box${gameState === 'account' ? ' account-mode' : ''}`}>
             {gameState !== 'account' && (
                 <div className="action-box-controls">
+                    {promptSlot && <div className="action-box-prompt-cell">{promptSlot}</div>}
                     <MovementPad />
                     <CommandDeck />
                     <SkillsDeck />

@@ -613,6 +613,24 @@
     position: relative;
 }
 
+@media (max-width: 768px) and (orientation: portrait) {
+    .mobile-gutter-input-wrapper {
+        z-index: 9200 !important;
+        pointer-events: auto;
+    }
+
+    .mobile-gutter-input-wrapper .input-area,
+    .mobile-gutter-input-wrapper .input-main-container,
+    .mobile-gutter-input-wrapper .input-actions-container {
+        pointer-events: auto;
+    }
+
+    .mobile-gutter-input-wrapper .input-actions-container {
+        gap: 8px;
+        isolation: isolate;
+    }
+}
+
 .msg-repeat-btn {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -632,8 +650,21 @@
 
 @media (max-width: 768px) {
     .msg-repeat-btn, .msg-cancel-btn {
-        width: 32px;
-        height: 32px;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
+    }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+    .mobile-gutter-input-wrapper .msg-repeat-btn,
+    .mobile-gutter-input-wrapper .msg-cancel-btn {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px;
+        min-height: 44px;
+        touch-action: manipulation;
     }
 }
 
@@ -867,7 +898,7 @@
     padding: 5px;
     border: 1px solid rgba(232, 176, 32, 0.24);
     border-radius: 7px;
-    background: rgba(5, 8, 14, 0.985);
+    background: rgba(13, 16, 23, 0.65);
     box-shadow:
         0 16px 40px rgba(0, 0, 0, 0.42),
         0 0 18px rgba(232, 176, 32, 0.12);
@@ -878,8 +909,8 @@
 .command-suggestion-option {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    justify-content: flex-start;
+    gap: 8px;
     width: 100%;
     padding: 6px 8px;
     border: 0;
@@ -891,6 +922,22 @@
     line-height: 1.2;
     text-align: left;
     cursor: pointer;
+}
+
+.command-suggestion-key {
+    flex: 0 0 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(232, 176, 32, 0.28);
+    border-radius: 4px;
+    background: rgba(232, 176, 32, 0.08);
+    color: #e8b020;
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1;
 }
 
 .command-suggestion-option:hover,
@@ -905,11 +952,17 @@
 }
 
 .command-suggestion-name {
+    flex: 1 1 auto;
+    min-width: 0;
     color: #e8b020;
     font-weight: 800;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .command-suggestion-full {
+    flex: 0 0 auto;
     color: #748096;
     font-size: 11px;
 }
@@ -935,12 +988,18 @@
 
 .light-mode .command-suggestion-popup {
     border-color: rgba(138, 102, 32, 0.28);
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.65);
     box-shadow: 0 16px 34px rgba(15, 23, 42, 0.16);
 }
 
 .light-mode .command-suggestion-option {
     color: #334155;
+}
+
+.light-mode .command-suggestion-key {
+    border-color: rgba(138, 102, 32, 0.28);
+    background: rgba(138, 102, 32, 0.08);
+    color: #8a6620;
 }
 
 .light-mode .command-suggestion-option:hover,

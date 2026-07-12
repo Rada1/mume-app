@@ -53,6 +53,7 @@ interface PopoverManagerProps {
     objectColor?: string;
     roomColor?: string;
     characterInfo?: CharacterInfo;
+    currentTerrain?: string;
 }
 import { DialMenu } from './DialMenu';
 import { StandardMenuPopover } from './StandardMenuPopover';
@@ -76,7 +77,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     popoverState: parentPopoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, customTraits, setCustomTraits, favorites, setFavorites, parley, setParley, whoList,
     isMendingMode, setIsMendingMode, setMendingTarget, handleTabClick, setGearTab, setPlayersTab, setCharTab, refreshLogHighlights, practice, openKeywordEdit,
     entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides, accountCharacters, accountState, setAccountState,
-    playerColor, npcColor, objectColor, roomColor, characterInfo
+    playerColor, npcColor, objectColor, roomColor, characterInfo, currentTerrain
 }) => {
     const theme = useSettingsStore(state => state.theme);
     const [localState, setLocalState] = React.useState<any | null>(null);
@@ -373,7 +374,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             inlineCategories || []
         );
         const actionButtonIds = getButtonIdsForTraits(traitSections.map(section => section.trait));
-        const filterDeps = { buttons, inlineCategories: inlineCategories || [], roomNpcs, entities, characterInfo };
+        const filterDeps = { buttons, inlineCategories: inlineCategories || [], roomNpcs, entities, characterInfo, currentTerrain };
         const filteredActionButtonIds = actionButtonIds.filter(id => {
             const button = buttons.find(item => item.id === id);
             return !!button && isButtonValidForEntity(
@@ -530,6 +531,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     setAccountState={setAccountState}
                     characterInfo={characterInfo}
                     direction={popoverState.direction}
+                    currentTerrain={currentTerrain}
                 />            )}
         </div>
     );

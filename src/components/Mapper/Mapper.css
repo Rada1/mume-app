@@ -913,6 +913,51 @@ canvas.map-canvas {
     font-size: 11px;
 }
 
+@media (max-width: 768px) and (orientation: portrait) {
+    .gutter-map-filter-host {
+        z-index: 9300;
+    }
+
+    .gutter-map-filter-host .map-filter-bar:not(.collapsed) {
+        width: calc(100vw - 24px);
+    }
+
+    .gutter-map-filter-host .map-filter-bar:not(.collapsed) .map-filter-parent,
+    .gutter-map-filter-host .map-filter-bar.collapsed .map-filter-parent {
+        height: 40px;
+        min-height: 40px;
+        touch-action: manipulation;
+    }
+
+    .gutter-map-filter-host .map-filter-buttons {
+        gap: 8px;
+        padding: 6px 2px;
+    }
+
+    .gutter-map-filter-host .map-filter-button-chip {
+        height: 40px;
+        min-height: 40px;
+    }
+
+    .gutter-map-filter-host .map-filter-button-main {
+        min-width: 48px;
+        padding: 0 8px 0 10px;
+        touch-action: manipulation;
+    }
+
+    .gutter-map-filter-host .map-filter-button-chevron-target {
+        width: 36px;
+        min-width: 36px;
+        touch-action: manipulation;
+    }
+
+    .gutter-map-filter-host .map-filter-subflag {
+        min-height: 40px;
+        padding: 0 14px;
+        touch-action: manipulation;
+    }
+}
+
 .map-look-hold-indicator {
     position: absolute;
     left: 50%;

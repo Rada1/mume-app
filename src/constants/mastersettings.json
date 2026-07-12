@@ -478,10 +478,10 @@
     },
     {
       "id": "tactical-doors",
-      "label": "Scout",
-      "command": "scout",
+      "label": "Doors",
+      "command": "doors",
       "setId": "Tactical",
-      "actionType": "command",
+      "actionType": "menu",
       "display": "floating",
       "hideIfUnknown": false,
       "style": {

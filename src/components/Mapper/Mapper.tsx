@@ -317,11 +317,15 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             touchAction: 'none',
             zIndex: infoRoomId ? 2900 : undefined
         }}>
-            <div className="mapper-overlay mapper-sun-overlay" />
-            <div className="mapper-overlay mapper-moon-overlay" />
-            <div className="mapper-overlay mapper-artificial-overlay" />
-            <div className="mapper-overlay mapper-dark-overlay" />
-            <div className="mapper-overlay mapper-fog-overlay" />
+            {!isMobile && (
+                <>
+                    <div className="mapper-overlay mapper-sun-overlay" />
+                    <div className="mapper-overlay mapper-moon-overlay" />
+                    <div className="mapper-overlay mapper-artificial-overlay" />
+                    <div className="mapper-overlay mapper-dark-overlay" />
+                    <div className="mapper-overlay mapper-fog-overlay" />
+                </>
+            )}
             <MapCanvas
                 ref={canvasRef}
                 rooms={rooms}

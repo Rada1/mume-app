@@ -101,6 +101,15 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     // Account mode keeps the log transparent (environment shows through) like the
     // in-game view, rather than a dark account splash behind the menu text.
     const resolvedBgImage = manualBgImage || null;
+    React.useEffect(() => {
+        const root = document.documentElement;
+        if (!resolvedBgImage) {
+            root.style.removeProperty('--account-gutter-bg-image');
+            return;
+        }
+        root.style.setProperty('--account-gutter-bg-image', `url("${resolvedBgImage.replace(/"/g, '\\"')}")`);
+        return () => root.style.removeProperty('--account-gutter-bg-image');
+    }, [resolvedBgImage]);
 
     const zoneKey = React.useMemo(() => {
         if (!roomZone) return 'unknown';
@@ -304,10 +313,14 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             if (!logContainerRef.current) return;
             const rect = logContainerRef.current.getBoundingClientRect();
             const measured = Math.max(0, window.innerHeight - rect.bottom);
-            // On the account/login screen there's no bottom control bar to reserve
-            // space, so floor the offset to give a visible frosted band with the
-            // forest terrain line sitting on top of it.
-            const offset = gameState === 'account' ? Math.max(measured, 52) : measured;
+            // On mobile account screens the account gutter is rendered outside the
+            // normal desktop action box, so keep the terrain strip above that sheet
+            // instead of letting the gutter lip cover the pixel art.
+            const accountGutter = document.querySelector<HTMLElement>('.mobile-bottom-gutter.account-gutter');
+            const accountGutterHeight = viewport.isMobile && !viewport.isLandscape && accountGutter
+                ? Math.ceil(accountGutter.getBoundingClientRect().height)
+                : 52;
+            const offset = gameState === 'account' ? Math.max(measured, accountGutterHeight) : measured;
             document.documentElement.style.setProperty('--log-terrain-bottom-offset', `${offset}px`);
         };
 
@@ -318,6 +331,10 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 observer.observe(logContainerRef.current.parentElement);
             }
         }
+        const accountGutter = document.querySelector<HTMLElement>('.mobile-bottom-gutter.account-gutter');
+        if (accountGutter) {
+            observer.observe(accountGutter);
+        }
 
         const timeout = setTimeout(updateBottomOffset, 100);
         window.addEventListener('resize', updateBottomOffset);
@@ -326,7 +343,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             observer.disconnect();
             window.removeEventListener('resize', updateBottomOffset);
         };
-    }, [gameState]);
+    }, [gameState, viewport.isLandscape, viewport.isMobile]);
 
     // --- Full-width sky art strip alignment ---
     // Same idea as the terrain strip above, but for the sun/moon/cloud row at the top
@@ -546,14 +563,16 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         )}
                     </div>
 
-                    {gameState !== 'account' && (
+                    {/* On mobile the prompt box is a standalone row above the log's
+                        bottom. On desktop it slots into the action-box grid instead
+                        (passed as promptSlot below) so the bottom bar is one gapless
+                        unit — the prompt fills the center's top cell while the side
+                        button columns rise to the drawer bottom around it. */}
+                    {gameState !== 'account' && viewport.isMobile && (
                         <PromptBox
                             processMessageHtml={processMessageHtml}
                             processMessageTokens={processMessageTokens}
                             onWimpyChange={handleWimpyChange}
-                            heldButton={heldButton}
-                            setHeldButton={setHeldButton}
-                            setCommandPreview={setCommandPreview}
                         />
                     )}
 
@@ -566,6 +585,13 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             heldButton={heldButton}
                             setHeldButton={setHeldButton}
                             wasDraggingRef={wasDraggingRef}
+                            promptSlot={gameState !== 'account' ? (
+                                <PromptBox
+                                    processMessageHtml={processMessageHtml}
+                                    processMessageTokens={processMessageTokens}
+                                    onWimpyChange={handleWimpyChange}
+                                />
+                            ) : null}
                         />
                     )}
                 </div>

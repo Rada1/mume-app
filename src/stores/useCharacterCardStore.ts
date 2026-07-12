@@ -9,14 +9,19 @@ import { create } from 'zustand';
 
 interface CharacterCardState {
     isOpen: boolean;
-    open: () => void;
+    anchorRect: { left: number; top: number; width: number; height: number } | null;
+    open: (anchorRect?: { left: number; top: number; width: number; height: number } | null) => void;
     close: () => void;
-    toggle: () => void;
+    toggle: (anchorRect?: { left: number; top: number; width: number; height: number } | null) => void;
 }
 
 export const useCharacterCardStore = create<CharacterCardState>((set) => ({
     isOpen: false,
-    open: () => set({ isOpen: true }),
-    close: () => set({ isOpen: false }),
-    toggle: () => set(state => ({ isOpen: !state.isOpen }))
+    anchorRect: null,
+    open: (anchorRect = null) => set({ isOpen: true, anchorRect }),
+    close: () => set({ isOpen: false, anchorRect: null }),
+    toggle: (anchorRect = null) => set(state => ({
+        isOpen: !state.isOpen,
+        anchorRect: state.isOpen ? null : anchorRect
+    }))
 }));

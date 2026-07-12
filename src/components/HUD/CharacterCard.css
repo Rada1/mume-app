@@ -164,7 +164,7 @@
     border-radius: 6px;
     color: rgba(255, 255, 255, 0.75);
     cursor: pointer;
-    z-index: 2;
+    z-index: 30;
     transition: background 0.15s ease, color 0.15s ease;
 }
 
@@ -902,6 +902,21 @@
 }
 
 @media (max-width: 1024px) and (orientation: portrait) {
+    .character-card-mobile-dismiss-layer {
+        position: fixed;
+        inset: 0;
+        z-index: 69998;
+        background: transparent;
+        touch-action: manipulation;
+    }
+
+    .character-card-dock.character-card-popover {
+        border-radius: 10px;
+        box-shadow: 0 16px 42px rgba(0, 0, 0, 0.58), 0 0 0 1px rgba(212, 170, 0, 0.24);
+        transform-origin: center center;
+        animation: character-card-popover-enter 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
     .character-card-dock {
         left: max(10px, env(safe-area-inset-left, 0px));
         right: max(10px, env(safe-area-inset-right, 0px));
@@ -910,7 +925,7 @@
         width: auto;
         height: auto;
         max-height: none;
-        z-index: calc(var(--z-drawer, 9200) + 20);
+        z-index: 69999;
     }
 
     .character-card-header {
@@ -956,6 +971,11 @@
         width: min(320px, calc(100vw - 32px));
         max-height: min(360px, 58vh);
     }
+}
+
+@keyframes character-card-popover-enter {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* Single-column layout for the character card (mobile dock and desktop drawer alike) */

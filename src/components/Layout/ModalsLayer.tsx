@@ -112,6 +112,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         viewport,
         fontFamily,
         setFontFamily,
+        currentTerrain,
     } = useGame() as any;
 
     const { setTarget, characterInfo } = useVitals();
@@ -339,6 +340,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 npcColor={npcColor}
                 objectColor={objectColor}
                 roomColor={roomColor}
+                currentTerrain={currentTerrain}
             />
 
 

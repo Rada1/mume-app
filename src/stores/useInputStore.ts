@@ -3,6 +3,8 @@ import { create } from 'zustand';
 interface InputStore {
     input: string;
     setInput: (val: string) => void;
+    targetPickerRequestId: number;
+    requestTargetPicker: () => void;
     history: string[];
     historyIndex: number;
     tempInput: string;
@@ -13,6 +15,7 @@ interface InputStore {
 
 export const useInputStore = create<InputStore>((set) => ({
     input: '',
+    targetPickerRequestId: 0,
     history: [],
     historyIndex: -1,
     tempInput: '',
@@ -22,6 +25,7 @@ export const useInputStore = create<InputStore>((set) => ({
         }
         return { input, tempInput: input };
     }),
+    requestTargetPicker: () => set((state) => ({ targetPickerRequestId: state.targetPickerRequestId + 1 })),
     addToHistory: (cmd) => set((state) => {
         const trimmed = cmd.trim();
         if (!trimmed) return {};

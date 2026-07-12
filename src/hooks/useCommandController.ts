@@ -9,6 +9,21 @@ import { CaptureStage } from '../types';
 import { useInputStore } from '../stores/useInputStore';
 // import { useAtmosphereStore } from '../stores/useAtmosphereStore';
 
+const isCommunicationCommand = (cmd: string): boolean => {
+    const trimmed = cmd.trim();
+    if (!trimmed) return false;
+    
+    // Check for shortcut prefixes: ' ; :
+    const firstChar = trimmed.charAt(0);
+    if (firstChar === "'" || firstChar === ';' || firstChar === ':') {
+        return true;
+    }
+    
+    const firstWord = trimmed.toLowerCase().split(/\s+/)[0];
+    const commVerbs = ['say', 'tell', 'whisper', 'yell', 'shout', 'narrate', 'sing', 'emote', 'reply', 'ask', 'pray'];
+    return commVerbs.includes(firstWord);
+};
+
 const findCommandInput = (): HTMLTextAreaElement | HTMLInputElement | null => {
     const active = document.activeElement;
     if (
@@ -147,8 +162,10 @@ export function useCommandController(deps: CommandControllerDeps) {
         }
 
         if (!isSystem && !silent) {
-            // New: Play click sound on command entry (keyboard, numpad, or other non-button sources)
-            if (!options?.fromUi && isSoundEnabled && playClickSound) {
+            const isComm = isCommunicationCommand(cmd);
+            if (isComm && isSoundEnabled && d.playEffect) {
+                d.playEffect('commsend');
+            } else if (!options?.fromUi && isSoundEnabled && playClickSound) {
                 playClickSound();
             }
 

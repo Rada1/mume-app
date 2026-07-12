@@ -84,9 +84,9 @@ const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
     return {
         ...button,
         setId: normalizedSetId,
-        label: button.id === 'tactical-charmie' ? 'Ch' : button.label,
-        command: button.id === 'tactical-charmie' ? 'order followers' : button.command,
-        actionType: button.id === 'tactical-charmie' ? 'modifier' : button.actionType,
+        label: button.id === 'tactical-charmie' ? 'Ch' : button.id === 'tactical-doors' ? 'Doors' : button.label,
+        command: button.id === 'tactical-charmie' ? 'order followers' : button.id === 'tactical-doors' ? 'doors' : button.command,
+        actionType: button.id === 'tactical-charmie' ? 'modifier' : button.id === 'tactical-doors' ? 'menu' : button.actionType,
         style: button.id === 'tactical-charmie' ? normalizedCharmieStyle : button.style,
         position: button.id === 'tactical-charmie' ? { ...button.position, w: 34, h: 34 } : button.position,
         swipeCommands,

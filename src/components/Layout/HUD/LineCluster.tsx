@@ -57,7 +57,7 @@ const TACTICAL_CLASS_LABELS: Record<string, string> = {
     'tactical-thief': 'thief',
     'tactical-warrior': 'warrior',
     'tactical-mage': 'mage',
-    'tactical-doors': 'scout'
+    'tactical-doors': 'doors'
 };
 
 const getTacticalClassLabel = (button: CustomButton): string => (

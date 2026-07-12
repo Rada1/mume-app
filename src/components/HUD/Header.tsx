@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, DraftingCompass, MessageSquare, Users, Clock, UtensilsCrossed, Droplets, CloudFog } from 'lucide-react';
+import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, Store, DraftingCompass, MessageSquare, Users, Clock, UtensilsCrossed, Droplets, CloudFog } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
 import { useModeStore } from '../../stores/useModeStore';
@@ -10,6 +10,7 @@ import { useArchiveStore } from '../../stores/useArchiveStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { canAccessShaper } from '../../shaper/access/shaperAccess';
 import { useMumeTime } from '../../hooks/useMumeTime';
+import { getTraitsForName } from '../../utils/inlineActionModel';
 
 interface HeaderProps {
     isLandscape?: boolean;
@@ -38,7 +39,7 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
         entities
     } = useGame() as any;
 
-    const { setActiveMapFilter } = useMapper();
+    const { setActiveMapFilter, currentRoomId, rooms, preloadedCoordsRef } = useMapper();
 
     // Get mode state
     const mode = useModeStore();
@@ -51,6 +52,8 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
     } = useUI();
 
     const selectedTarget = useUIStore(state => state.selectedTarget);
+    const setIsShopOpen = useUIStore(state => state.setIsShopOpen);
+    const setShopkeeperName = useUIStore(state => state.setShopkeeperName);
 
     const isReplayHUDMinimized = useSessionStore(state => state.isReplayHUDMinimized);
     const setIsReplayHUDMinimized = useSessionStore(state => state.setIsReplayHUDMinimized);
@@ -157,6 +160,43 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
         stats?.conditions?.thirsty ||
         currentTime
     );
+
+    const currentRoomLoadFlags = React.useMemo(() => {
+        if (!currentRoomId) return [];
+        const rawId = String(currentRoomId).replace(/^m_/, '');
+        const mapRoom = rooms[currentRoomId] || rooms[`m_${rawId}`];
+        const preloadedRoom = preloadedCoordsRef.current?.[rawId];
+        return [
+            ...(Array.isArray(preloadedRoom?.[8]) ? preloadedRoom[8] : []),
+            ...(Array.isArray(mapRoom?.loadFlags) ? mapRoom.loadFlags : [])
+        ];
+    }, [currentRoomId, rooms, preloadedCoordsRef]);
+
+    const hasMailLoadFlag = React.useMemo(
+        () => currentRoomLoadFlags.some(flag => String(flag).toUpperCase() === 'MAIL'),
+        [currentRoomLoadFlags]
+    );
+
+    const roomShopkeeper = React.useMemo(() => {
+        const npcs = Array.isArray(roomNpcs) ? roomNpcs : [];
+        return npcs.find((npc: any) => {
+            const name = String(npc?.name || npc?.short || npc?.shortdesc || '');
+            const registryEntity = npc?.id !== undefined
+                ? (entities?.[`roomchars:${npc.id}`] || entities?.[String(npc.id)])
+                : null;
+            if (registryEntity?.capabilities?.includes('shopkeeper')) return true;
+            const categoryText = [
+                npc?.type,
+                npc?.category,
+                ...(Array.isArray(npc?.labels) ? npc.labels : []),
+                ...(Array.isArray(npc?.flags) ? npc.flags : [])
+            ].join(' ').toLowerCase();
+            if (/\b(?:shopkeeper|dealer|merchant|keeper|smith|trader)\b/.test(categoryText)) return true;
+            return getTraitsForName(name).some(trait => trait.id === 'trait-shopkeeper');
+        }) || null;
+    }, [roomNpcs, entities]);
+
+    const hasShopkeeperInlineAction = !!roomShopkeeper;
 
     // Auto-focus the input when it appears
     useEffect(() => {
@@ -534,20 +574,38 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
 
                 {!isAccountScreen && (
                     <>
-                        <button
-                            className="menu-toggle-btn"
-                            onClick={() => {
-                                setArchivePanelMode('mail');
-                                setArchiveView('mail-inbox');
-                                openArchive(true);
-                                executeCommand('look mail', true, true, false, true);
-                                triggerHaptic?.(10);
-                            }}
-                            title="Mailbox"
-                            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
-                        >
-                            <Mail size={17} />
-                        </button>
+                        {hasMailLoadFlag && (
+                            <button
+                                className="menu-toggle-btn"
+                                onClick={() => {
+                                    setArchivePanelMode('mail');
+                                    setArchiveView('mail-inbox');
+                                    openArchive(true);
+                                    executeCommand('look mail', true, true, false, true);
+                                    triggerHaptic?.(10);
+                                }}
+                                title="Mailbox"
+                                style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
+                            >
+                                <Mail size={17} />
+                            </button>
+                        )}
+
+                        {hasShopkeeperInlineAction && (
+                            <button
+                                className="menu-toggle-btn"
+                                onClick={() => {
+                                    setShopkeeperName(roomShopkeeper?.name || roomShopkeeper?.short || null);
+                                    setIsShopOpen(true);
+                                    executeCommand('list');
+                                    triggerHaptic?.(10);
+                                }}
+                                title="Shop"
+                                style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
+                            >
+                                <Store size={17} />
+                            </button>
+                        )}
 
                         <button
                             className={`menu-toggle-btn${showPlayersPanel ? ' active' : ''}`}

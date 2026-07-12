@@ -6,6 +6,7 @@
  */
 
 import React, { useMemo, useRef, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Sword, Shield as ShieldIcon, Heart, Zap, Footprints, Sparkles, Coins, Star, GraduationCap, Compass, KeyRound, Swords, ScrollText, Trophy, Info, Pencil } from 'lucide-react';
 import { useCharacterCardStore } from '../../stores/useCharacterCardStore';
 import { useActiveVitals, useActiveCharacter, useActiveCombat } from '../../stores/useActiveGameState';
@@ -204,6 +205,7 @@ const AvatarInfoField: React.FC<AvatarInfoFieldProps> = ({ label, value, placeho
 export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, forceOpen = false }) => {
     const isOpen = useCharacterCardStore(s => s.isOpen);
     const close = useCharacterCardStore(s => s.close);
+    const anchorRect = useCharacterCardStore(s => s.anchorRect);
     const [activePopover, setActivePopover] = useState<'info' | 'quests' | 'achievements' | 'avatar' | null>(null);
     const characterName = useActiveCharacter();
     const vitals = useActiveVitals();
@@ -213,6 +215,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
     const setPendingEditorContext = useArchiveStore(s => s.setPendingEditorContext);
     const lastRefreshRef = useRef(0);
     const avatarRefreshRef = useRef(0);
+    const cardRef = useRef<HTMLElement | null>(null);
     // "change description"/"change whois" open a real MUME editor session, and
     // MUME only allows one such session at a time — queue the reads (title
     // included, since firing it before the prior session closes also gets
@@ -350,6 +353,56 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
     const hasConditions = vitals.isHidden || !!vitals.sneak || !!vitals.climb || vitals.isSwimming || vitals.isRidden || isRidingOrMounted;
     const hasCombatInfo = !!combat.opponentName || !!combat.bufferName;
     const combatAvatarName = combat.opponentName || combat.bufferName;
+    const isMobilePopover = !embedded && viewport.isMobile && !viewport.isLandscape && !!anchorRect;
+    const mobilePopoverStyle = useMemo(() => {
+        if (!isMobilePopover || !anchorRect || typeof window === 'undefined') return undefined;
+        const width = Math.min(380, Math.max(300, window.innerWidth - 20));
+        const left = Math.max(10, Math.min(window.innerWidth - width - 10, anchorRect.left + (anchorRect.width / 2) - (width / 2)));
+        const gutter = document.querySelector<HTMLElement>('.mobile-bottom-gutter:not(.account-gutter)');
+        const gutterRect = gutter?.getBoundingClientRect();
+        const topLimit = gutterRect ? gutterRect.top + 14 : window.innerHeight * 0.48;
+        const bottomLimit = gutterRect ? gutterRect.bottom - 14 : window.innerHeight - 12;
+        const availableHeight = Math.max(280, bottomLimit - topLimit);
+        const height = Math.min(560, Math.max(300, availableHeight));
+        const top = Math.max(76, Math.min(topLimit, window.innerHeight - height - 10));
+        return {
+            left,
+            right: 'auto',
+            top,
+            bottom: 'auto',
+            width,
+            height,
+            maxHeight: height
+        } as React.CSSProperties;
+    }, [anchorRect, isMobilePopover]);
+
+    useEffect(() => {
+        if (!isMobilePopover) return;
+        const closeFromTarget = (target: EventTarget | null) => {
+            if (!(target instanceof Node)) return;
+            if (!target) return;
+            if (cardRef.current?.contains(target)) return;
+            if (target instanceof HTMLElement && target.closest('.prompt-character-trigger')) return;
+            close();
+        };
+        const handlePointerDown = (event: PointerEvent) => {
+            closeFromTarget(event.target);
+        };
+        const handleTouchStart = (event: TouchEvent) => {
+            closeFromTarget(event.target);
+        };
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') close();
+        };
+        document.addEventListener('pointerdown', handlePointerDown, { capture: true });
+        document.addEventListener('touchstart', handleTouchStart, { capture: true });
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('pointerdown', handlePointerDown, { capture: true });
+            document.removeEventListener('touchstart', handleTouchStart, { capture: true });
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [close, isMobilePopover]);
 
     if (!isOpen && !forceOpen) return null;
 
@@ -370,10 +423,26 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
         executeCommand('achievement', true, true, false, true);
     };
 
-    return (
-        <aside className={`character-card character-card-dock${embedded ? ' character-card-embedded' : ''}${gameState === 'account' ? ' is-account-phase' : ''}`} aria-label="Character card">
+    const card = (
+        <aside
+            ref={cardRef}
+            className={`character-card character-card-dock${embedded ? ' character-card-embedded' : ''}${isMobilePopover ? ' character-card-popover' : ''}${gameState === 'account' ? ' is-account-phase' : ''}`}
+            style={mobilePopoverStyle}
+            aria-label="Character card"
+        >
                 {!embedded && (
-                    <button className="character-card-close" onClick={handleClose} aria-label="Close character card">
+                    <button
+                        className="character-card-close"
+                        onPointerDown={(event) => {
+                            event.stopPropagation();
+                            handleClose();
+                        }}
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            handleClose();
+                        }}
+                        aria-label="Close character card"
+                    >
                         <X size={16} strokeWidth={2.5} />
                     </button>
                 )}
@@ -736,6 +805,31 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
                 </div>
         </aside>
     );
+
+    if (isMobilePopover) {
+        const mobilePopover = (
+            <>
+                <div
+                    className="character-card-mobile-dismiss-layer"
+                    aria-hidden="true"
+                    onPointerDown={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        close();
+                    }}
+                    onTouchStart={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        close();
+                    }}
+                />
+                {card}
+            </>
+        );
+        return createPortal(mobilePopover, document.body);
+    }
+
+    return card;
 };
 
 export default React.memo(CharacterCard);

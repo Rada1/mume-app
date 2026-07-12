@@ -46,6 +46,7 @@ import { useNetworkStore } from '../stores/useNetworkStore';
 import { useModeStore } from '../stores/useModeStore';
 import { useSessionStore } from '../stores/useSessionStore';
 import { useEffectTimerStore } from '../stores/useEffectTimerStore';
+import { useCharacterCardStore } from '../stores/useCharacterCardStore';
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
 export const VitalsContext = createContext<VitalsContextType | undefined>(undefined);
@@ -839,6 +840,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (viewport.isMobile) {
                 if (drawer === 'account') {
                     ui.setDrawer('account');
+                } else if (drawer === 'character') {
+                    const anchorRect = typeof window === 'undefined'
+                        ? null
+                        : { left: window.innerWidth / 2, top: window.innerHeight * 0.52, width: 0, height: 0 };
+                    ui.setDrawer('none');
+                    ui.setMapExpanded(true);
+                    useCharacterCardStore.getState().open(anchorRect);
                 } else {
                     ui.setDrawer('none');
                     ui.setMapExpanded(true);

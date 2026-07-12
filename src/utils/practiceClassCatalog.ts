@@ -67,3 +67,26 @@ export const getPracticeClassLabel = (skillName: string): string | null => {
     return classKey ? classKey.charAt(0).toUpperCase() + classKey.slice(1) : null;
 };
 
+// MUME guild room load flags → practice class. Note SCOUT_GUILD is the thief guild.
+const GUILD_FLAG_TO_CLASS: Record<string, PracticeClassKey> = {
+    RANGER_GUILD: 'ranger',
+    WARRIOR_GUILD: 'warrior',
+    MAGE_GUILD: 'mage',
+    CLERIC_GUILD: 'cleric',
+    SCOUT_GUILD: 'thief',
+    THIEF_GUILD: 'thief'
+};
+
+/**
+ * Returns the practice class a room is a guild for, based on its load flags
+ * (e.g. `CLERIC_GUILD` → 'cleric'), or null if it's not a class guild.
+ */
+export const getGuildClassFromFlags = (flags: Array<string | undefined | null> | undefined): PracticeClassKey | null => {
+    if (!flags) return null;
+    for (const flag of flags) {
+        const cls = GUILD_FLAG_TO_CLASS[String(flag || '').toUpperCase()];
+        if (cls) return cls;
+    }
+    return null;
+};
+

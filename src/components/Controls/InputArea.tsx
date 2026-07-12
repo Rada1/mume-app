@@ -76,6 +76,11 @@ const replaceCommandArgumentToken = (command: string, target: string): string =>
     return `${leadingWhitespace}${commandToken}${spacing}${argumentLeading}${target}${trailing || ' '}`;
 };
 
+const suggestionHotkeyForIndex = (index: number): string | null => {
+    if (index < 9) return String(index + 1);
+    if (index === 9) return '0';
+    return null;
+};
 
 const InputArea: React.FC<InputAreaProps> = ({
     onSend, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
@@ -83,6 +88,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 }) => {
     const input = useInputStore(s => s.input);
     const setInput = useInputStore(s => s.setInput);
+    const targetPickerRequestId = useInputStore(s => s.targetPickerRequestId);
     const { ui, setUI } = useUI();
     const { viewport } = useBaseGame();
     const { stats } = useVitals();
@@ -102,6 +108,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     const isSwiping = useRef(false);
     const [commandIndex, setCommandIndex] = useState(0);
     const [isCommandInputFocused, setIsCommandInputFocused] = useState(false);
+    const [isTargetPickerForced, setIsTargetPickerForced] = useState(false);
     const [commandPopupStyle, setCommandPopupStyle] = useState<React.CSSProperties>({});
 
     useEffect(() => {
@@ -489,10 +496,32 @@ const InputArea: React.FC<InputAreaProps> = ({
     }, [chars, hasCommandArgumentSpace, targetFragment]);
     const selectedTargetSuggestion = targetSuggestions[0] ?? null;
     const visibleTargetSuggestions = useMemo(() => {
-        if (!selectedTargetSuggestion) return targetSuggestions;
-        const otherSuggestions = targetSuggestions.filter(entry => entry.key !== selectedTargetSuggestion.key);
-        return [...otherSuggestions, selectedTargetSuggestion];
-    }, [selectedTargetSuggestion, targetSuggestions]);
+        return targetSuggestions;
+    }, [targetSuggestions]);
+
+    useEffect(() => {
+        if (targetPickerRequestId > 0) {
+            setIsTargetPickerForced(true);
+        }
+    }, [targetPickerRequestId]);
+
+    useEffect(() => {
+        if (!hasCommandArgumentSpace) {
+            setIsTargetPickerForced(false);
+        }
+    }, [hasCommandArgumentSpace]);
+
+    const chooseTargetSuggestion = useCallback((value: string) => {
+        setInput(replaceCommandArgumentToken(input, value));
+        setIsTargetPickerForced(false);
+        requestAnimationFrame(() => inputRef.current?.focus());
+    }, [input, setInput]);
+
+    const chooseCommandSuggestion = useCallback((entry: Parameters<typeof replaceMumeCommandToken>[1]) => {
+        setInput(replaceMumeCommandToken(input, entry));
+        requestAnimationFrame(() => inputRef.current?.focus());
+    }, [input, setInput]);
+
     const showCommandPopup = shouldSuggestMumeCommands &&
         !hasCommandArgumentSpace &&
         isCommandInputFocused &&
@@ -500,7 +529,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         input.trim().length > 0;
     const showTargetPopup = shouldSuggestMumeCommands &&
         hasCommandArgumentSpace &&
-        isCommandInputFocused &&
+        (isCommandInputFocused || isTargetPickerForced) &&
         targetSuggestions.length > 0;
     const showCompletionPopup = showCommandPopup || showTargetPopup;
     const visibleCommandSuggestions = useMemo(() => {
@@ -549,40 +578,46 @@ const InputArea: React.FC<InputAreaProps> = ({
             style={commandPopupStyle}
         >
             {showTargetPopup
-                ? visibleTargetSuggestions.map(entry => (
+                ? visibleTargetSuggestions.map((entry, index) => {
+                    const hotkey = suggestionHotkeyForIndex(index);
+                    return (
                     <button
                         key={entry.key}
                         type="button"
                         className={`command-suggestion-option target-suggestion-option${selectedTargetSuggestion?.key === entry.key ? ' is-selected' : ''}`}
                         onPointerDown={event => {
                             event.preventDefault();
-                            setInput(replaceCommandArgumentToken(input, entry.value));
-                            requestAnimationFrame(() => inputRef.current?.focus());
+                            chooseTargetSuggestion(entry.value);
                         }}
                     >
+                        {hotkey && <span className="command-suggestion-key">{hotkey}</span>}
                         <span className="command-suggestion-name">{entry.value}</span>
                         <span className="command-suggestion-full">
                             {selectedTargetSuggestion?.key === entry.key ? 'selected' : entry.meta}
                         </span>
                     </button>
-                ))
-                : visibleCommandSuggestions.map(entry => (
+                    );
+                })
+                : visibleCommandSuggestions.map((entry, index) => {
+                    const hotkey = suggestionHotkeyForIndex(index);
+                    return (
                     <button
                         key={entry.display}
                         type="button"
                         className={`command-suggestion-option${mumeCommandMatch.entry?.full === entry.full ? ' is-selected' : ''}`}
                         onPointerDown={event => {
                             event.preventDefault();
-                            setInput(replaceMumeCommandToken(input, entry));
-                            requestAnimationFrame(() => inputRef.current?.focus());
+                            chooseCommandSuggestion(entry);
                         }}
                     >
+                        {hotkey && <span className="command-suggestion-key">{hotkey}</span>}
                         <span className="command-suggestion-name">{entry.display}</span>
                         <span className="command-suggestion-full">
                             {mumeCommandMatch.entry?.full === entry.full ? 'selected' : entry.full}
                         </span>
                     </button>
-                ))}
+                    );
+                })}
         </div>,
         document.body
     ) : null;
@@ -902,6 +937,25 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 target.style.height = `${target.scrollHeight}px`;
                             }}
                             onKeyDown={(e) => {
+                                if (showCompletionPopup && /^[0-9]$/.test(e.key)) {
+                                    const optionIndex = e.key === '0' ? 9 : parseInt(e.key, 10) - 1;
+                                    if (showTargetPopup) {
+                                        const option = visibleTargetSuggestions[optionIndex];
+                                        if (option) {
+                                            e.preventDefault();
+                                            chooseTargetSuggestion(option.value);
+                                            return;
+                                        }
+                                    } else if (showCommandPopup) {
+                                        const option = visibleCommandSuggestions[optionIndex];
+                                        if (option) {
+                                            e.preventDefault();
+                                            chooseCommandSuggestion(option);
+                                            return;
+                                        }
+                                    }
+                                }
+
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();
                                     handleSubmit();

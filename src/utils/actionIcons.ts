@@ -10,7 +10,8 @@ import type React from 'react';
 import {
     Eye, Tent, FlameKindling, Moon, Sunrise, Armchair, PersonStanding, Search,
     BookOpen, LogIn, LogOut, Mountain, Waves, Ear, Hand, Sparkles, ShoppingCart,
-    Coins, Utensils, DoorOpen, DoorClosed, ScrollText, Swords, Play, Flag, MapPin
+    Coins, Utensils, DoorOpen, DoorClosed, ScrollText, Swords, Play, Flag, MapPin,
+    Droplets
 } from 'lucide-react';
 
 export type ActionIcon = React.ComponentType<{ size?: number; strokeWidth?: number }>;
@@ -41,7 +42,8 @@ const VERB_ICONS: Record<string, ActionIcon> = {
     buy: ShoppingCart, order: ShoppingCart,
     list: ScrollText,
     sell: Coins, value: Coins,
-    eat: Utensils, drink: Utensils, taste: Utensils,
+    eat: Utensils, taste: Utensils,
+    drink: Droplets,
     open: DoorOpen, unlock: DoorOpen,
     close: DoorClosed, lock: DoorClosed,
     kill: Swords, attack: Swords, consider: Swords,

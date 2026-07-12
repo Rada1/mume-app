@@ -183,8 +183,13 @@
     pointer-events: auto;
 }
 
+.room-chip-terrain-pins .terrain-pin.is-foreground .room-chip.is-target {
+    max-width: 118px;
+    overflow: visible;
+}
+
 .room-chip-terrain-pins .terrain-pin.is-foreground .terrain-pin-line {
-    height: 12px;
+    height: 8px;
     opacity: 1;
 }
 
@@ -202,7 +207,7 @@
 
 .terrain-pin-line {
     width: 0;
-    height: 12px;
+    height: 8px;
     border-left: 2px dashed rgba(255, 255, 255, 0.4);
 }
 
@@ -487,7 +492,7 @@
 }
 
 .room-chip.is-target:not(.room-chip-player)::after {
-    content: 'tap again';
+    content: 'menu';
     display: inline-block;
     margin-left: 0.35em;
     padding: 1px 4px;

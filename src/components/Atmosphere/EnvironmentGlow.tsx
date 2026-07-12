@@ -3,25 +3,21 @@
  * @description Renders a dynamic, fluid environmental backdrop that reacts to terrain, lighting, and keyboard typing.
  */
 
-import React, { useEffect, useLayoutEffect, useRef, useMemo, useState } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useGame } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { normalizeTerrain } from '../../utils/terrainUtils';
+import { useInputStore } from '../../stores/useInputStore';
+import {
+    HSLColor,
+    TERRAIN_CONFIGS,
+    LIGHTING_COLORS,
+    LIGHT_WAVE_HEIGHT_MULTIPLIER,
+    adjustForTheme,
+    lerp,
+    lerpHue
+} from './environmentGlowUtils';
 import './EnvironmentGlow.css';
-
-// --- Types Section ---
-interface HSLColor {
-    h: number;
-    s: number;
-    l: number;
-}
-
-interface TerrainConfig {
-    color1: HSLColor;
-    color2: HSLColor;
-    speed: number;
-    amplitude: number;
-}
 
 interface EnvironmentGlowProps {
     terrain?: string;
@@ -29,109 +25,6 @@ interface EnvironmentGlowProps {
     input: string;
 }
 
-// --- Constants Section ---
-const TERRAIN_CONFIGS: Record<string, TerrainConfig> = {
-    forest: {
-        color1: { h: 140, s: 65, l: 15 },
-        color2: { h: 110, s: 50, l: 20 },
-        speed: 0.006,
-        amplitude: 14,
-    },
-    water: {
-        color1: { h: 205, s: 75, l: 20 },
-        color2: { h: 180, s: 65, l: 24 },
-        speed: 0.012,
-        amplitude: 18,
-    },
-    underground: {
-        color1: { h: 280, s: 25, l: 10 },
-        color2: { h: 15, s: 75, l: 14 }, // Lava highlights
-        speed: 0.003,
-        amplitude: 8,
-    },
-    mountain: {
-        color1: { h: 215, s: 15, l: 22 },
-        color2: { h: 240, s: 10, l: 30 },
-        speed: 0.005,
-        amplitude: 10,
-    },
-    hills: {
-        color1: { h: 35, s: 40, l: 16 },
-        color2: { h: 70, s: 30, l: 20 },
-        speed: 0.006,
-        amplitude: 12,
-    },
-    field: {
-        color1: { h: 90, s: 45, l: 16 },
-        color2: { h: 60, s: 40, l: 20 },
-        speed: 0.007,
-        amplitude: 12,
-    },
-    road: {
-        color1: { h: 40, s: 25, l: 15 },
-        color2: { h: 30, s: 20, l: 18 },
-        speed: 0.006,
-        amplitude: 8,
-    },
-    city: {
-        color1: { h: 25, s: 35, l: 18 },
-        color2: { h: 0, s: 25, l: 22 },
-        speed: 0.006,
-        amplitude: 10,
-    },
-    building: {
-        color1: { h: 35, s: 35, l: 18 },
-        color2: { h: 15, s: 30, l: 22 },
-        speed: 0.005,
-        amplitude: 8,
-    },
-    'account-blue': {
-        color1: { h: 220, s: 70, l: 12 },
-        color2: { h: 200, s: 60, l: 16 },
-        speed: 0.010,
-        amplitude: 18,
-    },
-    default: {
-        color1: { h: 220, s: 20, l: 16 },
-        color2: { h: 200, s: 15, l: 20 },
-        speed: 0.004,
-        amplitude: 8,
-    },
-};
-
-// --- Helper Functions ---
-// Lighting renders as its own distinct color stream alongside terrain, not as a tint baked
-// into terrain hues. Keeping them separate lets both flows read clearly side by side.
-const LIGHTING_COLORS: Record<string, HSLColor> = {
-    sun:        { h: 200, s: 32, l: 94 }, // bright pale sky blue
-    moon:       { h: 222, s: 58, l: 32 }, // deep moonlit blue
-    artificial: { h: 28,  s: 75, l: 46 }, // torch amber
-    dark:       { h: 260, s: 22, l: 28 }, // deep void violet
-    none:       { h: 220, s: 18, l: 38 },
-};
-const LIGHT_WAVE_HEIGHT_MULTIPLIER = 1.5;
-
-const adjustForTheme = (color: HSLColor, isLightMode: boolean): HSLColor => {
-    let { h, s, l } = color;
-    if (isLightMode) {
-        l = Math.min(95, 76 + l * 0.4); // bright pastel
-        s = Math.max(12, s * 0.5);
-    }
-    return { h, s, l };
-};
-
-const lerp = (start: number, end: number, amt: number): number => {
-    return (1 - amt) * start + amt * end;
-};
-
-const lerpHue = (start: number, end: number, amt: number): number => {
-    let diff = end - start;
-    while (diff < -180) diff += 360;
-    while (diff > 180) diff -= 360;
-    return (start + diff * amt + 360) % 360;
-};
-
-// --- Main Component ---
 export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
     terrain,
     lighting = 'none',
@@ -140,70 +33,11 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
     const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
     const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
     const theme = useSettingsStore(s => s.theme);
-    const { viewport, gameState } = useGame() as any;
+    const { viewport } = useGame() as any;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const [visibleHeight, setVisibleHeight] = useState<number | null>(null);
 
     const isMobile = viewport?.isMobile;
-
-    // Responsive height adjustment for mobile so waves align with the bottom of the log area (above drawers)
-    useLayoutEffect(() => {
-        const updateHeight = () => {
-            const container = containerRef.current;
-            if (!container || !isMobile) {
-                setVisibleHeight(null);
-                return;
-            }
-
-            // Skip if nested inside the Map view/drawer
-            if (container.closest('.map-container') !== null) {
-                setVisibleHeight(null);
-                return;
-            }
-
-            const logEl = document.querySelector('.message-log-container');
-            if (logEl) {
-                const logRect = logEl.getBoundingClientRect();
-                const parentRect = container.parentElement?.getBoundingClientRect();
-                const promptRect = (document.querySelector('.control-card-wrapper') || document.querySelector('.action-box'))?.getBoundingClientRect();
-                const gutterEl = document.querySelector('.mobile-bottom-gutter');
-                const gutterRect = gutterEl?.getBoundingClientRect();
-                if (parentRect) {
-                    let visualBottom = Math.max(logRect.bottom, promptRect?.bottom ?? logRect.bottom);
-                    // Extend down behind the mobile gutter's curved top corners (border-radius: 32px)
-                    if (gutterRect) {
-                        visualBottom = Math.max(visualBottom, gutterRect.top + 32);
-                    }
-                    const computedHeight = visualBottom - parentRect.top;
-                    if (computedHeight > 0 && computedHeight < window.innerHeight) {
-                        setVisibleHeight(computedHeight);
-                        return;
-                    }
-                }
-            }
-            setVisibleHeight(null);
-        };
-
-        updateHeight();
-
-        // Observe both window resizing and log content adjustments (like drawer layout toggles)
-        const logEl = document.querySelector('.message-log-container');
-        let observer: ResizeObserver | null = null;
-        if (logEl) {
-            observer = new ResizeObserver(updateHeight);
-            observer.observe(logEl);
-            if (logEl.parentElement) {
-                observer.observe(logEl.parentElement);
-            }
-        }
-
-        window.addEventListener('resize', updateHeight);
-        return () => {
-            window.removeEventListener('resize', updateHeight);
-            if (observer) observer.disconnect();
-        };
-    }, [isMobile]);
 
     // Track typing activity triggers with target-easing to ensure a smooth, inertia-driven effect
     const prevInputLen = useRef(0);
@@ -215,8 +49,6 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
 
     const isLightMode = theme === 'light';
 
-    // Target colors adjusted for current layout/mode. Terrain colors stay pure (no lighting
-    // tint), and lightingColor is its own independent stream so the two read as distinct flows.
     const targetColors = useMemo(() => {
         const lightingRaw = LIGHTING_COLORS[lighting] || LIGHTING_COLORS.none;
         return {
@@ -228,7 +60,6 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
         };
     }, [config, isLightMode, lighting]);
 
-    // Track active/current values for smoothing transitions
     const currentColors = useRef({
         c1: { ...targetColors.color1 },
         c2: { ...targetColors.color2 },
@@ -237,22 +68,17 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
         amplitude: targetColors.amplitude,
     });
 
-    // Mirror targetColors and lighting into refs so the animation loop can read the latest
-    // values without re-running its useEffect — re-running would reset wave phase and snap
-    // the visuals. Keeping a long-lived loop lets `currentColors` lerp continuously.
     const targetColorsRef = useRef(targetColors);
     const lightingRef = useRef(lighting);
     useEffect(() => { targetColorsRef.current = targetColors; }, [targetColors]);
     useEffect(() => { lightingRef.current = lighting; }, [lighting]);
 
-    // Persist wave phase across effect re-runs so terrain/lighting changes don't snap the wave
     const phaseRef = useRef(0);
 
     // Detect keyboard typing spikes
     useEffect(() => {
         const len = input.length;
         if (len !== prevInputLen.current) {
-            // Smaller increments for a more gradual, inertia-style build-up
             typingActivityTarget.current = Math.min(1.0, typingActivityTarget.current + 0.22);
             prevInputLen.current = len;
         }
@@ -263,7 +89,6 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
         const handleCommandSent = (e: Event) => {
             const customEvent = e as CustomEvent;
             if (customEvent.detail && !customEvent.detail.silent) {
-                // Boost typing activity significantly for command execution
                 typingActivityTarget.current = Math.min(1.0, typingActivityTarget.current + 0.65);
             }
         };
@@ -281,11 +106,7 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
 
         let frameId = 0;
         let lastFrameTime = 0;
-        const FRAME_MS = 100; // 10fps — glow is a slow ambient effect; canvas re-uploads
-                               // to GPU every frame, so fewer frames = less compositor churn.
-
-        // Draw at half DPR — the CSS blur hides all pixel detail anyway,
-        // so halving resolution cuts the GPU upload size by 75%.
+        const FRAME_MS = 100; // 10fps for performance efficiency
         const CANVAS_SCALE = Math.max(0.5, (window.devicePixelRatio || 1) * 0.5);
 
         const resize = () => {
@@ -313,8 +134,6 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
             }
             ctx.clearRect(0, 0, w, h);
 
-            // Interpolate colors towards target — slow enough (~2s to settle) that switching
-            // rooms/terrain reads as a smooth fade rather than a snap.
             const colorLerp = 0.012;
             const motionLerp = 0.03;
             const cur = currentColors.current;
@@ -335,34 +154,23 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
             cur.speed = lerp(cur.speed, tar.speed, motionLerp);
             cur.amplitude = lerp(cur.amplitude, tar.amplitude, motionLerp);
 
-            // Slowly decay the target typing activity (takes approx 1.5 - 2 seconds to settle)
             typingActivityTarget.current = lerp(typingActivityTarget.current, 0, 0.025);
-
-            // Smoothly interpolate the current visual activity towards the target (inertia effect)
             typingActivityCurrent.current = lerp(typingActivityCurrent.current, typingActivityTarget.current, 0.045);
 
             const act = typingActivityCurrent.current;
-
-            // Flicker multiplier for torchlight (slightly smoothed out to reduce flashing)
             const flicker = lightingRef.current === 'artificial' ? 1.0 + (Math.random() - 0.5) * 0.06 : 1.0;
 
-            // Typing influence is now gentler and has momentum:
             const finalSpeed = cur.speed * (1.0 + act * 0.35);
-            // Use CSS height (not canvas pixels) so amplitude stays correct at half resolution
             const cssH = h / CANVAS_SCALE;
             const screenScale = Math.min(3.0, Math.max(0.6, cssH / 350));
             const finalAmp = cur.amplitude * screenScale * LIGHT_WAVE_HEIGHT_MULTIPLIER * (1.0 + act * 0.45) * flicker;
 
-            // Typing brightness/saturation boost is now a soft wash rather than a sharp flash
             const brightnessBoost = act * 6;
             const saturationBoost = act * 8;
 
             phaseRef.current += finalSpeed;
             const phase = phaseRef.current;
 
-            // Draw one wave: solid color with a perpendicular alpha fade at the wave line.
-            // Two waves are layered — a larger lighting-colored wave behind, and a smaller
-            // terrain-colored wave in front — so both colors stay visible side by side.
             const drawWave = (
                 offsetPhase: number,
                 wavelengthMultiplier: number,
@@ -377,42 +185,66 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
                 const s = Math.min(100, color.s + saturationBoost);
                 const l = Math.min(100, color.l + brightnessBoost);
 
-                // Gradient axis follows the wave's slope so the transparent edge tracks the
-                // wave line across the whole width (a purely vertical gradient would clip
-                // whichever side rises higher).
-                const leftCenterY = h * leftYPercent;
-                const grad = ctx.createLinearGradient(
-                    0, leftCenterY - finalAmp * 2,
-                    0, h
-                );
-                grad.addColorStop(0, `hsla(${color.h}, ${s}%, ${l}%, 0)`);
-                grad.addColorStop(0.5, `hsla(${color.h}, ${s}%, ${l}%, ${alpha})`);
-                grad.addColorStop(1, `hsla(${color.h}, ${s}%, ${l}%, 1)`);
+                if (isMobile) {
+                    // Vertical wave along the right edge: right edge is "bottom" of the wave
+                    const leftXPercent = leftYPercent;
+                    const rightXPercent = rightYPercent;
 
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.moveTo(-40, h + 40);
-                for (let x = -40; x <= w + 40; x += 6) {
-                    const ratio = (x + 40) / (w + 80);
-                    const baseY = h * (leftYPercent + ratio * (rightYPercent - leftYPercent));
-                    const angle = ratio * Math.PI * 2 * wavelengthMultiplier + phase + offsetPhase;
-                    const y = baseY + Math.sin(angle) * finalAmp;
-                    ctx.lineTo(x, y);
+                    const grad = ctx.createLinearGradient(
+                        w * (leftXPercent - 0.15), 0,
+                        w, 0
+                    );
+                    grad.addColorStop(0, `hsla(${color.h}, ${s}%, ${l}%, 0)`);
+                    grad.addColorStop(0.5, `hsla(${color.h}, ${s}%, ${l}%, ${alpha})`);
+                    grad.addColorStop(1, `hsla(${color.h}, ${s}%, ${l}%, 1)`);
+
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.moveTo(w + 40, -40);
+                    for (let y = -40; y <= h + 40; y += 6) {
+                        const ratio = (y + 40) / (h + 80);
+                        const baseX = w * (leftXPercent + ratio * (rightXPercent - leftXPercent));
+                        const angle = ratio * Math.PI * 2 * wavelengthMultiplier + phase + offsetPhase;
+                        const x = baseX + Math.sin(angle) * finalAmp;
+                        ctx.lineTo(x, y);
+                    }
+                    ctx.lineTo(w + 40, h + 40);
+                    ctx.closePath();
+                    ctx.fill();
+                } else {
+                    // Horizontal wave at the bottom
+                    const leftCenterY = h * leftYPercent;
+                    const grad = ctx.createLinearGradient(
+                        0, leftCenterY - finalAmp * 2,
+                        0, h
+                    );
+                    grad.addColorStop(0, `hsla(${color.h}, ${s}%, ${l}%, 0)`);
+                    grad.addColorStop(0.5, `hsla(${color.h}, ${s}%, ${l}%, ${alpha})`);
+                    grad.addColorStop(1, `hsla(${color.h}, ${s}%, ${l}%, 1)`);
+
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.moveTo(-40, h + 40);
+                    for (let x = -40; x <= w + 40; x += 6) {
+                        const ratio = (x + 40) / (w + 80);
+                        const baseY = h * (leftYPercent + ratio * (rightYPercent - leftYPercent));
+                        const angle = ratio * Math.PI * 2 * wavelengthMultiplier + phase + offsetPhase;
+                        const y = baseY + Math.sin(angle) * finalAmp;
+                        ctx.lineTo(x, y);
+                    }
+                    ctx.lineTo(w + 40, h + 40);
+                    ctx.closePath();
+                    ctx.fill();
                 }
-                ctx.lineTo(w + 40, h + 40);
-                ctx.closePath();
-                ctx.fill();
                 ctx.restore();
             };
 
-            // Two waves are layered — a larger lighting-colored wave behind, and a smaller
-            // terrain-colored wave in front — so both colors stay visible side by side.
-            const leftY = isMobile ? 0.64 : 0.72;
-            const rightY = isMobile ? 0.80 : 0.88;
-            
+            const leftY = 0.72;
+            const rightY = 0.88;
+
             // 1. Lighting-colored wave (larger, behind)
             drawWave(0, 0.9, 0.35, leftY - 0.08, rightY - 0.08, cur.cL);
-            
+
             // 2. Terrain-colored wave (smaller, in front)
             drawWave(Math.PI * 0.6, 1.4, 0.6, leftY, rightY, cur.c1);
 
@@ -425,29 +257,31 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
             cancelAnimationFrame(frameId);
             observer.disconnect();
         };
-        // Only depend on isImmersionMode and isPerformanceMode — color/lighting changes are read via refs so
-        // the animation loop persists and `currentColors` lerps smoothly across rooms.
-    }, [isImmersionMode, isPerformanceMode]);
+    }, [isImmersionMode, isPerformanceMode, isMobile]);
 
-    // Render static fallback gradient if immersion mode is disabled or performance mode is active
+    // Fallback static gradient
     if (!isImmersionMode || isPerformanceMode) {
-        const bgStyle = {
+        const bgStyle = isMobile ? {
+            background: `linear-gradient(270deg, 
+                hsl(${targetColors.color2.h}, ${targetColors.color2.s}%, ${targetColors.color2.l}%) 0%, 
+                hsl(${targetColors.color1.h}, ${targetColors.color1.s}%, ${targetColors.color1.l}%) 20%, 
+                transparent 40%)`,
+        } : {
             background: `linear-gradient(180deg, 
-                transparent ${isMobile ? 52 : 60}%, 
-                hsl(${targetColors.color1.h}, ${targetColors.color1.s}%, ${targetColors.color1.l}%) ${isMobile ? 74 : 82}%, 
+                transparent 60%, 
+                hsl(${targetColors.color1.h}, ${targetColors.color1.s}%, ${targetColors.color1.l}%) 82%, 
                 hsl(${targetColors.color2.h}, ${targetColors.color2.s}%, ${targetColors.color2.l}%) 100%)`,
         };
         return (
-            <div ref={containerRef} className="environment-glow-container" style={visibleHeight ? { height: `${visibleHeight}px` } : undefined}>
+            <div ref={containerRef} className="environment-glow-container">
                 <div className="environment-glow-fallback" style={bgStyle} />
                 <div className="environment-glow-overlay" />
             </div>
         );
     }
 
-    // Dynamic animated canvas container
     return (
-        <div ref={containerRef} className="environment-glow-container" aria-hidden="true" style={visibleHeight ? { height: `${visibleHeight}px` } : undefined}>
+        <div ref={containerRef} className="environment-glow-container" aria-hidden="true">
             <canvas ref={canvasRef} className="environment-glow-canvas" />
             <div className="environment-glow-overlay" />
         </div>

@@ -63,6 +63,7 @@ export const CommandDeck: FC = () => {
     };
     const { target } = useActiveVitals() as { target: string | null };
     const setInput = useInputStore(s => s.setInput);
+    const requestTargetPicker = useInputStore(s => s.requestTargetPicker);
 
     const [activeTab, setActiveTab] = useState<TabKey>(() => {
         const saved = localStorage.getItem('mud-deck-tab');
@@ -99,6 +100,7 @@ export const CommandDeck: FC = () => {
             hintTimerRef.current = window.setTimeout(() => setNeedsTargetHint(null), 3200);
             // Still prime the input so typing a target name also works.
             setInput(item.cmd);
+            requestTargetPicker();
             setTimeout(() => {
                 const el = document.getElementById('mud-input') as HTMLTextAreaElement | null;
                 if (el) { el.focus(); el.style.height = 'auto'; el.style.height = `${el.scrollHeight}px`; }

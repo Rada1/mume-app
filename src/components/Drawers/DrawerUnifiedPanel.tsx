@@ -21,15 +21,9 @@ export const DrawerUnifiedPanel: React.FC<DrawerUnifiedPanelProps> = ({ drawer, 
         drawer={drawer}
         gearTab={drawerData.gearTab}
         setGearTab={drawerData.setGearTab}
-        charTab={drawerData.charTab}
-        setCharTab={drawerData.setCharTab}
         displayInventoryLines={drawerData.displayInventoryLines}
         displayEqLines={drawerData.displayEqLines}
         roomItems={drawerData.roomItems}
-        infoLines={drawerData.infoLines}
-        questLines={drawerData.questLines}
-        achievementLines={drawerData.achievementLines}
-        practiceLines={drawerData.practiceLines}
         triggerHaptic={drawerData.triggerHaptic}
         executeCommand={drawerData.executeCommand}
     />

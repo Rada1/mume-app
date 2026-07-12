@@ -7,9 +7,6 @@
     overflow: hidden;
 }
 
-.is-mobile:not(.is-landscape) .environment-root {
-    bottom: var(--mobile-gutter-height);
-}
 
 .app-container.kb-open .environment-root {
     bottom: 0;
@@ -102,6 +99,10 @@
     position: fixed;
     inset: 0;
     z-index: 4500;
+}
+
+.is-mobile:not(.is-landscape) .environment-root.front {
+    z-index: 9500; /* Overlays the map drawer and entire client on mobile */
 }
 
 .environment-root.front > * {

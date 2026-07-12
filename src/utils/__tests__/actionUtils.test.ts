@@ -177,5 +177,84 @@ describe('isButtonValidForEntity', () => {
             'room'
         )).toBe(false);
     });
+
+    describe('btn-room-drink-water terrain rules', () => {
+        const room: GameEntity = {
+            id: 'room-water-1',
+            name: 'watery room',
+            noun: 'room',
+            category: 'cat-room',
+            kind: 'room',
+            location: 'room',
+            capabilities: []
+        };
+        const defaultMan = character('Man');
+
+        it('allows Drink Water in a water sector', () => {
+            expect(isButtonValidForEntity(
+                makeButton('btn-room-drink-water', 'drink water'),
+                room.id,
+                'cat-room',
+                { buttons: [], entities: { [room.id]: room }, characterInfo: defaultMan, currentTerrain: 'water' },
+                undefined,
+                'room'
+            )).toBe(true);
+        });
+
+        it('allows Drink Water in a shallows sector', () => {
+            expect(isButtonValidForEntity(
+                makeButton('btn-room-drink-water', 'drink water'),
+                room.id,
+                'cat-room',
+                { buttons: [], entities: { [room.id]: room }, characterInfo: defaultMan, currentTerrain: 'shallows' },
+                undefined,
+                'room'
+            )).toBe(true);
+        });
+
+        it('allows Drink Water in a rapids sector', () => {
+            expect(isButtonValidForEntity(
+                makeButton('btn-room-drink-water', 'drink water'),
+                room.id,
+                'cat-room',
+                { buttons: [], entities: { [room.id]: room }, characterInfo: defaultMan, currentTerrain: 'rapids' },
+                undefined,
+                'room'
+            )).toBe(true);
+        });
+
+        it('allows Drink Water in an underwater sector', () => {
+            expect(isButtonValidForEntity(
+                makeButton('btn-room-drink-water', 'drink water'),
+                room.id,
+                'cat-room',
+                { buttons: [], entities: { [room.id]: room }, characterInfo: defaultMan, currentTerrain: 'underwater' },
+                undefined,
+                'room'
+            )).toBe(true);
+        });
+
+        it('blocks Drink Water in a field sector', () => {
+            expect(isButtonValidForEntity(
+                makeButton('btn-room-drink-water', 'drink water'),
+                room.id,
+                'cat-room',
+                { buttons: [], entities: { [room.id]: room }, characterInfo: defaultMan, currentTerrain: 'field' },
+                undefined,
+                'room'
+            )).toBe(false);
+        });
+
+        it('blocks Drink Water when terrain is undefined', () => {
+            expect(isButtonValidForEntity(
+                makeButton('btn-room-drink-water', 'drink water'),
+                room.id,
+                'cat-room',
+                { buttons: [], entities: { [room.id]: room }, characterInfo: defaultMan },
+                undefined,
+                'room'
+            )).toBe(false);
+        });
+    });
 });
 

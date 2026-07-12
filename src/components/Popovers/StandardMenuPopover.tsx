@@ -59,6 +59,7 @@ interface StandardMenuProps {
     setAccountState?: React.Dispatch<React.SetStateAction<import('../../types').AccountState>>;
     direction?: string;
     characterInfo?: CharacterInfo;
+    currentTerrain?: string;
 }
 
 const formatSetLabel = (id: string): string => {
@@ -158,7 +159,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     let seenCommandsSize = 0;
     const renderActionButtons = () => {
         const seenCommands = new Set<string>();
-        const filterDeps = { buttons, inlineCategories: inlineCategories || [], roomNpcs, entities, characterInfo };
+        const filterDeps = { buttons, inlineCategories: inlineCategories || [], roomNpcs, entities, characterInfo, currentTerrain: props.currentTerrain };
 
         const favoritedButtons = buttons.filter(b => {
             const isValid = isButtonValidForEntity(b, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);

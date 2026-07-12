@@ -4,13 +4,14 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { Eye, Tent, FlameKindling, Swords, BookOpen, Play } from 'lucide-react';
+import { Eye, Tent, FlameKindling, Swords, BookOpen, Play, Droplets } from 'lucide-react';
 import { resolveActionIcon } from '../actionIcons';
 
 describe('resolveActionIcon', () => {
     it('maps known verbs to their icon', () => {
         expect(resolveActionIcon('watch')).toBe(Eye);
         expect(resolveActionIcon('read')).toBe(BookOpen);
+        expect(resolveActionIcon('drink')).toBe(Droplets);
     });
 
     it('distinguishes camp (campfire) from camp rent (tent) by full command', () => {

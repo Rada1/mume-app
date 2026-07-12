@@ -204,7 +204,7 @@ const UserCommandBubbleWithTimer: React.FC<{
 
     let finalProgress = progress;
     let finalElapsed = elapsedMs;
-    let statusText = 'Attempting';
+    let statusText = 'sending';
     let statusColor = '#eab308'; // yellow
     let isFinished = false;
     let isInterrupted = false;
@@ -214,17 +214,17 @@ const UserCommandBubbleWithTimer: React.FC<{
         isInterrupted = msg.timerInfo.status === 'interrupted';
         finalProgress = 1.0;
         finalElapsed = msg.timerInfo.elapsedMs;
-        statusText = msg.timerInfo.status;
+        statusText = isInterrupted ? 'interrupted' : 'sent';
         statusColor = isInterrupted ? '#ef4444' : '#22c55e';
     } else if (active) {
         isFinished = active.isFinished;
         isInterrupted = active.isInterrupted;
         if (isFinished) {
-            statusText = isInterrupted ? 'interrupted' : 'completed';
+            statusText = isInterrupted ? 'interrupted' : 'sent';
             statusColor = isInterrupted ? '#ef4444' : '#22c55e';
             finalProgress = 1.0;
         } else if (active.type === 'spell') {
-            statusText = 'casting';
+            statusText = 'sending';
             statusColor = '#c084fc';
         }
     }

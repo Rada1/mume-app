@@ -56,13 +56,18 @@
             var(--desktop-map-width, 22vw)
             minmax(0, 1fr)
             var(--desktop-character-width, 22vw);
-        /* Definite height so the skills grid can fill it and scroll internally —
-           without a fixed height, a class with many spells pushes the row (and
-           the whole bottom bar) taller. Top row flexes, bottom row = input. */
-        grid-template-rows: minmax(0, 1fr) auto auto;
-        height: clamp(150px, 16vh, 220px);
+        /* The center column stacks the prompt box, command deck, timer lane and
+           input as four content-sized rows — no flexible gap between them. The
+           side columns (DPad / skills) span all four rows, so they rise to the top
+           of the prompt box (= the drawer bottom) and drop to the input's bottom,
+           forming the notch the prompt box slots into. Height is driven by this
+           content; account mode restores a fixed height below.
+           Rows: [prompt] [command deck] [input] — the timer lane lives in the
+           input's right slot, not its own row. */
+        grid-template-rows: auto auto auto;
+        flex-shrink: 0;
         row-gap: 4px;
-        padding-top: 3px !important;
+        padding-top: 0 !important;
         padding-bottom: 9px !important;
         background: transparent !important;
         border: none !important;
@@ -82,25 +87,38 @@
     }
 
     .action-box .movement-pad {
-        position: absolute;
-        left: calc(var(--desktop-map-width, 22vw) / 2);
-        top: calc(50% - 18px);
+        position: static;
         grid-column: 1;
-        grid-row: 1 / 3;
+        grid-row: 1 / -1;
+        align-self: stretch;
+        justify-self: center;
+        height: 100%;
+        aspect-ratio: 1 / 1;
+        max-width: 100%;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
         margin: 0;
-        transform: translate(-50%, -50%);
+        transform: none;
     }
 
+    .action-box .action-box-prompt-cell,
     .action-box .command-deck,
     .action-box-input-cell,
     .action-box-timer-lane {
         grid-column: 2;
         width: 100%;
+        min-width: 0;
+    }
+
+    /* Prompt box occupies the center's top cell; the side columns rise past it. */
+    .action-box .action-box-prompt-cell {
+        grid-row: 1;
+        align-self: start;
     }
 
     .action-box .command-deck {
-        grid-row: 1;
-        align-self: end;
+        grid-row: 2;
+        align-self: stretch;
         padding-top: 2px;
         padding-bottom: 0;
     }
@@ -108,7 +126,7 @@
     /* Skills panel fills the bottom-bar column under the character drawer. */
     .action-box .skills-deck {
         grid-column: 3;
-        grid-row: 1 / 3;
+        grid-row: 1 / -1;
         align-self: stretch;
         width: 100%;
         min-width: 0;
@@ -117,6 +135,22 @@
         padding-left: 0;
         padding-right: 0;
         gap: 3px;
+        /* Contain the absolutely-positioned inner fill; the column's height is
+           driven by the center column (prompt + command deck + input), NOT by the
+           skill list — so extra skills scroll instead of stretching the bar. */
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Absolute fill takes the deck's content out of grid-track sizing, so a long
+       skill list can never inflate the row tracks / bottom-bar height. */
+    .action-box .skills-deck-inner {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-height: 0;
     }
 
     .action-box .skills-deck .deck-class-switch,
@@ -137,6 +171,7 @@
 
     .action-box .skills-deck .deck-grid-wrap {
         flex: 1 1 auto;
+        min-height: 0;
     }
 
     .action-box .skills-deck .deck-grid {
@@ -153,7 +188,7 @@
     }
 
     .action-box-timer-lane {
-        grid-row: 2;
+        grid-row: 3;
         display: flex;
         align-self: end;
         justify-self: stretch;
@@ -302,9 +337,16 @@
    AccountDeck spans all three columns (it lays out its own status/center/detail
    sub-columns) in the top row, with the command input in the bottom row. */
 @media (min-width: 1025px) {
+    /* Account mode has no prompt box, so restore a definite height with a flexible
+       row for the account deck (it manages its own internal scroll). */
+    .action-box.account-mode {
+        grid-template-rows: 0px minmax(0, 1fr) auto;
+        height: clamp(150px, 16vh, 220px);
+    }
+
     .action-box.account-mode .account-deck {
         grid-column: 1 / -1;
-        grid-row: 1;
+        grid-row: 2;
         align-self: stretch;
         min-height: 0;
     }
@@ -313,5 +355,6 @@
        the center block under the log, aligned with the command input below it. */
     .action-box.account-mode .account-deck.account-deck-wide {
         grid-column: 2;
+        grid-row: 2;
     }
 }

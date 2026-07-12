@@ -124,10 +124,14 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         }} />
                     </div>
                 )}
-                <div className="client-lighting-overlay client-sun-overlay" />
-                <div className="client-lighting-overlay client-moon-overlay" />
-                <div className="client-lighting-overlay client-artificial-overlay" />
-                <div className="client-lighting-overlay client-dark-overlay" />
+                {!isMobile && (
+                    <>
+                        <div className="client-lighting-overlay client-sun-overlay" />
+                        <div className="client-lighting-overlay client-moon-overlay" />
+                        <div className="client-lighting-overlay client-artificial-overlay" />
+                        <div className="client-lighting-overlay client-dark-overlay" />
+                    </>
+                )}
                 <EnvironmentGlow terrain={terrain || undefined} lighting={lighting} input={input} />
                 {isImmersionMode && (
                     <div className={`storm-overlay-layer ${weather === 'heavy-rain' ? 'active' : ''}`} />
@@ -143,6 +147,14 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
 
             {/* --- FRONT LAYER: Atmospheric & Interactive [z-index: 4500+] --- */}
             <div className={`environment-root front`}>
+                {isMobile && (
+                    <div className={`lighting-state-${lighting || 'none'}`} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                        <div className="client-lighting-overlay client-sun-overlay" />
+                        <div className="client-lighting-overlay client-moon-overlay" />
+                        <div className="client-lighting-overlay client-artificial-overlay" />
+                        <div className="client-lighting-overlay client-dark-overlay" />
+                    </div>
+                )}
                 {isImmersionMode && (
                     <>
                         <div

@@ -121,7 +121,7 @@ export const MapperRoomInfo: React.FC<MapperRoomInfoProps> = () => {
     const actionButtons = useMemo(() => {
         const buttons = btn?.buttons || [];
         if (!roomName || buttons.length === 0) return [];
-        const filterDeps = { buttons, inlineCategories: inlineCategories || [], roomNpcs, entities, characterInfo };
+        const filterDeps = { buttons, inlineCategories: inlineCategories || [], roomNpcs, entities, characterInfo, currentTerrain };
         const seen = new Set<string>();
         return buttons.filter(b => {
             if (seen.has(b.command)) return false;
@@ -131,7 +131,7 @@ export const MapperRoomInfo: React.FC<MapperRoomInfoProps> = () => {
             seen.add(b.command);
             return true;
         });
-    }, [btn?.buttons, inlineCategories, roomNpcs, entities, characterInfo, roomEntityId, roomName, hasTowerFlag]);
+    }, [btn?.buttons, inlineCategories, roomNpcs, entities, characterInfo, roomEntityId, roomName, hasTowerFlag, currentTerrain]);
 
     if (!roomName) return null;
 

@@ -14,6 +14,7 @@ export interface ActionFilterDeps {
     roomNpcs?: (string | GmcpOccupant)[];
     entities: Record<string, GameEntity>;
     characterInfo?: CharacterInfo;
+    currentTerrain?: string;
 }
 
 /**
@@ -130,6 +131,15 @@ export function isButtonValidForEntity(
     // 10. Cover/Uncover actions only apply when worn
     if ((button.id === 'btn-lightsource-cover' || button.id === 'btn-lightsource-uncover') && location !== 'worn') {
         return false;
+    }
+
+    // 11. Room drink water button requires the room to have a water-related terrain
+    if (button.id === 'btn-room-drink-water') {
+        const terrain = (deps.currentTerrain || '').toLowerCase().trim();
+        const isValidWaterSector = ['water', 'shallow', 'shallows', 'underwater', 'rapids', 'rapid'].includes(terrain);
+        if (!isValidWaterSector) {
+            return false;
+        }
     }
 
     return true;

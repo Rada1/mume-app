@@ -282,6 +282,13 @@
     min-height: 0;
 }
 
+/* Transparent on mobile (children flow into .skills-deck); becomes an absolute
+   fill on desktop (see ActionBox.css) so the skill grid scrolls internally and
+   never grows the bottom bar. */
+.skills-deck-inner {
+    display: contents;
+}
+
 .skills-deck .deck-grid-wrap {
     flex: 1;
     min-height: 0;
@@ -308,4 +315,96 @@
     line-height: 1.12;
     max-height: 2.3em;
     overflow: hidden;
+}
+
+/* --- Guild / practice affordances --- */
+.deck-class-chip.is-guild {
+    border-color: rgba(93, 202, 165, 0.55);
+    box-shadow: 0 0 0 1px rgba(93, 202, 165, 0.25);
+}
+
+.deck-class-chip.is-guild.is-active {
+    background: rgba(93, 202, 165, 0.16);
+    border-color: rgba(93, 202, 165, 0.6);
+    color: #7fe3c0;
+}
+
+.deck-class-guild-icon {
+    margin-left: 3px;
+    vertical-align: -1px;
+    color: #5dcaa5 !important;
+}
+
+.deck-guild-note {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 1px 0 -2px;
+    padding: 3px 8px;
+    border: 1px solid rgba(93, 202, 165, 0.3);
+    border-radius: 8px;
+    background: rgba(93, 202, 165, 0.1);
+    color: #7fe3c0;
+    font-size: 0.62rem;
+    font-weight: 650;
+}
+
+.deck-guild-note svg { color: #5dcaa5; flex-shrink: 0; }
+.deck-guild-note strong { color: #a9f0d6; font-weight: 800; }
+
+.deck-slot.can-practice {
+    border-color: rgba(93, 202, 165, 0.4);
+    background: rgba(24, 40, 36, 0.9);
+}
+
+.deck-slot.can-practice:hover {
+    border-color: rgba(93, 202, 165, 0.7);
+}
+
+.deck-slot-practice-chip {
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 1px 5px 1px 3px;
+    border: 1px solid rgba(93, 202, 165, 0.5);
+    border-radius: 10px;
+    background: rgba(93, 202, 165, 0.18);
+    color: #a9f0d6;
+    font-family: inherit;
+    font-size: 0.52rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.deck-slot-practice-chip svg { color: #7fe3c0 !important; }
+
+.deck-slot-practice-chip:hover {
+    background: rgba(93, 202, 165, 0.32);
+    border-color: rgba(93, 202, 165, 0.8);
+}
+
+.deck-slot-practice-chip:active { transform: translateY(1px); }
+
+.light-mode .deck-slot.can-practice {
+    background: rgba(93, 202, 165, 0.14);
+    border-color: rgba(45, 150, 115, 0.5);
+}
+
+.light-mode .deck-slot-practice-chip {
+    background: rgba(45, 150, 115, 0.18);
+    border-color: rgba(45, 150, 115, 0.5);
+    color: #1f6b52;
+}
+
+.light-mode .deck-guild-note {
+    background: rgba(45, 150, 115, 0.12);
+    border-color: rgba(45, 150, 115, 0.4);
+    color: #1f6b52;
 }

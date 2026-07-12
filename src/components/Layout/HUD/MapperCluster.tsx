@@ -5,8 +5,8 @@ import { CommandDeck } from '../../HUD/CommandDeck';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useInputStore } from '../../../stores/useInputStore';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
-import { DrawerType, GameContextType, UIContextType } from '../../../context/GameContext/types';
-import { ArrowLeft, BookOpen, Info, UtensilsCrossed, Droplets, Menu, ChevronLeft, HelpCircle } from 'lucide-react';
+import { GameContextType, UIContextType } from '../../../context/GameContext/types';
+import { ArrowLeft, BookOpen, Info, UtensilsCrossed, Droplets, Menu, ChevronLeft, HelpCircle, Play, Plus, KeyRound, Clock, Link2, Activity, MapPin, Timer, UserCircle, LogOut } from 'lucide-react';
 import { useMapper } from '../../../context/useMapper';
 import { MapFilterBar } from '../../Mapper/MapFilterBar';
 
@@ -14,7 +14,6 @@ import InputArea from '../../Controls/InputArea';
 import OpponentRechargeTimer from '../../Combat/OpponentRechargeTimer';
 import { ActionTimerDisplay } from '../../HUD/ActionTimerDisplay';
 import { UiPositions, SwipeDirection } from '../../../types';
-import { GutterDrawerPanel } from './GutterDrawerPanel';
 import { AccountAnsiLine } from '../../Drawers/AccountAnsiLine';
 import './MobileCommandDeck.css';
 
@@ -59,7 +58,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     } = useGame() as GameContextType;
     const { target, activePrompt, stats } = useVitals();
     const {
-        ui, setPopoverState,
+        ui, setUI, setPopoverState,
         handleTabClick, toggleMap
     } = useUI() as UIContextType;
     const isExpanded = ui.mapExpanded;
@@ -76,14 +75,10 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     // Mobile DOCKED (Gutter) Mode
     const isReplaying = (useGame() as GameContextType).sessionMode === 'replay';
 
-    // Remember the most recent non-'none' drawer so the drawer slide keeps rendering
-    // its content while sliding out of view (otherwise the panel would go blank mid-animation).
-    const [lastShownDrawer, setLastShownDrawer] = useState<DrawerType>(
-        ui.drawer !== 'none' ? ui.drawer : 'status'
-    );
     useEffect(() => {
-        if (ui.drawer !== 'none') setLastShownDrawer(ui.drawer);
-    }, [ui.drawer]);
+        if (!viewport.isMobile || viewport.isLandscape || gameState === 'account' || ui.drawer === 'none') return;
+        setUI(prev => ({ ...prev, drawer: 'none', mapExpanded: true }));
+    }, [gameState, setUI, ui.drawer, viewport.isLandscape, viewport.isMobile]);
 
     useEffect(() => {
         const app = document.querySelector<HTMLElement>('.app-container');
@@ -187,6 +182,43 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     }, [liveOptions.length, liveOptionsKey]);
 
     const selectedMenuCommand = accountState.selectedMenuCommand ?? null;
+
+    const MENU_TABS = [
+        { cmd: 'play', label: 'Play', icon: Play },
+        { cmd: 'create', label: 'Create', icon: Plus },
+        { cmd: 'password', label: 'Password', icon: KeyRound },
+        { cmd: 'time', label: 'Time', icon: Clock },
+        { cmd: 'link', label: 'Link', icon: Link2 },
+        { cmd: 'lag', label: 'Lag', icon: Activity }
+    ];
+
+    const selectMenuCommand = (command: string) => {
+        triggerHaptic(20);
+        if (command === 'play') {
+            setAccountState(prev => ({
+                ...prev,
+                selectedMenuCommand: 'play',
+                characters: [],
+                selectedCharacter: null,
+                charSelectTab: null,
+                isGathering: true
+            }));
+            executeCommand('list', true);
+            return;
+        }
+        if (command === 'time' || command === 'link' || command === 'lag') {
+            const captureKey = `${command}Lines` as 'timeLines' | 'linkLines' | 'lagLines';
+            setAccountState(prev => ({
+                ...prev,
+                selectedMenuCommand: command,
+                charCapture: { type: command },
+                [captureKey]: []
+            }));
+            executeCommand(command);
+            return;
+        }
+        setAccountState(prev => ({ ...prev, selectedMenuCommand: command }));
+    };
 
     const [playNameInput, setPlayNameInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
@@ -340,179 +372,203 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
                         {isMenuStage && (
                             <div className="char-select-panel">
-                                {!accountState.selectedCharacter ? (
-                                    selectedMenuCommand === 'create' ? (
-                                        <div className="cmd-action-panel">
-                                            <div className="cmd-action-header">
-                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}><Menu size={16} /></button>
-                                                <span className="cmd-action-title">New Character</span>
-                                            </div>
-                                            <div className="cmd-action-body">
-                                                <button className="char-play-btn" onClick={() => { triggerHaptic(30); executeCommand('create'); }}>
-                                                    Create Character
-                                                </button>
+                                <div className="mobile-account-deck">
+                                    <div className="mobile-account-status">
+                                        <div>
+                                            <div className="account-col-label">ACCOUNT</div>
+                                            <div className="account-status-name"><UserCircle size={15} /> Signed in</div>
+                                            <div className="account-status-meta">
+                                                {accountState.characters.length ? `${accountState.characters.length} character${accountState.characters.length === 1 ? '' : 's'}` : 'Menu'}
                                             </div>
                                         </div>
-                                    ) : selectedMenuCommand === 'play' ? (
-                                        <div className="cmd-action-panel">
-                                            <div className="cmd-action-header">
-                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setPlayNameInput(''); setAccountState(prev => ({ ...prev, selectedMenuCommand: null, characters: [] })); executeCommand('menu'); }}><Menu size={16} /></button>
-                                                <div className="cmd-action-title-stack">
-                                                    <span className="cmd-action-title">Play Character</span>
-                                                    <span className="cmd-action-subtitle">Name / Rce / Sub / Lvl / Logon area / Rent / Delete</span>
-                                                </div>
-                                            </div>
-                                            <div className="cmd-play-char-list">
-                                                {accountState.characters.length === 0 ? (
-                                                    <div className="char-data-loading">Loading…</div>
-                                                ) : (
-                                                    accountState.characters.map(char => (
-                                                        <button
-                                                            key={char.name}
-                                                            className={`cmd-play-char-item${playNameInput === char.name ? ' selected' : ''}`}
-                                                            onClick={() => { triggerHaptic(15); setPlayNameInput(char.name); }}
-                                                        >
-                                                            {char.rawLine || char.name}
-                                                        </button>
-                                                    ))
-                                                )}
-                                            </div>
-                                            <div className="cmd-action-body">
-                                                <input
-                                                    className="cmd-name-input"
-                                                    type="text"
-                                                    placeholder="Character name…"
-                                                    value={playNameInput}
-                                                    onChange={e => setPlayNameInput(e.target.value)}
-                                                    onKeyDown={e => { if (e.key === 'Enter' && playNameInput.trim()) { triggerHaptic(30); executeCommand('play ' + playNameInput.trim()); setPlayNameInput(''); } }}
-                                                    autoCapitalize="words"
-                                                    spellCheck={false}
-                                                />
-                                                <div className="cmd-play-action-row">
+                                        <div className="account-status-actions">
+                                            {(selectedMenuCommand || accountState.selectedCharacter) && (
+                                                <button
+                                                    className="account-btn account-btn-sm"
+                                                    onClick={() => {
+                                                        triggerHaptic(10);
+                                                        setPlayNameInput('');
+                                                        setPasswordInput('');
+                                                        setAccountState(prev => ({
+                                                            ...prev,
+                                                            selectedMenuCommand: null,
+                                                            selectedCharacter: null,
+                                                            charSelectTab: null,
+                                                            charCapture: null
+                                                        }));
+                                                        executeCommand('menu');
+                                                    }}
+                                                >
+                                                    <ArrowLeft size={14} /> Menu
+                                                </button>
+                                            )}
+                                            <button className="account-btn account-btn-sm" onClick={() => { triggerHaptic(20); executeCommand('quit'); }} title="Quit">
+                                                <LogOut size={14} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="cmd-action-panel" style={{ display: 'flex', flexDirection: 'column', flex: 1, height: '100%' }}>
+                                        <div className="account-tab-rail">
+                                            {MENU_TABS.map(tab => {
+                                                const Icon = tab.icon;
+                                                const active = selectedMenuCommand === tab.cmd || (!selectedMenuCommand && tab.cmd === 'play');
+                                                return (
                                                     <button
-                                                        className="char-secondary-btn"
-                                                        disabled={!selectedPlayName}
-                                                        onClick={() => requestCharacterData('info')}
-                                                        aria-label="Show character info"
-                                                        title="Info"
+                                                        key={tab.cmd}
+                                                        type="button"
+                                                        className={`account-tab${active ? ' is-active' : ''}`}
+                                                        onClick={() => selectMenuCommand(tab.cmd)}
                                                     >
-                                                        <Info size={16} />
-                                                        <span>Info</span>
+                                                        <Icon size={12} strokeWidth={2.2} />
+                                                        <span>{tab.label}</span>
                                                     </button>
+                                                );
+                                            })}
+                                        </div>
+
+                                        <div className="account-tab-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, width: '100%' }}>
+                                            {(!selectedMenuCommand || selectedMenuCommand === 'play') ? (
+                                                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, width: '100%' }}>
+                                                    <div className="cmd-play-char-list account-char-list">
+                                                        {accountState.characters.length === 0 ? (
+                                                            <div className="char-data-loading">{accountState.isGathering ? 'Loading characters…' : 'No characters listed.'}</div>
+                                                        ) : (
+                                                            accountState.characters.map(entry => (
+                                                                <button
+                                                                    key={entry.name}
+                                                                    type="button"
+                                                                    className={`account-char-chip${playNameInput === entry.name ? ' is-active' : ''}`}
+                                                                    onClick={() => {
+                                                                        triggerHaptic(15);
+                                                                        setPlayNameInput(entry.name);
+                                                                        setAccountState(prev => ({
+                                                                            ...prev,
+                                                                            selectedCharacter: entry,
+                                                                            charSelectTab: null,
+                                                                            charInfoLines: [],
+                                                                            charPracticeLines: []
+                                                                        }));
+                                                                    }}
+                                                                >
+                                                                    <span className="account-char-name">{entry.name}</span>
+                                                                    {(entry.level || entry.race) && (
+                                                                        <span className="account-char-meta">{[entry.level, entry.race].filter(Boolean).join(' · ')}</span>
+                                                                    )}
+                                                                    {(entry.area || entry.rent) && (
+                                                                        <span className="account-char-detail">
+                                                                            {entry.area && <span className="account-char-loc"><MapPin size={9} strokeWidth={2.4} />{entry.area}</span>}
+                                                                            {entry.rent && <span className="account-char-rent"><Timer size={9} strokeWidth={2.4} />{entry.rent}</span>}
+                                                                        </span>
+                                                                    )}
+                                                                </button>
+                                                            ))
+                                                        )}
+                                                    </div>
+                                                    <div className="cmd-action-body">
+                                                        <input
+                                                            className="cmd-name-input"
+                                                            type="text"
+                                                            placeholder="Character name…"
+                                                            value={playNameInput}
+                                                            onChange={e => setPlayNameInput(e.target.value)}
+                                                            onKeyDown={e => { if (e.key === 'Enter' && playNameInput.trim()) { triggerHaptic(30); executeCommand('play ' + playNameInput.trim()); setPlayNameInput(''); } }}
+                                                            autoCapitalize="words"
+                                                            spellCheck={false}
+                                                        />
+                                                        <div className="cmd-play-action-row">
+                                                            <button
+                                                                className="char-secondary-btn"
+                                                                disabled={!selectedPlayName}
+                                                                onClick={() => requestCharacterData('info')}
+                                                                aria-label="Show character info"
+                                                                title="Info"
+                                                            >
+                                                                <Info size={16} />
+                                                                <span>Info</span>
+                                                            </button>
+                                                            <button
+                                                                className="char-play-btn"
+                                                                disabled={!selectedPlayName}
+                                                                onClick={() => { if (!selectedPlayName) return; triggerHaptic(30); executeCommand('play ' + selectedPlayName); setPlayNameInput(''); }}
+                                                            >
+                                                                Play {selectedPlayName ? capitalize(selectedPlayName) : '...'}
+                                                            </button>
+                                                            <button
+                                                                className="char-secondary-btn"
+                                                                disabled={!selectedPlayName}
+                                                                onClick={() => requestCharacterData('practice')}
+                                                                aria-label="Show character skills and spells"
+                                                                title="Skills and spells"
+                                                            >
+                                                                <BookOpen size={16} />
+                                                                <span>Skills</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ) : selectedMenuCommand === 'create' ? (
+                                                <div className="cmd-action-body">
+                                                    <button className="char-play-btn" onClick={() => { triggerHaptic(30); executeCommand('create'); }}>
+                                                        Create Character
+                                                    </button>
+                                                </div>
+                                            ) : selectedMenuCommand === 'password' ? (
+                                                <div className="cmd-action-body">
+                                                    <input
+                                                        className="cmd-name-input"
+                                                        type="password"
+                                                        placeholder="New password…"
+                                                        value={passwordInput}
+                                                        onChange={e => setPasswordInput(e.target.value)}
+                                                        onKeyDown={e => { if (e.key === 'Enter' && passwordInput.trim()) { triggerHaptic(30); executeCommand('password ' + passwordInput.trim()); setPasswordInput(''); } }}
+                                                        autoCapitalize="none"
+                                                        autoComplete="new-password"
+                                                        spellCheck={false}
+                                                    />
                                                     <button
                                                         className="char-play-btn"
-                                                        disabled={!selectedPlayName}
-                                                        onClick={() => { if (!selectedPlayName) return; triggerHaptic(30); executeCommand('play ' + selectedPlayName); setPlayNameInput(''); }}
+                                                        disabled={!passwordInput.trim()}
+                                                        onClick={() => { if (!passwordInput.trim()) return; triggerHaptic(30); executeCommand('password ' + passwordInput.trim()); setPasswordInput(''); }}
                                                     >
-                                                        Play {selectedPlayName ? capitalize(selectedPlayName) : '...'}
-                                                    </button>
-                                                    <button
-                                                        className="char-secondary-btn"
-                                                        disabled={!selectedPlayName}
-                                                        onClick={() => requestCharacterData('practice')}
-                                                        aria-label="Show character skills and spells"
-                                                        title="Skills and spells"
-                                                    >
-                                                        <BookOpen size={16} />
-                                                        <span>Skills</span>
+                                                        Change Password
                                                     </button>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    ) : selectedMenuCommand === 'time' ? (
-                                        <div className="cmd-action-panel">
-                                            <div className="cmd-action-header">
-                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}><Menu size={16} /></button>
-                                                <span className="cmd-action-title">Game Time</span>
-                                            </div>
-                                            <div className="char-detail-content">
-                                                {(accountState.timeLines ?? []).length > 0
-                                                    ? <div className="char-data-lines">{(accountState.timeLines ?? []).map((line, i) => <AccountAnsiLine key={i} line={line} />)}</div>
-                                                    : accountState.charCapture?.type === 'time'
-                                                        ? <div className="char-data-loading">Loading…</div>
-                                                        : null}
-                                            </div>
-                                            <div className="char-detail-play">
-                                                <button className="char-play-btn" onClick={() => { triggerHaptic(20); setAccountState(prev => ({ ...prev, charCapture: { type: 'time' }, timeLines: [] })); executeCommand('time'); }}>Refresh</button>
-                                            </div>
-                                        </div>
-                                    ) : selectedMenuCommand === 'link' ? (
-                                        <div className="cmd-action-panel">
-                                            <div className="cmd-action-header">
-                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}><Menu size={16} /></button>
-                                                <span className="cmd-action-title">Link Status</span>
-                                            </div>
-                                            <div className="char-detail-content">
-                                                {(accountState.linkLines ?? []).length > 0
-                                                    ? <div className="char-data-lines">{(accountState.linkLines ?? []).map((line, i) => <AccountAnsiLine key={i} line={line} />)}</div>
-                                                    : accountState.charCapture?.type === 'link'
-                                                        ? <div className="char-data-loading">Loading…</div>
-                                                        : null}
-                                            </div>
-                                            <div className="char-detail-play">
-                                                <button className="char-play-btn" onClick={() => { triggerHaptic(20); setAccountState(prev => ({ ...prev, charCapture: { type: 'link' }, linkLines: [] })); executeCommand('link'); }}>Refresh</button>
-                                            </div>
-                                        </div>
-                                    ) : selectedMenuCommand === 'lag' ? (
-                                        <div className="cmd-action-panel">
-                                            <div className="cmd-action-header">
-                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}><Menu size={16} /></button>
-                                                <span className="cmd-action-title">Lag Report</span>
-                                            </div>
-                                            <div className="char-detail-content">
-                                                {(accountState.lagLines ?? []).length > 0
-                                                    ? <div className="char-data-lines">{(accountState.lagLines ?? []).map((line, i) => <AccountAnsiLine key={i} line={line} />)}</div>
-                                                    : accountState.charCapture?.type === 'lag'
-                                                        ? <div className="char-data-loading">Loading…</div>
-                                                        : null}
-                                            </div>
-                                            <div className="char-detail-play">
-                                                <button className="char-play-btn" onClick={() => { triggerHaptic(20); setAccountState(prev => ({ ...prev, charCapture: { type: 'lag' }, lagLines: [] })); executeCommand('lag'); }}>Refresh</button>
-                                            </div>
-                                        </div>
-                                    ) : selectedMenuCommand === 'password' ? (
-                                        <div className="cmd-action-panel">
-                                            <div className="cmd-action-header">
-                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setPasswordInput(''); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}><Menu size={16} /></button>
-                                                <span className="cmd-action-title">Change Password</span>
-                                            </div>
-                                            <div className="cmd-action-body">
-                                                <input
-                                                    className="cmd-name-input"
-                                                    type="password"
-                                                    placeholder="New password…"
-                                                    value={passwordInput}
-                                                    onChange={e => setPasswordInput(e.target.value)}
-                                                    onKeyDown={e => { if (e.key === 'Enter' && passwordInput.trim()) { triggerHaptic(30); executeCommand('password ' + passwordInput.trim()); setPasswordInput(''); } }}
-                                                    autoCapitalize="none"
-                                                    autoComplete="new-password"
-                                                    spellCheck={false}
-                                                />
-                                                <button
-                                                    className="char-play-btn"
-                                                    disabled={!passwordInput.trim()}
-                                                    onClick={() => { if (!passwordInput.trim()) return; triggerHaptic(30); executeCommand('password ' + passwordInput.trim()); setPasswordInput(''); }}
-                                                >
-                                                    Change Password
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="char-select-hint">
-                                            {accountState.characters.length === 0 ? (
-                                                <>
-                                                    <span className="char-select-label">Commands</span>
-                                                    <span className="char-select-sublabel">Tap a command in the log to run it</span>
-                                                </>
                                             ) : (
-                                                <>
-                                                    <span className="char-select-label">Characters</span>
-                                                    <span className="char-select-sublabel">Tap a name in the log to select</span>
-                                                </>
+                                                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, width: '100%' }}>
+                                                    <div className="char-detail-content" style={{ flex: 1, overflowY: 'auto', padding: '8px' }}>
+                                                        {(() => {
+                                                            const lines = (accountState[`${selectedMenuCommand}Lines` as 'timeLines' | 'linkLines' | 'lagLines'] ?? []) as string[];
+                                                            return lines.length > 0 ? (
+                                                                <div className="char-data-lines">
+                                                                    {lines.map((line, i) => <AccountAnsiLine key={i} line={line} />)}
+                                                                </div>
+                                                            ) : (
+                                                                <div className="char-data-loading">Loading…</div>
+                                                            );
+                                                        })()}
+                                                    </div>
+                                                    <div className="char-detail-play" style={{ padding: '8px' }}>
+                                                        <button
+                                                            className="char-play-btn"
+                                                            onClick={() => {
+                                                                triggerHaptic(20);
+                                                                setAccountState(prev => ({
+                                                                    ...prev,
+                                                                    charCapture: { type: selectedMenuCommand },
+                                                                    [`${selectedMenuCommand}Lines` as 'timeLines' | 'linkLines' | 'lagLines']: []
+                                                                }));
+                                                                executeCommand(selectedMenuCommand);
+                                                            }}
+                                                        >
+                                                            Refresh
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             )}
                                         </div>
-                                    )
-                                ) : (
+                                    </div>
+                                    <div className="mobile-account-detail-strip">
+                                    {accountState.selectedCharacter ? (
                                     <div className="char-detail-panel">
                                         <div className="char-detail-header">
                                             <button
@@ -594,12 +650,16 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                             </button>
                                         </div>
                                     </div>
-                                )}
+                                    ) : (
+                                        <div className="account-empty">Pick a character to see info or skills.</div>
+                                    )}
+                                    </div>
+                                </div>
                             </div>
                         )}
 
                         {isCreationStage && (
-                            <div className="creation-flow-container" style={{ 
+                            <div className="creation-flow-container mobile-account-creation-deck" style={{ 
                                 display: 'flex', 
                                 flexDirection: 'column', 
                                 flex: 1, 
@@ -608,7 +668,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                 overflow: 'hidden',
                                 justifyContent: 'flex-start'
                             }}>
-                                <div style={{ 
+                                <div className="mobile-creation-title" style={{ 
                                     color: 'rgba(255,255,255,0.4)', 
                                     fontSize: '11px', 
                                     fontWeight: 900, 
@@ -631,7 +691,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                 {displayedOptions.map(opt => (
                                                     <button
                                                         key={opt.id}
-                                                        className="account-menu-btn"
+                                                        className="account-menu-btn creation-option-btn no-arrow"
                                                         style={{ flex: 1, textAlign: 'center', padding: '12px', fontWeight: 'bold' }}
                                                         onClick={() => {
                                                             triggerHaptic(15);
@@ -700,7 +760,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                         if (isStatStage) {
                                             return (
                                                 <div style={{ display: 'flex', width: '100%', gap: '8px', padding: '0 4px', alignItems: 'stretch' }}>
-                                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                                                    <div className="mobile-creation-stat-list" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1px' }}>
                                                         {statOptions.map(opt => {
                                                             const currentValue = accountState.stats?.[opt.id];
                                                             return (
@@ -725,7 +785,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                                          opt.id === 'wil' ? 'Willpower (wil)' :
                                                                          opt.id === 'per' ? 'Perception (per)' : opt.id}
                                                                     </span>
-                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                     <div className="mobile-creation-stat-controls" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                         <button
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
@@ -782,7 +842,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                             );
                                                         })}
                                                     </div>
-                                                    <div style={{ width: '85px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                     <div className="mobile-creation-side-actions" style={{ width: '85px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                                         {actionOptions.map(opt => (
                                                                                             <button
                                                                                                 key={opt.id}
@@ -833,14 +893,14 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                     executeCommand(opt.id);
                                                 }}
                                             >
-                                                <span style={{ color: '#fff', marginRight: '8px', fontWeight: 'bold', minWidth: '16px' }}>
+                                                <span className="creation-option-id" style={{ color: '#fff', marginRight: '8px', fontWeight: 'bold', minWidth: '16px' }}>
                                                     {/^\d+$/.test(opt.id) ? (
                                                         <>
                                                             (<span style={{ color: '#4ade80' }}>{opt.id}</span>)
                                                         </>
                                                     ) : opt.id}
                                                 </span>
-                                                <span style={{ flex: 1, fontWeight: 'bold' }}>{opt.label}</span>
+                                                <span className="creation-option-label" style={{ flex: 1, fontWeight: 'bold' }}>{opt.label}</span>
                                             </button>
                                         ));
                                     })()}
@@ -940,7 +1000,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         );
     }
 
-    const isShown = ui.mapExpanded && ui.drawer === 'none';
+    const isShown = ui.mapExpanded;
     
     return (
         <div
@@ -965,8 +1025,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     onPointerCancel={handleGutterResizeEnd}
                 />
             )}
-            {/* Horizontal slide-track holding [drawer | map] so switching between
-                them animates with the same swipe transition used between drawers. */}
+            {/* Mobile gutter is map-only; non-map drawers open elsewhere or as popovers. */}
             <div
                 className="mobile-gutter-slide-viewport"
                 style={{
@@ -981,32 +1040,17 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        width: '200%',
+                        width: '100%',
                         height: '100%',
-                        transform: isShown ? 'translateX(-50%)' : 'translateX(0)',
+                        transform: 'none',
                         transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                     }}
                 >
-                    {/* Drawer slide (left half) */}
-                    <div
-                        style={{
-                            width: '50%',
-                            height: '100%',
-                            flexShrink: 0,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            minHeight: 0,
-                            pointerEvents: ui.drawer !== 'none' ? 'auto' : 'none'
-                        }}
-                    >
-                        <GutterDrawerPanel displayDrawer={lastShownDrawer} />
-                    </div>
-
-                    {/* Map slide (right half) */}
+                    {/* Map slide */}
                     <div
                         className="mobile-mapper-touch-surface gutter-panel-card map-under-command-bar"
                         style={{
-                            width: '50%',
+                            width: '100%',
                             height: 'calc(100% + 124px)',
                             flexShrink: 0,
                             position: 'relative',

@@ -569,7 +569,7 @@
 /* Second-tap affordance shown only once a button is selected, signalling that
    the selected inline entity now acts as a menu trigger. Skipped for room names. */
 .message-content .inline-btn.selected:not(.room-name-inline)::after {
-    content: 'tap again';
+    content: 'menu';
     display: inline-block;
     margin-left: 0.35em;
     padding: 1px 4px;
@@ -1751,6 +1751,31 @@ span.inline-btn {
     cursor: pointer;
     z-index: 10;
     opacity: 0;
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+    .mobile-gutter-input-wrapper .spat-container {
+        bottom: calc(100% + 8px);
+        gap: 10px;
+        padding: 6px 10px;
+        margin-left: -10px;
+        z-index: 9300;
+    }
+
+    .mobile-gutter-input-wrapper .spat-button {
+        min-width: 68px;
+        min-height: 44px;
+        height: 44px;
+        padding: 0 14px;
+        touch-action: none;
+    }
+
+    .mobile-gutter-input-wrapper .spat-button::before {
+        content: '';
+        position: absolute;
+        inset: -6px -8px;
+        border-radius: 12px;
+    }
 }
 
 .spat-container {

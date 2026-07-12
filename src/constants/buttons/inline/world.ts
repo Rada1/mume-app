@@ -52,7 +52,8 @@ export const WORLD_BUTTONS = [
     // --- ROOM NAMES ---
     createButton({ id: 'btn-watch', label: 'Watch', command: 'watch', setId: 'cat-room', color: '#38bdf8' }),
     createButton({ id: 'btn-camp', label: 'Camp', command: 'camp', setId: 'cat-room', color: '#22c55e' }),
-    createButton({ id: 'btn-camp-rent', label: 'Camp Rent', command: 'camp rent', setId: 'cat-room', color: '#10b981' })
+    createButton({ id: 'btn-camp-rent', label: 'Camp Rent', command: 'camp rent', setId: 'cat-room', color: '#10b981' }),
+    createButton({ id: 'btn-room-drink-water', label: 'Drink Water', command: 'drink water', setId: 'cat-room', color: '#3b82f6' })
 ];
 
 

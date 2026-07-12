@@ -18,7 +18,7 @@ export const DEFAULT_CATEGORY_CONFIGS: CategoryConfig[] = [
     { id: 'cat-worn-object', label: 'Worn Object', isLocationCategory: true, legacyIds: ['inline-worn', 'worn', 'obj-worn'], defaultTraitIds: ['trait-worn-object', 'trait-observable', 'trait-consider'] },
     { id: 'cat-container-item', label: 'Container Item', isLocationCategory: true, legacyIds: ['inline-container-item'], defaultTraitIds: ['trait-get-container-item', 'trait-observable'] },
     { id: 'cat-object', label: 'Object', legacyIds: ['inline-object', 'object', 'default'], defaultTraitIds: ['trait-observable'] },
-    { id: 'cat-room', label: 'Room Name', legacyIds: ['room', 'roomname', 'room-name'], defaultTraitIds: ['trait-watchtower', 'trait-campable', 'trait-numenorean-camp'] },
+    { id: 'cat-room', label: 'Room Name', legacyIds: ['room', 'roomname', 'room-name'], defaultTraitIds: ['trait-watchtower', 'trait-campable', 'trait-numenorean-camp', 'trait-room-water'] },
     { id: 'cat-exit', label: 'Exit', legacyIds: ['exit', 'inline-exit'], defaultTraitIds: ['trait-exit'] },
 ];
 
@@ -60,5 +60,6 @@ export const DEFAULT_TRAIT_CONFIGS: TraitConfig[] = [
     { id: 'trait-watchtower', label: 'Watch Tower', kind: 'room', keywords: ['watch tower', 'watchtower', 'tower'], buttonIds: ['btn-watch'] },
     { id: 'trait-campable', label: 'Campable', kind: 'room', keywords: ['camp', 'clearing', 'campsite', 'forest', 'garden'], buttonIds: ['btn-camp'] },
     { id: 'trait-numenorean-camp', label: 'Camp Rent', kind: 'room', keywords: [], requirement: { race: ['Numenorean', 'Black Numenorean', 'Black Númenórean'] }, buttonIds: ['btn-camp-rent'] },
+    { id: 'trait-room-water', label: 'Drink Water', kind: 'room', keywords: [], buttonIds: ['btn-room-drink-water'] },
     { id: 'trait-exit', label: 'Exit', kind: 'exit', legacySetIds: ['inline-exit'], keywords: ['north', 'south', 'east', 'west', 'up', 'down'], buttonIds: ['btn-exit-go', 'btn-look'] }
 ];

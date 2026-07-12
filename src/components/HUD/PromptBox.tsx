@@ -4,7 +4,7 @@
  */
 
 import React, { memo, FC, useState, useRef, useCallback, useEffect } from 'react';
-import { Swords, Heart, Zap, Info, Sliders, ChevronUp } from 'lucide-react';
+import { Swords, Heart, Zap, Info, Sliders } from 'lucide-react';
 import './PromptBox.css';
 import { GameStats, CharacterInfo, CombatHealthStatus } from '../../types';
 import { useGame, useUI } from '../../context/GameContext';
@@ -18,6 +18,7 @@ import { PromptInventoryChips } from './PromptInventoryChips';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { DispositionSliderPopout, DispositionSliderConfig } from './DispositionSliderPopout';
 import { targetTextMatchesEntity } from '../../utils/selectionUtils';
+import { useCharacterCardStore } from '../../stores/useCharacterCardStore';
 
 interface PromptBoxProps {
     processMessageHtml?: (html: string, mid: string, isRoomName: boolean, type?: string, isCombat?: boolean, side?: string) => string;
@@ -323,6 +324,10 @@ const PromptBox: FC<PromptBoxProps> = ({
         isRiding: isRidingFromGame
     } = useGame();
     const { handleTabClick, setPopoverState, popoverState } = useUI();
+    const openCharacterCard = useCharacterCardStore(s => s.open);
+    const closeCharacterCard = useCharacterCardStore(s => s.close);
+    const isCharacterCardOpen = useCharacterCardStore(s => s.isOpen);
+    const characterCardAnchorRect = useCharacterCardStore(s => s.anchorRect);
     const enemyColor = useSettingsStore(state => state.enemyColor);
     const targetColor = useSettingsStore(state => state.targetColor);
     const theme = useSettingsStore(state => state.theme);
@@ -430,7 +435,7 @@ const PromptBox: FC<PromptBoxProps> = ({
     const [showNumbers, setShowNumbers] = useState(false);
     const numbersTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const lastAffectsRefreshRef = useRef(0);
-    const [isExpanded, setIsExpanded] = useState(false);
+    const isExpanded = true;
 
     // Dynamic scaling linked directly to the authoritative log font size
     const nameFontSize = `var(--dynamic-log-size)`;
@@ -551,19 +556,27 @@ const PromptBox: FC<PromptBoxProps> = ({
         { id: 'alert', label: 'Alertness', value: alertness || 'normal', options: ALERT_OPTIONS, displayLabels: ALERT_LABELS }
     ]), [alertness, mood, spellSpeed]);
 
-    const handleBoxToggle = useCallback((e: React.MouseEvent) => {
-        if ((e.target as HTMLElement).closest('button')) return;
-        triggerHaptic(10);
-        setIsExpanded(prev => {
-            const nextExpanded = !prev;
-            const now = Date.now();
-            if (nextExpanded && !isSpectateMode && now - lastAffectsRefreshRef.current > 5000) {
-                lastAffectsRefreshRef.current = now;
-                executeCommand('info %f', true, true, true, true);
-            }
-            return nextExpanded;
-        });
-    }, [executeCommand, isSpectateMode, triggerHaptic]);
+    useEffect(() => {
+        const now = Date.now();
+        if (isSpectateMode || now - lastAffectsRefreshRef.current <= 5000) return;
+        lastAffectsRefreshRef.current = now;
+        executeCommand('info %f', true, true, true, true);
+    }, [executeCommand, isSpectateMode]);
+
+    const handlePromptCharacterClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
+        if (!viewport.isMobile || viewport.isLandscape) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const rect = e.currentTarget.getBoundingClientRect();
+        const anchorRect = { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+        if (isCharacterCardOpen && characterCardAnchorRect) {
+            closeCharacterCard();
+            triggerHaptic(10);
+            return;
+        }
+        openCharacterCard(anchorRect);
+        triggerHaptic(20);
+    }, [characterCardAnchorRect, closeCharacterCard, isCharacterCardOpen, openCharacterCard, triggerHaptic, viewport.isLandscape, viewport.isMobile]);
 
     const handleDispositionSelect = useCallback((id: DispositionSliderConfig['id'], val: string) => {
         if (id === 'mood') {
@@ -750,13 +763,19 @@ const PromptBox: FC<PromptBoxProps> = ({
 
     return (
         <div className={`prompt-box-container${isExpanded ? ' is-expanded' : ''}`} id="prompt-box" style={{ '--prompt-name-font-size': nameFontSize } as any}>
-            <div className="prompt-box-content" onClick={handleBoxToggle}>
+            <div className="prompt-box-content">
                 {/* Names Row — only shown in combat */}
                 <div className="prompt-vitals-row-ascii">
                     {/* Player Side */}
                     <div className="vitals-side-container side-left">
                         <div className="prompt-player-hud">
-                            <div className="prompt-avatar-module">
+                            <div
+                                className="prompt-avatar-module prompt-character-trigger"
+                                onClick={handlePromptCharacterClick}
+                                role={viewport.isMobile && !viewport.isLandscape ? 'button' : undefined}
+                                tabIndex={viewport.isMobile && !viewport.isLandscape ? 0 : undefined}
+                                aria-label="Open character drawer"
+                            >
                                 <div className="prompt-avatar-pixel" aria-hidden="true">
                                     <div className="terrain-pin-sprite-head" />
                                     <div className="terrain-pin-sprite-body" />
@@ -776,7 +795,13 @@ const PromptBox: FC<PromptBoxProps> = ({
 
                             <div className="player-vitals-stack">
                               <div className="prompt-top-stats-row player-top-stats-row">
-                                <div className="name-label prompt-player-name prompt-inline-name">
+                                <div
+                                    className="name-label prompt-player-name prompt-inline-name prompt-character-trigger"
+                                    onClick={handlePromptCharacterClick}
+                                    role={viewport.isMobile && !viewport.isLandscape ? 'button' : undefined}
+                                    tabIndex={viewport.isMobile && !viewport.isLandscape ? 0 : undefined}
+                                    aria-label="Open character drawer"
+                                >
                                     {characterName || ''}
                                 </div>
                                 <button
@@ -863,17 +888,6 @@ const PromptBox: FC<PromptBoxProps> = ({
 
                     {/* Center Anchor */}
                     {inCombat && <div className="vitals-center-anchor" style={{ position: 'relative' }}>
-                        <ChevronUp 
-                            size={11} 
-                            className={`prompt-expand-chevron ${isExpanded ? 'is-expanded' : ''}`} 
-                            style={{ 
-                                opacity: 0.3, 
-                                marginBottom: '1px', 
-                                transition: 'transform 0.2s ease, opacity 0.2s ease', 
-                                transform: isExpanded ? 'rotate(180deg)' : 'none',
-                                pointerEvents: 'none'
-                            }} 
-                        />
                         <button 
                             className={`pos-combat-square-btn ${inCombat ? 'is-fighting' : ''} ${activeSlider === 'pos' ? 'active' : ''}`}
                             onClick={!isSpectateMode ? handlePosClick : undefined}
@@ -942,7 +956,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                     </div>
                 </div>
 
-                {isExpanded && <PromptInventoryChips affects={affects} />}
+                <PromptInventoryChips affects={affects} showGear={false} />
 
                 {activeSlider === 'pos' && activeButtonRect && (
                     <CombatSliderPopout 
