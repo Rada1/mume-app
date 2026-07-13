@@ -194,8 +194,51 @@
     line-height: 1.4 !important;
 }
 
+.custom-prompt-container {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.prompt-metadata-line {
+    flex-basis: 100%;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 1.25ch;
+    line-height: 1.2;
+    flex-wrap: wrap;
+}
+
+.prompt-environment-line {
+    display: inline;
+    line-height: 1.2;
+}
+
+.prompt-entities-line {
+    display: inline;
+    line-height: 1.2;
+}
+
+.entity-count-prompt {
+    flex-wrap: wrap;
+    gap: 0.25em;
+}
+
+.entity-name-item {
+    color: var(--text-primary);
+}
+
 .message.prompt.is-snoop {
     margin-top: 1em !important;
+}
+
+.message.entity-prompt {
+    margin: 1px 0 2px !important;
+    color: var(--text-primary);
+    font-weight: bold;
+    line-height: 1.25 !important;
+    padding: 2px 6px !important;
+    box-shadow: none !important;
 }
 
 .message.is-room-block:not(.is-room-name) {
@@ -439,6 +482,8 @@
 .message.is-room-name .message-content,
 .message.is-room-name .message-content span {
     opacity: 1 !important;
+    filter: none !important;
+    text-shadow: none !important;
 }
 
 
@@ -454,7 +499,7 @@
 .inline-btn,
 .pc-highlighter,
 .npc-highlighter,
-.message-content span[style*="color"],
+.message:not(.is-room-name) .message-content span[style*="color"],
 .message-content .keyword-highlight,
 .message-content .inline-btn,
 .message-content .pc-highlighter,
@@ -1371,7 +1416,7 @@
     padding: 0;
     text-decoration: underline;
     text-decoration-style: dotted;
-    text-decoration-color: rgba(160, 160, 160, 0.22);
+    text-decoration-color: var(--text-primary, #d4cdb8);
     text-underline-offset: 3px;
 }
 /* Objects/Items and Beings (NPCs/Players) */
@@ -1594,6 +1639,11 @@ span.inline-btn {
     z-index: 100;
 }
 
+.inline-btn.menu-active {
+    outline: 1px solid color-mix(in srgb, var(--glow-color, var(--accent)) 72%, transparent);
+    outline-offset: 2px;
+}
+
 
 .inline-btn.drop-hover-active {
     animation: drop-pulse-strong 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -1620,10 +1670,6 @@ span.inline-btn {
     border: none !important;
     box-shadow: none !important;
     animation: none !important;
-    text-decoration-line: underline !important;
-    text-decoration-style: solid !important;
-    text-decoration-color: #ef4444 !important;
-    text-underline-offset: 3px;
     transform: none !important;
     z-index: 10;
 }
@@ -1657,6 +1703,14 @@ span.inline-btn {
         0 0 6px var(--glow-color),
         0 0 14px color-mix(in srgb, var(--glow-color), transparent 55%),
         1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Room-name buttons use the log text treatment without the entity bloom. */
+.room-name-inline,
+.message-content .room-name-inline,
+.message-content .room-name-inline span {
+    filter: none !important;
+    text-shadow: none !important;
 }
 
 .room-name-inline[data-targetable="false"] {
@@ -2165,10 +2219,8 @@ span.inline-btn {
 }
 
 .room-description-merged {
-    font-weight: 400;
-    font-style: italic;
     font-size: var(--dynamic-log-size, 16px);
-    color: rgba(255, 255, 255, 0.7);
+    color: inherit;
     margin-top: 4px;
     display: block;
     width: 100%;
@@ -2208,7 +2260,7 @@ span.inline-btn {
 .light-mode .inline-btn,
 .light-mode .pc-highlighter,
 .light-mode .npc-highlighter,
-.light-mode .message-content span[style*="color"],
+.light-mode .message:not(.is-room-name) .message-content span[style*="color"],
 .light-mode .message-content .keyword-highlight,
 .light-mode .message-content .inline-btn,
 .light-mode .message-content .pc-highlighter,
@@ -2226,6 +2278,10 @@ span.inline-btn {
 .light-mode .inline-btn.menu-active {
     background-color: rgba(255, 255, 255, 0.85) !important;
     box-shadow: none !important;
+}
+
+.light-mode .inline-btn.menu-active {
+    outline-color: color-mix(in srgb, var(--glow-color, var(--accent)) 58%, #64748b);
 }
 
 /* --- MUME Welcome Block Centering --- */
@@ -2696,5 +2752,21 @@ span.inline-btn {
     background-size: 32px 32px, 128px 24px;
     background-position: 0 0, 0 0;
 }
+
+/* --- Inline Button Custom Styling overrides (No Drop Shadow, Inherit Text Color) --- */
+.inline-btn,
+.message-content .inline-btn,
+.message-content .inline-btn.pc-highlighter,
+.message-content .inline-btn[data-category="player"],
+.message-content .inline-btn.npc-highlighter,
+.message-content .inline-btn[data-category="npc"],
+.message-content .inline-btn.auto-item,
+.message-content .inline-btn.auto-obj,
+.message-content .inline-btn[data-category="object"],
+.message-log-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
+    color: inherit !important;
+    text-shadow: none !important;
+}
+
 
 

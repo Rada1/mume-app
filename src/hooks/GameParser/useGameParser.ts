@@ -1148,6 +1148,41 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 undefined, hasHitTag, hasDamageTag, hasAvoidDamageTag, hasMissTag,
                 undefined, isSnoop, undefined, isRipMessage, undefined, resourceGain || undefined
             );
+
+            if (!isSnoop && finalType === 'prompt') {
+                const parts: string[] = [];
+                const playerCount = Array.isArray(deps.roomPlayers) ? deps.roomPlayers.filter(Boolean).length : 0;
+                const npcCount = Array.isArray(deps.roomNpcs) ? deps.roomNpcs.filter(Boolean).length : 0;
+                const itemCount = Array.isArray(deps.roomItems) ? deps.roomItems.filter(Boolean).length : 0;
+
+                if (playerCount > 0) {
+                    parts.push(`[Player: ${playerCount}]`);
+                }
+                if (npcCount > 0) {
+                    parts.push(`[NPC: ${npcCount}]`);
+                }
+                if (itemCount > 0) {
+                    parts.push(`[Object: ${itemCount}]`);
+                }
+
+                if (parts.length > 0) {
+                    const entitiesText = parts.join('');
+                    const entitiesMid = `entities-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                    
+                    deps.addMessage(
+                        'game',
+                        entitiesText,
+                        undefined,
+                        entitiesMid,
+                        false,
+                        { textOnly: entitiesText, lower: entitiesText.toLowerCase(), html: entitiesText },
+                        undefined, undefined, undefined, false,
+                        undefined, undefined, undefined, undefined, undefined, undefined,
+                        undefined, undefined, undefined, false, false, false, false,
+                        undefined, false, undefined, false, undefined, undefined
+                    );
+                }
+            }
         }
 
         gmcpBus.emit('Game.Text', { type: finalType, text: textOnly });
@@ -1155,7 +1190,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     }, [
         processTriggers, router, combat, room, account, stat, atmosphere, time, parseLogGmcp, actionTracker,
         deps.addMessage, deps.isNewbieMode, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target, deps.captureStage, deps.ansiConvert, deps.practiceHandler, capture, finalizeNearbyCapture,
-        automator.addToQueue, automator.stopSpectatingName
+        automator.addToQueue, automator.stopSpectatingName, deps.roomPlayers, deps.roomNpcs, deps.roomItems
     ]);
 
     return useMemo(() => ({

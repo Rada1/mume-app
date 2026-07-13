@@ -77,6 +77,7 @@ export interface Message {
     roomSection?: 'objects' | 'mobs' | 'players' | 'exits'; // Which room-contents group this line belongs to
     isRoomSectionStart?: boolean; // First line of a contents section — render a labelled divider above it
     isRoomContentsLine?: boolean; // Contents line (or trailing blank) — gets the solid panel background
+    roomZone?: string | null; // Zone/area of the room at the time of entry
 
     isCombatBlockStart?: boolean;
     isCommBlockStart?: boolean;
@@ -114,6 +115,15 @@ export interface Message {
     practiceHeader?: { sessionsLeft: number };
     isWelcomeBlock?: boolean;
     isWelcomeTitle?: boolean;
+    promptHPStatus?: string;
+    promptManaStatus?: string;
+    promptMoveStatus?: string;
+    promptOpponentName?: string | null;
+    promptOpponentHealthStatus?: CombatHealthStatus | null;
+    promptHPPercent?: number;
+    promptManaPercent?: number;
+    promptMovePercent?: number;
+    promptOpponentHealthPercent?: number | null;
 }
 
 export interface MumeTime {

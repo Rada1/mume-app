@@ -2,7 +2,32 @@
  * @file Draws player, NPC, object, and trail entities on the mapper canvas.
  */
 import { RenderContext, getSeed } from './rendererUtils';
-import { GRID_SIZE, DIRS, WALL_COLOR, getGateState, getExitTargetId } from '../mapperUtils';
+import { GRID_SIZE, DIRS, WALL_COLOR, getGateState, getExitTargetId, getClientThemeColor } from '../mapperUtils';
+
+const tintedMapperAssets: Record<string, HTMLCanvasElement> = {};
+
+const getTintedMapperAsset = (
+    imagesRef: RenderContext['imagesRef'],
+    key: string,
+    color: string
+): HTMLCanvasElement | null => {
+    const image = imagesRef.current[key];
+    if (!image || !image.complete || image.naturalWidth <= 0) return null;
+    const cacheKey = `${key}_${color}`;
+    if (tintedMapperAssets[cacheKey]) return tintedMapperAssets[cacheKey];
+
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const tintCtx = canvas.getContext('2d');
+    if (!tintCtx) return null;
+    tintCtx.drawImage(image, 0, 0);
+    tintCtx.globalCompositeOperation = 'source-in';
+    tintCtx.fillStyle = color;
+    tintCtx.fillRect(0, 0, canvas.width, canvas.height);
+    tintedMapperAssets[cacheKey] = canvas;
+    return canvas;
+};
 import { getMemberColor } from '../../../utils/groupUtils';
 import { COLOR_NPC, COLOR_PLAYER, COLOR_OBJ } from '../../../utils/categorizationUtils';
 import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
@@ -533,45 +558,15 @@ export const drawEntities = (
             !!rCtx.joystickActive
         );
 
-        // 1. Current Room Highlight (Corners only)
-        ctx.save();
-
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.globalAlpha = alpha * 0.85;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
-        ctx.lineWidth = Math.max(0.8, 1.5 / rCtx.camera.zoom);
-
-        const inset = 3;
-        const x1 = px - GRID_SIZE / 2 + inset;
-        const y1 = py - GRID_SIZE / 2 + inset;
-        const w = GRID_SIZE - inset * 2;
-        const h = GRID_SIZE - inset * 2;
-        const r = 3;
-        const cornerLen = GRID_SIZE * 0.22; // length of each corner leg
-
-        ctx.beginPath();
-        // Top-Left Corner
-        ctx.moveTo(x1 + cornerLen, y1);
-        ctx.arcTo(x1, y1, x1, y1 + cornerLen, r);
-        ctx.lineTo(x1, y1 + cornerLen);
-
-        // Top-Right Corner
-        ctx.moveTo(x1 + w - cornerLen, y1);
-        ctx.arcTo(x1 + w, y1, x1 + w, y1 + cornerLen, r);
-        ctx.lineTo(x1 + w, y1 + cornerLen);
-
-        // Bottom-Left Corner
-        ctx.moveTo(x1 + cornerLen, y1 + h);
-        ctx.arcTo(x1, y1 + h, x1, y1 + h - cornerLen, r);
-        ctx.lineTo(x1, y1 + h - cornerLen);
-
-        // Bottom-Right Corner
-        ctx.moveTo(x1 + w - cornerLen, y1 + h);
-        ctx.arcTo(x1 + w, y1 + h, x1 + w, y1 + h - cornerLen, r);
-        ctx.lineTo(x1 + w, y1 + h - cornerLen);
-
-        ctx.stroke();
-        ctx.restore();
+        // 1. MMapper current-room selection texture, tinted with the client's
+        // dark-brown map ink while preserving MMapper's exact bracket shape.
+        const roomSelection = getTintedMapperAsset(rCtx.imagesRef, 'mmapper-char-room-sel', '#4a341e');
+        if (roomSelection) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.drawImage(roomSelection, px - GRID_SIZE / 2, py - GRID_SIZE / 2, GRID_SIZE, GRID_SIZE);
+            ctx.restore();
+        }
 
         // 3. Client-side movement predictions ("prespammed path", MMapper-style).
         // The queue holds only the directions of moves sent but not yet confirmed.
@@ -632,6 +627,7 @@ export const drawEntities = (
                 return pd ? { x: pd[0], y: pd[1], z: pd[2] || 0 } : null;
             };
 
+            const predictedPoints: Array<{ x: number; y: number }> = [{ x: px, y: py }];
             let curId: string = activeId;
             for (let i = 0; i < predictionDirs.length; i++) {
                 const nextId = resolveNextRoomId(curId, predictionDirs[i].dir);
@@ -643,21 +639,28 @@ export const drawEntities = (
                 if (Math.abs(coords.z - currentZ) >= 1.0) continue;
                 const toX = coords.x * GRID_SIZE + GRID_SIZE / 2;
                 const toY = coords.y * GRID_SIZE + GRID_SIZE / 2;
-                const alpha = Math.max(0.25, 0.85 - i * 0.18);
+                predictedPoints.push({ x: toX, y: toY });
+            }
 
+            if (predictedPoints.length > 1) {
+                const movementColor = rCtx.playerColor || '#4a341e';
                 ctx.save();
-                ctx.globalAlpha = alpha * 0.45;
-                ctx.shadowBlur = 20 * (rCtx.camera.zoom > 1 ? 1 : rCtx.camera.zoom);
-                ctx.shadowColor = '#ffffff';
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-
-                const inset = 1;
+                // MMapper's prespammed path is a solid, centered 0.1-room-unit
+                // line with a small point at its endpoint.
+                ctx.globalAlpha = 0.78;
+                ctx.strokeStyle = movementColor;
+                ctx.lineWidth = GRID_SIZE * 0.1;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.setLineDash([]);
                 ctx.beginPath();
-                if (typeof (ctx as any).roundRect === 'function') {
-                    (ctx as any).roundRect(toX - GRID_SIZE/2 + inset, toY - GRID_SIZE/2 + inset, GRID_SIZE - inset*2, GRID_SIZE - inset*2, 4);
-                } else {
-                    ctx.rect(toX - GRID_SIZE/2 + inset, toY - GRID_SIZE/2 + inset, GRID_SIZE - inset*2, GRID_SIZE - inset*2);
-                }
+                ctx.moveTo(predictedPoints[0].x, predictedPoints[0].y);
+                for (const point of predictedPoints.slice(1)) ctx.lineTo(point.x, point.y);
+                ctx.stroke();
+                ctx.fillStyle = movementColor;
+                const endpoint = predictedPoints[predictedPoints.length - 1];
+                ctx.beginPath();
+                ctx.arc(endpoint.x, endpoint.y, 4, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.restore();
             }
@@ -1043,8 +1046,8 @@ export const drawMarkers = (
         ctx.fill(); 
 
         if (marker.text) {
-            const fontSize = (marker.fontSize || 10) * sizeScale;
-            ctx.font = `${fontSize}px Aniron, "Cinzel", serif`;
+            const fontSize = (marker.fontSize || 10) * 1.2 * sizeScale;
+            ctx.font = `bold ${fontSize}px "Iosevka", monospace`;
             const labelY = my - dotSize - 4 * sizeScale;
 
             const metrics = ctx.measureText(marker.text);
@@ -1061,7 +1064,7 @@ export const drawMarkers = (
 
             ctx.save();
             ctx.globalAlpha = 1.0;
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+            ctx.fillStyle = getClientThemeColor('--bg-app', '#0e0d0b');
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
             ctx.lineWidth = Math.max(1 * sizeScale, 0.5);
 
@@ -1085,7 +1088,7 @@ export const drawMarkers = (
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
 
-            ctx.fillStyle = '#ffcc00';
+            ctx.fillStyle = getClientThemeColor('--text-primary', '#d4cdb8');
             ctx.fillText(marker.text, mx, labelY);
         }
         ctx.restore();
@@ -1438,7 +1441,7 @@ export const drawFilterHighlights = (
             const label = `${roomsAway} ${roomsAway === 1 ? 'room' : 'rooms'}`;
 
             ctx.save();
-            ctx.font = `bold ${Math.max(11, 13 / rCtx.camera.zoom)}px sans-serif`;
+            ctx.font = `bold ${Math.max(11, 13 / rCtx.camera.zoom)}px "Iosevka", monospace`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             const metrics = ctx.measureText(label);

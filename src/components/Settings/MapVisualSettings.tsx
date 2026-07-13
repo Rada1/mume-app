@@ -208,8 +208,8 @@ const MapVisualSettings: React.FC = () => {
         resetMapVisuals,
         zoneFocusGrayscale,
         setZoneFocusGrayscale,
-        optimisticMovement,
-        setOptimisticMovement
+        mapDrawerOpacity,
+        setMapDrawerOpacity
     } = useSettingsStore();
 
     const mapperContext = useContext(MapperContext);
@@ -353,27 +353,6 @@ const MapVisualSettings: React.FC = () => {
                 </button>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', padding: '8px 0', borderTop: '1px solid var(--border-modal)' }}>
-                <div>
-                    <label className="setting-label" style={{ margin: 0 }}>Predictive Movement</label>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Move your marker the instant you send a command, gliding to the predicted room and bouncing back if blocked. Off: the marker only moves when the game confirms the room.</div>
-                </div>
-                <button
-                    className={`setting-toggle ${optimisticMovement ? 'active' : ''}`}
-                    onClick={() => setOptimisticMovement(!optimisticMovement)}
-                    style={{
-                        height: '24px', width: '45px', position: 'relative', border: 'none',
-                        backgroundColor: optimisticMovement ? 'var(--accent)' : 'var(--input-bg)',
-                        borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s', flexShrink: 0
-                    }}
-                >
-                    <div style={{
-                        width: '20px', height: '20px', background: '#fff', borderRadius: '50%',
-                        position: 'absolute', top: '2px', left: optimisticMovement ? '22px' : '2px', transition: 'all 0.3s'
-                    }} />
-                </button>
-            </div>
-
             <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: '8px 0', display: 'block' }}>MUME Tiles</label>
             <ColorRow
                 label="Wall Color"
@@ -418,6 +397,9 @@ const MapVisualSettings: React.FC = () => {
             <SliderRow label="Blur Slope" value={mapBackgroundVisuals.blurScale} min={0} max={60} step={0.5} onChange={(blurScale) => setMapBackgroundVisuals({ blurScale })} />
             <ColorRow label="Tint Color" value={mapBackgroundVisuals.tintColor} onChange={(tintColor) => setMapBackgroundVisuals({ tintColor })} />
             <SliderRow label="Tint Amount" value={mapBackgroundVisuals.tintOpacity} min={0} max={1} step={0.01} suffix="%" onChange={(tintOpacity) => setMapBackgroundVisuals({ tintOpacity })} />
+
+            <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: '18px 0 8px', display: 'block' }}>Map Drawer</label>
+            <SliderRow label="Drawer Opacity" value={mapDrawerOpacity} min={0.2} max={1} step={0.05} suffix="%" onChange={(val) => setMapDrawerOpacity(val)} />
 
             <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: '18px 0 8px', display: 'block' }}>Zone Atmospheres</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '10px 0', borderTop: '1px solid var(--border-modal)' }}>

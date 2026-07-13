@@ -53,6 +53,8 @@ const MapSettings: React.FC = () => {
         setShowBackgroundImage,
         showDebugEchoes,
         setShowDebugEchoes,
+        useLegacyMapArt,
+        setUseLegacyMapArt,
     } = useSettingsStore();
     const {
         rooms, setRooms, markers, setMarkers, allowPersistence, setAllowPersistence,
@@ -119,6 +121,16 @@ const MapSettings: React.FC = () => {
                     </div>
                     <button className={`setting-toggle ${showBackgroundImage ? 'active' : ''}`} onClick={() => setShowBackgroundImage(!showBackgroundImage)} style={toggleStyle(showBackgroundImage)}>
                         <div style={knobStyle(showBackgroundImage)} />
+                    </button>
+                </div>
+
+                <div style={rowStyle}>
+                    <div>
+                        <label className="setting-label" style={{ margin: 0 }}>Use Legacy Map Art</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Toggle between the classic sketch-style map art and the new modern minimalist art style.</div>
+                    </div>
+                    <button className={`setting-toggle ${useLegacyMapArt ? 'active' : ''}`} onClick={() => setUseLegacyMapArt(!useLegacyMapArt)} style={toggleStyle(useLegacyMapArt)}>
+                        <div style={knobStyle(useLegacyMapArt)} />
                     </button>
                 </div>
 

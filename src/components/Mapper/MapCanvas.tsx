@@ -179,7 +179,8 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
 
     // Parallax: update when mapper state wakes instead of running a permanent RAF loop.
     useEffect(() => {
-        const showBg = useSettingsStore.getState().showBackgroundImage;
+        const settings = useSettingsStore.getState();
+        const showBg = settings.showBackgroundImage && settings.isImmersionMode;
         if (!showBg) return;
         const FACTOR = 0.035;
         const container = canvasRef.current?.closest('.mapper-container') as HTMLElement | null;

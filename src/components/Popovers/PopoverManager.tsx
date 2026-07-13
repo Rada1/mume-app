@@ -143,7 +143,10 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 el.style.maxHeight = '';
                 // Measure with offset* (layout box) rather than getBoundingClientRect,
                 // whose width/height are distorted by the scale() bounce-in animation.
-                const popW = el.offsetWidth, popH = el.offsetHeight;
+                const compactRoot = el.querySelector('.inline-action-compact') as HTMLElement | null;
+                const popW = compactRoot?.offsetWidth || el.offsetWidth;
+                const popH = el.offsetHeight;
+                if (compactRoot) el.style.width = `${popW}px`;
                 let top = popoverState.y, left = popoverState.x;
 
                 if (popoverState.type === 'select-parley-target' || popoverState.type === 'select-parley-command') {
@@ -154,6 +157,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 } else {
                     el.style.bottom = 'auto';
                     el.style.top = 'auto';
+                    delete el.dataset.anchorPlacement;
                     if (popoverState.menuDisplay !== 'dial' && popoverState.sourceRect) {
                         const source = popoverState.sourceRect;
                         const gap = 8;
@@ -168,8 +172,11 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                             if (top + popH > winH - 10) top = Math.max(10, winH - popH - 10);
                             el.style.top = `${top}px`;
                             el.style.transformOrigin = canFitRight ? 'left center' : 'right center';
+                            el.dataset.anchorPlacement = canFitRight ? 'right' : 'left';
                         } else {
-                            left = source.left + (source.width / 2) - (popW / 2);
+                            left = compactRoot
+                                ? source.left
+                                : source.left + (source.width / 2) - (popW / 2);
                             const spaceAbove = source.top - gap - 10;
                             const spaceBelow = winH - sourceBottom - gap - 10;
                             const placeAbove = popH <= spaceAbove || (popH > spaceBelow && spaceAbove >= spaceBelow);
@@ -179,8 +186,10 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                                 // captured examine/consider lines) grows it upward.
                                 el.style.bottom = `${Math.max(10, winH - (source.top - gap))}px`;
                                 el.style.transformOrigin = 'center bottom';
+                                el.dataset.anchorPlacement = 'above';
                             } else {
                                 el.style.top = `${Math.min(sourceBottom + gap, Math.max(10, winH - popH - 10))}px`;
+                                el.dataset.anchorPlacement = 'below';
                                 el.style.transformOrigin = 'center top';
                             }
                         }
@@ -202,10 +211,12 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             };
 
             positionPopover();
+            const frame = requestAnimationFrame(positionPopover);
             const observer = new ResizeObserver(positionPopover);
             observer.observe(el);
             window.addEventListener('resize', positionPopover);
             return () => {
+                cancelAnimationFrame(frame);
                 observer.disconnect();
                 window.removeEventListener('resize', positionPopover);
             };

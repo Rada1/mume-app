@@ -24,6 +24,26 @@ const ASSETS = {
     mountain2: '/assets/Pictures/terrain/mountain2.png',
 };
 
+const MAPPER_FLAG_ASSETS = [
+    'terrain-brush', 'terrain-cavern', 'terrain-city', 'terrain-field', 'terrain-forest',
+    'terrain-hills', 'terrain-indoors', 'terrain-mountains', 'terrain-rapids', 'terrain-road',
+    'terrain-shallow', 'terrain-tunnel', 'terrain-undefined', 'terrain-underwater', 'terrain-water',
+    'char-arrows', 'char-room-sel', 'room-sel-move-good',
+    'load-armour', 'load-attention', 'load-boat', 'load-clock', 'load-coach',
+    'load-darkword', 'load-deathtrap', 'load-equipment', 'load-ferry', 'load-food',
+    'load-herb', 'load-horse', 'load-key', 'load-mail', 'load-mule', 'load-pack',
+    'load-rohirrim', 'load-stable', 'load-trained', 'load-treasure', 'load-warg',
+    'load-watch', 'load-water', 'load-weapon', 'load-whiteword',
+    'mob-aggmob', 'mob-armourshop', 'mob-clericguild', 'mob-elitemob', 'mob-foodshop',
+    'mob-guild', 'mob-mageguild', 'mob-milkable', 'mob-passivemob', 'mob-petshop',
+    'mob-questmob', 'mob-rangerguild', 'mob-rattlesnake', 'mob-rent', 'mob-scoutguild',
+    'mob-shop', 'mob-smob', 'mob-warriorguild', 'mob-weaponshop',
+] as const;
+
+for (const asset of MAPPER_FLAG_ASSETS) {
+    (ASSETS as Record<string, string>)[`mmapper-${asset}`] = `/assets/mmapper/pixmaps/${asset}.png`;
+}
+
 const bakeTreeShadow = (img: HTMLImageElement, isDarkMode: boolean): HTMLCanvasElement => {
     const canvas = document.createElement('canvas');
     // Add 15% padding on all sides to prevent shadow clipping

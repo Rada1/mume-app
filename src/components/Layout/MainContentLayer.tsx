@@ -92,6 +92,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const { processMessageHtml, processMessageTokens } = useLog();
     const isCharacterCardOpen = useCharacterCardStore(s => s.isOpen);
 
+    const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
     const manualBgImage = useSettingsStore(s => s.bgImage);
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
     const showPlayersPanel = useSettingsStore(s => s.showPlayersPanel);
@@ -108,7 +109,9 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             return;
         }
         root.style.setProperty('--account-gutter-bg-image', `url("${resolvedBgImage.replace(/"/g, '\\"')}")`);
-        return () => root.style.removeProperty('--account-gutter-bg-image');
+        return () => {
+            root.style.removeProperty('--account-gutter-bg-image');
+        };
     }, [resolvedBgImage]);
 
     const zoneKey = React.useMemo(() => {
@@ -392,7 +395,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     return (
         <div className={`content-layer view-mode-${activeView}`}>
-            {!viewport.isMobile && (
+            {!viewport.isMobile && isImmersionMode && (
                 <div
                     style={{
                         position: 'fixed',
@@ -430,7 +433,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     />
                 </div>
             )}
-            {!viewport.isMobile && gameState !== 'account' && (
+            {!viewport.isMobile && gameState !== 'account' && isImmersionMode && (
                 <div
                     style={{
                         position: 'fixed',
@@ -535,7 +538,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             <DrawerResizeHandle handleType="log-left" widthVar="--desktop-log-width" />
                             <DrawerResizeHandle handleType="log-right" widthVar="--desktop-log-width" />
                         </>}
-                        {gameState !== 'account' && roomName && (
+                        {gameState !== 'account' && roomName && isImmersionMode && (
                             <div className="desktop-log-room-card-wrapper">
                                 <MapperRoomInfo section="details" />
                             </div>
@@ -556,7 +559,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         />
                         <TimerExpiryToast />
                         {gameState !== 'account' && <QuickButtonBar />}
-                        {gameState !== 'account' && roomName && (
+                        {gameState !== 'account' && roomName && isImmersionMode && (
                             <div className="log-terrain-chips-overlay">
                                 <RoomChipRows variant="terrain-pins" />
                             </div>
@@ -568,7 +571,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         (passed as promptSlot below) so the bottom bar is one gapless
                         unit — the prompt fills the center's top cell while the side
                         button columns rise to the drawer bottom around it. */}
-                    {gameState !== 'account' && viewport.isMobile && (
+                    {gameState !== 'account' && viewport.isMobile && isImmersionMode && (
                         <PromptBox
                             processMessageHtml={processMessageHtml}
                             processMessageTokens={processMessageTokens}
@@ -585,7 +588,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             heldButton={heldButton}
                             setHeldButton={setHeldButton}
                             wasDraggingRef={wasDraggingRef}
-                            promptSlot={gameState !== 'account' ? (
+                            promptSlot={gameState !== 'account' && isImmersionMode ? (
                                 <PromptBox
                                     processMessageHtml={processMessageHtml}
                                     processMessageTokens={processMessageTokens}

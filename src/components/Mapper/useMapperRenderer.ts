@@ -6,7 +6,7 @@ import { CompactMapExit, MapperPrediction, RegionLabel } from './mapperTypes';
 import { drawTerrains, drawLocalTerrains, drawExplorationRevealOverlay, RING_REVEAL_BAKE_MS, RING_REVEAL_TOTAL_MS } from './renderers/drawTerrains';
 import { drawFeatures, drawLocalFeatures, drawAnimatingFlags } from './renderers/drawFeatures';
 import { drawDoorLabels } from './renderers/drawDoorLabels';
-import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee, drawDoorHighlights, drawFilterHighlights } from './renderers/drawEntities';
+import { drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee, drawDoorHighlights, drawFilterHighlights } from './renderers/drawEntities';
 import { drawRegionLabels } from './renderers/drawRegionLabels';
 import { drawZoneFocusOverlay } from './renderers/zoneFocusOverlay';
 import { ZoneFilterConfig } from './zoneFilters';
@@ -204,6 +204,7 @@ export const useMapperRenderer = ({
 
     const zoneFocusGrayscale = useSettingsStore(s => s.zoneFocusGrayscale);
     const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
+    const useLegacyMapArt = useSettingsStore(s => s.useLegacyMapArt);
 
     const layerCacheRef = useRef<MapperLayerCache | null>(null);
     const localSpatialIndexRef = useRef<Record<number, Record<string, string[]>>>({});
@@ -442,6 +443,7 @@ export const useMapperRenderer = ({
             // movement settles. Makes discovery behave like reveal-all.
             ['unveil', unveilMap], ['treatExpl', treatMapAsExplored],
             ['weather', weather], ['zone', activeZone || ''], ['zonePre', activeZonePreloaded || ''],
+            ['legacyMapArt', useLegacyMapArt],
         ];
         const baseParams = paramParts.map(p => p[1]).join('_');
         const needsRebuild = cache.lastParams !== baseParams || (!isViewportInteracting && lodChanged) || zoomDiff > zoomThreshold || moveDist > moveThreshold || finalExplorationBakeDue || visualsChanged;
@@ -500,7 +502,8 @@ export const useMapperRenderer = ({
             isExplorationBaked,
             ring1Revealed,
             ring2Peeked,
-            joystickActive
+            joystickActive,
+            useLegacyMapArt
         });
 
         // Phase 1a: clear the back terrain buffer + gather visible rooms. Cheap
@@ -587,7 +590,7 @@ export const useMapperRenderer = ({
             // misalignment seen while zooming. The finished cache is reprojected to the
             // live camera at draw time via bZoom = lastBuildZoom = pb.zoom.
             terrainCtx.save();
-            terrainCtx.imageSmoothingEnabled = false;
+            terrainCtx.imageSmoothingEnabled = true;
             terrainCtx.scale(dpr * pb.zoom, dpr * pb.zoom);
             terrainCtx.translate(-pb.buildCamX, -pb.buildCamY);
 
@@ -606,13 +609,12 @@ export const useMapperRenderer = ({
             if (pb.terrainNextBx > pb.bX2) {
                 // Tail layers, drawn once after all terrain columns are down.
                 terrainCtx.save();
-                terrainCtx.imageSmoothingEnabled = false;
+                terrainCtx.imageSmoothingEnabled = true;
                 terrainCtx.scale(dpr * pb.zoom, dpr * pb.zoom);
                 terrainCtx.translate(-pb.buildCamX, -pb.buildCamY);
                 const tl0 = performance.now();
                 drawLocalTerrains(rCtx, pb.localVisible);
                 const tl1 = performance.now();
-                drawGrid(rCtx, pb.gX1, pb.gY1, pb.gX2, pb.gY2);
                 const tl2 = performance.now();
                 if (floorIndex) drawZoneFocusOverlay(rCtx, pb.bX1, pb.bY1, pb.bX2, pb.bY2, floorIndex, pb.localVisible, true);
                 const tl3 = performance.now();

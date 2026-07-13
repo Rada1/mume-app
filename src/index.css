@@ -525,11 +525,11 @@
 .app-container.in-combat .custom-buttons-layer,
 .app-container.in-combat .header,
 .app-container.in-combat .input-area {
-    filter: brightness(0.35) saturate(0.7);
+    filter: none;
 }
 
 .app-container.in-combat {
-    background-color: rgba(0, 0, 0, 0.75) !important;
+    background-color: var(--bg-app) !important;
 }
 
 /* Ensure the message log container stays focused and bright */

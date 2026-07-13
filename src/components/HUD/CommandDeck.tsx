@@ -9,15 +9,16 @@
 
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import {
-    Swords, MessageSquare, Wrench,
-    Sword, HeartPulse, Footprints, Target, ScrollText
+    Swords, MessageSquare, Wrench, Home,
+    Sword, HeartPulse, Footprints, Target, ScrollText,
+    Eye, Tent, Droplets, BedDouble
 } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
 import './CommandDeck.css';
 
-type TabKey = 'combat' | 'social' | 'utility';
+type TabKey = 'combat' | 'social' | 'utility' | 'room';
 
 interface DeckItem {
     label: string;
@@ -42,18 +43,24 @@ const STATIC: Record<TabKey, { label: string; cmd: string }[]> = {
         { label: 'Equipment', cmd: 'equipment' }, { label: 'Time', cmd: 'time' },
         { label: 'Weather', cmd: 'weather' }, { label: 'Group', cmd: 'group' },
         { label: 'Who', cmd: 'who' }, { label: 'Affects', cmd: 'affects' }
+    ],
+    room: [
+        { label: 'Watch', cmd: 'watch' }, { label: 'Camp', cmd: 'camp' },
+        { label: 'Camp Rent', cmd: 'camp rent' }, { label: 'Drink Water', cmd: 'drink water' }
     ]
 };
 
 const TABS: { key: TabKey; label: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number }> }[] = [
     { key: 'combat', label: 'Combat', icon: Swords },
     { key: 'social', label: 'Social', icon: MessageSquare },
-    { key: 'utility', label: 'Utility', icon: Wrench }
+    { key: 'utility', label: 'Utility', icon: Wrench },
+    { key: 'room', label: 'Room', icon: Home }
 ];
 
 const LABEL_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
     Kill: Sword, Flee: Footprints,
-    Consider: Target, Assist: HeartPulse
+    Consider: Target, Assist: HeartPulse,
+    Watch: Eye, Camp: Tent, 'Camp Rent': BedDouble, 'Drink Water': Droplets
 };
 
 export const CommandDeck: FC = () => {
@@ -67,7 +74,7 @@ export const CommandDeck: FC = () => {
 
     const [activeTab, setActiveTab] = useState<TabKey>(() => {
         const saved = localStorage.getItem('mud-deck-tab');
-        return (['combat', 'social', 'utility'] as string[]).includes(saved || '') ? (saved as TabKey) : 'combat';
+        return (['combat', 'social', 'utility', 'room'] as string[]).includes(saved || '') ? (saved as TabKey) : 'combat';
     });
 
     const selectTab = (key: TabKey) => {
@@ -132,6 +139,7 @@ export const CommandDeck: FC = () => {
     const iconFor = (item: DeckItem): React.ComponentType<{ size?: number; strokeWidth?: number }> => {
         if (activeTab === 'social') return MessageSquare;
         if (activeTab === 'utility') return LABEL_ICONS[item.label] || ScrollText;
+        if (activeTab === 'room') return LABEL_ICONS[item.label] || Home;
         return LABEL_ICONS[item.label] || Swords;
     };
 

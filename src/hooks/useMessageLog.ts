@@ -4,6 +4,7 @@ import { useMessageStore } from '../stores/useMessageStore';
 import { ansiConvert } from '../utils/ansi';
 import { isEnvironmentEventLine } from '../utils/environmentEventUtils';
 import { hasXmlTag } from '../utils/xmlTagUtils';
+import { getActiveVitals, getActiveCombat } from '../stores/useActiveGameState';
 
 // ---------------------------------------------------------------------------
 // Regex constants
@@ -83,7 +84,8 @@ export function useMessageLog(
         roomName?: string | null,
         roomDesc?: string | null,
         terrain?: string | null,
-        roomNum?: number | null
+        roomNum?: number | null,
+        roomZone?: string | null
     },
     lastCommIdBySenderRef: React.MutableRefObject<Map<string, string>>,
     isNewbieMode: boolean,
@@ -510,6 +512,7 @@ export function useMessageLog(
                 isNarrate,
                 isRoomName: isActuallyRoomName,
                 terrain: isActuallyRoomName ? roomContext.terrain : undefined,
+                roomZone: isActuallyRoomName ? roomContext.roomZone : undefined,
                 commSender,
                 commAction,
                 commText,
@@ -536,6 +539,77 @@ export function useMessageLog(
 
         const isWelcomeTitle = isWelcomeBlock && currentTextLower.includes('***');
 
+        let promptHPStatus: string | undefined = undefined;
+        let promptManaStatus: string | undefined = undefined;
+        let promptMoveStatus: string | undefined = undefined;
+        let promptOpponentName: string | null | undefined = undefined;
+        let promptOpponentHealthStatus: any = undefined;
+        let promptHPPercent: number | undefined = undefined;
+        let promptManaPercent: number | undefined = undefined;
+        let promptMovePercent: number | undefined = undefined;
+        let promptOpponentHealthPercent: number | null | undefined = undefined;
+
+        if (finalType === 'prompt') {
+            try {
+                const vitals = getActiveVitals();
+                const combat = getActiveCombat();
+
+                promptHPStatus = vitals.gmcpVitals.hpStatus || 'Healthy';
+
+                const maxMana = vitals.gmcpVitals.maxMana;
+                const mana = vitals.gmcpVitals.mana;
+                const maxMove = vitals.gmcpVitals.maxMove;
+                const move = vitals.gmcpVitals.move;
+
+                const getManaPercent = (current: number, max: number): number => max > 0 ? (current / max) * 100 : 0;
+                const getMovePercent = (current: number, max: number): number => max > 0 ? (current / max) * 100 : 0;
+                const getTierStatus = (percent: number, tiers: readonly string[]): string => {
+                    if (tiers.length === 0) return '';
+                    const clamped = Math.max(0, Math.min(100, percent));
+                    if (clamped >= 100) return tiers[0];
+                    const bucketSize = 100 / tiers.length;
+                    const index = Math.min(tiers.length - 1, Math.floor((100 - clamped) / bucketSize));
+                    return tiers[index];
+                };
+
+                promptManaStatus = vitals.gmcpVitals.manaStatus || (maxMana > 0 ? getTierStatus(getManaPercent(mana, maxMana), ['Full', 'Burning', 'Hot', 'Warm', 'Cold', 'Icy', 'Frozen']) : 'Full');
+                promptMoveStatus = vitals.gmcpVitals.moveStatus || (maxMove > 0 ? getTierStatus(getMovePercent(move, maxMove), ['Unwearied', 'Steadfast', 'Rested', 'Tired', 'Slow', 'Weak', 'Fainting', 'Exhausted']) : 'Unwearied');
+
+                const hpPercentMap: Record<string, number> = {
+                    'healthy': 100, 'fine': 83, 'hurt': 66, 'wounded': 50,
+                    'bad': 33, 'awful': 16, 'dying': 0, 'stunned': 25, 'none': 0
+                };
+                promptHPPercent = vitals.gmcpVitals.maxHp > 0 
+                    ? Math.round((vitals.gmcpVitals.hp / vitals.gmcpVitals.maxHp) * 100)
+                    : (hpPercentMap[promptHPStatus.trim().toLowerCase()] ?? 100);
+
+                const manaPercentMap: Record<string, number> = {
+                    'full': 100, 'burning': 83, 'hot': 66, 'warm': 50,
+                    'cold': 33, 'icy': 16, 'frozen': 0
+                };
+                promptManaPercent = maxMana > 0
+                    ? Math.round(getManaPercent(mana, maxMana))
+                    : (manaPercentMap[promptManaStatus.trim().toLowerCase()] ?? 100);
+
+                const movePercentMap: Record<string, number> = {
+                    'unwearied': 100, 'steadfast': 85, 'rested': 71, 'tired': 57,
+                    'slow': 42, 'weak': 28, 'fainting': 14, 'exhausted': 0
+                };
+                promptMovePercent = maxMove > 0
+                    ? Math.round(getMovePercent(move, maxMove))
+                    : (movePercentMap[promptMoveStatus.trim().toLowerCase()] ?? 100);
+
+                if (vitals.position === 'fighting') {
+                    promptOpponentName = combat.opponentName;
+                    promptOpponentHealthStatus = combat.opponentHealthStatus;
+                    const oppRawStatus = combat.opponentHealthStatus || 'Healthy';
+                    promptOpponentHealthPercent = hpPercentMap[oppRawStatus.trim().toLowerCase()] ?? 50;
+                }
+            } catch (e) {
+                console.error('Failed to get active vitals for prompt log line', e);
+            }
+        }
+
         const msg: Message = {
             id: mid || Math.random().toString(36).substring(7),
             html,
@@ -556,6 +630,7 @@ export function useMessageLog(
             replyCommand,
             isRoomName: isActuallyRoomName,
             terrain: isActuallyRoomName ? roomContext.terrain : undefined,
+            roomZone: isActuallyRoomName ? roomContext.roomZone : undefined,
             isRoomBlock: isActuallyRoomName,
             isRoomBlockStart: isActuallyRoomName,
             isNarrate,
@@ -577,7 +652,16 @@ export function useMessageLog(
             isSnoop: providedIsSnoop,
             isSnoopInput: providedIsSnoopInput,
             isRipMessage: providedIsRipMessage,
-            resourceGain
+            resourceGain,
+            promptHPStatus,
+            promptManaStatus,
+            promptMoveStatus,
+            promptOpponentName,
+            promptOpponentHealthStatus,
+            promptHPPercent,
+            promptManaPercent,
+            promptMovePercent,
+            promptOpponentHealthPercent
         };
 
         if (isCombat) {

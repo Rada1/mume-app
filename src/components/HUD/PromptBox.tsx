@@ -39,7 +39,7 @@ const SPEED_LABELS = ['QUIC', 'FAST', 'NORM', 'CARE', 'THOR'];
 const ALERT_OPTIONS = ['normal', 'careful', 'attentive', 'vigilant', 'paranoid'];
 const ALERT_LABELS = ['NORM', 'CARE', 'ATTE', 'VIGI', 'PARA'];
 
-const RunnerIcon: React.FC<{ size?: number; className?: string }> = ({ size = 11, className }) => (
+export const RunnerIcon: React.FC<{ size?: number; className?: string }> = ({ size = 11, className }) => (
     <svg
         width={size}
         height={size}

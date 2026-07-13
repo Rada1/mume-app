@@ -10,6 +10,7 @@ import { Token, EntityToken, AnsiToken, TextToken, InlineCategoryConfig, GmcpOcc
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
 import { toCategoryId } from '../../utils/inlineActionModel';
 import { extractMumeKeyword } from '../../utils/gameUtils';
+import { ANSI_PALETTE } from '../../utils/ansi';
 
 export interface TokenizerContext {
     target?: string | null;
@@ -124,6 +125,9 @@ export class Tokenizer {
 
             if (fullMatch.startsWith('\x1b')) {
                 this.currentStyle = this.applyAnsi(fullMatch, this.currentStyle);
+                if (activeEntity && activeEntity.content.trim().length === 0) {
+                    activeEntity.style = { ...this.currentStyle };
+                }
             } else if (tagName) {
                 const isClosing = tagName.startsWith('/');
                 const baseName = (isClosing ? tagName.substring(1) : tagName).toLowerCase();
@@ -654,13 +658,35 @@ export class Tokenizer {
                 Object.keys(newStyle).forEach(key => delete (newStyle as any)[key]);
             } else if (code === 1) {
                 newStyle.fontWeight = 'bold';
+            } else if (code === 3) {
+                newStyle.fontStyle = 'italic';
+            } else if (code === 4) {
+                newStyle.textDecoration = 'underline';
             } else if (code === 22) {
                 newStyle.fontWeight = 'normal';
+            } else if (code === 23) {
+                newStyle.fontStyle = 'normal';
+            } else if (code === 24) {
+                delete newStyle.textDecoration;
             } else if (code >= 30 && code <= 37) {
                 const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
                 newStyle.color = `var(--ansi-${colors[code - 30]})`;
+            } else if (code === 39) {
+                delete newStyle.color;
             } else if (code === 38 && codes[i+1] === '5' && codes[i+2]) {
+                const paletteIndex = parseInt(codes[i + 2], 10);
+                if (!Number.isNaN(paletteIndex) && ANSI_PALETTE[paletteIndex]) {
+                    newStyle.color = ANSI_PALETTE[paletteIndex];
+                }
                 i += 2;
+            } else if (code === 38 && codes[i+1] === '2' && codes[i+2] && codes[i+3] && codes[i+4]) {
+                const r = parseInt(codes[i + 2], 10);
+                const g = parseInt(codes[i + 3], 10);
+                const b = parseInt(codes[i + 4], 10);
+                if (![r, g, b].some(Number.isNaN)) {
+                    newStyle.color = `rgb(${r},${g},${b})`;
+                }
+                i += 4;
             } else if (code >= 90 && code <= 97) {
                 const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
                 newStyle.color = `var(--ansi-bright-${colors[code - 90]})`;

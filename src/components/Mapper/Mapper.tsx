@@ -308,7 +308,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const effectiveLighting = isImmersionMode ? (gameState === 'account' ? 'moon' : (lighting || 'none')) : 'none';
 
     return (
-        <div className={`mapper-container lighting-state-${effectiveLighting} ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''} ${!showBackgroundImage ? 'no-bg-image' : ''}`} style={{ 
+        <div className={`mapper-container lighting-state-${effectiveLighting} ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''} ${(!showBackgroundImage || !isImmersionMode) ? 'no-bg-image' : ''}`} style={{ 
             position: 'relative', 
             width: '100%', 
             height: '100%', 
@@ -559,35 +559,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 </div>
             )}
 
-            {!effectiveIsMinimized && !isMobile && (
-                <div className="map-area-indicator" style={{
-                    position: 'absolute',
-                    top: '20px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    color: '#fbbf24',
-                    background: 'rgba(0, 0, 0, 0.55)',
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
-                    padding: '9px 18px',
-                    zIndex: 9999,
-                    fontSize: '16px',
-                    pointerEvents: 'none',
-                    borderRadius: '7px',
-                    border: '2px solid rgba(255, 255, 255, 0.12)',
-                    fontFamily: 'var(--font-mono, monospace)',
-                    fontWeight: 800,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    boxShadow: '0 6px 18px rgba(0,0,0,0.55)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                }}>
-                    <span style={{ opacity: 0.6 }}>area:</span>
-                    <span style={{ color: '#fff' }}>{displayZone || 'Unknown'}</span>
-                </div>
-            )}
 
             {isTracingMode && (
                 <TracingHUD

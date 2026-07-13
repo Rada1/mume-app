@@ -7,6 +7,7 @@
 
 import React, { FC } from 'react';
 import { useGame, useUI } from '../../context/GameContext';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import InputArea from '../Controls/InputArea';
 import { CommandDeck } from './CommandDeck';
 import { SkillsDeck } from './SkillsDeck';
@@ -70,8 +71,30 @@ export const ActionBox: FC<ActionBoxProps> = ({
         setPopoverState: (val: unknown) => void;
     };
 
+    const bottomBarOpacity = useSettingsStore(s => s.bottomBarOpacity);
+    const setBottomBarOpacity = useSettingsStore(s => s.setBottomBarOpacity);
+
     return (
-        <div className={`action-box${gameState === 'account' ? ' account-mode' : ''}`}>
+        <div
+            className={`action-box${gameState === 'account' ? ' account-mode' : ''}`}
+            style={{ opacity: bottomBarOpacity } as React.CSSProperties}
+        >
+            {/* Floating Opacity Slider */}
+            {!viewport.isMobile && (
+                <div className="bottom-bar-opacity-slider-container" onPointerDown={(e) => e.stopPropagation()}>
+                    <span className="bottom-bar-opacity-label">Opacity:</span>
+                    <input
+                        type="range"
+                        min="0.1"
+                        max="1.0"
+                        step="0.05"
+                        value={bottomBarOpacity}
+                        onChange={(e) => setBottomBarOpacity(parseFloat(e.target.value))}
+                        className="bottom-bar-opacity-slider"
+                    />
+                    <span className="bottom-bar-opacity-value">{Math.round(bottomBarOpacity * 100)}%</span>
+                </div>
+            )}
             {gameState !== 'account' && (
                 <div className="action-box-controls">
                     {promptSlot && <div className="action-box-prompt-cell">{promptSlot}</div>}

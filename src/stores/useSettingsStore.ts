@@ -118,7 +118,10 @@ interface SettingsState {
     showMapperToolbar: boolean;
     isTextRevealEnabled: boolean;
     showBackgroundImage: boolean;
-    optimisticMovement: boolean;
+    useLegacyMapArt: boolean;
+    mapDrawerOpacity: number;
+    characterDrawerOpacity: number;
+    bottomBarOpacity: number;
     mapTileVisuals: MapTileVisualAdjustments;
     mapBackgroundVisuals: MapBackgroundVisualAdjustments;
     zoneFilters: Record<string, ZoneFilterConfig>;
@@ -138,6 +141,8 @@ interface SettingsState {
     setBgImage: (val: string | null) => void;
     setBgImageBottom: (val: string | null) => void;
     setFontFamily: (val: string) => void;
+    setCharacterDrawerOpacity: (val: number) => void;
+    setBottomBarOpacity: (val: number) => void;
     setUiMode: (val: UiMode) => void;
     setIsBloomEnabled: (val: boolean) => void;
     setIsHighlighterEnabled: (val: boolean) => void;
@@ -181,7 +186,8 @@ interface SettingsState {
     setShowMapperToolbar: (val: boolean) => void;
     setIsTextRevealEnabled: (val: boolean) => void;
     setShowBackgroundImage: (val: boolean) => void;
-    setOptimisticMovement: (val: boolean) => void;
+    setUseLegacyMapArt: (val: boolean) => void;
+    setMapDrawerOpacity: (val: number) => void;
     setMapTileVisuals: (val: Partial<MapTileVisualAdjustments>) => void;
     setMapBackgroundVisuals: (val: Partial<MapBackgroundVisualAdjustments>) => void;
     resetMapVisuals: () => void;
@@ -321,7 +327,10 @@ export const useSettingsStore = create<SettingsState>()(
             showMapperToolbar: false,
             isTextRevealEnabled: true,
             showBackgroundImage: true,
-            optimisticMovement: true,
+            useLegacyMapArt: true,
+            mapDrawerOpacity: 1.0,
+            characterDrawerOpacity: 1.0,
+            bottomBarOpacity: 1.0,
             mapTileVisuals: DEFAULT_MAP_TILE_VISUALS,
             mapBackgroundVisuals: DEFAULT_MAP_BACKGROUND_VISUALS,
             zoneFilters: ZONE_FILTERS,
@@ -425,7 +434,10 @@ export const useSettingsStore = create<SettingsState>()(
             setShowMapperToolbar: (showMapperToolbar) => set({ showMapperToolbar }),
             setIsTextRevealEnabled: (isTextRevealEnabled) => set({ isTextRevealEnabled }),
             setShowBackgroundImage: (showBackgroundImage) => set({ showBackgroundImage }),
-            setOptimisticMovement: (optimisticMovement) => set({ optimisticMovement }),
+            setUseLegacyMapArt: (useLegacyMapArt) => set({ useLegacyMapArt }),
+            setMapDrawerOpacity: (mapDrawerOpacity) => set({ mapDrawerOpacity }),
+            setCharacterDrawerOpacity: (characterDrawerOpacity) => set({ characterDrawerOpacity }),
+            setBottomBarOpacity: (bottomBarOpacity) => set({ bottomBarOpacity }),
             setMapTileVisuals: (mapTileVisuals) => set((state) => ({
                 mapTileVisuals: {
                     ...state.mapTileVisuals,
@@ -468,7 +480,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 21,
+            version: 25,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -644,6 +656,30 @@ export const useSettingsStore = create<SettingsState>()(
                     }
                 }
 
+                if (version < 22) {
+                    if (persistedState.mapDrawerOpacity === undefined) {
+                        persistedState.mapDrawerOpacity = 1.0;
+                    }
+                }
+
+                if (version < 23) {
+                    if (persistedState.characterDrawerOpacity === undefined) {
+                        persistedState.characterDrawerOpacity = 1.0;
+                    }
+                }
+
+                if (version < 24) {
+                    if (persistedState.bottomBarOpacity === undefined) {
+                        persistedState.bottomBarOpacity = 1.0;
+                    }
+                }
+
+                if (version < 25) {
+                    if (persistedState.useLegacyMapArt === undefined) {
+                        persistedState.useLegacyMapArt = true;
+                    }
+                }
+
                 return persistedState;
             },
             merge: (persistedState: any, currentState) => {
@@ -671,7 +707,7 @@ export const useSettingsStore = create<SettingsState>()(
                     ...(merged.mapBackgroundVisuals || {})
                 };
                 merged.showBackgroundImage = merged.showBackgroundImage ?? true;
-                merged.optimisticMovement = merged.optimisticMovement ?? true;
+                merged.useLegacyMapArt = merged.useLegacyMapArt ?? true;
                 merged.showChatWindow = merged.showChatWindow ?? false;
                 merged.showPlayersPanel = merged.showPlayersPanel ?? false;
                 let validFilters = merged.zoneFilters;

@@ -136,10 +136,139 @@
     transform: translateY(-1px);
 }
 
+/* Compact inline menus show only available actions and their configuration affordance. */
+.inline-action-compact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    min-width: 0;
+    width: max-content;
+    max-width: min(240px, calc(100vw - 24px));
+    align-self: flex-start;
+    flex: 0 0 auto;
+}
+
+.popover-menu:has(.inline-action-compact) {
+    width: max-content;
+    min-width: 0;
+    max-width: min(240px, calc(100vw - 24px));
+    align-items: flex-start;
+    padding: 0;
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    gap: 0;
+}
+
+.popover-menu:has(.inline-action-compact)::after {
+    content: '';
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    background: var(--accent);
+    transform: rotate(45deg);
+    z-index: -1;
+}
+
+.popover-menu:has(.inline-action-compact)[data-anchor-placement="above"]::after {
+    left: 50%;
+    bottom: -4px;
+    margin-left: -5px;
+}
+
+.popover-menu:has(.inline-action-compact)[data-anchor-placement="below"]::after {
+    left: 50%;
+    top: -4px;
+    margin-left: -5px;
+}
+
+.popover-menu:has(.inline-action-compact)[data-anchor-placement="right"]::after {
+    left: -4px;
+    top: 50%;
+    margin-top: -5px;
+}
+
+.popover-menu:has(.inline-action-compact)[data-anchor-placement="left"]::after {
+    right: -4px;
+    top: 50%;
+    margin-top: -5px;
+}
+
+.inline-action-chips {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+}
+
+.inline-action-compact .popover-action-chip {
+    width: max-content;
+    justify-content: flex-start;
+    min-height: 28px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-align: left;
+}
+
+.inline-action-compact .popover-action-chip > span:last-child {
+    display: none;
+}
+
+.inline-action-settings {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-dim, rgba(255, 255, 255, 0.65));
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    align-self: flex-end;
+}
+
+.inline-action-settings:hover,
+.inline-action-settings:focus-visible {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+    outline: none;
+}
+
+.light-mode .inline-action-settings {
+    border-color: rgba(15, 23, 42, 0.14);
+    background: rgba(15, 23, 42, 0.04);
+    color: rgba(15, 23, 42, 0.58);
+}
+
+.light-mode .inline-action-settings:hover,
+.light-mode .inline-action-settings:focus-visible {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
 .light-mode .popover-action-chip:not(.fight-btn) {
     background: rgba(255, 255, 255, 0.7) !important;
     border-color: rgba(0, 0, 0, 0.1) !important;
     color: #475569 !important;
+}
+
+.light-mode .inline-action-compact .popover-action-chip:not(.fight-btn) {
+    background: #f3ead8 !important;
+    border-color: rgba(110, 85, 48, 0.28) !important;
+    color: #4a3b2a !important;
+}
+
+.light-mode .inline-action-compact .popover-action-chip:not(.fight-btn):hover,
+.light-mode .inline-action-compact .popover-action-chip:not(.fight-btn):active {
+    background: #e8dcc5 !important;
+    border-color: rgba(110, 85, 48, 0.46) !important;
+    color: #35291c !important;
 }
 
 /* Popover Menu Styles */

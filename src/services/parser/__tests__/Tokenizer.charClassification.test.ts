@@ -19,6 +19,19 @@ const findEntityFor = (tokens: Token[], content: string): EntityToken | undefine
     tokens.find((t): t is EntityToken => t.type === 'entity' && t.content.trim() === content);
 
 describe('Tokenizer — char inline button assignment (GMCP source-of-truth contract)', () => {
+    describe('Room ANSI styling', () => {
+        it('preserves ANSI style when color starts inside a room name tag', () => {
+            const tokens = Tokenizer.tokenize(
+                '<room><name>\x1b[38;5;120mUnder the Birch Trees</name></room>',
+                makeContext([])
+            );
+            const room = findEntityFor(tokens, 'Under the Birch Trees');
+
+            expect(room?.metadata?.category).toBe('cat-room');
+            expect(room?.metadata?.style?.color).toBe('rgb(135,255,135)');
+        });
+    });
+
     describe('GMCP type drives the inline category', () => {
         it('emits cat-ally for type=ally', () => {
             const tokens = Tokenizer.tokenize(

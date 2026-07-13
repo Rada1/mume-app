@@ -17,6 +17,12 @@ export const PATH_COLOR_LIGHT = '#884020';
 export const WALL_COLOR = '#3a3c42';
 export const LONG_CONNECTION_COLOR = 'rgba(120, 120, 120, 0.45)'; // Subtle gray for long exits/stairs
 
+export const getClientThemeColor = (cssVariable: string, fallback: string): string => {
+    if (typeof document === 'undefined') return fallback;
+    const themeElement = document.querySelector('.light-mode, .dark-mode') || document.documentElement;
+    return getComputedStyle(themeElement).getPropertyValue(cssVariable).trim() || fallback;
+};
+
 export const DIRS: Record<string, { dx: number, dy: number, dz?: number, opp: string, name: string }> = {
     n: { dx: 0, dy: -1, opp: 's', name: 'North' },
     north: { dx: 0, dy: -1, opp: 's', name: 'North' },

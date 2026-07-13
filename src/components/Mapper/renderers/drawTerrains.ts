@@ -1,9 +1,13 @@
 import { RenderContext } from './rendererUtils';
-import { GRID_SIZE, getTerrainColor, getTerrainName, getGateState } from '../mapperUtils';
+import { GRID_SIZE, getTerrainColor, getTerrainName, getGateState, getClientThemeColor } from '../mapperUtils';
 import { getZoneVisuals } from '../zoneFilters';
 import { perfMonitor } from '../../../utils/perfMonitor';
+import { useSettingsStore } from '../../../stores/useSettingsStore';
+import { drawNewArtTerrainIcon } from './drawNewMapArt';
 
 const TERRAIN_TILE_INSET = 0;
+const TERRAIN_ICON_OPACITY = 0.2;
+const FIELD_ICON_OPACITY = 0.35;
 const FAR_ZOOM_TERRAIN_LOD = 0.04;
 const OVERVIEW_TERRAIN_ZOOM = 0.15;
 export const RING_REVEAL_MS = 0;
@@ -76,6 +80,37 @@ const fillTerrainTile = (ctx: CanvasRenderingContext2D, x: number, y: number, s:
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillRect(sx1, sy1, sx2 - sx1, sy2 - sy1);
+    ctx.restore();
+};
+
+const fillShallowCheckerTile = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    s: number,
+    fieldColor: string,
+    waterColor: string
+) => {
+    const inset = getTerrainTileInset(s);
+    const tileSize = s - inset * 2;
+    const cellSize = tileSize / 4;
+    const seamOverlap = 0.75;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x + inset, y + inset, tileSize, tileSize);
+    ctx.clip();
+    for (let row = 0; row < 4; row++) {
+        for (let column = 0; column < 4; column++) {
+            ctx.fillStyle = (row + column) % 2 === 0 ? fieldColor : waterColor;
+            ctx.fillRect(
+                x + inset + column * cellSize,
+                y + inset + row * cellSize,
+                cellSize + seamOverlap,
+                cellSize + seamOverlap
+            );
+        }
+    }
     ctx.restore();
 };
 
@@ -522,7 +557,7 @@ const drawTerrainTileIcon = (
     walls?: { n: boolean; s: boolean; e: boolean; w: boolean }
 ) => {
     const tName = getTerrainName(terrain);
-    const inset = tName === 'Forest' ? 0 : getTerrainTileInset(s);
+    const inset = 0;
     drawTerrainIcon(
         ctx,
         x + inset,
@@ -562,6 +597,31 @@ export const drawTerrainIcon = (
     tileS?: number
 ) => {
     const tName = getTerrainName(terrain);
+    const mapperTerrainSuffix: Record<string, string> = {
+        Brush: 'brush',
+        Cavern: 'cavern',
+        City: 'city',
+        Field: 'field',
+        Forest: 'forest',
+        Hills: 'hills',
+        Indoors: 'indoors',
+        Building: 'indoors',
+        Mountains: 'mountains',
+        Rapids: 'rapids',
+        Road: 'road',
+        Shallows: 'shallow',
+        Tunnel: 'tunnel',
+        Underwater: 'underwater',
+        Water: 'water',
+    };
+    const mapperTerrain = imagesRef.current[`mmapper-terrain-${mapperTerrainSuffix[tName] || 'undefined'}`];
+    if (mapperTerrain && mapperTerrain.complete && mapperTerrain.naturalWidth > 0) {
+        // Slightly overlap neighboring room textures so their source-image edge
+        // pixels cannot form visible seams at the room boundaries.
+        const bleed = Math.min(1, s_orig * 0.02);
+        ctx.drawImage(mapperTerrain, x - bleed, y - bleed, s_orig + bleed * 2, s_orig + bleed * 2);
+        return;
+    }
     const transform = ctx.getTransform();
     const physicalSize = s_orig * transform.a;
 
@@ -600,18 +660,19 @@ export const drawTerrainIcon = (
     const mountainImgReady = !!(mountainImg && mountainImg.complete && mountainImg.naturalWidth > 0);
     const hillImg = tName === 'Hills' ? imagesRef.current['hill'] : null;
     const hillImgReady = !!(hillImg && hillImg.complete && hillImg.naturalWidth > 0);
+    const useLegacyMapArt = useSettingsStore.getState().useLegacyMapArt;
     const key = variantSpecificTerrains.includes(tName)
-        ? `${tName}_v${variant}_${isDarkMode}_s${iconSize}_w${weather || 'none'}_v66${
+        ? `${tName}_v${variant}_${isDarkMode}_s${iconSize}_w${weather || 'none'}_leg${useLegacyMapArt}_v77${
             tName === 'Mountains' ? `_i${mountainImgReady ? 1 : 0}` :
             tName === 'Hills' ? `_h${hillImgReady ? 1 : 0}` :
             (tName === 'Tunnel' || tName === 'Cavern') ? `_c${connects}_f${floorColor || ''}` : ''
           }`
-        : `${tName}_${isDarkMode}_s${iconSize}_w${weather || 'none'}_v66`;
+        : `${tName}_${isDarkMode}_s${iconSize}_w${weather || 'none'}_leg${useLegacyMapArt}_v77`;
     
     if (!processedIconsRef.current[key]) {
         let targetW = s;
         let targetH = s;
-        if (tName === 'Mountains' && mountainImgReady) {
+        if (useLegacyMapArt && tName === 'Mountains' && mountainImgReady) {
             const ratio = mountainImg!.naturalHeight / mountainImg!.naturalWidth;
             // Scale down all but 1 variant to create more organic size variance
             const scale = (variant % 3 === 0) ? 1.3 : (variant % 3 === 1 ? 0.85 : 0.98);
@@ -622,7 +683,7 @@ export const drawTerrainIcon = (
                 targetH = s * scale;
                 targetW = (s / ratio) * scale;
             }
-        } else if (tName === 'Hills' && hillImgReady) {
+        } else if (useLegacyMapArt && tName === 'Hills' && hillImgReady) {
             const ratio = hillImg!.naturalHeight / hillImg!.naturalWidth;
             if (ratio > 1) {
                 targetW = s * 0.5;
@@ -644,12 +705,15 @@ export const drawTerrainIcon = (
         iconCanvas.height = canvasH;
         const ictx = iconCanvas.getContext('2d')!;
         
-        const cX = s / 2;
-        const cY = s / 2;
-        ictx.strokeStyle = isDarkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.3)";
-        ictx.lineWidth = 2;
-        ictx.lineJoin = 'round';
-        ictx.lineCap = 'round';
+        if (!useLegacyMapArt) {
+            drawNewArtTerrainIcon(ictx, canvasW, canvasH, s, tName, variant, isDarkMode, weather, connects, floorColor, walls);
+        } else {
+            const cX = s / 2;
+            const cY = s / 2;
+            ictx.strokeStyle = isDarkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.3)";
+            ictx.lineWidth = 2;
+            ictx.lineJoin = 'round';
+            ictx.lineCap = 'round';
 
         if (tName === 'Mountains') {
             // Draw background grass texture
@@ -1354,6 +1418,7 @@ export const drawTerrainIcon = (
             }
             ictx.restore();
         }
+        } // end of else (legacy map art)
         processedIconsRef.current[key] = iconCanvas;
     }
 
@@ -1362,19 +1427,21 @@ export const drawTerrainIcon = (
           const drawW = cachedIcon.width / lodScale;
           const drawH = cachedIcon.height / lodScale;
           let offsetX = x - (drawW - s_orig) / 2;
-          let offsetY = y - (drawH - s_orig);
+          let offsetY = useLegacyMapArt ? y - (drawH - s_orig) : y - (drawH - s_orig) / 2;
 
-          if (tName === 'Hills') {
-              // Deterministic pseudo-random offset between -12% and +12% of tile size s_orig
-              const s1 = Math.abs(Math.sin(variant * 17.3) * 43758.5453) % 1;
-              const s2 = Math.abs(Math.sin(variant * 29.7) * 43758.5453) % 1;
-              offsetX += (s1 - 0.5) * s_orig * 0.34;
-              offsetY += (s2 - 0.5) * s_orig * 0.30;
-          } else if (tName === 'Mountains') {
-              const s1 = Math.abs(Math.sin(variant * 29.7) * 43758.5453) % 1;
-              const s2 = Math.abs(Math.sin(variant * 17.3) * 43758.5453) % 1;
-              offsetX += (s2 - 0.5) * s_orig * 0.24;
-              offsetY += (s1 - 0.5) * s_orig * 0.42;
+          if (useLegacyMapArt) {
+              if (tName === 'Hills') {
+                  // Deterministic pseudo-random offset between -12% and +12% of tile size s_orig
+                  const s1 = Math.abs(Math.sin(variant * 17.3) * 43758.5453) % 1;
+                  const s2 = Math.abs(Math.sin(variant * 29.7) * 43758.5453) % 1;
+                  offsetX += (s1 - 0.5) * s_orig * 0.34;
+                  offsetY += (s2 - 0.5) * s_orig * 0.30;
+              } else if (tName === 'Mountains') {
+                  const s1 = Math.abs(Math.sin(variant * 29.7) * 43758.5453) % 1;
+                  const s2 = Math.abs(Math.sin(variant * 17.3) * 43758.5453) % 1;
+                  offsetX += (s2 - 0.5) * s_orig * 0.24;
+                  offsetY += (s1 - 0.5) * s_orig * 0.42;
+              }
           }
 
           let clipped = false;
@@ -1391,7 +1458,13 @@ export const drawTerrainIcon = (
               clipped = true;
           }
 
+          const previousAlpha = ctx.globalAlpha;
+          const iconOpacity = tName === 'Field' || tName === 'Grasslands'
+            ? FIELD_ICON_OPACITY
+            : TERRAIN_ICON_OPACITY;
+          ctx.globalAlpha = previousAlpha * iconOpacity;
           ctx.drawImage(cachedIcon, offsetX, offsetY, drawW, drawH);
+          ctx.globalAlpha = previousAlpha;
 
           if (clipped) {
               ctx.restore();
@@ -1465,7 +1538,11 @@ export const applyRoomShading = (ctx: CanvasRenderingContext2D, r: any, s: numbe
 
     if (overlayAlpha > 0) {
         ctx.save();
-        ctx.fillStyle = '#000000';
+        // Dark rooms are represented by a lighter tile in dark mode so the
+        // lighting cue remains legible against the dark map surface.
+        ctx.fillStyle = rCtx.isDarkMode
+            ? getClientThemeColor('--text-primary', '#d4cdb8')
+            : '#000000';
         ctx.globalAlpha = overlayAlpha * alphaMul;
         fillTerrainTile(ctx, r.x, r.y, s);
         ctx.restore();
@@ -1689,7 +1766,19 @@ export const drawTerrains = (
                     ...terrainColors,
                     ...zoneVis.terrainColors
                 };
-                const color = useOverviewTerrainColors
+                const newArtTileColor = (() => {
+                    const terrainName = getTerrainName(terrain);
+                    if (terrainName === 'Water' || terrainName === 'Rapids' || terrainName === 'Underwater') {
+                        return getClientThemeColor('--map-water-surface', isDarkMode ? '#101b22' : '#e4eef0');
+                    }
+                    if (terrainName === 'Cavern' || terrainName === 'Tunnel') {
+                        return getClientThemeColor('--map-underground-surface', isDarkMode ? '#171513' : '#e8e3da');
+                    }
+                    return getClientThemeColor('--map-land-surface', isDarkMode ? '#171614' : '#e9e2d4');
+                })();
+                const color = !rCtx.useLegacyMapArt
+                    ? newArtTileColor
+                    : useOverviewTerrainColors
                     ? getOverviewTerrainColor(terrain, isDarkMode)
                     : getTerrainColor(terrain, isDarkMode, 0.62, mergedTerrainColors);
                 const tx = Math.round(rx) * s;
@@ -1862,9 +1951,20 @@ export const drawTerrains = (
             fillTerrainTile(ctx, r.x, r.y, s);
 
             // 2. Terrain color
-            ctx.fillStyle = color;
             ctx.globalAlpha = tileOpacity;
-            fillTerrainTile(ctx, r.x, r.y, s);
+            if (getTerrainName(r.terrain) === 'Shallows') {
+                fillShallowCheckerTile(
+                    ctx,
+                    r.x,
+                    r.y,
+                    s,
+                    getTerrainColor('Field', isDarkMode, 0.62, terrainColors),
+                    getTerrainColor('Water', isDarkMode, 0.62, terrainColors)
+                );
+            } else {
+                ctx.fillStyle = color;
+                fillTerrainTile(ctx, r.x, r.y, s);
+            }
 
             // 3. Snow overlay
             if (r.isPermanentSnow || (rCtx.weather === 'snow' && Number(r.sundeath) !== 0)) {
@@ -1902,7 +2002,6 @@ export const drawTerrains = (
 
                 const tIconStart = perfMonitor.enabled ? performance.now() : 0;
                 drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects, tFloor, walls);
-                drawOutskirtTrees(ctx, r.x, r.y, r.vnum, s, r.terrain, preloaded, isDarkMode, tileOpacity, explored, imagesRef);
                 if (perfMonitor.enabled) perfMonitor.addIconMs(performance.now() - tIconStart);
                 ctx.restore();
             }
@@ -1986,9 +2085,20 @@ export const drawTerrains = (
                 ctx.restore();
 
                 ctx.save();
-                ctx.fillStyle = color;
                 ctx.globalAlpha = tileOpacity;
-                fillTerrainTile(ctx, r.x, r.y, s);
+                if (getTerrainName(r.terrain) === 'Shallows') {
+                    fillShallowCheckerTile(
+                        ctx,
+                        r.x,
+                        r.y,
+                        s,
+                        getTerrainColor('Field', isDarkMode, 0.62, terrainColors),
+                        getTerrainColor('Water', isDarkMode, 0.62, terrainColors)
+                    );
+                } else {
+                    ctx.fillStyle = color;
+                    fillTerrainTile(ctx, r.x, r.y, s);
+                }
 
                 // Snow overlay
                 if (r.isPermanentSnow || (rCtx.weather === 'snow' && Number(r.sundeath) !== 0)) {
@@ -2019,7 +2129,6 @@ export const drawTerrains = (
                     const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
 
                     drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects3, tFloor3, walls);
-                    drawOutskirtTrees(ctx, r.x, r.y, r.vnum, s, r.terrain, preloaded, isDarkMode, tileOpacity, explored, imagesRef);
                     ctx.restore();
                 }
             }

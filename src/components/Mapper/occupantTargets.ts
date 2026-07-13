@@ -174,7 +174,7 @@ const addOccupantTarget = (
     if (!name) return;
 
     const displayKind = getOccupantDisplayKind(source, options.characterName || null);
-    if (displayKind === 'self') return;
+    if (displayKind !== 'player') return;
 
     target.push({
         x: 0,

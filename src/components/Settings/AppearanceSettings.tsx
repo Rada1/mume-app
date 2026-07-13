@@ -36,6 +36,8 @@ interface AppearanceSettingsProps {
 export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
     uiMode,
     setUiMode,
+    theme,
+    setTheme,
     fontFamily,
     setFontFamily,
     logFontSize,
@@ -58,6 +60,10 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
     const setDrawerZoom = useSettingsStore(s => s.setDrawerZoom);
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
     const setShowChatWindow = useSettingsStore(s => s.setShowChatWindow);
+    const characterDrawerOpacity = useSettingsStore(s => s.characterDrawerOpacity);
+    const setCharacterDrawerOpacity = useSettingsStore(s => s.setCharacterDrawerOpacity);
+    const bottomBarOpacity = useSettingsStore(s => s.bottomBarOpacity);
+    const setBottomBarOpacity = useSettingsStore(s => s.setBottomBarOpacity);
 
     return (
         <>
@@ -90,6 +96,13 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
             {/* Appearance */}
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Appearance</label>
+
+                <ToggleRow
+                    label="Light Mode"
+                    description="Use the warm parchment-and-gold light theme."
+                    value={theme === 'light'}
+                    onToggle={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                />
 
                 {/* Main Font Family */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
@@ -164,6 +177,66 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                                 onClick={() => setDrawerZoom(1.0)}
                             >Reset</button>
                         )}
+                    </div>
+                </div>
+
+                {/* Character Drawer Opacity */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Character Drawer Opacity</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Adjust the transparency of the character drawer on desktop.</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input
+                            type="range"
+                            min="0.2"
+                            max="1.0"
+                            step="0.05"
+                            value={characterDrawerOpacity}
+                            onChange={(e) => setCharacterDrawerOpacity(parseFloat(e.target.value))}
+                            style={{
+                                cursor: 'pointer',
+                                accentColor: 'var(--accent, #d4aa00)'
+                            }}
+                        />
+                        <span style={{
+                            width: '48px',
+                            textAlign: 'right',
+                            fontSize: '0.85rem',
+                            color: 'var(--text-primary)',
+                            fontFamily: 'monospace',
+                            fontWeight: 'bold'
+                        }}>{Math.round(characterDrawerOpacity * 100)}%</span>
+                    </div>
+                </div>
+
+                {/* Bottom Bar Opacity */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Bottom Bar Opacity</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Adjust the transparency of the bottom interactive action box.</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input
+                            type="range"
+                            min="0.2"
+                            max="1.0"
+                            step="0.05"
+                            value={bottomBarOpacity}
+                            onChange={(e) => setBottomBarOpacity(parseFloat(e.target.value))}
+                            style={{
+                                cursor: 'pointer',
+                                accentColor: 'var(--accent, #d4aa00)'
+                            }}
+                        />
+                        <span style={{
+                            width: '48px',
+                            textAlign: 'right',
+                            fontSize: '0.85rem',
+                            color: 'var(--text-primary)',
+                            fontFamily: 'monospace',
+                            fontWeight: 'bold'
+                        }}>{Math.round(bottomBarOpacity * 100)}%</span>
                     </div>
                 </div>
 

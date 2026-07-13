@@ -86,9 +86,9 @@ export const TERRAIN_CONFIGS: Record<string, TerrainConfig> = {
 };
 
 export const LIGHTING_COLORS: Record<string, HSLColor> = {
-    sun:        { h: 200, s: 32, l: 94 },
+    sun:        { h: 200, s: 20, l: 45 },
     moon:       { h: 222, s: 58, l: 32 },
-    artificial: { h: 28,  s: 75, l: 46 },
+    artificial: { h: 28,  s: 40, l: 30 },
     dark:       { h: 260, s: 22, l: 28 },
     none:       { h: 220, s: 18, l: 38 },
 };

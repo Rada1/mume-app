@@ -67,6 +67,7 @@ export interface TokenRendererProps {
     forceBoldEntities?: boolean;
     splitFirstWord?: boolean;
     wordReveal?: boolean;
+    disableRoomInline?: boolean;
     metadata?: {
         id?: string;
         context?: string;
@@ -84,6 +85,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
     forceBoldEntities = false,
     splitFirstWord = false,
     wordReveal = false,
+    disableRoomInline = false,
     metadata: propMetadata
 }) => {
     const { target, opponentId, opponentName } = useTokenHighlight();
@@ -217,6 +219,15 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             }
 
             const isRoom = categoryAxes.family === 'room' || e.metadata?.kind === 'room';
+            if (isRoom && disableRoomInline) {
+                const roomTextStyle: React.CSSProperties = { ...(e.metadata?.style || {}) };
+                if (e.metadata?.color && !roomTextStyle.color) roomTextStyle.color = e.metadata.color;
+                return (
+                    <span key={idx} style={Object.keys(roomTextStyle).length > 0 ? roomTextStyle : undefined}>
+                        {content}
+                    </span>
+                );
+            }
             const props: any = {
                 className: `${isRoom ? 'inline-btn room-name-inline' : `inline-btn`} ${extraClasses.join(' ')}`.trim(),
             };
@@ -277,36 +288,18 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             
             if (categoryColor) {
                 style['--glow-color'] = categoryColor;
-                style.color = 'var(--glow-color)';
             }
 
             if (forceBoldEntities || isRoom || categoryAxes.categoryId === 'cat-enemy') {
                 style.fontWeight = 'bold';
             }
 
-            const typeIcon = getEntityTypeIcon(tokenCategoryId);
             const button = (
                 <span 
                     {...props} 
                     style={Object.keys(style).length > 0 ? style : undefined}
                 >
                     {renderItemConditionText(content, itemTier?.state, itemTier?.stateLabel)}
-                    {typeIcon && (
-                        <span
-                            className={`inline-entity-type-icon inline-entity-type-${typeIcon.kind}`}
-                            aria-hidden="true"
-                            title={typeIcon.label}
-                            style={{
-                                marginLeft: '3px',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                verticalAlign: 'middle',
-                                opacity: 0.85
-                            }}
-                        >
-                            <typeIcon.icon size={10} strokeWidth={2.6} />
-                        </span>
-                    )}
                 </span>
             );
 
@@ -346,7 +339,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
         }
     };
 
-    if (propCategoryAxes?.family === 'room') {
+    if (propCategoryAxes?.family === 'room' && !disableRoomInline) {
         const context = propMetadata?.context || tokens.map(token => token.content).join('').trim();
         const categoryColor = getInlineGlowColor(propCategoryAxes.categoryId, inlineCategories, {
             room: settings.roomColor || undefined,

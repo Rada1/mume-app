@@ -258,7 +258,7 @@ export const useSessionState = (
 
     const log = useMessageLog(
         { current: inCombat } as any,
-        { players: roomPlayers, npcs: roomNpcs, items: roomItems, roomName, roomDesc, terrain: currentTerrain, roomNum: rStore?.roomNum },
+        { players: roomPlayers, npcs: roomNpcs, items: roomItems, roomName, roomDesc, terrain: currentTerrain, roomNum: rStore?.roomNum, roomZone },
         lastCommIdBySenderRef,
         isNewbieMode,
         recordEntry,

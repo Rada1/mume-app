@@ -9,7 +9,7 @@ import { isButtonValidForEntity } from '../../utils/actionUtils';
 import { getButtonIdsForTraits, getCategoryConfig, getResolvedTraitSections, getTraitsForName as getInlineActionTraits } from '../../utils/inlineActionModel';
 import { getInlineCategoryAxes, getInlineCategoryLabel, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 import { formatMumeTarget, sanitizeGameTarget } from '../../utils/gameUtils';
-import { User, Users, Skull, GraduationCap, Store, Coins, Sword, Trash2, Package, Utensils, Droplets, Flame, BookOpen, Shield, Box, Pencil } from 'lucide-react';
+import { User, Users, Skull, GraduationCap, Store, Coins, Sword, Trash2, Package, Utensils, Droplets, Flame, BookOpen, Shield, Box, Pencil, Settings } from 'lucide-react';
 
 // --- Sub-components ---
 import { TraitToggleSection } from './StandardMenu/TraitToggleSection';
@@ -157,9 +157,59 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     };
 
     let seenCommandsSize = 0;
+    const isInlineMenu = !isTacticalSet && (
+        categoryAxes.isInlineAction ||
+        ['inventorylist', 'equipmentlist', 'roomitems', 'roomnpcs', 'selection'].includes(safeSetId) ||
+        safeSetId.startsWith('object') ||
+        safeSetId.startsWith('npc')
+    );
+    const [isCompactInline, setIsCompactInline] = React.useState(isInlineMenu && !popoverState.isChoosingCategory);
+
+    React.useEffect(() => {
+        setIsCompactInline(isInlineMenu && !popoverState.isChoosingCategory);
+    }, [isInlineMenu, popoverState.context, popoverState.setId, popoverState.isChoosingCategory]);
+
+    const openInlineSettings = (event: React.MouseEvent) => {
+        event.stopPropagation();
+        triggerHaptic?.(20);
+        setIsCompactInline(false);
+    };
+
     const renderActionButtons = () => {
         const seenCommands = new Set<string>();
         const filterDeps = { buttons, inlineCategories: inlineCategories || [], roomNpcs, entities, characterInfo, currentTerrain: props.currentTerrain };
+
+        if (isCompactInline) {
+            return (
+                <div className="inline-action-chips" data-inline-action-chips="true">
+                    {buttons.map(button => {
+                        if (favorites.includes(button.command) || seenCommands.has(button.command)) return null;
+                        const isValid = isButtonValidForEntity(button, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);
+                        if (!isValid || !resolvedTraitButtonIds.has(button.id)) return null;
+                        seenCommands.add(button.command);
+                        return <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} compact glowDelay="0s" />;
+                    })}
+                    {favorites.map(command => {
+                        const button = buttons.find(candidate => candidate.command === command);
+                        if (!button || seenCommands.has(button.command)) return null;
+                        const isValid = isButtonValidForEntity(button, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);
+                        if (!isValid || !resolvedTraitButtonIds.has(button.id)) return null;
+                        seenCommands.add(button.command);
+                        return <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} compact glowDelay="0s" />;
+                    })}
+                    <button
+                        type="button"
+                        className="inline-action-settings"
+                        aria-label="Open inline action settings"
+                        title="Open inline action settings"
+                        onPointerDown={(event) => event.stopPropagation()}
+                        onClick={openInlineSettings}
+                    >
+                        <Settings size={15} />
+                    </button>
+                </div>
+            );
+        }
 
         const favoritedButtons = buttons.filter(b => {
             const isValid = isButtonValidForEntity(b, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);
@@ -247,12 +297,6 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
 
     // --- Special Cases ---
 
-    const isInlineMenu = !isTacticalSet && (
-        categoryAxes.isInlineAction ||
-        ['inventorylist', 'equipmentlist', 'roomitems', 'roomnpcs', 'selection'].includes(safeSetId) ||
-        safeSetId.startsWith('object') ||
-        safeSetId.startsWith('npc')
-    );
     const headerContext = categoryAxes.isCharacter ? targetContext : popoverState.context;
     const cleanHeaderContext = headerContext ? stripAnsiCodes(headerContext) : null;
     const cleanDisplayName = popoverState.displayName
@@ -322,8 +366,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     const CategoryIcon = !isSetManager ? resolveEntityCategoryIcon(categoryId, resolvedTraitIds) : null;
 
     return (
-        <div ref={menuRootRef} style={{ '--accent': themeColor || 'var(--accent)', '--set-accent': themeColor || 'var(--accent)' } as any}>
-            {!isParleyType && (
+        <div ref={menuRootRef} className={isCompactInline ? 'inline-action-compact' : undefined} style={{ '--accent': themeColor || 'var(--accent)', '--set-accent': themeColor || 'var(--accent)' } as any}>
+            {!isParleyType && !isCompactInline && (
                 <div className="popover-header" onPointerDown={(e) => { e.stopPropagation(); }} style={{ cursor: !isSetManager ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', marginBottom: '3px', paddingBottom: '3px', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'none' }} onClick={(event) => { if (event.target instanceof HTMLElement && event.target.closest('[data-keyword-editor="true"]')) return; triggerHaptic?.(20); if (!isSetManager) setPopoverState({ ...popoverState, setId: 'setmanager' }); }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', flex: 1 }}>
                         {CategoryIcon && <CategoryIcon size={16} style={{ flexShrink: 0, opacity: 0.8 }} />}
@@ -342,7 +386,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                 </div>
             )}
 
-            {isChoosingCategory && setCustomTraits && (
+            {!isCompactInline && isChoosingCategory && setCustomTraits && (
                 <TraitToggleSection popoverState={popoverState} customTraits={customTraits || []} setCustomTraits={setCustomTraits} activeTraits={resolvedTraitIds} keywordTraits={keywordTraitIds} triggerHaptic={triggerHaptic} addMessage={addMessage} refreshLogHighlights={refreshLogHighlights} characterInfo={characterInfo} />
             )}
 
@@ -355,19 +399,21 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                             {!isTacticalSet && popoverState.assignSourceId && (
                                 <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} style={{ borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => { const setName = safeSetId; const dir = popoverState.assignSwipeDir; setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: setName }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: 'menu' } } : { ...b, command: setName, label: setName, actionType: 'menu' }) : b)); setPopoverState(null); addMessage('system', `Assigned sub-menu '${setName}'${dir ? ` to swipe ${dir}` : ''}.`); }}>Assign {safeSetId.toUpperCase()} as Menu</div>
                             )}
-                            <CapturedDetailsCard
-                                examineLines={popoverState.capturedExamineLines}
-                                considerLines={popoverState.capturedConsiderLines}
-                                isCapturingExamine={popoverState.isCapturingExamine}
-                                isCapturingConsider={popoverState.isCapturingConsider}
-                                whoisLines={popoverState.capturedWhoisLines}
-                                isCapturingWhois={popoverState.isCapturingWhois}
-                            />
+                            {!isCompactInline && (
+                                <CapturedDetailsCard
+                                    examineLines={popoverState.capturedExamineLines}
+                                    considerLines={popoverState.capturedConsiderLines}
+                                    isCapturingExamine={popoverState.isCapturingExamine}
+                                    isCapturingConsider={popoverState.isCapturingConsider}
+                                    whoisLines={popoverState.capturedWhoisLines}
+                                    isCapturingWhois={popoverState.isCapturingWhois}
+                                />
+                            )}
                             {renderActionButtons()}
-                            {seenCommandsSize === 0 && isInlineMenu && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'npc-shopkeeper' && (
+                            {!isCompactInline && seenCommandsSize === 0 && isInlineMenu && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'npc-shopkeeper' && (
                                 <div className="popover-empty" style={{ padding: '8px', textAlign: 'center', opacity: 0.5, fontSize: '0.75rem' }}>No buttons available for this category</div>
                             )}
-                            {openKeywordEdit && isInlineMenu && popoverState.context && (
+                            {!isCompactInline && openKeywordEdit && isInlineMenu && popoverState.context && (
                                 <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} style={{ borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 4, opacity: 0.6, fontSize: '0.82rem' }} onClick={() => { triggerHaptic?.(20); openKeywordEdit(popoverState.context!, cleanDisplayName || popoverState.context!); setPopoverState(null); }}>✏ Edit keyword "{stripAnsiCodes(popoverState.context)}"</div>
                             )}
                         </>

@@ -8,10 +8,10 @@ import React, { useCallback, useMemo, useEffect, useRef } from 'react';
 import { 
     Compass, Swords, MessageSquare, CloudSun, Footprints,
     ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
-    ChevronsUp, ChevronsDown,
+    ChevronsUp, ChevronsDown, Heart, Zap,
     ArrowUpLeft, ArrowUpRight, ArrowDownLeft, ArrowDownRight 
 } from 'lucide-react';
-import { Message } from '../../types';
+import { GmcpOccupant, Message } from '../../types';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import { TokenRenderer } from './TokenRenderer';
@@ -28,6 +28,7 @@ import { decodeCommandEntities } from '../../utils/commandTextUtils';
 import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { getRoomTerrainVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 import { formatMovementArrow, getMovementDirectionLabel, normalizeMovementDirection } from '../../utils/movementDirections';
+import { RunnerIcon } from '../HUD/PromptBox';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -55,6 +56,67 @@ const getMovementDisplay = (raw: string) => {
     const arrow = direction ? formatMovementArrow(direction) : trimmed;
     const label = direction ? getMovementDirectionLabel(direction) : 'movement';
     return { arrow, label, direction };
+};
+
+const getLightingLabel = (lighting?: string): string => {
+    switch (lighting) {
+        case 'sun': return 'Sunlight';
+        case 'artificial': return 'Artificial light';
+        case 'moon': return 'Moonlight';
+        case 'dark': return 'Darkness';
+        default: return '';
+    }
+};
+
+const getTerrainLabel = (terrain?: string | null): string => {
+    const value = terrain?.trim() || '';
+    return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : '';
+};
+
+const getWeatherLabel = (weather?: string | null): string => {
+    const value = weather?.trim() || '';
+    if (!value || value.toLowerCase() === 'none') return '';
+    return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : '';
+};
+
+const parseEntityCountPrompt = (text: string) => {
+    const matches = [...text.matchAll(/\[(Player|NPC|Object):\s*(\d+)\]/g)];
+    if (matches.length === 0 || matches.map(match => match[0]).join('') !== text) return null;
+    return matches.map(([, kind, count]) => ({ kind, count }));
+};
+
+const getRoomEntityLabel = (entity: string | GmcpOccupant): string => {
+    if (typeof entity === 'string') return entity.trim();
+    return entity.keyword?.trim() || entity.name?.trim() || entity.shortdesc?.trim() || entity.short?.trim() || '';
+};
+
+interface PromptEntityButton {
+    label: string;
+    id?: string;
+    category: 'cat-npc' | 'cat-object';
+}
+
+const getEntityButtonsForPrompt = (
+    entityCountPrompt: Array<{ kind: string; count: string }>,
+    roomNpcs: Array<string | GmcpOccupant> = [],
+    roomItems: Array<string | GmcpOccupant> = [],
+): PromptEntityButton[] => {
+    const entitiesByKind: Record<string, Array<string | GmcpOccupant>> = {
+        NPC: roomNpcs,
+        Object: roomItems,
+    };
+
+    return entityCountPrompt.flatMap(({ kind, count }) => {
+        const limit = Number.parseInt(count, 10);
+        return (entitiesByKind[kind] || [])
+            .map(entity => ({
+                label: getRoomEntityLabel(entity),
+                id: typeof entity === 'string' || entity.id === undefined ? undefined : String(entity.id),
+                category: kind === 'NPC' ? 'cat-npc' as const : 'cat-object' as const,
+            }))
+            .filter(entity => Boolean(entity.label))
+            .slice(0, Number.isNaN(limit) ? undefined : limit);
+    });
 };
 
 const renderMovementArrowIcon = (direction: string | null, fallback: string) => {
@@ -110,190 +172,6 @@ interface MessageLogProps {
     onWheel?: (e: React.WheelEvent) => void;
 }
 
-const UserCommandBubbleWithTimer: React.FC<{
-    msg: Message;
-    isAwaitingResponse?: boolean;
-    commandBloomPhase: string;
-}> = ({ msg, isAwaitingResponse, commandBloomPhase }) => {
-    const active = useActionTimerStore(state => state.activeTimer);
-    const cleanMsgCmd = (msg.textRaw || '').trim().toLowerCase();
-    const cleanTimerCmd = (active?.name || '').trim().toLowerCase();
-    
-    // Check if this timer matches our command
-    const isMatchingTimer = active && (
-        cleanMsgCmd === cleanTimerCmd || 
-        (cleanTimerCmd.startsWith('casting:') && cleanMsgCmd.includes(cleanTimerCmd.substring(8).trim()))
-    );
-
-    const [progress, setProgress] = React.useState(0);
-    const [elapsedMs, setElapsedMs] = React.useState(0);
-
-    // Commit active timer completion to the message's persistent timerInfo
-    React.useEffect(() => {
-        if (!isMatchingTimer || !active) return;
-
-        if (active.isFinished) {
-            const finalElapsed = active.elapsedMs || (Date.now() - active.startedAt);
-            const status = active.isInterrupted ? 'interrupted' : 'completed';
-            useMessageStore.getState().setUserMessages(prev =>
-                prev.map(m => m.id === msg.id ? {
-                    ...m,
-                    timerInfo: {
-                        durationMs: active.durationMs,
-                        elapsedMs: finalElapsed,
-                        status
-                    }
-                } : m)
-            );
-        }
-    }, [isMatchingTimer, active?.id, active?.isFinished, active?.isInterrupted, msg.id]);
-
-    React.useEffect(() => {
-        if (!isMatchingTimer || !active || active.isFinished) {
-            setProgress(0);
-            setElapsedMs(0);
-            return;
-        }
-
-        const start = active.startedAt;
-        const duration = active.durationMs;
-
-        const update = () => {
-            const now = Date.now();
-            const elapsed = now - start;
-            const currentRatio = Math.max(0, Math.min(1, elapsed / duration));
-            
-            setElapsedMs(elapsed);
-            
-            if (duration <= 1000 && elapsed >= duration) {
-                setProgress(1.0);
-                setElapsedMs(duration);
-                useActionTimerStore.getState().completeTimer(false);
-                return;
-            }
-
-            if (elapsed > duration) {
-                setProgress(0.99);
-            } else {
-                setProgress(currentRatio);
-            }
-
-            const currentActive = useActionTimerStore.getState().activeTimer;
-            if (currentActive && !currentActive.isFinished && currentActive.id === active.id) {
-                requestAnimationFrame(update);
-            }
-        };
-
-        const animationFrame = requestAnimationFrame(update);
-        return () => {
-            cancelAnimationFrame(animationFrame);
-        };
-    }, [isMatchingTimer, active?.id, active?.isFinished]);
-
-    const bubbleText = <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />;
-
-    const hasPersisted = !!msg.timerInfo;
-    
-    if (!isMatchingTimer && !hasPersisted) {
-        return (
-            <div className={`user-command-bubble${isAwaitingResponse ? ' awaiting-response' : ''}${commandBloomPhase !== 'off' ? ` bloom-${commandBloomPhase}` : ''}`}>
-                {bubbleText}
-            </div>
-        );
-    }
-
-    let finalProgress = progress;
-    let finalElapsed = elapsedMs;
-    let statusText = 'sending';
-    let statusColor = '#eab308'; // yellow
-    let isFinished = false;
-    let isInterrupted = false;
-
-    if (hasPersisted && msg.timerInfo) {
-        isFinished = true;
-        isInterrupted = msg.timerInfo.status === 'interrupted';
-        finalProgress = 1.0;
-        finalElapsed = msg.timerInfo.elapsedMs;
-        statusText = isInterrupted ? 'interrupted' : 'sent';
-        statusColor = isInterrupted ? '#ef4444' : '#22c55e';
-    } else if (active) {
-        isFinished = active.isFinished;
-        isInterrupted = active.isInterrupted;
-        if (isFinished) {
-            statusText = isInterrupted ? 'interrupted' : 'sent';
-            statusColor = isInterrupted ? '#ef4444' : '#22c55e';
-            finalProgress = 1.0;
-        } else if (active.type === 'spell') {
-            statusText = 'sending';
-            statusColor = '#c084fc';
-        }
-    }
-
-    const stopwatchText = `${(finalElapsed / 1000).toFixed(2)}s`;
-
-    return (
-        <div 
-            className={`user-command-bubble${isFinished ? (isInterrupted ? ' interrupted' : ' completed') : ' active-timer'}${commandBloomPhase !== 'off' ? ` bloom-${commandBloomPhase}` : ''}`}
-            style={{
-                position: 'relative',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                background: isFinished 
-                    ? (isInterrupted ? 'rgba(239, 68, 68, 0.12)' : 'rgba(34, 197, 94, 0.12)') 
-                    : 'rgba(13, 16, 23, 0.85)',
-                border: `1px solid ${isFinished ? (isInterrupted ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)') : 'rgba(255, 255, 255, 0.15)'}`,
-                boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
-                transition: 'all 0.2s ease',
-                pointerEvents: 'none',
-                overflow: 'hidden'
-            }}
-        >
-            <span style={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>{bubbleText}</span>
-            <div 
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontSize: '0.65rem',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.3px',
-                    borderLeft: '1px solid rgba(255, 255, 255, 0.15)',
-                    paddingLeft: '8px'
-                }}
-            >
-                <span style={{ color: statusColor }}>{statusText}</span>
-                <span style={{ fontFamily: 'monospace', color: '#fff', opacity: 0.8 }}>{stopwatchText}</span>
-            </div>
-            
-            <div 
-                style={{
-                    position: 'absolute',
-                    left: 0,
-                    bottom: 0,
-                    width: '100%',
-                    height: '2px',
-                    background: 'rgba(255, 255, 255, 0.05)'
-                }}
-            >
-                <div 
-                    style={{
-                        height: '100%',
-                        width: `${finalProgress * 100}%`,
-                        background: isFinished 
-                            ? (isInterrupted ? '#ef4444' : '#22c55e') 
-                            : (active?.type === 'spell' ? '#c084fc' : '#eab308'),
-                        transition: isFinished ? 'width 0.2s ease-out' : 'none'
-                    }}
-                />
-            </div>
-        </div>
-    );
-};
-
 const MessageItem = React.memo(({
     msg,
     inCombat,
@@ -305,12 +183,16 @@ const MessageItem = React.memo(({
     isOldBatchDim = false,
     isTimestampEnabled,
     isNewbieMode,
-    currentRoomName,
     viewport,
     isTextRevealEnabled,
     isAwaitingResponse,
     batchOffset = 0,
     colors,
+    lighting,
+    currentTerrain,
+    weather,
+    roomNpcs,
+    roomItems,
 }: {
     msg: Message,
     executeCommand: (cmd: string, silent?: boolean) => void,
@@ -322,11 +204,15 @@ const MessageItem = React.memo(({
     isOldBatchDim?: boolean;
     isTimestampEnabled?: boolean;
     isNewbieMode?: boolean;
-    currentRoomName?: string | null,
     viewport: any;
     isTextRevealEnabled: boolean;
     isAwaitingResponse?: boolean;
     batchOffset?: number;
+    lighting?: string;
+    currentTerrain?: string | null;
+    weather?: string | null;
+    roomNpcs?: Array<string | GmcpOccupant>;
+    roomItems?: Array<string | GmcpOccupant>;
     colors?: {
         targetColor?: string;
         playerColor?: string;
@@ -339,6 +225,50 @@ const MessageItem = React.memo(({
 }) => {
     const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
     const content = msg.html;
+    const lightingLabel = getLightingLabel(lighting);
+    const terrainLabel = getTerrainLabel(currentTerrain);
+    const weatherLabel = getWeatherLabel(weather);
+    const entityCountPrompt = msg.type === 'game' ? parseEntityCountPrompt(msg.textOnly || msg.textRaw || '') : null;
+    const promptEntities = getEntityButtonsForPrompt(
+        [{ kind: 'NPC', count: String(roomNpcs?.length || 0) }, { kind: 'Object', count: String(roomItems?.length || 0) }],
+        roomNpcs,
+        roomItems,
+    );
+    const environmentLabels = [terrainLabel, lightingLabel, weatherLabel].filter(Boolean);
+    const promptEnvironment = environmentLabels.length > 0 ? (
+        <span className="prompt-environment-line">
+            [{environmentLabels.join(' | ')}]
+        </span>
+    ) : null;
+    const promptEntityLine = promptEntities.length > 0 ? (
+        <span className="prompt-entities-line">
+            [
+            {promptEntities.map((entity, index) => (
+                <React.Fragment key={`${entity.label}-${entity.id || index}`}>
+                    <span
+                        className="inline-btn prompt-entity-inline"
+                        data-action="menu"
+                        data-category={entity.category}
+                        data-cmd={entity.category}
+                        data-context={entity.label}
+                        data-menu-display="list"
+                        data-targetable="true"
+                        {...(entity.id ? { 'data-id': entity.id } : {})}
+                    >
+                        {entity.label}
+                    </span>
+                    {index < promptEntities.length - 1 ? ' | ' : ''}
+                </React.Fragment>
+            ))}
+            ]
+        </span>
+    ) : null;
+    const promptMetadataLine = promptEnvironment || promptEntityLine ? (
+        <span className="prompt-metadata-line">
+            {promptEnvironment}
+            {promptEntityLine}
+        </span>
+    ) : null;
     // Frozen at mount — prevents wordReveal from toggling off mid-life when re-renders
     // cross the 2-second mark (rapid combat GMCP updates), which collapses inline-block
     // log-word wrappers and shifts inline button positions.
@@ -416,7 +346,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${isRecentEntry && isTextRevealEnabled ? ' recent-entry' : ''}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}`}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${isRecentEntry && isTextRevealEnabled ? ' recent-entry' : ''}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}`}
             style={{ 
                 '--reveal-delay': `${batchOffset * 15}ms`,
                 '--terrain-glow-color': msg.isRoomBlock && !msg.isRoomContentsLine ? getRoomTerrainGlowColor(msg.terrain) : undefined
@@ -440,38 +370,89 @@ const MessageItem = React.memo(({
                     COMMUNICATION
                 </div>
             )}
-            {(msg.type === 'weather' || msg.type === 'gmcp-event') && (
+            {showBlockHeaders && msg.isWeatherBlockStart && (msg.type === 'weather' || msg.type === 'gmcp-event') && (
                 <div className="weather-block-header">
                     <CloudSun size={11} strokeWidth={2.5} />
                     WEATHER
                 </div>
             )}
-            {msg.type === 'movement' && (
+            {showBlockHeaders && msg.isMovementBlockStart && msg.type === 'movement' && (
                 <div className="movement-block-header">
                     <Footprints size={11} strokeWidth={2.5} />
                     MOVEMENT
                 </div>
             )}
             {msg.type === 'user' ? (
-                <UserCommandBubbleWithTimer 
-                    msg={msg} 
-                    isAwaitingResponse={isAwaitingResponse} 
-                    commandBloomPhase={commandBloomPhase} 
-                />
+                <div className="content-row" style={{ justifyContent: 'flex-end', width: '100%', paddingRight: '8px' }}>
+                    <span className="message-content user-command-text" style={{ textAlign: 'right' }}>
+                        <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />
+                    </span>
+                    {timestampEl}
+                </div>
             ) : msg.type === 'snoop-command' ? (
                 <div className="snoop-command-bubble">
                     <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />
                 </div>
             ) : msg.type === 'prompt' ? (
-                <span><TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''))} /></span>
+                msg.promptHPPercent !== undefined ? (
+                    <span className="custom-prompt-container">
+                        <span className="custom-prompt-prefix">[</span>
+                        <span className="prompt-stat-item"><Heart size={11} strokeWidth={3} aria-label="Health" title="Health" /><span style={{ color: getHPPercentColor(msg.promptHPPercent) }}>{msg.promptHPPercent}%</span></span>
+                        <span className="prompt-stat-divider">|</span>
+                        <span className="prompt-stat-item"><Zap size={11} strokeWidth={3} aria-label="Mana" title="Mana" /><span style={{ color: getManaPercentColor(msg.promptManaPercent ?? 100) }}>{msg.promptManaPercent ?? 100}%</span></span>
+                        <span className="prompt-stat-divider">|</span>
+                        <span className="prompt-stat-item"><RunnerIcon size={11} aria-label="Move" title="Move" /><span style={{ color: getMovePercentColor(msg.promptMovePercent ?? 100) }}>{msg.promptMovePercent ?? 100}%</span></span>
+                        <span className="custom-prompt-prefix">]</span>
+                        {msg.promptOpponentName && (
+                            <>
+                                <span className="prompt-vs-label">Vs</span>
+                                <span className="prompt-opponent-info">
+                                    <span className="prompt-opponent-name">{msg.promptOpponentName}</span>
+                                    <span className="prompt-opponent-status"> 
+                                        {msg.promptOpponentHealthPercent !== undefined && msg.promptOpponentHealthPercent !== null 
+                                            ? ` (${msg.promptOpponentHealthPercent}%)` 
+                                            : ` (${msg.promptOpponentHealthStatus || 'Fighting'})`}
+                                    </span>
+                                </span>
+                            </>
+                        )}
+                        <span className="raw-prompt-suffix"> <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''))} /></span>
+                        {promptMetadataLine}
+                    </span>
+                ) : msg.promptHPStatus ? (
+                    <span className="custom-prompt-container">
+                        <span className="custom-prompt-prefix">[</span>
+                        <span className="prompt-stat-item"><Heart size={11} strokeWidth={3} aria-label="Health" title="Health" /><span>{msg.promptHPStatus}</span></span>
+                        <span className="prompt-stat-divider">|</span>
+                        <span className="prompt-stat-item"><Zap size={11} strokeWidth={3} aria-label="Mana" title="Mana" /><span>{msg.promptManaStatus}</span></span>
+                        <span className="prompt-stat-divider">|</span>
+                        <span className="prompt-stat-item"><RunnerIcon size={11} aria-label="Move" title="Move" /><span>{msg.promptMoveStatus}</span></span>
+                        <span className="custom-prompt-prefix">]</span>
+                        {msg.promptOpponentName && (
+                            <>
+                                <span className="prompt-vs-label">Vs</span>
+                                <span className="prompt-opponent-info">
+                                    <span className="prompt-opponent-name">{msg.promptOpponentName}</span>
+                                    <span className="prompt-opponent-status"> ({msg.promptOpponentHealthStatus || 'Fighting'})</span>
+                                </span>
+                            </>
+                        )}
+                        <span className="raw-prompt-suffix"> <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''))} /></span>
+                        {promptMetadataLine}
+                    </span>
+                ) : (
+                    <span><TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''))} /></span>
+                )
+            ) : entityCountPrompt ? (
+                null
             ) : msg.type === 'movement' ? (() => {
                 const movement = getMovementDisplay(msg.textRaw || '');
                 return (
-                    <div className="movement-event-row">
-                        <div className="movement-event-chip" aria-label={`Moved ${movement.label}`}>
-                            <span className="movement-event-arrow">{renderMovementArrowIcon(movement.direction, movement.arrow)}</span>
-                            <span className="movement-event-label">{movement.label}</span>
-                        </div>
+                    <div className="content-row">
+                        {timestampEl}
+                        <span className="message-content">
+                            You move {movement.label}.
+                        </span>
                     </div>
                 );
             })() : msg.type === 'practice-skill' && msg.practiceSkill ? (
@@ -536,13 +517,7 @@ const MessageItem = React.memo(({
                                     fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
                                     splitFirstWord={true}
                                     wordReveal={isTextRevealEnabled && isRecent && !msg.isRoomName}
-                                    metadata={msg.isRoomName ? {
-                                        id: `room:${(currentRoomName || msg.textRaw || '').toLowerCase()}`,
-                                        context: currentRoomName || msg.textRaw || '',
-                                        category: 'cat-room',
-                                        cmd: 'cat-room',
-                                        action: 'menu'
-                                    } : undefined}
+                                    disableRoomInline={msg.isRoomName}
                                 />
                                 <ResourceGainBadge gain={msg.resourceGain} />
                                 {msg.isHitImpact && sheenActive && (
@@ -551,24 +526,18 @@ const MessageItem = React.memo(({
                                             tokens={msg.tokens}
                                             fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
                                             splitFirstWord={true}
-                                            metadata={msg.isRoomName ? {
-                                                id: `room:${(currentRoomName || msg.textRaw || '').toLowerCase()}`,
-                                                context: currentRoomName || msg.textRaw || '',
-                                                category: 'cat-room',
-                                                cmd: 'cat-room',
-                                                action: 'menu'
-                                            } : undefined}
+                                            disableRoomInline={msg.isRoomName}
                                         />
                                     </div>
                                 )}
                                 {msg.isDamageImpact && sheenActive && (
                                     <div className="damage-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={true} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={true} disableRoomInline={msg.isRoomName} />
                                     </div>
                                 )}
                                 {msg.isRipMessage && sheenActive && (
                                     <div className="rip-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={true} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={true} disableRoomInline={msg.isRoomName} />
                                     </div>
                                 )}
                                 {msg.isRoomName && msg.tokens && msg.html?.includes('room-desc-line') && (
@@ -587,6 +556,29 @@ const MessageItem = React.memo(({
     );
 });
 
+const getHPPercentColor = (percent: number): string => {
+    if (percent >= 80) return '#22c55e'; // green
+    if (percent >= 60) return '#4ade80'; // light green
+    if (percent >= 50) return '#facc15'; // yellow
+    if (percent >= 30) return '#fb923c'; // orange
+    return '#ef4444'; // red
+};
+
+const getManaPercentColor = (percent: number): string => {
+    if (percent >= 80) return '#c084fc'; // purple
+    if (percent >= 60) return '#a855f7'; // medium purple
+    if (percent >= 40) return '#ec4899'; // pink
+    return '#60a5fa'; // blue
+};
+
+const getMovePercentColor = (percent: number): string => {
+    if (percent >= 85) return '#22c55e'; // green
+    if (percent >= 70) return '#4ade80'; // light green
+    if (percent >= 50) return '#86efac'; // pale green
+    if (percent >= 30) return '#fb923c'; // orange
+    return '#ef4444'; // red
+};
+
 const MessageLog: React.FC<MessageLogProps> = ({
     onLogClick,
     onMouseUp,
@@ -599,7 +591,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { 
         inCombat, inCombatRef, roomName, viewport, executeCommand, setParley,
         triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled,
-        isNewbieMode, showSpectatePromptInLog, sessionMode,
+        isNewbieMode, showSpectatePromptInLog, sessionMode, lighting, currentTerrain, weather, roomNpcs, roomItems,
         accountState
     } = useBaseGame() as any;
     const isSpectateMode = useModeStore(s => s.isSpectating);
@@ -745,10 +737,21 @@ const MessageLog: React.FC<MessageLogProps> = ({
         }
 
         if (hidePrompt) {
-            list = list.filter(m => m.type !== 'prompt');
+            let lastPromptIdx = -1;
+            for (let i = list.length - 1; i >= 0; i--) {
+                if (list[i].type === 'prompt') {
+                    lastPromptIdx = i;
+                    break;
+                }
+            }
+            if (lastPromptIdx !== -1) {
+                list = list.filter((m, idx) => m.type !== 'prompt' || idx === lastPromptIdx);
+            } else {
+                list = list.filter(m => m.type !== 'prompt');
+            }
         }
 
-        return list;
+        return list.filter(message => !(message.type === 'game' && parseEntityCountPrompt(message.textOnly || message.textRaw || '')));
     }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime, isSpectateMode, activeView, spectateBuffer.isLive, spectateBuffer.displayCutoff, hidePrompt]);
 
     const lastUserMsgIndex = useMemo(() => {
@@ -1092,12 +1095,16 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     isOldBatchDim={brightBatchFloor !== undefined && (msg.batchId === undefined || msg.batchId < brightBatchFloor)}
                                     isTimestampEnabled={isTimestampEnabled}
                                     isNewbieMode={isNewbieMode}
-                                    currentRoomName={roomName}
                                     viewport={viewport}
                                     isTextRevealEnabled={isTextRevealEnabled}
                                     isAwaitingResponse={msg.type === 'user' && msg.id === awaitingResponseUserId}
                                     batchOffset={batchOffset}
                                     colors={colors}
+                                    lighting={lighting}
+                                    currentTerrain={currentTerrain}
+                                    weather={weather}
+                                    roomNpcs={roomNpcs}
+                                    roomItems={roomItems}
                                 />
                             </div>
                         );

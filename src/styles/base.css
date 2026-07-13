@@ -11,22 +11,25 @@
     --radius-card: 12px;
 
     /* Dark Mode (Default) */
-    --bg-app-rgb: 10, 13, 21;
+    --bg-app-rgb: 14, 13, 11;
     --bg-app: rgb(var(--bg-app-rgb));
-    --bg-panel: #101010;
+    --bg-panel: #171512;
     --bg-overlay: rgba(0, 0, 0, 0.70);
-    --text-primary: #d1d5db;   /* Cool Gray 300 - Softer than pure white */
-    --text-dim: #9ca3af;       /* Gray 400 */
-    --text-faded: #6b7280;     /* Gray 500 */
+    --text-primary: #d4cdb8;   /* Warm parchment */
+    --text-dim: #a9a18d;       /* Muted parchment */
+    --text-faded: #756f60;     /* Faded parchment */
     --border-color: rgba(212, 170, 0, 0.4);
-    --input-bg: rgb(35, 35, 40);
-    --command-surface-bg: rgb(45, 39, 43);
-    --header-bg: rgba(0, 0, 0, 0.75);
-    --bg-modal: #101010;
+    --input-bg: rgb(32, 29, 24);
+    --command-surface-bg: rgb(45, 39, 30);
+    --header-bg: rgba(13, 12, 10, 0.88);
+    --bg-modal: #171512;
     --border-modal: rgba(212, 170, 0, 0.2);
     --color-exit: rgba(255, 255, 255, 0.9);
-    --mapper-bg: #0a0d15;
+    --mapper-bg: #0e0d0b;
     --mapper-border: rgba(212, 170, 0, 0.3);
+    --map-water-surface: #101b22;
+    --map-underground-surface: #171513;
+    --map-land-surface: #171614;
     
     /* Inline Button Colors */
     --color-npc: rgba(253, 224, 71, 0.95);    /* Bright Pastel Yellow */
@@ -58,26 +61,29 @@
 }
 
 .light-mode {
-    --bg-app: #f2f2f7;
-    --bg-panel: rgba(255, 255, 255, 0.9);
-    --bg-overlay: rgba(255, 255, 255, 0.6);
-    --text-primary: #1d1d1f;
-    --text-dim: #424245;
-    --text-faded: #86868b;
-    --border-color: rgba(0, 0, 0, 0.1);
-    --input-bg: #ffffff;
-    --command-surface-bg: #e5e5ea;
-    --header-bg: #e8e8ed;
-    --bg-modal: #ffffff;
-    --border-modal: rgba(0, 0, 0, 0.1);
-    --accent: #007aff;
-    --accent-rgb: 0, 122, 255;
-    --map-accent: #0066cc;
+    --bg-app: #f3eee3;
+    --bg-panel: #fbf8f0;
+    --bg-overlay: rgba(243, 238, 227, 0.82);
+    --text-primary: #2f2a20;
+    --text-dim: #6b6252;
+    --text-faded: #9b907d;
+    --border-color: rgba(138, 102, 32, 0.28);
+    --input-bg: #fffdf7;
+    --command-surface-bg: #eee6d5;
+    --header-bg: rgba(251, 248, 240, 0.94);
+    --bg-modal: #fbf8f0;
+    --border-modal: rgba(138, 102, 32, 0.22);
+    --accent: #8a6620;
+    --accent-rgb: 138, 102, 32;
+    --map-accent: #8a6620;
     --ansi-white: #444444;
     --ansi-bright-white: #000000;
     --color-exit: #000000;
-    --mapper-bg: #f2f2f7;
-    --mapper-border: rgba(0, 0, 0, 0.1);
+    --mapper-bg: #e8e0d1;
+    --mapper-border: rgba(138, 102, 32, 0.2);
+    --map-water-surface: #e4eef0;
+    --map-underground-surface: #e8e3da;
+    --map-land-surface: #e9e2d4;
 }
 
 @media (min-width: 1025px) {

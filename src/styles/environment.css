@@ -27,16 +27,16 @@
 .client-sun-overlay {
     z-index: 5;
     background: radial-gradient(circle at center,
-        rgba(255, 255, 200, 0.24) 0%,
-        rgba(255, 230, 140, 0.11) 45%,
+        rgba(255, 255, 200, 0.04) 0%,
+        rgba(255, 230, 140, 0.01) 45%,
         transparent 90%
     );
     mix-blend-mode: overlay;
-    backdrop-filter: brightness(1.04) saturate(1.12);
+    backdrop-filter: brightness(1.002) saturate(1.01);
 }
 
 .lighting-state-sun .client-sun-overlay {
-    opacity: 0.38;
+    opacity: 0.04;
 }
 
 .client-moon-overlay {
@@ -57,15 +57,15 @@
 .client-artificial-overlay {
     z-index: 7;
     background: radial-gradient(circle at center,
-        rgba(220, 20, 20, 0.24) 0%,
-        rgba(150, 10, 10, 0.09) 45%,
+        rgba(220, 20, 20, 0.10) 0%,
+        rgba(150, 10, 10, 0.04) 45%,
         transparent 85%
     );
     mix-blend-mode: screen;
 }
 
 .lighting-state-artificial .client-artificial-overlay {
-    opacity: 0.52;
+    opacity: 0.15;
 }
 
 .client-dark-overlay {
@@ -143,9 +143,9 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
 
 .lighting-state-sun .overlay-layer {
     background: linear-gradient(to bottom, 
-        rgba(100, 180, 255, 0.1) 0%, 
-        rgba(150, 210, 255, 0.05) 35%, 
-        rgba(0, 5, 20, 0.02) 100%
+        rgba(100, 180, 255, 0.04) 0%, 
+        rgba(150, 210, 255, 0.02) 35%, 
+        rgba(0, 5, 20, 0.01) 100%
     );
     /* SUBTLE sky-blue wash near the top, fading to a very faint ambient tint below */
 }
@@ -153,9 +153,9 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
 .is-mobile:not(.is-landscape) .lighting-state-sun .overlay-layer {
     /* Diagonal gradient for portrait mobile to emphasize darkness in the bottom-left corner */
     background: linear-gradient(225deg, 
-        rgba(100, 180, 255, 0.1) 0%, 
-        rgba(150, 210, 255, 0.04) 40%, 
-        rgba(0, 5, 20, 0.08) 100%
+        rgba(100, 180, 255, 0.04) 0%, 
+        rgba(150, 210, 255, 0.02) 40%, 
+        rgba(0, 5, 20, 0.04) 100%
     );
 }
 
@@ -195,9 +195,9 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
 .lighting-state-artificial .overlay-layer {
     /* Very dark red ambient wash — top-heavy darkness fading out toward a dark red bottom */
     background: linear-gradient(to bottom,
-        rgba(15, 5, 5, 0.55) 0%,
-        rgba(12, 4, 4, 0.6) 45%,
-        rgba(40, 10, 10, 0.25) 80%,
+        rgba(15, 5, 5, 0.35) 0%,
+        rgba(12, 4, 4, 0.4) 45%,
+        rgba(40, 10, 10, 0.08) 80%,
         transparent 100%
     );
 }

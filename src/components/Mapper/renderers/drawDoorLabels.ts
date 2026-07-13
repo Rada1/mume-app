@@ -3,7 +3,7 @@
  * @description Renders Arda map door names beside named hidden door exits.
  */
 
-import { DIRS, GRID_SIZE, getExitTargetId } from '../mapperUtils';
+import { DIRS, GRID_SIZE, getExitTargetId, getClientThemeColor } from '../mapperUtils';
 import { RenderContext } from './rendererUtils';
 
 type DoorExit = {
@@ -70,7 +70,7 @@ const drawLabelBubble = (
     const radius = 3 * invZoom;
 
     ctx.save();
-    ctx.font = `${fontSize}px "Inter", sans-serif`;
+    ctx.font = `${fontSize}px "Iosevka", monospace`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
@@ -78,7 +78,7 @@ const drawLabelBubble = (
     const height = fontSize + padY * 2;
     const labelY = y - 12 * invZoom;
 
-    ctx.fillStyle = 'rgba(16, 16, 16, 0.72)';
+    ctx.fillStyle = getClientThemeColor('--bg-app', '#0e0d0b');
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
     ctx.lineWidth = Math.max(1 * invZoom, 0.5);
     ctx.beginPath();
@@ -86,9 +86,7 @@ const drawLabelBubble = (
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = '#f4f4f5';
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
-    ctx.shadowBlur = 2 * invZoom;
+    ctx.fillStyle = getClientThemeColor('--text-primary', '#d4cdb8');
     ctx.fillText(text, x, labelY);
     ctx.restore();
 };

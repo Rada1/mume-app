@@ -12,6 +12,7 @@ import { Lock, Compass } from 'lucide-react';
 import { DrawerResizeHandle } from './DrawerResizeHandle';
 import { AccountDrawer } from './AccountDrawer';
 import { CharacterCard } from '../HUD/CharacterCard';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import './PlaceholderDrawers.css';
 
 interface DrawerManagerProps {
@@ -29,10 +30,11 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 }) => {
     const {
         characterName, viewport, gameState,
-        sessionMode
+        sessionMode, isImmersionMode
     } = useGame() as any;
     const mapperDesktopRef = React.useRef<MapperRef>(null);
     const { ui, setUI } = useUI();
+    const { mapDrawerOpacity, setMapDrawerOpacity, characterDrawerOpacity, setCharacterDrawerOpacity } = useSettingsStore();
 
     // Body classes for desktop layout
     React.useEffect(() => {
@@ -111,7 +113,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             {!viewport.isMobile && (
                 <div className="left-drawer-stack open">
-                    <div className="map-drawer-desktop open">
+                    <div className="map-drawer-desktop open" style={{ opacity: mapDrawerOpacity } as React.CSSProperties}>
                         <DrawerResizeHandle handleType="left" widthVar="--desktop-map-width" leftVar="--desktop-map-left" />
                         <DrawerResizeHandle handleType="right" widthVar="--desktop-map-width" />
                         <div className="drawer-header">
@@ -132,6 +134,21 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                                     setHeldButton={setHeldButton}
                                     setCommandPreview={setCommandPreview}
                                 />
+
+                                {/* Floating Opacity Slider */}
+                                <div className="map-opacity-slider-container" onPointerDown={(e) => e.stopPropagation()}>
+                                    <span className="map-opacity-label">Opacity:</span>
+                                    <input
+                                        type="range"
+                                        min="0.2"
+                                        max="1.0"
+                                        step="0.05"
+                                        value={mapDrawerOpacity}
+                                        onChange={(e) => setMapDrawerOpacity(parseFloat(e.target.value))}
+                                        className="map-opacity-slider"
+                                    />
+                                    <span className="map-opacity-value">{Math.round(mapDrawerOpacity * 100)}%</span>
+                                </div>
 
                                 {gameState === 'account' && (
                                     <div className="map-placeholder-overlay">
@@ -176,7 +193,13 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             {!viewport.isMobile && (
                 <div className="right-drawer-stack open">
-                    <div className="character-drawer-desktop open">
+                    <div
+                        className="character-drawer-desktop open"
+                        style={{
+                            opacity: characterDrawerOpacity,
+                            ...(!isImmersionMode ? { filter: 'grayscale(100%)' } : {})
+                        } as React.CSSProperties}
+                    >
                         <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" />
                         <DrawerResizeHandle handleType="right" widthVar="--desktop-character-width" rightVar="--desktop-character-right" />
                         <div className="drawer-header">
@@ -186,6 +209,22 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                         </div>
                         <div className="drawer-content character-drawer-content" style={{ position: 'relative' }}>
                             <CharacterCard embedded forceOpen />
+
+                            {/* Floating Opacity Slider */}
+                            <div className="character-opacity-slider-container" onPointerDown={(e) => e.stopPropagation()}>
+                                <span className="character-opacity-label">Opacity:</span>
+                                <input
+                                    type="range"
+                                    min="0.1"
+                                    max="1.0"
+                                    step="0.05"
+                                    value={characterDrawerOpacity}
+                                    onChange={(e) => setCharacterDrawerOpacity(parseFloat(e.target.value))}
+                                    className="character-opacity-slider"
+                                />
+                                <span className="character-opacity-value">{Math.round(characterDrawerOpacity * 100)}%</span>
+                            </div>
+
                             {gameState === 'account' && (
                                 <div className="character-card-locked-overlay">
                                     <div className="character-card-locked-icon-ring">

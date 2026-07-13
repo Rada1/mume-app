@@ -1,6 +1,6 @@
 import { RenderContext, drawLine, drawInkyLine } from './rendererUtils';
 import { getZoneVisuals } from '../zoneFilters';
-import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, WALL_COLOR, LONG_CONNECTION_COLOR } from '../mapperUtils';
+import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, WALL_COLOR, LONG_CONNECTION_COLOR, getClientThemeColor } from '../mapperUtils';
 import { drawTerrainIcon, getTerrainTileInset, getRoomWalls } from './drawTerrains';
 import { DETAIL_GRAYSCALE_FILTER, getRoomZone, isOutsideActiveZone } from './zoneFocusOverlay';
 
@@ -725,7 +725,8 @@ export const drawRoomFlagsOptimized = (
     loadF: string[],
     questF: string[],
     scale: number = 1.0,
-    loadScale: number = scale
+    loadScale: number = scale,
+    imagesRef?: RenderContext['imagesRef']
 ) => {
     type Indicator = { regex: RegExp, sym: string, color: string, size: number, glowStrength?: number, noBlackBg?: boolean };
 
@@ -786,6 +787,58 @@ export const drawRoomFlagsOptimized = (
     const loadFlagsStr = loadF.join('|').toUpperCase();
     const hasQuest = questF.length > 0 || /QUEST/i.test([...mobF, ...loadF].join('|'));
 
+    const getMMapperAsset = (ind: Indicator, isLoad: boolean): HTMLImageElement | undefined => {
+        if (!imagesRef) return undefined;
+        const source = ind.regex.source;
+        let asset = '';
+        if (isLoad) {
+            if (/DEATHTRAP/i.test(source)) asset = 'load-deathtrap';
+            else if (/TREASURE/i.test(source)) asset = 'load-treasure';
+            else if (/ARMOUR(?!_SHOP)/i.test(source)) asset = 'load-armour';
+            else if (/WEAPON(?!_SHOP)/i.test(source)) asset = 'load-weapon';
+            else if (/EQUIPMENT/i.test(source)) asset = 'load-equipment';
+            else if (/KEY/i.test(source)) asset = 'load-key';
+            else if (/HERB/i.test(source)) asset = 'load-herb';
+            else if (/WATER|POND|WELL|FOUNTAIN/i.test(source)) asset = 'load-water';
+            else if (/FOOD(?!_SHOP)/i.test(source)) asset = 'load-food';
+            else if (/STABLE/i.test(source)) asset = 'load-stable';
+            else if (/WARG/i.test(source)) asset = 'load-warg';
+            else if (/MULE/i.test(source)) asset = 'load-mule';
+            else if (/PACK_HORSE/i.test(source)) asset = 'load-pack';
+            else if (/TRAINED_HORSE/i.test(source)) asset = 'load-trained';
+            else if (/ROHIRRIM/i.test(source)) asset = 'load-rohirrim';
+            else if (/HORSE/i.test(source)) asset = 'load-horse';
+            else if (/BOAT/i.test(source)) asset = 'load-boat';
+            else if (/FERRY/i.test(source)) asset = 'load-ferry';
+            else if (/COACH/i.test(source)) asset = 'load-coach';
+            else if (/TOWER/i.test(source)) asset = 'load-watch';
+            else if (/MAIL/i.test(source)) asset = 'load-mail';
+            else if (/CLOCK/i.test(source)) asset = 'load-clock';
+            else if (/ATTENTION/i.test(source)) asset = 'load-attention';
+            else if (/WHITE_WORD/i.test(source)) asset = 'load-whiteword';
+            else if (/DARK_WORD/i.test(source)) asset = 'load-darkword';
+        } else if (/AGGRESSIVE_MOB/i.test(source)) asset = 'mob-aggmob';
+        else if (/SUPER_MOB/i.test(source)) asset = 'mob-smob';
+        else if (/ELITE_MOB/i.test(source)) asset = 'mob-elitemob';
+        else if (/RATTLESNAKE/i.test(source)) asset = 'mob-rattlesnake';
+        else if (/QUEST/i.test(source)) asset = 'mob-questmob';
+        else if (/RENT/i.test(source)) asset = 'mob-rent';
+        else if (/WEAPON_SHOP/i.test(source)) asset = 'mob-weaponshop';
+        else if (/ARMOUR_SHOP/i.test(source)) asset = 'mob-armourshop';
+        else if (/FOOD_SHOP/i.test(source)) asset = 'mob-foodshop';
+        else if (/PET_SHOP/i.test(source)) asset = 'mob-petshop';
+        else if (/SHOP/i.test(source)) asset = 'mob-shop';
+        else if (/MAGE_GUILD/i.test(source)) asset = 'mob-mageguild';
+        else if (/CLERIC_GUILD/i.test(source)) asset = 'mob-clericguild';
+        else if (/WARRIOR_GUILD/i.test(source)) asset = 'mob-warriorguild';
+        else if (/RANGER_GUILD/i.test(source)) asset = 'mob-rangerguild';
+        else if (/SCOUT_GUILD/i.test(source)) asset = 'mob-scoutguild';
+        else if (/GUILD/i.test(source)) asset = 'mob-guild';
+        else if (/MILKABLE/i.test(source)) asset = 'mob-milkable';
+        else if (/PASSIVE_MOB/i.test(source)) asset = 'mob-passivemob';
+        return asset ? imagesRef.current[`mmapper-${asset}`] : undefined;
+    };
+
     // First pass: collect matching indicators (deduplicated by symbol)
     const mobMatched: Indicator[] = [];
     const loadMatched: Indicator[] = [];
@@ -830,11 +883,12 @@ export const drawRoomFlagsOptimized = (
         const totalW = mobMatched.reduce((sum, ind) => sum + ind.size + 4, 0);
         let off = -totalW / 2 + (mobMatched[0]?.size ?? 0) / 2;
         for (const ind of mobMatched) {
-            const icon = getIndicatorIcon(ind.sym, ind.color, false, ind.glowStrength, false, true, ind.size);
+            const icon = getMMapperAsset(ind, false) || getIndicatorIcon(ind.sym, ind.color, false, 0, true, true, ind.size);
+            const iconSize = getMMapperAsset(ind, false) ? 35 : icon.width;
             ctx.save();
             ctx.translate(anchorX + off, anchorY);
             ctx.scale(scale, scale);
-            ctx.drawImage(icon, -icon.width / 2, -icon.height / 2);
+            ctx.drawImage(icon, -iconSize / 2, -iconSize / 2, iconSize, iconSize);
             
             ctx.restore();
             off += ind.size + 4;
@@ -852,12 +906,13 @@ export const drawRoomFlagsOptimized = (
             const oy = Math.sin(angle) * radius;
 
             const size = Math.max(9, Math.round(ind.size * 0.75));
-            const icon = getIndicatorIcon(ind.sym, ind.color, false, ind.glowStrength, false, true, size);
+            const icon = getMMapperAsset(ind, true) || getIndicatorIcon(ind.sym, ind.color, false, 0, true, true, size);
+            const iconSize = getMMapperAsset(ind, true) ? 25 : icon.width;
             
             ctx.save();
             ctx.translate(anchorX + ox, anchorY + oy);
             ctx.scale(loadScale, loadScale);
-            ctx.drawImage(icon, -icon.width / 2, -icon.height / 2);
+            ctx.drawImage(icon, -iconSize / 2, -iconSize / 2, iconSize, iconSize);
             
             ctx.restore();
         }
@@ -1142,7 +1197,9 @@ export const drawFeatures = (
                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
                 const zoneName = localRoom?.zone || rData[9] || '';
                 const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
-                const currentWallColor = zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR;
+                const currentWallColor = rCtx.useLegacyMapArt
+                    ? (zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR)
+                    : getClientThemeColor('--text-primary', isDarkMode ? '#d4cdb8' : '#2f2a20');
                 const currentDoorColor = zoneVis.doorColor || rCtx.mapTileVisuals?.doorColor || '#ffcc00';
 
                 // Calculate fade-in for newly explored rooms (skip for active room)
@@ -1325,7 +1382,7 @@ export const drawFeatures = (
                         if (d === 'n') { x2 += s; } else if (d === 's') { y1 += s; x2 += s; y2 += s; } else if (d === 'e') { x1 += s; x2 += s; y2 += s; } else { y2 += s; }
 
                         if (!hasExit) {
-                            drawInkyLine(ctx, x1, y1, x2, y2, currentWallColor, 3.0, dpr, invZoom);
+                            drawInkyLine(ctx, x1, y1, x2, y2, currentWallColor, 1.6, dpr, invZoom);
                         } else if (hasDoor) {
                             const ddx = x2 - x1, ddy = y2 - y1;
                             // Clip to this room's tile so the door doesn't bleed into the neighbor
@@ -1335,7 +1392,7 @@ export const drawFeatures = (
                             // Brown post segments (no drop shadow)
                             ctx.save();
                             ctx.strokeStyle = currentWallColor;
-                            ctx.lineWidth = 3.5;
+                            ctx.lineWidth = 1.8;
                             ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
                             ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                             ctx.restore();
@@ -1347,7 +1404,7 @@ export const drawFeatures = (
                             ctx.shadowColor = currentDoorColor;
                             if (isClosed) {
                                 ctx.strokeStyle = currentDoorColor;
-                                ctx.lineWidth = 4.0;
+                                ctx.lineWidth = 2.4;
                                 ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                             } else {
                                 const sqSize = 4.0;
@@ -1445,7 +1502,7 @@ export const drawFeatures = (
                         }
                         
                         if (flagScale > 0.0) {
-                            drawRoomFlagsOptimized(ctx, anchorX, anchorY, camera.zoom, finalMobF, loadF, questF, flagScale);
+                            drawRoomFlagsOptimized(ctx, anchorX, anchorY, camera.zoom, finalMobF, loadF, questF, flagScale, flagScale, rCtx.imagesRef);
                         }
                         ctx.restore();
                     }
@@ -1522,7 +1579,6 @@ export const drawFeatures = (
 
 export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
     const { ctx, isDarkMode, currentZ, preloaded, camera, allRooms, dpr, invZoom, baseMapExitsRef } = rCtx;
-    const wallColor = rCtx.mapTileVisuals?.wallColor || WALL_COLOR;
     const s = GRID_SIZE;
 
     for (const room of localRooms) {
@@ -1533,7 +1589,9 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
         const wx = room.x * s, wy = room.y * s, cX = wx + s / 2, cY = wy + s / 2;
         const zoneName = room.zone || '';
         const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
-        const currentWallColor = zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR;
+        const currentWallColor = rCtx.useLegacyMapArt
+            ? (zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR)
+            : getClientThemeColor('--text-primary', isDarkMode ? '#d4cdb8' : '#2f2a20');
         const currentDoorColor = zoneVis.doorColor || rCtx.mapTileVisuals?.doorColor || '#ffcc00';
 
         // Local Connections
@@ -1659,7 +1717,9 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
             const wx = room.x * s, wy = room.y * s;
             const zoneName = room.zone || '';
             const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
-            const currentWallColor = zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR;
+            const currentWallColor = rCtx.useLegacyMapArt
+                ? (zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR)
+                : getClientThemeColor('--text-primary', isDarkMode ? '#d4cdb8' : '#2f2a20');
             const currentDoorColor = zoneVis.doorColor || rCtx.mapTileVisuals?.doorColor || '#ffcc00';
             for (const d of ['n', 's', 'e', 'w']) {
                 const rId = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;
@@ -1668,7 +1728,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 let x1 = wx, y1 = wy, x2 = wx, y2 = wy;
                 if (d === 'n') { x2 += s; } else if (d === 's') { y1 += s; x2 += s; y2 += s; } else if (d === 'e') { x1 += s; x2 += s; y2 += s; } else { y2 += s; }
                 if (!hasExit) {
-                    drawInkyLine(ctx, x1, y1, x2, y2, currentWallColor, 3.0, dpr, invZoom);
+                    drawInkyLine(ctx, x1, y1, x2, y2, currentWallColor, 1.6, dpr, invZoom);
                 } else if (hasDoor && camera.zoom >= 0.1) {
                     const ddx = x2 - x1, ddy = y2 - y1;
                     // Clip to this room's tile so the door doesn't bleed into the neighbor
@@ -1677,7 +1737,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                     if (isActiveRoom) drawDoorVisualOutline(ctx, x1, y1, x2, y2, isClosed);
                     // Brown post segments (no drop shadow)
                     ctx.save();
-                    ctx.strokeStyle = currentWallColor; ctx.lineWidth = 3.5;
+                    ctx.strokeStyle = currentWallColor; ctx.lineWidth = 1.8;
                     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
                     ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                     ctx.restore();
@@ -1686,7 +1746,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                     ctx.fillStyle = currentDoorColor;
                     ctx.shadowBlur = 8; ctx.shadowColor = currentDoorColor;
                     if (isClosed) {
-                        ctx.strokeStyle = currentDoorColor; ctx.lineWidth = 4.0;
+                        ctx.strokeStyle = currentDoorColor; ctx.lineWidth = 2.4;
                         ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                     } else {
                         const sqSize = 4.0;
@@ -1724,7 +1784,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
             const wx = room.x * s, wy = room.y * s, cX = wx + s / 2, cY = wy + s / 2;
             const mobF = room.mobFlags || [], loadF = room.loadFlags || [], questF = room.roomQuestFlags || [];
             if (mobF.length > 0 || loadF.length > 0 || questF.length > 0) {
-                drawRoomFlagsOptimized(ctx, cX, cY, camera.zoom, mobF, loadF, questF);
+                drawRoomFlagsOptimized(ctx, cX, cY, camera.zoom, mobF, loadF, questF, 1.0, 1.0, rCtx.imagesRef);
             }
             if (room.ridable === 'NOT_RIDABLE' || room.ridable === false || room.ridable === 'false') {
                 const iconSize = 14;
@@ -1785,7 +1845,7 @@ export const drawAnimatingFlags = (rCtx: RenderContext) => {
                 }
             }
             if (flagScale > 0.0) {
-                drawRoomFlagsOptimized(ctx, anchorX, anchorY, camera.zoom, finalMobF, loadF, questF, flagScale, loadScale);
+                drawRoomFlagsOptimized(ctx, anchorX, anchorY, camera.zoom, finalMobF, loadF, questF, flagScale, loadScale, rCtx.imagesRef);
             }
             if (elapsed < delay + animDur || !isBaked) {
                 rCtx.triggerRender?.(); // keep rendering loop active
