@@ -86,9 +86,17 @@
     opacity: 0.72;
 }
 
-/* Light and dark themes stay clean unless the independent immersion toggle is enabled. */
-:is(.light-mode, .dark-mode):not(.immersion-mode) .environment-root.back,
+/* Weather/fog front effects and the lighting/terrain-wave effects inside
+   .environment-root.back are immersion-only. The map background image inside
+   .environment-root.back is the exception — it renders in both modes
+   (see EnvironmentEffects.tsx), so the container itself must stay visible. */
 :is(.light-mode, .dark-mode):not(.immersion-mode) .environment-root.front > * {
+    display: none;
+}
+
+/* The wiki theme uses a flat warm page surface. Do not darken it with the
+   immersion lighting multiply layer in the standard themes. */
+:is(.light-mode, .dark-mode):not(.immersion-mode) .client-dark-overlay {
     display: none;
 }
 
@@ -789,5 +797,4 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
 .terrain-indoors .terrain-tint-layer {
     background-color: rgba(101, 67, 33, 0.1);
 }
-
 

@@ -212,50 +212,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         return () => window.removeEventListener('mume-mapper-center-on-player', onCenter);
     }, [handleCenterOnPlayer]);
 
-    // Zoom-in while the swipe wheel is active (heldButton set on mobile only)
-    const savedZoomRef = useRef<number | null>(null);
-    const holdZoomTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const snapCameraToPlayer = useCallback((zoom: number) => {
-        if (!playerPosRef.current || !canvasRef.current) return;
-        // Use clientWidth/Height — identical to canvas.width/getDPR() used by the animation loop
-        const w = canvasRef.current.clientWidth;
-        const h = canvasRef.current.clientHeight;
-        cameraRef.current.x = (playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2) - (w / (2 * zoom));
-        let targetY = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));
-        if (isMobile && !isLandscape) {
-            const tacticalClearance = 32;
-            targetY -= (tacticalClearance / 2) / zoom;
-        }
-        cameraRef.current.y = targetY;
-        cameraRef.current.zoom = zoom;
-        (cameraRef.current as any).targetZoom = zoom;
-    }, [playerPosRef, canvasRef, cameraRef, isMobile, isLandscape]);
-
-    useEffect(() => {
-        if (!isMobile) return;
-        if (heldButton) {
-            if (savedZoomRef.current !== null || holdZoomTimerRef.current) return;
-            holdZoomTimerRef.current = setTimeout(() => {
-                holdZoomTimerRef.current = null;
-                savedZoomRef.current = cameraRef.current.zoom;
-                snapCameraToPlayer(2.8);
-                triggerRender();
-            }, 100);
-        } else {
-            if (holdZoomTimerRef.current) {
-                clearTimeout(holdZoomTimerRef.current);
-                holdZoomTimerRef.current = null;
-            }
-            if (savedZoomRef.current !== null) {
-                const target = savedZoomRef.current;
-                savedZoomRef.current = null;
-                snapCameraToPlayer(target);
-                triggerRender();
-            }
-        }
-    }, [heldButton, isMobile, cameraRef, triggerRender, snapCameraToPlayer]);
-
     // We still keep the context menu local to the instance for better UX (each window has its own context menu)
     const [localContextMenu, setLocalContextMenu] = useState<{ x: number, y: number, wx: number, wy: number, roomId: string | null } | null>(null);
     const setContextMenu = setLocalContextMenu;

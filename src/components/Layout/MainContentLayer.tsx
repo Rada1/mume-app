@@ -533,6 +533,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             overflow: 'hidden',
                         } as React.CSSProperties}
                     >
+                        <div className="log-opaque-backdrop" />
                         {resolvedBgImage && <div className="log-background-layer" style={{ backgroundImage: `url(${resolvedBgImage})` }} />}
                         {!viewport.isMobile && <>
                             <DrawerResizeHandle handleType="log-left" widthVar="--desktop-log-width" />

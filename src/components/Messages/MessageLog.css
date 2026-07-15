@@ -29,6 +29,19 @@
     display: none;
 }
 
+/* Opaque backing for the log so the client background image reads behind the
+   map/character drawers but not through the log text. Solid edge-to-edge —
+   the log and drawers dock directly against each other with no gap, so the
+   fade into the background image is drawn on the drawers' inner edge instead
+   (see .map-drawer-desktop / .character-drawer-desktop in Drawers.css). */
+.log-opaque-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-color: var(--bg-app);
+}
+
 .has-drawer-open .message-log-container {
     filter: none;
 }
@@ -196,17 +209,114 @@
 
 .custom-prompt-container {
     display: inline-flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    --mume-wiki-link-color: #c9a84c;
+}
+
+.light-mode .custom-prompt-container {
+    --mume-wiki-link-color: #8b6b10;
+}
+
+.prompt-row {
+    display: inline-flex;
     align-items: center;
+    flex-wrap: wrap;
+    min-width: 0;
+    line-height: 1.25;
+}
+
+.prompt-vitals-row,
+.prompt-controls-row {
+    gap: 0.35em;
+}
+
+.prompt-controls-row {
+    max-width: 100%;
+}
+
+.prompt-control-group {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25em;
+}
+
+.prompt-stat-label {
+    font-size: 0.78em;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.prompt-stat-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25em;
+}
+
+.prompt-movement-indicators,
+.prompt-combat-stat-indicators {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.45em;
+    margin-left: 0.35em;
+}
+
+.prompt-movement-indicator:hover,
+.prompt-movement-indicator:focus-visible,
+.prompt-mode-indicator:hover,
+.prompt-mode-indicator:focus-visible {
+    color: var(--mume-wiki-link-color) !important;
+    outline: none;
+}
+
+.prompt-mode-indicators {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    margin-left: 0.35em;
+}
+
+.prompt-mode-indicator {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--mume-wiki-link-color) !important;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.prompt-mode-indicator.active {
+    color: var(--mume-wiki-link-color) !important;
+}
+
+.prompt-movement-indicator {
+    color: var(--mume-wiki-link-color) !important;
+}
+
+.prompt-control-group .prompt-stat-divider {
+    color: var(--text-primary, #d4cdb8) !important;
+}
+
+.prompt-combat-stat-indicators > span:not(.prompt-stat-divider) {
+    color: var(--text-primary, #d4cdb8) !important;
+}
+
+.prompt-combat-stat-indicators {
+    color: var(--text-primary, #d4cdb8);
+    font-size: 0.92em;
+    font-weight: 700;
 }
 
 .prompt-metadata-line {
-    flex-basis: 100%;
     display: inline-flex;
     align-items: baseline;
     gap: 1.25ch;
     line-height: 1.2;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .prompt-environment-line {
@@ -593,9 +703,8 @@
     padding: 0 3px;
     font-weight: bold !important;
     border: 0;
-    border-bottom: 1px solid color-mix(in srgb, var(--color-target), transparent 20%);
     outline: none;
-    box-shadow: inset 0 -8px 0 color-mix(in srgb, var(--color-target), transparent 88%);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-target), transparent 82%);
     background: color-mix(in srgb, var(--color-target), transparent 94%);
     z-index: 1;
 }
@@ -1416,9 +1525,15 @@
     padding: 0;
     text-decoration: underline;
     text-decoration-style: dotted;
-    text-decoration-color: var(--text-primary, #d4cdb8);
+    text-decoration-color: var(--glow-color, currentColor);
     text-underline-offset: 3px;
 }
+
+/* Text selection should not retain inline-button underlines or alter the selection line box. */
+.message-log.is-text-selecting .inline-btn {
+    text-decoration: none !important;
+}
+
 /* Objects/Items and Beings (NPCs/Players) */
 .auto-obj, .auto-item, .npc-highlighter, .pc-highlighter, .auto-npc, .auto-occupant {
     text-decoration: none;
@@ -1657,11 +1772,8 @@ span.inline-btn {
     padding-left: 3px !important;
     padding-right: 3px !important;
     border: 0;
-    border-bottom: 1px solid color-mix(in srgb, var(--glow-color, var(--color-target)), transparent 18%);
     background: color-mix(in srgb, var(--glow-color, var(--color-target)), transparent 90%) !important;
-    box-shadow:
-        inset 0 -8px 0 color-mix(in srgb, var(--glow-color, var(--color-target)), transparent 84%),
-        0 0 0 1px color-mix(in srgb, var(--glow-color, var(--color-target)), transparent 80%);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--glow-color, var(--color-target)), transparent 80%);
     transform: none !important;
     z-index: 10;
 }
@@ -1680,9 +1792,8 @@ span.inline-btn {
 .inline-btn.is-opponent.active-target,
 .inline-btn.is-opponent.selected {
     border: 0 !important;
-    border-bottom: 1px solid color-mix(in srgb, var(--color-target), transparent 18%) !important;
     background: color-mix(in srgb, var(--color-target), transparent 92%) !important;
-    box-shadow: inset 0 -8px 0 color-mix(in srgb, var(--color-target), transparent 86%) !important;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-target), transparent 82%) !important;
 }
 
 .message-log-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
@@ -2766,6 +2877,108 @@ span.inline-btn {
 .message-log-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
     color: inherit !important;
     text-shadow: none !important;
+}
+
+/* Match the MUME Wiki's warm hyperlink colors throughout the log. */
+.message-content .inline-btn,
+.message-content .inline-btn[data-category],
+.message-content .room-name-inline,
+.message-content .room-name-inline span {
+    --mume-wiki-link-color: #c9a84c;
+    --glow-color: var(--mume-wiki-link-color) !important;
+    color: var(--mume-wiki-link-color) !important;
+}
+
+.light-mode .message-content .inline-btn,
+.light-mode .message-content .inline-btn[data-category],
+.light-mode .message-content .room-name-inline,
+.light-mode .message-content .room-name-inline span {
+    --mume-wiki-link-color: #8b6b10;
+}
+
+/* Prompt metadata sits outside .message-content, so give its entity buttons
+   the same warm link color explicitly. */
+.custom-prompt-container .prompt-entity-inline {
+    --mume-wiki-link-color: #c9a84c;
+    --glow-color: var(--mume-wiki-link-color) !important;
+    color: var(--mume-wiki-link-color) !important;
+}
+
+.light-mode .custom-prompt-container .prompt-entity-inline {
+    --mume-wiki-link-color: #8b6b10;
+}
+
+/* Room names get a small location-marker highlight without changing line height. */
+.message-content .room-name-inline {
+    padding: 0 1.5em 0 3px !important;
+    border-radius: 3px;
+    background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--mume-wiki-link-color, #c9a84c) 26%, transparent),
+        color-mix(in srgb, var(--mume-wiki-link-color, #c9a84c) 26%, transparent) calc(100% - 1.5em),
+        transparent 100%
+    ) !important;
+    box-shadow: none;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+
+/* Main room titles are plain spans while their descriptions are merged separately. */
+.message.is-room-name .message-content .room-title-text {
+    padding: 0 1.5em 0 3px;
+    border-radius: 3px;
+    background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--mume-wiki-link-color, #c9a84c) 26%, transparent),
+        color-mix(in srgb, var(--mume-wiki-link-color, #c9a84c) 26%, transparent) calc(100% - 1.5em),
+        transparent 100%
+    );
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+
+/* Warm parchment callouts: a subtle story-note treatment instead of a chat bubble. */
+.message-log .comm-bubble-wrapper,
+.message-log .comm-bubble-wrapper.continuation {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    margin: 4px 0 !important;
+    padding: 3px 8px;
+    border-left: 2px solid var(--mume-wiki-link-color, #c9a84c);
+    background: color-mix(in srgb, var(--mume-wiki-link-color, #c9a84c) 7%, transparent);
+}
+
+.light-mode .message-log .comm-bubble-wrapper,
+.light-mode .message-log .comm-bubble-wrapper.continuation {
+    --mume-wiki-link-color: #8b6b10;
+}
+
+.message-log .comm-content-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.message-log .comm-bubble,
+.message-log .comm-bubble-wrapper.continuation .comm-bubble {
+    display: block;
+    width: auto;
+    max-width: none;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    line-height: inherit;
+}
+
+.message-log .comm-bubble:hover {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    transform: none;
 }
 
 

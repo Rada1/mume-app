@@ -5,7 +5,8 @@ import { Embers } from './Embers';
 import { useInputStore } from '../../stores/useInputStore';
 import { EnvironmentGlow } from './EnvironmentGlow';
 
-const BACKGROUND_MAP_OPACITY = 0.10;
+const BACKGROUND_MAP_OPACITY = 0.18;
+const BACKGROUND_MAP_OPACITY_NO_IMMERSION = BACKGROUND_MAP_OPACITY * 0.35;
 
 interface EnvironmentEffectsProps {
     lighting: LightingType;
@@ -82,18 +83,20 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
         return bgImage.toLowerCase().includes('forest.png');
     }, [bgImage]);
 
+    const backgroundMapOpacity = isImmersionMode ? BACKGROUND_MAP_OPACITY : BACKGROUND_MAP_OPACITY_NO_IMMERSION;
+
     return (
         <div style={{ '--lightning-x': `${lightningX}%` } as React.CSSProperties}>
             {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
             <div className={`environment-root back lighting-state-${lighting || 'none'} terrain-${(terrain || 'default').toLowerCase().replace(/\s+/g, '-')} ${isWater ? 'water-motion-active' : ''} ${isForest ? 'forest-motion-active' : ''}`}>
-                {prevImage && (
-                    <div 
-                        className="background-layer" 
-                        style={{ 
+                {isImmersionMode && prevImage && (
+                    <div
+                        className="background-layer"
+                        style={{
                             backgroundImage: `url(${prevImage})`,
-                            opacity: triggerFade ? 0 : BACKGROUND_MAP_OPACITY,
+                            opacity: triggerFade ? 0 : backgroundMapOpacity,
                             transition: 'opacity 300ms ease-in-out',
-                        }} 
+                        }}
                     >
                         <div style={{
                             position: 'absolute',
@@ -105,14 +108,14 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         }} />
                     </div>
                 )}
-                {currentImage && (
-                    <div 
-                        className="background-layer" 
-                        style={{ 
+                {isImmersionMode && currentImage && (
+                    <div
+                        className="background-layer"
+                        style={{
                             backgroundImage: `url(${currentImage})`,
-                            opacity: prevImage ? (triggerFade ? BACKGROUND_MAP_OPACITY : 0) : BACKGROUND_MAP_OPACITY,
+                            opacity: prevImage ? (triggerFade ? backgroundMapOpacity : 0) : backgroundMapOpacity,
                             transition: prevImage ? 'opacity 300ms ease-in-out' : 'none',
-                        }} 
+                        }}
                     >
                         <div style={{
                             position: 'absolute',
@@ -124,7 +127,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         }} />
                     </div>
                 )}
-                {!isMobile && (
+                {isImmersionMode && !isMobile && (
                     <>
                         <div className="client-lighting-overlay client-sun-overlay" />
                         <div className="client-lighting-overlay client-moon-overlay" />
@@ -132,7 +135,9 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         <div className="client-lighting-overlay client-dark-overlay" />
                     </>
                 )}
-                <EnvironmentGlow terrain={terrain || undefined} lighting={lighting} input={input} />
+                {isImmersionMode && (
+                    <EnvironmentGlow terrain={terrain || undefined} lighting={lighting} input={input} />
+                )}
                 {isImmersionMode && (
                     <div className={`storm-overlay-layer ${weather === 'heavy-rain' ? 'active' : ''}`} />
                 )}
@@ -147,7 +152,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
 
             {/* --- FRONT LAYER: Atmospheric & Interactive [z-index: 4500+] --- */}
             <div className={`environment-root front`}>
-                {isMobile && (
+                {isImmersionMode && isMobile && (
                     <div className={`lighting-state-${lighting || 'none'}`} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
                         <div className="client-lighting-overlay client-sun-overlay" />
                         <div className="client-lighting-overlay client-moon-overlay" />

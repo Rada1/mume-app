@@ -517,6 +517,30 @@
     height: auto;
 }
 
+/* The map/character drawers dock flush against the log with no gap between
+   them, so the fade into the client background image has to live on the
+   drawers' own inner edge (the side touching the log) rather than in a gap
+   that doesn't exist. Only shown when the background image itself is
+   visible, i.e. immersion mode off. */
+@media (min-width: 1025px) {
+    :is(.light-mode, .dark-mode):not(.immersion-mode) .map-drawer-desktop .drawer-content::after,
+    :is(.light-mode, .dark-mode):not(.immersion-mode) .character-drawer-desktop .drawer-content::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 150;
+        pointer-events: none;
+    }
+
+    :is(.light-mode, .dark-mode):not(.immersion-mode) .map-drawer-desktop .drawer-content::after {
+        background: linear-gradient(to right, transparent calc(100% - 140px), var(--bg-app) 100%);
+    }
+
+    :is(.light-mode, .dark-mode):not(.immersion-mode) .character-drawer-desktop .drawer-content::after {
+        background: linear-gradient(to left, transparent calc(100% - 140px), var(--bg-app) 100%);
+    }
+}
+
 .map-drawer-desktop.open {
     transform: translateX(0);
     opacity: 1;
@@ -536,6 +560,13 @@
     flex-direction: column;
     gap: 12px;
     pointer-events: none;
+}
+
+/* Map desktop keeps the mapper and log as the only primary work surfaces. */
+@media (min-width: 1025px) {
+    body.map-drawer-open .right-drawer-stack {
+        display: none !important;
+    }
 }
 
 .character-drawer-desktop {
@@ -1391,6 +1422,10 @@
     }
 
     .map-canvas-full-viewport .mapper-container::before {
+        display: none !important;
+    }
+
+    .map-canvas-full-viewport .mapper-container::after {
         display: none !important;
     }
 

@@ -15,7 +15,8 @@ export interface DispositionSliderConfig {
 }
 
 interface DispositionSliderPopoutProps {
-    sliders: DispositionSliderConfig[];
+    slider?: DispositionSliderConfig;
+    sliders?: DispositionSliderConfig[];
     anchorRect: DOMRect;
     onSelect: (id: DispositionSliderConfig['id'], value: string, index: number) => void;
     onClose: () => void;
@@ -34,49 +35,63 @@ const getIndex = (value: string, options: string[]) => {
 // --- Render Section ---
 
 export const DispositionSliderPopout: React.FC<DispositionSliderPopoutProps> = ({
+    slider,
     sliders,
     anchorRect,
     onSelect,
     onClose
-}) => ReactDOM.createPortal(
+}) => {
+    const visibleSliders = slider ? [slider] : (sliders || []);
+
+    return ReactDOM.createPortal(
     <>
         <div className="disposition-popout-backdrop" onClick={(e) => { e.stopPropagation(); onClose(); }} />
         <div
-            className="disposition-popout"
+            className={`disposition-popout${slider ? ' disposition-single-popout' : ''}`}
             style={{
                 bottom: (window.innerHeight - anchorRect.top) + 12,
                 left: anchorRect.left + (anchorRect.width / 2)
             }}
             onClick={(e) => e.stopPropagation()}
         >
-            <div className="disposition-popout-title">Disposition</div>
-            {sliders.map(slider => {
-                const currentIndex = getIndex(slider.value, slider.options);
+            <div className="disposition-popout-title">{slider?.label || 'Disposition'}</div>
+            {visibleSliders.map(activeSlider => {
+                const currentIndex = getIndex(activeSlider.value, activeSlider.options);
                 return (
-                    <div key={slider.id} className="disposition-slider-column">
-                        <div className="disposition-slider-label">{slider.label}</div>
+                    <div key={activeSlider.id} className="disposition-slider-column has-codes">
+                        <div className="disposition-slider-label">{activeSlider.label}</div>
+                        <div className="disposition-slider-codes">
+                            {[...activeSlider.options.keys()].reverse().map((realIndex) => (
+                                <span
+                                    key={realIndex}
+                                    className={realIndex === currentIndex ? 'active' : ''}
+                                >
+                                    {realIndex + 1}
+                                </span>
+                            ))}
+                        </div>
                         <input
                             className="disposition-slider"
                             type="range"
                             min="0"
-                            max={slider.options.length - 1}
+                            max={activeSlider.options.length - 1}
                             step="1"
                             value={currentIndex}
                             onChange={(e) => {
                                 const index = Number(e.target.value);
-                                onSelect(slider.id, slider.options[index], index);
+                                onSelect(activeSlider.id, activeSlider.options[index], index);
                             }}
-                            aria-label={slider.label}
+                            aria-label={activeSlider.label}
                         />
                         <div className="disposition-slider-options">
-                            {[...slider.displayLabels].reverse().map((displayLabel, reverseIndex) => {
-                                const realIndex = slider.displayLabels.length - 1 - reverseIndex;
+                            {[...activeSlider.displayLabels].reverse().map((displayLabel, reverseIndex) => {
+                                const realIndex = activeSlider.displayLabels.length - 1 - reverseIndex;
                                 const isActive = realIndex === currentIndex;
                                 return (
                                     <button
                                         key={displayLabel}
                                         className={`disposition-option${isActive ? ' active' : ''}`}
-                                        onClick={() => onSelect(slider.id, slider.options[realIndex], realIndex)}
+                                        onClick={() => onSelect(activeSlider.id, activeSlider.options[realIndex], realIndex)}
                                     >
                                         {displayLabel}
                                     </button>
@@ -89,4 +104,5 @@ export const DispositionSliderPopout: React.FC<DispositionSliderPopoutProps> = (
         </div>
     </>,
     document.body
-);
+    );
+};

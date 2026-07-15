@@ -223,7 +223,11 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 const roomTextStyle: React.CSSProperties = { ...(e.metadata?.style || {}) };
                 if (e.metadata?.color && !roomTextStyle.color) roomTextStyle.color = e.metadata.color;
                 return (
-                    <span key={idx} style={Object.keys(roomTextStyle).length > 0 ? roomTextStyle : undefined}>
+                    <span
+                        key={idx}
+                        className="room-title-text"
+                        style={Object.keys(roomTextStyle).length > 0 ? roomTextStyle : undefined}
+                    >
                         {content}
                     </span>
                 );

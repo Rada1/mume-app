@@ -15,6 +15,7 @@ import { useModeStore } from '../../stores/useModeStore';
 import { TokenRenderer } from '../Messages/TokenRenderer';
 import PromptCombatStatsLine from './PromptCombatStatsLine';
 import { PromptInventoryChips } from './PromptInventoryChips';
+import RoomChipRows from '../Mapper/RoomChipRows';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { DispositionSliderPopout, DispositionSliderConfig } from './DispositionSliderPopout';
 import { targetTextMatchesEntity } from '../../utils/selectionUtils';
@@ -33,11 +34,12 @@ const HEALTH_SEGMENTS = HEALTH_TIERS.length - 1;
 const MANA_SEGMENTS = MANA_TIERS.length - 1;
 const MOVE_SEGMENTS = MOVE_TIERS.length - 1;
 const MOOD_OPTIONS = ['wimpy', 'prudent', 'normal', 'brave', 'aggressive', 'berserk'];
-const MOOD_LABELS = ['WIM', 'PRU', 'NOR', 'BRA', 'AGG', 'BER'];
+const MOOD_LABELS = ['WIMPY', 'PRUDENT', 'NORMAL', 'BRAVE', 'AGGRESSIVE', 'BERSERK'];
 const SPEED_OPTIONS = ['quick', 'fast', 'normal', 'careful', 'thorough'];
-const SPEED_LABELS = ['QUIC', 'FAST', 'NORM', 'CARE', 'THOR'];
+const SPEED_LABELS = ['QUICK', 'FAST', 'NORMAL', 'CAREFUL', 'THOROUGH'];
 const ALERT_OPTIONS = ['normal', 'careful', 'attentive', 'vigilant', 'paranoid'];
-const ALERT_LABELS = ['NORM', 'CARE', 'ATTE', 'VIGI', 'PARA'];
+const ALERT_LABELS = ['NORMAL', 'CAREFUL', 'ATTENTIVE', 'VIGILANT', 'PARANOID'];
+const POSITION_CODES: Record<string, number> = { sleeping: 4, resting: 5, sitting: 6, standing: 8 };
 
 export const RunnerIcon: React.FC<{ size?: number; className?: string }> = ({ size = 11, className }) => (
     <svg
@@ -957,12 +959,16 @@ const PromptBox: FC<PromptBoxProps> = ({
                 </div>
 
                 <PromptInventoryChips affects={affects} showGear={false} />
+                <div className="prompt-room-occupants" aria-label="Room occupants">
+                    <RoomChipRows variant="occupants-row" />
+                </div>
 
                 {activeSlider === 'pos' && activeButtonRect && (
                     <CombatSliderPopout 
                         label="POSITION"
                         value={playerPosition}
                         options={['sleeping', 'resting', 'sitting', 'standing']}
+                        codes={['sleeping', 'resting', 'sitting', 'standing'].map(opt => POSITION_CODES[opt])}
                         anchorRect={activeButtonRect}
                         onSelect={(val, idx) => {
                             if (playerPosition === 'sleeping' && idx > 0) {

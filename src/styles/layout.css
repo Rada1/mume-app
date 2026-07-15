@@ -54,9 +54,29 @@
     height: 800%;
     background-size: contain !important;
     background-position: center !important;
-    opacity: 0.10;
+    opacity: 0.18;
     filter: sepia(1) hue-rotate(195deg) saturate(6) brightness(0.9) !important;
-    transition: opacity 300ms ease-in-out, filter 0.4s ease;
+    transition: opacity 300ms ease-in-out, filter 0.4s ease, left 0.4s ease;
+}
+
+/* The image is zoomed in (800% + contain + centered), so whatever point sits
+   at this element's center is the map art's own center. On desktop the log
+   isn't necessarily centered in the viewport — it's centered in the gap
+   between the map and character drawers, which can be resized to different
+   widths — so recenter horizontally on the log's actual midpoint instead of
+   the viewport's, keeping the art's center aligned with the log's center. */
+@media (min-width: 1025px) {
+    .environment-root.back .background-layer {
+        left: calc((var(--desktop-map-width, 22vw) + 100% - var(--desktop-character-width, 22vw)) / 2);
+    }
+}
+
+/* Light mode: invert the dark-background/white-line map art into a
+   dark-line look, then tint the (now white) background to match the log's
+   parchment color (--bg-app, #f3eee3) instead of stark white, so the map
+   reads as the same paper as the log rather than a separate white sheet. */
+.light-mode .environment-root.back .background-layer {
+    filter: invert(1) brightness(0.95) sepia(0.2) brightness(0.95) !important;
 }
 
 .app-content-shaker {
@@ -127,7 +147,8 @@
         overflow: visible;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: var(--radius-card, 12px) !important;
-        background-color: rgba(13, 16, 23, 0.35) !important;
+        /* Use the warm MUME Wiki parchment-brown surface directly in dark mode. */
+        background-color: var(--bg-app) !important;
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35) !important;
         padding: 10px 14px !important;
         box-sizing: border-box !important;
@@ -140,7 +161,7 @@
     .force-desktop .message-log-container {
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: var(--radius-card, 12px) !important;
-        background-color: rgba(13, 16, 23, 0.35) !important;
+        background-color: var(--bg-app) !important;
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35) !important;
         padding: 10px 14px !important;
         box-sizing: border-box !important;
@@ -251,13 +272,13 @@
 @media (min-width: 1024px) and (max-width: 1850px) {
     body.map-drawer-open .app-content-shaker {
         padding-left: calc(var(--desktop-map-width, var(--drawer-width)) + var(--drawer-gap));
+        padding-right: 0;
     }
 }
 
 /* Utility drawer push (right side) — matches map drawer push exactly */
 @media (min-width: 1024px) and (max-width: 1850px) {
-    body.utility-drawer-open .app-content-shaker,
-    .app-container:not(.state-account) .app-content-shaker {
+    body.utility-drawer-open .app-content-shaker {
         padding-right: calc(var(--desktop-character-width, var(--drawer-width)) + var(--drawer-gap));
     }
 }

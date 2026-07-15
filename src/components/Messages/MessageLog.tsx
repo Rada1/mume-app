@@ -11,7 +11,7 @@ import {
     ChevronsUp, ChevronsDown, Heart, Zap,
     ArrowUpLeft, ArrowUpRight, ArrowDownLeft, ArrowDownRight 
 } from 'lucide-react';
-import { GmcpOccupant, Message } from '../../types';
+import { GmcpOccupant, Message, Token } from '../../types';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import { TokenRenderer } from './TokenRenderer';
@@ -29,6 +29,7 @@ import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { getRoomTerrainVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 import { formatMovementArrow, getMovementDirectionLabel, normalizeMovementDirection } from '../../utils/movementDirections';
 import { RunnerIcon } from '../HUD/PromptBox';
+import PromptModeIndicators from './PromptModeIndicators';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -78,6 +79,14 @@ const getWeatherLabel = (weather?: string | null): string => {
     if (!value || value.toLowerCase() === 'none') return '';
     return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : '';
 };
+
+const stripPromptModeTokens = (tokens?: Token[]): Token[] | undefined => tokens?.map(token => {
+    if (token.type !== 'text' && token.type !== 'ansi') return token;
+    return {
+        ...token,
+        content: token.content.replace(/\b[AMPS]\d+\b/g, '')
+    };
+});
 
 const parseEntityCountPrompt = (text: string) => {
     const matches = [...text.matchAll(/\[(Player|NPC|Object):\s*(\d+)\]/g)];
@@ -225,6 +234,10 @@ const MessageItem = React.memo(({
 }) => {
     const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
     const content = msg.html;
+    const promptTokens = msg.type === 'prompt' ? stripPromptModeTokens(msg.tokens) : msg.tokens;
+    const promptFallbackHtml = msg.type === 'prompt'
+        ? sanitizeMumeHtml(ansiConvert.toHtml((msg.textRaw || '').replace(/\b[AMPS]\d+\b/g, '')))
+        : sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''));
     const lightingLabel = getLightingLabel(lighting);
     const terrainLabel = getTerrainLabel(currentTerrain);
     const weatherLabel = getWeatherLabel(weather);
@@ -396,13 +409,14 @@ const MessageItem = React.memo(({
             ) : msg.type === 'prompt' ? (
                 msg.promptHPPercent !== undefined ? (
                     <span className="custom-prompt-container">
-                        <span className="custom-prompt-prefix">[</span>
-                        <span className="prompt-stat-item"><Heart size={11} strokeWidth={3} aria-label="Health" title="Health" /><span style={{ color: getHPPercentColor(msg.promptHPPercent) }}>{msg.promptHPPercent}%</span></span>
-                        <span className="prompt-stat-divider">|</span>
-                        <span className="prompt-stat-item"><Zap size={11} strokeWidth={3} aria-label="Mana" title="Mana" /><span style={{ color: getManaPercentColor(msg.promptManaPercent ?? 100) }}>{msg.promptManaPercent ?? 100}%</span></span>
-                        <span className="prompt-stat-divider">|</span>
-                        <span className="prompt-stat-item"><RunnerIcon size={11} aria-label="Move" title="Move" /><span style={{ color: getMovePercentColor(msg.promptMovePercent ?? 100) }}>{msg.promptMovePercent ?? 100}%</span></span>
-                        <span className="custom-prompt-prefix">]</span>
+                        <span className="prompt-row prompt-vitals-row">
+                            <span className="custom-prompt-prefix">[</span>
+                            <span className="prompt-stat-item"><span className="prompt-stat-label">HP</span><span>{msg.promptHPPercent}%</span></span>
+                            <span className="prompt-stat-divider">|</span>
+                            <span className="prompt-stat-item"><span className="prompt-stat-label">MANA</span><span>{msg.promptManaPercent ?? 100}%</span></span>
+                            <span className="prompt-stat-divider">|</span>
+                            <span className="prompt-stat-item"><span className="prompt-stat-label">MP</span><span>{msg.promptMovePercent ?? 100}%</span></span>
+                            <span className="custom-prompt-prefix">]</span>
                         {msg.promptOpponentName && (
                             <>
                                 <span className="prompt-vs-label">Vs</span>
@@ -416,18 +430,23 @@ const MessageItem = React.memo(({
                                 </span>
                             </>
                         )}
-                        <span className="raw-prompt-suffix"> <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''))} /></span>
+                        </span>
+                        <span className="prompt-row prompt-controls-row">
+                            <PromptModeIndicators />
+                            <span className="raw-prompt-suffix"> <TokenRenderer tokens={promptTokens} fallbackHtml={promptFallbackHtml} /></span>
+                        </span>
                         {promptMetadataLine}
                     </span>
                 ) : msg.promptHPStatus ? (
                     <span className="custom-prompt-container">
-                        <span className="custom-prompt-prefix">[</span>
-                        <span className="prompt-stat-item"><Heart size={11} strokeWidth={3} aria-label="Health" title="Health" /><span>{msg.promptHPStatus}</span></span>
-                        <span className="prompt-stat-divider">|</span>
-                        <span className="prompt-stat-item"><Zap size={11} strokeWidth={3} aria-label="Mana" title="Mana" /><span>{msg.promptManaStatus}</span></span>
-                        <span className="prompt-stat-divider">|</span>
-                        <span className="prompt-stat-item"><RunnerIcon size={11} aria-label="Move" title="Move" /><span>{msg.promptMoveStatus}</span></span>
-                        <span className="custom-prompt-prefix">]</span>
+                        <span className="prompt-row prompt-vitals-row">
+                            <span className="custom-prompt-prefix">[</span>
+                            <span className="prompt-stat-item"><span className="prompt-stat-label">HP</span><span>{msg.promptHPStatus}</span></span>
+                            <span className="prompt-stat-divider">|</span>
+                            <span className="prompt-stat-item"><span className="prompt-stat-label">MANA</span><span>{msg.promptManaStatus}</span></span>
+                            <span className="prompt-stat-divider">|</span>
+                            <span className="prompt-stat-item"><span className="prompt-stat-label">MP</span><span>{msg.promptMoveStatus}</span></span>
+                            <span className="custom-prompt-prefix">]</span>
                         {msg.promptOpponentName && (
                             <>
                                 <span className="prompt-vs-label">Vs</span>
@@ -437,7 +456,11 @@ const MessageItem = React.memo(({
                                 </span>
                             </>
                         )}
-                        <span className="raw-prompt-suffix"> <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''))} /></span>
+                        </span>
+                        <span className="prompt-row prompt-controls-row">
+                            <PromptModeIndicators />
+                            <span className="raw-prompt-suffix"> <TokenRenderer tokens={promptTokens} fallbackHtml={promptFallbackHtml} /></span>
+                        </span>
                         {promptMetadataLine}
                     </span>
                 ) : (
@@ -515,7 +538,7 @@ const MessageItem = React.memo(({
                                 <TokenRenderer
                                     tokens={msg.tokens}
                                     fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
-                                    splitFirstWord={true}
+                                    splitFirstWord={msg.isRoomName ? false : true}
                                     wordReveal={isTextRevealEnabled && isRecent && !msg.isRoomName}
                                     disableRoomInline={msg.isRoomName}
                                 />
@@ -525,19 +548,19 @@ const MessageItem = React.memo(({
                                         <TokenRenderer
                                             tokens={msg.tokens}
                                             fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
-                                            splitFirstWord={true}
+                                            splitFirstWord={msg.isRoomName ? false : true}
                                             disableRoomInline={msg.isRoomName}
                                         />
                                     </div>
                                 )}
                                 {msg.isDamageImpact && sheenActive && (
                                     <div className="damage-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={true} disableRoomInline={msg.isRoomName} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={msg.isRoomName ? false : true} disableRoomInline={msg.isRoomName} />
                                     </div>
                                 )}
                                 {msg.isRipMessage && sheenActive && (
                                     <div className="rip-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={true} disableRoomInline={msg.isRoomName} />
+                                    <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={msg.isRoomName ? false : true} disableRoomInline={msg.isRoomName} />
                                     </div>
                                 )}
                                 {msg.isRoomName && msg.tokens && msg.html?.includes('room-desc-line') && (
@@ -555,29 +578,6 @@ const MessageItem = React.memo(({
         </div>
     );
 });
-
-const getHPPercentColor = (percent: number): string => {
-    if (percent >= 80) return '#22c55e'; // green
-    if (percent >= 60) return '#4ade80'; // light green
-    if (percent >= 50) return '#facc15'; // yellow
-    if (percent >= 30) return '#fb923c'; // orange
-    return '#ef4444'; // red
-};
-
-const getManaPercentColor = (percent: number): string => {
-    if (percent >= 80) return '#c084fc'; // purple
-    if (percent >= 60) return '#a855f7'; // medium purple
-    if (percent >= 40) return '#ec4899'; // pink
-    return '#60a5fa'; // blue
-};
-
-const getMovePercentColor = (percent: number): string => {
-    if (percent >= 85) return '#22c55e'; // green
-    if (percent >= 70) return '#4ade80'; // light green
-    if (percent >= 50) return '#86efac'; // pale green
-    if (percent >= 30) return '#fb923c'; // orange
-    return '#ef4444'; // red
-};
 
 const MessageLog: React.FC<MessageLogProps> = ({
     onLogClick,
@@ -869,6 +869,13 @@ const MessageLog: React.FC<MessageLogProps> = ({
     useEffect(() => {
         const handleSelectionChange = () => {
             const selection = window.getSelection();
+            const logElement = scrollContainerRef.current;
+            const selectionInLog = !!selection && !selection.isCollapsed && selection.toString().length > 0 && !!logElement && (
+                (!!selection.anchorNode && logElement.contains(selection.anchorNode)) ||
+                (!!selection.focusNode && logElement.contains(selection.focusNode))
+            );
+            logElement?.classList.toggle('is-text-selecting', selectionInLog);
+
             if (!selection || selection.isCollapsed || selection.toString().length === 0) {
                 setSelectionRange(null);
                 return;
@@ -904,8 +911,11 @@ const MessageLog: React.FC<MessageLogProps> = ({
             }
         };
         document.addEventListener('selectionchange', handleSelectionChange);
-        return () => document.removeEventListener('selectionchange', handleSelectionChange);
-    }, []);
+        return () => {
+            document.removeEventListener('selectionchange', handleSelectionChange);
+            scrollContainerRef.current?.classList.remove('is-text-selecting');
+        };
+    }, [scrollContainerRef]);
 
     const messagesRef = React.useRef(displayMessages);
     messagesRef.current = displayMessages;

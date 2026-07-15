@@ -5,6 +5,7 @@
  */
 
 import { MiddleEarthVectors, LabelVector, MapBackgroundVisualAdjustments } from '../mapperTypes';
+import { getClientThemeColor } from '../mapperUtils';
 
 // --- Types Section ---
 
@@ -309,7 +310,7 @@ export function drawBackgroundMap(
     if (drawLayers.includes('ocean')) {
         ctx.save();
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.fillStyle = isDarkMode ? '#0b0f19' : '#e0e7ff'; // deep dark blue-gray (dark) / soft indigo (light)
+        ctx.fillStyle = getClientThemeColor('--bg-app', isDarkMode ? '#1a1410' : '#f4eee0');
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.restore();
     }

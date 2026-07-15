@@ -10,6 +10,7 @@ interface CombatSliderPopoutProps {
     label: string;
     value: string;
     options: string[];
+    codes?: number[];
     anchorRect: DOMRect;
     onSelect: (val: string, index: number) => void;
     onClose: () => void;
@@ -23,6 +24,7 @@ export const CombatSliderPopout: React.FC<CombatSliderPopoutProps> = ({
     label,
     value,
     options,
+    codes,
     anchorRect,
     onSelect,
     onClose,
@@ -44,15 +46,25 @@ export const CombatSliderPopout: React.FC<CombatSliderPopoutProps> = ({
                 style={{
                     bottom: (window.innerHeight - anchorRect.top) + 12,
                     left: anchorRect.left + (anchorRect.width / 2),
-                    width: isBeorningOrBear ? '180px' : '128px',
+                    width: isBeorningOrBear ? '200px' : '148px',
                     gridTemplateColumns: isBeorningOrBear ? 'repeat(2, minmax(0, 1fr))' : '1fr',
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="disposition-popout-title">{isBeorningOrBear ? 'POSITION / FORM' : label}</div>
                 
-                <div className="disposition-slider-column">
+                <div className="disposition-slider-column has-codes">
                     <div className="disposition-slider-label">POS</div>
+                    <div className="disposition-slider-codes">
+                        {[...options.keys()].reverse().map((realIndex) => (
+                            <span
+                                key={realIndex}
+                                className={realIndex === currentIndex ? 'active' : ''}
+                            >
+                                {codes ? codes[realIndex] : realIndex + 1}
+                            </span>
+                        ))}
+                    </div>
                     <input
                         className="disposition-slider"
                         type="range"

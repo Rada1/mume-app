@@ -933,39 +933,49 @@
 }
 
 .disposition-popout {
+    --disposition-bg: #231c16;
+    --disposition-border: #3d3020;
+    --disposition-accent: #c9a84c;
+    --disposition-accent-hover: #e0c070;
+    --disposition-text: #d4c9b0;
+    --disposition-text-dim: #b0a080;
     position: fixed;
     transform: translateX(-50%);
-    width: min(270px, calc(100vw - 24px));
-    height: 236px;
+    width: min(360px, calc(100vw - 24px));
+    height: auto;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
-    padding: 24px 12px 12px;
-    background: rgba(10, 10, 12, 0.95);
-    border: 1px solid rgba(201, 151, 56, 0.35);
-    border-radius: 18px;
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 15px rgba(201, 151, 56, 0.15);
+    padding: 10px;
+    background: var(--disposition-bg);
+    border: 1px solid var(--disposition-border);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.22);
     z-index: 3501;
     pointer-events: auto;
+    animation: popover-bounce-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.light-mode .disposition-popout {
+    --disposition-bg: #fbf8f0;
+    --disposition-border: rgba(138, 102, 32, 0.28);
+    --disposition-accent: #8a6620;
+    --disposition-accent-hover: #a8882a;
+    --disposition-text: #2f2a20;
+    --disposition-text-dim: #6b6252;
+    box-shadow: 0 12px 32px rgba(77, 58, 28, 0.15), 0 2px 6px rgba(77, 58, 28, 0.1);
 }
 
 .disposition-popout-title {
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, #ffd700 0%, #c99738 100%);
-    color: #000;
-    font-size: 11px;
-    line-height: 1;
-    font-weight: 900;
-    padding: 6px 14px;
-    border-radius: 18px;
+    grid-column: 1 / -1;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid var(--disposition-border);
+    font-size: 0.7rem;
+    color: var(--disposition-text-dim);
+    text-align: center;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
-    box-shadow: 0 4px 12px rgba(201, 151, 56, 0.4);
+    letter-spacing: 1px;
     white-space: nowrap;
 }
 
@@ -977,20 +987,40 @@
     gap: 6px;
 }
 
-.combat-position-popout .disposition-slider-column {
-    grid-template-columns: 28px minmax(58px, 1fr);
+.disposition-slider-column.has-codes {
+    grid-template-columns: 14px 28px 1fr;
+}
+
+.combat-position-popout .disposition-slider-column.has-codes {
+    grid-template-columns: 14px 28px minmax(58px, 1fr);
+}
+
+.disposition-slider-codes {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+    color: var(--disposition-text-dim);
+    font-family: var(--font-mono, monospace);
+    font-size: 9px;
+    font-weight: 700;
+    text-align: right;
+    line-height: 1;
+}
+
+.disposition-slider-codes span.active {
+    color: var(--disposition-accent);
 }
 
 .disposition-slider-label {
     grid-column: 1 / -1;
-    color: #ffd700;
+    color: var(--disposition-accent);
     font-family: var(--font-title), serif;
     font-size: 10px;
-    font-weight: 900;
+    font-weight: 700;
     line-height: 1;
     text-align: center;
     text-transform: uppercase;
-    text-shadow: 0 0 4px rgba(255, 215, 0, 0.2);
 }
 
 .disposition-slider {
@@ -1000,7 +1030,7 @@
     height: 100%;
     margin: 0;
     cursor: grab;
-    accent-color: #c99738;
+    accent-color: var(--disposition-accent);
 }
 
 .disposition-slider-options {
@@ -1013,31 +1043,29 @@
 .disposition-option {
     border: 0;
     background: transparent;
-    color: rgba(255, 255, 255, 0.48);
+    color: var(--disposition-text-dim);
     font-family: var(--font-mono, monospace);
     font-size: 9px;
-    font-weight: 900;
+    font-weight: 700;
     line-height: 1;
     padding: 2px 0;
     text-align: left;
     cursor: pointer;
     white-space: nowrap;
-    transition: color 0.15s ease, text-shadow 0.15s ease;
+    transition: color 0.15s ease;
 }
 
 .disposition-option:hover {
-    color: #ffffff;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    color: var(--disposition-text);
 }
 
 .disposition-option.active {
-    color: #ffd700;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    color: var(--disposition-accent);
+    font-weight: 900;
 }
 
 .disposition-option.active:hover {
-    color: #fffbcf;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+    color: var(--disposition-accent-hover);
 }
 
 .pos-combat-square-btn.is-fighting {
@@ -1297,6 +1325,43 @@
 
 .prompt-inventory-chip-rows {
     animation: promptChipsReveal 0.15s ease-out;
+}
+
+.disposition-single-popout {
+    width: 148px;
+    grid-template-columns: 1fr;
+}
+
+/* Keep nearby character targets visible beside the prompt without using the
+   mapper's larger room-card chip treatment. */
+.prompt-room-occupants:has(.room-chip) {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.prompt-room-occupants .room-chip-occupants-row {
+    justify-content: flex-start;
+    gap: 4px;
+    padding: 2px 8px 3px;
+}
+
+.prompt-room-occupants .room-chip-occupants-row .room-chip {
+    min-height: 18px;
+    padding: 2px 6px;
+    border-width: 1px;
+    border-radius: 3px;
+    font-size: 0.62rem;
+    line-height: 1.05;
+}
+
+/* Prompt entity buttons use the same warm link color as inline log buttons. */
+.prompt-room-occupants .room-chip {
+    color: #c9a84c;
+}
+
+.light-mode .prompt-room-occupants .room-chip {
+    color: #8b6b10;
 }
 
 @keyframes promptChipsReveal {

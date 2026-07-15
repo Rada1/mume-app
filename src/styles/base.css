@@ -11,7 +11,8 @@
     --radius-card: 12px;
 
     /* Dark Mode (Default) */
-    --bg-app-rgb: 14, 13, 11;
+    /* MUME Wiki dark-theme page background: rgb(26, 20, 16). */
+    --bg-app-rgb: 26, 20, 16;
     --bg-app: rgb(var(--bg-app-rgb));
     --bg-panel: #171512;
     --bg-overlay: rgba(0, 0, 0, 0.70);

@@ -1197,10 +1197,12 @@ export const drawFeatures = (
                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
                 const zoneName = localRoom?.zone || rData[9] || '';
                 const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
-                const currentWallColor = rCtx.useLegacyMapArt
+                const currentWallColor = isDarkMode
+                    ? '#2b1a12'
+                    : rCtx.useLegacyMapArt
                     ? (zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR)
-                    : getClientThemeColor('--text-primary', isDarkMode ? '#d4cdb8' : '#2f2a20');
-                const currentDoorColor = zoneVis.doorColor || rCtx.mapTileVisuals?.doorColor || '#ffcc00';
+                    : getClientThemeColor('--text-primary', '#2f2a20');
+                const currentDoorColor = getClientThemeColor('--mume-wiki-link-color', isDarkMode ? '#c9a84c' : '#8b6b10');
 
                 // Calculate fade-in for newly explored rooms (skip for active room)
                 let exploredAlphaMul = 1.0;
@@ -1382,7 +1384,7 @@ export const drawFeatures = (
                         if (d === 'n') { x2 += s; } else if (d === 's') { y1 += s; x2 += s; y2 += s; } else if (d === 'e') { x1 += s; x2 += s; y2 += s; } else { y2 += s; }
 
                         if (!hasExit) {
-                            drawInkyLine(ctx, x1, y1, x2, y2, currentWallColor, 1.6, dpr, invZoom);
+                            drawInkyLine(ctx, x1, y1, x2, y2, currentWallColor, 2.0, dpr, invZoom);
                         } else if (hasDoor) {
                             const ddx = x2 - x1, ddy = y2 - y1;
                             // Clip to this room's tile so the door doesn't bleed into the neighbor
@@ -1392,22 +1394,22 @@ export const drawFeatures = (
                             // Brown post segments (no drop shadow)
                             ctx.save();
                             ctx.strokeStyle = currentWallColor;
-                            ctx.lineWidth = 1.8;
+                            ctx.lineWidth = 2.2;
                             ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
                             ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                             ctx.restore();
 
-                            // Yellow door elements with glow
+                            // Door elements without bloom
                             ctx.save();
                             ctx.fillStyle = currentDoorColor;
-                            ctx.shadowBlur = 8;
+                            ctx.shadowBlur = 0;
                             ctx.shadowColor = currentDoorColor;
                             if (isClosed) {
                                 ctx.strokeStyle = currentDoorColor;
-                                ctx.lineWidth = 2.4;
+                                ctx.lineWidth = 3.2;
                                 ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                             } else {
-                                const sqSize = 4.0;
+                                const sqSize = 5.0;
                                 if (ddx === 0) {
                                     ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.25, sqSize, sqSize);
                                     ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.75 - sqSize, sqSize, sqSize);
@@ -1521,7 +1523,7 @@ export const drawFeatures = (
                             const { hasDoor, isClosed } = getGateState(localRoom, ghostExits, 'u', allRooms, preloaded);
                             const finalColor = hasDoor ? currentDoorColor : iconColor;
                             const isOutline = hasDoor && !isClosed;
-                            const icon = getIndicatorIcon('▲', finalColor, isOutline, 7, true, true, arrowSize);
+                            const icon = getIndicatorIcon('▲', finalColor, isOutline, hasDoor ? 0 : 7, true, true, arrowSize);
                             ctx.save();
                             ctx.globalAlpha = isExplored ? (hasDoor ? 1.0 : exploredAlphaMul * 0.5) : 0.2;
                             if (hasDoor && isActive) drawDoorIndicatorOutline(ctx, anchorX - cOff, anchorY - cOff);
@@ -1532,7 +1534,7 @@ export const drawFeatures = (
                             const { hasDoor, isClosed } = getGateState(localRoom, ghostExits, 'd', allRooms, preloaded);
                             const finalColor = hasDoor ? currentDoorColor : iconColor;
                             const isOutline = hasDoor && !isClosed;
-                            const icon = getIndicatorIcon('▼', finalColor, isOutline, 7, true, true, arrowSize);
+                            const icon = getIndicatorIcon('▼', finalColor, isOutline, hasDoor ? 0 : 7, true, true, arrowSize);
                             ctx.save();
                             ctx.globalAlpha = isExplored ? (hasDoor ? 1.0 : exploredAlphaMul * 0.5) : 0.2;
                             if (hasDoor && isActive) drawDoorIndicatorOutline(ctx, anchorX + cOff, anchorY + cOff);
@@ -1589,10 +1591,12 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
         const wx = room.x * s, wy = room.y * s, cX = wx + s / 2, cY = wy + s / 2;
         const zoneName = room.zone || '';
         const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
-        const currentWallColor = rCtx.useLegacyMapArt
+        const currentWallColor = isDarkMode
+            ? '#2b1a12'
+            : rCtx.useLegacyMapArt
             ? (zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR)
-            : getClientThemeColor('--text-primary', isDarkMode ? '#d4cdb8' : '#2f2a20');
-        const currentDoorColor = zoneVis.doorColor || rCtx.mapTileVisuals?.doorColor || '#ffcc00';
+            : getClientThemeColor('--text-primary', '#2f2a20');
+        const currentDoorColor = getClientThemeColor('--mume-wiki-link-color', isDarkMode ? '#c9a84c' : '#8b6b10');
 
         // Local Connections
         if (room.exits) {
@@ -1668,7 +1672,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 const { hasDoor, isClosed } = getGateState(room, null, 'u', allRooms, preloaded);
                 const finalColor = hasDoor ? currentDoorColor : 'rgba(148, 163, 184, 0.8)';
                 const isOutline = hasDoor && !isClosed;
-                const icon = getIndicatorIcon('▲', finalColor, isOutline, 7, true, true, arrowSize);
+                const icon = getIndicatorIcon('▲', finalColor, isOutline, hasDoor ? 0 : 7, true, true, arrowSize);
                 ctx.save();
                 ctx.globalAlpha = hasDoor ? 1.0 : 0.5;
                 if (hasDoor && isActiveRoom) drawDoorIndicatorOutline(ctx, cX - 12, cY - 12);
@@ -1679,7 +1683,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 const { hasDoor, isClosed } = getGateState(room, null, 'd', allRooms, preloaded);
                 const finalColor = hasDoor ? currentDoorColor : 'rgba(148, 163, 184, 0.8)';
                 const isOutline = hasDoor && !isClosed;
-                const icon = getIndicatorIcon('▼', finalColor, isOutline, 7, true, true, arrowSize);
+                const icon = getIndicatorIcon('▼', finalColor, isOutline, hasDoor ? 0 : 7, true, true, arrowSize);
                 ctx.save();
                 ctx.globalAlpha = hasDoor ? 1.0 : 0.5;
                 if (hasDoor && isActiveRoom) drawDoorIndicatorOutline(ctx, cX + 12, cY + 12);
@@ -1717,10 +1721,12 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
             const wx = room.x * s, wy = room.y * s;
             const zoneName = room.zone || '';
             const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
-            const currentWallColor = rCtx.useLegacyMapArt
+            const currentWallColor = isDarkMode
+                ? '#2b1a12'
+                : rCtx.useLegacyMapArt
                 ? (zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR)
-                : getClientThemeColor('--text-primary', isDarkMode ? '#d4cdb8' : '#2f2a20');
-            const currentDoorColor = zoneVis.doorColor || rCtx.mapTileVisuals?.doorColor || '#ffcc00';
+                : getClientThemeColor('--text-primary', '#2f2a20');
+            const currentDoorColor = getClientThemeColor('--mume-wiki-link-color', isDarkMode ? '#c9a84c' : '#8b6b10');
             for (const d of ['n', 's', 'e', 'w']) {
                 const rId = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;
                 const wEx = preloaded[rId]?.[4]?.[d];
@@ -1728,7 +1734,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 let x1 = wx, y1 = wy, x2 = wx, y2 = wy;
                 if (d === 'n') { x2 += s; } else if (d === 's') { y1 += s; x2 += s; y2 += s; } else if (d === 'e') { x1 += s; x2 += s; y2 += s; } else { y2 += s; }
                 if (!hasExit) {
-                    drawInkyLine(ctx, x1, y1, x2, y2, currentWallColor, 1.6, dpr, invZoom);
+                    drawInkyLine(ctx, x1, y1, x2, y2, currentWallColor, 2.0, dpr, invZoom);
                 } else if (hasDoor && camera.zoom >= 0.1) {
                     const ddx = x2 - x1, ddy = y2 - y1;
                     // Clip to this room's tile so the door doesn't bleed into the neighbor
@@ -1737,19 +1743,19 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                     if (isActiveRoom) drawDoorVisualOutline(ctx, x1, y1, x2, y2, isClosed);
                     // Brown post segments (no drop shadow)
                     ctx.save();
-                    ctx.strokeStyle = currentWallColor; ctx.lineWidth = 1.8;
+                    ctx.strokeStyle = currentWallColor; ctx.lineWidth = 2.2;
                     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
                     ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                     ctx.restore();
-                    // Yellow door elements with glow
+                    // Door elements without bloom
                     ctx.save();
                     ctx.fillStyle = currentDoorColor;
-                    ctx.shadowBlur = 8; ctx.shadowColor = currentDoorColor;
+                    ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
                     if (isClosed) {
-                        ctx.strokeStyle = currentDoorColor; ctx.lineWidth = 2.4;
+                        ctx.strokeStyle = currentDoorColor; ctx.lineWidth = 3.2;
                         ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                     } else {
-                        const sqSize = 4.0;
+                        const sqSize = 5.0;
                         if (ddx === 0) {
                             ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.25, sqSize, sqSize);
                             ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.75 - sqSize, sqSize, sqSize);

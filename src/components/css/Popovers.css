@@ -112,52 +112,51 @@
     100% { opacity: 1; transform: scale(1); }
 }
 
-/* Compact Action Chips */
-/* Unified with the bottom-bar CommandDeck slot styling: flat dark fill, hairline
-   border, gold hover. (The red .fight-btn keeps its own styling.) */
+/* Compact inline action dropdown */
+/* The red .fight-btn keeps its own styling. */
 .popover-action-chip:not(.fight-btn) {
     animation: none !important;
-    background: rgba(22, 27, 38, 0.85) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 7px !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 6px !important;
     box-shadow: none !important;
-    color: #cbd5e1 !important;
+    color: var(--text-primary, #d4cdb8) !important;
     font-weight: 700;
-    transition: transform 0.14s ease, background 0.14s ease, border-color 0.14s ease !important;
+    transition: background 0.14s ease, color 0.14s ease !important;
 }
 
 .popover-action-chip:not(.fight-btn):hover,
 .popover-action-chip:not(.fight-btn):active {
     animation: none !important;
-    background: rgba(30, 36, 49, 0.95) !important;
-    border-color: rgba(232, 176, 32, 0.4) !important;
+    background: rgba(201, 168, 76, 0.12) !important;
     box-shadow: none !important;
-    color: #ffffff !important;
-    transform: translateY(-1px);
+    color: #f1e4c3 !important;
+    transform: none;
 }
 
 /* Compact inline menus show only available actions and their configuration affordance. */
 .inline-action-compact {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 3px;
+    align-items: stretch;
+    gap: 0;
     min-width: 0;
-    width: max-content;
-    max-width: min(240px, calc(100vw - 24px));
+    width: fit-content;
+    max-width: min(220px, calc(100vw - 24px));
     align-self: flex-start;
     flex: 0 0 auto;
 }
 
 .popover-menu:has(.inline-action-compact) {
-    width: max-content;
+    width: fit-content;
     min-width: 0;
-    max-width: min(240px, calc(100vw - 24px));
-    align-items: flex-start;
-    padding: 0;
-    background: transparent;
-    border-color: transparent;
-    box-shadow: none;
+    max-width: min(236px, calc(100vw - 24px));
+    align-items: stretch;
+    padding: 6px;
+    background: rgba(35, 28, 22, 0.98);
+    border: 1px solid rgba(201, 168, 76, 0.28);
+    border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.48), 0 0 16px rgba(201, 168, 76, 0.1);
     gap: 0;
 }
 
@@ -166,7 +165,9 @@
     position: absolute;
     width: 9px;
     height: 9px;
-    background: var(--accent);
+    background: rgba(35, 28, 22, 0.98);
+    border-right: 1px solid rgba(201, 168, 76, 0.28);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.28);
     transform: rotate(45deg);
     z-index: -1;
 }
@@ -198,15 +199,18 @@
 .inline-action-chips {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 3px;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
 }
 
 .inline-action-compact .popover-action-chip {
-    width: max-content;
+    display: flex !important;
+    width: auto !important;
     justify-content: flex-start;
-    min-height: 28px;
-    padding: 4px 8px;
+    min-height: 30px;
+    box-sizing: border-box;
+    padding: 6px 10px !important;
     border-radius: 6px;
     text-align: left;
 }
@@ -222,9 +226,9 @@
     width: 28px;
     height: 28px;
     padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(201, 168, 76, 0.28);
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(48, 38, 29, 0.72);
     color: var(--text-dim, rgba(255, 255, 255, 0.65));
     cursor: pointer;
     transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
@@ -240,9 +244,9 @@
 }
 
 .light-mode .inline-action-settings {
-    border-color: rgba(15, 23, 42, 0.14);
-    background: rgba(15, 23, 42, 0.04);
-    color: rgba(15, 23, 42, 0.58);
+    border-color: rgba(110, 85, 48, 0.28);
+    background: #f3ead8;
+    color: #6b6252;
 }
 
 .light-mode .inline-action-settings:hover,
@@ -259,15 +263,15 @@
 }
 
 .light-mode .inline-action-compact .popover-action-chip:not(.fight-btn) {
-    background: #f3ead8 !important;
-    border-color: rgba(110, 85, 48, 0.28) !important;
+    background: transparent !important;
+    border-color: transparent !important;
     color: #4a3b2a !important;
 }
 
 .light-mode .inline-action-compact .popover-action-chip:not(.fight-btn):hover,
 .light-mode .inline-action-compact .popover-action-chip:not(.fight-btn):active {
-    background: #e8dcc5 !important;
-    border-color: rgba(110, 85, 48, 0.46) !important;
+    background: rgba(139, 107, 16, 0.12) !important;
+    border-color: transparent !important;
     color: #35291c !important;
 }
 
@@ -743,6 +747,13 @@ body.has-popover .dial-menu-overlay {
     max-width: min(640px, calc(100vw - 32px)) !important;
     width: 600px !important;
     max-height: min(620px, calc(100vh - 24px)) !important;
+}
+
+/* Captured examine/consider output can leave the wide marker on an inline
+   action menu even though the compact action list is all that is visible. */
+.popover-menu.popover-captured-wide:has(.inline-action-compact) {
+    width: fit-content !important;
+    max-width: min(236px, calc(100vw - 24px)) !important;
 }
 
 .captured-details-card {

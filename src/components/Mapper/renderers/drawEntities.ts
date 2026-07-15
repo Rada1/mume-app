@@ -1222,7 +1222,7 @@ export const drawDoorHighlights = (
     // hPad: extra padding along the wall beyond the bar's 25%/75% endpoints
     const hPad = 2;
     const corner = Math.max(2, 4 / camera.zoom);
-    const DOOR_COLOR = '#ffcc00';
+    const DOOR_COLOR = getClientThemeColor('--mume-wiki-link-color', rCtx.isDarkMode ? '#c9a84c' : '#8b6b10');
 
     // [dir, rectX, rectY, rectW, rectH] in world space — each rect wraps around the door bar
     const doorRects: [string, number, number, number, number][] = [
@@ -1243,8 +1243,8 @@ export const drawDoorHighlights = (
         ctx.globalAlpha = 0.85;
         ctx.strokeStyle = DOOR_COLOR;
         ctx.lineWidth = Math.max(0.6, 1.0 / camera.zoom);
-        ctx.shadowBlur = vPad * 1.2;
-        ctx.shadowColor = DOOR_COLOR;
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = 'transparent';
         ctx.beginPath();
         if (typeof (ctx as any).roundRect === 'function') {
             (ctx as any).roundRect(rx, ry, rw, rh, corner);
