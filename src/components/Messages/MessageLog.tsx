@@ -737,6 +737,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
         }
 
         if (hidePrompt) {
+            list = list.filter(m => m.type !== 'prompt');
+        } else {
             let lastPromptIdx = -1;
             for (let i = list.length - 1; i >= 0; i--) {
                 if (list[i].type === 'prompt') {
@@ -746,8 +748,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
             }
             if (lastPromptIdx !== -1) {
                 list = list.filter((m, idx) => m.type !== 'prompt' || idx === lastPromptIdx);
-            } else {
-                list = list.filter(m => m.type !== 'prompt');
             }
         }
 
@@ -956,7 +956,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             if (msg.type === 'practice-class-header') return 32;
             if (msg.type === 'practice-column-header') return 80;
             if (msg.type === 'movement') return showBlockHeaders && msg.isMovementBlockStart ? 64 : 36;
-            if (msg.type === 'prompt') return Math.ceil(viewport.logFontSizePx * 1.25 + 6);
+            if (msg.type === 'prompt') return Math.max(64, Math.ceil(viewport.logFontSizePx * 3.75 + 16));
 
             const charCount = (msg.textRaw || msg.commText || '').length;
             const cols = viewport.columns || 80;
