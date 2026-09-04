@@ -63,12 +63,16 @@ export function useViewport(
         return isMobile && windowWidth > window.innerHeight;
     }, [isMobile, windowWidth, uiMode]);
 
+    const targetScrollCalculatorRef = useRef<(() => number) | null>(null);
+
     const scrollToBottom = useCallback((force = false, instant = false, _source = 'unknown') => {
         if (!scrollContainerRef.current) return;
         const container = scrollContainerRef.current;
 
         const currentScroll = container.scrollTop;
-        const targetScroll = Math.max(0, container.scrollHeight - container.clientHeight);
+        const targetScroll = targetScrollCalculatorRef.current 
+            ? targetScrollCalculatorRef.current() 
+            : Math.max(0, container.scrollHeight - container.clientHeight);
 
         if (!force) {
             const threshold = 40; // Increased to match MessageLog.tsx lock detection
@@ -428,6 +432,7 @@ export function useViewport(
         logFontSize,
         logFontSizePx,
         setLogFontSize: setLogFontSizeAndPersist,
-        resetLogFontSize: () => setLogFontSizeAndPersist(1.0)
+        resetLogFontSize: () => setLogFontSizeAndPersist(1.0),
+        targetScrollCalculatorRef
     }), [isMobile, isLandscape, isKeyboardOpen, columns, rows, scrollToBottom, updateHeight, logFontSize, logFontSizePx, setLogFontSizeAndPersist]);
 }

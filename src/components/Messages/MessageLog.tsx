@@ -396,11 +396,13 @@ const MessageItem = React.memo(({
                 </div>
             )}
             {msg.type === 'user' ? (
-                <div className="content-row" style={{ justifyContent: 'flex-end', width: '100%', paddingRight: '8px' }}>
-                    <span className="message-content user-command-text" style={{ textAlign: 'right' }}>
-                        <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />
-                    </span>
+                <div className="content-row user-command-row" style={{ justifyContent: 'flex-end', width: '100%', paddingRight: '8px', alignItems: 'center' }}>
                     {timestampEl}
+                    <div className={`user-command-bubble${isAwaitingResponse ? ' awaiting-response' : ''}${commandBloomPhase !== 'off' ? ` bloom-${commandBloomPhase}` : ''}`}>
+                        <span className="message-content user-command-text">
+                            <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />
+                        </span>
+                    </div>
                 </div>
             ) : msg.type === 'snoop-command' ? (
                 <div className="snoop-command-bubble">
@@ -792,8 +794,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
     const isUserScrollingRef = React.useRef(false);
     const userScrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
     const lastScrollTopRef = useRef(0);
+    const getLiveScrollTopRef = useRef<() => number>(() => 0);
 
     const handleScroll = useCallback(() => {
         const container = scrollContainerRef.current;
@@ -813,19 +815,19 @@ const MessageLog: React.FC<MessageLogProps> = ({
             document.body.classList.remove('ui-scrolling');
         }, 150);
 
-        // Increased threshold to be more forgiving of sub-pixel drift or rapid growth
-        const threshold = 80; 
-        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+        const currentLiveScroll = getLiveScrollTopRef.current();
+        const threshold = 60;
+        const isAtLive = Math.abs(container.scrollTop - currentLiveScroll) < threshold || container.scrollTop > currentLiveScroll;
         const isScrollingUp = container.scrollTop < lastScrollTopRef.current;
 
         lastScrollTopRef.current = container.scrollTop;
 
         // Only update lock state if we aren't currently auto-scrolling
-        if (viewport.isLockedToBottomRef.current !== isNearBottom) {
-            // If we are scrolling UP and move away from bottom, unlock.
+        if (viewport.isLockedToBottomRef.current !== isAtLive) {
+            // If we are scrolling UP and move away from live, unlock.
             // If we are scrolling DOWN and hit the threshold, relock.
-            if (isScrollingUp || isNearBottom) {
-                viewport.isLockedToBottomRef.current = isNearBottom;
+            if (isScrollingUp || isAtLive) {
+                viewport.isLockedToBottomRef.current = isAtLive;
             }
         }
 
@@ -993,6 +995,60 @@ const MessageLog: React.FC<MessageLogProps> = ({
         });
     }, [ui.isShaperOpen, virtualizer, viewport]);
 
+    const lastCommandIdRef = React.useRef<string | number | null>(null);
+    const commandAnchorOffsetRef = React.useRef<number | null>(null);
+    const [containerHeight, setContainerHeight] = React.useState(600);
+
+    React.useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+        setContainerHeight(container.clientHeight);
+        const ro = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                if (entry.contentRect.height) {
+                    setContainerHeight(entry.contentRect.height);
+                }
+            }
+        });
+        ro.observe(container);
+        return () => ro.disconnect();
+    }, [scrollContainerRef]);
+
+    const getLiveScrollTop = useCallback(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return 0;
+        const totalSize = virtualizer.getTotalSize();
+        const clientHeight = container.clientHeight;
+
+        if (commandAnchorOffsetRef.current !== null) {
+            const cmdOffset = Math.max(0, commandAnchorOffsetRef.current - 12);
+            const contentBelowCmd = totalSize - cmdOffset;
+            // While the command and streaming response fit within the visible viewport,
+            // keep the command anchored at the top!
+            if (contentBelowCmd <= clientHeight - 40) {
+                return cmdOffset;
+            }
+            // Once the response exceeds the viewport, follow the streaming bottom edge
+            return Math.max(cmdOffset, totalSize - clientHeight + 40);
+        }
+
+        // Default (before any user command, spectate, or replay): follow the bottom of virtual content
+        return Math.max(0, totalSize - clientHeight + 40);
+    }, [virtualizer, scrollContainerRef]);
+
+    getLiveScrollTopRef.current = getLiveScrollTop;
+
+    useEffect(() => {
+        if (viewport.targetScrollCalculatorRef) {
+            viewport.targetScrollCalculatorRef.current = getLiveScrollTop;
+        }
+        return () => {
+            if (viewport.targetScrollCalculatorRef) {
+                viewport.targetScrollCalculatorRef.current = null;
+            }
+        };
+    }, [viewport, getLiveScrollTop]);
+
     const lastScrollCallRef = React.useRef(0);
     const lastMessagesRef = React.useRef(messages);
 
@@ -1003,15 +1059,26 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
         const now = Date.now();
         const isThrottled = now - lastScrollCallRef.current < 16;
+        const isUserCmd = lastMsg?.type === 'user';
 
-        if (isNewMessage) {
+        if (isUserCmd && lastMsg.id !== lastCommandIdRef.current) {
+            lastCommandIdRef.current = lastMsg.id;
+            const offsetResult = lastUserMsgIndex >= 0 ? virtualizer.getOffsetForIndex(lastUserMsgIndex, 'start') : undefined;
+            const cmdOffset = offsetResult ? offsetResult[0] : virtualizer.getTotalSize();
+            commandAnchorOffsetRef.current = cmdOffset;
+            viewport.isLockedToBottomRef.current = true;
+            lastScrollCallRef.current = now;
+            requestAnimationFrame(() => {
+                viewport.scrollToBottom(true, true, 'UserCommand');
+            });
+        } else if (isNewMessage) {
             // In Spectate and Replay Mode, we always want to follow the action 
             // unless the user manually scrolled up.
-            if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user' || isSpectateMode || sessionMode === 'replay') {
+            if (viewport.isLockedToBottomRef.current || isSpectateMode || sessionMode === 'replay') {
                 viewport.isLockedToBottomRef.current = true;
                 lastScrollCallRef.current = now;
                 requestAnimationFrame(() => {
-                    viewport.scrollToBottom(true, lastMsg?.type === 'user' || isSpectateMode || sessionMode === 'replay', 'NewMessage');
+                    viewport.scrollToBottom(true, isSpectateMode || sessionMode === 'replay', 'NewMessage');
                 });
             }
         } else if (viewport.isLockedToBottomRef.current && !isThrottled) {
@@ -1020,7 +1087,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 viewport.scrollToBottom(true, false, 'LayoutEffect');
             });
         }
-    }, [messages, viewport, isNewbieMode, lastUserMsgIndex, virtualizer]);
+    }, [messages, viewport, isNewbieMode, lastUserMsgIndex, virtualizer, isSpectateMode, sessionMode]);
 
     React.useEffect(() => {
         const container = scrollContainerRef.current;
@@ -1040,10 +1107,22 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
     const totalSize = virtualizer.getTotalSize();
     React.useLayoutEffect(() => {
+        if (lastUserMsgIndex >= 0 && lastCommandIdRef.current) {
+            const offsetResult = virtualizer.getOffsetForIndex(lastUserMsgIndex, 'start');
+            if (offsetResult && offsetResult[0] !== undefined) {
+                commandAnchorOffsetRef.current = offsetResult[0];
+            }
+        }
         if (viewport.isLockedToBottomRef.current && !isUserScrollingRef.current) {
             viewport.scrollToBottom(true, true, 'VirtualizerResize');
         }
-    }, [totalSize, viewport, virtualizer]);
+    }, [totalSize, viewport, virtualizer, lastUserMsgIndex]);
+
+    const spacerHeight = useMemo(() => {
+        if (commandAnchorOffsetRef.current === null) return 30;
+        const contentBelowCmd = totalSize - commandAnchorOffsetRef.current;
+        return Math.max(30, Math.ceil(containerHeight - contentBelowCmd + 20));
+    }, [containerHeight, totalSize]);
 
     const virtualItems = virtualizer.getVirtualItems();
 
@@ -1121,7 +1200,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                     });
                     })()}
                 </div>
-                <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: '30px', flexShrink: 0 }} />
+                <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: `${spacerHeight}px`, flexShrink: 0 }} />
             </div>
         </div>
     );
