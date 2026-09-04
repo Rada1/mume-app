@@ -127,7 +127,7 @@
     }
 
     .app-container.kb-open .content-layer {
-        padding-bottom: 70px !important;
+        padding-bottom: 58px !important;
     }
 }
 
@@ -198,12 +198,16 @@
 
     /* Shrink gutter to just the input bar when keyboard is open (excluding account stages) */
     .kb-open .mobile-bottom-gutter:not(.account-gutter) {
-        height: 70px !important;
+        height: auto !important;
+        min-height: 52px;
+        padding: 4px 8px 6px 8px !important;
         border-radius: 0;
         z-index: var(--z-hud-interactive);
+        box-sizing: border-box;
     }
 
-    .kb-open .mobile-bottom-gutter .mobile-mapper-touch-surface {
+    .kb-open .mobile-bottom-gutter .mobile-mapper-touch-surface,
+    .kb-open .mobile-prompt-timer-lane {
         display: none !important;
     }
 }

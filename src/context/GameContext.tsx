@@ -1007,12 +1007,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const { stats: _s, target: _t, activePrompt: _ap, setActivePrompt: _sap, ...rest } = v;
         return rest;
     }, [
-        v.rumble, v.deathRoomId, v.heldButton, v.heldButtonRef,
+        v.deathRoomId, v.heldButton, v.heldButtonRef,
         v.isMendingMode, v.mendingTarget, v.bufferName, v.playerHealthStatus,
         v.opponentName, v.opponentId, v.opponentHealthStatus, v.bufferHealthStatus,
         v.characterInfo, v.groupMembers, v.pendingMove,
         v.xpHistory, v.xpEvent, v.tpHistory, v.tpEvent, v.gameTime, v.roomName, v.characterName,
-        v.setStats, v.setTarget, v.setRumble, v.setDeathRoomId, v.setHeldButton,
+        v.setStats, v.setTarget, v.setDeathRoomId, v.setHeldButton,
         v.setIsMendingMode, v.setMendingTarget, v.setBufferName, v.setPlayerHealthStatus,
         v.setOpponentId, v.setOpponentName, v.setOpponentHealthStatus, v.setBufferHealthStatus,
         v.setCharacterInfo, v.setGroupMembers, v.setPendingMove,

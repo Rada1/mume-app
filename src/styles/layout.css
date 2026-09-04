@@ -26,7 +26,7 @@
 }
 
 .app-container.kb-open {
-    --mobile-gutter-height: 70px;
+    --mobile-gutter-height: 58px;
 }
 
 .background-layer {
@@ -79,7 +79,7 @@
     filter: invert(1) brightness(0.95) sepia(0.2) brightness(0.95) !important;
 }
 
-.app-content-shaker {
+.app-viewport-shell {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -219,7 +219,7 @@
     }
     
     .kb-open .content-layer {
-        padding-bottom: 70px !important; /* Matches gutter height in kb-open state */
+        padding-bottom: 58px !important; /* Matches gutter height in kb-open state */
     }
     
     .state-account .content-layer {
@@ -262,7 +262,7 @@
 
 /* Desktop: map drawer pushes the log to make room */
 @media (min-width: 1024px) {
-    .app-content-shaker {
+    .app-viewport-shell {
         box-sizing: border-box;
         transition: padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding-right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -270,7 +270,7 @@
 
 /* Map drawer push (left side) */
 @media (min-width: 1024px) and (max-width: 1850px) {
-    body.map-drawer-open .app-content-shaker {
+    body.map-drawer-open .app-viewport-shell {
         padding-left: calc(var(--desktop-map-width, var(--drawer-width)) + var(--drawer-gap));
         padding-right: 0;
     }
@@ -278,12 +278,12 @@
 
 /* Utility drawer push (right side) — matches map drawer push exactly */
 @media (min-width: 1024px) and (max-width: 1850px) {
-    body.utility-drawer-open .app-content-shaker {
+    body.utility-drawer-open .app-viewport-shell {
         padding-right: calc(var(--desktop-character-width, var(--drawer-width)) + var(--drawer-gap));
     }
 }
 
-.is-landscape .app-content-shaker {
+.is-landscape .app-viewport-shell {
     display: flex !important;
     flex-direction: row-reverse !important;
     height: 100dvh !important;
@@ -512,10 +512,10 @@
 .action-box {
     display: flex;
     flex-direction: column;
-    background: rgba(36, 38, 43, 0.72);
+    background: rgba(30, 23, 16, 0.68);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(201, 168, 76, 0.14);
     border-radius: var(--radius-card);
     padding: 0;
     margin-top: 12px;
@@ -2796,8 +2796,8 @@
     .action-box {
         border-radius: 0 !important;
         border: none !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-        background: rgba(36, 38, 43, 0.68) !important;
+        border-top: 1px solid rgba(201, 168, 76, 0.14) !important;
+        background: rgba(30, 23, 16, 0.68) !important;
         box-shadow: none !important;
         margin: 0 !important;
         padding: 0 !important;

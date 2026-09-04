@@ -23,8 +23,6 @@ export interface VitalsContextType {
     setTarget: (val: string | null) => void;
     activePrompt: ActivePrompt | null;
     setActivePrompt: (prompt: string | ActivePrompt | null) => void;
-    rumble: boolean;
-    setRumble: (val: boolean) => void;
     deathRoomId: string | null;
     setDeathRoomId: (val: string | null) => void;
     heldButton: {
@@ -316,6 +314,8 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     roomName: string | null;
     roomDesc: string | null;
     spectateRoomNum?: number | null;
+    spectateRoomZone?: string | null;
+    setSpectateRoomZone?: (zone: string | null) => void;
     commandPreview: string | null;
     setCommandPreview: (val: string | null) => void;
     pendingMove: { dir: string; timestamp: number } | null;

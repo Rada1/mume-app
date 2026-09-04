@@ -91,7 +91,7 @@ const MudClient = () => {
         status
     } = useGame();
 
-    const { rumble, setTarget, heldButton, heldButtonRef, setHeldButton } = useVitals();
+    const { setTarget, heldButton, heldButtonRef, setHeldButton } = useVitals();
     const { setIsSetManagerOpen, popoverState, setUI, ui, setManagerSelectedSet } = useUI();
     const { addMessage } = useLog();
 
@@ -302,7 +302,7 @@ const MudClient = () => {
             }}
             onClick={handleBackgroundClick}
         >
-            <div className={`app-content-shaker ${rumble ? 'rumble-active' : ''}`} style={{ flex: 1, position: 'relative' }}>
+            <div className="app-viewport-shell" style={{ flex: 1, position: 'relative' }}>
                 <AtmosphericLayer />
                 <div className="app-header-glass-strip" aria-hidden="true" />
 

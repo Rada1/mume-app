@@ -169,7 +169,6 @@ export const useSessionState = (
         vStore.setActivePrompt(p);
     }, []);
 
-    const [rumble, setRumble] = useState(false);
     const [deathRoomId, setDeathRoomId] = useState<string | null>(null);
     const [gameTime, setGameTime] = useState<import('../../types').MumeTime | null>(null);
 
@@ -340,7 +339,7 @@ export const useSessionState = (
     }, [vStore]);
 
     const vitals = useMemo<VitalsContextType>(() => ({
-        stats, setStats, target, setTarget, activePrompt, setActivePrompt: setActivePromptCompat, rumble, setRumble,
+        stats, setStats, target, setTarget, activePrompt, setActivePrompt: setActivePromptCompat,
         deathRoomId, setDeathRoomId, heldButton, setHeldButton, heldButtonRef,
         isMendingMode: false, setIsMendingMode: () => {}, mendingTarget: null, setMendingTarget: () => {},
         bufferName, setBufferName, playerHealthStatus, setPlayerHealthStatus, opponentName, opponentId,
@@ -355,7 +354,7 @@ export const useSessionState = (
         spectateOpponentName: null, spectateOpponentId: null,
         roomName, characterName: currentName
     } as VitalsContextType), [
-        stats, target, activePrompt, rumble, deathRoomId, heldButton, setHeldButton, bufferName, playerHealthStatus,
+        stats, target, activePrompt, deathRoomId, heldButton, setHeldButton, bufferName, playerHealthStatus,
         opponentName, opponentId, opponentHealthStatus, bufferHealthStatus, groupMembers,
         xpHistory, xpEvent, tpHistory, tpEvent, gameTime, roomName, currentName, vStore.characterInfo, setCharacterInfo
     ]);

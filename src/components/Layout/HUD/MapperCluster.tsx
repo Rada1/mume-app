@@ -83,7 +83,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     useEffect(() => {
         const app = document.querySelector<HTMLElement>('.app-container');
         if (!app) return;
-        const isResizableGutterOpen = viewport.isMobile && !viewport.isLandscape && gameState !== 'account' && (ui.mapExpanded || ui.drawer !== 'none');
+        const isResizableGutterOpen = viewport.isMobile && !viewport.isLandscape && !viewport.isKeyboardOpen && gameState !== 'account' && (ui.mapExpanded || ui.drawer !== 'none');
         if (!isResizableGutterOpen) {
             app.style.removeProperty('--mobile-gutter-height');
             return;
@@ -100,7 +100,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         applySavedHeight();
         window.addEventListener('resize', applySavedHeight);
         return () => window.removeEventListener('resize', applySavedHeight);
-    }, [gameState, ui.drawer, ui.mapExpanded, viewport.isLandscape, viewport.isMobile]);
+    }, [gameState, ui.drawer, ui.mapExpanded, viewport.isKeyboardOpen, viewport.isLandscape, viewport.isMobile]);
 
     const setMobileGutterHeight = React.useCallback((clientY: number) => {
         const app = document.querySelector<HTMLElement>('.app-container');
@@ -554,7 +554,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                                 triggerHaptic(20);
                                                                 setAccountState(prev => ({
                                                                     ...prev,
-                                                                    charCapture: { type: selectedMenuCommand },
+                                                                    charCapture: { type: selectedMenuCommand as 'practice' | 'info' | 'link' | 'lag' | 'time' },
                                                                     [`${selectedMenuCommand}Lines` as 'timeLines' | 'linkLines' | 'lagLines']: []
                                                                 }));
                                                                 executeCommand(selectedMenuCommand);

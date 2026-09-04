@@ -337,10 +337,7 @@ export function useViewport(
                 container.style.overflow = 'hidden';
 
                 if (Math.abs(window.scrollY) > 1) window.scrollTo(0, 0);
-                if (isFocusableActive) {
-                    const input = document.activeElement as HTMLElement;
-                    input.scrollIntoView({ block: 'center', behavior: 'instant' as any });
-                }
+                if (container.scrollTop > 0) container.scrollTop = 0;
             } else {
                 if (container.classList.contains('kb-open')) {
                     container.classList.remove('kb-open');
