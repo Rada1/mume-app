@@ -2458,6 +2458,19 @@ span.inline-btn {
     bottom: 0;
 }
 
+/* Hide terrain and ceiling pixel art borders when immersion mode is disabled */
+:not(.immersion-mode) .message-log-container::before,
+:not(.immersion-mode) .message-log-container::after,
+.app-container:not(.immersion-mode) .message-log-container::before,
+.app-container:not(.immersion-mode) .message-log-container::after,
+:not(.immersion-mode) .app-terrain-strip,
+:not(.immersion-mode) .app-ceiling-strip,
+.app-container:not(.immersion-mode) .app-terrain-strip,
+.app-container:not(.immersion-mode) .app-ceiling-strip {
+    display: none !important;
+    content: none !important;
+}
+
 /* NPC/object chips pinned along the very bottom of the log, standing on top
    of the terrain pixel-art strip (::after, z-index 10) like little figures
    on the ground line instead of living inside the room card. */

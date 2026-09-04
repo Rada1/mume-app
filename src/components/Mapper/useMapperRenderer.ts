@@ -194,7 +194,7 @@ export const useMapperRenderer = ({
     closestRoomId = null, filterPathIds = [], filterPathDistance = 0, matchedRoomIds = new Set(),
     mapTileVisuals, mapTileOpacity, zoneFilters,
     lighting = 'none',
-    isImmersionMode = true,
+    isImmersionMode = false,
     weather = 'none',
     regionLabels = {},
     selectedRegionLabelId = null,

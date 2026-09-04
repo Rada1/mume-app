@@ -525,7 +525,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     }}
                 >
                     <div
-                        className={`message-log-container${isTacticalTargetingActive ? ' tactical-targeting-active' : ''} log-terrain-${getRoomTerrainVisualKey(roomCardTerrain)} log-lighting-${lighting} log-weather-${weather} log-zone-${zoneKey} log-lore-${zoneVisualKey}`}
+                        className={`message-log-container${isTacticalTargetingActive ? ' tactical-targeting-active' : ''}${isImmersionMode ? ` log-terrain-${getRoomTerrainVisualKey(roomCardTerrain)} log-lighting-${lighting} log-weather-${weather} log-zone-${zoneKey} log-lore-${zoneVisualKey}` : ''}`}
                         ref={logContainerRef}
                         style={{
                             flex: 1,

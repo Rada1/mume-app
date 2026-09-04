@@ -273,7 +273,7 @@ export const useSettingsStore = create<SettingsState>()(
             
             theme: 'dark',
             drawerZoom: 1.0,
-            isImmersionMode: true,
+            isImmersionMode: false,
             isPerformanceMode: false,
             accentColor: '#d4aa00',
             bgImage: null,
@@ -480,7 +480,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 25,
+            version: 26,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -678,6 +678,10 @@ export const useSettingsStore = create<SettingsState>()(
                     if (persistedState.useLegacyMapArt === undefined) {
                         persistedState.useLegacyMapArt = true;
                     }
+                }
+
+                if (version < 26) {
+                    persistedState.isImmersionMode = false;
                 }
 
                 return persistedState;

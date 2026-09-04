@@ -22,7 +22,7 @@ const readHorizontalPadding = (element: HTMLElement) => {
 export function useViewport(
     uiMode: import('../types').UiMode = 'auto',
     disableSmoothScroll: boolean = false,
-    isImmersionMode: boolean = true,
+    isImmersionMode: boolean = false,
     fontFamily: string = "'Roboto Mono', monospace",
     isTimestampEnabled: boolean = false,
     isNewbieMode: boolean = false
