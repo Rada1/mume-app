@@ -579,13 +579,25 @@
 }
 
 
-/* Inherit regular message styling for room names is handled above now */
+/* Room name titles are slightly larger than body text for rapid spatial scanning */
+.message.is-room-name .message-content {
+    font-size: 1.15em;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
 
 .message.is-room-name .message-content,
 .message.is-room-name .message-content span {
     opacity: 1 !important;
     filter: none !important;
     text-shadow: none !important;
+}
+
+.message.is-room-name .room-description-merged,
+.message.is-room-name .room-desc-line {
+    font-size: var(--dynamic-log-size, 16px) !important;
+    font-weight: normal !important;
+    letter-spacing: normal !important;
 }
 
 
