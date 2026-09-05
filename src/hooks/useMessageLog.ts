@@ -320,7 +320,7 @@ export function useMessageLog(
 
         // If combatOverride is provided directly (from parser), trust it.
         // The parser handles inCombat context for ambiguous verbs like 'dodge'.
-        const isCombat = !!combatOverride;
+        const isCombat = !!combatOverride || type === 'combat';
         const combatSide = isCombat
             ? (providedCombatSide || ((currentTextLower.startsWith('you ') || currentTextLower.startsWith('your ')) ? 'player' : 'opponent'))
             : undefined;

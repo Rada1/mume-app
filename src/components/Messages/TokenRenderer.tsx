@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Token, EntityToken, AnsiToken } from '../../types';
+import { Token, EntityToken, AnsiToken, TextToken } from '../../types';
 import { useTokenHighlight, useBaseGame, useUI } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -314,11 +314,15 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             case 'ansi':
                 const a = token as AnsiToken;
                 const ansiItemState = classifyItemTier(content);
+                const ansiClasses = [
+                    ...(a.classes || []),
+                    ...(isTargetMatch && targetMatcher ? ['is-target', 'target-highlighter'] : [])
+                ].filter(Boolean).join(' ');
                 return (
                     <span 
                         key={idx} 
+                        className={ansiClasses || undefined}
                         style={a.style}
-                        {...(isTargetMatch && targetMatcher ? getTargetHighlightProps() : {})}
                     >
                         {targetMatcher && !isTargetMatch
                             ? renderTextWithTarget(content, idx)
@@ -328,14 +332,24 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             
             case 'text':
             default:
+                const textToken = token as TextToken;
                 const textItemState = classifyItemTier(content);
+                const textClasses = [
+                    ...(textToken.classes || []),
+                    ...(isTargetMatch && targetMatcher ? ['is-target', 'target-highlighter'] : [])
+                ].filter(Boolean).join(' ');
                 if (targetMatcher && !isTargetMatch) {
-                    return renderTextWithTarget(content, idx);
+                    return (
+                        <span key={idx} className={textClasses || undefined} style={textToken.style}>
+                            {renderTextWithTarget(content, idx)}
+                        </span>
+                    );
                 }
                 return (
                     <span 
                         key={idx} 
-                        {...(isTargetMatch && targetMatcher ? getTargetHighlightProps() : {})}
+                        className={textClasses || undefined}
+                        style={textToken.style}
                     >
                         {renderItemConditionText(content, textItemState.state, textItemState.stateLabel)}
                     </span>

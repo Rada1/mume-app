@@ -9,6 +9,8 @@ export interface BaseToken {
 
 export interface TextToken extends BaseToken {
     type: 'text';
+    classes?: string[];
+    style?: React.CSSProperties;
 }
 
 export interface AnsiToken extends BaseToken {

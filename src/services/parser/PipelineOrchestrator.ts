@@ -87,7 +87,12 @@ export class PipelineOrchestrator {
     private static tokensToHtml(tokens: Token[]): string {
         return tokens.map(token => {
             if (token.type === 'text') {
-                return this.escapeHtml((token as TextToken).content);
+                const text = token as TextToken;
+                const escaped = this.escapeHtml(text.content);
+                if (text.classes && text.classes.length > 0) {
+                    return `<span class="${text.classes.join(' ')}">${escaped}</span>`;
+                }
+                return escaped;
             } else if (token.type === 'ansi') {
                 const ansi = token as AnsiToken;
                 const escaped = this.escapeHtml(ansi.content);

@@ -29,6 +29,7 @@ import { PipelineOrchestrator } from '../../services/parser/PipelineOrchestrator
 import { Tokenizer } from '../../services/parser/Tokenizer';
 import { useActionTracker } from './useActionTracker';
 import { buildPlayerLineTokens } from './playerLineTokens';
+import { formatCombatLineTokens } from './combatLineTokens';
 import { useUIStore } from '../../stores/useUIStore';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { parseEffectTimerLine } from '../../services/timers/effectTimerParser';
@@ -1118,8 +1119,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 messageTokens = undefined;
             } else {
                 const messageObj = PipelineOrchestrator.processTextLine(lineToParse, ansiHtml, finalType, tokenizerContext, finalTokens);
+                messageTokens = (finalType === 'combat' && messageObj.tokens)
+                    ? formatCombatLineTokens(messageObj.tokens)
+                    : messageObj.tokens;
                 messageHtml = messageObj.html;
-                messageTokens = messageObj.tokens;
             }
 
             const tokenizeFresh = (text: string) => {
@@ -1139,7 +1142,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 if (hasDamageTag) gmcpBus.emit('Game.CombatPulse', { direction: 'incoming', time: eventTime });
             }
             deps.addMessage(
-                finalType, textOnly, undefined, mid, false,
+                finalType, textOnly, finalType === 'combat', mid, false,
                 { textOnly, lower, html: messageHtml, tokens: messageTokens },
                 undefined, undefined, undefined, false, 
                 commResult.replyTarget, commResult.replyCommand, commResult.commSender, commResult.commAction, commResult.commText, commResult.commColor,

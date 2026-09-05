@@ -772,10 +772,30 @@
     /* Bright Yellow 300 */
 }
 
+/* --- Combat Skimmability Typography --- */
+.combat-verb {
+    font-weight: 700;
+    opacity: 1;
+}
+
+.combat-regular {
+    font-weight: normal;
+    opacity: 1;
+}
+
+.combat-dimmed {
+    opacity: 0.38;
+    transition: opacity 0.2s ease;
+}
+
+.message.combat:hover .combat-dimmed,
+.combat-bubble:hover .combat-dimmed {
+    opacity: 0.75;
+}
+
 .keyword-highlight.combat-verb {
-    color: #ffffff !important;
-    font-weight: bold;
-    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 1;
 }
 
 .keyword-highlight.combat-action {
