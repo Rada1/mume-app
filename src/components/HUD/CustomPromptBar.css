@@ -1,0 +1,154 @@
+/**
+ * @file CustomPromptBar.css
+ * @description Styling for the stationary CustomPromptBar outside the message log.
+ */
+
+.custom-prompt-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    padding: 6px 14px 7px 14px;
+    background: rgba(18, 14, 10, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(201, 168, 76, 0.22);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.45);
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    flex-shrink: 0;
+    z-index: 20;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.84rem;
+    line-height: 1.35;
+    user-select: none;
+    -webkit-user-select: none;
+    --mume-wiki-link-color: #c9a84c;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.light-mode .custom-prompt-bar {
+    background: rgba(245, 240, 230, 0.92);
+    border-top: 1px solid rgba(139, 107, 16, 0.25);
+    border-bottom: 1px solid rgba(180, 160, 120, 0.3);
+    --mume-wiki-link-color: #8b6b10;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* When slotted into desktop ActionBox grid cell */
+.action-box-prompt-cell .custom-prompt-bar {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 4px 8px 5px 8px;
+}
+
+.custom-prompt-bar .prompt-row {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    min-width: 0;
+    line-height: 1.25;
+}
+
+.custom-prompt-bar .prompt-vitals-row,
+.custom-prompt-bar .prompt-controls-row {
+    gap: 0.35em;
+}
+
+.custom-prompt-bar .prompt-controls-row {
+    max-width: 100%;
+}
+
+.custom-prompt-bar .custom-prompt-prefix {
+    color: var(--text-primary, #d4cdb8);
+    font-weight: 700;
+}
+
+.custom-prompt-bar .prompt-stat-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25em;
+    color: var(--text-primary, #d4cdb8);
+}
+
+.custom-prompt-bar .prompt-stat-label {
+    font-size: 0.78em;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--mume-wiki-link-color);
+}
+
+.custom-prompt-bar .prompt-stat-divider {
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.light-mode .custom-prompt-bar .prompt-stat-divider {
+    color: rgba(0, 0, 0, 0.25);
+}
+
+.custom-prompt-bar .prompt-vs-label {
+    color: #ef4444;
+    font-weight: 700;
+    font-size: 0.85em;
+    margin-left: 0.4em;
+    margin-right: 0.2em;
+}
+
+.custom-prompt-bar .prompt-opponent-name {
+    color: #f87171;
+    font-weight: 700;
+}
+
+.custom-prompt-bar .prompt-opponent-status {
+    color: #fca5a5;
+    font-size: 0.9em;
+}
+
+.custom-prompt-bar .prompt-metadata-line {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 1.25ch;
+    line-height: 1.25;
+    flex-wrap: wrap;
+    width: 100%;
+    max-height: 75px;
+    overflow-y: auto;
+}
+
+.custom-prompt-bar .prompt-environment-line {
+    color: #a8a29e;
+    display: inline;
+    line-height: 1.2;
+}
+
+.custom-prompt-bar .prompt-entities-line {
+    display: inline;
+    line-height: 1.2;
+    color: var(--text-primary, #d4cdb8);
+}
+
+.custom-prompt-bar .prompt-entity-inline {
+    --mume-wiki-link-color: #c9a84c;
+    --glow-color: var(--mume-wiki-link-color) !important;
+    color: var(--mume-wiki-link-color) !important;
+    cursor: pointer;
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+    transition: opacity 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.custom-prompt-bar .prompt-entity-inline:hover,
+.custom-prompt-bar .prompt-entity-inline:active {
+    text-decoration: underline solid;
+    opacity: 0.85;
+}
+
+.light-mode .custom-prompt-bar .prompt-entity-inline {
+    --mume-wiki-link-color: #8b6b10;
+}

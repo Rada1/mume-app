@@ -29,7 +29,6 @@ import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { getRoomTerrainVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 import { formatMovementArrow, getMovementDirectionLabel, normalizeMovementDirection } from '../../utils/movementDirections';
 import { RunnerIcon } from '../HUD/PromptBox';
-import PromptModeIndicators from './PromptModeIndicators';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -59,73 +58,10 @@ const getMovementDisplay = (raw: string) => {
     return { arrow, label, direction };
 };
 
-const getLightingLabel = (lighting?: string): string => {
-    switch (lighting) {
-        case 'sun': return 'Sunlight';
-        case 'artificial': return 'Artificial light';
-        case 'moon': return 'Moonlight';
-        case 'dark': return 'Darkness';
-        default: return '';
-    }
-};
-
-const getTerrainLabel = (terrain?: string | null): string => {
-    const value = terrain?.trim() || '';
-    return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : '';
-};
-
-const getWeatherLabel = (weather?: string | null): string => {
-    const value = weather?.trim() || '';
-    if (!value || value.toLowerCase() === 'none') return '';
-    return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : '';
-};
-
-const stripPromptModeTokens = (tokens?: Token[]): Token[] | undefined => tokens?.map(token => {
-    if (token.type !== 'text' && token.type !== 'ansi') return token;
-    return {
-        ...token,
-        content: token.content.replace(/\b[AMPS]\d+\b/g, '')
-    };
-});
-
 const parseEntityCountPrompt = (text: string) => {
     const matches = [...text.matchAll(/\[(Player|NPC|Object):\s*(\d+)\]/g)];
     if (matches.length === 0 || matches.map(match => match[0]).join('') !== text) return null;
     return matches.map(([, kind, count]) => ({ kind, count }));
-};
-
-const getRoomEntityLabel = (entity: string | GmcpOccupant): string => {
-    if (typeof entity === 'string') return entity.trim();
-    return entity.keyword?.trim() || entity.name?.trim() || entity.shortdesc?.trim() || entity.short?.trim() || '';
-};
-
-interface PromptEntityButton {
-    label: string;
-    id?: string;
-    category: 'cat-npc' | 'cat-object';
-}
-
-const getEntityButtonsForPrompt = (
-    entityCountPrompt: Array<{ kind: string; count: string }>,
-    roomNpcs: Array<string | GmcpOccupant> = [],
-    roomItems: Array<string | GmcpOccupant> = [],
-): PromptEntityButton[] => {
-    const entitiesByKind: Record<string, Array<string | GmcpOccupant>> = {
-        NPC: roomNpcs,
-        Object: roomItems,
-    };
-
-    return entityCountPrompt.flatMap(({ kind, count }) => {
-        const limit = Number.parseInt(count, 10);
-        return (entitiesByKind[kind] || [])
-            .map(entity => ({
-                label: getRoomEntityLabel(entity),
-                id: typeof entity === 'string' || entity.id === undefined ? undefined : String(entity.id),
-                category: kind === 'NPC' ? 'cat-npc' as const : 'cat-object' as const,
-            }))
-            .filter(entity => Boolean(entity.label))
-            .slice(0, Number.isNaN(limit) ? undefined : limit);
-    });
 };
 
 const renderMovementArrowIcon = (direction: string | null, fallback: string) => {
@@ -197,11 +133,6 @@ const MessageItem = React.memo(({
     isAwaitingResponse,
     batchOffset = 0,
     colors,
-    lighting,
-    currentTerrain,
-    weather,
-    roomNpcs,
-    roomItems,
 }: {
     msg: Message,
     executeCommand: (cmd: string, silent?: boolean) => void,
@@ -217,11 +148,6 @@ const MessageItem = React.memo(({
     isTextRevealEnabled: boolean;
     isAwaitingResponse?: boolean;
     batchOffset?: number;
-    lighting?: string;
-    currentTerrain?: string | null;
-    weather?: string | null;
-    roomNpcs?: Array<string | GmcpOccupant>;
-    roomItems?: Array<string | GmcpOccupant>;
     colors?: {
         targetColor?: string;
         playerColor?: string;
@@ -234,54 +160,7 @@ const MessageItem = React.memo(({
 }) => {
     const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
     const content = msg.html;
-    const promptTokens = msg.type === 'prompt' ? stripPromptModeTokens(msg.tokens) : msg.tokens;
-    const promptFallbackHtml = msg.type === 'prompt'
-        ? sanitizeMumeHtml(ansiConvert.toHtml((msg.textRaw || '').replace(/\b[AMPS]\d+\b/g, '')))
-        : sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''));
-    const lightingLabel = getLightingLabel(lighting);
-    const terrainLabel = getTerrainLabel(currentTerrain);
-    const weatherLabel = getWeatherLabel(weather);
     const entityCountPrompt = msg.type === 'game' ? parseEntityCountPrompt(msg.textOnly || msg.textRaw || '') : null;
-    const promptEntities = getEntityButtonsForPrompt(
-        [{ kind: 'NPC', count: String(roomNpcs?.length || 0) }, { kind: 'Object', count: String(roomItems?.length || 0) }],
-        roomNpcs,
-        roomItems,
-    );
-    const environmentLabels = [terrainLabel, lightingLabel, weatherLabel].filter(Boolean);
-    const promptEnvironment = environmentLabels.length > 0 ? (
-        <span className="prompt-environment-line">
-            [{environmentLabels.join(' | ')}]
-        </span>
-    ) : null;
-    const promptEntityLine = promptEntities.length > 0 ? (
-        <span className="prompt-entities-line">
-            [
-            {promptEntities.map((entity, index) => (
-                <React.Fragment key={`${entity.label}-${entity.id || index}`}>
-                    <span
-                        className="inline-btn prompt-entity-inline"
-                        data-action="menu"
-                        data-category={entity.category}
-                        data-cmd={entity.category}
-                        data-context={entity.label}
-                        data-menu-display="list"
-                        data-targetable="true"
-                        {...(entity.id ? { 'data-id': entity.id } : {})}
-                    >
-                        {entity.label}
-                    </span>
-                    {index < promptEntities.length - 1 ? ' | ' : ''}
-                </React.Fragment>
-            ))}
-            ]
-        </span>
-    ) : null;
-    const promptMetadataLine = promptEnvironment || promptEntityLine ? (
-        <span className="prompt-metadata-line">
-            {promptEnvironment}
-            {promptEntityLine}
-        </span>
-    ) : null;
     // Frozen at mount — prevents wordReveal from toggling off mid-life when re-renders
     // cross the 2-second mark (rapid combat GMCP updates), which collapses inline-block
     // log-word wrappers and shifts inline button positions.
@@ -409,65 +288,7 @@ const MessageItem = React.memo(({
                     <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />
                 </div>
             ) : msg.type === 'prompt' ? (
-                msg.promptHPPercent !== undefined ? (
-                    <span className="custom-prompt-container">
-                        <span className="prompt-row prompt-vitals-row">
-                            <span className="custom-prompt-prefix">[</span>
-                            <span className="prompt-stat-item"><span className="prompt-stat-label">HP</span><span>{msg.promptHPPercent}%</span></span>
-                            <span className="prompt-stat-divider">|</span>
-                            <span className="prompt-stat-item"><span className="prompt-stat-label">MANA</span><span>{msg.promptManaPercent ?? 100}%</span></span>
-                            <span className="prompt-stat-divider">|</span>
-                            <span className="prompt-stat-item"><span className="prompt-stat-label">MP</span><span>{msg.promptMovePercent ?? 100}%</span></span>
-                            <span className="custom-prompt-prefix">]</span>
-                        {msg.promptOpponentName && (
-                            <>
-                                <span className="prompt-vs-label">Vs</span>
-                                <span className="prompt-opponent-info">
-                                    <span className="prompt-opponent-name">{msg.promptOpponentName}</span>
-                                    <span className="prompt-opponent-status"> 
-                                        {msg.promptOpponentHealthPercent !== undefined && msg.promptOpponentHealthPercent !== null 
-                                            ? ` (${msg.promptOpponentHealthPercent}%)` 
-                                            : ` (${msg.promptOpponentHealthStatus || 'Fighting'})`}
-                                    </span>
-                                </span>
-                            </>
-                        )}
-                        </span>
-                        <span className="prompt-row prompt-controls-row">
-                            <PromptModeIndicators />
-                            <span className="raw-prompt-suffix"> <TokenRenderer tokens={promptTokens} fallbackHtml={promptFallbackHtml} /></span>
-                        </span>
-                        {promptMetadataLine}
-                    </span>
-                ) : msg.promptHPStatus ? (
-                    <span className="custom-prompt-container">
-                        <span className="prompt-row prompt-vitals-row">
-                            <span className="custom-prompt-prefix">[</span>
-                            <span className="prompt-stat-item"><span className="prompt-stat-label">HP</span><span>{msg.promptHPStatus}</span></span>
-                            <span className="prompt-stat-divider">|</span>
-                            <span className="prompt-stat-item"><span className="prompt-stat-label">MANA</span><span>{msg.promptManaStatus}</span></span>
-                            <span className="prompt-stat-divider">|</span>
-                            <span className="prompt-stat-item"><span className="prompt-stat-label">MP</span><span>{msg.promptMoveStatus}</span></span>
-                            <span className="custom-prompt-prefix">]</span>
-                        {msg.promptOpponentName && (
-                            <>
-                                <span className="prompt-vs-label">Vs</span>
-                                <span className="prompt-opponent-info">
-                                    <span className="prompt-opponent-name">{msg.promptOpponentName}</span>
-                                    <span className="prompt-opponent-status"> ({msg.promptOpponentHealthStatus || 'Fighting'})</span>
-                                </span>
-                            </>
-                        )}
-                        </span>
-                        <span className="prompt-row prompt-controls-row">
-                            <PromptModeIndicators />
-                            <span className="raw-prompt-suffix"> <TokenRenderer tokens={promptTokens} fallbackHtml={promptFallbackHtml} /></span>
-                        </span>
-                        {promptMetadataLine}
-                    </span>
-                ) : (
-                    <span><TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''))} /></span>
-                )
+                null
             ) : entityCountPrompt ? (
                 null
             ) : msg.type === 'movement' ? (() => {
@@ -593,7 +414,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { 
         inCombat, inCombatRef, roomName, viewport, executeCommand, setParley,
         triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled,
-        isNewbieMode, showSpectatePromptInLog, sessionMode, lighting, currentTerrain, weather, roomNpcs, roomItems,
+        isNewbieMode, showSpectatePromptInLog, sessionMode,
         accountState
     } = useBaseGame() as any;
     const isSpectateMode = useModeStore(s => s.isSpectating);
@@ -738,20 +559,9 @@ const MessageLog: React.FC<MessageLogProps> = ({
             }
         }
 
-        if (hidePrompt) {
-            list = list.filter(m => m.type !== 'prompt');
-        } else {
-            let lastPromptIdx = -1;
-            for (let i = list.length - 1; i >= 0; i--) {
-                if (list[i].type === 'prompt') {
-                    lastPromptIdx = i;
-                    break;
-                }
-            }
-            if (lastPromptIdx !== -1) {
-                list = list.filter((m, idx) => m.type !== 'prompt' || idx === lastPromptIdx);
-            }
-        }
+        // Prompts are rendered in the stationary CustomPromptBar outside and below the log,
+        // so they do not scroll or shift the log view when commands are sent.
+        list = list.filter(m => m.type !== 'prompt');
 
         return list.filter(message => !(message.type === 'game' && parseEntityCountPrompt(message.textOnly || message.textRaw || '')));
     }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime, isSpectateMode, activeView, spectateBuffer.isLive, spectateBuffer.displayCutoff, hidePrompt]);
@@ -1172,11 +982,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     isAwaitingResponse={msg.type === 'user' && msg.id === awaitingResponseUserId}
                                     batchOffset={batchOffset}
                                     colors={colors}
-                                    lighting={lighting}
-                                    currentTerrain={currentTerrain}
-                                    weather={weather}
-                                    roomNpcs={roomNpcs}
-                                    roomItems={roomItems}
                                 />
                             </div>
                         );

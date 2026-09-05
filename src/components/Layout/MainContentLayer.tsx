@@ -9,6 +9,7 @@ import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { LineCluster } from './HUD/LineCluster';
 import PromptBox from '../HUD/PromptBox';
+import CustomPromptBar from '../HUD/CustomPromptBar';
 import ActionBox from '../HUD/ActionBox';
 import { CharacterCard } from '../HUD/CharacterCard';
 import { useCharacterCardStore } from '../../stores/useCharacterCardStore';
@@ -96,6 +97,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const manualBgImage = useSettingsStore(s => s.bgImage);
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
     const showPlayersPanel = useSettingsStore(s => s.showPlayersPanel);
+    const hidePrompt = useSettingsStore(s => s.hidePrompt);
     const isSpectating = activeSession === 'spectate' || activeView === 'target';
     const roomCardTerrain = isSpectating ? spectateTerrain : currentTerrain;
 
@@ -567,17 +569,19 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         )}
                     </div>
 
-                    {/* On mobile the prompt box is a standalone row above the log's
-                        bottom. On desktop it slots into the action-box grid instead
-                        (passed as promptSlot below) so the bottom bar is one gapless
-                        unit — the prompt fills the center's top cell while the side
-                        button columns rise to the drawer bottom around it. */}
-                    {gameState !== 'account' && viewport.isMobile && isImmersionMode && (
-                        <PromptBox
-                            processMessageHtml={processMessageHtml}
-                            processMessageTokens={processMessageTokens}
-                            onWimpyChange={handleWimpyChange}
-                        />
+                    {/* On mobile the prompt is a standalone row outside and below the log.
+                        On desktop it slots into the action-box grid (passed as promptSlot below) so
+                        the bottom bar is one gapless unit. */}
+                    {gameState !== 'account' && viewport.isMobile && !hidePrompt && (
+                        isImmersionMode ? (
+                            <PromptBox
+                                processMessageHtml={processMessageHtml}
+                                processMessageTokens={processMessageTokens}
+                                onWimpyChange={handleWimpyChange}
+                            />
+                        ) : (
+                            <CustomPromptBar onLogClick={handleLogClick} />
+                        )
                     )}
 
                     {!viewport.isMobile && (gameState !== 'account' || shouldShowAccountInput) && (
@@ -589,12 +593,16 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             heldButton={heldButton}
                             setHeldButton={setHeldButton}
                             wasDraggingRef={wasDraggingRef}
-                            promptSlot={gameState !== 'account' && isImmersionMode ? (
-                                <PromptBox
-                                    processMessageHtml={processMessageHtml}
-                                    processMessageTokens={processMessageTokens}
-                                    onWimpyChange={handleWimpyChange}
-                                />
+                            promptSlot={gameState !== 'account' && !hidePrompt ? (
+                                isImmersionMode ? (
+                                    <PromptBox
+                                        processMessageHtml={processMessageHtml}
+                                        processMessageTokens={processMessageTokens}
+                                        onWimpyChange={handleWimpyChange}
+                                    />
+                                ) : (
+                                    <CustomPromptBar onLogClick={handleLogClick} />
+                                )
                             ) : null}
                         />
                     )}
