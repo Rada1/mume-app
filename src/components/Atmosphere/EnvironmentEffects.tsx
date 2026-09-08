@@ -4,6 +4,7 @@ import Rain from './Rain';
 import { Embers } from './Embers';
 import { useInputStore } from '../../stores/useInputStore';
 import { EnvironmentGlow } from './EnvironmentGlow';
+import { getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 
 const BACKGROUND_MAP_OPACITY = 0.18;
 const BACKGROUND_MAP_OPACITY_NO_IMMERSION = BACKGROUND_MAP_OPACITY * 0.35;
@@ -69,6 +70,43 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
         }
     }, [currentImage, triggerFade]);
 
+    // Smooth cross-fade when moving between rooms with different terrain glows
+    const currentTerrainGlow = getRoomTerrainGlowColor(terrain);
+    const [auraState, setAuraState] = React.useState({
+        currentGlow: currentTerrainGlow,
+        prevGlow: null as string | null,
+        triggerFade: false
+    });
+
+    React.useEffect(() => {
+        setAuraState(prev => {
+            if (prev.currentGlow === currentTerrainGlow) return prev;
+            return {
+                prevGlow: prev.currentGlow,
+                currentGlow: currentTerrainGlow,
+                triggerFade: false
+            };
+        });
+    }, [currentTerrainGlow]);
+
+    React.useEffect(() => {
+        if (auraState.prevGlow && !auraState.triggerFade) {
+            const frame = requestAnimationFrame(() => {
+                setAuraState(prev => ({ ...prev, triggerFade: true }));
+            });
+            return () => cancelAnimationFrame(frame);
+        }
+    }, [auraState.prevGlow, auraState.triggerFade]);
+
+    React.useEffect(() => {
+        if (auraState.triggerFade) {
+            const timer = setTimeout(() => {
+                setAuraState(prev => ({ ...prev, prevGlow: null, triggerFade: false }));
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [auraState.triggerFade]);
+
     const isWater = React.useMemo(() => {
         if (!bgImage) return false;
         const lowerBg = bgImage.toLowerCase();
@@ -95,7 +133,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         style={{
                             backgroundImage: `url(${prevImage})`,
                             opacity: triggerFade ? 0 : backgroundMapOpacity,
-                            transition: 'opacity 300ms ease-in-out',
+                            transition: 'opacity 1500ms ease-in-out',
                         }}
                     >
                         <div style={{
@@ -104,7 +142,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                             backgroundColor: getLightingTint(lighting),
                             mixBlendMode: 'multiply',
                             pointerEvents: 'none',
-                            transition: 'background-color 0.8s ease-in-out',
+                            transition: 'background-color 2.8s cubic-bezier(0.25, 0.1, 0.25, 1)',
                         }} />
                     </div>
                 )}
@@ -114,7 +152,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         style={{
                             backgroundImage: `url(${currentImage})`,
                             opacity: prevImage ? (triggerFade ? backgroundMapOpacity : 0) : backgroundMapOpacity,
-                            transition: prevImage ? 'opacity 300ms ease-in-out' : 'none',
+                            transition: prevImage ? 'opacity 1500ms ease-in-out' : 'none',
                         }}
                     >
                         <div style={{
@@ -123,7 +161,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                             backgroundColor: getLightingTint(lighting),
                             mixBlendMode: 'multiply',
                             pointerEvents: 'none',
-                            transition: 'background-color 0.8s ease-in-out',
+                            transition: 'background-color 2.8s cubic-bezier(0.25, 0.1, 0.25, 1)',
                         }} />
                     </div>
                 )}
@@ -140,6 +178,30 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                 )}
                 {isImmersionMode && (
                     <div className={`storm-overlay-layer ${weather === 'heavy-rain' ? 'active' : ''}`} />
+                )}
+                {isImmersionMode && (
+                    <>
+                        {auraState.prevGlow && (
+                            <div
+                                className="client-terrain-ambient-aura"
+                                aria-hidden="true"
+                                style={{
+                                    '--terrain-glow-color': auraState.prevGlow,
+                                    opacity: auraState.triggerFade ? 0 : 1,
+                                    transition: 'opacity 3000ms cubic-bezier(0.25, 0.1, 0.25, 1)',
+                                } as React.CSSProperties}
+                            />
+                        )}
+                        <div
+                            className="client-terrain-ambient-aura"
+                            aria-hidden="true"
+                            style={{
+                                '--terrain-glow-color': auraState.currentGlow,
+                                opacity: auraState.prevGlow ? (auraState.triggerFade ? 1 : 0) : 1,
+                                transition: auraState.prevGlow ? 'opacity 3000ms cubic-bezier(0.25, 0.1, 0.25, 1)' : 'none',
+                            } as React.CSSProperties}
+                        />
+                    </>
                 )}
             </div>
 

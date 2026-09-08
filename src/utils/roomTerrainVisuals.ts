@@ -50,15 +50,15 @@ export const getZoneVisualKey = (zone: string | null | undefined): string => {
 export const getRoomTerrainGlowColor = (terrain: string | null | undefined): string => {
     if (!terrain) return 'rgba(255, 255, 255, 0.06)';
     const normalized = terrain.toLowerCase();
-    if (normalized.includes('underwater')) return 'rgba(20, 184, 166, 0.19)';
-    if (normalized.includes('shallow') || normalized.includes('swamp') || normalized.includes('marsh') || normalized.includes('bog')) return 'rgba(101, 163, 13, 0.18)';
-    if (normalized.includes('brush') || normalized.includes('shrub') || normalized.includes('thicket')) return 'rgba(74, 222, 128, 0.16)';
-    if (normalized.includes('forest') || normalized.includes('wood') || normalized.includes('jungle')) return 'rgba(34, 197, 94, 0.16)';
-    if (normalized.includes('water') || normalized.includes('rapid') || normalized.includes('river') || normalized.includes('sea') || normalized.includes('ocean') || normalized.includes('lake')) return 'rgba(14, 165, 233, 0.18)';
-    if (normalized.includes('mountain') || normalized.includes('peak') || normalized.includes('cliff') || normalized.includes('hill')) return 'rgba(148, 163, 184, 0.16)';
-    if (normalized.includes('road') || normalized.includes('path') || normalized.includes('bridge') || normalized.includes('trail')) return 'rgba(217, 119, 6, 0.16)';
-    if (normalized.includes('building') || normalized.includes('inside') || normalized.includes('shop') || normalized.includes('tavern') || normalized.includes('inn')) return 'rgba(245, 158, 11, 0.16)';
-    if (normalized.includes('city') || normalized.includes('town')) return 'rgba(239, 68, 68, 0.16)';
-    if (normalized.includes('underground') || normalized.includes('cave') || normalized.includes('tunnel')) return 'rgba(139, 92, 246, 0.16)';
-    return 'rgba(132, 204, 22, 0.16)';
+    if (normalized.includes('underwater')) return 'rgba(20, 140, 130, 0.17)';
+    if (normalized.includes('shallow') || normalized.includes('swamp') || normalized.includes('marsh') || normalized.includes('bog')) return 'rgba(85, 120, 25, 0.17)';
+    if (normalized.includes('brush') || normalized.includes('shrub') || normalized.includes('thicket')) return 'rgba(55, 140, 80, 0.16)';
+    if (normalized.includes('forest') || normalized.includes('wood') || normalized.includes('jungle')) return 'rgba(46, 125, 75, 0.17)';
+    if (normalized.includes('water') || normalized.includes('rapid') || normalized.includes('river') || normalized.includes('sea') || normalized.includes('ocean') || normalized.includes('lake')) return 'rgba(28, 120, 168, 0.17)';
+    if (normalized.includes('mountain') || normalized.includes('peak') || normalized.includes('cliff') || normalized.includes('hill')) return 'rgba(125, 135, 150, 0.15)';
+    if (normalized.includes('road') || normalized.includes('path') || normalized.includes('bridge') || normalized.includes('trail')) return 'rgba(195, 115, 20, 0.16)';
+    if (normalized.includes('building') || normalized.includes('inside') || normalized.includes('shop') || normalized.includes('tavern') || normalized.includes('inn')) return 'rgba(215, 145, 25, 0.16)';
+    if (normalized.includes('city') || normalized.includes('town')) return 'rgba(175, 60, 60, 0.16)';
+    if (normalized.includes('underground') || normalized.includes('cave') || normalized.includes('tunnel')) return 'rgba(115, 75, 180, 0.16)';
+    return 'rgba(90, 130, 45, 0.16)';
 };

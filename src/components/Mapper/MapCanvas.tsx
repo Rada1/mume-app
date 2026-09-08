@@ -177,24 +177,6 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         filterFitRef
     });
 
-    // Parallax: update when mapper state wakes instead of running a permanent RAF loop.
-    useEffect(() => {
-        const settings = useSettingsStore.getState();
-        const showBg = settings.showBackgroundImage && settings.isImmersionMode;
-        if (!showBg) return;
-        const FACTOR = 0.035;
-        const container = canvasRef.current?.closest('.mapper-container') as HTMLElement | null;
-        if (!container) return;
-        container.style.setProperty('--parallax-x', `${-props.camera.current.x * FACTOR}px`);
-        container.style.setProperty('--parallax-y', `${-props.camera.current.y * FACTOR}px`);
-        const zoom = props.camera.current.zoom;
-        const bgScale = 1 + (zoom - 1) * 0.05;
-        container.style.setProperty('--parallax-scale', `${bgScale}`);
-        document.documentElement.style.setProperty('--parallax-x', `${-props.camera.current.x * FACTOR}px`);
-        document.documentElement.style.setProperty('--parallax-y', `${-props.camera.current.y * FACTOR}px`);
-        document.documentElement.style.setProperty('--parallax-scale', `${bgScale}`);
-    }, [canvasRef, props.camera, props.renderVersion, props.isMobile]);
-
     useEffect(() => {
         const cvs = canvasRef.current;
         const parent = cvs?.parentElement;

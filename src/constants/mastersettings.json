@@ -5,8 +5,6 @@
   "bgImage": "",
   "loginName": "",
   "loginPassword": "",
-  "isCrtEnabled": false,
-  "isBloomEnabled": false,
   "isSoundEnabled": true,
   "isNoviceMode": false,
   "buttons": [

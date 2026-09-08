@@ -149,6 +149,10 @@ export const useAudioEffects = () => {
     const playStabSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('stab', options), [playEffect]);
     const playArrowHitSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('arrowhit', options), [playEffect]);
     const playClickSound = useCallback(() => playEffect('click', { volume: 2.0 }), [playEffect]);
+    const playLookSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('look', options), [playEffect]);
+    const playExamineSound = playLookSound;
+    const playWhoSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('who', options), [playEffect]);
+    const playEqInventorySound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('eqinventory', options), [playEffect]);
     const playAchievementSound = useCallback(() => playEffect('achievement'), [playEffect]);
     const playEventMoveSound = useCallback(() => playEffect('event-move'), [playEffect]);
     const playWearSound = useCallback(() => playEffect('wear'), [playEffect]);
@@ -210,6 +214,10 @@ export const useAudioEffects = () => {
         playStabSound,
         playArrowHitSound,
         playClickSound,
+        playLookSound,
+        playExamineSound,
+        playWhoSound,
+        playEqInventorySound,
         playDoorSound,
         playMovementSound,
         playMagicExplosionSound,

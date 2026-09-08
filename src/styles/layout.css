@@ -1,3 +1,9 @@
+@property --terrain-glow-color {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(255, 255, 255, 0.06);
+}
+
 .app-container {
     position: fixed;
     top: 0;
@@ -9,8 +15,35 @@
     display: flex;
     flex-direction: column;
     background: var(--bg-app);
-    perspective: 1200px;
     --mobile-gutter-height: 110px;
+    transition: --terrain-glow-color 3.0s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.app-container.immersion-mode {
+    background: #090c12 !important;
+}
+
+.app-container.immersion-mode .background-layer {
+    filter: sepia(0.35) brightness(0.60) contrast(1.05) blur(3px) !important;
+}
+
+/* Edge-to-edge immersion frame mirroring the room card's terrain border and gold hairline inlay */
+.app-container.immersion-mode::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 9999;
+    background: transparent !important;
+    border: 1px solid var(--terrain-glow-color, rgba(255, 255, 255, 0.14));
+    box-shadow:
+        inset 0 0 0 1px rgba(232, 176, 32, 0.24),
+        inset 0 0 16px var(--terrain-glow-color, transparent),
+        inset 0 0 40px var(--terrain-glow-color, transparent);
+    transition: --terrain-glow-color 3.0s cubic-bezier(0.25, 0.1, 0.25, 1),
+                border-color 3.0s cubic-bezier(0.25, 0.1, 0.25, 1),
+                box-shadow 3.0s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 
@@ -39,7 +72,7 @@
     background-position: center !important;
     background-repeat: no-repeat;
     z-index: -1;
-    transition: background-image 0.5s ease-in-out, filter 0.4s ease;
+    transition: background-image 1.5s ease-in-out, filter 1.5s ease;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
     filter: sepia(0.45) brightness(0.70) contrast(1.08);
 }
@@ -49,7 +82,7 @@
     left: 50%;
     right: auto;
     bottom: auto;
-    transform: translate(calc(-50% + var(--parallax-x, 0px)), calc(-50% + var(--parallax-y, 0px))) scale(var(--parallax-scale, 1));
+    transform: translate(-50%, -50%);
     width: 800%;
     height: 800%;
     background-size: contain !important;
@@ -2701,6 +2734,8 @@
 .desktop-log-room-card-wrapper .mri-content {
     background: rgba(13, 16, 23, 0.65) !important;
     backdrop-filter: blur(12px) !important;
+    transition: border-color 3.0s cubic-bezier(0.25, 0.1, 0.25, 1),
+                box-shadow 3.0s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
 }
 
 .desktop-log-room-card-wrapper .room-chip-rows {
@@ -2803,6 +2838,16 @@
         padding: 0 !important;
         backdrop-filter: blur(12px) !important;
         -webkit-backdrop-filter: blur(12px) !important;
+    }
+
+    .immersion-mode .control-card-wrapper,
+    .immersion-mode .action-box,
+    .app-container.immersion-mode .control-card-wrapper,
+    .app-container.immersion-mode .action-box {
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border-top: 1px solid rgba(232, 176, 32, 0.14) !important;
     }
 
     .light-mode .control-card-wrapper,

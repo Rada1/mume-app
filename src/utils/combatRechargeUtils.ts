@@ -86,3 +86,15 @@ export const getMedianDuration = (samples: number[]): number | null => {
         ? Math.round((sorted[middle - 1] + sorted[middle]) / 2)
         : sorted[middle];
 };
+
+export const extractDeadMobName = (text: string): string | null => {
+    const t = text.replace(/<[^>]*>/g, '').replace(/^[\s*]+/, '').trim();
+    let m = t.match(/^(?:A|An|The)\s+(.+?)\s+is dead!\s*R\.?I\.?P/i);
+    if (m) return m[1].trim();
+    m = t.match(/^(.+?)\s+is dead!\s*R\.?I\.?P/i);
+    if (m && !/^you\b/i.test(m[1])) return m[1].trim();
+    m = t.match(/you (?:have )?sl(?:ay|ew|ain)\s+(?:the\s+|an?\s+)?(.+?)[.!]/i);
+    if (m) return m[1].trim();
+    return null;
+};
+

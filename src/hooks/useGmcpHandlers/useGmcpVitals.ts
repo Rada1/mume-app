@@ -93,7 +93,13 @@ export const useGmcpVitals = ({
                 
                 // Sync combat state from position
                 if (setInCombat && !isSpectateMode) {
-                    setInCombat(data.position === 'fighting');
+                    const fighting = data.position === 'fighting';
+                    setInCombat(fighting);
+                    if (!fighting) {
+                        setOpponentName(null);
+                        setOpponentId(null);
+                        setOpponentHealthStatus(null);
+                    }
                 }
             }
         }
@@ -103,6 +109,9 @@ export const useGmcpVitals = ({
             if (setInCombat && !isSpectateMode) {
                 setInCombat(false);
             }
+            setOpponentName(null);
+            setOpponentId(null);
+            setOpponentHealthStatus(null);
         }
 
         // --- Combat Info via Vitals ---

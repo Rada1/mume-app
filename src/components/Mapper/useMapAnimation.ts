@@ -67,7 +67,6 @@ export const useMapAnimation = ({
     const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
     const wakeUntilRef = useRef(0);
     const lastFrameTimeRef = useRef<number>(0);
-    const lastParallaxRef = useRef<{ x: number; y: number; scale: number } | null>(null);
 
     const isJoystickActiveRef = useRef(false);
     const joystickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -333,32 +332,6 @@ export const useMapAnimation = ({
             needsNextFrame = true;
         } else {
             wakeUntilRef.current = 0;
-        }
-
-        const showBg = useSettingsStore.getState().showBackgroundImage;
-        const container = showBg ? cvs.closest('.mapper-container') as HTMLElement | null : null;
-        if (container) {
-            const FACTOR = 0.035;
-            const nextParallax = {
-                x: -camera.current.x * FACTOR,
-                y: -camera.current.y * FACTOR,
-                scale: 1 + (camera.current.zoom - 1) * 0.05,
-            };
-            const prevParallax = lastParallaxRef.current;
-            if (
-                !prevParallax ||
-                Math.abs(prevParallax.x - nextParallax.x) > 0.1 ||
-                Math.abs(prevParallax.y - nextParallax.y) > 0.1 ||
-                Math.abs(prevParallax.scale - nextParallax.scale) > 0.001
-            ) {
-                container.style.setProperty('--parallax-x', `${nextParallax.x}px`);
-                container.style.setProperty('--parallax-y', `${nextParallax.y}px`);
-                container.style.setProperty('--parallax-scale', `${nextParallax.scale}`);
-                document.documentElement.style.setProperty('--parallax-x', `${nextParallax.x}px`);
-                document.documentElement.style.setProperty('--parallax-y', `${nextParallax.y}px`);
-                document.documentElement.style.setProperty('--parallax-scale', `${nextParallax.scale}`);
-                lastParallaxRef.current = nextParallax;
-            }
         }
 
         const drawStart = performance.now();

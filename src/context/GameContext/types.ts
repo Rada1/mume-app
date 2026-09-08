@@ -369,8 +369,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setIsImmersionMode: (val: boolean) => void;
     isPerformanceMode: boolean;
     setIsPerformanceMode: (val: boolean) => void;
-    isBloomEnabled: boolean;
-    setIsBloomEnabled: (val: boolean) => void;
     isSpectateMode: boolean;
     setIsSpectateMode: (val: boolean) => void;
     showSpectatePromptInLog: boolean;

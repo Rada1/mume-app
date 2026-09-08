@@ -45,8 +45,6 @@ interface UseSettingsInput {
     setInlineCategories?: (...args: any[]) => void;
     isHighlighterEnabled?: boolean;
     setIsHighlighterEnabled?: (val: boolean) => void;
-    isBloomEnabled?: boolean;
-    setIsBloomEnabled?: (val: boolean) => void;
     isTimestampEnabled?: boolean;
     setIsTimestampEnabled?: (val: boolean) => void;
     autoSaveSessions?: boolean;

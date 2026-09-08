@@ -1,45 +1,46 @@
 /**
  * @file parser.worker.ts
- * @description Web Worker entrypoint for CPU-heavy telnet text tokenization.
+ * @description Web worker for asynchronous parser tokenization.
  */
 
 import { Tokenizer } from './Tokenizer';
-import { ParserWorkerRequest, ParserWorkerMessage, TokenizedLine } from './parserWorkerTypes';
-
-const tokenizeChunk = (request: ParserWorkerRequest): TokenizedLine[] => {
-    const tokenizer = Tokenizer.getInstance();
-    tokenizer.resetOccupantMatches();
-
-    return request.chunkLines.map(entry => {
-        const line = typeof entry === 'string' ? entry : entry.line;
-        const isPrompt = typeof entry === 'string' ? false : entry.isPrompt;
-
-        tokenizer.reset('room');
-        return {
-            line,
-            isPrompt,
-            tokens: tokenizer.tokenize(line, request.context, undefined, true),
-        };
-    });
-};
+import {
+    ParserWorkerRequest,
+    ParserWorkerResponse,
+} from './parserWorkerTypes';
 
 self.onmessage = (event: MessageEvent<ParserWorkerRequest>) => {
+    const { id, chunkLines, context } = event.data;
     const startedAt = performance.now();
+
     try {
-        const lines = tokenizeChunk(event.data);
-        const message: ParserWorkerMessage = {
-            id: event.data.id,
+        const tokenizer = Tokenizer.getInstance();
+        tokenizer.resetOccupantMatches();
+
+        const lines = chunkLines.map(entry => {
+            const line = typeof entry === 'string' ? entry : entry.line;
+            const isPrompt = typeof entry === 'string' ? false : entry.isPrompt;
+            tokenizer.reset('room');
+            return {
+                line,
+                isPrompt,
+                tokens: tokenizer.tokenize(line, context, undefined, true),
+            };
+        });
+
+        const durationMs = performance.now() - startedAt;
+        const response: ParserWorkerResponse = {
+            id,
             ok: true,
             lines,
-            durationMs: performance.now() - startedAt,
+            durationMs,
         };
-        self.postMessage(message);
+        self.postMessage(response);
     } catch (error) {
-        const message: ParserWorkerMessage = {
-            id: event.data.id,
+        self.postMessage({
+            id,
             ok: false,
             error: error instanceof Error ? error.message : String(error),
-        };
-        self.postMessage(message);
+        });
     }
 };

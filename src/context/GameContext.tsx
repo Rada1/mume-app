@@ -932,7 +932,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         showSpectatePromptInLog: settingsStore.showSpectatePromptInLog,
         setShowSpectatePromptInLog: settingsStore.setShowSpectatePromptInLog,
         isImmersionMode: settingsStore.isImmersionMode,
-        isBloomEnabled: settingsStore.isBloomEnabled, setIsBloomEnabled: settingsStore.setIsBloomEnabled,
+        
         isHighlighterEnabled: true, setIsHighlighterEnabled: (v) => {}, // Placeholder
         isTimestampEnabled: settingsStore.isTimestampEnabled, setIsTimestampEnabled: settingsStore.setIsTimestampEnabled,
         disableSmoothScroll: settingsStore.disableSmoothScroll, setDisableSmoothScroll: settingsStore.setDisableSmoothScroll,

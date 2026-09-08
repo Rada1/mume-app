@@ -65,6 +65,13 @@
     max-width: 100%;
 }
 
+.custom-prompt-bar .prompt-combat-stat-indicators {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.45em;
+    margin-left: 0.35em;
+}
+
 .custom-prompt-bar .custom-prompt-prefix {
     color: var(--text-primary, #d4cdb8);
     font-weight: 700;
@@ -81,7 +88,11 @@
     font-size: 0.78em;
     font-weight: 700;
     letter-spacing: 0.02em;
-    color: var(--mume-wiki-link-color);
+    color: #a8a29e;
+}
+
+.light-mode .custom-prompt-bar .prompt-stat-label {
+    color: #78716c;
 }
 
 .custom-prompt-bar .prompt-stat-divider {
@@ -123,8 +134,22 @@
 
 .custom-prompt-bar .prompt-environment-line {
     color: #a8a29e;
-    display: inline;
+    display: inline-flex;
+    align-items: center;
     line-height: 1.2;
+    flex-wrap: wrap;
+    gap: 0.25em;
+}
+
+.custom-prompt-bar .prompt-env-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+}
+
+.custom-prompt-bar .prompt-env-icon {
+    flex-shrink: 0;
+    vertical-align: middle;
 }
 
 .custom-prompt-bar .prompt-entities-line {

@@ -70,6 +70,18 @@ const mergeResourceGains = <T extends Message>(m: T, gains: import('../types').R
     return resourceGain === m.resourceGain ? m : { ...m, resourceGain } as T;
 };
 
+const getMessageCategory = (m: Message): 'combat' | 'comm' | 'social' | 'weather' | 'movement' | 'status' | 'room' | 'user' | 'other' => {
+    if (m.isCombat || m.type === 'combat' || m.isHitImpact || m.isDamageImpact || m.isAvoidDamageImpact || m.isMissImpact) return 'combat';
+    if (m.isSocial) return 'social';
+    if (m.isComm || m.type === 'comm' || m.type === 'comm-continue') return 'comm';
+    if (m.type === 'weather' || m.type === 'gmcp-event' || isEnvironmentEventLine(m.textOnly || m.textRaw)) return 'weather';
+    if (m.type === 'movement') return 'movement';
+    if (m.type === 'status-event' || hasXmlTag(m.textRaw, 'status')) return 'status';
+    if (m.isRoomBlock || m.isRoomName) return 'room';
+    if (m.type === 'user') return 'user';
+    return 'other';
+};
+
 // ---------------------------------------------------------------------------
 let lastVibrateTime = 0;
 const USER_LOG_MESSAGE_LIMIT = 500;
@@ -112,6 +124,8 @@ export function useMessageLog(
     const addedMidSetRef = useRef<Set<string>>(new Set());
 
     const batchIdRef = useRef(0);
+    const lastCategoryRef = useRef<string | null>(null);
+    const prevHadEmptyLineRef = useRef<boolean>(false);
 
     // Resource gains (XP/TP) arrive via GMCP, sometimes just *before* the combat line
     // that earned them. We queue them and attach to the next action line that flushes;
@@ -141,40 +155,11 @@ export function useMessageLog(
         const hasRoomInBatch = messageBufferRef.current.some(m => m.isRoomName);
         const containsPrompt = messageBufferRef.current.some(m => m.type === 'prompt');
         
-        let pending = messageBufferRef.current.map((m, idx) => {
-            const prev = idx > 0 ? messageBufferRef.current[idx - 1] : lastMessageRef.current;
-            const isRoomBlockStart = m.isRoomBlock && (!prev || !prev.isRoomBlock);
-            const isCombatMsg = !!(m.isHitImpact || m.isDamageImpact || m.isAvoidDamageImpact || m.isMissImpact);
-            const prevIsCombatMsg = prev ? !!(prev.isHitImpact || prev.isDamageImpact || prev.isAvoidDamageImpact || prev.isMissImpact) : false;
-            const isCombatBlockStart = isCombatMsg && !prevIsCombatMsg;
-            const isSocialMsg = !!m.isSocial;
-            const prevIsSocialMsg = prev ? !!prev.isSocial : false;
-            const isCommMsg = !!m.isComm && !isSocialMsg;
-            const prevIsCommMsg = prev ? !!prev.isComm && !prev.isSocial : false;
-            const isCommBlockStart = isCommMsg && !prevIsCommMsg;
-            const isSocialBlockStart = isSocialMsg && !prevIsSocialMsg;
-            const isWeatherMsg = m.type === 'weather' || m.type === 'gmcp-event' || isEnvironmentEventLine(m.textOnly || m.textRaw);
-            const prevIsWeatherMsg = prev ? prev.type === 'weather' || prev.type === 'gmcp-event' || isEnvironmentEventLine(prev.textOnly || prev.textRaw) : false;
-            const isWeatherBlockStart = isWeatherMsg && !prevIsWeatherMsg;
-            const isMovementMsg = m.type === 'movement';
-            const prevIsMovementMsg = prev ? prev.type === 'movement' : false;
-            const isMovementBlockStart = isMovementMsg && !prevIsMovementMsg;
-            const isStatusMsg = m.type === 'status-event' || hasXmlTag(m.textRaw, 'status');
-            const prevIsStatusMsg = prev ? prev.type === 'status-event' || hasXmlTag(prev.textRaw, 'status') : false;
-            const isStatusBlockStart = isStatusMsg && !prevIsStatusMsg;
-            return {
-                ...m,
-                batchId: currentBatchId,
-                inRoomBatch: hasRoomInBatch,
-                isRoomBlockStart,
-                isCombatBlockStart,
-                isCommBlockStart,
-                isSocialBlockStart,
-                isWeatherBlockStart,
-                isMovementBlockStart,
-                isStatusBlockStart
-            };
-        });
+        let pending = messageBufferRef.current.map((m) => ({
+            ...m,
+            batchId: currentBatchId,
+            inRoomBatch: hasRoomInBatch,
+        }));
 
         // Attach any queued resource gains (GMCP arrived just before this text) to the
         // first real action line in this batch — the line that actually earned them.
@@ -260,6 +245,51 @@ export function useMessageLog(
             }
         }
 
+        let lastCat = lastCategoryRef.current;
+        let hadBlank = prevHadEmptyLineRef.current;
+
+        for (let i = 0; i < pending.length; i++) {
+            const m = pending[i];
+            if (m.type === 'prompt') {
+                continue;
+            }
+
+            if (m.isEmpty) {
+                hadBlank = true;
+                continue;
+            }
+
+            const cat = getMessageCategory(m);
+            const isDifferentCategory = lastCat !== null && lastCat !== cat;
+            const needsBlockGap = isDifferentCategory && !hadBlank;
+
+            const isCombatBlockStart = cat === 'combat' && needsBlockGap;
+            const isCommBlockStart = cat === 'comm' && needsBlockGap;
+            const isSocialBlockStart = cat === 'social' && needsBlockGap;
+            const isWeatherBlockStart = cat === 'weather' && needsBlockGap;
+            const isMovementBlockStart = cat === 'movement' && needsBlockGap;
+            const isStatusBlockStart = cat === 'status' && needsBlockGap;
+            const isRoomBlockStart = (m.isRoomBlock || m.isRoomName) && needsBlockGap;
+
+            pending[i] = {
+                ...m,
+                isCombatBlockStart,
+                isCommBlockStart,
+                isSocialBlockStart,
+                isWeatherBlockStart,
+                isMovementBlockStart,
+                isStatusBlockStart,
+                isRoomBlockStart: isRoomBlockStart || m.isRoomBlockStart
+            };
+
+            lastCat = cat;
+            hadBlank = false;
+            lastMessageRef.current = pending[i];
+        }
+
+        lastCategoryRef.current = lastCat;
+        prevHadEmptyLineRef.current = hadBlank;
+
         messageBufferRef.current = [];
         const ordered: Message[] = pending;
         
@@ -342,6 +372,7 @@ export function useMessageLog(
         // We no longer use ANSI color heuristics — those caused too many false positives.
         const isActuallyRoomName = !isCombat && !isComm && type !== 'room-description' && type !== 'prompt' && (
             isRoomName === true ||
+            type === 'room-name' ||
             (!providedIsSnoop && curRoom && !replyCommand && (
                 currentTextOnly === curRoom ||
                 currentTextLower === curRoom.toLowerCase() ||
@@ -691,7 +722,9 @@ export function useMessageLog(
                 if (addedMidSetRef.current.has(mid) || drained.some(m => m.id === mid)) return;
             }
 
-            lastMessageRef.current = msg;
+            if (msg.type !== 'prompt' && !msg.isEmpty) {
+                lastMessageRef.current = msg;
+            }
             if (mid) addedMidSetRef.current.add(mid);
             setMessages(prev => {
                 const nextMessages = [...prev, ...drained, msg];
@@ -704,7 +737,9 @@ export function useMessageLog(
                 if (addedMidSetRef.current.has(mid)) return;
             }
 
-            lastMessageRef.current = msg;
+            if (msg.type !== 'prompt' && !msg.isEmpty) {
+                lastMessageRef.current = msg;
+            }
             if (mid) addedMidSetRef.current.add(mid);
             messageBufferRef.current.push(msg);
 
@@ -719,6 +754,9 @@ export function useMessageLog(
     const clearLog = useCallback(() => {
         messageBufferRef.current = [];
         addedMidSetRef.current.clear();
+        lastCategoryRef.current = null;
+        prevHadEmptyLineRef.current = false;
+        lastMessageRef.current = null;
         if (flushTimeoutRef.current) {
             cancelAnimationFrame(flushTimeoutRef.current as unknown as number);
             flushTimeoutRef.current = null;

@@ -32,6 +32,9 @@ export function useReplayMessages() {
         providedIsHitterImpact?: boolean,
         providedIsSnoop?: boolean,
         providedIsSnoopInput?: boolean,
+        providedIsRipMessage?: boolean,
+        providedIsSocial?: boolean,
+        resourceGain?: import('../types').ResourceGain
     ) => {
         const id = mid || `replay-${Date.now()}-${idCounterRef.current++}`;
         const msg: Message = {

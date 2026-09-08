@@ -29,7 +29,7 @@
     gap: 4px;
     pointer-events: auto; /* Enable tapping on the card */
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s ease, box-shadow 0.4s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 3.0s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 3.0s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .mapper-room-info-container.expanded .mri-content {

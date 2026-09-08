@@ -3,9 +3,8 @@
  * @description Displays room character and object keyword chips under the mapper room card.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useGame, useVitals } from '../../context/GameContext';
-import { useCombatRechargeStore, CombatRechargeTimer } from '../../stores/useCombatRechargeStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { audioManager } from '../../services/audio/AudioManager';
@@ -17,7 +16,6 @@ import { extractMumeKeyword } from '../../utils/gameUtils';
 import { useObjectDragCommands } from '../../hooks/useObjectDragCommands';
 import { targetTextMatchesEntity } from '../../utils/selectionUtils';
 import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
-import { useCharacterCardStore } from '../../stores/useCharacterCardStore';
 import { Box, Swords, Users } from 'lucide-react';
 import { getEntityTypeIcon } from '../Messages/TokenRenderer';
 import './RoomChipRows.css';
@@ -36,33 +34,6 @@ interface RoomChip {
 type OccupantSource = GmcpOccupant | string;
 
 const CHARACTER_ORDER: Record<CharacterKind, number> = { enemy: 0, npc: 1, ally: 2, neutral: 3 };
-
-const getLatestSwing = (timers: Partial<Record<string, CombatRechargeTimer>>): { startedAt: number; isLanded: boolean } => {
-    let startedAt = 0;
-    let isLanded = false;
-    for (const timer of Object.values(timers)) {
-        if (timer && timer.startedAt > startedAt) {
-            startedAt = timer.startedAt;
-            isLanded = timer.isLanded !== false;
-        }
-    }
-    return { startedAt, isLanded };
-};
-
-// Briefly toggles a boolean on (after a frame so a rapid re-trigger restarts the
-// CSS animation), then off after `ms`. Returns a cleanup for the effect.
-const pulseState = (setter: (value: boolean) => void, ms: number): (() => void) => {
-    setter(false);
-    let timeoutId = 0;
-    const frameId = window.requestAnimationFrame(() => {
-        setter(true);
-        timeoutId = window.setTimeout(() => setter(false), ms);
-    });
-    return () => {
-        window.cancelAnimationFrame(frameId);
-        if (timeoutId) window.clearTimeout(timeoutId);
-    };
-};
 
 const getName = (source: OccupantSource): string => (
     typeof source === 'string'
@@ -138,7 +109,7 @@ const withDuplicateOrdinals = (chips: RoomChip[]): RoomChip[] => {
 const CONSIDER_DELAY_MS = 850;
 
 interface RoomChipRowsProps {
-    variant?: 'summary' | 'columns' | 'occupants-row' | 'objects-row' | 'terrain-pins';
+    variant?: 'summary' | 'columns' | 'occupants-row' | 'objects-row';
 }
 
 export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' }) => {
@@ -151,7 +122,6 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
     const selectedTarget = useUIStore(s => s.selectedTarget);
     const toggleObjectSelection = useUIStore(s => s.toggleObjectSelection);
     const objectDragState = useUIStore(s => s.objectDragState);
-    const openCharacterCard = useCharacterCardStore(s => s.open);
     const startObjectDrag = useObjectDragCommands({ executeCommand, triggerHaptic });
     const colorVars: ChipColorVars = {
         '--enemy-color': useSettingsStore(s => s.enemyColor),
@@ -161,36 +131,6 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
         '--object-color': useSettingsStore(s => s.objectColor),
         '--target-color': useSettingsStore(s => s.targetColor)
     };
-
-    // --- Directional combat lunge + damage flash for the terrain-pin avatars in the log ---
-    const activeTimers = useCombatRechargeStore(state => state.active);
-    const opponentTimers = useCombatRechargeStore(state => state.opponentActive);
-    const playerSwing = useMemo(() => getLatestSwing(activeTimers), [activeTimers]);
-    const opponentSwing = useMemo(() => getLatestSwing(opponentTimers), [opponentTimers]);
-    const [isPlayerLunging, setIsPlayerLunging] = useState(false);
-    const [isOpponentLunging, setIsOpponentLunging] = useState(false);
-    const [isPlayerHit, setIsPlayerHit] = useState(false);
-    const [isOpponentHit, setIsOpponentHit] = useState(false);
-
-    // You swing -> your pin nudges toward the enemy; if it lands, the enemy pin flashes red.
-    useEffect(() => {
-        if (!playerSwing.startedAt) return;
-        return pulseState(setIsPlayerLunging, 280);
-    }, [playerSwing.startedAt]);
-    useEffect(() => {
-        if (!playerSwing.startedAt || !playerSwing.isLanded) return;
-        return pulseState(setIsOpponentHit, 450);
-    }, [playerSwing.startedAt]);
-
-    // Opponent swings -> its pin nudges toward you; if it lands, your pin flashes red.
-    useEffect(() => {
-        if (!opponentSwing.startedAt) return;
-        return pulseState(setIsOpponentLunging, 280);
-    }, [opponentSwing.startedAt]);
-    useEffect(() => {
-        if (!opponentSwing.startedAt || !opponentSwing.isLanded) return;
-        return pulseState(setIsPlayerHit, 450);
-    }, [opponentSwing.startedAt]);
 
     const isChipOpponent = (chip: RoomChip): boolean => {
         if (!inCombat) return false;
@@ -260,238 +200,6 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
     const allyChips = useMemo(() => characterChips.filter(c => c.kind === 'ally'), [characterChips]);
     const enemyChips = useMemo(() => characterChips.filter(c => c.kind === 'enemy'), [characterChips]);
 
-    // Terrain-pin focus lane: instead of wrapping the occupant pins onto stacked
-    // rows, keep them on one horizontally-scrollable line where the pin nearest
-    // the lane's centre is scaled up ("brought to the foreground") and off-centre
-    // pins shrink + dim. Every pin stays individually tappable.
-    const pinChips = useMemo(() => [...characterChips, ...itemChips], [characterChips, itemChips]);
-    const pinChipsKey = useMemo(() => pinChips.map(c => c.entityId).join('|'), [pinChips]);
-    const laneRef = useRef<HTMLDivElement | null>(null);
-    const focusRef = useRef(0); // carousel focus, in pin-index units (fractional)
-
-    useEffect(() => {
-        if (variant !== 'terrain-pins') return;
-        const lane = laneRef.current;
-        if (!lane) return;
-        const wrap = lane.parentElement;
-
-        const pinCount = () => lane.querySelectorAll('.terrain-pin').length;
-        const clampFocus = (v: number) => {
-            const n = pinCount();
-            return n <= 1 ? 0 : Math.max(0, Math.min(n - 1, v));
-        };
-
-        // Recentre focus if it's out of range for the current occupant set.
-        const initialN = pinCount();
-        if (initialN > 0 && (Number.isNaN(focusRef.current) || focusRef.current > initialN - 1)) {
-            focusRef.current = (initialN - 1) / 2;
-        }
-
-        let raf = 0;
-        let animRaf = 0;
-        let target = focusRef.current;
-
-        // Fisheye layout: give each pin a weight that peaks at the focus, lay the
-        // weighted cells across the usable width, and place each pin at its cell
-        // centre. Everything is normalised into the lane, so no pin is ever
-        // scrolled off-screen — the shoulders just compress.
-        const layout = () => {
-            raf = 0;
-            const rect = lane.getBoundingClientRect();
-            const W = rect.width;
-            if (W === 0) return;
-            const pins = Array.from(lane.querySelectorAll<HTMLElement>('.terrain-pin'));
-            const n = pins.length;
-            if (n === 0) return;
-            const focus = Math.max(0, Math.min(n - 1, focusRef.current));
-
-            // reserve a left gutter for the player's own (separately-pinned) chip
-            const playerPin = wrap?.querySelector<HTMLElement>('.terrain-pin-player');
-            const marginLeft = (playerPin ? playerPin.getBoundingClientRect().width : 40) + 20;
-            const marginRight = 14;
-            const usable = Math.max(1, W - marginLeft - marginRight);
-
-            // Each pin's visual width grows from a bare sprite to a full title
-            // chip across a focus window (a flat plateau of labelled chips at the
-            // centre, fading to sprites on the shoulders). A constant gap sits
-            // between every pin so chips never touch; when the row gets crowded the
-            // gap shrinks toward a floor (and only then do the chips themselves
-            // compress) rather than closing up.
-            // CHIP_W must match the max-width the CSS caps a labelled chip to
-            // (box-sizing: border-box), so a chip can never be wider than the cell
-            // we reserve for it and neighbouring chips can't overlap.
-            const CHIP_W = 84;    // full labelled-chip width (matches CSS cap)
-            const SPRITE_W = 16;  // bare sprite width
-            const GAP = 9;        // desired gap between pins
-            const GAP_MIN = 5;    // never let the gap go below this
-            const PLATEAU = 3;    // pins within this of focus get a full chip
-            const FADE = 2.2;     // chips fade to sprites over this many more pins
-
-            const focusWindow = (d: number) => {
-                if (d <= PLATEAU) return 1;
-                const t = Math.max(0, 1 - (d - PLATEAU) / FADE);
-                return t * t * (3 - 2 * t); // smoothstep tail
-            };
-            const gs = pins.map((_, i) => focusWindow(Math.abs(i - focus)));
-            // Labelled pins occupy a full (capped) chip cell so they line up with
-            // the CSS max-width; un-labelled pins interpolate down to a sprite.
-            const labeled = gs.map(g => g >= 0.9);
-            const content = gs.map((g, i) => labeled[i] ? CHIP_W : SPRITE_W + (CHIP_W - SPRITE_W) * g);
-            const contentSum = content.reduce((a, b) => a + b, 0);
-            const gaps = Math.max(1, n - 1);
-
-            let gap = GAP;
-            let scale = 1;
-            if (contentSum + gaps * GAP > usable) {
-                gap = Math.max(GAP_MIN, (usable - contentSum) / gaps);
-                if (contentSum + gaps * gap > usable) {
-                    gap = GAP_MIN;
-                    scale = Math.max(0.4, (usable - gaps * GAP_MIN) / contentSum);
-                }
-            }
-
-            const laidWidth = contentSum * scale + gaps * gap;
-            const startX = marginLeft + Math.max(0, (usable - laidWidth) / 2);
-
-            let cum = 0;
-            pins.forEach((pin, i) => {
-                const w = content[i] * scale;
-                const cx = startX + cum + w / 2;
-                cum += w + gap;
-                pin.style.left = `${cx.toFixed(1)}px`;
-                pin.style.setProperty('--pin-focus', gs[i].toFixed(3));
-                // Reveal the name once a pin is (near) full chip width.
-                pin.classList.toggle('is-foreground', labeled[i]);
-            });
-        };
-        const schedule = () => { if (!raf) raf = requestAnimationFrame(layout); };
-        const stopAnim = () => { if (animRaf) { cancelAnimationFrame(animRaf); animRaf = 0; } };
-
-        // Ease focus toward a target index (snap/settle) — this is what gives the
-        // carousel its motion, so no CSS transition fights it.
-        const animateTo = (t: number) => {
-            target = clampFocus(t);
-            if (animRaf) return;
-            const step = () => {
-                const cur = focusRef.current;
-                const diff = target - cur;
-                if (Math.abs(diff) < 0.002) {
-                    focusRef.current = target;
-                    animRaf = 0;
-                    layout();
-                    triggerHaptic?.(15); // Settle haptic tick when animation completes
-                    return;
-                }
-                focusRef.current = cur + diff * 0.22;
-                animRaf = requestAnimationFrame(step);
-                layout();
-            };
-            animRaf = requestAnimationFrame(step);
-        };
-
-        // --- Pointer drag (touch + mouse) ---
-        let dragging = false;
-        let startX = 0;
-        let startFocus = 0;
-        let lastTickFocus = Math.round(focusRef.current);
-        let moved = false;
-        let activePointer = -1;
-
-        const onPointerDown = (e: PointerEvent) => {
-            if (e.button > 0) return;
-            dragging = true;
-            moved = false;
-            activePointer = e.pointerId;
-            startX = e.clientX;
-            startFocus = focusRef.current;
-            lastTickFocus = Math.round(startFocus);
-            stopAnim();
-        };
-        const onPointerMove = (e: PointerEvent) => {
-            if (!dragging || e.pointerId !== activePointer) return;
-            const dx = e.clientX - startX;
-            if (Math.abs(dx) > 3) {
-                moved = true;
-                try { lane.setPointerCapture(activePointer); } catch { /* ignore */ }
-            }
-            const n = pinCount();
-            const perPin = lane.getBoundingClientRect().width / Math.max(1, n * 0.9);
-            const newFocus = clampFocus(startFocus - dx / perPin);
-            focusRef.current = newFocus;
-
-            // Trigger a light haptic tick when crossing integer boundaries
-            const currentRounded = Math.round(newFocus);
-            if (currentRounded !== lastTickFocus) {
-                lastTickFocus = currentRounded;
-                triggerHaptic?.(8);
-            }
-
-            schedule();
-        };
-        const endDrag = (e: PointerEvent, cancelled: boolean) => {
-            if (!dragging || e.pointerId !== activePointer) return;
-            dragging = false;
-            try { lane.releasePointerCapture(activePointer); } catch { /* ignore */ }
-            activePointer = -1;
-            if (cancelled) {
-                if (moved) animateTo(Math.round(focusRef.current));
-                return;
-            }
-            if (!moved) {
-                // tap: bring the nearest pin to the tap point into focus
-                const pins = Array.from(lane.querySelectorAll<HTMLElement>('.terrain-pin'));
-                let best = -1;
-                let bestDist = Infinity;
-                pins.forEach((pin, i) => {
-                    const r = pin.getBoundingClientRect();
-                    const d = Math.abs(r.left + r.width / 2 - e.clientX);
-                    if (d < bestDist) { bestDist = d; best = i; }
-                });
-                if (best >= 0) animateTo(best);
-            } else {
-                animateTo(Math.round(focusRef.current));
-            }
-        };
-        const onPointerUp = (e: PointerEvent) => endDrag(e, false);
-        const onPointerCancel = (e: PointerEvent) => endDrag(e, true);
-
-        // --- Wheel (desktop): rotate the carousel; settle to a pin when it stops ---
-        let wheelSettle = 0;
-        const onWheel = (e: WheelEvent) => {
-            const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-            if (delta === 0) return;
-            e.preventDefault();
-            e.stopPropagation();
-            stopAnim();
-            const newFocus = clampFocus(focusRef.current + delta * 0.01);
-            focusRef.current = newFocus;
-            schedule();
-            if (wheelSettle) clearTimeout(wheelSettle);
-            wheelSettle = window.setTimeout(() => animateTo(Math.round(focusRef.current)), 150);
-        };
-
-        layout();
-        lane.addEventListener('pointerdown', onPointerDown);
-        lane.addEventListener('pointermove', onPointerMove);
-        lane.addEventListener('pointerup', onPointerUp);
-        lane.addEventListener('pointercancel', onPointerCancel);
-        lane.addEventListener('wheel', onWheel, { passive: false });
-        const ro = new ResizeObserver(schedule);
-        ro.observe(lane);
-
-        return () => {
-            lane.removeEventListener('pointerdown', onPointerDown);
-            lane.removeEventListener('pointermove', onPointerMove);
-            lane.removeEventListener('pointerup', onPointerUp);
-            lane.removeEventListener('pointercancel', onPointerCancel);
-            lane.removeEventListener('wheel', onWheel);
-            ro.disconnect();
-            if (raf) cancelAnimationFrame(raf);
-            if (animRaf) cancelAnimationFrame(animRaf);
-            if (wheelSettle) clearTimeout(wheelSettle);
-        };
-    }, [variant, pinChipsKey, triggerHaptic]);
-
     const rows = [
         {
             id: 'npcs',
@@ -523,9 +231,7 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
         }
     ].filter(row => row.chips.length > 0);
 
-    // terrain-pins always renders (even with an empty room) so the player's own
-    // pixel-art pin stays visible on the ground line; skip the early-out for it.
-    if (rows.length === 0 && variant !== 'terrain-pins') return null;
+    if (rows.length === 0) return null;
     const activeRow = rows.find(row => row.id === activeRowId) || null;
 
     const getChipAccentColor = (kind: ChipKind): string => ({
@@ -630,74 +336,6 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
             </button>
         );
     };
-
-    if (variant === 'terrain-pins') {
-        const openPlayerCard = (event: React.MouseEvent<HTMLButtonElement>) => {
-            event.stopPropagation();
-            triggerHaptic?.(15);
-            openCharacterCard();
-        };
-
-        // Clicking your own pin targets yourself (toggle). Double-click still
-        // opens the character card.
-        const selfContext = characterName || 'self';
-        const selfEntityId = 'roomchars:self';
-        const isSelfTarget = selectedTarget?.id === selfEntityId
-            || targetTextMatchesEntity(target, selfContext, characterName || 'You');
-        const selectSelf = (event: React.MouseEvent<HTMLButtonElement>) => {
-            event.stopPropagation();
-            audioManager.playEffect('target', { skipJitter: true });
-            triggerHaptic?.(15);
-            const isSame = useUIStore.getState().selectedTarget?.id === selfEntityId;
-            toggleObjectSelection({ id: selfEntityId, setId: 'cat-ally', category: 'cat-ally', context: selfContext });
-            setTarget(isSame ? null : selfContext);
-        };
-
-        return (
-            <div className="room-chip-terrain-pins-wrap" style={colorVars} aria-label="Room entities and objects">
-                <div className="terrain-pin terrain-pin-player">
-                    <button
-                        type="button"
-                        className={`room-chip room-chip-player${isSelfTarget ? ' is-active is-target' : ''}`}
-                        title={isSelfTarget ? 'Clear yourself as target (double-click for character panel)' : 'Target yourself (double-click for character panel)'}
-                        onClick={selectSelf}
-                        onDoubleClick={openPlayerCard}
-                    >
-                        {characterName || 'You'}
-                    </button>
-                    <span className="terrain-pin-line" />
-                    <span className={`terrain-pin-sprite terrain-pin-sprite-player${isPlayerLunging ? ' is-player-lunging' : ''}${isPlayerHit ? ' is-hit' : ''}`} aria-hidden="true">
-                        <span className="terrain-pin-sprite-head" />
-                        <span className="terrain-pin-sprite-body" />
-                    </span>
-                </div>
-                <div
-                    ref={laneRef}
-                    className="room-chip-terrain-pins"
-                >
-                    {pinChips.map(chip => {
-                        const chipIsOpponent = isChipOpponent(chip);
-                        return (
-                        <div className="terrain-pin" key={chip.entityId}>
-                            {renderChip(chip)}
-                            <span className="terrain-pin-line" />
-                            <span className={`terrain-pin-sprite terrain-pin-sprite-${chip.kind}${chipIsOpponent && isOpponentLunging ? ' is-opponent-lunging' : ''}${chipIsOpponent && isOpponentHit ? ' is-hit' : ''}`} aria-hidden="true">
-                                {chip.kind === 'object' ? (
-                                    <span className="terrain-pin-sprite-block" />
-                                ) : (
-                                    <>
-                                        <span className="terrain-pin-sprite-head" />
-                                        <span className="terrain-pin-sprite-body" />
-                                    </>
-                                )}
-                            </span>
-                        </div>
-                        );
-                    })}
-                </div>
-            </div>
-        );
-    }
 
     if (variant === 'occupants-row') {
         if (characterChips.length === 0) return null;

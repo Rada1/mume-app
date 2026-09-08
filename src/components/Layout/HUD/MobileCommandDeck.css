@@ -31,7 +31,7 @@
     min-height: 24px;
     padding: 3px 8px;
     border-radius: 7px;
-    background: rgba(22, 27, 38, 0.78);
+    background: rgba(35, 28, 22, 0.78);
     font-size: 0.56rem;
 }
 
@@ -56,7 +56,7 @@
     min-height: 38px;
     padding: 4px 3px;
     border-radius: 7px;
-    background: rgba(22, 27, 38, 0.82);
+    background: rgba(35, 28, 22, 0.82);
 }
 
 .mobile-command-deck-persistent .deck-slot svg {

@@ -5,9 +5,9 @@
     grid-template-rows: repeat(3, 31px);
     gap: 4px;
     padding: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(201, 168, 76, 0.14);
     border-radius: 7px;
-    background: rgba(12, 15, 22, 0.55);
+    background: rgba(26, 20, 16, 0.55);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     pointer-events: auto;
@@ -22,10 +22,10 @@
     align-items: center;
     justify-content: center;
     gap: 2px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(201, 168, 76, 0.16);
     border-radius: 7px;
-    background: rgba(22, 27, 38, 0.85);
-    color: #cbd5e1;
+    background: rgba(35, 28, 22, 0.82);
+    color: #d4c9b0;
     cursor: pointer;
     transition: background 0.12s ease, border-color 0.12s ease, transform 0.1s ease;
     min-width: 0;
@@ -35,28 +35,28 @@
 }
 
 .movement-pad-cell:hover {
-    border-color: rgba(232, 176, 32, 0.42);
-    background: rgba(30, 36, 49, 0.95);
-    color: #e8b020;
+    border-color: rgba(201, 168, 76, 0.42);
+    background: rgba(45, 36, 28, 0.92);
+    color: #c9a84c;
 }
 
 .movement-pad-cell:active,
 .movement-pad-cell.is-key-pressed {
     transform: scale(0.94);
-    background: rgba(232, 176, 32, 0.18);
-    border-color: rgba(232, 176, 32, 0.55);
-    color: #e8b020;
+    background: rgba(201, 168, 76, 0.18);
+    border-color: rgba(201, 168, 76, 0.55);
+    color: #c9a84c;
 }
 
 .movement-pad-cell.is-key-pressed {
-    box-shadow: inset 0 0 0 1px rgba(232, 176, 32, 0.2), 0 0 12px rgba(232, 176, 32, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(201, 168, 76, 0.2), 0 0 12px rgba(201, 168, 76, 0.18);
 }
 
 .movement-pad-key {
     position: absolute;
     top: 4px;
     left: 5px;
-    color: #7f8a9c;
+    color: #8a7a5e;
     font-family: var(--font-mono, monospace);
     font-size: 7px;
     font-weight: 800;
@@ -68,7 +68,7 @@
 
 .movement-pad-cell:hover .movement-pad-key,
 .movement-pad-cell.is-key-pressed .movement-pad-key {
-    color: rgba(232, 176, 32, 0.9);
+    color: rgba(201, 168, 76, 0.9);
 }
 
 .movement-pad-cell svg {
@@ -77,7 +77,7 @@
 
 .movement-pad-label {
     max-width: 100%;
-    color: #cbd5e1;
+    color: #d4c9b0;
     font-family: var(--font-mono, monospace);
     font-size: 0.52rem;
     font-weight: 650;
@@ -91,7 +91,7 @@
 
 .movement-pad-cell:hover .movement-pad-label,
 .movement-pad-cell.is-key-pressed .movement-pad-label {
-    color: #e8b020;
+    color: #c9a84c;
 }
 
 /* Cardinal directions get the gold accent; look/exits/scan stay neutral. */
@@ -101,11 +101,11 @@
 .movement-pad-cell.pad-w,
 .movement-pad-cell.pad-u,
 .movement-pad-cell.pad-d {
-    color: #e8b020;
+    color: #c9a84c;
 }
 
 .movement-pad-cell.pad-look {
-    color: #cbd5e1;
+    color: #d4c9b0;
 }
 
 .light-mode .movement-pad {
@@ -142,7 +142,7 @@
         grid-template-rows: repeat(3, 54px);
         gap: 4px;
         padding: 3px;
-        background: rgba(8, 11, 18, 0.44);
+        background: rgba(20, 15, 11, 0.44);
     }
 }
 

@@ -48,28 +48,14 @@ export const ActionBox: FC<ActionBoxProps> = ({
         whoList,
         gameState,
         accountState
-    } = useGame() as {
-        executeCommand: (cmd: string, silent?: boolean, sys?: boolean, isRetry?: boolean, forceHistory?: boolean) => void;
-        viewport: { isMobile: boolean; isKeyboardOpen: boolean; isLandscape: boolean };
-        btn: { setActiveSet: (setId: string) => void };
-        currentTerrain: string;
-        spatButtons: unknown;
-        setSpatButtons: React.Dispatch<React.SetStateAction<unknown>>;
-        parley: unknown;
-        setParley: React.Dispatch<React.SetStateAction<unknown>>;
-        whoList: unknown;
-        gameState: string;
-        accountState?: { stage?: string };
-    };
+    } = useGame();
 
     // In account mode every stage has its own purpose-built input (the AccountDeck
     // menu, the creation panel's contextual field), so the generic command line is
     // redundant — except at the login stage, where InputArea renders the login card.
     const hideCommandInput = gameState === 'account' && accountState?.stage !== 'login';
 
-    const { setPopoverState } = useUI() as {
-        setPopoverState: (val: unknown) => void;
-    };
+    const { setPopoverState } = useUI();
 
     const bottomBarOpacity = useSettingsStore(s => s.bottomBarOpacity);
     const setBottomBarOpacity = useSettingsStore(s => s.setBottomBarOpacity);

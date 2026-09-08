@@ -1,7 +1,7 @@
 /**
  * @file CustomPromptBar.tsx
  * @description Stationary MUME prompt bar anchored below the message log.
- * Displays live vitals, mode indicators, environment labels, and interactive room entity chips.
+ * Displays live vitals, mode indicators, environment labels with icons, time, and interactive room entity chips.
  */
 
 // --- Logic Section ---
@@ -9,7 +9,16 @@ import React, { FC, memo } from 'react';
 import { useGame } from '../../context/GameContext';
 import { useActiveVitals, useActiveCombat } from '../../stores/useActiveGameState';
 import { PromptModeIndicators } from '../Messages/PromptModeIndicators';
-import { GmcpOccupant } from '../../types';
+import { useMumeTime } from '../../hooks/useMumeTime';
+import {
+    HEALTH_MAP, MANA_MAP, MOVE_MAP,
+    getLightingLabel, getLightingIcon,
+    getTerrainLabel, getTerrainIcon,
+    getWeatherLabel, getWeatherIcon,
+    formatMumeTime, getTimeIcon,
+    getEntityButtonsForPrompt,
+    PromptEnvItem
+} from './customPromptHelpers';
 import './CustomPromptBar.css';
 
 interface CustomPromptBarProps {
@@ -17,81 +26,12 @@ interface CustomPromptBarProps {
     className?: string;
 }
 
-const HEALTH_MAP: Record<string, number> = {
-    healthy: 100, fine: 83, hurt: 66, wounded: 50,
-    bad: 33, awful: 16, dying: 0, stunned: 25, none: 0
-};
-
-const MANA_MAP: Record<string, number> = {
-    full: 100, burning: 83, hot: 66, warm: 50,
-    cold: 33, icy: 16, frozen: 0
-};
-
-const MOVE_MAP: Record<string, number> = {
-    unwearied: 100, steadfast: 85, rested: 71, tired: 57,
-    slow: 42, weak: 28, fainting: 14, exhausted: 0
-};
-
-const getLightingLabel = (lighting?: string): string => {
-    switch (lighting) {
-        case 'sun': return 'Sunlight';
-        case 'artificial': return 'Artificial light';
-        case 'moon': return 'Moonlight';
-        case 'dark': return 'Darkness';
-        default: return '';
-    }
-};
-
-const getTerrainLabel = (terrain?: string | null): string => {
-    const value = terrain?.trim() || '';
-    return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : '';
-};
-
-const getWeatherLabel = (weather?: string | null): string => {
-    const value = weather?.trim() || '';
-    if (!value || value.toLowerCase() === 'none') return '';
-    return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : '';
-};
-
-const getRoomEntityLabel = (entity: string | GmcpOccupant): string => {
-    if (typeof entity === 'string') return entity.trim();
-    return entity.keyword?.trim() || entity.name?.trim() || entity.shortdesc?.trim() || entity.short?.trim() || '';
-};
-
-interface PromptEntityButton {
-    label: string;
-    id?: string;
-    category: 'cat-npc' | 'cat-object';
-}
-
-const getEntityButtonsForPrompt = (
-    roomNpcs: Array<string | GmcpOccupant> = [],
-    roomItems: Array<string | GmcpOccupant> = [],
-): PromptEntityButton[] => {
-    const npcs: PromptEntityButton[] = (roomNpcs || [])
-        .map(entity => ({
-            label: getRoomEntityLabel(entity),
-            id: typeof entity === 'string' || entity.id === undefined ? undefined : String(entity.id),
-            category: 'cat-npc' as const,
-        }))
-        .filter(entity => Boolean(entity.label));
-
-    const items: PromptEntityButton[] = (roomItems || [])
-        .map(entity => ({
-            label: getRoomEntityLabel(entity),
-            id: typeof entity === 'string' || entity.id === undefined ? undefined : String(entity.id),
-            category: 'cat-object' as const,
-        }))
-        .filter(entity => Boolean(entity.label));
-
-    return [...npcs, ...items];
-};
-
 // --- Render Section ---
 export const CustomPromptBar: FC<CustomPromptBarProps> = ({ onLogClick, className }) => {
     const vitals = useActiveVitals();
     const combat = useActiveCombat();
-    const { lighting, currentTerrain, weather, roomNpcs, roomItems, handleLogClick } = useGame();
+    const { lighting, currentTerrain, weather, isFoggy, gameTime, roomNpcs, roomItems, handleLogClick } = useGame();
+    const currentTime = useMumeTime(gameTime);
 
     const clickHandler = onLogClick || (handleLogClick as unknown as (e: React.MouseEvent) => void);
 
@@ -119,7 +59,7 @@ export const CustomPromptBar: FC<CustomPromptBarProps> = ({ onLogClick, classNam
     const moveDisplay = movePercent !== null ? `${movePercent}%` : (vitals.moveStatus || '100%');
 
     // Combat opponent
-    const isFighting = vitals.position === 'fighting' || vitals.inCombat || Boolean(combat.opponentName);
+    const isFighting = vitals.position === 'fighting' || vitals.inCombat;
     const opponentName = isFighting ? combat.opponentName : null;
     const opponentHealthStatus = isFighting ? combat.opponentHealthStatus : null;
     const opponentHealthPercent = isFighting && opponentHealthStatus
@@ -130,7 +70,43 @@ export const CustomPromptBar: FC<CustomPromptBarProps> = ({ onLogClick, classNam
     const lightingLabel = getLightingLabel(lighting);
     const terrainLabel = getTerrainLabel(currentTerrain);
     const weatherLabel = getWeatherLabel(weather);
-    const envLabels = [terrainLabel, lightingLabel, weatherLabel].filter(Boolean);
+    const timeLabel = formatMumeTime(currentTime);
+
+    const envItems: PromptEnvItem[] = [];
+    if (terrainLabel) {
+        envItems.push({
+            id: 'terrain',
+            label: terrainLabel,
+            icon: getTerrainIcon(currentTerrain),
+        });
+    }
+    if (lightingLabel) {
+        envItems.push({
+            id: 'lighting',
+            label: lightingLabel,
+            icon: getLightingIcon(lighting),
+        });
+    }
+    if (weatherLabel) {
+        envItems.push({
+            id: 'weather',
+            label: weatherLabel,
+            icon: getWeatherIcon(weather, isFoggy),
+        });
+    } else if (isFoggy) {
+        envItems.push({
+            id: 'weather',
+            label: 'Fog',
+            icon: getWeatherIcon('fog', true),
+        });
+    }
+    if (timeLabel) {
+        envItems.push({
+            id: 'time',
+            label: timeLabel,
+            icon: getTimeIcon(),
+        });
+    }
 
     const promptEntities = getEntityButtonsForPrompt(roomNpcs, roomItems);
 
@@ -176,16 +152,26 @@ export const CustomPromptBar: FC<CustomPromptBarProps> = ({ onLogClick, classNam
                 <PromptModeIndicators />
             </div>
 
-            {(envLabels.length > 0 || promptEntities.length > 0) && (
+            {(envItems.length > 0 || promptEntities.length > 0) && (
                 <div className="prompt-row prompt-metadata-line">
-                    {envLabels.length > 0 && (
+                    {envItems.length > 0 && (
                         <span className="prompt-environment-line">
-                            [{envLabels.join(' | ')}]
+                            <span className="custom-prompt-prefix">[</span>
+                            {envItems.map((item, index) => (
+                                <React.Fragment key={item.id}>
+                                    {index > 0 && <span className="prompt-stat-divider"> | </span>}
+                                    <span className="prompt-env-item">
+                                        {item.icon}
+                                        <span>{item.label}</span>
+                                    </span>
+                                </React.Fragment>
+                            ))}
+                            <span className="custom-prompt-prefix">]</span>
                         </span>
                     )}
                     {promptEntities.length > 0 && (
                         <span className="prompt-entities-line">
-                            [
+                            <span className="custom-prompt-prefix">[</span>
                             {promptEntities.map((entity, index) => (
                                 <React.Fragment key={`${entity.label}-${entity.id || index}`}>
                                     <span
@@ -203,7 +189,7 @@ export const CustomPromptBar: FC<CustomPromptBarProps> = ({ onLogClick, classNam
                                     {index < promptEntities.length - 1 ? ' | ' : ''}
                                 </React.Fragment>
                             ))}
-                            ]
+                            <span className="custom-prompt-prefix">]</span>
                         </span>
                     )}
                 </div>

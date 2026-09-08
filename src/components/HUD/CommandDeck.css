@@ -10,7 +10,7 @@
     box-sizing: border-box;
     padding: 6px 10px;
     font-family: var(--font-mono, monospace);
-    color: #cbd5e1;
+    color: #d4c9b0;
     pointer-events: auto;
 }
 
@@ -25,10 +25,10 @@
     gap: 6px;
     max-width: 92%;
     padding: 5px 12px;
-    border: 1px solid rgba(232, 176, 32, 0.5);
+    border: 1px solid rgba(201, 168, 76, 0.5);
     border-radius: 8px;
-    background: rgba(28, 20, 6, 0.96);
-    color: #f0c674;
+    background: rgba(30, 23, 16, 0.96);
+    color: #e0c070;
     font-size: 0.72rem;
     font-weight: 650;
     line-height: 1.2;
@@ -40,13 +40,13 @@
 }
 
 .deck-target-hint strong {
-    color: #ffd98a;
+    color: #f0dfa8;
     font-weight: 800;
 }
 
 .deck-target-hint svg {
     flex-shrink: 0;
-    color: #e8b020;
+    color: #c9a84c;
 }
 
 @keyframes deckHintPop {
@@ -55,8 +55,8 @@
 }
 
 .deck-slot.needs-target {
-    border-color: rgba(232, 176, 32, 0.75) !important;
-    background: rgba(232, 176, 32, 0.14) !important;
+    border-color: rgba(201, 168, 76, 0.75) !important;
+    background: rgba(201, 168, 76, 0.14) !important;
     animation: deckSlotShake 0.4s ease;
 }
 
@@ -81,10 +81,10 @@
     align-items: center;
     gap: 5px;
     padding: 4px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(201, 168, 76, 0.14);
     border-radius: 20px;
-    background: rgba(22, 27, 38, 0.85);
-    color: #9aa5b6;
+    background: rgba(35, 28, 22, 0.82);
+    color: #b0a080;
     font-family: inherit;
     font-size: 0.7rem;
     font-weight: 700;
@@ -95,14 +95,14 @@
 }
 
 .deck-tab:hover {
-    color: #cbd5e1;
-    border-color: rgba(255, 255, 255, 0.16);
+    color: #d4c9b0;
+    border-color: rgba(201, 168, 76, 0.32);
 }
 
 .deck-tab.is-active {
-    background: rgba(232, 176, 32, 0.16);
-    border-color: rgba(232, 176, 32, 0.42);
-    color: #e8b020;
+    background: rgba(201, 168, 76, 0.16);
+    border-color: rgba(201, 168, 76, 0.42);
+    color: #c9a84c;
 }
 
 .deck-tab svg {
@@ -126,10 +126,10 @@
 
 .deck-class-chip {
     padding: 2px 9px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(201, 168, 76, 0.16);
     border-radius: 20px;
-    background: rgba(22, 27, 38, 0.85);
-    color: #8b95a6;
+    background: rgba(35, 28, 22, 0.82);
+    color: #a89878;
     font-family: inherit;
     font-size: 0.66rem;
     font-weight: 700;
@@ -138,9 +138,9 @@
 }
 
 .deck-class-chip.is-active {
-    background: rgba(232, 176, 32, 0.16);
-    border-color: rgba(232, 176, 32, 0.4);
-    color: #e8b020;
+    background: rgba(201, 168, 76, 0.16);
+    border-color: rgba(201, 168, 76, 0.4);
+    color: #c9a84c;
 }
 
 .deck-grid {
@@ -162,10 +162,10 @@
     gap: 2px;
     min-height: 46px;
     padding: 5px 4px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(201, 168, 76, 0.16);
     border-radius: 7px;
-    background: rgba(22, 27, 38, 0.85);
-    color: #cbd5e1;
+    background: rgba(35, 28, 22, 0.82);
+    color: #d4c9b0;
     font-family: inherit;
     cursor: pointer;
     overflow: hidden;
@@ -173,8 +173,8 @@
 }
 
 .deck-slot:hover {
-    border-color: rgba(232, 176, 32, 0.4);
-    background: rgba(30, 36, 49, 0.95);
+    border-color: rgba(201, 168, 76, 0.4);
+    background: rgba(45, 36, 28, 0.92);
 }
 
 .deck-slot:active {
@@ -182,7 +182,7 @@
 }
 
 .deck-slot svg {
-    color: #e8b020;
+    color: #c9a84c;
     flex-shrink: 0;
 }
 
@@ -195,7 +195,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: #cbd5e1;
+    color: #d4c9b0;
 }
 
 .deck-slot-key {
@@ -204,7 +204,7 @@
     left: 4px;
     font-size: 0.56rem;
     font-weight: 700;
-    color: #6b7688;
+    color: #8a7a5e;
 }
 
 .deck-slot-pct {
@@ -222,7 +222,7 @@
 }
 
 .deck-slot.state-dim svg {
-    color: #7a8496;
+    color: #8a7a5e;
 }
 
 .deck-slot.state-passive {
@@ -231,12 +231,12 @@
 }
 
 .deck-slot.state-passive svg {
-    color: #7a8496;
+    color: #8a7a5e;
 }
 
 .deck-slot.state-passive:hover {
-    border-color: rgba(255, 255, 255, 0.08);
-    background: rgba(22, 27, 38, 0.85);
+    border-color: rgba(201, 168, 76, 0.16);
+    background: rgba(35, 28, 22, 0.82);
 }
 
 .deck-slot.target-ready {

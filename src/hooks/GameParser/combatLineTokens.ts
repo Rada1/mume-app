@@ -35,55 +35,64 @@ const COMBAT_VERBS = new Set([
     'thrust', 'thrusts',
     'burn', 'burns', 'burned', 'burnt',
     'shock', 'shocks', 'shocked',
+    'disarm', 'disarms', 'disarmed',
+    'trip', 'trips', 'tripped',
+    'rescue', 'rescues', 'rescued',
+    'clobber', 'clobbers', 'clobbered',
+    'smash', 'smashes', 'smashed',
+    'grapple', 'grapples', 'grappled',
+    'hurl', 'hurls', 'hurled', 'thrusted'
+]);
+
+const AVOID_DEFENSE_WORDS = new Set([
     'dodge', 'dodges', 'dodged',
     'parry', 'parries', 'parried',
     'block', 'blocks', 'blocked',
-    'flee', 'flees', 'fled',
-    'disarm', 'disarms', 'disarmed',
-    'trip', 'trips', 'tripped',
-    'rescue', 'rescues', 'rescued'
-]);
-
-const COMBAT_OUTCOMES = new Set([
+    'deflect', 'deflects', 'deflected',
+    'evade', 'evades', 'evaded',
+    'avoid', 'avoids', 'avoided',
     'miss', 'misses', 'missed',
-    'tick', 'ticks', 'ticked',
-    'tickle', 'tickles', 'tickled',
-    'scratch', 'scratches', 'scratched',
-    'graze', 'grazes', 'grazed',
-    'bruise', 'bruises', 'bruised',
-    'hurt', 'hurts',
-    'wound', 'wounds', 'wounded',
-    'decimate', 'decimates', 'decimated',
-    'devastate', 'devastates', 'devastated',
-    'mutilate', 'mutilates', 'mutilated',
-    'massacre', 'massacres', 'massacred',
-    'obliterate', 'obliterates', 'obliterated',
-    'annihilate', 'annihilates', 'annihilated',
-    'kill', 'kills', 'killed', 'dead',
-    'severely', 'extremely', 'strongly', 'barely', 'hard', 'lightly', 'badly', 'critically', 'cleanly', 'skillfully'
-]);
-
-const ANATOMY_WORDS = new Set([
-    'head', 'skull', 'neck', 'throat', 'face', 'eye', 'eyes', 'ear', 'ears', 'nose', 'mouth', 'jaw', 'snout', 'beak', 'fang', 'fangs',
-    'body', 'chest', 'torso', 'back', 'spine', 'ribs', 'stomach', 'abdomen', 'waist', 'groin', 'flank',
-    'shoulder', 'shoulders', 'arm', 'arms', 'elbow', 'elbows', 'forearm', 'forearms', 'wrist', 'wrists', 'hand', 'hands', 'finger', 'fingers',
-    'hip', 'hips', 'thigh', 'thighs', 'leg', 'legs', 'knee', 'knees', 'calf', 'calves', 'shin', 'shins', 'ankle', 'ankles', 'foot', 'feet', 'toe', 'toes', 'hoof', 'hooves',
-    'wing', 'wings', 'tail', 'tails', 'claw', 'claws', 'tentacle', 'tentacles'
+    'fail', 'fails', 'failed',
+    'sidestep', 'sidesteps', 'sidestepped'
 ]);
 
 // --- Logic Section ---
 
 /**
  * Formats tokens of a combat message into structured typography tokens.
- * - Action verb: BOLD (combat-verb)
- * - Subject ('you'), Target entity, Anatomy noun, Damage tier: REGULAR (combat-regular / entity)
- * - Syntactic glue, lateral adjectives, punctuation: DIMMED (combat-dimmed)
+ * - For hit and damage messages: only action verbs ("slash", "pierce", etc.) are 100% opacity (red/cyan).
+ * - For miss and avoid messages: only defense/miss words ("parry", "fail", "avoid", etc.) are 100% opacity (regular color).
+ * - Everything else is dimmed to the default 50% opacity (combat-dimmed).
  */
-export function formatCombatLineTokens(tokens: Token[]): Token[] {
+export function formatCombatLineTokens(tokens: Token[], isHitOrDamage?: boolean): Token[] {
     if (!tokens || tokens.length === 0) return tokens;
 
     const rawResult: Token[] = [];
-    let hasVerb = false;
+    const fullText = tokens.map(t => t.content).join('').trim();
+    const hasPlayerAvoid = /^(?:you|your)\b/i.test(fullText) && /\b(?:dodge|parry|block|evade|deflect)\b/i.test(fullText);
+    const hasOpponentAvoid = !/^(?:you|your)\b/i.test(fullText) && /\b(?:dodges?|parries|blocks?|evades?|deflects?)\s+(?:your|attempt)\b/i.test(fullText);
+
+    const hasAvoidOrMissWord = Array.from(AVOID_DEFENSE_WORDS).some(w => {
+        const regex = new RegExp(`\\b${w}\\b`, 'i');
+        return regex.test(fullText);
+    }) || /\b(?:tries to|try to|attempt to)\b/i.test(fullText);
+
+    const effectiveIsHitOrDamage = isHitOrDamage !== undefined
+        ? isHitOrDamage
+        : !hasAvoidOrMissWord;
+
+    let isPlayerAttack = false;
+    let isIncomingDamage = false;
+
+    if (hasPlayerAvoid) {
+        isIncomingDamage = true;
+    } else if (hasOpponentAvoid) {
+        isPlayerAttack = true;
+    } else if (/^(?:you|your)\b/i.test(fullText)) {
+        isPlayerAttack = true;
+    } else if (/\b(?:you|your)\b/i.test(fullText)) {
+        isIncomingDamage = true;
+    }
 
     for (const token of tokens) {
         if (token.type === 'entity') {
@@ -133,38 +142,36 @@ export function formatCombatLineTokens(tokens: Token[]): Token[] {
                     continue;
                 }
 
-                if (lower === 'you') {
-                    flushDimmed();
-                    rawResult.push({
-                        type: 'text',
-                        content: piece,
-                        classes: ['combat-regular']
-                    } as TextToken);
-                } else if (!hasVerb && COMBAT_VERBS.has(lower)) {
-                    hasVerb = true;
-                    flushDimmed();
-                    rawResult.push({
-                        type: 'text',
-                        content: piece,
-                        classes: ['combat-verb']
-                    } as TextToken);
-                } else if (ANATOMY_WORDS.has(lower)) {
-                    flushDimmed();
-                    rawResult.push({
-                        type: 'text',
-                        content: piece,
-                        classes: ['combat-regular']
-                    } as TextToken);
-                } else if (COMBAT_OUTCOMES.has(lower) || (hasVerb && COMBAT_VERBS.has(lower))) {
-                    flushDimmed();
-                    rawResult.push({
-                        type: 'text',
-                        content: piece,
-                        classes: ['combat-regular']
-                    } as TextToken);
+                if (effectiveIsHitOrDamage) {
+                    // For hit and damage messages: ONLY strike verbs ("slash, pierce", etc.) are 100% opacity (red/cyan)
+                    if (COMBAT_VERBS.has(lower)) {
+                        flushDimmed();
+                        const verbClasses = ['combat-verb'];
+                        if (isPlayerAttack) {
+                            verbClasses.push('combat-verb-player');
+                        } else if (isIncomingDamage) {
+                            verbClasses.push('combat-verb-incoming');
+                        }
+                        rawResult.push({
+                            type: 'text',
+                            content: piece,
+                            classes: verbClasses
+                        } as TextToken);
+                    } else {
+                        currentDimmed += piece;
+                    }
                 } else {
-                    // Lateral modifiers (left, right), articles, prepositions, connectors etc.
-                    currentDimmed += piece;
+                    // For miss and avoid messages: ONLY defense/miss words ("parry, fail, avoid", etc.) are 100% opacity (regular color)
+                    if (AVOID_DEFENSE_WORDS.has(lower)) {
+                        flushDimmed();
+                        rawResult.push({
+                            type: 'text',
+                            content: piece,
+                            classes: ['combat-verb']
+                        } as TextToken);
+                    } else {
+                        currentDimmed += piece;
+                    }
                 }
             }
             flushDimmed();

@@ -1,41 +1,3 @@
-/* --- Bloom Effects --- */
-
-/**
- * Bloom Effect
- * Adds a subtle glow to bright elements.
- * We apply this as a filter to the main content to avoid blurring everything.
- */
-.bloom-enabled {
-  filter: brightness(1.05) contrast(1.05);
-}
-
-.light-mode.bloom-enabled {
-  filter: brightness(1.0) contrast(1.02); /* Avoid washing out in light mode */
-}
-
-.bloom-enabled .hud-cluster,
-.bloom-enabled .custom-btn,
-.bloom-enabled .xbox-cluster,
-.bloom-enabled .modal,
-.bloom-enabled .btn-primary,
-.bloom-enabled .btn-secondary,
-.bloom-enabled .account-screen-overlay,
-.bloom-enabled .account-view {
-  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.15));
-}
-
-/* Darker glows for light mode to maintain readability */
-.light-mode.bloom-enabled .hud-cluster,
-.light-mode.bloom-enabled .custom-btn,
-.light-mode.bloom-enabled .xbox-cluster,
-.light-mode.bloom-enabled .modal,
-.light-mode.bloom-enabled .btn-primary,
-.light-mode.bloom-enabled .btn-secondary,
-.light-mode.bloom-enabled .account-screen-overlay,
-.light-mode.bloom-enabled .account-view {
-  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.1));
-}
-
 /* --- Performance Mode overrides --- */
 .performance-mode,
 .performance-mode * {
@@ -50,8 +12,7 @@
 /* Completely hide atmospheric containers to save DOM rendering/paint overhead */
 .performance-mode .environment-root,
 .performance-mode .terrain-tint-layer,
-.performance-mode .overlay-layer,
-.performance-mode .screen-vignette {
+.performance-mode .overlay-layer {
   display: none !important;
 }
 

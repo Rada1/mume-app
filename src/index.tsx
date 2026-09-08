@@ -35,6 +35,7 @@ import { MumeEditor } from './components/Utility/MumeEditor';
 import { useSettingsStore } from './stores/useSettingsStore';
 import { useDisplayMode } from './hooks/useDisplayMode';
 import { normalizeTerrain } from './utils/terrainUtils';
+import { getRoomTerrainGlowColor } from './utils/roomTerrainVisuals';
 import { toThemeLinkedColor } from './utils/themeLinkedColors';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -78,7 +79,6 @@ const MudClient = () => {
         mumeEditState,
         setMumeEditState,
         handleSaveMumeEdit,
-        isBloomEnabled,
         isImmersionMode,
         isPerformanceMode,
         inCombat,
@@ -236,7 +236,10 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container state-${gameState} stage-${accountState?.stage || 'none'} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isPerformanceMode ? 'performance-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
+            className={`app-container state-${gameState} stage-${accountState?.stage || 'none'} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isPerformanceMode ? 'performance-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
+            style={{
+                ...(isImmersionMode ? { '--terrain-glow-color': getRoomTerrainGlowColor(currentTerrain) } : {})
+            } as React.CSSProperties}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();

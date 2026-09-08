@@ -25,6 +25,7 @@ import { useMessageStore } from '../../stores/useMessageStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { decodeCommandEntities } from '../../utils/commandTextUtils';
+import { getMumeCommandMatch } from '../../utils/mumeCommandCatalog';
 import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { getRoomTerrainVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 import { formatMovementArrow, getMovementDirectionLabel, normalizeMovementDirection } from '../../utils/movementDirections';
@@ -33,6 +34,22 @@ import { RunnerIcon } from '../HUD/PromptBox';
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
     return `[${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}]`;
+};
+
+/**
+ * Expands a user-typed command into the l(ook) display format.
+ * Returns null when no expansion applies (typed full word, unknown cmd, or has args).
+ */
+const expandCommandDisplay = (raw: string): { typed: string; remainder: string; suffix: string } | null => {
+    const trimmed = raw.trim();
+    if (!trimmed) return null;
+    const match = getMumeCommandMatch(trimmed);
+    if (!match.entry) return null;
+    const { token, suffix, entry } = match;
+    // No expansion needed if the user already typed the full command word
+    if (token === entry.full) return null;
+    const remainder = entry.full.slice(token.length);
+    return { typed: token, remainder, suffix };
 };
 
 const arrowToDirection: Record<string, string> = {
@@ -125,7 +142,6 @@ const MessageItem = React.memo(({
     setParley,
     triggerHaptic,
     playClickSound,
-    isOldBatchDim = false,
     isTimestampEnabled,
     isNewbieMode,
     viewport,
@@ -141,7 +157,6 @@ const MessageItem = React.memo(({
     setParley?: (p: any) => void;
     triggerHaptic?: (ms: number) => void;
     playClickSound?: () => void;
-    isOldBatchDim?: boolean;
     isTimestampEnabled?: boolean;
     isNewbieMode?: boolean;
     viewport: any;
@@ -166,23 +181,9 @@ const MessageItem = React.memo(({
     // log-word wrappers and shifts inline button positions.
     const [isRecent] = React.useState(() => Date.now() - msg.timestamp < 2000);
     const [isRecentEntry] = React.useState(() => Date.now() - msg.timestamp < 600);
-    const [commandBloomPhase, setCommandBloomPhase] = React.useState<'off' | 'active' | 'exiting'>(isAwaitingResponse ? 'active' : 'off');
     
     // local state to handle the cleanup of the hit sheen animation
     const [sheenActive, setSheenActive] = React.useState(!!(msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage));
-
-    React.useEffect(() => {
-        if (msg.type !== 'user') return;
-        if (isAwaitingResponse) {
-            setCommandBloomPhase('active');
-            return;
-        }
-        setCommandBloomPhase(phase => phase === 'active' ? 'exiting' : phase);
-        const timer = setTimeout(() => {
-            setCommandBloomPhase('off');
-        }, 220);
-        return () => clearTimeout(timer);
-    }, [isAwaitingResponse, msg.type]);
 
     React.useEffect(() => {
         if (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage) {
@@ -238,7 +239,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${isRecentEntry && isTextRevealEnabled ? ' recent-entry' : ''}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}`}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${isRecentEntry && isTextRevealEnabled ? ' recent-entry' : ''}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}`}
             style={{ 
                 '--reveal-delay': `${batchOffset * 15}ms`,
                 '--terrain-glow-color': msg.isRoomBlock && !msg.isRoomContentsLine ? getRoomTerrainGlowColor(msg.terrain) : undefined
@@ -277,7 +278,7 @@ const MessageItem = React.memo(({
             {msg.type === 'user' ? (
                 <div className="content-row user-command-row" style={{ justifyContent: 'flex-end', width: '100%', paddingRight: '8px', alignItems: 'center' }}>
                     {timestampEl}
-                    <div className={`user-command-bubble${isAwaitingResponse ? ' awaiting-response' : ''}${commandBloomPhase !== 'off' ? ` bloom-${commandBloomPhase}` : ''}`}>
+                    <div className={`user-command-bubble${isAwaitingResponse ? ' awaiting-response' : ''}`}>
                         <span className="message-content user-command-text">
                             <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />
                         </span>
@@ -362,8 +363,9 @@ const MessageItem = React.memo(({
                                     tokens={msg.tokens}
                                     fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
                                     splitFirstWord={msg.isRoomName ? false : true}
-                                    wordReveal={isTextRevealEnabled && isRecent && !msg.isRoomName}
+                                    wordReveal={isTextRevealEnabled && isRecent && !msg.isRoomName && !msg.isRoomContentsLine}
                                     disableRoomInline={msg.isRoomName}
+                                    isRoomContentsLine={msg.isRoomContentsLine}
                                 />
                                 <ResourceGainBadge gain={msg.resourceGain} />
                                 {msg.isHitImpact && sheenActive && (
@@ -373,17 +375,18 @@ const MessageItem = React.memo(({
                                             fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
                                             splitFirstWord={msg.isRoomName ? false : true}
                                             disableRoomInline={msg.isRoomName}
+                                            isRoomContentsLine={msg.isRoomContentsLine}
                                         />
                                     </div>
                                 )}
                                 {msg.isDamageImpact && sheenActive && (
                                     <div className="damage-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={msg.isRoomName ? false : true} disableRoomInline={msg.isRoomName} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={msg.isRoomName ? false : true} disableRoomInline={msg.isRoomName} isRoomContentsLine={msg.isRoomContentsLine} />
                                     </div>
                                 )}
                                 {msg.isRipMessage && sheenActive && (
                                     <div className="rip-sheen-overlay" aria-hidden="true">
-                                    <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={msg.isRoomName ? false : true} disableRoomInline={msg.isRoomName} />
+                                    <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={msg.isRoomName ? false : true} disableRoomInline={msg.isRoomName} isRoomContentsLine={msg.isRoomContentsLine} />
                                     </div>
                                 )}
                                 {msg.isRoomName && msg.tokens && msg.html?.includes('room-desc-line') && (
@@ -582,17 +585,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
         return null;
     }, [displayMessages]);
 
-    const brightBatchFloor = useMemo(() => {
-        const seenBatchIds = new Set<number>();
-        for (let i = displayMessages.length - 1; i >= 0; i--) {
-            const batchId = displayMessages[i].batchId;
-            if (batchId === undefined) continue;
-            seenBatchIds.add(batchId);
-            if (seenBatchIds.size === 2) return batchId;
-        }
-        return undefined;
-    }, [displayMessages]);
-
     const handlePointerDownInternal = useCallback((e: React.PointerEvent) => {
         if (onPointerDown) onPointerDown(e);
     }, [onPointerDown]);
@@ -767,12 +759,24 @@ const MessageLog: React.FC<MessageLogProps> = ({
             if (msg.type === 'movement') return showBlockHeaders && msg.isMovementBlockStart ? 64 : 36;
             if (msg.type === 'prompt') return Math.max(64, Math.ceil(viewport.logFontSizePx * 3.75 + 16));
 
+            if (msg.isEmpty) return Math.round(viewport.logFontSizePx * 1.5);
+
             const charCount = (msg.textRaw || msg.commText || '').length;
             const cols = viewport.columns || 80;
             const lineCount = Math.max(1, Math.ceil(charCount / cols));
-            let h = lineCount * (viewport.logFontSizePx * 1.1) + (isComm ? 48 : 4);
+            let h = lineCount * Math.round(viewport.logFontSizePx * 1.5) + (isComm ? 48 : 0);
             if (msg.type === 'user') h += 24;
-            if (msg.isCombat) h += 10;
+            if (
+                msg.isCombatBlockStart ||
+                msg.isCommBlockStart ||
+                msg.isSocialBlockStart ||
+                msg.isWeatherBlockStart ||
+                msg.isMovementBlockStart ||
+                msg.isStatusBlockStart ||
+                msg.isRoomBlockStart
+            ) {
+                h += Math.round(viewport.logFontSizePx * 1.2);
+            }
             if (showBlockHeaders && msg.isRoomBlockStart) h += 24;
             if (showBlockHeaders && msg.isCombatBlockStart) h += 24;
             if (showBlockHeaders && msg.isCommBlockStart) h += 24;
@@ -911,7 +915,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     setParley={setParley}
                                     triggerHaptic={triggerHaptic}
                                     playClickSound={playClickSound}
-                                    isOldBatchDim={brightBatchFloor !== undefined && (msg.batchId === undefined || msg.batchId < brightBatchFloor)}
                                     isTimestampEnabled={isTimestampEnabled}
                                     isNewbieMode={isNewbieMode}
                                     viewport={viewport}

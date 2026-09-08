@@ -44,7 +44,7 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(calc(-50% + var(--parallax-x, 0px)), calc(-50% + var(--parallax-y, 0px))) scale(var(--parallax-scale, 1));
+    transform: translate(-50%, -50%);
     width: 800%;
     height: 800%;
     background: url('/assets/Pictures/UIPics/darkmap.png') no-repeat center center;
@@ -60,7 +60,7 @@
     inset: 0;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 1s ease-in-out, backdrop-filter 1s ease-in-out;
+    transition: opacity 2.8s ease-in-out, backdrop-filter 2.8s ease-in-out;
 }
 
 /* --- Sun --- */
@@ -114,7 +114,7 @@
     background: radial-gradient(circle at center, transparent 15%, rgba(0, 0, 15, 0.95) 100%);
     mix-blend-mode: multiply;
     opacity: 0.65; /* Active when state is 'dark' or 'none' */
-    transition: opacity 1s ease-in-out;
+    transition: opacity 2.8s ease-in-out;
 }
 
 .light-mode .mapper-dark-overlay {
@@ -180,14 +180,6 @@
     80% { opacity: 0.46; filter: saturate(1.05); }
     90% { opacity: 0.53; filter: saturate(1.1); }
     100% { opacity: 0.45; filter: saturate(1); }
-}
-
-.vignette-container {
-    display: none !important;
-}
-
-.vignette-container::after {
-    display: none !important;
 }
 
 canvas.map-canvas {
@@ -1034,18 +1026,7 @@ canvas.map-canvas {
     z-index: 20;
 }
 
-/* Mobile Portrait Vignette */
-.mobile-mini-map::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: transparent;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-}
+
 
 /* Landscape Overrides */
 .is-landscape .mobile-mini-map {

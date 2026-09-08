@@ -54,7 +54,7 @@ export function usePromptParser(deps: PromptParserDeps) {
         const isEndPrompt = (
             !!textPMatch &&
             !attachedText &&
-            !['practice', 'who', 'shop', 'where', 'quest', 'stat', 'info', 'whois', 'description'].includes(capture.getActiveType() as any)
+            !['who', 'shop', 'where', 'quest', 'stat', 'info', 'whois', 'description'].includes(capture.getActiveType() as any)
         ) || 
             (/^((?:(?:\[.*?\]|[\w\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-\s]|\([^)]+\))\s*)*[\]\)\>])\s*$/.test(textOnly)) ||
             (textOnly.includes('HP:') && textOnly.includes('MA:'));

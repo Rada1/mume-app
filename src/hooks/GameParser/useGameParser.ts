@@ -343,6 +343,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         playSpectateOofSound: deps.playSpectateOofSound,
         playKillSound: deps.playKillSound, 
         playLevelSound: deps.playLevelSound, 
+        playEffect: deps.playEffect,
         setInCombat,
         characterName: session.game.characterName, 
         spectateCharacterName: deps.spectateCharacterName,
@@ -973,8 +974,14 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // drawer content. A new drawer header can also arrive before the previous
         // capture sees a prompt, so switch sessions at the header boundary.
         let skipCaptureAccumulation = effectiveCaptureBoundary;
-        if (!isSnoop && effectiveCaptureBoundary && capture.hasSession()) {
-            capture.finalizeSession();
+        if (!isSnoop && effectiveCaptureBoundary) {
+            if (capture.hasSession()) {
+                capture.finalizeSession();
+            }
+            capture.clearPendingFlags?.();
+            if (deps.captureStage.current !== 'none') {
+                deps.captureStage.current = 'none' as any;
+            }
         }
 
         const incomingCaptureType = !isSnoop && !effectiveCaptureBoundary && !isAccountPhase
@@ -1119,8 +1126,12 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 messageTokens = undefined;
             } else {
                 const messageObj = PipelineOrchestrator.processTextLine(lineToParse, ansiHtml, finalType, tokenizerContext, finalTokens);
-                messageTokens = (finalType === 'combat' && messageObj.tokens)
-                    ? formatCombatLineTokens(messageObj.tokens)
+                const hasAvoidOrMissTag = lineToParse.includes('<avoid_damage>') || lineToParse.includes('<miss>');
+                const hasHitOrDamageTag = lineToParse.includes('<hit>') || lineToParse.includes('<damage>');
+                const isCombatOrAvoid = hasAvoidOrMissTag || hasHitOrDamageTag;
+                const isHitOrDamage = hasAvoidOrMissTag ? false : (hasHitOrDamageTag ? true : undefined);
+                messageTokens = (isCombatOrAvoid && messageObj.tokens)
+                    ? formatCombatLineTokens(messageObj.tokens, isHitOrDamage)
                     : messageObj.tokens;
                 messageHtml = messageObj.html;
             }
@@ -1142,7 +1153,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 if (hasDamageTag) gmcpBus.emit('Game.CombatPulse', { direction: 'incoming', time: eventTime });
             }
             deps.addMessage(
-                finalType, textOnly, finalType === 'combat', mid, false,
+                finalType, textOnly, finalType === 'combat', mid, finalType === 'room-name',
                 { textOnly, lower, html: messageHtml, tokens: messageTokens },
                 undefined, undefined, undefined, false, 
                 commResult.replyTarget, commResult.replyCommand, commResult.commSender, commResult.commAction, commResult.commText, commResult.commColor,

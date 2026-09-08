@@ -13,23 +13,11 @@ import {
 import {
     isOpponentFailedAttackLine,
     isPlayerAttemptAvoidedLine,
-    isPlayerFailedAttackLine
+    isPlayerFailedAttackLine,
+    extractDeadMobName
 } from '../../utils/combatRechargeUtils';
 import { parseResourceGainLine } from '../../utils/resourceGainUtils';
 import { triggerKillPrompt } from '../../stores/useKillPromptStore';
-
-// Pull the dead mob's display name out of a death line so the loot prompt can
-// label its card, e.g. "A Morgundul orc-guard is dead! R.I.P." -> "Morgundul orc-guard".
-const extractDeadMobName = (text: string): string | null => {
-    const t = text.replace(/<[^>]*>/g, '').replace(/^[\s*]+/, '').trim();
-    let m = t.match(/^(?:A|An|The)\s+(.+?)\s+is dead!\s*R\.?I\.?P/i);
-    if (m) return m[1].trim();
-    m = t.match(/^(.+?)\s+is dead!\s*R\.?I\.?P/i);
-    if (m && !/^you\b/i.test(m[1])) return m[1].trim();
-    m = t.match(/you (?:have )?sl(?:ay|ew|ain)\s+(?:the\s+|an?\s+)?(.+?)[.!]/i);
-    if (m) return m[1].trim();
-    return null;
-};
 
 export interface CombatParserDeps {
     inCombatRef: React.RefObject<boolean>;
@@ -60,39 +48,38 @@ export interface CombatParserDeps {
     isSpectateMode?: boolean;
 }
 
-const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'recovered', 'shoot', 'shoots', 'blast', 'shatters', 'joins?', 'assists?'].join('|');
+const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'recovered', 'shoot', 'shoots', 'blast', 'shatters', 'joins?', 'assists?', 'dodge', 'dodges', 'parry', 'parries', 'deflect', 'deflects', 'evade', 'evades', 'blocks?', 'avoids?', 'fails?', 'failed'].join('|');
 const COMBAT_REGEX = new RegExp(`\\b(${COMBAT_VERBS_STR})(?:es|s)?\\b`, 'i');
 
 export function useCombatParser(deps: CombatParserDeps) {
     const {
-        inCombatRef,
-        setOpponentHealthStatus,
-        setOpponentName,
-        setCharacterInfo,
-        triggerXpTicker,
-        triggerTpTicker,
-        groupMembers,
-        mapperRef,
-        setDeathRoomId,
-        spectateCharacterName,
-        roomPlayers,
-        setSpectateInCombat,
-        setSpectateOpponentName,
-        setSpectateOpponentStatus,
-        playKillSound,
-        playLevelSound,
-        characterName
+        inCombatRef, setOpponentHealthStatus, setOpponentName, setCharacterInfo,
+        triggerXpTicker, triggerTpTicker, groupMembers, mapperRef, setDeathRoomId,
+        spectateCharacterName, roomPlayers, setSpectateInCombat, setSpectateOpponentName,
+        setSpectateOpponentStatus, playKillSound, playLevelSound, characterName
     } = deps;
 
-    const checkCombatMatch = useCallback((lower: string, isSnoop: boolean = false) => {
+    const checkCombatMatch = useCallback((lower: string, isSnoop: boolean = false, cleanLine?: string) => {
         // Exclude specific flavor text that shouldn't be combat
         if (lower.includes('hissing shriek') || lower.includes('the nine')) return { isMatch: false };
 
         // Strip leading spaces and asterisks (damage indicators in MUME)
         const cleanLower = lower.replace(/^[\s\*]+/, '').trim();
+        if (
+            /\b(?:looms?\s+(?:overhead|above)|ready\s+to\s+\w+|\b(?:is|are)\s+(?:here|(?:standing|sitting|resting|sleeping|fighting|lying|hovering|floating|perched|waiting|lurking)\s+here))\b/i.test(cleanLower) ||
+            /\b(?:practice sessions left|skill\s*\/\s*spell|difficulty\s+class)\b/i.test(cleanLower) ||
+            /\b(?:superb|excellent|very good|good|fair|average|bad|poor|very bad|awful|not learned)\s+(?:very easy|easy|normal|hard|very hard)\b/i.test(cleanLower)
+        ) return { isMatch: false };
 
-        const isSpecificCharge = /^you charge\b/i.test(cleanLower) || /\bcharges (?:at|towards) you\b/i.test(cleanLower) || /\bcharge (?:at|towards) you\b/i.test(cleanLower);
-        const isMatch = COMBAT_REGEX.test(cleanLower) || isSpecificCharge || ((cleanLower.includes('dodge') || cleanLower.includes('parry') || cleanLower.includes('flee')) && inCombatRef.current);
+        const hasCombatTag = !!cleanLine && (
+            cleanLine.includes('<hit>') || cleanLine.includes('<damage>') ||
+            /<avoid_damage\b/i.test(cleanLine) || /<miss\b/i.test(cleanLine)
+        );
+        const isSpecificCharge = /^you charge\b/i.test(cleanLower) || /\bcharges? (?:at|towards) you\b/i.test(cleanLower);
+        const hasXmlTag = !!cleanLine && /<[a-zA-Z_]+[ >]/i.test(cleanLine);
+        if (hasXmlTag && !hasCombatTag && !isSpecificCharge) return { isMatch: false };
+
+        const isMatch = hasCombatTag || isSpecificCharge || isPlayerAttemptAvoidedLine(cleanLower) || isPlayerFailedAttackLine(cleanLower) || isOpponentFailedAttackLine(cleanLower) || (inCombatRef.current && (COMBAT_REGEX.test(cleanLower) || cleanLower.includes('dodge') || cleanLower.includes('parry') || cleanLower.includes('flee') || cleanLower.includes('fail')));
         
         if (!isMatch) return { isMatch: false };
 
@@ -162,35 +149,31 @@ export function useCombatParser(deps: CombatParserDeps) {
             if (deadName) triggerKillPrompt(deadName);
         }
 
-        if (inCombatRef.current || (isSnoop && setSpectateInCombat)) {
-            const isDeath = /you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) || /\bis dead!\s*r\.?i\.?p/i.test(lower);
+        const isDeath = /you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) || /\bis dead!\s*r\.?i\.?p/i.test(lower);
+        const isCombatEnd = isDeath ||
+            /^you flee\b/i.test(lower) ||
+            /\bflees\s/i.test(lower) ||
+            /you stop fighting/i.test(lower);
 
-            if (isDeath ||
-                /^you flee\b/i.test(lower) ||
-                /\bflees\s/i.test(lower) ||
-                /you stop fighting/i.test(lower)) {
-                
-                if (isSnoop && setSpectateInCombat) {
-                    setSpectateInCombat(false, true);
-                    setSpectateOpponentStatus?.(null);
-                    setSpectateOpponentName?.(null);
-                } else {
-                    // NOTE: setInCombat is intentionally NOT called here.
-                    // Combat mode is driven exclusively by GMCP position data.
-                    // We still clear the opponent HUD display on unambiguous exit signals.
-                    setOpponentHealthStatus(null);
-                    setOpponentName(null);
-                }
-                
-                if (/you are dead/i.test(lower) && setDeathRoomId && mapperRef?.current) {
-                    const currentRoom = mapperRef.current.getCurrentRoom?.();
-                    if (currentRoom?.id) {
-                        setDeathRoomId(currentRoom.id.toString());
-                    }
-                }
-                
-                return true;
+        if (isCombatEnd) {
+            if (isSnoop && setSpectateInCombat) {
+                setSpectateInCombat(false, true);
+                setSpectateOpponentStatus?.(null);
+                setSpectateOpponentName?.(null);
+            } else {
+                // Clear the opponent HUD display on unambiguous exit signals.
+                setOpponentHealthStatus(null);
+                setOpponentName(null);
             }
+            
+            if (/you are dead/i.test(lower) && setDeathRoomId && mapperRef?.current) {
+                const currentRoom = mapperRef.current.getCurrentRoom?.();
+                if (currentRoom?.id) {
+                    setDeathRoomId(currentRoom.id.toString());
+                }
+            }
+            
+            return true;
         } else if (/you are dead/i.test(lower) && setDeathRoomId && mapperRef?.current) {
             // Also check for death even if not "in combat" (e.g. trap, fall)
             const currentRoom = mapperRef.current.getCurrentRoom?.();
@@ -255,12 +238,8 @@ export function useCombatParser(deps: CombatParserDeps) {
         if (handleXpTicker(lower, isSnoop)) return 'game';
 
         // 3. Detect Combat Match
-        const match = checkCombatMatch(lower, isSnoop);
+        const match = checkCombatMatch(lower, isSnoop, cleanLine);
         if (match.isMatch) {
-            // Play Sounds
-            // CONSIDERING USER REQUEST: hit sounds only go off when the line contains a <hit>...</hit> tag.
-            // and just use hit-impact.mp3 for all <hit>...</hit> messages
-            // AND damage lines should play oof.mp3
             const hasHitTag = cleanLine.includes('<hit>');
             const hasDamageTag = cleanLine.includes('<damage>');
             const hasAvoidDamageTag = /<avoid_damage\b/i.test(cleanLine);
@@ -279,13 +258,14 @@ export function useCombatParser(deps: CombatParserDeps) {
                 else deps.playOofSound?.();
             }
 
-            if (!isSnoop && (hasMissTag || hasAvoidDamageTag || isOpponentFailedAttack)) {
+            const isUserInvolved = match.side === 'player' || match.isPlayerTarget;
+            const isMissOrAvoid = hasMissTag || hasAvoidDamageTag || isPlayerAvoidedAttempt || isPlayerFailedAttack || isOpponentFailedAttack || /\byou miss\b/i.test(lower) || /\bmisses you\b/i.test(lower) || /\byou (?:dodge|parry|deflect|evade|block|avoid)\b/i.test(lower);
+
+            if (!isSnoop && isUserInvolved && isMissOrAvoid) {
                 deps.playEffect?.('miss', { volume: 0.85 });
             }
 
-            // Visual FX
-            // Removed hitflash triggers
-                        if (!isSnoop && (isPlayerAvoidedAttempt || isPlayerFailedAttack)) {
+            if (!isSnoop && (isPlayerAvoidedAttempt || isPlayerFailedAttack)) {
                 recordCombatRechargeConfirmation(match.verb || (hasMissTag || hasAvoidDamageTag ? 'miss' : undefined), false);
             } else if (!isSnoop && hasAvoidDamageTag) {
                 recordOpponentCombatRechargeConfirmation(match.verb, false);

@@ -651,17 +651,22 @@ export class Tokenizer {
         const codesStr = ansiMatch.substring(2, ansiMatch.length - 1);
         const codes = codesStr === '' ? ['0'] : codesStr.split(';');
         const newStyle = { ...style };
+        const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
 
         for (let i = 0; i < codes.length; i++) {
             const code = parseInt(codes[i], 10);
             if (code === 0) {
-                Object.keys(newStyle).forEach(key => delete (newStyle as any)[key]);
+                Object.keys(newStyle).forEach(key => delete (newStyle as Record<string, unknown>)[key]);
             } else if (code === 1) {
                 newStyle.fontWeight = 'bold';
             } else if (code === 3) {
                 newStyle.fontStyle = 'italic';
             } else if (code === 4) {
                 newStyle.textDecoration = 'underline';
+            } else if (code === 7) {
+                const temp = newStyle.color;
+                newStyle.color = newStyle.backgroundColor;
+                newStyle.backgroundColor = temp;
             } else if (code === 22) {
                 newStyle.fontWeight = 'normal';
             } else if (code === 23) {
@@ -669,10 +674,13 @@ export class Tokenizer {
             } else if (code === 24) {
                 delete newStyle.textDecoration;
             } else if (code >= 30 && code <= 37) {
-                const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
                 newStyle.color = `var(--ansi-${colors[code - 30]})`;
             } else if (code === 39) {
                 delete newStyle.color;
+            } else if (code >= 40 && code <= 47) {
+                newStyle.backgroundColor = `var(--ansi-${colors[code - 40]})`;
+            } else if (code === 49) {
+                delete newStyle.backgroundColor;
             } else if (code === 38 && codes[i+1] === '5' && codes[i+2]) {
                 const paletteIndex = parseInt(codes[i + 2], 10);
                 if (!Number.isNaN(paletteIndex) && ANSI_PALETTE[paletteIndex]) {
@@ -687,9 +695,24 @@ export class Tokenizer {
                     newStyle.color = `rgb(${r},${g},${b})`;
                 }
                 i += 4;
+            } else if (code === 48 && codes[i+1] === '5' && codes[i+2]) {
+                const paletteIndex = parseInt(codes[i + 2], 10);
+                if (!Number.isNaN(paletteIndex) && ANSI_PALETTE[paletteIndex]) {
+                    newStyle.backgroundColor = ANSI_PALETTE[paletteIndex];
+                }
+                i += 2;
+            } else if (code === 48 && codes[i+1] === '2' && codes[i+2] && codes[i+3] && codes[i+4]) {
+                const r = parseInt(codes[i + 2], 10);
+                const g = parseInt(codes[i + 3], 10);
+                const b = parseInt(codes[i + 4], 10);
+                if (![r, g, b].some(Number.isNaN)) {
+                    newStyle.backgroundColor = `rgb(${r},${g},${b})`;
+                }
+                i += 4;
             } else if (code >= 90 && code <= 97) {
-                const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
                 newStyle.color = `var(--ansi-bright-${colors[code - 90]})`;
+            } else if (code >= 100 && code <= 107) {
+                newStyle.backgroundColor = `var(--ansi-bright-${colors[code - 100]})`;
             }
         }
         return newStyle;

@@ -45,7 +45,7 @@ export const Embers: React.FC<EmbersProps> = ({ count, zone }) => {
             size: 0.5 + Math.random() * (isMobile ? 1.2 : 2.6), // Vary size wider on desktop
             duration: 6 + Math.random() * 8, // Base duration
             delay: Math.random() * 10,
-            opacity: 0.7 + Math.random() * 0.3,
+            opacity: 0.45 + Math.random() * 0.35,
             hue: colorProfile.hue + (Math.random() - 0.5) * 10,
             saturation: colorProfile.saturation,
             lightness: colorProfile.lightness + (Math.random() - 0.5) * 6,
@@ -68,11 +68,12 @@ export const Embers: React.FC<EmbersProps> = ({ count, zone }) => {
             const ember = embers[index];
             if (!ember) return;
 
+            const baseOpacity = ember.opacity;
             const anim = el.animate([
                 { transform: 'translate(0, 0) rotate(0deg) scale(0.2)', opacity: 0, offset: 0 },
-                { transform: 'translate(calc(var(--dest-x) * 0.15), calc(var(--dest-y) * 0.15)) rotate(45deg) scale(1)', opacity: 1, offset: 0.15 },
-                { transform: 'translate(calc(var(--dest-x) * 0.5 + var(--sway-x)), calc(var(--dest-y) * 0.5 + var(--sway-y))) rotate(180deg) scale(var(--scale))', opacity: 0.85, offset: 0.50 },
-                { transform: 'translate(calc(var(--dest-x) * 0.7 + var(--sway-x)), calc(var(--dest-y) * 0.7 + var(--sway-y))) rotate(240deg) scale(calc(var(--scale) * 0.9))', opacity: 0.80, offset: 0.70 },
+                { transform: 'translate(calc(var(--dest-x) * 0.15), calc(var(--dest-y) * 0.15)) rotate(45deg) scale(1)', opacity: baseOpacity, offset: 0.15 },
+                { transform: 'translate(calc(var(--dest-x) * 0.5 + var(--sway-x)), calc(var(--dest-y) * 0.5 + var(--sway-y))) rotate(180deg) scale(var(--scale))', opacity: baseOpacity * 0.85, offset: 0.50 },
+                { transform: 'translate(calc(var(--dest-x) * 0.7 + var(--sway-x)), calc(var(--dest-y) * 0.7 + var(--sway-y))) rotate(240deg) scale(calc(var(--scale) * 0.9))', opacity: baseOpacity * 0.80, offset: 0.70 },
                 { transform: 'translate(var(--dest-x), var(--dest-y)) rotate(360deg) scale(0)', opacity: 0, offset: 1 }
             ], {
                 duration: ember.duration * 1000,

@@ -194,8 +194,9 @@ export const PromptModeIndicators: React.FC = () => {
                     {combatStats.map((stat, index) => (
                         <React.Fragment key={stat.label}>
                             {index > 0 && <span className="prompt-stat-divider">|</span>}
-                            <span title={`${stat.name}: ${stat.description}`}>
-                                {stat.label}{stat.value}%
+                            <span className="prompt-stat-item" title={`${stat.name}: ${stat.description}`}>
+                                <span className="prompt-stat-label">{stat.label}</span>
+                                <span className="prompt-stat-value">{stat.value}%</span>
                             </span>
                         </React.Fragment>
                     ))}

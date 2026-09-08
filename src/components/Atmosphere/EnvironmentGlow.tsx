@@ -134,7 +134,7 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
             }
             ctx.clearRect(0, 0, w, h);
 
-            const colorLerp = 0.012;
+            const colorLerp = 0.005;
             const motionLerp = 0.03;
             const cur = currentColors.current;
             const tar = targetColorsRef.current;

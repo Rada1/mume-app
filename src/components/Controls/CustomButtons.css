@@ -8,8 +8,6 @@
     height: 100%;
     z-index: 500;
     pointer-events: none !important; /* Force non-interactive container */
-    transform: translateZ(105px);
-    transform-style: preserve-3d;
 }
 
 .custom-btn {
@@ -29,7 +27,6 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     touch-action: none;
-    transform-style: preserve-3d;
     will-change: transform;
     -webkit-tap-highlight-color: transparent;
     outline: none;

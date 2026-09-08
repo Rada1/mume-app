@@ -61,11 +61,11 @@ const ZONE_ALIGNMENT_BY_NAME: Record<string, ZoneAlignment> = {
 };
 
 export const EMBER_COLOR_BY_ALIGNMENT: Record<ZoneAlignment, EmberColorProfile> = {
-    'super-good': { hue: 132, saturation: 96, lightness: 68, glowLightness: 48 },
-    good: { hue: 186, saturation: 100, lightness: 72, glowLightness: 52 },
-    neutral: { hue: 46, saturation: 100, lightness: 70, glowLightness: 50 },
-    evil: { hue: 274, saturation: 96, lightness: 72, glowLightness: 50 },
-    'super-evil': { hue: 0, saturation: 100, lightness: 68, glowLightness: 48 }
+    'super-good': { hue: 132, saturation: 96, lightness: 68, glowLightness: 48 }, // Original bright Lothlórien emerald green
+    good: { hue: 196, saturation: 48, lightness: 50, glowLightness: 36 },         // Muted twilight / starlight cyan
+    neutral: { hue: 38, saturation: 45, lightness: 32, glowLightness: 20 },       // Antique beeswax candle / warm earth gold
+    evil: { hue: 272, saturation: 42, lightness: 26, glowLightness: 16 },         // Shadowy deep plum / dark amethyst
+    'super-evil': { hue: 8, saturation: 55, lightness: 28, glowLightness: 18 }   // Smoldering dark cinder / iron rust red
 };
 
 // --- Logic Section ---

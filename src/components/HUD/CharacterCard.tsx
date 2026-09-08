@@ -210,7 +210,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
     const characterName = useActiveCharacter();
     const vitals = useActiveVitals();
     const combat = useActiveCombat();
-    const { gameState, triggerHaptic, practice, executeCommand, mood, mumeEditState, handleSaveMumeEdit, handleCancelMumeEdit } = useGame();
+    const { gameState, triggerHaptic, practice, executeCommand, mood, mumeEditState, handleSaveMumeEdit, handleCancelMumeEdit, viewport } = useGame();
     const { infoLines, questLines, achievementLines, practiceLines } = useUI();
     const setPendingEditorContext = useArchiveStore(s => s.setPendingEditorContext);
     const lastRefreshRef = useRef(0);
@@ -757,7 +757,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
                         </Section>
 
                         <Section title="Equipment" icon={<ShieldIcon size={10} strokeWidth={2.5} />} className="character-card-equipment">
-                            <PromptInventoryChips showHeader={false} variant="drawer" />
+                            <PromptInventoryChips showGear variant="drawer" />
                         </Section>
 
                         {hasCombatInfo && (

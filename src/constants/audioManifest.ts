@@ -140,6 +140,7 @@ export const AUDIO_MANIFEST = {
         'kill': { path: '/assets/Sounds/UI/rip.mp3' },
         'level': { path: '/assets/Sounds/SoundEffects/level.wav' },
         'magicexplosion': { path: '/assets/Sounds/SoundEffects/magicexplosion.mp3' },
+        'look': { path: '/assets/Sounds/SoundEffects/look.mp3', defaultVolume: 0.4 },
         'move': { path: '/assets/Sounds/SoundEffects/move.mp3' },
         'miss': { path: '/assets/Sounds/SoundEffects/miss.mp3' },
         'oof': { path: '/assets/Sounds/SoundEffects/oof.mp3' },
@@ -162,6 +163,8 @@ export const AUDIO_MANIFEST = {
         'stopriding': { path: '/assets/Sounds/UI/stopriding.mp3', defaultVolume: 0.8 },
         'target': { path: '/assets/Sounds/UI/target.mp3', defaultVolume: 0.07 },
         'help': { path: '/assets/Sounds/UI/help.mp3', defaultVolume: 0.8 },
+        'who': { path: '/assets/Sounds/SoundEffects/who.mp3', defaultVolume: 0.8 },
+        'eqinventory': { path: '/assets/Sounds/SoundEffects/eqinventory.mp3', defaultVolume: 0.8 },
     } as Record<string, SoundConfig>,
     bpmMap: {
         'AncientBrokenRoad.mp3': 72,

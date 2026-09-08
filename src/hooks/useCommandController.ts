@@ -24,6 +24,50 @@ const isCommunicationCommand = (cmd: string): boolean => {
     return commVerbs.includes(firstWord);
 };
 
+const LOOK_EXAMINE_COMMAND_VERBS = new Set([
+    'look', 'l', 'loo', 'lo',
+    'examine', 'examin', 'exami', 'exam', 'exa', 'ex'
+]);
+
+export const isLookCommand = (cmd: string): boolean => {
+    const trimmed = cmd.trim();
+    if (!trimmed) return false;
+    const parts = trimmed.split(';');
+    return parts.some(part => {
+        const firstWord = part.trim().toLowerCase().split(/\s+/)[0];
+        return LOOK_EXAMINE_COMMAND_VERBS.has(firstWord);
+    });
+};
+
+const WHO_INFO_COMMAND_VERBS = new Set([
+    'who', 'wh',
+    'score', 'sc', 'sco', 'scor',
+    'stat', 'stats', 'status', 'st',
+    'information', 'info', 'inf',
+    'where', 'whe', 'wher'
+]);
+
+export const isWhoCommand = (cmd: string): boolean => {
+    const trimmed = cmd.trim();
+    if (!trimmed) return false;
+    const parts = trimmed.split(';');
+    return parts.some(part => {
+        const firstWord = part.trim().toLowerCase().split(/\s+/)[0];
+        return WHO_INFO_COMMAND_VERBS.has(firstWord);
+    });
+};
+
+export const isEqOrInvCommand = (cmd: string): boolean => {
+    const trimmed = cmd.trim();
+    if (!trimmed) return false;
+    const parts = trimmed.split(';');
+    return parts.some(part => {
+        const firstWord = part.trim().toLowerCase().split(/\s+/)[0];
+        return firstWord === 'equipment' || firstWord === 'eq' || firstWord === 'equip' ||
+               firstWord === 'inventory' || firstWord === 'inv' || firstWord === 'i';
+    });
+};
+
 const findCommandInput = (): HTMLTextAreaElement | HTMLInputElement | null => {
     const active = document.activeElement;
     if (
@@ -128,8 +172,6 @@ export interface CommandControllerDeps {
     showLegacyButtons: boolean;
     setShowLegacyButtons: (val: boolean) => void;
     isImmersionMode: boolean;
-    isBloomEnabled: boolean;
-    setIsBloomEnabled: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
     disableSmoothScroll: boolean;
@@ -162,8 +204,17 @@ export function useCommandController(deps: CommandControllerDeps) {
         }
 
         if (!isSystem && !silent) {
+            const isLook = isLookCommand(cmd);
+            const isWho = isWhoCommand(cmd);
+            const isEqOrInv = isEqOrInvCommand(cmd);
             const isComm = isCommunicationCommand(cmd);
-            if (isComm && isSoundEnabled && d.playEffect) {
+            if (isLook && isSoundEnabled && d.playEffect) {
+                d.playEffect('look');
+            } else if (isWho && isSoundEnabled && d.playEffect) {
+                d.playEffect('who');
+            } else if (isEqOrInv && isSoundEnabled && d.playEffect) {
+                d.playEffect('eqinventory');
+            } else if (isComm && isSoundEnabled && d.playEffect) {
                 d.playEffect('commsend');
             } else if (!options?.fromUi && isSoundEnabled && playClickSound) {
                 playClickSound();

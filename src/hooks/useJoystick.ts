@@ -10,9 +10,6 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     const [swipeRay, setSwipeRay] = useState<{ active: boolean, angle: number, dist: number, x?: number, y?: number }>({ active: false, angle: 0, dist: 0 });
     const [joystickGlow, setJoystickGlow] = useState(false);
     const [isSwipeWheelHidden, setIsSwipeWheelHidden] = useState(false);
-    
-
-    const joystickKnobRef = useRef<HTMLDivElement>(null);
     const joystickStartPos = useRef<{ x: number, y: number } | null>(null);
     const longPressTimer = useRef<NodeJS.Timeout | null>(null);
     const lastHapticDirRef = useRef<Direction | null>(null);
@@ -242,12 +239,6 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             setSwipeRay(prev => prev.active ? { ...prev, active: false } : prev);
         }
 
-        if (joystickKnobRef.current && dist > 5) {
-            const maxDist = 75;
-            const tiltX = -(dy / maxDist) * 10, tiltY = (dx / maxDist) * 10;
-            joystickKnobRef.current.style.transform = `perspective(600px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-        }
-
         if (dist < threshold) {
             setCurrentDir(null);
             lockedDirRef.current = null;
@@ -314,11 +305,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
         if (suppressDefault) {
             cleanupJoystickEnd();
-            if (joystickKnobRef.current) {
-                joystickKnobRef.current.classList.add('resetting');
-                joystickKnobRef.current.style.transform = '';
-                setTimeout(() => { if (joystickKnobRef.current) joystickKnobRef.current.classList.remove('resetting'); }, 500);
-            }
+            
             return { isCenterTap, dir: initialDir || null };
         }
 
@@ -328,11 +315,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
                 executeCommand(cmd, false, false, false, false, { fromUi: true });
                 cleanupJoystickEnd();
                 if (playClickSound) playClickSound();
-                if (joystickKnobRef.current) {
-                    joystickKnobRef.current.classList.add('resetting');
-                    joystickKnobRef.current.style.transform = '';
-                    setTimeout(() => { if (joystickKnobRef.current) joystickKnobRef.current.classList.remove('resetting'); }, 500);
-                }
+                
                 return true;
             }
             
@@ -347,21 +330,13 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
                 if (playClickSound) playClickSound();
                 setJoystickGlow(true);
                 setTimeout(() => setJoystickGlow(false), 300);
-                if (joystickKnobRef.current) {
-                    joystickKnobRef.current.classList.add('resetting');
-                    joystickKnobRef.current.style.transform = '';
-                    setTimeout(() => { if (joystickKnobRef.current) joystickKnobRef.current.classList.remove('resetting'); }, 500);
-                }
+                
                 return true;
             }
         }
 
         cleanupJoystickEnd();
-        if (joystickKnobRef.current) {
-            joystickKnobRef.current.classList.add('resetting');
-            joystickKnobRef.current.style.transform = '';
-            setTimeout(() => { if (joystickKnobRef.current) joystickKnobRef.current.classList.remove('resetting'); }, 500);
-        }
+        
         return false;
     }, [joystickActive, isJoystickConsumed, isTargetModifierActive, currentDir, target, availableExits, stopRepeatTimer, playClickSound]);
 
@@ -407,9 +382,6 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         lockedDirRef.current = null;
         joystickStartPos.current = null;
         touchStartPos.current = null;
-        if (joystickKnobRef.current) {
-            joystickKnobRef.current.style.transform = '';
-        }
     }, [stopRepeatTimer]);
 
     return {
@@ -425,7 +397,6 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         setJoystickGlow,
         isSwipeWheelHidden,
         setIsSwipeWheelHidden,
-        joystickKnobRef,
         handleJoystickStart,
         handleJoystickMove,
         handleJoystickEnd,

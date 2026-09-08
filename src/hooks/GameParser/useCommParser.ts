@@ -96,7 +96,7 @@ export function useCommParser(deps: CommParserDeps) {
         const parseXmlComm = () => {
             const commTags = ['tell', 'say', 'narrate', 'shout', 'yell', 'song', 'sing', 'pray', 'whisper', 'social', 'emote'];
             const tagPattern = commTags.join('|');
-            const tagMatch = line.match(new RegExp(`<(${tagPattern})(?:\\s+[^>]*)?>([\\s\\S]*?)<\\/\\1>`, 'i'));
+            const tagMatch = line.match(new RegExp(`(?:<|&lt;)(${tagPattern})(?:\\s+[^>]*?)?(?:>|&gt;)([\\s\\S]*?)(?:<\\/|&lt;\\/)\\1(?:>|&gt;)`, 'i'));
             if (!tagMatch) return false;
 
             const tag = tagMatch[1].toLowerCase();
@@ -142,53 +142,7 @@ export function useCommParser(deps: CommParserDeps) {
             return true;
         };
 
-        const parseTaggedPlainComm = () => {
-            if (!/<[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?>/.test(line)) return false;
-            // Skip lines containing formatting/structural tags — these are UI output, not comm messages.
-            // Matching on comm verb words inside <code>, <highlight>, <em> etc. is always a false positive.
-            if (/<(?:code|highlight|em|prompt|status|xml|object|room|exits|move|weather|magic|hp|mana|move|exp|align|prac|gold|bank|affect|group|help|item|info|object|rune|score|stats|zone|quiet|noquest|notell|noshout|narrate)\b/i.test(line)) return false;
-
-            const plain = stripMarkup(line).trim();
-            const actionMatch = plain.match(/^(.+?)\s+(tells?\s+the\s+group|tells? you|tells?|whispers?|says?|asks?(?:\s+you)?|exclaims?|narrates?|shouts?|yells?|sings?|prays?)(?:\s+.*?|:\s*|,\s*)(.*)$/i);
-            if (!actionMatch) return false;
-
-            const action = actionMatch[2].toLowerCase();
-            const commandMap: Record<string, string> = {
-                tells: 'tell',
-                tell: 'tell',
-                'tells you': 'tell',
-                'tells the group': 'group',
-                'tell the group': 'group',
-                whispers: 'whisper',
-                whisper: 'whisper',
-                says: 'say',
-                say: 'say',
-                narrates: 'narrate',
-                narrate: 'narrate',
-                shouts: 'shout',
-                shout: 'shout',
-                yells: 'yell',
-                yell: 'yell',
-                sings: 'sing',
-                sing: 'sing',
-                prays: 'pray',
-                pray: 'pray'
-            };
-
-            replyCommand = commandMap[action] ?? action.replace(/s$/, '');
-            replyTarget = action === 'tells the group' || action === 'tell the group'
-                ? undefined
-                : actionMatch[1].trim();
-            commSender = replyTarget;
-            if (!commSender) commSender = actionMatch[1].trim();
-            commAction = actionMatch[2];
-            commText = actionMatch[3].trim();
-            commColor = extractColorAtRawIndex(line.length);
-            return true;
-        };
-
         parseXmlComm();
-        if (!replyCommand) parseTaggedPlainComm();
 
         if (replyCommand || isSocial) {
             msgType = 'comm';

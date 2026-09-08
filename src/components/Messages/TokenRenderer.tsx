@@ -68,6 +68,7 @@ export interface TokenRendererProps {
     splitFirstWord?: boolean;
     wordReveal?: boolean;
     disableRoomInline?: boolean;
+    isRoomContentsLine?: boolean;
     metadata?: {
         id?: string;
         context?: string;
@@ -86,6 +87,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
     splitFirstWord = false,
     wordReveal = false,
     disableRoomInline = false,
+    isRoomContentsLine = false,
     metadata: propMetadata
 }) => {
     const { target, opponentId, opponentName } = useTokenHighlight();
@@ -114,17 +116,20 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     const secondPart = fallbackHtml.substring(match.index);
                     return (
                         <>
-                            <span className="first-word-static">{firstPart}</span>
+                            <span className="first-word-static"><span>{firstPart}</span></span>
                             {secondPart && settings.isTextRevealEnabled && (
-                                <span className="remaining-reveal-animated">{secondPart}</span>
+                                <span className="remaining-reveal-animated"><span>{secondPart}</span></span>
                             )}
-                            {secondPart && !settings.isTextRevealEnabled && secondPart}
+                            {secondPart && !settings.isTextRevealEnabled && <span>{secondPart}</span>}
                         </>
                     );
                 } else {
-                    return <span className="first-word-static">{fallbackHtml}</span>;
+                    return <span className="first-word-static"><span>{fallbackHtml}</span></span>;
                 }
             }
+        }
+        if (disableRoomInline) {
+            return <span className="room-title-text" dangerouslySetInnerHTML={{ __html: fallbackHtml }} />;
         }
         return <span dangerouslySetInnerHTML={{ __html: fallbackHtml }} />;
     }
@@ -225,7 +230,6 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 return (
                     <span
                         key={idx}
-                        className="room-title-text"
                         style={Object.keys(roomTextStyle).length > 0 ? roomTextStyle : undefined}
                     >
                         {content}
@@ -318,15 +322,20 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     ...(a.classes || []),
                     ...(isTargetMatch && targetMatcher ? ['is-target', 'target-highlighter'] : [])
                 ].filter(Boolean).join(' ');
+                if (targetMatcher && !isTargetMatch) {
+                    return (
+                        <span key={idx} className={ansiClasses || undefined} style={a.style}>
+                            {renderTextWithTarget(content, idx)}
+                        </span>
+                    );
+                }
                 return (
                     <span 
                         key={idx} 
                         className={ansiClasses || undefined}
                         style={a.style}
                     >
-                        {targetMatcher && !isTargetMatch
-                            ? renderTextWithTarget(content, idx)
-                            : renderItemConditionText(content, ansiItemState.state, ansiItemState.stateLabel)}
+                        {renderItemConditionText(content, ansiItemState.state, ansiItemState.stateLabel)}
                     </span>
                 );
             
@@ -513,6 +522,14 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 )}
                 {remainingNodes.length > 0 && !settings.isTextRevealEnabled && remainingNodes}
             </>
+        );
+    }
+
+    if (disableRoomInline) {
+        return (
+            <span className="room-title-text">
+                {tokens.map((token, idx) => renderToken(token, idx))}
+            </span>
         );
     }
 

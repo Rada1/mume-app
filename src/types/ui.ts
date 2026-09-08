@@ -13,7 +13,6 @@ export interface QuickButton {
     label: string;
     command: string;
 }
-export type TriggerAction = 'spit' | 'hide' | 'show' | 'command';
 export type ActionType = 'command' | 'menu' | 'nav' | 'select-assign' | 'select-recipient' | 'select-container' | 'assign' | 'teleport-manage' | 'historical' | 'preload' | 'show' | 'modifier';
 export type ObjectDragRow = 'inventory' | 'worn' | 'room';
 
@@ -40,17 +39,6 @@ export interface UiPosition {
     w?: number;
     h?: number;
     scale?: number;
-}
-
-export interface BranchingEdgeGlowControls {
-    spreadSpeed: number;
-    branchingFactor: number;
-    persistenceMs: number;
-}
-
-export interface BranchingEdgeGlowProps {
-    imageUrl: string | null;
-    controls?: Partial<BranchingEdgeGlowControls>;
 }
 
 export type UiPositions = Record<string, UiPosition>;

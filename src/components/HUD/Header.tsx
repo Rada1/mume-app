@@ -94,12 +94,13 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
 
         // 2. If no direct match in selectedTarget, search the entities registry
         if (entities) {
-            // Find an entity in the registry that matches the target keyword
-            const matchingEntity = Object.values(entities).find((entity: any) => {
+            const matchingEntity = Object.values(entities).find((entity): entity is { id?: string; noun?: string; name?: string } => {
+                if (!entity || typeof entity !== 'object') return false;
+                const e = entity as { noun?: string; name?: string };
                 return (
-                    entity.noun?.toLowerCase() === normTarget ||
-                    entity.name?.toLowerCase() === normTarget ||
-                    entity.name?.toLowerCase().includes(normTarget)
+                    e.noun?.toLowerCase() === normTarget ||
+                    e.name?.toLowerCase() === normTarget ||
+                    e.name?.toLowerCase().includes(normTarget)
                 );
             });
 

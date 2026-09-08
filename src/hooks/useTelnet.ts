@@ -113,7 +113,8 @@ export function useTelnet(config: TelnetConfig) {
         bufferRef.current += text;
         
         const currentBuffer = bufferRef.current;
-        const rawLines = currentBuffer.split('\n');
+        const normalized = currentBuffer.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        const rawLines = normalized.split('\n');
         let lastLine = rawLines.pop() || '';
 
         const processedLines: (string | { line: string, isPrompt: boolean })[] = [];

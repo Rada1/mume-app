@@ -75,7 +75,6 @@ interface SettingsState {
     bgImageBottom: string | null;
     fontFamily: string;
     uiMode: UiMode;
-    isBloomEnabled: boolean;
     isHighlighterEnabled: boolean;
     objectColor: string;
     playerColor: string;
@@ -144,7 +143,6 @@ interface SettingsState {
     setCharacterDrawerOpacity: (val: number) => void;
     setBottomBarOpacity: (val: number) => void;
     setUiMode: (val: UiMode) => void;
-    setIsBloomEnabled: (val: boolean) => void;
     setIsHighlighterEnabled: (val: boolean) => void;
     setDisableSmoothScroll: (val: boolean) => void;
     setObjectColor: (val: string) => void;
@@ -280,7 +278,6 @@ export const useSettingsStore = create<SettingsState>()(
             bgImageBottom: null,
             fontFamily: DEFAULT_FONT_FAMILY,
             uiMode: 'auto',
-            isBloomEnabled: true,
             isHighlighterEnabled: true,
             objectColor: 'rgba(251, 146, 60, 0.95)',
             playerColor: COLOR_ALLY,
@@ -358,7 +355,6 @@ export const useSettingsStore = create<SettingsState>()(
             setBgImageBottom: (bgImageBottom) => set({ bgImageBottom }),
             setFontFamily: (fontFamily) => set({ fontFamily }),
             setUiMode: (uiMode) => set({ uiMode }),
-            setIsBloomEnabled: (isBloomEnabled) => set({ isBloomEnabled }),
             setIsHighlighterEnabled: (isHighlighterEnabled) => set({ isHighlighterEnabled }),
             setObjectColor: (objectColor) => set({ objectColor }),
             setPlayerColor: (playerColor) => set({ playerColor }),

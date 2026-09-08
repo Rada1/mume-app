@@ -4,11 +4,10 @@ import MessageLog from '../Messages/MessageLog';
 import ChatWindow from '../Messages/ChatWindow';
 import PlayersPanel from '../Players/PlayersPanel';
 import InputArea from '../Controls/InputArea';
-import { useGame, useUI, useVitals, useLog } from '../../context/GameContext';
+import { useGame, useUI, useLog } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { LineCluster } from './HUD/LineCluster';
-import PromptBox from '../HUD/PromptBox';
 import CustomPromptBar from '../HUD/CustomPromptBar';
 import ActionBox from '../HUD/ActionBox';
 import { CharacterCard } from '../HUD/CharacterCard';
@@ -24,9 +23,8 @@ import type { MumeEditState } from '../../stores/useUIStore';
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
 import { StickyRoomHeader } from './StickyRoomHeader';
 import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
-import RoomChipRows from '../Mapper/RoomChipRows';
 import { useActiveVitals } from '../../stores/useActiveGameState';
-import { getRoomTerrainVisualKey, getZoneVisualKey } from '../../utils/roomTerrainVisuals';
+import { getRoomTerrainVisualKey, getZoneVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -57,7 +55,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     setMumeEditState,
     wasDraggingRef
 }) => {
-    const { setStats } = useVitals() as any;
     const {
         env,
         triggerHaptic,
@@ -124,13 +121,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const skyLightingClass = lighting === 'sun' ? 'lighting-sun' : 'lighting-none';
 
     const { setPopoverState } = useUI();
-
-    const handleWimpyChange = React.useCallback((val: number) => {
-        triggerHaptic(10);
-        // Optimistic update
-        setStats(prev => ({ ...prev, wimpy: val }));
-        executeCommand(`change wimpy ${val}`, true, true);
-    }, [executeCommand, triggerHaptic, setStats]);
     const logContainerRef = React.useRef<HTMLDivElement>(null);
 
     // --- Terrain Strip Cross-Fade State & Effects ---
@@ -175,7 +165,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     prevLore: null,
                     triggerFade: false
                 }));
-            }, 150); // Cross-fade quickly (150ms)
+            }, 1200); // Cross-fade smoothly (1200ms)
             return () => clearTimeout(timer);
         }
     }, [terrainState.triggerFade]);
@@ -232,7 +222,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     prevTerrain: null,
                     triggerFade: false
                 }));
-            }, 150); // Cross-fade quickly (150ms)
+            }, 1200); // Cross-fade smoothly (1200ms)
             return () => clearTimeout(timer);
         }
     }, [skyState.triggerFade]);
@@ -417,7 +407,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                                 left: 0,
                                 right: 0,
                                 bottom: 0,
-                                transition: 'opacity 150ms ease-in-out',
+                                transition: 'opacity 1200ms ease-in-out',
                                 opacity: terrainState.triggerFade ? 0 : 1,
                             }}
                         />
@@ -429,7 +419,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             left: 0,
                             right: 0,
                             bottom: 0,
-                            transition: terrainState.prevTerrain ? 'opacity 150ms ease-in-out' : 'none',
+                            transition: terrainState.prevTerrain ? 'opacity 1200ms ease-in-out' : 'none',
                             opacity: terrainState.prevTerrain ? (terrainState.triggerFade ? 1 : 0) : 1,
                         }}
                     />
@@ -456,7 +446,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                                 left: 0,
                                 right: 0,
                                 top: 0,
-                                transition: 'opacity 150ms ease-in-out',
+                                transition: 'opacity 1200ms ease-in-out',
                                 opacity: skyState.triggerFade ? 0 : 1,
                             }}
                         />
@@ -468,7 +458,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             left: 0,
                             right: 0,
                             top: 0,
-                            transition: skyState.prevTerrain ? 'opacity 150ms ease-in-out' : 'none',
+                            transition: skyState.prevTerrain ? 'opacity 1200ms ease-in-out' : 'none',
                             opacity: skyState.prevTerrain ? (skyState.triggerFade ? 1 : 0) : 1,
                         }}
                     />
@@ -482,7 +472,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                                 left: 0,
                                 right: 0,
                                 top: 0,
-                                transition: 'opacity 150ms ease-in-out',
+                                transition: 'opacity 1200ms ease-in-out',
                                 opacity: terrainState.triggerFade ? 0 : 1,
                             }}
                         />
@@ -494,7 +484,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             left: 0,
                             right: 0,
                             top: 0,
-                            transition: terrainState.prevTerrain ? 'opacity 150ms ease-in-out' : 'none',
+                            transition: terrainState.prevTerrain ? 'opacity 1200ms ease-in-out' : 'none',
                             opacity: terrainState.prevTerrain ? (terrainState.triggerFade ? 1 : 0) : 1,
                         }}
                     />
@@ -533,6 +523,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             flex: 1,
                             position: 'relative',
                             overflow: 'hidden',
+                            ...(isImmersionMode ? { '--terrain-glow-color': getRoomTerrainGlowColor(roomCardTerrain) } : {})
                         } as React.CSSProperties}
                     >
                         <div className="log-opaque-backdrop" />
@@ -562,26 +553,13 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         />
                         <TimerExpiryToast />
                         {gameState !== 'account' && <QuickButtonBar />}
-                        {gameState !== 'account' && roomName && isImmersionMode && (
-                            <div className="log-terrain-chips-overlay">
-                                <RoomChipRows variant="terrain-pins" />
-                            </div>
-                        )}
                     </div>
 
                     {/* On mobile the prompt is a standalone row outside and below the log.
                         On desktop it slots into the action-box grid (passed as promptSlot below) so
                         the bottom bar is one gapless unit. */}
                     {gameState !== 'account' && viewport.isMobile && !hidePrompt && (
-                        isImmersionMode ? (
-                            <PromptBox
-                                processMessageHtml={processMessageHtml}
-                                processMessageTokens={processMessageTokens}
-                                onWimpyChange={handleWimpyChange}
-                            />
-                        ) : (
-                            <CustomPromptBar onLogClick={handleLogClick} />
-                        )
+                        <CustomPromptBar onLogClick={handleLogClick} />
                     )}
 
                     {!viewport.isMobile && (gameState !== 'account' || shouldShowAccountInput) && (
@@ -594,15 +572,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             setHeldButton={setHeldButton}
                             wasDraggingRef={wasDraggingRef}
                             promptSlot={gameState !== 'account' && !hidePrompt ? (
-                                isImmersionMode ? (
-                                    <PromptBox
-                                        processMessageHtml={processMessageHtml}
-                                        processMessageTokens={processMessageTokens}
-                                        onWimpyChange={handleWimpyChange}
-                                    />
-                                ) : (
-                                    <CustomPromptBar onLogClick={handleLogClick} />
-                                )
+                                <CustomPromptBar onLogClick={handleLogClick} />
                             ) : null}
                         />
                     )}
@@ -612,7 +582,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             </div>
 
             {isMobile ? (
-                /* Mobile Layout: PromptBox and InputArea stacked in control-card-wrapper */
+                /* Mobile Layout: InputArea in control-card-wrapper */
                 (gameState !== 'account' || (shouldShowAccountInput && isLandscape)) && (
                     <div className="control-card-wrapper">
                         {((shouldShowAccountInput && isLandscape) || (gameState !== 'account' && isLandscape)) && (

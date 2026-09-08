@@ -414,7 +414,7 @@ export const drawRoomOccupants = (
             const isSelectedTarget = targetTextMatchesEntity(rCtx.targetName, occ.commandTarget, occ.name);
             const isCombatant = isOpponent || (occ.id != null && combatantIds.has(String(occ.id)));
             const isGroupOcc = occ.ring === 'inner';
-            const playerLunge = !!rCtx.inCombat && (occ.kind === 'self' || occ.kind === 'player')
+            const playerLunge = !!rCtx.inCombat && ((occ.kind as string) === 'self' || occ.kind === 'player')
                 ? getLungedPoint(orbX, orbY, px, py, getCombatLungeProgress(rCtx, 'outgoing'), camera.zoom)
                 : { x: orbX, y: orbY };
             const combatPoint = isOpponent

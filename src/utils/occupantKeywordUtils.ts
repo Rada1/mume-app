@@ -20,11 +20,11 @@ const normalizeCommandKeyword = (value: string | undefined): string => (
 
 const getEnemyNeutralWord = (value: string): string => {
     const clean = stripOuterMarkers(value);
-    const capitalized = clean.match(/\b[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'’-]*/g) || [];
-    const chosen = capitalized.find(word => !LOW_VALUE_WORDS.has(word.toLowerCase()));
+    const capitalized: string[] = clean.match(/\b[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'’-]*/g) || [];
+    const chosen = capitalized.find((word: string) => !LOW_VALUE_WORDS.has(word.toLowerCase()));
     if (chosen) return chosen;
 
-    const words = clean.split(/\s+/).filter(word => word && !LOW_VALUE_WORDS.has(word.toLowerCase()));
+    const words = clean.split(/\s+/).filter((word: string) => word && !LOW_VALUE_WORDS.has(word.toLowerCase()));
     return words[words.length - 1] || clean;
 };
 

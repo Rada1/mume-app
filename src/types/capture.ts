@@ -64,6 +64,7 @@ export interface CaptureController {
     isFromDrawer: () => boolean;
     getActiveType: () => CaptureType;
     setPendingFlags: (isSilent: boolean, fromDrawer: boolean, command?: string) => void;
+    clearPendingFlags: () => void;
     isPendingSilent: () => boolean;
     shouldSuppressCommandEcho: (line: string, attachedText?: string) => boolean;
     shouldSuppressSilentBlank: (line: string) => boolean;

@@ -52,7 +52,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
     // We use a local ref to ensure synchronous updates while useGameParser 
     // is looping through lines. This avoids stale closures and state timing issues.
     const sessionRef = useRef<CaptureSession | null>(null);
-    const pendingFlagsRef = useRef<{ isSilent: boolean, fromDrawer: boolean, command?: string }>({ isSilent: false, fromDrawer: false });
+    const pendingFlagsRef = useRef<{ isSilent: boolean; fromDrawer: boolean; command?: string; timestamp?: number }>({ isSilent: false, fromDrawer: false });
     const pendingSilentCommandsRef = useRef<string[]>([]);
     const lastSilentCaptureEndedAtRef = useRef(0);
     const lastRequestedContainerIdRef = useRef<string | null>(null);
@@ -684,16 +684,22 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             : currentStage === 'sc' ? 'score'
             : currentStage;
 
-        if (normalizedExpected === session.type && !pendingFlagsRef.current.command) {
-            captureStage.current = 'none';
-        }
+        captureStage.current = 'none';
+        pendingFlagsRef.current = { isSilent: false, fromDrawer: false, command: undefined, timestamp: undefined };
     }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setWhoList, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setAchievementLines, setCaptureSession, captureStage, pendingFlagsRef, practiceHandler, setContainerContents, setCharacterInfo]);
 
     const hasSession = useCallback(() => sessionRef.current !== null, [sessionRef]);
     const isSilent = useCallback(() => sessionRef.current?.isSilent || false, [sessionRef]);
     const isFromDrawer = useCallback(() => sessionRef.current?.fromDrawer || false, [sessionRef]);
     const getActiveType = useCallback(() => sessionRef.current?.type || 'none', [sessionRef]);
-    const isPendingSilent = useCallback(() => pendingFlagsRef.current.isSilent, []);
+    const isPendingSilent = useCallback(() => {
+        if (!pendingFlagsRef.current.isSilent) return false;
+        if (pendingFlagsRef.current.timestamp && Date.now() - pendingFlagsRef.current.timestamp > 2500) {
+            pendingFlagsRef.current.isSilent = false;
+            return false;
+        }
+        return true;
+    }, []);
     
     const normalizeCommandEcho = useCallback((value: string) => value
         .replace(/\x1b\[[0-9;]*m/g, '')
@@ -706,7 +712,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         .replace(/\s+/g, ' '), []);
 
     const setPendingFlags = useCallback((isSilent: boolean, fromDrawer: boolean, command?: string) => {
-        pendingFlagsRef.current = { isSilent, fromDrawer, command };
+        pendingFlagsRef.current = { isSilent, fromDrawer, command, timestamp: Date.now() };
         if (!isSilent || !command?.trim()) return;
 
         pendingSilentCommandsRef.current.push(normalizeCommandEcho(command));
@@ -714,6 +720,10 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             pendingSilentCommandsRef.current.shift();
         }
     }, [normalizeCommandEcho]);
+
+    const clearPendingFlags = useCallback(() => {
+        pendingFlagsRef.current = { isSilent: false, fromDrawer: false, command: undefined, timestamp: undefined };
+    }, []);
 
     const shouldSuppressCommandEcho = useCallback((line: string, attachedText?: string) => {
         const pending = pendingSilentCommandsRef.current;
@@ -748,6 +758,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         isFromDrawer,
         getActiveType,
         setPendingFlags,
+        clearPendingFlags,
         isPendingSilent,
         shouldSuppressCommandEcho,
         shouldSuppressSilentBlank,
