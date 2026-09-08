@@ -35,24 +35,9 @@
     background: rgba(112, 82, 45, 0.12);
 }
 
-.mapper-container.no-bg-image::before {
-    display: none;
-}
-
+/* Background map is handled by the atmospheric layer (.environment-root.back) */
 .mapper-container::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 800%;
-    height: 800%;
-    background: url('/assets/Pictures/UIPics/darkmap.png') no-repeat center center;
-    background-size: contain;
-    opacity: 0.12;
-    pointer-events: none;
-    z-index: 0;
-    filter: sepia(1) hue-rotate(195deg) saturate(6) brightness(0.9);
+    display: none !important;
 }
 
 .mapper-overlay {

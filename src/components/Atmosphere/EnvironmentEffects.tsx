@@ -165,7 +165,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         }} />
                     </div>
                 )}
-                {isImmersionMode && !isMobile && (
+                {isImmersionMode && (
                     <>
                         <div className="client-lighting-overlay client-sun-overlay" />
                         <div className="client-lighting-overlay client-moon-overlay" />
@@ -214,14 +214,6 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
 
             {/* --- FRONT LAYER: Atmospheric & Interactive [z-index: 4500+] --- */}
             <div className={`environment-root front`}>
-                {isImmersionMode && isMobile && (
-                    <div className={`lighting-state-${lighting || 'none'}`} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-                        <div className="client-lighting-overlay client-sun-overlay" />
-                        <div className="client-lighting-overlay client-moon-overlay" />
-                        <div className="client-lighting-overlay client-artificial-overlay" />
-                        <div className="client-lighting-overlay client-dark-overlay" />
-                    </div>
-                )}
                 {isImmersionMode && (
                     <>
                         <div

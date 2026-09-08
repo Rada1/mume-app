@@ -92,6 +92,10 @@
     transition: opacity 300ms ease-in-out, filter 0.4s ease, left 0.4s ease;
 }
 
+.app-container.immersion-mode .environment-root.back .background-layer {
+    filter: sepia(0.35) brightness(0.60) contrast(1.05) blur(3px) !important;
+}
+
 /* The image is zoomed in (800% + contain + centered), so whatever point sits
    at this element's center is the map art's own center. On desktop the log
    isn't necessarily centered in the viewport — it's centered in the gap

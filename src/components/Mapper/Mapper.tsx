@@ -273,7 +273,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             touchAction: 'none',
             zIndex: infoRoomId ? 2900 : undefined
         }}>
-            {!isMobile && (
+            {isImmersionMode && (
                 <>
                     <div className="mapper-overlay mapper-sun-overlay" />
                     <div className="mapper-overlay mapper-moon-overlay" />
