@@ -78,6 +78,7 @@ export interface Message {
     isRoomSectionStart?: boolean; // First line of a contents section — render a labelled divider above it
     isRoomContentsLine?: boolean; // Contents line (or trailing blank) — gets the solid panel background
     roomZone?: string | null; // Zone/area of the room at the time of entry
+    roomArrivalDirection?: Direction; // Direction used to enter this freshly rendered room block
 
     isCombatBlockStart?: boolean;
     isCommBlockStart?: boolean;

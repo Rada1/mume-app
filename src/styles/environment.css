@@ -101,6 +101,27 @@
     opacity: 0.72;
 }
 
+/* Sleep is intentionally darker than an unlit room: the player should feel
+   their eyes close while the HUD itself remains outside this atmosphere layer. */
+.client-sleep-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 9;
+    pointer-events: none;
+    opacity: 0;
+    background:
+        radial-gradient(ellipse 48% 32% at 50% 42%, rgba(12, 16, 35, 0.28) 0%, rgba(2, 4, 14, 0.75) 72%, rgba(0, 0, 8, 0.9) 100%),
+        rgba(0, 0, 9, 0.6);
+    mix-blend-mode: multiply;
+    backdrop-filter: brightness(0.58) saturate(0.62);
+    -webkit-backdrop-filter: brightness(0.58) saturate(0.62);
+    transition: opacity 0.9s ease-in-out;
+}
+
+.environment-root.is-sleeping .client-sleep-overlay {
+    opacity: 0.92;
+}
+
 /* Weather/fog front effects and the lighting/terrain-wave effects inside
    .environment-root.back are immersion-only. The map background image inside
    .environment-root.back is the exception — it renders in both modes

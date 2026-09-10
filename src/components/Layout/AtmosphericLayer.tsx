@@ -22,6 +22,7 @@ export const AtmosphericLayer: React.FC = () => {
         viewport,
         currentTerrain,
         roomZone,
+        playerPosition,
         spectateTerrain,
         spectateRoomZone,
         accountState,
@@ -65,6 +66,7 @@ export const AtmosphericLayer: React.FC = () => {
             bgImageBottomScale={resolvedBottomBgScale}
             terrain={effectiveTerrain}
             zone={effectiveZone}
+            isSleeping={!isViewingSpectateTarget && playerPosition === 'sleeping'}
         />
     );
 };

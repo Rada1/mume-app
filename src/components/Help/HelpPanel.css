@@ -25,6 +25,11 @@
     transition: right 0.2s cubic-bezier(0.16, 1, 0.3, 1), top 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.help-panel.help-panel-split {
+    width: min(var(--desktop-help-split-width, 78vw), 88vw);
+    max-width: 88vw;
+}
+
 .global-dragging .help-panel {
     transition: none !important;
 }
@@ -115,6 +120,138 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     background: rgba(0, 0, 0, 0.12);
 }
+
+.help-panel-tabs {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 2px;
+    padding: 5px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.help-panel-tabs button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 26px;
+    padding: 3px 7px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-dim);
+    font: inherit;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.help-panel-tabs button:hover,
+.help-panel-tabs button.is-active {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent), transparent 65%);
+    background: color-mix(in srgb, var(--accent), transparent 90%);
+}
+
+.help-panel-view,
+.help-panel-game-pane,
+.help-wiki-pane {
+    min-height: 0;
+}
+
+.help-panel-view {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.help-panel-game-pane,
+.help-wiki-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.help-panel-split-game {
+    flex: 0 0 var(--help-split-size, 46%);
+    display: flex;
+    min-width: 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.help-panel-split-divider {
+    position: relative;
+    flex: 0 0 8px;
+    cursor: col-resize;
+    touch-action: none;
+    background: transparent;
+}
+
+.help-panel-split-divider::after {
+    content: '';
+    position: absolute;
+    top: 18%;
+    bottom: 18%;
+    left: 3px;
+    width: 2px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.12);
+    transition: background 0.15s ease;
+}
+
+.help-panel-split-divider:hover::after {
+    background: var(--accent);
+}
+
+.help-wiki-pane-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.help-wiki-pane-title,
+.help-wiki-pane-url {
+    display: block;
+}
+
+.help-wiki-pane-title {
+    color: var(--accent);
+    font-size: 0.74rem;
+    font-weight: 700;
+}
+
+.help-wiki-pane-url {
+    color: var(--text-dim);
+    font-size: 0.62rem;
+}
+
+.help-wiki-pane-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.help-wiki-pane-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+}
+
+.help-wiki-pane-actions button:hover { color: var(--accent); border-color: var(--accent); }
+
+.help-wiki-pane-frame-wrap { position: relative; flex: 1; min-height: 0; }
+.help-wiki-pane-frame { width: 100%; height: 100%; border: 0; background: #15110e; }
+.help-wiki-pane-loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--text-dim); font-size: 0.75rem; }
 
 .help-panel-search-input {
     flex: 1;
@@ -225,6 +362,10 @@
         max-width: none;
         height: min(45%, 320px);
     }
+
+    .help-panel-split-tab { display: none !important; }
+
+    .help-panel.help-panel-split { width: auto; }
 }
 
 @keyframes help-panel-enter {

@@ -23,6 +23,7 @@ interface EnvironmentEffectsProps {
     bgImageBottomScale?: number;
     terrain?: string | null;
     zone?: string | null;
+    isSleeping?: boolean;
 }
 
 const getLightingTint = (lighting: LightingType): string => {
@@ -45,7 +46,8 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     isMobile,
     bgImage,
     terrain,
-    zone
+    zone,
+    isSleeping = false
 }) => {
     const input = useInputStore(s => s.input);
 
@@ -127,7 +129,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     return (
         <div style={{ '--lightning-x': `${lightningX}%` } as React.CSSProperties}>
             {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
-            <div className={`environment-root back lighting-state-${lighting || 'none'} terrain-${(terrain || 'default').toLowerCase().replace(/\s+/g, '-')} ${isWater ? 'water-motion-active' : ''} ${isForest ? 'forest-motion-active' : ''}`}>
+            <div className={`environment-root back lighting-state-${lighting || 'none'} terrain-${(terrain || 'default').toLowerCase().replace(/\s+/g, '-')} ${isSleeping ? 'is-sleeping' : ''} ${isWater ? 'water-motion-active' : ''} ${isForest ? 'forest-motion-active' : ''}`}>
                 {isImmersionMode && prevImage && (
                     <div
                         className="background-layer"
@@ -172,6 +174,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         <div className="client-lighting-overlay client-moon-overlay" />
                         <div className="client-lighting-overlay client-artificial-overlay" />
                         <div className="client-lighting-overlay client-dark-overlay" />
+                        <div className="client-sleep-overlay" />
                     </>
                 )}
                 {isImmersionMode && (
@@ -209,7 +212,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
             {/* --- EMBER LAYER: Full-client particles above the map/drawer surface --- */}
             {isImmersionMode && (
                 <div className="embers-client-layer">
-                    <Embers count={28} zone={zone} />
+                    <Embers count={44} zone={zone} />
                 </div>
             )}
 

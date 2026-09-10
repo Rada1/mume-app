@@ -8,6 +8,7 @@ import { ansiConvert } from '../utils/ansi';
 import { isEnvironmentEventLine } from '../utils/environmentEventUtils';
 import { hasXmlTag } from '../utils/xmlTagUtils';
 import { getActiveVitals, getActiveCombat } from '../stores/useActiveGameState';
+import { normalizeMovementDirection, MovementDirection } from '../utils/movementDirections';
 
 // ---------------------------------------------------------------------------
 // Regex constants
@@ -115,12 +116,34 @@ export function useMessageLog(
     const addedMidSetRef = useRef<Set<string>>(new Set());
 
     const batchIdRef = useRef(0);
+    // Keep the most recently requested/confirmed movement just long enough to
+    // animate the room output it produces. The direction is consumed by the
+    // next room title, so ordinary `look` output remains still.
+    const pendingRoomArrivalRef = useRef<{ direction: MovementDirection; timestamp: number } | null>(null);
 
     // Resource gains (XP/TP) arrive via GMCP, sometimes just *before* the combat line
     // that earned them. We queue them and attach to the next action line that flushes;
     // a short fallback timer covers the tail case (last kill with no line after it).
     const pendingGainsRef = useRef<import('../types').ResourceGain[]>([]);
     const pendingGainTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        if (isSpectateSession || typeof window === 'undefined') return;
+
+        const noteMovement = (event: Event) => {
+            const direction = normalizeMovementDirection(
+                (event as CustomEvent<{ dir?: string }>).detail?.dir
+            );
+            if (direction) pendingRoomArrivalRef.current = { direction, timestamp: Date.now() };
+        };
+
+        window.addEventListener('mume-mapper-push-move', noteMovement);
+        window.addEventListener('mume-mapper-move-confirmed', noteMovement);
+        return () => {
+            window.removeEventListener('mume-mapper-push-move', noteMovement);
+            window.removeEventListener('mume-mapper-move-confirmed', noteMovement);
+        };
+    }, [isSpectateSession]);
 
     // Sync roomZone from server GMCP Room.Info onto the latest room name log line
     // in case telnet prose arrived slightly before the GMCP metadata packet.
@@ -204,6 +227,7 @@ export function useMessageLog(
         const roomNameIdx = pending.findIndex(m => m.isRoomName);
         if (roomNameIdx !== -1) {
             const roomBlockTerrain = pending[roomNameIdx].terrain;
+            const roomArrivalDirection = pending[roomNameIdx].roomArrivalDirection;
             // Description lines sometimes arrive as separate (unmerged) game lines.
             // Use the known GMCP room description to keep those in the description
             // section so the divider lands before the actual contents, not the desc.
@@ -245,6 +269,7 @@ export function useMessageLog(
                     ...m,
                     isRoomBlock: true,
                     terrain: m.terrain ?? roomBlockTerrain,
+                    roomArrivalDirection,
                     isRoomContentsStart: !markedContentsStart && isContents,
                     isRoomContentsLine,
                     roomSection,
@@ -372,10 +397,11 @@ export function useMessageLog(
                 currentTextLower === curRoom.toLowerCase() + '.'
             ))
         );
-
-        if (!providedIsSnoop && (currentTextLower === 'you are hungry.' || currentTextLower === 'you are thirsty.')) {
-            return;
-        }
+        const arrival = pendingRoomArrivalRef.current;
+        const roomArrivalDirection = isActuallyRoomName && arrival && Date.now() - arrival.timestamp < 4000
+            ? arrival.direction
+            : undefined;
+        if (isActuallyRoomName) pendingRoomArrivalRef.current = null;
 
         const arriveMatch = currentTextOnly.match(ARRIVE_REGEX);
         const leaveMatch = currentTextOnly.match(LEAVE_REGEX);
@@ -660,6 +686,7 @@ export function useMessageLog(
             roomZone: isActuallyRoomName ? (roomContext.roomZone || (isSpectateSession ? useSpectateRoomStore.getState().roomZone : useRoomStore.getState().roomZone) || undefined) : undefined,
             isRoomBlock: isActuallyRoomName,
             isRoomBlockStart: isActuallyRoomName,
+            roomArrivalDirection,
             isNarrate,
             practiceSkill,
             practiceHeader,

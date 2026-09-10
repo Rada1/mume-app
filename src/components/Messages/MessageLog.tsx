@@ -180,6 +180,8 @@ const MessageItem = React.memo(({
     const content = msg.html;
     const entityCountPrompt = msg.type === 'game' ? parseEntityCountPrompt(msg.textOnly || msg.textRaw || '') : null;
     const [isRecent] = React.useState(() => Date.now() - msg.timestamp < 3500);
+    const isImpactRumble = isRecent && (msg.isHitImpact || msg.isDamageImpact);
+    const impactRowRef = React.useRef<HTMLDivElement>(null);
     // local state to handle the cleanup of the hit sheen animation
     const [sheenActive, setSheenActive] = React.useState(!!(msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage));
 
@@ -191,6 +193,19 @@ const MessageItem = React.memo(({
             return () => clearTimeout(timer);
         }
     }, [msg.isHitImpact, msg.isDamageImpact, msg.isRipMessage]);
+
+    React.useEffect(() => {
+        if (!isImpactRumble || !impactRowRef.current) return;
+        const rumble = impactRowRef.current.animate([
+            { transform: 'translate3d(0, 0, 0)' },
+            { transform: 'translate3d(-5px, 1.5px, 0)', offset: 0.18 },
+            { transform: 'translate3d(6px, -1.5px, 0)', offset: 0.38 },
+            { transform: 'translate3d(-3px, 1px, 0)', offset: 0.58 },
+            { transform: 'translate3d(1.5px, 0, 0)', offset: 0.76 },
+            { transform: 'translate3d(0, 0, 0)' }
+        ], { duration: 360, easing: 'ease-out' });
+        return () => rumble.cancel();
+    }, [isImpactRumble]);
 
     const triggerParley = useCallback((e: React.MouseEvent) => {
         if (!setParley || !triggerHaptic || !playClickSound) return;
@@ -360,7 +375,7 @@ const MessageItem = React.memo(({
                     </div>
                 </div>
             ) : (
-                <div className="content-row">
+                <div className="content-row" ref={impactRowRef}>
                     {timestampEl}
                     {msg.isCombat && inCombat ? (
                         <div className="combat-bubble">
@@ -479,6 +494,57 @@ const MessageLog: React.FC<MessageLogProps> = ({
     // and the input box is independent — subscribing here forced a full virtual-list re-map on
     // every prompt tick and every keystroke.
     const { scrollContainerRef, messagesEndRef, scrollToBottom, isLockedToBottomRef } = viewport;
+    const logMotionContentRef = useRef<HTMLDivElement>(null);
+    const requestedMoveRef = useRef<{ direction: string; timestamp: number } | null>(null);
+    const lastLogNudgeRef = useRef<{ direction: string; timestamp: number } | null>(null);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const vectors = {
+            n: { x: 0, y: -1 }, s: { x: 0, y: 1 }, e: { x: 1, y: 0 }, w: { x: -1, y: 0 },
+            ne: { x: 0.7, y: -0.7 }, nw: { x: -0.7, y: -0.7 }, se: { x: 0.7, y: 0.7 }, sw: { x: -0.7, y: 0.7 },
+            u: { x: 0, y: -1 }, d: { x: 0, y: 1 }
+        } as const;
+        const getDirection = (event: Event) => normalizeMovementDirection(
+            (event as CustomEvent<{ dir?: string }>).detail?.dir
+        );
+        const rememberMove = (event: Event) => {
+            const direction = getDirection(event);
+            if (direction) requestedMoveRef.current = { direction, timestamp: Date.now() };
+        };
+        const nudgeLog = (event: Event) => {
+            const requested = requestedMoveRef.current;
+            const direction = getDirection(event) || (
+                requested && Date.now() - requested.timestamp < 2500
+                    ? normalizeMovementDirection(requested.direction)
+                    : null
+            );
+            if (!direction || !logMotionContentRef.current) return;
+            const lastNudge = lastLogNudgeRef.current;
+            if (lastNudge?.direction === direction && Date.now() - lastNudge.timestamp < 250) return;
+            lastLogNudgeRef.current = { direction, timestamp: Date.now() };
+            requestedMoveRef.current = null;
+
+            const vector = vectors[direction];
+            logMotionContentRef.current.animate([
+                { transform: 'translate3d(0, 0, 0)', easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
+                { transform: `translate3d(${vector.x * 13}px, ${vector.y * 10}px, 0)`, offset: 0.53, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' },
+                { transform: `translate3d(${-vector.x * 3.4}px, ${-vector.y * 2.6}px, 0)`, offset: 0.79, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' },
+                { transform: 'translate3d(0, 0, 0)' }
+            ], { duration: 780, easing: 'linear' });
+        };
+        const clearMove = () => { requestedMoveRef.current = null; };
+
+        window.addEventListener('mume-mapper-push-move', rememberMove);
+        window.addEventListener('mume-mapper-move-confirmed', nudgeLog);
+        window.addEventListener('mume-mapper-move-failed', clearMove);
+        return () => {
+            window.removeEventListener('mume-mapper-push-move', rememberMove);
+            window.removeEventListener('mume-mapper-move-confirmed', nudgeLog);
+            window.removeEventListener('mume-mapper-move-failed', clearMove);
+        };
+    }, []);
 
     // Highlight the selected character line in the log via a dynamic <style> rule.
     const selectedCharName = accountState?.selectedCharacter?.name ?? null;
@@ -931,6 +997,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             >
 
                 <div
+                    ref={logMotionContentRef}
                     style={{
                         height: `${virtualizer.getTotalSize()}px`,
                         width: '100%',
