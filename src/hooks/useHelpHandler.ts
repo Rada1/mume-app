@@ -5,6 +5,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { PopoverState } from '../types';
+import { useHelpStore } from '../stores/useHelpStore';
 
 const HELP_PROMPT_SETTLE_MS = 200;
 
@@ -42,7 +43,7 @@ export function useHelpHandler() {
     }, [clearFinalizeTimer]);
 
     const finalizeHelp = useCallback((
-        setPopoverState: (state: PopoverState) => void
+        _setPopoverState?: (state: PopoverState) => void
     ) => {
         if (!isHelpActiveRef.current) return;
         clearFinalizeTimer();
@@ -55,13 +56,12 @@ export function useHelpHandler() {
             if (hoverHelpCallbackRef.current) {
                 hoverHelpCallbackRef.current(helpData);
             } else {
-                setPopoverState({
-                    type: 'help-card',
-                    x: window.innerWidth / 2 - 150, // Default position, will be centered by manager
-                    y: window.innerHeight / 2 - 200,
-                    setId: 'help',
-                    helpData
-                });
+                // Extract topic from first non-empty line (e.g. "HELP ON <TOPIC>")
+                const firstLine = helpData.trim().split('\n')[0] || '';
+                const topicMatch = firstLine.match(/help(?:\s+on)?\s+([a-z0-9_-]+)/i);
+                const topic = topicMatch ? topicMatch[1].toUpperCase() : 'Topic';
+
+                useHelpStore.getState().setHelpData(topic, helpData);
             }
         }
 

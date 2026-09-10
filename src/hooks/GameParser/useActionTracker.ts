@@ -16,6 +16,8 @@ export interface ActionTrackerDeps {
     ansiConvert: { toHtml: (ansi: string) => string };
     onWear?: () => void;
     onRemove?: () => void;
+    onGet?: () => void;
+    onDrop?: () => void;
 }
 
 const inferWearSlot = (itemText: string): string => {
@@ -89,7 +91,9 @@ export function useActionTracker(deps: ActionTrackerDeps) {
         extractNoun,
         ansiConvert,
         onWear,
-        onRemove
+        onRemove,
+        onGet,
+        onDrop
     } = deps;
 
     const trackAction = useCallback((cleanLine: string, textOnly: string, lower: string) => {
@@ -148,17 +152,25 @@ export function useActionTracker(deps: ActionTrackerDeps) {
             }); return;
         }
         
-        const getMatch = cleanLine.match(/You (get|take) (.*?)\.( from (.*?)\.)?/i);
+        const getMatch = cleanLine.match(/^You (?:get|take|pick) (.*?)(?: from (.*?))?\.$/i);
         if (getMatch) {
-            const itemText = getMatch[2];
-            setInventoryLines(prev => [...prev, { 
-                id: Math.random().toString(36).substring(7), 
-                text: itemText, 
-                html: ansiConvert.toHtml(itemText), 
-                isItem: true, 
-                cmd: 'inventorylist', 
-                context: extractNoun(itemText) 
-            }]);
+            const itemRaw = getMatch[1];
+            const itemText = itemRaw.replace(/<[^>]+>/g, '').trim();
+            const moneyMatch = itemText.match(/(\d+)\s*(gold coins?|silver coins?|copper coins?|lauren|celeb|busc|penn(?:y|ies))/i);
+            if (moneyMatch) {
+                const amount = parseInt(moneyMatch[1], 10) || 0;
+                setCharacterInfo(prev => ({ ...prev, gold: (prev.gold || 0) + amount }));
+            } else {
+                setInventoryLines(prev => [...prev, { 
+                    id: Math.random().toString(36).substring(7), 
+                    text: itemText, 
+                    html: ansiConvert.toHtml(itemText), 
+                    isItem: true, 
+                    cmd: 'inventorylist', 
+                    context: extractNoun(itemText) 
+                }]);
+            }
+            onGet?.();
             return;
         }
         
@@ -182,7 +194,11 @@ export function useActionTracker(deps: ActionTrackerDeps) {
             setInventoryLines(prev => {
                 const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
                 if (idx === -1) return prev; return prev.filter((_, i) => i !== idx);
-            }); return;
+            });
+            if (giveMatch[1].toLowerCase() === 'drop') {
+                onDrop?.();
+            }
+            return;
         }
         
         const wieldMatch = textOnly.match(/^You (?:\w+\s+)*(?:wield|hold) (.*?)(?:, .*)?\.$/i);
@@ -215,7 +231,7 @@ export function useActionTracker(deps: ActionTrackerDeps) {
                 setCharacterInfo(prev => ({ ...prev, gold: Math.max(0, (prev.gold || 0) - amount) }));
             }
         }
-    }, [capture, setInventoryLines, setEqLines, setCharacterInfo, extractNoun, ansiConvert, onWear, onRemove]);
+    }, [capture, setInventoryLines, setEqLines, setCharacterInfo, extractNoun, ansiConvert, onWear, onRemove, onGet, onDrop]);
 
     return { trackAction };
 }

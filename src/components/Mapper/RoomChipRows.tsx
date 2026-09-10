@@ -300,6 +300,9 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
         const isOpponent = isChipOpponent(chip);
 
         const typeIcon = getEntityTypeIcon(chip.category);
+        const showPromptKindIcon = (variant === 'occupants-row' && chip.kind === 'npc')
+            || (variant === 'objects-row' && chip.kind === 'object');
+        const PromptKindIcon = chip.kind === 'object' ? Box : Swords;
 
         return (
             <button
@@ -316,8 +319,13 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
                 data-object-drop-label={chip.kind !== 'object' ? chip.label : undefined}
                 title={chip.context}
             >
+                {showPromptKindIcon && (
+                    <span className="room-chip-prompt-kind-icon" aria-hidden="true">
+                        <PromptKindIcon size={11} strokeWidth={2.4} />
+                    </span>
+                )}
                 {chip.label}
-                {typeIcon && (
+                {typeIcon && !showPromptKindIcon && (
                     <span
                         className={`inline-entity-type-icon inline-entity-type-${typeIcon.kind}`}
                         aria-hidden="true"

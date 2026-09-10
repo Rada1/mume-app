@@ -48,6 +48,17 @@
     transition: opacity 2.8s ease-in-out, backdrop-filter 2.8s ease-in-out;
 }
 
+/* Internal mapper overlays are disabled on mobile devices */
+.mapper-container.mobile .mapper-overlay {
+    display: none !important;
+}
+
+@media (max-width: 1024px) {
+    .mapper-overlay {
+        display: none !important;
+    }
+}
+
 /* --- Sun --- */
 .mapper-sun-overlay {
     z-index: 5;

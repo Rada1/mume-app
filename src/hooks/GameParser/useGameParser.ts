@@ -28,6 +28,7 @@ import { useSpectateAutomator } from '../useSpectateAutomator';
 import { PipelineOrchestrator } from '../../services/parser/PipelineOrchestrator';
 import { Tokenizer } from '../../services/parser/Tokenizer';
 import { useActionTracker } from './useActionTracker';
+import { useSpellCompletionTracker } from './useSpellCompletionTracker';
 import { buildPlayerLineTokens } from './playerLineTokens';
 import { formatCombatLineTokens } from './combatLineTokens';
 import { useUIStore } from '../../stores/useUIStore';
@@ -40,6 +41,7 @@ import { parseResourceGainLine } from '../../utils/resourceGainUtils';
 import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir } from './textMapperEvents';
 import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
 import { canBootstrapExpectedCapture } from './captureBootstrap';
+import { consumeCommandCompletionSound } from '../../services/audio/commandCompletionSounds';
 
 const decodeTextEntities = (text: string) => text
     .replace(/&gt;/gi, '>')
@@ -378,7 +380,14 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         extractNoun,
         ansiConvert: deps.ansiConvert,
         onWear: deps.playWearSound,
-        onRemove: deps.playRemoveSound
+        onRemove: deps.playRemoveSound,
+        onGet: () => deps.playEffect?.('get'),
+        onDrop: () => deps.playEffect?.('drop')
+    });
+
+    const spellCompletion = useSpellCompletionTracker({
+        playIncantationSound: deps.playIncantationSound,
+        playEffect: deps.playEffect
     });
 
     const comm = useCommParser({
@@ -408,6 +417,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         playDoorSound: deps.playDoorSound,
         playRideSound: deps.playRideSound,
         playStopRidingSound: deps.playStopRidingSound,
+        playEffect: deps.playEffect,
         setPlayerPosition,
         setIsRiding,
         isSpectateMode: deps.isSpectateMode,
@@ -505,7 +515,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         const pendingCommXml = pendingCommXmlRef.current;
         if (pendingCommXml) {
-            lineToParse = `${pendingCommXml.line} ${lineToParse.trimStart()}`;
+            lineToParse = `${pendingCommXml.line}${lineToParse}`;
             isSnoop = pendingCommXml.isSnoop;
             const closeRegex = new RegExp(`<\\/${pendingCommXml.tag}>`, 'i');
             if (!closeRegex.test(lineToParse)) {
@@ -531,6 +541,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             isPromptBoundaryLine(lineToParse) || 
             prompt.parsePrompt(stripAnsiCodes(lineToParse), isSnoop).isMatch;
         const isEndPromptLine = isPromptLine && !isHeaderLine;
+
+        // Command feedback belongs to the reply, not the outgoing command. A MUME
+        // prompt is the reliable boundary that marks that reply as complete.
+        if (!isSnoop && isEndPromptLine) {
+            const completionEffect = consumeCommandCompletionSound();
+            if (completionEffect && deps.isSoundEnabledRef.current) deps.playEffect(completionEffect);
+        }
 
         if (deps.help.isUiRequestedRef.current) {
             if (isHeaderLine) {
@@ -718,6 +735,14 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 registeredPlayers: Object.values(deps.entitiesRef.current || {})
                     .filter(e => e.capabilities.includes(EntityCapability.Player))
                     .map(p => p.name),
+                currentOccupants: [
+                    ...Object.values(useRoomStore.getState().chars || {}),
+                    ...(Array.isArray(deps.roomPlayers) ? deps.roomPlayers : []),
+                    ...(Array.isArray(deps.roomNpcs) ? deps.roomNpcs : []),
+                    ...Object.values(deps.entitiesRef.current || {})
+                        .filter(e => e.capabilities.includes(EntityCapability.Npc))
+                        .map(e => ({ id: e.id, name: e.name, type: 'npc' as const }))
+                ],
                 inlineCategories: deps.inlineCategories || [],
                 npcColor: deps.npcColor,
                 playerColor: deps.playerColor,
@@ -752,6 +777,12 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (isSnoop && textOnly.trim().length === 0) return;
         if (!isSnoop && capture.shouldSuppressSilentBlank(textOnly)) return;
 
+        // Practice confirmations arrive after the practice-list capture has closed,
+        // so the live line stream is the reliable place to trigger this effect.
+        if (!isSnoop && /You took \d+ out of \d+ sessions?.*knowledge is now \d+%/i.test(textOnly)) {
+            deps.playEffect('practice');
+        }
+
         if (!isSnoop) {
             const magicTarget = parseMagicKeyLine(textOnly, deps.roomNameRef.current, useRoomStore.getState().roomZone);
             if (magicTarget) {
@@ -760,13 +791,16 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             }
         }
 
-        // 1. System/Trigger Processing
-        processTriggers(lineToParse);
-
-        // 2. Visibility and Routing
+        // 2. Room Detection & Trigger Processing
         const isImportant = lineToParse.includes('\x1b[1m') || lineToParse.includes('\x1b[33m');
         const isRoom = lineToParse.includes('\x1b[32m') && textOnly.startsWith('  ');
         const isRoomDescription = isRoom && textOnly.length > 5;
+        const roomType = isSnoop ? null : room.parseRoomLine(textOnly, lineToParse, isSnoop);
+        const isEffectivelyRoomDesc = isRoomDescription || roomType === 'room-description';
+
+        // 1. System/Trigger Processing (skip sound triggers for room descriptions)
+        processTriggers(lineToParse, isEffectivelyRoomDesc);
+
         const isEndPrompt = textOnly.includes('>') || textOnly.includes(':');
 
         let isVisible = router.determineVisibility(lower, isImportant, isRoom, isRoomDescription, isEndPrompt, deps.isNewbieMode, lineToParse, undefined, isSnoop);
@@ -775,10 +809,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         let msgType: MessageType = 'game';
         const resourceGain = parseResourceGainLine(textOnly);
         
-        const combatType = combat.parseCombatLine(textOnly, lineToParse, isSnoop);
+        const combatType = isEffectivelyRoomDesc ? null : combat.parseCombatLine(textOnly, lineToParse, isSnoop);
         if (combatType) msgType = combatType;
 
-        const roomType = isSnoop ? null : room.parseRoomLine(textOnly, lineToParse, isSnoop);
         if (roomType) msgType = roomType;
 
         const commResult = comm.parseComm(lineToParse, textOnly, lower);
@@ -960,7 +993,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         router.trackRoomItemAction(textOnly, lineToParse, false);
 
         // Play buy/sell sound on buy/sell notifications
-        if (!isSnoop && (
+        if (!isSnoop && !isEffectivelyRoomDesc && (
             lower.includes('you now have a') ||
             lower.includes('you now have an') ||
             lower.includes('you sell a') ||
@@ -1065,6 +1098,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         atmosphere.parseAtmosphere(lower, isSnoop);
+        if (!isSnoop && /^(?:you are hungry|you are thirsty)\.$/i.test(textOnly.trim())) {
+            deps.playEffect?.('hungrythirsty');
+        }
         if (!isSnoop) {
             parseEffectTimerLine(textOnly);
             parseActionTimerLine(textOnly);
@@ -1077,8 +1113,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             deps.playMagicExplosionSound();
         }
         */
-        if (!isSnoop && lower.includes('you start to concentrate...')) {
-            deps.playIncantationSound();
+        if (!isEffectivelyRoomDesc) {
+            spellCompletion.handleSpellLine(textOnly, lower, isSnoop);
         }
 
         const finalType = router.routeMessage(msgType, textOnly, lower, lineToParse, textOnly, isEndPrompt, isSnoop) as MessageType;
@@ -1108,6 +1144,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         if (isVisible) {
+            if (finalType === 'weather' && !isSnoop) {
+                deps.playEffect?.('weather');
+            }
             const mid = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
             let lineToConvert = isAccountPhase ? lineToParse.trimEnd() : lineToParse;
             if (isAccountPhase) {
@@ -1160,7 +1199,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 commResult.commSender ? tokenizeFresh(commResult.commSender) : undefined,
                 commResult.commText ? tokenizeFresh(commResult.commText) : undefined,
                 undefined, hasHitTag, hasDamageTag, hasAvoidDamageTag, hasMissTag,
-                undefined, isSnoop, undefined, isRipMessage, undefined, resourceGain || undefined
+                undefined, isSnoop, undefined, isRipMessage, commResult.isSocial, resourceGain || undefined
             );
 
             if (!isSnoop && finalType === 'prompt') {

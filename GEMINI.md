@@ -34,6 +34,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **Side Drawers (Inventory, Equipment, Stats):** `src/components/Drawers/`
 - **Inline Button Popovers:** `src/components/Popovers/StandardMenuPopover.tsx`
 - **Mapper Component:** `src/components/Mapper/` (and `src/mapper/renderer.ts`)
+- **Docked Sliding Panels (Chat, Players, Help, Editor, Archive):** `src/utils/dockedPanelUtils.ts`, `src/components/Help/HelpPanel.tsx`, `src/components/Messages/ChatWindow.tsx`, `src/components/Players/PlayersPanel.tsx`, `src/components/Utility/MumeEditor.tsx`, `src/components/Utility/MumeArchive.tsx`
 - **Privileged Shaper Workspace:** `src/shaper/` and `docs/shaper.md` for concept-zone builder UI, validation, future collaboration, and deploy planning. Entry is hidden behind `canAccessShaper()`.
 
 ### 🧠 Logic & Networking
@@ -70,6 +71,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 | **Fix Broad Highlighting** | `Tokenizer.ts`, `useEntityRegistry.ts` |
 | **Replay a Session** | `useSessionReplayer.ts`, `useSessionManager.ts` |
 | **Manage Custom Traits** | `inlineActionModel.ts`, `TraitSettings.tsx`, `useSettingsStore.ts` |
+| **Zone Colors & Highlights** | `src/utils/zoneColors.ts`, `src/hooks/useZoneThemeSync.ts`, `MessageLog.tsx`, `MessageLog.css` |
 | **Plan or Build Shaper Mode** | `docs/shaper.md`, `src/shaper/`, `src/shaper/access/shaperAccess.ts` |
 
 ## 🚫 Avoid Scanning (Use .geminiignore)

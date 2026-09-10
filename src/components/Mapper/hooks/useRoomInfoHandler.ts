@@ -686,7 +686,8 @@ export const useRoomInfoHandler = ({
                 const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
                 const isDoor = isClosed || (typeof gmcpExit === 'object' && (gmcpExit as any).door) || !!exName || exFlagsLow.some(f => /door|gate|portcullis|secret/i.test(f));
 
-                updatedExits[dir] = { target: internalTarget || "", gmcpDestId, name: exName, flags: exFlags || [], closed: isClosed, hasDoor: !!isDoor };
+                const mergedFlags = exFlags && exFlags.length > 0 ? exFlags : (ghostData?.[4]?.[dir]?.flags || room.exits?.[dir]?.flags || []);
+                updatedExits[dir] = { target: internalTarget || "", gmcpDestId, name: exName, flags: mergedFlags, closed: isClosed, hasDoor: !!isDoor };
 
                 const existingExit = room.exits && room.exits[dir];
                 if (!existingExit || existingExit.gmcpDestId !== gmcpDestId || existingExit.closed !== isClosed) {

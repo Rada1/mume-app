@@ -43,3 +43,6 @@ export const ROOM_COLORS: Record<string, string> = {
     mountain: '#451a03',
     default: '#64748b'
 };
+
+export * from './spellCompletionMessages';
+

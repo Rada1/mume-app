@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { isLookCommand, isWhoCommand, isEqOrInvCommand } from './useCommandController';
+import { isLookCommand, isWhoCommand, isEqOrInvCommand, isFleeCommand, isGetCommand, isDropCommand } from './useCommandController';
 
 describe('useCommandController command helpers', () => {
     describe('isLookCommand', () => {
@@ -121,6 +121,67 @@ describe('useCommandController command helpers', () => {
             expect(isEqOrInvCommand('id sword')).toBe(false);
             expect(isEqOrInvCommand('eat bread')).toBe(false);
             expect(isEqOrInvCommand('enter gate')).toBe(false);
+        });
+    });
+
+    describe('isFleeCommand', () => {
+        it('matches flee commands and abbreviations', () => {
+            expect(isFleeCommand('flee')).toBe(true);
+            expect(isFleeCommand('fl')).toBe(true);
+            expect(isFleeCommand('flee north')).toBe(true);
+            expect(isFleeCommand('fl s')).toBe(true);
+            expect(isFleeCommand('stand; flee')).toBe(true);
+            expect(isFleeCommand('rest; fl')).toBe(true);
+        });
+
+        it('rejects non-flee commands', () => {
+            expect(isFleeCommand('')).toBe(false);
+            expect(isFleeCommand('flush')).toBe(false);
+            expect(isFleeCommand('fleece')).toBe(false);
+            expect(isFleeCommand('fight')).toBe(false);
+            expect(isFleeCommand('f')).toBe(false);
+            expect(isFleeCommand('fly')).toBe(false);
+        });
+    });
+
+    describe('isGetCommand', () => {
+        it('matches get and take commands with arguments and chains', () => {
+            expect(isGetCommand('get')).toBe(true);
+            expect(isGetCommand('get sword')).toBe(true);
+            expect(isGetCommand('get all')).toBe(true);
+            expect(isGetCommand('get all.bread sack')).toBe(true);
+            expect(isGetCommand('get 100 coins')).toBe(true);
+            expect(isGetCommand('take')).toBe(true);
+            expect(isGetCommand('take all corpse')).toBe(true);
+            expect(isGetCommand('stand; get all')).toBe(true);
+            expect(isGetCommand('rest; take key')).toBe(true);
+        });
+
+        it('rejects non-get commands', () => {
+            expect(isGetCommand('')).toBe(false);
+            expect(isGetCommand('g')).toBe(false);
+            expect(isGetCommand('give sword troll')).toBe(false);
+            expect(isGetCommand('glance')).toBe(false);
+            expect(isGetCommand('group')).toBe(false);
+        });
+    });
+
+    describe('isDropCommand', () => {
+        it('matches drop commands with arguments and chains', () => {
+            expect(isDropCommand('drop')).toBe(true);
+            expect(isDropCommand('drop sword')).toBe(true);
+            expect(isDropCommand('drop all')).toBe(true);
+            expect(isDropCommand('drop 50 coins')).toBe(true);
+            expect(isDropCommand('stand; drop corpse')).toBe(true);
+            expect(isDropCommand('look; drop ring')).toBe(true);
+        });
+
+        it('rejects non-drop commands', () => {
+            expect(isDropCommand('')).toBe(false);
+            expect(isDropCommand('d')).toBe(false);
+            expect(isDropCommand('down')).toBe(false);
+            expect(isDropCommand('drink water')).toBe(false);
+            expect(isDropCommand('draw sword')).toBe(false);
         });
     });
 });

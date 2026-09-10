@@ -30,7 +30,7 @@ export const DrawerResizeHandle: React.FC<Props> = ({
         e.stopPropagation();
 
         const drawer = (e.currentTarget as HTMLElement).closest(
-            '.map-drawer-desktop, .character-drawer-desktop, .log-card-drawer, .message-log-container, .chat-window-panel, .players-panel'
+            '.map-drawer-desktop, .character-drawer-desktop, .log-card-drawer, .message-log-container, .chat-window-panel, .players-panel, .docked-panel, .help-panel, .mume-editor-panel, .mume-archive-panel'
         ) as HTMLElement | null;
         if (!drawer) return;
 

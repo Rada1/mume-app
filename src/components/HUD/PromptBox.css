@@ -1340,19 +1340,29 @@
     width: 100%;
 }
 
-.prompt-room-occupants .room-chip-occupants-row {
+.prompt-room-occupants .room-chip-occupants-row,
+.prompt-room-occupants .room-chip-objects-row {
     justify-content: flex-start;
     gap: 4px;
     padding: 2px 8px 3px;
 }
 
-.prompt-room-occupants .room-chip-occupants-row .room-chip {
+.prompt-room-occupants .room-chip-occupants-row .room-chip,
+.prompt-room-occupants .room-chip-objects-row .room-chip {
     min-height: 18px;
     padding: 2px 6px;
     border-width: 1px;
     border-radius: 3px;
     font-size: 0.62rem;
     line-height: 1.05;
+}
+
+.prompt-room-occupants .room-chip-prompt-kind-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    margin-right: 4px;
+    opacity: 0.8;
 }
 
 /* Prompt entity buttons use the same warm link color as inline log buttons. */

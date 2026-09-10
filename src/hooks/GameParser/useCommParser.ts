@@ -144,7 +144,9 @@ export function useCommParser(deps: CommParserDeps) {
 
         parseXmlComm();
 
-        if (replyCommand || isSocial) {
+        // Social/emote tags are game output, not conversations. Keep isSocial
+        // for log grouping, but only real replyable channels become comm bubbles.
+        if (replyCommand) {
             msgType = 'comm';
         }
 

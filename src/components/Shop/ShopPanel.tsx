@@ -3,6 +3,8 @@ import { X, Search } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 import { useGame, useUI } from '../../context/GameContext';
 import { ShopItem } from '../../types';
+import { findRoomShopkeeper } from '../../utils/shopkeeperUtils';
+import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
 import './ShopPanel.css';
 
 type ShopAction = 'buy' | 'show' | 'compare';
@@ -20,17 +22,11 @@ const INV_ACTIONS: { id: InvAction; label: string }[] = [
     { id: 'mend',  label: 'Mend' },
 ];
 
-const KNOWN_MUME_SHOPKEEPERS = new Set([
-    'nordri', 'harn', 'gillie', 'sadie', 'corbec', 'clara', 'bill', 'eostra', 'kraz', 
-    'litri', 'gymir', 'thulin', 'edrahil', 'lindir', 'al', 'olo', 'gaffer', 'boffin',
-    'thrain', 'dwalin', 'gimli', 'gloin', 'bofur', 'bombur', 'thorin', 'arminas', 
-    'fili', 'kili', 'elrond', 'galadriel', 'celeborn', 'thranduil', 'legolas', 
-    'balin', 'dori', 'nori', 'ori', 'oen', 'grocer', 'weaponsmith', 'armourer', 
-    'provisioner', 'innkeeper', 'dealer', 'merchant', 'keeper', 'smith', 'trader',
-    'magni', 'modi', 'var', 'syn', 'gullveig'
-]);
+interface ShopPanelProps {
+    style?: React.CSSProperties;
+}
 
-export const ShopPanel: React.FC = () => {
+export const ShopPanel: React.FC<ShopPanelProps> = ({ style }) => {
     const isShopOpen      = useUIStore(s => s.isShopOpen);
     const setIsShopOpen   = useUIStore(s => s.setIsShopOpen);
     const shopItems        = useUIStore(s => s.shopItems);
@@ -44,22 +40,12 @@ export const ShopPanel: React.FC = () => {
     const shopkeeperNameFromStore = useUIStore(s => s.shopkeeperName);
     const setShopkeeperName       = useUIStore(s => s.setShopkeeperName);
 
-    const { triggerHaptic, executeCommand, roomNpcs, roomName, registry } = useGame() as any;
+    const { triggerHaptic, executeCommand, roomNpcs, roomName, entities, viewport } = useGame() as any;
     const { handleTabClick, setGearTab } = useUI() as any;
     const [search, setSearch] = useState('');
     const selectedTarget = useUIStore(s => s.selectedTarget);
 
-    const shopkeeper = roomNpcs?.find((npc: any) => {
-        const entity = registry?.getEntity(npc.id);
-        return entity?.capabilities?.includes('shopkeeper') || 
-               npc.name?.toLowerCase().includes('shopkeeper') ||
-               npc.name?.toLowerCase().includes('dealer') ||
-               npc.name?.toLowerCase().includes('merchant') ||
-               npc.name?.toLowerCase().includes('keeper') ||
-               npc.name?.toLowerCase().includes('smith') ||
-               npc.name?.toLowerCase().includes('trader') ||
-               (npc.name && KNOWN_MUME_SHOPKEEPERS.has(npc.name.toLowerCase()));
-    });
+    const shopkeeper = findRoomShopkeeper(roomNpcs, entities ?? {});
 
     const shopkeeperName = shopkeeperNameFromStore || (shopkeeper ? shopkeeper.name : null);
 
@@ -212,14 +198,25 @@ export const ShopPanel: React.FC = () => {
     const isTargeting = heldAction !== null;
 
     return (
-        <div className={`shop-panel${isShopOpen ? ' open' : ''}`}>
+        <aside className="docked-panel chat-window-panel shop-panel" style={style} aria-label="Shop">
+            {!viewport?.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-shop-width" minWidth={18} maxWidth={60} />}
 
-            {/* Header / Title Bar */}
-            <div className="shop-header-title-bar">
-                <span className="shop-header-label">Shop</span>
-                <span className="shop-header-sublabel">
-                    {shopkeeperName ? `Dealing with: ${shopkeeperName}` : (roomName || 'Store')}
-                </span>
+            <div className="chat-window-header">
+                <span>Shop</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="chat-window-count">
+                        {shopkeeperName ? `Dealing with: ${shopkeeperName}` : (roomName || 'Store')}
+                    </span>
+                    <button
+                        type="button"
+                        onClick={handleClose}
+                        title="Close shop"
+                        aria-label="Close shop"
+                        style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '2px' }}
+                    >
+                        <X size={14} />
+                    </button>
+                </div>
             </div>
 
             {/* Search bar */}
@@ -323,10 +320,7 @@ export const ShopPanel: React.FC = () => {
                     );
                 })}
 
-                <button type="button" className="shop-action-btn shop-close-btn" onClick={handleClose} title="Close Shop">
-                    <X size={16} />
-                </button>
             </div>
-        </div>
+        </aside>
     );
 };

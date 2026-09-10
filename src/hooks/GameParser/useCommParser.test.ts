@@ -65,4 +65,15 @@ describe('useCommParser - XML comm requirement', () => {
         expect(escapedParsed.replyCommand).toBe('tell');
         expect(escapedParsed.replyTarget).toBe('Gandalf');
     });
+
+    it('keeps XML social output out of comm bubbles', () => {
+        const { result } = renderHook(() => useCommParser(createDeps()));
+
+        const socialLine = '<social>You smile viciously.</social>';
+        const parsed = result.current.parseComm(socialLine, 'You smile viciously.', socialLine.toLowerCase());
+
+        expect(parsed.msgType).toBe('game');
+        expect(parsed.isSocial).toBe(true);
+        expect(parsed.replyCommand).toBeUndefined();
+    });
 });

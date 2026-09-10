@@ -38,6 +38,9 @@ const MAPPER_FLAG_ASSETS = [
     'mob-guild', 'mob-mageguild', 'mob-milkable', 'mob-passivemob', 'mob-petshop',
     'mob-questmob', 'mob-rangerguild', 'mob-rattlesnake', 'mob-rent', 'mob-scoutguild',
     'mob-shop', 'mob-smob', 'mob-warriorguild', 'mob-weaponshop',
+    'trail-all', 'trail-none', 'trail-n', 'trail-s', 'trail-e', 'trail-w',
+    'trail-ne', 'trail-ns', 'trail-nw', 'trail-es', 'trail-ew', 'trail-sw',
+    'trail-nes', 'trail-new', 'trail-nsw', 'trail-esw',
 ] as const;
 
 for (const asset of MAPPER_FLAG_ASSETS) {

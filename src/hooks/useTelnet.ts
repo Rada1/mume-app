@@ -167,18 +167,19 @@ export function useTelnet(config: TelnetConfig) {
                 displayPrompt = decodePromptText(line);
             }
 
-            // Remove trailing > delimiter if present for a cleaner HUD look
-            if (displayPrompt.endsWith('>')) {
-                displayPrompt = displayPrompt.substring(0, displayPrompt.length - 1).trim();
-            }
+            // The compact HUD omits the delimiter, while the raw log preserves
+            // it so the server prompt reads exactly as it does in-game.
+            const hudPrompt = displayPrompt.endsWith('>')
+                ? displayPrompt.substring(0, displayPrompt.length - 1).trim()
+                : displayPrompt;
 
-            const promptKey = displayPrompt.replace(/\s+/g, ' ').trim();
+            const promptKey = hudPrompt.replace(/\s+/g, ' ').trim();
             const isNewPrompt = promptKey !== lastProcessedPromptRef.current;
             if (isNewPrompt) {
                 lastProcessedPromptRef.current = promptKey;
-                configRef.current.setPrompt(displayPrompt);
+                configRef.current.setPrompt(hudPrompt);
 
-                const cleanLine = displayPrompt.replace(/\x1b\[[0-9;]*m/g, '').trim();
+                const cleanLine = hudPrompt.replace(/\x1b\[[0-9;]*m/g, '').trim();
                 if (configRef.current.handlers.detectLighting) {
                     configRef.current.handlers.detectLighting(cleanLine);
                 }

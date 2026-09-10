@@ -142,3 +142,32 @@ export const ansiConvert = {
     // Expose the raw converter for anything else that might need it
     raw: converter
 };
+
+// --- Green Color Detection Section ---
+/**
+ * Checks if a CSS color string represents an ANSI green or bright green color.
+ * Used to ensure numeric values/vital stats in status, score, info, etc. render at 100% opacity.
+ */
+export const isAnsiGreenColor = (color?: string): boolean => {
+    if (!color) return false;
+    const c = color.toLowerCase().trim();
+    if (c.includes('green')) return true;
+    if (c.includes('#55ff55') || c.includes('#00ff00') || c.includes('#00bb00')) return true;
+    const rgbMatch = c.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/);
+    if (rgbMatch) {
+        const r = parseInt(rgbMatch[1], 10);
+        const g = parseInt(rgbMatch[2], 10);
+        const b = parseInt(rgbMatch[3], 10);
+        if (g >= 150 && g > r * 1.3 && g > b * 1.3) return true;
+        if (r === 55 && g === 255 && b === 85) return true;
+        if (r === 0 && g === 187 && b === 0) return true;
+    }
+    if (/^#([0-9a-f]{6})$/i.test(c)) {
+        const r = parseInt(c.slice(1, 3), 16);
+        const g = parseInt(c.slice(3, 5), 16);
+        const b = parseInt(c.slice(5, 7), 16);
+        if (g >= 150 && g > r * 1.3 && g > b * 1.3) return true;
+    }
+    return false;
+};
+

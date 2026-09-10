@@ -27,7 +27,7 @@
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border: none !important;
-    border-bottom: 1px solid rgba(var(--terrain-glow-rgb, 94, 98, 105), 0.15) !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--room-light-color, rgb(94, 98, 105)), transparent 85%) !important;
     position: absolute !important;
     top: 0;
     left: 0;

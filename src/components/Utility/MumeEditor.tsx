@@ -1,74 +1,43 @@
 /**
  * @file MumeEditor.tsx
- * @description Modal editor for generic MUME edit sessions.
+ * @description Docked sliding editor panel for MUME edit sessions and local note composition.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGame } from '../../context/GameContext';
+import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
 import { X } from 'lucide-react';
 import './MumeEditor.css';
 
-export const MumeEditor: React.FC = () => {
-    const { mumeEditState, setMumeEditState, handleSaveMumeEdit, handleCancelMumeEdit } = useGame();
+interface MumeEditorProps {
+    style?: React.CSSProperties;
+}
+
+// --- Component Section ---
+
+export const MumeEditor: React.FC<MumeEditorProps> = ({ style }) => {
+    const { mumeEditState, setMumeEditState, handleSaveMumeEdit, handleCancelMumeEdit, viewport } = useGame() as {
+        mumeEditState: {
+            isOpen: boolean;
+            mode?: 'view' | 'edit';
+            title?: string;
+            text: string;
+            context?: { kind?: string };
+        };
+        setMumeEditState: React.Dispatch<React.SetStateAction<any>>;
+        handleSaveMumeEdit: (text: string) => void;
+        handleCancelMumeEdit: () => void;
+        viewport?: { isMobile: boolean };
+    };
+
     const [text, setText] = useState('');
     const isViewMode = mumeEditState.mode === 'view';
-    
-    // Position & sizing state
-    const [position, setPosition] = useState({ x: 0, y: 0 });
-    const [size, setSize] = useState({ width: 800, height: 600 });
-    
-    // Dragging & resizing status
-    const [isDragging, setIsDragging] = useState(false);
-    const [isResizing, setIsResizing] = useState(false);
-    
-    const dragStart = useRef({ x: 0, y: 0 });
-    const dragOffset = useRef({ x: 0, y: 0 });
-    const resizeStart = useRef({ x: 0, y: 0 });
-    const resizeSize = useRef({ width: 800, height: 600 });
 
     useEffect(() => {
         if (mumeEditState.isOpen) {
-            setText(mumeEditState.text);
-            // Reset position to center on open
-            setPosition({ x: 0, y: 0 });
-            setSize({ width: 800, height: 600 });
+            setText(mumeEditState.text || '');
         }
     }, [mumeEditState.isOpen, mumeEditState.text]);
-
-    useEffect(() => {
-        if (!isDragging && !isResizing) return;
-
-        const handleMouseMove = (e: MouseEvent) => {
-            if (isDragging) {
-                const dx = e.clientX - dragStart.current.x;
-                const dy = e.clientY - dragStart.current.y;
-                setPosition({
-                    x: dragOffset.current.x + dx,
-                    y: dragOffset.current.y + dy
-                });
-            } else if (isResizing) {
-                const dx = e.clientX - resizeStart.current.x;
-                const dy = e.clientY - resizeStart.current.y;
-                setSize({
-                    width: Math.max(400, resizeSize.current.width + dx),
-                    height: Math.max(300, resizeSize.current.height + dy)
-                });
-            }
-        };
-
-        const handleMouseUp = () => {
-            setIsDragging(false);
-            setIsResizing(false);
-        };
-
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseup', handleMouseUp);
-
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [isDragging, isResizing]);
 
     if (!mumeEditState.isOpen) return null;
     if (
@@ -98,75 +67,85 @@ export const MumeEditor: React.FC = () => {
         handleSaveMumeEdit(text);
     };
 
-    const handleHeaderMouseDown = (e: React.MouseEvent) => {
-        if (e.button !== 0) return; // Left click only
-        setIsDragging(true);
-        dragStart.current = { x: e.clientX, y: e.clientY };
-        dragOffset.current = { ...position };
-        e.preventDefault();
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            handleSave();
+        }
     };
 
-    const handleResizeMouseDown = (e: React.MouseEvent) => {
-        if (e.button !== 0) return;
-        setIsResizing(true);
-        resizeStart.current = { x: e.clientX, y: e.clientY };
-        resizeSize.current = { ...size };
-        e.stopPropagation();
-        e.preventDefault();
-    };
-
-    const style: React.CSSProperties = {
-        position: 'absolute',
-        width: `${size.width}px`,
-        height: `${size.height}px`,
-        left: `calc(50% - ${size.width / 2}px + ${position.x}px)`,
-        top: `calc(50% - ${size.height / 2}px + ${position.y}px)`,
-    };
+    const lineCount = text ? text.split('\n').length : 0;
+    const charCount = text ? text.length : 0;
 
     return (
-        <div className="mume-editor-overlay" onClick={handleCancel}>
-            <div 
-                className="mume-editor-container"
-                style={style}
-                onClick={e => e.stopPropagation()}
-            >
-                <div 
-                    className="mume-editor-header"
-                    onMouseDown={handleHeaderMouseDown}
-                    style={{ cursor: 'move' }}
+        <aside
+            className="docked-panel mume-editor-panel"
+            style={style}
+            aria-label="MUME Editor"
+        >
+            {!viewport?.isMobile && (
+                <DrawerResizeHandle
+                    handleType="left"
+                    widthVar="--desktop-editor-width"
+                    minWidth={20}
+                    maxWidth={65}
+                />
+            )}
+
+            {/* Header */}
+            <div className="mume-editor-panel-header">
+                <div className="mume-editor-panel-title">
+                    <span>{mumeEditState.title || 'MUME Editor'}</span>
+                    <span className="mume-editor-stats">
+                        ({lineCount} {lineCount === 1 ? 'line' : 'lines'}, {charCount} chars)
+                    </span>
+                </div>
+
+                <button
+                    type="button"
+                    className="mume-editor-panel-close"
+                    onClick={handleCancel}
+                    title={isViewMode ? 'Close' : 'Cancel'}
+                    aria-label="Close editor"
                 >
-                    <div className="mume-editor-title-block">
-                        <h2>{mumeEditState.title || 'Mume Editor'}</h2>
-                    </div>
-                    <button className="icon-btn" onClick={handleCancel} onMouseDown={e => e.stopPropagation()}>
-                        <X size={20} />
-                    </button>
-                </div>
-                <div className="mume-editor-content">
-                    <textarea
-                        className="mume-editor-textarea"
-                        value={text}
-                        onChange={e => setText(e.target.value)}
-                        placeholder="Enter text..."
-                        readOnly={isViewMode}
-                        autoFocus
-                    />
-                </div>
-                <div className="mume-editor-footer">
-                    <button className="mume-editor-btn cancel" onClick={handleCancel}>
-                        {isViewMode ? 'Close' : 'Cancel'}
-                    </button>
-                    {!isViewMode && (
-                        <button className="mume-editor-btn save" onClick={handleSave}>
-                            Save
-                        </button>
-                    )}
-                </div>
-                <div 
-                    className="mume-editor-resize-handle" 
-                    onMouseDown={handleResizeMouseDown}
+                    <X size={16} />
+                </button>
+            </div>
+
+            {/* Editor Content Area */}
+            <div className="mume-editor-content">
+                <textarea
+                    className="mume-editor-textarea"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Enter text here... (Ctrl+Enter to save)"
+                    readOnly={isViewMode}
+                    autoFocus
                 />
             </div>
-        </div>
+
+            {/* Footer Actions */}
+            <div className="mume-editor-footer">
+                <button
+                    type="button"
+                    className="mume-editor-btn cancel"
+                    onClick={handleCancel}
+                >
+                    {isViewMode ? 'Close' : 'Cancel'}
+                </button>
+                {!isViewMode && (
+                    <button
+                        type="button"
+                        className="mume-editor-btn save"
+                        onClick={handleSave}
+                    >
+                        Save
+                    </button>
+                )}
+            </div>
+        </aside>
     );
 };
+
+export default React.memo(MumeEditor);

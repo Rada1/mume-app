@@ -6,10 +6,9 @@
 /* --- Layout Section --- */
 
 .chat-window-panel {
-    position: absolute;
-    top: 8px;
-    right: 10px;
-    bottom: 8px;
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 52px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
     z-index: 60000;
     width: var(--desktop-chat-width, 24vw);
     min-width: 260px;
@@ -217,7 +216,7 @@
     padding: 7px 9px !important;
     width: fit-content !important;
     max-width: min(calc(100% - 22px), 280px) !important;
-    box-shadow: 0 0 8px color-mix(in srgb, var(--bubble-color, transparent), transparent 60%) !important;
+    box-shadow: none !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 3px !important;
@@ -277,9 +276,7 @@
 .chat-window-entry .comm-bubble:hover {
     background-color: color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.08)), transparent 92%) !important;
     border-color: color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.65)), transparent 5%) !important;
-    box-shadow: 
-        0 4px 12px rgba(0, 0, 0, 0.3),
-        0 0 16px color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.45)), transparent 35%) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
     transform: translateY(-1px) !important;
 }
 

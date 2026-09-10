@@ -7,6 +7,7 @@ import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useSessionStore } from '../../stores/useSessionStore';
 import { useArchiveStore } from '../../stores/useArchiveStore';
+import { useHelpStore } from '../../stores/useHelpStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { canAccessShaper } from '../../shaper/access/shaperAccess';
 import { useMumeTime } from '../../hooks/useMumeTime';
@@ -65,6 +66,9 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
     const setShowChatWindow = useSettingsStore(state => state.setShowChatWindow);
     const showPlayersPanel = useSettingsStore(state => state.showPlayersPanel);
     const setShowPlayersPanel = useSettingsStore(state => state.setShowPlayersPanel);
+    const isHelpOpen = useHelpStore(state => state.isOpen);
+    const setIsHelpOpen = useHelpStore(state => state.setIsOpen);
+    const helpData = useHelpStore(state => state.helpData);
 
     const [isEnteringTarget, setIsEnteringTarget] = useState(false);
     const [manualTargetInput, setManualTargetInput] = useState('');
@@ -630,6 +634,21 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
                             style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
                         >
                             <MessageSquare size={17} />
+                        </button>
+
+                        <button
+                            className={`menu-toggle-btn${isHelpOpen ? ' active' : ''}`}
+                            onClick={() => {
+                                if (!isHelpOpen && !helpData) {
+                                    executeCommand('help', false, false, false, true);
+                                }
+                                setIsHelpOpen(!isHelpOpen);
+                                triggerHaptic?.(10);
+                            }}
+                            title="Toggle Help Window"
+                            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
+                        >
+                            <HelpCircle size={17} />
                         </button>
                     </>
                 )}

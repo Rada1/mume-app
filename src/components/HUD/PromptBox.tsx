@@ -961,6 +961,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                 <PromptInventoryChips affects={affects} showGear={false} />
                 <div className="prompt-room-occupants" aria-label="Room occupants">
                     <RoomChipRows variant="occupants-row" />
+                    <RoomChipRows variant="objects-row" />
                 </div>
 
                 {activeSlider === 'pos' && activeButtonRect && (

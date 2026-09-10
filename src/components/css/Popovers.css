@@ -349,7 +349,9 @@
     width: 100vw;
     height: 100vh;
     z-index: 55000;
-    background: radial-gradient(circle at center, rgba(8, 10, 16, 0.08) 0%, rgba(0, 0, 0, 0.36) 100%);
+    /* Inline action menus should leave the log readable; this layer only
+       captures outside taps and must not dim the game behind it. */
+    background: transparent;
     touch-action: none;
     touch-action: none;
     pointer-events: auto !important;

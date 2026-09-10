@@ -83,6 +83,7 @@ export interface PopoverState {
     capturedWhoisLines?: string[];
     isCapturingWhois?: boolean;
     openedByHover?: boolean;
+    isRoomDescription?: boolean;
 }
 
 export interface ButtonSetSettings {

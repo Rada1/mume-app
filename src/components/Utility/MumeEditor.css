@@ -1,91 +1,122 @@
-/*
+/**
  * @file MumeEditor.css
- * @description Styles for MUME edit sessions and contextual reply composition.
+ * @description Styles for docked MUME edit sessions and local editor.
  */
 
-.mume-editor-overlay {
+.mume-editor-panel {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100020 !important;
-    padding: 20px;
-}
-
-.mume-editor-container {
-    background: #15151e;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 12px;
-    width: 100%;
-    max-width: 800px;
-    height: 80vh;
+    top: calc(env(safe-area-inset-top, 0px) + 52px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+    z-index: 60000;
+    width: var(--desktop-editor-width, 32vw);
+    min-width: 300px;
+    max-width: 65vw;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    pointer-events: auto;
     overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-card, 8px);
+    background: rgba(12, 15, 22, 0.72);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(10px);
+    animation: editor-panel-enter 140ms ease-out;
+    transition: right 0.2s cubic-bezier(0.16, 1, 0.3, 1), top 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.mume-editor-header {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 16px 20px;
+.global-dragging .mume-editor-panel {
+    transition: none !important;
+}
+
+.light-mode .mume-editor-panel {
+    background: rgba(255, 255, 255, 0.72);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+.mume-editor-panel-header {
+    flex: 0 0 auto;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.mume-editor-header h2 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     color: var(--accent);
+    font-size: 0.76rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
-.mume-editor-title-block {
-    min-width: 0;
+.mume-editor-panel-title {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.mume-editor-title-block h2 {
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.mume-editor-title-block span {
-    color: #9ba7aa;
-    font-size: 0.78rem;
-    letter-spacing: 0;
+.mume-editor-panel-title::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    flex-shrink: 0;
+}
+
+.mume-editor-stats {
+    color: var(--text-dim);
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-left: 6px;
+}
+
+.mume-editor-panel-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.mume-editor-panel-close:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
 }
 
 .mume-editor-content {
     flex: 1;
-    padding: 20px;
+    min-height: 0;
+    padding: 8px 10px;
     display: flex;
     flex-direction: column;
 }
 
 .mume-editor-textarea {
     flex: 1;
-    background: #0b0b10;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
-    padding: 15px;
-    color: #fff;
-    font-family: 'Inter', monospace;
-    font-size: 1rem;
+    min-height: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 10px;
+    color: var(--text-primary, #fff);
+    font-family: var(--font-mono, "Cascadia Code", monospace);
+    font-size: 0.82rem;
+    line-height: 1.4;
     resize: none;
     outline: none;
-    transition: all 0.2s;
+    transition: border-color 0.2s ease;
 }
 
 .mume-editor-textarea:focus {
@@ -93,31 +124,34 @@
 }
 
 .mume-editor-footer {
-    padding: 16px 20px;
+    flex: 0 0 auto;
+    padding: 8px 10px;
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    background: rgba(0, 0, 0, 0.1);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    align-items: center;
+    gap: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.15);
 }
 
 .mume-editor-btn {
-    padding: 10px 24px;
+    padding: 6px 14px;
     border-radius: 6px;
+    font-size: 0.76rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.15s ease;
     border: none;
 }
 
 .mume-editor-btn.cancel {
-    background: rgba(255, 255, 255, 0.1);
-    color: #ccc;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-dim, #ccc);
 }
 
 .mume-editor-btn.cancel:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
+    background: rgba(255, 255, 255, 0.14);
+    color: var(--text-primary, #fff);
 }
 
 .mume-editor-btn.save {
@@ -127,16 +161,27 @@
 
 .mume-editor-btn.save:hover {
     filter: brightness(1.1);
-    transform: translateY(-1px);
 }
 
-.mume-editor-resize-handle {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 16px;
-    height: 16px;
-    cursor: nwse-resize;
-    background: linear-gradient(135deg, transparent 50%, rgba(255, 255, 255, 0.25) 50%);
-    border-radius: 0 0 12px 0;
+@media (max-width: 1024px) and (orientation: portrait) {
+    .mume-editor-panel {
+        top: auto;
+        left: 8px;
+        right: 8px !important;
+        bottom: 8px;
+        width: auto;
+        max-width: none;
+        height: min(50%, 360px);
+    }
+}
+
+@keyframes editor-panel-enter {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }

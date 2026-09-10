@@ -56,7 +56,7 @@ export function useCombatParser(deps: CombatParserDeps) {
         inCombatRef, setOpponentHealthStatus, setOpponentName, setCharacterInfo,
         triggerXpTicker, triggerTpTicker, groupMembers, mapperRef, setDeathRoomId,
         spectateCharacterName, roomPlayers, setSpectateInCombat, setSpectateOpponentName,
-        setSpectateOpponentStatus, playKillSound, playLevelSound, characterName
+        setSpectateOpponentStatus, playKillSound, playLevelSound, playEffect, characterName
     } = deps;
 
     const checkCombatMatch = useCallback((lower: string, isSnoop: boolean = false, cleanLine?: string) => {
@@ -149,11 +149,10 @@ export function useCombatParser(deps: CombatParserDeps) {
             if (deadName) triggerKillPrompt(deadName);
         }
 
+        const isFlee = /^you flee\b/i.test(lower);
+        if (isFlee && !isSnoop) playEffect?.('flee');
         const isDeath = /you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) || /\bis dead!\s*r\.?i\.?p/i.test(lower);
-        const isCombatEnd = isDeath ||
-            /^you flee\b/i.test(lower) ||
-            /\bflees\s/i.test(lower) ||
-            /you stop fighting/i.test(lower);
+        const isCombatEnd = isDeath || isFlee || /\bflees\s/i.test(lower) || /you stop fighting/i.test(lower);
 
         if (isCombatEnd) {
             if (isSnoop && setSpectateInCombat) {
@@ -182,7 +181,7 @@ export function useCombatParser(deps: CombatParserDeps) {
             }
         }
         return false;
-    }, [inCombatRef, setOpponentHealthStatus, setOpponentName, setDeathRoomId, mapperRef, setSpectateInCombat, setSpectateOpponentStatus, setSpectateOpponentName, playKillSound]);
+    }, [inCombatRef, setOpponentHealthStatus, setOpponentName, setDeathRoomId, mapperRef, setSpectateInCombat, setSpectateOpponentStatus, setSpectateOpponentName, playKillSound, playEffect]);
 
     const handleXpTicker = useCallback((lower: string, isSnoop: boolean = false) => {
         const resourceGain = parseResourceGainLine(lower);

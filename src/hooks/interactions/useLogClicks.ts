@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { EntityCapability } from '../../types';
 import { getButtonCommand } from '../../utils/buttonUtils';
-import { formatMumeTarget, formatNpcKeywordTarget, sanitizeGameTarget } from '../../utils/gameUtils';
+import { formatMumeTarget, formatNpcKeywordTarget, sanitizeGameTarget, isInsideRoomDescription } from '../../utils/gameUtils';
 import { getEffectiveKeyword } from '../../utils/keywordUtils';
 import { getInlineCategoryAxes, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 import { useUIStore } from '../../stores/useUIStore';
@@ -99,7 +99,10 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         if (selection) {
             const cleanSelection = sanitizeGameTarget(selection) || selection;
             setTarget(cleanSelection);
-            audioManager.playEffect('target', { skipJitter: true });
+            const isRoomDesc = isInsideRoomDescription(e.target as HTMLElement);
+            if (!isRoomDesc) {
+                audioManager.playEffect('target', { skipJitter: true });
+            }
             triggerHaptic(30);
 
             try {
@@ -116,6 +119,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         if (ui.mapExpanded && viewport.isMobile && viewport.isLandscape) return;
 
         const targetEl = (e.target instanceof HTMLElement) ? e.target.closest('.inline-btn') as HTMLElement : (e.target as any)?.parentElement?.closest('.inline-btn') as HTMLElement;
+        const isRoomDesc = isInsideRoomDescription(targetEl);
 
         // Close shop panel if open when tapping log background (not on an inline button)
         if (useUIStore.getState().isShopOpen && !targetEl) {
@@ -130,7 +134,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             if (now - lastBtnClickRef.current < doubleTapThreshold) {
                 lastBtnClickRef.current = 0;
             }
-            if (isSoundEnabled) {
+            if (isSoundEnabled && !isRoomDesc) {
                 const isTargetableInline = targetEl.getAttribute('data-targetable') !== 'false';
                 const action = targetEl.getAttribute('data-action');
                 if (!(isTargetableInline && action === 'menu')) {
@@ -342,6 +346,12 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             const accentColor = glowColor || targetEl.style.color || undefined;
             const isAlreadySelected = shopStore.selectedTarget?.id === entityId;
             if (isAlreadySelected) {
+                const isSameOpenMenu = popoverState?.entityId === entityId;
+                if (isSameOpenMenu) {
+                    setPopoverState(null);
+                    triggerHaptic(10);
+                    return;
+                }
                 const rect = targetEl.getBoundingClientRect();
                 const sourceRect = { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
                 setPopoverState({
@@ -359,9 +369,12 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                     accentColor,
                     preferSide: 'top',
                     parentNoun,
+                    isRoomDescription: isRoomDesc,
                     ...getInspectState()
                 });
-                playEffect('actionmenu');
+                if (!isRoomDesc) {
+                    playEffect('actionmenu');
+                }
                 targetEl.classList.add('menu-active');
                 runInspectCommands();
                 triggerHaptic(20);
@@ -379,7 +392,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 parentNoun,
             });
             setTarget(contextStr || null);
-            if (isSoundEnabled) {
+            if (isSoundEnabled && !isRoomDesc) {
                 audioManager.playEffect('target', { skipJitter: true });
             }
             if (popoverState && popoverState.entityId !== entityId) {
@@ -419,9 +432,12 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 accentColor,
                 preferSide: 'top',
                 parentNoun,
+                isRoomDescription: isRoomDesc,
                 ...getInspectState()
             });
-            playEffect('actionmenu');
+            if (!isRoomDesc) {
+                playEffect('actionmenu');
+            }
             targetEl.classList.add('menu-active');
             runInspectCommands();
             triggerHaptic(20);
@@ -458,7 +474,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                     }, 10);
                 }
             } else {
-                const isSilent = targetEl.getAttribute('data-silent') === 'true';
+                const isSilent = targetEl.getAttribute('data-silent') === 'true' || isRoomDesc;
                 if (context) lastCommandContextRef.current = { context, displayText: targetEl.innerText.trim() };
                 executeCommand(finalCmd, isSilent, false, false, fromDrawer, { shouldFocus: false });
             }

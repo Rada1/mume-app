@@ -119,17 +119,17 @@ export const CustomPromptBar: FC<CustomPromptBarProps> = ({ onLogClick, classNam
                 <span className="custom-prompt-prefix">[</span>
                 <span className="prompt-stat-item">
                     <span className="prompt-stat-label">HP</span>
-                    <span>{hpDisplay}</span>
+                    <span className="prompt-stat-value">{hpDisplay}</span>
                 </span>
                 <span className="prompt-stat-divider">|</span>
                 <span className="prompt-stat-item">
                     <span className="prompt-stat-label">MANA</span>
-                    <span>{manaDisplay}</span>
+                    <span className="prompt-stat-value">{manaDisplay}</span>
                 </span>
                 <span className="prompt-stat-divider">|</span>
                 <span className="prompt-stat-item">
                     <span className="prompt-stat-label">MP</span>
-                    <span>{moveDisplay}</span>
+                    <span className="prompt-stat-value">{moveDisplay}</span>
                 </span>
                 <span className="custom-prompt-prefix">]</span>
 

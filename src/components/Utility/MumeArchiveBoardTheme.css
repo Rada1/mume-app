@@ -1,0 +1,196 @@
+/*
+ * @file MumeArchiveBoardTheme.css
+ * @description Shared docked-tab panel treatment for the MUME board panel.
+ */
+
+.mume-archive-panel.archive-mode-board {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(12, 15, 22, 0.72);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(10px);
+}
+
+.archive-mode-board .mume-mail-header {
+    height: auto;
+    min-height: 37px;
+    padding: 8px 10px;
+    background: transparent;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.archive-mode-board .mail-title {
+    gap: 8px;
+    color: var(--accent);
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.archive-mode-board .mail-title::before {
+    width: 6px;
+    height: 6px;
+    content: '';
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+}
+
+.archive-mode-board .mail-title svg {
+    display: none;
+}
+
+.archive-mode-board .mail-title h2 {
+    color: inherit;
+    font: inherit;
+}
+
+.archive-mode-board .mail-icon-btn {
+    color: var(--text-dim);
+}
+
+.archive-mode-board .mail-icon-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.archive-mode-board .mume-mail-body,
+.archive-mode-board .mail-list-pane {
+    background: transparent;
+}
+
+.archive-mode-board .mail-list-pane {
+    border-right-color: rgba(255, 255, 255, 0.07);
+}
+
+.archive-mode-board .archive-compose-sidebar,
+.archive-mode-board .mail-tabs button,
+.archive-mode-board .mail-actions button,
+.archive-mode-board .mail-send-btn {
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.archive-mode-board .archive-compose-sidebar,
+.archive-mode-board .mail-tabs button.active,
+.archive-mode-board .mail-send-btn {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent), transparent 54%);
+    background: color-mix(in srgb, var(--accent), transparent 86%);
+}
+
+.archive-mode-board .archive-compose-sidebar:hover,
+.archive-mode-board .mail-tabs button:hover,
+.archive-mode-board .mail-actions button:hover,
+.archive-mode-board .mail-send-btn:hover {
+    color: var(--text-primary);
+    border-color: color-mix(in srgb, var(--accent), transparent 44%);
+    background: color-mix(in srgb, var(--accent), transparent 80%);
+}
+
+.archive-mode-board .mail-search-row,
+.archive-mode-board .mail-compose input,
+.archive-mode-board .mail-compose textarea,
+.archive-mode-board .archive-inline-reply textarea {
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.16);
+}
+
+.archive-mode-board .mail-search-row {
+    color: var(--text-dim);
+}
+
+.archive-mode-board .mail-search-row input::placeholder,
+.archive-mode-board .mail-compose input::placeholder,
+.archive-mode-board .mail-compose textarea::placeholder {
+    color: var(--text-dim);
+}
+
+.archive-mode-board .mail-row {
+    color: var(--text-primary);
+}
+
+.archive-mode-board .mail-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.archive-mode-board .mail-row.active {
+    border-color: color-mix(in srgb, var(--accent), transparent 54%);
+    background: color-mix(in srgb, var(--accent), transparent 86%);
+}
+
+.archive-mode-board .mail-row.depth-1 {
+    border-left-color: color-mix(in srgb, var(--accent), transparent 64%);
+}
+
+.archive-mode-board .read-dot {
+    background: var(--accent);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--accent), transparent 35%);
+}
+
+.archive-mode-board .read-dot.read {
+    background: rgba(255, 255, 255, 0.22);
+    box-shadow: none;
+}
+
+.archive-mode-board .mail-row-subject,
+.archive-mode-board .mail-message-header h3,
+.archive-mode-board .archive-inline-reply-title {
+    color: var(--text-primary);
+}
+
+.archive-mode-board .mail-row-meta,
+.archive-mode-board .mail-message-header,
+.archive-mode-board .mail-status,
+.archive-mode-board .mail-compose-title {
+    color: var(--text-dim);
+}
+
+.archive-mode-board .mail-message-header,
+.archive-mode-board .mail-message-body,
+.archive-mode-board .archive-inline-reply {
+    border-color: rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.archive-mode-board .mail-message-body {
+    color: var(--text-primary);
+}
+
+.archive-mode-board .mail-compose {
+    border-top-color: rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.16);
+}
+
+.archive-mode-board .archive-inline-reply textarea:focus,
+.archive-mode-board .mail-compose input:focus,
+.archive-mode-board .mail-compose textarea:focus {
+    border-color: color-mix(in srgb, var(--accent), transparent 44%);
+}
+
+.archive-mode-board .archive-inline-send {
+    color: var(--bg-panel, #10131a);
+    background: var(--accent);
+}
+
+.archive-mode-board .archive-inline-cancel {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 700px) {
+    .mume-archive-panel.archive-mode-board .mail-list-pane {
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .archive-mode-board .mail-compose {
+        background: rgba(12, 15, 22, 0.96);
+    }
+
+    .archive-mode-board .archive-compose-fab {
+        color: var(--text-primary);
+        border-color: color-mix(in srgb, var(--accent), transparent 54%);
+        background: color-mix(in srgb, var(--accent), #10131a 62%);
+    }
+}

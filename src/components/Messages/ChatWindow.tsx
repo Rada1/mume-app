@@ -9,8 +9,9 @@ import { useMessageStore } from '../../stores/useMessageStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { getChatMessageDetails, getChatWindowMessages, parseOutgoingChatCommand } from '../../utils/chatWindowUtils';
 import { useGame } from '../../context/GameContext';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import { ChatEntry } from './ChatEntry';
-import { Send } from 'lucide-react';
+import { Send, X } from 'lucide-react';
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
 
 // --- Logic Section ---
@@ -39,13 +40,18 @@ const getMessageThreadKey = (message: Message): string => {
     return 'vicinity';
 };
 
+interface ChatWindowProps {
+    style?: React.CSSProperties;
+}
+
 // --- Component Section ---
 
-const ChatWindow: React.FC = () => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ style }) => {
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const activeView = useModeStore(s => s.activeView);
     const userMessages = useMessageStore(s => s.user);
     const spectateMessages = useMessageStore(s => s.spectate);
+    const setShowChatWindow = useSettingsStore(s => s.setShowChatWindow);
     const scrollRef = React.useRef<HTMLDivElement>(null);
     const inputRef = React.useRef<HTMLInputElement>(null);
     
@@ -197,11 +203,22 @@ const ChatWindow: React.FC = () => {
     }, [visibleMessages.length, selectedThread]);
 
     return (
-        <aside className="chat-window-panel" aria-label="Chat window">
+        <aside className="docked-panel chat-window-panel" style={style} aria-label="Chat window">
             {!viewport?.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-chat-width" minWidth={15} maxWidth={60} />}
             <div className="chat-window-header">
                 <span>Chat</span>
-                <span className="chat-window-count">{chatMessages.length}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="chat-window-count">{chatMessages.length}</span>
+                    <button
+                        type="button"
+                        onClick={() => setShowChatWindow(false)}
+                        title="Close chat"
+                        aria-label="Close chat"
+                        style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '2px' }}
+                    >
+                        <X size={14} />
+                    </button>
+                </div>
             </div>
             <div className="chat-window-body">
                 <div className="chat-thread-strip" aria-label="Chat scopes">

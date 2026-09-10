@@ -7,6 +7,8 @@ import { useFKeyControls } from './useFKeyControls';
 import { getGateState } from '../components/Mapper/mapperUtils';
 import { CaptureStage } from '../types';
 import { useInputStore } from '../stores/useInputStore';
+import { clearCommandCompletionSounds, queueCommandCompletionSound } from '../services/audio/commandCompletionSounds';
+import { findRoomShopkeeper } from '../utils/shopkeeperUtils';
 // import { useAtmosphereStore } from '../stores/useAtmosphereStore';
 
 const isCommunicationCommand = (cmd: string): boolean => {
@@ -65,6 +67,41 @@ export const isEqOrInvCommand = (cmd: string): boolean => {
         const firstWord = part.trim().toLowerCase().split(/\s+/)[0];
         return firstWord === 'equipment' || firstWord === 'eq' || firstWord === 'equip' ||
                firstWord === 'inventory' || firstWord === 'inv' || firstWord === 'i';
+    });
+};
+
+const FLEE_COMMAND_VERBS = new Set(['flee', 'fl']);
+
+export const isFleeCommand = (cmd: string): boolean => {
+    const trimmed = cmd.trim();
+    if (!trimmed) return false;
+    const parts = trimmed.split(';');
+    return parts.some(part => {
+        const firstWord = part.trim().toLowerCase().split(/\s+/)[0];
+        return FLEE_COMMAND_VERBS.has(firstWord);
+    });
+};
+
+const GET_COMMAND_VERBS = new Set(['get', 'take']);
+const DROP_COMMAND_VERBS = new Set(['drop']);
+
+export const isGetCommand = (cmd: string): boolean => {
+    const trimmed = cmd.trim();
+    if (!trimmed) return false;
+    const parts = trimmed.split(';');
+    return parts.some(part => {
+        const firstWord = part.trim().toLowerCase().split(/\s+/)[0];
+        return GET_COMMAND_VERBS.has(firstWord);
+    });
+};
+
+export const isDropCommand = (cmd: string): boolean => {
+    const trimmed = cmd.trim();
+    if (!trimmed) return false;
+    const parts = trimmed.split(';');
+    return parts.some(part => {
+        const firstWord = part.trim().toLowerCase().split(/\s+/)[0];
+        return DROP_COMMAND_VERBS.has(firstWord);
     });
 };
 
@@ -146,6 +183,7 @@ export interface CommandControllerDeps {
     help: any;
     lastCommandContextRef: React.MutableRefObject<{ context: string; displayText: string } | null>;
     entities: Record<string, import('../types').GameEntity>;
+    roomNpcs: import('../types').GmcpOccupant[];
     applyOptimisticChange: (change: import('../types').OptimisticChange) => void;
     selectedObjectIds: Set<string>;
     toggleObjectSelection: (info: import('../stores/useUIStore').SelectedTargetInfo) => void;
@@ -204,19 +242,29 @@ export function useCommandController(deps: CommandControllerDeps) {
         }
 
         if (!isSystem && !silent) {
+            // A newer player command supersedes any response cue still waiting for
+            // an old prompt. Otherwise a delayed prompt can play (for example) a
+            // previous `who` sound after an unrelated `stand` command.
+            clearCommandCompletionSounds();
             const isLook = isLookCommand(cmd);
             const isWho = isWhoCommand(cmd);
             const isEqOrInv = isEqOrInvCommand(cmd);
             const isComm = isCommunicationCommand(cmd);
-            if (isLook && isSoundEnabled && d.playEffect) {
-                d.playEffect('look');
-            } else if (isWho && isSoundEnabled && d.playEffect) {
-                d.playEffect('who');
-            } else if (isEqOrInv && isSoundEnabled && d.playEffect) {
-                d.playEffect('eqinventory');
-            } else if (isComm && isSoundEnabled && d.playEffect) {
-                d.playEffect('commsend');
-            } else if (!options?.fromUi && isSoundEnabled && playClickSound) {
+            const isHelp = cmd.toLowerCase() === 'help' || cmd.toLowerCase().startsWith('help ') || cmd.trim().startsWith('?');
+            const canQueueReplySound = d.status === 'connected' && d.sessionMode !== 'replay';
+            if (isLook && isSoundEnabled && d.playEffect && canQueueReplySound) {
+                queueCommandCompletionSound('look');
+            } else if (isWho && isSoundEnabled && d.playEffect && canQueueReplySound) {
+                queueCommandCompletionSound('who');
+            } else if (isEqOrInv && isSoundEnabled && d.playEffect && canQueueReplySound) {
+                queueCommandCompletionSound('eqinventory');
+            } else if (isComm && isSoundEnabled && d.playEffect && canQueueReplySound) {
+                queueCommandCompletionSound('commsend');
+            }
+
+            // A command-specific sound is a reply/completion cue, not a replacement
+            // for the immediate command-send sound.
+            if (!isHelp && !options?.fromUi && isSoundEnabled && playClickSound) {
                 playClickSound();
             }
 
@@ -256,12 +304,19 @@ export function useCommandController(deps: CommandControllerDeps) {
             
             // Silent system practice (e.g. initial connect sync)
             if (isSystem && effectiveSilent) practice.setSilentSyncPending(true);
-        } else if ((cmd.toLowerCase().startsWith('list') || cmd.toLowerCase().startsWith('browse')) && d.gameState !== 'account') {
-            import('../stores/useUIStore').then(({ useUIStore }) => useUIStore.getState().setIsShopOpen(true));
+        } else if (/^(?:list|browse)(?:\s|$)/i.test(cmd.trim()) && d.gameState !== 'account') {
+            const shopkeeper = findRoomShopkeeper(d.roomNpcs, d.entities);
+            if (shopkeeper) {
+                import('../stores/useUIStore').then(({ useUIStore }) => {
+                    const shopStore = useUIStore.getState();
+                    shopStore.setShopkeeperName(shopkeeper.name ?? null);
+                    shopStore.setIsShopOpen(true);
+                });
+            }
         } else if (cmd.toLowerCase() === 'help' || cmd.toLowerCase().startsWith('help ') || cmd.trim().startsWith('?')) {
             d.help.setIsUiRequested(true);
-            if (d.playEffect) {
-                d.playEffect('help');
+            if (!isSystem && !silent && d.isSoundEnabled && d.playEffect && d.status === 'connected' && d.sessionMode !== 'replay') {
+                queueCommandCompletionSound('help');
             }
         }
 

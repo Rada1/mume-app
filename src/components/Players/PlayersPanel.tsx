@@ -5,7 +5,7 @@
  * alongside the map and chat without switching tabs.
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { DrawerTabBar } from '../Drawers/DrawerTabBar';
@@ -15,17 +15,21 @@ import { NearbyWhereView } from '../Drawers/NearbyWhereView';
 import { GroupTableView } from '../Drawers/GroupTableView';
 
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
+import { X } from 'lucide-react';
 
 type PlayersTab = 'online' | 'nearby' | 'group';
 
-// --- Component Section ---
+interface PlayersPanelProps {
+    style?: React.CSSProperties;
+}
 
-const PlayersPanel: React.FC = () => {
+const PlayersPanel: React.FC<PlayersPanelProps> = ({ style }) => {
     const { triggerHaptic, executeCommand, viewport } = useGame() as any;
     const { playersTab, setPlayersTab, whoLines, whereLines, setWhoLines, setWhereLines } = useUI();
     const { groupMembers } = useVitals();
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
-    const lastNearbyRefreshRef = React.useRef(0);
+    const setShowPlayersPanel = useSettingsStore(s => s.setShowPlayersPanel);
+    const lastNearbyRefreshRef = useRef(0);
 
     const refreshNearby = () => {
         const now = Date.now();
@@ -50,10 +54,19 @@ const PlayersPanel: React.FC = () => {
     const activeIndex = tabs.indexOf(playersTab);
 
     return (
-        <aside className={`players-panel${showChatWindow ? ' with-chat' : ''}`} aria-label="Players panel">
+        <aside className={`docked-panel players-panel${showChatWindow ? ' with-chat' : ''}`} style={style} aria-label="Players panel">
             {!viewport?.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-players-width" minWidth={15} maxWidth={60} />}
-            <div className="players-panel-header">
+            <div className="players-panel-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span>Players</span>
+                <button
+                    type="button"
+                    onClick={() => setShowPlayersPanel(false)}
+                    title="Close players panel"
+                    aria-label="Close players panel"
+                    style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '2px' }}
+                >
+                    <X size={14} />
+                </button>
             </div>
             <DrawerTabBar
                 tabs={[{ id: 'online', label: 'Online' }, { id: 'nearby', label: 'Nearby' }, { id: 'group', label: 'Group' }]}

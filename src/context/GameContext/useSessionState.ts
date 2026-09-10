@@ -32,6 +32,7 @@ export const useSessionState = (
         playCommMessageSound: () => void;
         playCombatHitSound: () => void;
         playLevelUpSound: () => void;
+        playTravelPointSound: () => void;
     }
 ): SessionContextType => {
     // --- Store Selection ---
@@ -305,9 +306,10 @@ export const useSessionState = (
             const delta = currentTp - prev;
             if (delta > 0) {
                 log.registerPendingResourceGain({ kind: 'tp', amount: delta });
+                audioTriggers?.playTravelPointSound();
             }
         }
-    }, [vStore.characterInfo.tp, tpHistory.new, triggerTpTicker, isSpectateSession, log]);
+    }, [vStore.characterInfo.tp, tpHistory.new, triggerTpTicker, isSpectateSession, log, audioTriggers]);
 
     // --- Parser State ---
     const [inventoryLines, setInventoryLines] = useState<DrawerLine[]>([]);

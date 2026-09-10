@@ -12,7 +12,6 @@ import { LiveBufferHUD } from './HUD/LiveBufferHUD';
 import { SpectateQueueHUD } from './HUD/SpectateQueueHUD';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/useMapper';
-import { MumeArchive } from '../Utility/MumeArchive';
 
 interface HUDClustersLayerProps {
     handleDragStart: (e: React.PointerEvent, id: string, type: string, force?: boolean) => void;
@@ -146,7 +145,6 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
 
             <SpectateQueueHUD />
             <LiveBufferHUD />
-            <MumeArchive />
         </>
     );
 };

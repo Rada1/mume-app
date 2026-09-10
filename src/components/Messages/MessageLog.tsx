@@ -22,6 +22,7 @@ import PracticeClassHeaderCard from '../Practice/PracticeClassHeaderCard';
 import PracticeColumnHeaderCard from '../Practice/PracticeColumnHeaderCard';
 import { useBaseGame, useLog, useUI } from '../../context/GameContext';
 import { useMessageStore } from '../../stores/useMessageStore';
+import { useRoomStore } from '../../stores/useRoomStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { decodeCommandEntities } from '../../utils/commandTextUtils';
@@ -149,6 +150,7 @@ const MessageItem = React.memo(({
     isAwaitingResponse,
     batchOffset = 0,
     colors,
+    lineIndex,
 }: {
     msg: Message,
     executeCommand: (cmd: string, silent?: boolean) => void,
@@ -163,6 +165,7 @@ const MessageItem = React.memo(({
     isTextRevealEnabled: boolean;
     isAwaitingResponse?: boolean;
     batchOffset?: number;
+    lineIndex?: number;
     colors?: {
         targetColor?: string;
         playerColor?: string;
@@ -176,12 +179,7 @@ const MessageItem = React.memo(({
     const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
     const content = msg.html;
     const entityCountPrompt = msg.type === 'game' ? parseEntityCountPrompt(msg.textOnly || msg.textRaw || '') : null;
-    // Frozen at mount — prevents wordReveal from toggling off mid-life when re-renders
-    // cross the 2-second mark (rapid combat GMCP updates), which collapses inline-block
-    // log-word wrappers and shifts inline button positions.
-    const [isRecent] = React.useState(() => Date.now() - msg.timestamp < 2000);
-    const [isRecentEntry] = React.useState(() => Date.now() - msg.timestamp < 600);
-    
+    const [isRecent] = React.useState(() => Date.now() - msg.timestamp < 3500);
     // local state to handle the cleanup of the hit sheen animation
     const [sheenActive, setSheenActive] = React.useState(!!(msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage));
 
@@ -234,15 +232,31 @@ const MessageItem = React.memo(({
     const extractRoomDescription = (html: string) => {
         const startIdx = html.indexOf('<div class="room-desc-line">');
         if (startIdx === -1) return '';
-        return html.substring(startIdx);
+        const raw = html.substring(startIdx);
+        return raw.replace(/(<div class="room-desc-line">)([\s\S]*?)(<\/div>)/g, (_match, open, inner, close) => {
+            let wIdx = 0;
+            const wrappedInner = inner.replace(/(>|^)([^<]+)(<|$)/g, (_m: string, before: string, text: string, after: string) => {
+                const words = text.replace(/(\S+)(\s*)/g, (_wm: string, word: string, space: string) => {
+                    const span = `<span class="log-text-word" style="--word-idx:${wIdx};">${word}</span>${space}`;
+                    wIdx++;
+                    return span;
+                });
+                return `${before}${words}${after}`;
+            });
+            return `${open}${wrappedInner}${close}`;
+        });
     };
 
     return (
         <div
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${isRecentEntry && isTextRevealEnabled ? ' recent-entry' : ''}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}`}
+            data-subdued-action={msg.isSubduedAction || undefined}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}`}
             style={{ 
                 '--reveal-delay': `${batchOffset * 15}ms`,
-                '--terrain-glow-color': msg.isRoomBlock && !msg.isRoomContentsLine ? getRoomTerrainGlowColor(msg.terrain) : undefined
+                '--terrain-glow-color': msg.isRoomBlock && !msg.isRoomContentsLine ? getRoomTerrainGlowColor(msg.terrain) : undefined,
+                // A negative delay starts the infinite wave at a varied phase
+                // immediately, instead of holding freshly received text still.
+                '--msg-line-delay': `-${(((lineIndex ?? 0) % 16) * 0.22).toFixed(2)}s`
             } as React.CSSProperties}
         >
             {showBlockHeaders && msg.isRoomBlockStart && (
@@ -280,7 +294,15 @@ const MessageItem = React.memo(({
                     {timestampEl}
                     <div className={`user-command-bubble${isAwaitingResponse ? ' awaiting-response' : ''}`}>
                         <span className="message-content user-command-text">
-                            <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />
+                            {(() => {
+                                const expansion = expandCommandDisplay(msg.textRaw || '');
+                                if (!expansion) {
+                                    return <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />;
+                                }
+                                return <>
+                                    {expansion.typed}<span className="user-command-expansion">({expansion.remainder})</span>{decodeCommandEntities(expansion.suffix)}
+                                </>;
+                            })()}
                         </span>
                     </div>
                 </div>
@@ -289,7 +311,11 @@ const MessageItem = React.memo(({
                     <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />
                 </div>
             ) : msg.type === 'prompt' ? (
-                null
+                <div className="content-row">
+                    <span className="message-content prompt-text">
+                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                    </span>
+                </div>
             ) : entityCountPrompt ? (
                 null
             ) : msg.type === 'movement' ? (() => {
@@ -298,7 +324,9 @@ const MessageItem = React.memo(({
                     <div className="content-row">
                         {timestampEl}
                         <span className="message-content">
-                            You move {movement.label}.
+                            <span className="log-text-word" style={{ '--word-idx': 0 } as any}>You </span>
+                            <span className="log-text-word" style={{ '--word-idx': 1 } as any}>move </span>
+                            <span className="log-text-word" style={{ '--word-idx': 2 } as any}>{movement.label}.</span>
                         </span>
                     </div>
                 );
@@ -326,7 +354,7 @@ const MessageItem = React.memo(({
                                     <span className="comm-action" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
                                 </>
                             )}
-                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} splitFirstWord={true} wordReveal={isTextRevealEnabled && isRecent} /></span>
+                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} splitFirstWord={true} /></span>
                         </div>
                         <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                     </div>
@@ -337,7 +365,11 @@ const MessageItem = React.memo(({
                     {msg.isCombat && inCombat ? (
                         <div className="combat-bubble">
                             <div className="message-content hit-sheen-container">
-                                <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
+                                <TokenRenderer
+                                    tokens={msg.tokens}
+                                    fallbackHtml={sanitizeMumeHtml(content)}
+                                    splitFirstWord={true}
+                                />
                                 <ResourceGainBadge gain={msg.resourceGain} />
                                 {msg.isHitImpact && sheenActive && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
@@ -359,14 +391,30 @@ const MessageItem = React.memo(({
                     ) : (
                         <>
                             <div className="message-content hit-sheen-container">
-                                <TokenRenderer
-                                    tokens={msg.tokens}
-                                    fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
-                                    splitFirstWord={msg.isRoomName ? false : true}
-                                    wordReveal={isTextRevealEnabled && isRecent && !msg.isRoomName && !msg.isRoomContentsLine}
-                                    disableRoomInline={msg.isRoomName}
-                                    isRoomContentsLine={msg.isRoomContentsLine}
-                                />
+                                {msg.isRoomName ? (() => {
+                                    const rawZone = (msg.roomZone || useRoomStore.getState().roomZone)?.trim();
+                                    const formatted = rawZone ? (rawZone.startsWith('(') && rawZone.endsWith(')') ? rawZone : `(${rawZone})`) : null;
+                                    return (
+                                        <span className="room-title-badge">
+                                            <TokenRenderer
+                                                tokens={msg.tokens}
+                                                fallbackHtml={msg.tokens ? undefined : sanitizeMumeHtml(content)}
+                                                splitFirstWord={false}
+                                                disableRoomInline={true}
+                                                isRoomContentsLine={msg.isRoomContentsLine}
+                                            />
+                                            {formatted && <span className="room-zone-name">{formatted}</span>}
+                                        </span>
+                                    );
+                                })() : (
+                                    <TokenRenderer
+                                        tokens={msg.tokens}
+                                        fallbackHtml={sanitizeMumeHtml(content)}
+                                        splitFirstWord={true}
+                                        disableRoomInline={false}
+                                        isRoomContentsLine={msg.isRoomContentsLine}
+                                    />
+                                )}
                                 <ResourceGainBadge gain={msg.resourceGain} />
                                 {msg.isHitImpact && sheenActive && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
@@ -562,9 +610,11 @@ const MessageLog: React.FC<MessageLogProps> = ({
             }
         }
 
-        // Prompts are rendered in the stationary CustomPromptBar outside and below the log,
-        // so they do not scroll or shift the log view when commands are sent.
+        // The raw in-game prompt belongs at the bottom of the log. Retain only
+        // its latest value so historical prompts never accumulate in the scrollback.
+        const latestPrompt = [...list].reverse().find(m => m.type === 'prompt');
         list = list.filter(m => m.type !== 'prompt');
+        if (latestPrompt) list.push(latestPrompt);
 
         return list.filter(message => !(message.type === 'game' && parseEntityCountPrompt(message.textOnly || message.textRaw || '')));
     }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime, isSpectateMode, activeView, spectateBuffer.isLive, spectateBuffer.displayCutoff, hidePrompt]);
@@ -757,7 +807,12 @@ const MessageLog: React.FC<MessageLogProps> = ({
             if (msg.type === 'practice-class-header') return 32;
             if (msg.type === 'practice-column-header') return 80;
             if (msg.type === 'movement') return showBlockHeaders && msg.isMovementBlockStart ? 64 : 36;
-            if (msg.type === 'prompt') return Math.max(64, Math.ceil(viewport.logFontSizePx * 3.75 + 16));
+            if (msg.type === 'prompt') {
+                // The raw prompt is now a compact final log line, not the old
+                // multi-row custom-prompt placeholder.
+                const promptLines = Math.max(1, Math.ceil((msg.textRaw || '').length / (viewport.columns || 80)));
+                return promptLines * Math.round(viewport.logFontSizePx * 1.4) + 6;
+            }
 
             if (msg.isEmpty) return Math.round(viewport.logFontSizePx * 1.5);
 
@@ -922,13 +977,14 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     isAwaitingResponse={msg.type === 'user' && msg.id === awaitingResponseUserId}
                                     batchOffset={batchOffset}
                                     colors={colors}
+                                    lineIndex={virtualItem.index}
                                 />
                             </div>
                         );
                     });
                     })()}
                 </div>
-                <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: '30px', flexShrink: 0 }} />
+                <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: '4px', flexShrink: 0 }} />
             </div>
         </div>
     );

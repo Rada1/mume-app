@@ -232,3 +232,13 @@ export const formatCompactNumber = (n: number | undefined | null): string => {
     }
     return n.toString();
 };
+
+/**
+ * Checks if a DOM element is inside a room description container or context.
+ */
+export const isInsideRoomDescription = (el: HTMLElement | null): boolean => {
+    if (!el) return false;
+    if (el.getAttribute('data-category') === 'cat-room' || el.getAttribute('data-category') === 'room') return true;
+    if (el.getAttribute('data-room-context') === 'true') return true;
+    return !!el.closest('.room-desc, .room-desc-line, .room-description-merged, .room-description, [data-type="room-description"], [data-room-context="true"]');
+};

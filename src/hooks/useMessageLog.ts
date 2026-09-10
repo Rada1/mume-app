@@ -1,6 +1,9 @@
 import { useCallback, useRef, useEffect, useMemo } from 'react';
 import { MessageType, Message } from '../types';
 import { useMessageStore } from '../stores/useMessageStore';
+import { useRoomStore } from '../stores/useRoomStore';
+import { useSpectateRoomStore } from '../stores/spectate/useSpectateRoomStore';
+import { gmcpBus } from '../events/gmcpBus';
 import { ansiConvert } from '../utils/ansi';
 import { isEnvironmentEventLine } from '../utils/environmentEventUtils';
 import { hasXmlTag } from '../utils/xmlTagUtils';
@@ -70,18 +73,6 @@ const mergeResourceGains = <T extends Message>(m: T, gains: import('../types').R
     return resourceGain === m.resourceGain ? m : { ...m, resourceGain } as T;
 };
 
-const getMessageCategory = (m: Message): 'combat' | 'comm' | 'social' | 'weather' | 'movement' | 'status' | 'room' | 'user' | 'other' => {
-    if (m.isCombat || m.type === 'combat' || m.isHitImpact || m.isDamageImpact || m.isAvoidDamageImpact || m.isMissImpact) return 'combat';
-    if (m.isSocial) return 'social';
-    if (m.isComm || m.type === 'comm' || m.type === 'comm-continue') return 'comm';
-    if (m.type === 'weather' || m.type === 'gmcp-event' || isEnvironmentEventLine(m.textOnly || m.textRaw)) return 'weather';
-    if (m.type === 'movement') return 'movement';
-    if (m.type === 'status-event' || hasXmlTag(m.textRaw, 'status')) return 'status';
-    if (m.isRoomBlock || m.isRoomName) return 'room';
-    if (m.type === 'user') return 'user';
-    return 'other';
-};
-
 // ---------------------------------------------------------------------------
 let lastVibrateTime = 0;
 const USER_LOG_MESSAGE_LIMIT = 500;
@@ -124,14 +115,45 @@ export function useMessageLog(
     const addedMidSetRef = useRef<Set<string>>(new Set());
 
     const batchIdRef = useRef(0);
-    const lastCategoryRef = useRef<string | null>(null);
-    const prevHadEmptyLineRef = useRef<boolean>(false);
 
     // Resource gains (XP/TP) arrive via GMCP, sometimes just *before* the combat line
     // that earned them. We queue them and attach to the next action line that flushes;
     // a short fallback timer covers the tail case (last kill with no line after it).
     const pendingGainsRef = useRef<import('../types').ResourceGain[]>([]);
     const pendingGainTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Sync roomZone from server GMCP Room.Info onto the latest room name log line
+    // in case telnet prose arrived slightly before the GMCP metadata packet.
+    useEffect(() => {
+        const handleRoomInfo = (data: any) => {
+            const isSnooped = !!data?.isSnooped;
+            if (!!isSpectateSession !== isSnooped) return;
+            const zone = data?.zone || data?.area;
+            if (!zone) return;
+            setMessages(prev => {
+                if (!prev || prev.length === 0) return prev;
+                for (let i = prev.length - 1; i >= 0; i--) {
+                    if (prev[i].isRoomName) {
+                        if (prev[i].roomZone !== zone && (Date.now() - prev[i].timestamp < 10000)) {
+                            const next = [...prev];
+                            next[i] = {
+                                ...next[i],
+                                roomZone: zone
+                            };
+                            return next;
+                        }
+                        break;
+                    }
+                }
+                return prev;
+            });
+        };
+
+        const unsub = gmcpBus.on('Room.Info', handleRoomInfo);
+        return () => {
+            unsub();
+        };
+    }, [isSpectateSession, setMessages]);
 
     const isCombatLine = useCallback((text: string) => {
         const lower = text.toLowerCase();
@@ -245,53 +267,18 @@ export function useMessageLog(
             }
         }
 
-        let lastCat = lastCategoryRef.current;
-        let hadBlank = prevHadEmptyLineRef.current;
-
         for (let i = 0; i < pending.length; i++) {
             const m = pending[i];
-            if (m.type === 'prompt') {
-                continue;
-            }
-
-            if (m.isEmpty) {
-                hadBlank = true;
-                continue;
-            }
-
-            const cat = getMessageCategory(m);
-            const isDifferentCategory = lastCat !== null && lastCat !== cat;
-            const needsBlockGap = isDifferentCategory && !hadBlank;
-
-            const isCombatBlockStart = cat === 'combat' && needsBlockGap;
-            const isCommBlockStart = cat === 'comm' && needsBlockGap;
-            const isSocialBlockStart = cat === 'social' && needsBlockGap;
-            const isWeatherBlockStart = cat === 'weather' && needsBlockGap;
-            const isMovementBlockStart = cat === 'movement' && needsBlockGap;
-            const isStatusBlockStart = cat === 'status' && needsBlockGap;
-            const isRoomBlockStart = (m.isRoomBlock || m.isRoomName) && needsBlockGap;
-
-            pending[i] = {
-                ...m,
-                isCombatBlockStart,
-                isCommBlockStart,
-                isSocialBlockStart,
-                isWeatherBlockStart,
-                isMovementBlockStart,
-                isStatusBlockStart,
-                isRoomBlockStart: isRoomBlockStart || m.isRoomBlockStart
-            };
-
-            lastCat = cat;
-            hadBlank = false;
-            lastMessageRef.current = pending[i];
+            if (m.type !== 'prompt' && !m.isEmpty) lastMessageRef.current = m;
         }
 
-        lastCategoryRef.current = lastCat;
-        prevHadEmptyLineRef.current = hadBlank;
-
         messageBufferRef.current = [];
-        const ordered: Message[] = pending;
+        // The server emits a prompt after nearly every response. Keep only the
+        // newest one so it can be shown as a stable, current footer in the log
+        // without consuming the history limit or accumulating prompt spam.
+        const latestPrompt = [...pending].reverse().find(m => m.type === 'prompt');
+        const ordered: Message[] = pending.filter(m => m.type !== 'prompt');
+        if (latestPrompt) ordered.push(latestPrompt);
         
         if (ordered.length > 0) ordered[ordered.length - 1] = { ...ordered[ordered.length - 1], isBatchEnd: true };
         // Register all flushed mids before committing to state so deduplication
@@ -299,7 +286,7 @@ export function useMessageLog(
         ordered.forEach(m => { if (m.id) addedMidSetRef.current.add(m.id); });
 
         setMessages(prev => {
-            const nextMessages = [...prev, ...ordered];
+            const nextMessages = [...prev.filter(m => m.type !== 'prompt'), ...ordered];
             if (nextMessages.length >= messageLimit) {
                 const trimmed = nextMessages.slice(nextMessages.length - messageLimit);
                 // Remove evicted IDs from the set so it stays bounded.
@@ -351,13 +338,18 @@ export function useMessageLog(
         // If combatOverride is provided directly (from parser), trust it.
         // The parser handles inCombat context for ambiguous verbs like 'dodge'.
         const isCombat = !!combatOverride || type === 'combat';
+        const isItemAction = /^You\s+(?:(?:\w+\s+){0,3})?(?:get|take|pick|drop|wear|put on|wield|hold|remove|stop using|fasten|sling|slip|tie|buckle|don|drape|loop|attach|wrap|eat|drink|quaff)\b/i.test(currentTextOnly);
+        const isPostureAction = /^You\s+(?:go\s+to\s+sleep|fall\s+asleep|(?:(?:are|are now|start|stop|begin(?:\s+to)?|continue(?:\s+to)?)\s+)?(?:stand(?:ing)?|sit(?:ting)?|sleep(?:ing)?|rest(?:ing)?|ride|riding|lead(?:ing)?|mount(?:ing)?|dismount(?:ing)?|wake(?:\s+up)?|lie(?:\s+down)?|lay(?:\s+down)?))\b/i.test(currentTextOnly);
+        const isSubduedAction = isItemAction || isPostureAction;
         const combatSide = isCombat
             ? (providedCombatSide || ((currentTextLower.startsWith('you ') || currentTextLower.startsWith('your ')) ? 'player' : 'opponent'))
             : undefined;
         const isTaggedSocial = /<(social|emote)(?:\s+[^>]*)?>/i.test(currentText) ||
             /<(social|emote)(?:\s+[^>]*)?>/i.test(String(precalculated?.html || ''));
         const isSocial = !!providedIsSocial || isTaggedSocial;
-        const isComm = type === 'comm' || !!replyCommand || isSocial;
+        // Social/emote lines may be grouped as social output, but they must
+        // remain ordinary log lines rather than communication bubbles.
+        const isComm = type === 'comm' || !!replyCommand;
         const isNarrate = currentTextLower.includes('narrate') || replyCommand === 'narrate';
         const curRoom = roomContext.roomName;
         const curDesc = roomContext.roomDesc;
@@ -543,7 +535,7 @@ export function useMessageLog(
                 isNarrate,
                 isRoomName: isActuallyRoomName,
                 terrain: isActuallyRoomName ? roomContext.terrain : undefined,
-                roomZone: isActuallyRoomName ? roomContext.roomZone : undefined,
+                roomZone: isActuallyRoomName ? (roomContext.roomZone || (isSpectateSession ? useSpectateRoomStore.getState().roomZone : useRoomStore.getState().roomZone) || undefined) : undefined,
                 commSender,
                 commAction,
                 commText,
@@ -641,6 +633,9 @@ export function useMessageLog(
             }
         }
 
+        // Every incoming game line gets the same one-shot text cue. This keeps
+        // multi-line responses (such as `who`) visually coherent.
+        const shouldApplyAudioSheen = finalType !== 'prompt' && finalType !== 'user' && !isEmpty;
         const msg: Message = {
             id: mid || Math.random().toString(36).substring(7),
             html,
@@ -649,6 +644,7 @@ export function useMessageLog(
             type: finalType,
             timestamp: Date.now(),
             isCombat,
+            isSubduedAction,
             combatSide,
             dimmedInCombat,
             isUrgent,
@@ -661,7 +657,7 @@ export function useMessageLog(
             replyCommand,
             isRoomName: isActuallyRoomName,
             terrain: isActuallyRoomName ? roomContext.terrain : undefined,
-            roomZone: isActuallyRoomName ? roomContext.roomZone : undefined,
+            roomZone: isActuallyRoomName ? (roomContext.roomZone || (isSpectateSession ? useSpectateRoomStore.getState().roomZone : useRoomStore.getState().roomZone) || undefined) : undefined,
             isRoomBlock: isActuallyRoomName,
             isRoomBlockStart: isActuallyRoomName,
             isNarrate,
@@ -683,6 +679,7 @@ export function useMessageLog(
             isSnoop: providedIsSnoop,
             isSnoopInput: providedIsSnoopInput,
             isRipMessage: providedIsRipMessage,
+            audioSheen: shouldApplyAudioSheen,
             resourceGain,
             promptHPStatus,
             promptManaStatus,
@@ -754,8 +751,6 @@ export function useMessageLog(
     const clearLog = useCallback(() => {
         messageBufferRef.current = [];
         addedMidSetRef.current.clear();
-        lastCategoryRef.current = null;
-        prevHadEmptyLineRef.current = false;
         lastMessageRef.current = null;
         if (flushTimeoutRef.current) {
             cancelAnimationFrame(flushTimeoutRef.current as unknown as number);

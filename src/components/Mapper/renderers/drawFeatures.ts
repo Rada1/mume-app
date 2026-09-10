@@ -1,8 +1,7 @@
 import { RenderContext, drawLine, drawInkyLine } from './rendererUtils';
 import { getZoneVisuals } from '../zoneFilters';
 import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, WALL_COLOR, LONG_CONNECTION_COLOR, getClientThemeColor } from '../mapperUtils';
-import { drawTerrainIcon, getTerrainTileInset, getRoomWalls } from './drawTerrains';
-import { DETAIL_GRAYSCALE_FILTER, getRoomZone, isOutsideActiveZone } from './zoneFocusOverlay';
+import { isTrailExit } from '../trailUtils';
 
 const hexToRgba = (hex: string, alpha: number): string => {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -1025,11 +1024,13 @@ export const drawFeatures = (
                             ];
                             const hasRoadFlag = combinedFlags.some((f: string) => /road|trail|path/i.test(String(f)));
                             const targetName = String(targetData[5] || '').toLowerCase();
-                            const isTrail = /trail|path/.test(currentName) || /trail|path/.test(targetName);
+                            const currentTerrain = currentRoomObj.terrain;
+                            const trailInfo = isTrailExit(currentTerrain, targetData[3], combinedFlags, currentName, targetName);
+                            const isTrail = trailInfo.isTrail;
+                            const isRoad = trailInfo.isRoad;
 
-                            if (hasRoadFlag) {
+                            if (hasRoadFlag || isTrail || isRoad) {
                                 const tpx = targetData[0] * s + s / 2, tpy = targetData[1] * s + s / 2;
-                                const isRoad = !isTrail && isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road';
                                 const defaultRoadColor = isDarkMode
                                     ? (isRoad 
                                         ? (rCtx.mapTileVisuals?.roadColorDark || ROAD_COLOR_DARK) 
@@ -1040,7 +1041,7 @@ export const drawFeatures = (
                                 const roadColor = isRoad
                                     ? (zoneVis.roadColor || defaultRoadColor)
                                     : (zoneVis.pathColor || defaultRoadColor);
-                                const lineWidth = isRoad ? 12 : 6;
+                                const lineWidth = isRoad ? 12 : (isTrail ? 3.5 : 6);
 
                                 let globalAlpha = 1.0;
                                 let isFade = false;
@@ -1080,7 +1081,7 @@ export const drawFeatures = (
 
     // --- Render Road & Trail Borders ---
     for (const seg of roadSegments) {
-        if (useOverviewRoutes) continue;
+        if (useOverviewRoutes || seg.isTrail) continue;
         ctx.save();
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -1108,6 +1109,11 @@ export const drawFeatures = (
             continue;
         }
 
+        // In legacy pixel-art mode, trails are rendered as pixel-art overlays on tiles
+        if (rCtx.useLegacyMapArt && seg.isTrail) {
+            continue;
+        }
+
         ctx.save();
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -1118,44 +1124,49 @@ export const drawFeatures = (
             grad.addColorStop(1, hexToRgba(seg.roadColor, 0));
             ctx.strokeStyle = grad;
             ctx.lineWidth = seg.lineWidth;
+            if (seg.isTrail) {
+                ctx.setLineDash([Math.max(4, 5 * invZoom), Math.max(3, 4 * invZoom)]);
+            }
             ctx.beginPath();
             ctx.moveTo(seg.x1, seg.y1);
             ctx.lineTo(seg.x2, seg.y2);
             ctx.stroke();
         } else {
-            drawLine(ctx, seg.x1, seg.y1, seg.x2, seg.y2, seg.roadColor, seg.lineWidth, dpr, invZoom);
+            drawLine(ctx, seg.x1, seg.y1, seg.x2, seg.y2, seg.roadColor, seg.lineWidth, dpr, invZoom, seg.isTrail);
         }
 
-        // Draw textured dirt/gravel specks along the line
-        const dx = seg.x2 - seg.x1;
-        const dy = seg.y2 - seg.y1;
-        const len = Math.sqrt(dx * dx + dy * dy);
-        if (len > 0) {
-            const nx = -dy / len;
-            const ny = dx / len;
-            const speckCount = Math.floor(len * (seg.lineWidth > 8 ? 0.45 : 0.28));
-            ctx.save();
-            ctx.globalAlpha = seg.globalAlpha * 0.40;
-            for (let j = 0; j < speckCount; j++) {
-                const seed = Math.sin(seg.x1 * 12.9898 + seg.y1 * 78.233 + j * 93.19) * 43758.5453;
-                const randT = (Math.abs(seed) % 1);
-                const maxOffset = Math.max(1, (seg.lineWidth - 2.5 * invZoom) / 2);
-                const randOffset = ((Math.abs(seed * 7.1) % 1) - 0.5) * maxOffset;
-                const randSize = 0.5 + (Math.abs(seed * 13.3) % 1) * 0.8 * invZoom;
+        // Draw textured dirt/gravel specks along the line (skip for trails)
+        if (!seg.isTrail) {
+            const dx = seg.x2 - seg.x1;
+            const dy = seg.y2 - seg.y1;
+            const len = Math.sqrt(dx * dx + dy * dy);
+            if (len > 0) {
+                const nx = -dy / len;
+                const ny = dx / len;
+                const speckCount = Math.floor(len * (seg.lineWidth > 8 ? 0.45 : 0.28));
+                ctx.save();
+                ctx.globalAlpha = seg.globalAlpha * 0.40;
+                for (let j = 0; j < speckCount; j++) {
+                    const seed = Math.sin(seg.x1 * 12.9898 + seg.y1 * 78.233 + j * 93.19) * 43758.5453;
+                    const randT = (Math.abs(seed) % 1);
+                    const maxOffset = Math.max(1, (seg.lineWidth - 2.5 * invZoom) / 2);
+                    const randOffset = ((Math.abs(seed * 7.1) % 1) - 0.5) * maxOffset;
+                    const randSize = 0.5 + (Math.abs(seed * 13.3) % 1) * 0.8 * invZoom;
 
-                const px = seg.x1 + dx * randT + nx * randOffset;
-                const py = seg.y1 + dy * randT + ny * randOffset;
+                    const px = seg.x1 + dx * randT + nx * randOffset;
+                    const py = seg.y1 + dy * randT + ny * randOffset;
 
-                const isDark = (j % 2 === 0);
-                ctx.fillStyle = isDark
-                    ? (isDarkMode ? '#000000' : 'rgba(50, 30, 10, 0.75)')
-                    : (isDarkMode ? '#555555' : 'rgba(255, 255, 255, 0.85)');
+                    const isDark = (j % 2 === 0);
+                    ctx.fillStyle = isDark
+                        ? (isDarkMode ? '#000000' : 'rgba(50, 30, 10, 0.75)')
+                        : (isDarkMode ? '#555555' : 'rgba(255, 255, 255, 0.85)');
 
-                ctx.beginPath();
-                ctx.arc(px, py, randSize, 0, Math.PI * 2);
-                ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(px, py, randSize, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
             }
-            ctx.restore();
         }
 
         ctx.restore();
@@ -1434,44 +1445,6 @@ export const drawFeatures = (
                         }
                     }
                     ctx.restore();
-                }
-
-                // Draw mountains icon on top of walls if zoom > 0.3
-                if (camera.zoom > 0.3) {
-                    const currentTerrain = localRoom ? localRoom.terrain : tSector;
-                    if (normalizeTerrain(currentTerrain) === 'Mountains') {
-                        const gridX = Math.round(rx), gridY = Math.round(ry);
-                        const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
-                        ctx.save();
-                        if (rCtx.camera.zoom >= 0.3
-                            && isOutsideActiveZone(getRoomZone(localRoom, rData), rCtx.activeZone, rCtx.activeZonePreloaded)
-                            && isOutsideActiveZone(rData[9] || '', rCtx.activeZone, rCtx.activeZonePreloaded)) {
-                            ctx.filter = DETAIL_GRAYSCALE_FILTER;
-                        }
-                        ctx.globalAlpha = isExplored ? exploredAlphaMul : 0.35;
-                        const inset = getTerrainTileInset(s);
-                        const isSnow = localRoom?.isPermanentSnow || rCtx.weather === 'snow';
-                        const walls = getRoomWalls(localRoom, ghostExits, allRooms, preloaded, explored, unveilMap);
-                        drawTerrainIcon(
-                            ctx,
-                            wx + inset,
-                            wy + inset,
-                            s - inset * 2,
-                            currentTerrain,
-                            isDarkMode,
-                            rCtx.processedIconsRef,
-                            rCtx.imagesRef,
-                            variant,
-                            isSnow ? 'snow' : rCtx.weather,
-                            0,
-                            undefined,
-                            walls,
-                            wx,
-                            wy,
-                            s
-                        );
-                        ctx.restore();
-                    }
                 }
 
                 // 3. Indicators and Flags (Zoom > 0.3)

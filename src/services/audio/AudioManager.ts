@@ -245,6 +245,34 @@ export class AudioManager {
                 playTime = Math.max(lastTime + minDelay, now);
             }
             this.lastScheduledTimes.set(key, playTime);
+        } else if (key === 'flee') {
+            const minDelay = 1.5;
+            const lastTime = this.lastScheduledTimes.get(key) ?? 0;
+            if (now < lastTime + minDelay) {
+                return;
+            }
+            this.lastScheduledTimes.set(key, now);
+        } else if (key === 'get' || key === 'drop') {
+            const minDelay = 0.25;
+            const lastTime = this.lastScheduledTimes.get(key) ?? 0;
+            if (now < lastTime + minDelay) {
+                return;
+            }
+            this.lastScheduledTimes.set(key, now);
+        } else if (key === 'weather') {
+            const minDelay = 2.0;
+            const lastTime = this.lastScheduledTimes.get(key) ?? 0;
+            if (now < lastTime + minDelay) {
+                return;
+            }
+            this.lastScheduledTimes.set(key, now);
+        } else if (key === 'magiccomplete') {
+            const minDelay = 1.0;
+            const lastTime = this.lastScheduledTimes.get(key) ?? 0;
+            if (now < lastTime + minDelay) {
+                return;
+            }
+            this.lastScheduledTimes.set(key, now);
         }
 
         let actualBuffer = buffer;
@@ -393,6 +421,18 @@ export class AudioManager {
 
         // Crossfade logic
         this.crossFadeAmbient(type, urlToPlay, key, buffer, targetVolume, isLoop, inCombat ? 500 : 20000);
+    }
+
+    public stopAccountMusic(): void {
+        // Invalidate an account-track request that is still loading, then promptly
+        // retire the active account track without disturbing an already-playing zone.
+        this.ambientRequestTokens.set('zone', (this.ambientRequestTokens.get('zone') ?? 0) + 1);
+        const active = this.activeAmbients.get('zone');
+        if (!active || active.key !== 'account') return;
+
+        this.fadeOutAndStop(active.source, active.gain, active.filter, 0.15);
+        this.activeAmbients.delete('zone');
+        this.stopAmbient('drum');
     }
 
     private crossFadeAmbient(type: 'terrain' | 'weather' | 'zone' | 'drum' | 'incantation', urlToPlay: string, key: string, buffer: AudioBuffer, targetVolume: number, isLoop: boolean, filterFreq?: number) {

@@ -122,11 +122,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { vitals: v, game: s } = useGameProviderState({
         playCommMessageSound,
         playCombatHitSound: playHitImpactSound,
-        playLevelUpSound: playLevelSound
+        playLevelUpSound: playLevelSound,
+        playTravelPointSound: () => playEffect('travelpoint')
     });
 
     // 3. Ambient Controller (Must be after state initialization)
-    useAmbientController(s.accountState.stage);
+    useAmbientController(s.gameState, s.accountState.stage);
 
     // Discord Activity SDK Integration
     const discordActivity = useDiscordActivity();
@@ -925,6 +926,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isTrackpadModifierActive: s.isTrackpadModifierActive,
         keywordOverrides: keywordOverrides.overrides, openKeywordEdit, lastCommandContextRef: { current: null },
         entities: s.entities, applyOptimisticChange: s.applyOptimisticChange,
+        roomNpcs: s.roomNpcs,
         selectedObjectIds: s.selectedObjectIds, toggleObjectSelection: s.toggleObjectSelection,
         clearObjectSelection: s.clearObjectSelection, playClickSound, playEffect, isSoundEnabled: s.isSoundEnabled,
         waiting: !!v.stats?.conditions?.waiting, recordEntry: s.userSession.recorder.recordEntry, gameState: s.gameState, isPasswordMode: s.isPasswordMode,

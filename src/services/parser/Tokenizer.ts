@@ -10,7 +10,7 @@ import { Token, EntityToken, AnsiToken, TextToken, InlineCategoryConfig, GmcpOcc
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
 import { toCategoryId } from '../../utils/inlineActionModel';
 import { extractMumeKeyword } from '../../utils/gameUtils';
-import { ANSI_PALETTE } from '../../utils/ansi';
+import { ANSI_PALETTE, isAnsiGreenColor } from '../../utils/ansi';
 
 export interface TokenizerContext {
     target?: string | null;
@@ -522,6 +522,7 @@ export class Tokenizer {
             tokens.push({
                 type: 'ansi',
                 content,
+                classes: isAnsiGreenColor(style.color) ? ['ansi-green-highlight'] : undefined,
                 style: { ...style }
             } as AnsiToken);
         } else {

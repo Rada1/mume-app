@@ -4,6 +4,18 @@
     initial-value: rgba(255, 255, 255, 0.06);
 }
 
+@property --room-light-color {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgb(110, 110, 120);
+}
+
+@property --room-light-color {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgb(110, 110, 120);
+}
+
 .app-container {
     position: fixed;
     top: 0;
@@ -231,6 +243,57 @@
 @media (max-width: 768px) {
     .message-log-wrapper.chat-window-active {
         flex-direction: column !important;
+    }
+}
+
+/* --- Shared Sliding Docked Panel Styles (Chat, Players, Help, Archive, Editor) --- */
+.docked-panel {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 52px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+    z-index: 60000;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    pointer-events: auto;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-card, 8px);
+    background: rgba(12, 15, 22, 0.72);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(10px);
+    transition: right 0.2s cubic-bezier(0.16, 1, 0.3, 1), top 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.global-dragging .docked-panel {
+    transition: none !important;
+}
+
+@media (max-width: 768px) {
+    .docked-panel {
+        left: 8px !important;
+        right: 8px !important;
+        width: calc(100% - 16px) !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        bottom: auto !important;
+    }
+}
+
+.light-mode .docked-panel {
+    background: rgba(255, 255, 255, 0.72);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    .docked-panel {
+        top: auto;
+        left: 8px;
+        right: 8px !important;
+        bottom: 8px;
+        width: auto;
+        max-width: none;
+        height: min(45%, 320px);
     }
 }
 

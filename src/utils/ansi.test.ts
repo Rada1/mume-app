@@ -1,10 +1,10 @@
-﻿/**
+/**
  * @file ansi.test.ts
  * @description Unit tests for ANSI sequence normalization and 256-color HTML rendering.
  */
 
 import { describe, it, expect } from 'vitest';
-import { ansiConvert, normalizeAnsiSequences } from './ansi';
+import { ansiConvert, normalizeAnsiSequences, isAnsiGreenColor } from './ansi';
 import { Tokenizer } from '../services/parser/Tokenizer';
 
 describe('ANSI Normalization', () => {
@@ -62,4 +62,44 @@ describe('Tokenizer ANSI Background Handling', () => {
         expect(ansiToken?.style?.color).toBe('rgb(175,0,215)');
         expect(ansiToken?.style?.backgroundColor).toBe('var(--ansi-black)');
     });
+
+    it('attaches ansi-green-highlight class to ANSI green tokens', () => {
+        const tokenizer = Tokenizer.getInstance();
+        tokenizer.reset();
+        // MUME status output: Perception: vision (\x1b[32m100/100\x1b[0m)
+        const tokens = tokenizer.tokenize('Perception: vision (\x1b[32m100/100\x1b[0m)', {});
+        const greenToken = tokens.find(t => t.content === '100/100');
+        expect(greenToken).toBeDefined();
+        expect(greenToken?.type).toBe('ansi');
+        if (greenToken?.type === 'ansi') {
+            expect(greenToken.classes).toContain('ansi-green-highlight');
+            expect(greenToken.style?.color).toBe('var(--ansi-green)');
+        }
+    });
 });
+
+describe('ANSI Green Color Detection', () => {
+    it('identifies standard and bright ANSI green variables', () => {
+        expect(isAnsiGreenColor('var(--ansi-green)')).toBe(true);
+        expect(isAnsiGreenColor('var(--ansi-bright-green)')).toBe(true);
+        expect(isAnsiGreenColor('var(--ansi-green, #55ff55)')).toBe(true);
+    });
+
+    it('identifies hex and rgb green colors', () => {
+        expect(isAnsiGreenColor('#55ff55')).toBe(true);
+        expect(isAnsiGreenColor('#00ff00')).toBe(true);
+        expect(isAnsiGreenColor('rgb(55, 255, 85)')).toBe(true);
+        expect(isAnsiGreenColor('rgb(0, 187, 0)')).toBe(true);
+        expect(isAnsiGreenColor('rgb(0,255,0)')).toBe(true);
+    });
+
+    it('rejects non-green colors and empty values', () => {
+        expect(isAnsiGreenColor('var(--ansi-red)')).toBe(false);
+        expect(isAnsiGreenColor('var(--ansi-yellow)')).toBe(false);
+        expect(isAnsiGreenColor('#ff5555')).toBe(false);
+        expect(isAnsiGreenColor('rgb(255, 55, 55)')).toBe(false);
+        expect(isAnsiGreenColor(undefined)).toBe(false);
+        expect(isAnsiGreenColor('')).toBe(false);
+    });
+});
+

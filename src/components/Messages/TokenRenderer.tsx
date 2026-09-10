@@ -298,6 +298,10 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 style['--glow-color'] = categoryColor;
             }
 
+            const tokenWordIdx = typeof idx === 'number' ? idx : 0;
+            style['--word-idx'] = tokenWordIdx;
+            style['--word-idx-delay'] = `${(tokenWordIdx * 0.08).toFixed(2)}s`;
+
             if (forceBoldEntities || isRoom || categoryAxes.categoryId === 'cat-enemy') {
                 style.fontWeight = 'bold';
             }
@@ -329,11 +333,34 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                         </span>
                     );
                 }
+                const ansiWords = content.split(' ');
+                if (ansiWords.length > 1) {
+                    const baseWIdx = typeof idx === 'number' ? idx * 4 : 0;
+                    return (
+                        <React.Fragment key={idx}>
+                            {ansiWords.map((w, wi) => {
+                                if (!w) {
+                                    if (wi === ansiWords.length - 1) return null;
+                                    return <span key={`sp-${wi}`}> </span>;
+                                }
+                                return (
+                                    <span
+                                        key={`w-${wi}`}
+                                        className={`log-text-word${ansiClasses ? ` ${ansiClasses}` : ''}`}
+                                        style={{ ...a.style, '--word-idx': baseWIdx + wi } as any}
+                                    >
+                                        {w}{wi < ansiWords.length - 1 ? ' ' : ''}
+                                    </span>
+                                );
+                            })}
+                        </React.Fragment>
+                    );
+                }
                 return (
                     <span 
                         key={idx} 
-                        className={ansiClasses || undefined}
-                        style={a.style}
+                        className={`log-text-word${ansiClasses ? ` ${ansiClasses}` : ''}`}
+                        style={{ ...a.style, '--word-idx': typeof idx === 'number' ? idx : 0 } as any}
                     >
                         {renderItemConditionText(content, ansiItemState.state, ansiItemState.stateLabel)}
                     </span>
@@ -354,11 +381,34 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                         </span>
                     );
                 }
+                const textWords = content.split(' ');
+                if (textWords.length > 1) {
+                    const baseWIdx = typeof idx === 'number' ? idx * 4 : 0;
+                    return (
+                        <React.Fragment key={idx}>
+                            {textWords.map((w, wi) => {
+                                if (!w) {
+                                    if (wi === textWords.length - 1) return null;
+                                    return <span key={`sp-${wi}`}> </span>;
+                                }
+                                return (
+                                    <span
+                                        key={`w-${wi}`}
+                                        className={`log-text-word${textClasses ? ` ${textClasses}` : ''}`}
+                                        style={{ ...textToken.style, '--word-idx': baseWIdx + wi } as any}
+                                    >
+                                        {w}{wi < textWords.length - 1 ? ' ' : ''}
+                                    </span>
+                                );
+                            })}
+                        </React.Fragment>
+                    );
+                }
                 return (
                     <span 
                         key={idx} 
-                        className={textClasses || undefined}
-                        style={textToken.style}
+                        className={`log-text-word${textClasses ? ` ${textClasses}` : ''}`}
+                        style={{ ...textToken.style, '--word-idx': typeof idx === 'number' ? idx : 0 } as any}
                     >
                         {renderItemConditionText(content, textItemState.state, textItemState.stateLabel)}
                     </span>
@@ -397,60 +447,6 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 })}
             </span>
         );
-    }
-
-    if (wordReveal) {
-        let wordIdx = 0;
-        const wordNodes: React.ReactNode[] = [];
-
-        for (let i = 0; i < tokens.length; i++) {
-            const token = tokens[i];
-
-            if (token.type === 'entity') {
-                const isFirst = wordIdx === 0;
-                wordNodes.push(
-                    <span 
-                        key={`lw-${i}`} 
-                        className={isFirst ? undefined : "log-word"} 
-                        style={isFirst ? undefined : { animationDelay: `${wordIdx * 30}ms` }}
-                    >
-                        {renderToken(token, i)}
-                    </span>
-                );
-                wordIdx++;
-                continue;
-            }
-
-            const ansiStyle = token.type === 'ansi' ? (token as AnsiToken).style : undefined;
-            const words = token.content.split(' ');
-
-            for (let j = 0; j < words.length; j++) {
-                const word = words[j];
-                if (!word) {
-                    // Skip trailing empty word — the previous word's trailing space already
-                    // represents that whitespace; emitting another <span> would double it.
-                    if (j === words.length - 1) continue;
-                    wordNodes.push(<span key={`sp-${i}-${j}`} style={ansiStyle}> </span>);
-                    continue;
-                }
-                const wordContent = targetMatcher && word.toLowerCase().includes(targetMatcher.value)
-                    ? renderTextWithTarget(word, `${i}-${j}`)
-                    : word;
-                const isFirst = wordIdx === 0;
-                wordNodes.push(
-                    <span
-                        key={`lw-${i}-${j}`}
-                        className={isFirst ? undefined : "log-word"}
-                        style={isFirst ? ansiStyle : { ...ansiStyle, animationDelay: `${wordIdx * 30}ms` }}
-                    >
-                        {wordContent}{j < words.length - 1 ? ' ' : ''}
-                    </span>
-                );
-                wordIdx++;
-            }
-        }
-
-        return <>{wordNodes}</>;
     }
 
     if (splitFirstWord) {

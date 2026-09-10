@@ -187,6 +187,26 @@ describe('useCombatParser - checkCombatMatch', () => {
         effectsPlayed.length = 0;
         result.current.parseCombatLine("you miss an orc.", "<miss>You miss an orc.</miss>", true);
         expect(effectsPlayed).toHaveLength(0);
+
+        // User flees head over heels
+        effectsPlayed.length = 0;
+        result.current.parseCombatLine("you flee head over heels.", "You flee head over heels.");
+        expect(effectsPlayed).toEqual(['flee']);
+
+        // User flees in a direction
+        effectsPlayed.length = 0;
+        result.current.parseCombatLine("you flee south.", "You flee south.");
+        expect(effectsPlayed).toEqual(['flee']);
+
+        // Opponent flees does NOT play flee effect
+        effectsPlayed.length = 0;
+        result.current.parseCombatLine("an orc flees south.", "An orc flees south.");
+        expect(effectsPlayed).toHaveLength(0);
+
+        // Snoop mode flee does NOT play flee effect
+        effectsPlayed.length = 0;
+        result.current.parseCombatLine("you flee south.", "You flee south.", true);
+        expect(effectsPlayed).toHaveLength(0);
     });
 });
 

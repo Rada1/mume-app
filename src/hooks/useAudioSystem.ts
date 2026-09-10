@@ -6,7 +6,7 @@ import { useHaptics } from './interactions/useHaptics';
 import { useModeStore } from '../stores/useModeStore';
 import { useUIStore } from '../stores/useUIStore';
 
-export const useAmbientController = (accountStage: string = 'none') => {
+export const useAmbientController = (gameState: 'account' | 'playing' | 'disconnected', accountStage: string = 'none') => {
     const isSoundEnabled = useSettingsStore(state => state.isSoundEnabled);
     const isImmersionMode = useSettingsStore(state => state.isImmersionMode);
     const zoneMusic = useSettingsStore(state => state.zoneMusic);
@@ -35,6 +35,12 @@ export const useAmbientController = (accountStage: string = 'none') => {
     const isAmbientActive = isSoundEnabled && isImmersionMode && !isShaperOpen;
 
     useEffect(() => {
+        if (gameState === 'playing') {
+            audioManager.stopAccountMusic();
+        }
+    }, [gameState]);
+
+    useEffect(() => {
         if (!isSoundEnabled || isShaperOpen) {
             audioManager.setAmbient('terrain', { key: null });
             return;
@@ -61,8 +67,10 @@ export const useAmbientController = (accountStage: string = 'none') => {
             return;
         }
 
-        // Account mode overrides standard zone music
-        if (accountStage !== 'none') {
+        // Account stage can lag the gameplay parser by a render. Game state is
+        // authoritative: never let a stale account stage keep its music alive
+        // once a character has entered the world.
+        if (gameState === 'account' && accountStage !== 'none') {
             normalizedZoneRef.current = 'account';
             inCombatRef.current = false;
             dynamicUrlsRef.current = ['/assets/Sounds/Account/accountmusic.mp3'];
@@ -95,7 +103,7 @@ export const useAmbientController = (accountStage: string = 'none') => {
         dynamicUrlsRef.current = dynamicUrls;
 
         audioManager.setAmbient('zone', { key: normalizedZone, inCombat, dynamicUrls });
-    }, [roomZone, inCombat, isSoundEnabled, zoneMusic, mode, isSpectating, activeView, accountStage, isShaperOpen]);
+    }, [roomZone, inCombat, isSoundEnabled, zoneMusic, mode, isSpectating, activeView, gameState, accountStage, isShaperOpen]);
 
     // Handle drum loop
     useEffect(() => {
@@ -153,6 +161,11 @@ export const useAudioEffects = () => {
     const playExamineSound = playLookSound;
     const playWhoSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('who', options), [playEffect]);
     const playEqInventorySound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('eqinventory', options), [playEffect]);
+    const playFleeSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('flee', options), [playEffect]);
+    const playGetSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('get', options), [playEffect]);
+    const playDropSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('drop', options), [playEffect]);
+    const playWeatherSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('weather', options), [playEffect]);
+    const playMagicCompleteSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('magiccomplete', options), [playEffect]);
     const playAchievementSound = useCallback(() => playEffect('achievement'), [playEffect]);
     const playEventMoveSound = useCallback(() => playEffect('event-move'), [playEffect]);
     const playWearSound = useCallback(() => playEffect('wear'), [playEffect]);
@@ -218,6 +231,11 @@ export const useAudioEffects = () => {
         playExamineSound,
         playWhoSound,
         playEqInventorySound,
+        playFleeSound,
+        playGetSound,
+        playDropSound,
+        playWeatherSound,
+        playMagicCompleteSound,
         playDoorSound,
         playMovementSound,
         playMagicExplosionSound,

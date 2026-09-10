@@ -24,6 +24,7 @@ export const useGameProviderState = (audioTriggers?: {
     playCommMessageSound: () => void;
     playCombatHitSound: () => void;
     playLevelUpSound: () => void;
+    playTravelPointSound: () => void;
 }) => {
     // Settings & UI Stores
     const settings = useSettingsStore();

@@ -8,10 +8,12 @@ import { Archive, CornerDownRight, Forward, Inbox, Mail, MessageSquare, Plus, Re
 import { useGame } from '../../context/GameContext';
 import { ArchiveDetail, ArchiveEntry, ArchivePanelMode, ArchiveView, useArchiveStore } from '../../stores/useArchiveStore';
 import { getArchiveForwardCommand, getArchiveListCommand, getArchiveReadCommand, getArchiveRemoveCommand, getArchiveReplyCommand, getArchiveSearchCommand } from '../../utils/archiveAdapters';
+import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
 import './MumeArchive.css';
 import './MumeArchiveActions.css';
 import './MumeArchiveCompose.css';
 import './MumeArchiveMobile.css';
+import './MumeArchiveBoardTheme.css';
 
 const viewLabels: Record<ArchiveView, string> = {
     board: 'Board',
@@ -39,30 +41,20 @@ const ArchiveTab = ({ view, activeView, entries, onClick }: { view: ArchiveView;
     return <button className={activeView === view ? 'active' : ''} onClick={onClick}><Icon size={15} /> {viewLabels[view]} {entries.length > 0 ? `(${entries.length}${unread ? ` / ${unread} unread` : ''})` : ''}</button>;
 };
 
-export const MumeArchive: React.FC = () => {
+interface MumeArchiveProps {
+    style?: React.CSSProperties;
+}
+
+export const MumeArchive: React.FC<MumeArchiveProps> = ({ style }) => {
     const {
         isOpen, panelMode, activeView, entriesByView, activeDetail, isLoadingList, isLoadingDetail,
         compose, setIsOpen, setActiveView, setActiveDetail, setCompose, setPendingEditorContext
     } = useArchiveStore();
     const { executeCommand, viewport, mumeEditState, setMumeEditState, handleSaveMumeEdit } = useGame();
     const isMobile = Boolean(viewport?.isMobile);
-    const [position, setPosition] = useState({ x: 0, y: 0 });
-    const [size, setSize] = useState({ width: 980, height: 680 });
     const [query, setQuery] = useState('');
     const [isComposerOpen, setIsComposerOpen] = useState(false);
     const [replyText, setReplyText] = useState('');
-    const [isDragging, setIsDragging] = useState(false);
-    const [isResizing, setIsResizing] = useState(false);
-    const dragStart = useRef({ x: 0, y: 0 });
-    const dragOffset = useRef({ x: 0, y: 0 });
-    const resizeStart = useRef({ x: 0, y: 0 });
-    const resizeSize = useRef({ width: 980, height: 680 });
-
-    useEffect(() => {
-        if (!isOpen) return;
-        setPosition({ x: 0, y: 0 });
-        setSize({ width: 980, height: 680 });
-    }, [isOpen]);
 
     useEffect(() => {
         setIsComposerOpen(false);
@@ -72,39 +64,16 @@ export const MumeArchive: React.FC = () => {
         if (mumeEditState.context?.kind !== 'archive-reply') return;
         setReplyText(mumeEditState.text);
     }, [mumeEditState.context, mumeEditState.text]);
+
     useEffect(() => {
         if (!mumeEditState.isOpen || mumeEditState.context?.kind !== 'archive-compose') return;
         handleSaveMumeEdit(mumeEditState.context.body);
-        if (mumeEditState.context.source === 'mail') { setActiveView('mail-sent'); [1200, 3000, 6000].forEach(ms => window.setTimeout(() => executeCommand('look sent mail', true, true, false, true), ms)); }
+        if (mumeEditState.context.source === 'mail') {
+            setActiveView('mail-sent');
+            [1200, 3000, 6000].forEach(ms => window.setTimeout(() => executeCommand('look sent mail', true, true, false, true), ms));
+        }
         setCompose({ recipients: '', subject: '', body: '' });
     }, [mumeEditState.isOpen, mumeEditState.context, executeCommand, handleSaveMumeEdit, setActiveView, setCompose]);
-
-    useEffect(() => {
-        if (!isDragging && !isResizing) return;
-        const handleMouseMove = (e: MouseEvent) => {
-            if (isDragging) {
-                setPosition({
-                    x: dragOffset.current.x + e.clientX - dragStart.current.x,
-                    y: dragOffset.current.y + e.clientY - dragStart.current.y
-                });
-                return;
-            }
-            setSize({
-                width: Math.max(680, resizeSize.current.width + e.clientX - resizeStart.current.x),
-                height: Math.max(460, resizeSize.current.height + e.clientY - resizeStart.current.y)
-            });
-        };
-        const handleMouseUp = () => {
-            setIsDragging(false);
-            setIsResizing(false);
-        };
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseup', handleMouseUp);
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [isDragging, isResizing]);
 
     if (!isOpen) return null;
 
@@ -113,12 +82,6 @@ export const MumeArchive: React.FC = () => {
         const haystack = `${entry.subject} ${entry.author} ${entry.date}`.toLowerCase();
         return haystack.includes(query.toLowerCase());
     });
-    const style: React.CSSProperties = isMobile ? {} : {
-        width: `${size.width}px`,
-        height: `${size.height}px`,
-        left: `calc(50% - ${size.width / 2}px + ${position.x}px)`,
-        top: `calc(50% - ${size.height / 2}px + ${position.y}px)`
-    };
 
     const refresh = (view = activeView) => {
         const command = getArchiveListCommand(view);
@@ -187,17 +150,23 @@ export const MumeArchive: React.FC = () => {
     );
 
     return (
-        <div className="mume-mail-overlay" onClick={() => setIsOpen(false)}>
-            <div className={`mume-mail-container ${isMobile ? 'is-mobile' : ''}`} style={style} onClick={e => e.stopPropagation()}>
-                <div className="mume-mail-header" onMouseDown={e => {
-                    if (e.button !== 0) return;
-                    setIsDragging(true);
-                    dragStart.current = { x: e.clientX, y: e.clientY };
-                    dragOffset.current = { ...position };
-                    e.preventDefault();
-                }}>
+        <aside
+            className={`docked-panel mume-archive-panel archive-mode-${panelMode}`}
+            style={style}
+            aria-label="Mail and Message Boards"
+        >
+            {!isMobile && (
+                <DrawerResizeHandle
+                    handleType="left"
+                    widthVar="--desktop-archive-width"
+                    minWidth={20}
+                    maxWidth={65}
+                />
+            )}
+            <div className={`mume-mail-container ${isMobile ? 'is-mobile' : ''}`}>
+                <div className="mume-mail-header">
                     <div className="mail-title"><Mail size={18} /><h2>{modeTitles[panelMode]}</h2></div>
-                    <div className="mail-header-controls" onMouseDown={e => e.stopPropagation()}>
+                    <div className="mail-header-controls">
                         <button className="mail-icon-btn" onClick={() => refresh()} title="Refresh"><RefreshCw size={16} className={isLoadingList ? 'spin' : ''} /></button>
                         <button className="mail-icon-btn close" onClick={() => setIsOpen(false)} title="Close"><X size={18} /></button>
                     </div>
@@ -285,14 +254,7 @@ export const MumeArchive: React.FC = () => {
                         <Plus size={18} /> {isBoardView ? 'Post' : 'Compose'}
                     </button>
                 )}
-                <div className="mume-mail-resize-handle" onMouseDown={e => {
-                    if (e.button !== 0) return;
-                    setIsResizing(true);
-                    resizeStart.current = { x: e.clientX, y: e.clientY };
-                    resizeSize.current = { ...size };
-                    e.preventDefault();
-                }} />
             </div>
-        </div>
+        </aside>
     );
 };

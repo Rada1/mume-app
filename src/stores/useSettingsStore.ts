@@ -322,7 +322,7 @@ export const useSettingsStore = create<SettingsState>()(
             unveilMap: false,
             zoneFocusGrayscale: false,
             showMapperToolbar: false,
-            isTextRevealEnabled: true,
+            isTextRevealEnabled: false,
             showBackgroundImage: true,
             useLegacyMapArt: true,
             mapDrawerOpacity: 1.0,
@@ -724,6 +724,7 @@ export const useSettingsStore = create<SettingsState>()(
                     ...currentState.zoneFilters,
                     ...(validFilters || {})
                 };
+                merged.isTextRevealEnabled = false;
                 return merged;
             },
             partialize: (state) => {

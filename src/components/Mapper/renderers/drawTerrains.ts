@@ -4,6 +4,7 @@ import { getZoneVisuals } from '../zoneFilters';
 import { perfMonitor } from '../../../utils/perfMonitor';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { drawNewArtTerrainIcon } from './drawNewMapArt';
+import { getRoomTrailDirections, getTrailPixmapSuffix } from '../trailUtils';
 
 const TERRAIN_TILE_INSET = 0;
 const TERRAIN_ICON_OPACITY = 0.2;
@@ -554,7 +555,8 @@ const drawTerrainTileIcon = (
     weather?: string,
     connects: number = 0,
     floorColor?: string,
-    walls?: { n: boolean; s: boolean; e: boolean; w: boolean }
+    walls?: { n: boolean; s: boolean; e: boolean; w: boolean },
+    trailSuffix?: string
 ) => {
     const tName = getTerrainName(terrain);
     const inset = 0;
@@ -574,7 +576,8 @@ const drawTerrainTileIcon = (
         walls,
         x,
         y,
-        s
+        s,
+        trailSuffix
     );
 };
 
@@ -594,7 +597,8 @@ export const drawTerrainIcon = (
     walls?: { n: boolean; s: boolean; e: boolean; w: boolean },
     tileX?: number,
     tileY?: number,
-    tileS?: number
+    tileS?: number,
+    trailSuffix?: string
 ) => {
     const tName = getTerrainName(terrain);
     const mapperTerrainSuffix: Record<string, string> = {
@@ -620,6 +624,12 @@ export const drawTerrainIcon = (
         // pixels cannot form visible seams at the room boundaries.
         const bleed = Math.min(1, s_orig * 0.02);
         ctx.drawImage(mapperTerrain, x - bleed, y - bleed, s_orig + bleed * 2, s_orig + bleed * 2);
+        if (trailSuffix) {
+            const trailImg = imagesRef.current[`mmapper-trail-${trailSuffix}`];
+            if (trailImg && trailImg.complete && trailImg.naturalWidth > 0) {
+                ctx.drawImage(trailImg, x, y, s_orig, s_orig);
+            }
+        }
         return;
     }
     const transform = ctx.getTransform();
@@ -1469,6 +1479,13 @@ export const drawTerrainIcon = (
           if (clipped) {
               ctx.restore();
           }
+
+          if (trailSuffix) {
+              const trailImg = imagesRef.current[`mmapper-trail-${trailSuffix}`];
+              if (trailImg && trailImg.complete && trailImg.naturalWidth > 0) {
+                  ctx.drawImage(trailImg, x, y, s_orig, s_orig);
+              }
+          }
       }
 };
 
@@ -1621,11 +1638,13 @@ export const drawExplorationRevealOverlay = (
             const exits = rData[4];
             const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
             const walls = getOutdoorSpillWalls(terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
+            const trailDirs = getRoomTrailDirections(vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
+            const trailSuffix = getTrailPixmapSuffix(trailDirs);
 
             ctx.save();
             ctx.filter = 'grayscale(1)';
             ctx.globalAlpha = alphaMul;
-            drawTerrainTileIcon(ctx, tx, ty, s, terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls);
+            drawTerrainTileIcon(ctx, tx, ty, s, terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls, trailSuffix);
             ctx.restore();
         }
     }
@@ -2000,8 +2019,11 @@ export const drawTerrains = (
                 const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
                 if (perfMonitor.enabled) perfMonitor.addWallMs(performance.now() - tWallStart);
 
+                const trailDirs = getRoomTrailDirections(r.vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
+                const trailSuffix = getTrailPixmapSuffix(trailDirs);
+
                 const tIconStart = perfMonitor.enabled ? performance.now() : 0;
-                drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects, tFloor, walls);
+                drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects, tFloor, walls, trailSuffix);
                 if (perfMonitor.enabled) perfMonitor.addIconMs(performance.now() - tIconStart);
                 ctx.restore();
             }
@@ -2023,8 +2045,10 @@ export const drawTerrains = (
                 const exits = preloaded[r.vnum]?.[4];
                 const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
                 const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
+                const trailDirs = getRoomTrailDirections(r.vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
+                const trailSuffix = getTrailPixmapSuffix(trailDirs);
 
-                drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls);
+                drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls, trailSuffix);
             }
         }
         ctx.restore();
@@ -2063,8 +2087,10 @@ export const drawTerrains = (
             const exits = preloaded[r.vnum]?.[4];
             const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
             const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
+            const trailDirs = getRoomTrailDirections(r.vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
+            const trailSuffix = getTrailPixmapSuffix(trailDirs);
 
-            drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls);
+            drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls, trailSuffix);
             ctx.restore();
         }
         ctx.restore();
@@ -2127,8 +2153,10 @@ export const drawTerrains = (
                     const exits = preloaded[r.vnum]?.[4];
                     const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
                     const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
+                    const trailDirs = getRoomTrailDirections(r.vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
+                    const trailSuffix = getTrailPixmapSuffix(trailDirs);
 
-                    drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects3, tFloor3, walls);
+                    drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects3, tFloor3, walls, trailSuffix);
                     ctx.restore();
                 }
             }
@@ -2202,8 +2230,10 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
             const rId = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;
             const exits = preloaded[rId]?.[4];
             const walls = getOutdoorSpillWalls(room.terrain, exits, preloaded, getRoomWalls(room, exits, allRooms, preloaded, rCtx.explored, rCtx.unveilMap), gridX, gridY, rCtx.roomAtCoord);
+            const trailDirs = getRoomTrailDirections(rId, room, exits, preloaded, rCtx.baseMapExitsRef?.current);
+            const trailSuffix = getTrailPixmapSuffix(trailDirs);
 
-            drawTerrainTileIcon(ctx, rx, ry, s, room.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnectsLocal, tFloorLocal, walls);
+            drawTerrainTileIcon(ctx, rx, ry, s, room.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnectsLocal, tFloorLocal, walls, trailSuffix);
             ctx.restore();
         }
     }

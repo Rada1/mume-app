@@ -95,7 +95,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 parentPopoverState.setId || '',
                 parentPopoverState.context || ''
             ].join(':');
-            if (!isPreparing && lastAudiblePopoverKeyRef.current !== popoverKey) {
+            if (!isPreparing && !parentPopoverState.isRoomDescription && lastAudiblePopoverKeyRef.current !== popoverKey) {
                 audioManager.playEffect('actionmenu');
                 lastAudiblePopoverKeyRef.current = popoverKey;
             }

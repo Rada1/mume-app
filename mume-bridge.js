@@ -3,7 +3,7 @@
  * @description Persistent WebSocket-to-telnet bridge for MUME.
  */
 
-import { WebSocketServer } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 import net from 'net';
 import os from 'os';
 
@@ -100,7 +100,7 @@ const ensureMumeSession = () => {
     });
 
     mumeSocket.on('data', (data) => {
-        if (activeClient?.readyState === activeClient.OPEN) {
+        if (activeClient && activeClient.readyState === WebSocket.OPEN) {
             activeClient.send(data);
         } else {
             rememberOfflineData(data);
@@ -127,7 +127,7 @@ wss.on('connection', (ws) => {
     console.log('[Bridge] Browser attached.');
     clearDetachTimer();
 
-    if (activeClient && activeClient.readyState === activeClient.OPEN) {
+    if (activeClient && activeClient.readyState === WebSocket.OPEN) {
         console.log('[Bridge] Replacing previous browser client.');
         activeClient.close(1012, 'New browser client attached');
     }

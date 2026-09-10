@@ -7,10 +7,9 @@
 /* --- Layout Section --- */
 
 .players-panel {
-    position: absolute;
-    top: 8px;
-    right: 10px;
-    bottom: 8px;
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 52px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
     z-index: 60000;
     width: var(--desktop-players-width, 24vw);
     min-width: 260px;
@@ -26,15 +25,17 @@
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
     backdrop-filter: blur(10px);
     animation: players-panel-enter 140ms ease-out;
-    transition: right 0.2s ease;
+    transition: right 0.2s ease, top 0.2s ease;
 }
 
 .global-dragging .players-panel {
     transition: none !important;
 }
 
-.players-panel.with-chat {
-    right: calc(var(--desktop-chat-width, 24vw) + 18px);
+@media (min-width: 769px) {
+    .players-panel.with-chat {
+        right: calc(var(--desktop-chat-width, 24vw) + 18px);
+    }
 }
 
 .light-mode .players-panel {

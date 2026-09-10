@@ -31,7 +31,6 @@ import SwipeFeedbackOverlay from './components/Overlay/SwipeFeedbackOverlay';
 import ObjectDragOverlay from './components/Overlay/ObjectDragOverlay';
 import { AgentHUD } from './components/Utility/AgentHUD';
 import { PerfHUD } from './components/Utility/PerfHUD';
-import { MumeEditor } from './components/Utility/MumeEditor';
 import { useSettingsStore } from './stores/useSettingsStore';
 import { useDisplayMode } from './hooks/useDisplayMode';
 import { normalizeTerrain } from './utils/terrainUtils';
@@ -43,6 +42,7 @@ import { canAccessShaper } from './shaper/access/shaperAccess';
 import { ShaperAccessDialog } from './shaper/components/ShaperAccessDialog';
 import { ShaperWorkspace } from './shaper/components/ShaperWorkspace';
 import { cleanupDevServiceWorkers } from './utils/devServiceWorkerCleanup';
+import { useZoneThemeSync } from './hooks/useZoneThemeSync';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
@@ -97,6 +97,7 @@ const MudClient = () => {
 
     const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
     const displayMode = useDisplayMode();
+    useZoneThemeSync();
 
     const [btnGlow, setBtnGlow] = useState({ up: false, down: false });
     const [returnToManager, setReturnToManager] = useState(false);
@@ -378,13 +379,6 @@ const MudClient = () => {
                         isEditorOpen={mumeEditState.isOpen}
                         onSaveEditor={handleSaveMumeEdit}
                     />
-                </ErrorBoundary>,
-                document.body
-            )}
-
-            {typeof document !== 'undefined' && createPortal(
-                <ErrorBoundary name="MUME Editor">
-                    <MumeEditor />
                 </ErrorBoundary>,
                 document.body
             )}

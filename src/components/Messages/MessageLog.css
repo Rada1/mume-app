@@ -559,15 +559,58 @@
     font-family: var(--font-mono, monospace);
 }
 
-@keyframes logWordReveal {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+/* Incoming letter-by-letter & space-by-space font-size ripple */
+@keyframes logCharRipple {
+    0% {
+        scale: 1;
+    }
+    30% {
+        scale: 1.30;
+        filter: brightness(1.24);
+    }
+    70% {
+        scale: 1.06;
+        filter: brightness(1.05);
+    }
+    100% {
+        scale: 1;
+        filter: brightness(1);
+    }
+}
+
+@keyframes logWordRipple {
+    0% {
+        scale: 1;
+    }
+    30% {
+        scale: 1.30;
+        filter: brightness(1.24);
+    }
+    70% {
+        scale: 1.06;
+        filter: brightness(1.05);
+    }
+    100% {
+        scale: 1;
+        filter: brightness(1);
+    }
+}
+
+.log-char {
+    display: inline-block;
+    vertical-align: baseline;
+    transform-origin: 50% 80%;
+    white-space: pre;
+    animation: logCharRipple 0.36s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+    animation-delay: var(--reveal-delay, 0s);
 }
 
 .log-word {
-    opacity: 0;
-    animation: logWordReveal 0.25s ease both;
-    display: inline;
+    display: inline-block;
+    vertical-align: baseline;
+    transform-origin: 50% 80%;
+    animation: logCharRipple 0.36s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+    animation-delay: var(--reveal-delay, 0s);
 }
 
 /* Intelligent Dimming Base */
@@ -586,18 +629,19 @@
     min-height: 1.35em;
     margin-left: 0.55em;
     padding: 0 0.45em;
-    border: 1px solid rgba(250, 204, 21, 0.45);
+    border: 1px solid rgba(253, 224, 71, 0.62);
     border-radius: 5px;
     background: rgba(24, 18, 5, 0.74);
-    color: #facc15;
+    color: #fde047;
     font-size: 0.78em;
     font-weight: 800;
     letter-spacing: 0;
     line-height: 1.25;
     white-space: nowrap;
-    text-shadow: 0 0 6px rgba(250, 204, 21, 0.35);
+    text-shadow: 0 0 6px rgba(253, 224, 71, 0.45);
     vertical-align: 0.08em;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18), 0 0 10px rgba(250, 204, 21, 0.18);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18), 0 0 10px rgba(253, 224, 71, 0.25);
+    opacity: 1 !important;
 }
 
 .resource-gain-badge.tp {
@@ -649,7 +693,7 @@
 }
 
 .message.is-room-name .message-content,
-.message.is-room-name .message-content span:not(.room-description-merged):not(.room-desc-line),
+.message.is-room-name .message-content span:not(.room-description-merged):not(.room-desc-line):not(.room-zone-name),
 .message.is-room-name .message-content .room-title-text,
 .message.is-room-name .message-content .room-title-text *,
 .room-title-text,
@@ -658,8 +702,27 @@
 .message-content .room-name-inline span,
 .message-content .room-name-inline * {
     opacity: 1 !important;
+    filter: none;
+    text-shadow: none;
+}
+
+/* Zone name displayed in small, 25% transparent faded text in parentheses after room name */
+.message.is-room-name .room-zone-name,
+.room-zone-name {
+    font-size: 0.78em;
+    font-weight: 400 !important;
+    letter-spacing: normal !important;
+    opacity: 0.50 !important;
+    color: var(--text-faded, #9b907d) !important;
+    display: inline-block;
+    vertical-align: baseline;
+    margin-left: 6px;
     filter: none !important;
     text-shadow: none !important;
+    animation: none !important;
+    background: none !important;
+    transform: none !important;
+    -webkit-text-fill-color: currentColor !important;
 }
 
 /* Interactive inline buttons, entity highlights, combat terms, comm messages, room titles, and user input stay full brightness */
@@ -809,30 +872,43 @@
 /* Second-tap affordance shown only once a button is selected, signalling that
    the selected inline entity now acts as a menu trigger. Skipped for room names. */
 .message-content .inline-btn.selected:not(.room-name-inline)::after {
-    content: 'menu';
+    content: '>';
     display: inline-block;
-    margin-left: 0.35em;
-    padding: 1px 4px;
-    border: 1px solid color-mix(in srgb, var(--glow-color, currentColor), transparent 45%);
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--glow-color, currentColor), transparent 88%);
+    margin-left: 0.25em;
+    padding: 0;
+    border: 0;
+    background: none;
     font-family: var(--font-mono, monospace);
-    font-size: 0.62em;
+    font-size: 0.9em;
     font-weight: 800;
     line-height: 1;
-    vertical-align: 0.12em;
-    text-transform: uppercase;
+    vertical-align: 0;
     letter-spacing: 0;
     opacity: 0.9;
     color: var(--glow-color, currentColor);
     pointer-events: none;
 }
 
+/* The selected entity owns the open action menu. Reflect that state in the
+   affordance without changing the compact, text-only selected treatment. */
+.message-content .inline-btn.selected.menu-active:not(.room-name-inline)::after {
+    content: '⌄';
+    margin-left: 0.2em;
+    font-size: 0.75em;
+    font-weight: 500;
+    opacity: 0.62;
+    vertical-align: 0.08em;
+}
+
 @media (max-width: 768px) {
     .message-content .inline-btn.selected:not(.room-name-inline)::after {
-        content: 'menu';
-        font-size: 0.68em;
-        padding: 1px 3px;
+        content: '>';
+        font-size: 0.9em;
+    }
+
+    .message-content .inline-btn.selected.menu-active:not(.room-name-inline)::after {
+        content: '⌄';
+        font-size: 0.75em;
     }
 }
 
@@ -1017,14 +1093,50 @@
 }
 
 .comm-sender {
-    font-weight: bold;
-    font-style: italic;
+    color: color-mix(in srgb, var(--text-primary, #d4cdb8) 50%, transparent) !important;
+    opacity: 1 !important;
+    font-weight: normal;
+    font-style: normal;
     font-size: inherit;
 }
 
 .comm-action {
-    font-style: italic;
+    color: var(--text-primary, #d4cdb8) !important;
+    opacity: var(--message-dim-opacity, 0.50) !important;
+    font-style: normal;
     font-size: inherit;
+}
+
+/* In comms, only the tagged speaker is an interactive entity. Keep its gold
+   inline-button treatment while the surrounding article and speech verb stay narrative. */
+.comm-sender .inline-btn,
+.comm-sender .inline-btn * {
+    --mume-wiki-link-color: #c9a84c;
+    --glow-color: var(--mume-wiki-link-color) !important;
+    color: var(--mume-wiki-link-color) !important;
+    opacity: 1 !important;
+    font-style: normal !important;
+    text-shadow: none !important;
+}
+
+.comm-sender .inline-btn {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--mume-wiki-link-color) 76%, #ffffff) 0%,
+        var(--mume-wiki-link-color) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: opacity(1) brightness(1.15) !important;
+    animation: none !important;
+    box-shadow: none !important;
+}
+
+.comm-sender .log-text-word,
+.comm-sender > span:not(.inline-btn) {
+    color: color-mix(in srgb, var(--text-primary, #d4cdb8) 50%, transparent) !important;
+    opacity: 1 !important;
 }
 
 .comm-bubble-wrapper {
@@ -1038,20 +1150,20 @@
 
 .comm-bubble-wrapper.continuation .comm-bubble {
     border-radius: 6px 20px 20px 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2), 0 0 5px color-mix(in srgb, var(--bubble-color, transparent), transparent 85%);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .comm-bubble {
     background: transparent;
-    border: 1px solid color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.3)), transparent 30%);
+    border: 1px dotted #c9a84c;
     border-radius: 20px 20px 20px 6px;
     padding: 2px 8px;
-    color: #fff;
+    color: var(--text-primary, #d4cdb8);
     flex-shrink: 1;
     width: fit-content;
     max-width: 100%;
     align-self: flex-start;
-    box-shadow: 0 0 8px color-mix(in srgb, var(--bubble-color, transparent), transparent 60%);
+    box-shadow: none;
     backdrop-filter: none;
     position: relative;
     line-height: 1.5;
@@ -1066,10 +1178,10 @@
 
 .comm-bubble:hover {
     background-color: color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.08)), transparent 92%) !important;
-    border-color: color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.65)), transparent 5%) !important;
+    border-color: #c9a84c !important;
+    border-style: dotted !important;
     box-shadow: 
-        0 4px 12px rgba(0, 0, 0, 0.3),
-        0 0 16px color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.45)), transparent 35%) !important;
+        0 4px 12px rgba(0, 0, 0, 0.3) !important;
     transform: translateY(-1px);
 }
 
@@ -1082,13 +1194,13 @@
 
 .comm-text {
     margin-left: 2px;
-    color: #ffffff !important;
+    color: var(--text-primary, #d4cdb8) !important;
     opacity: 1 !important;
 }
 
 .comm-text span,
 .comm-text * {
-    color: #ffffff !important;
+    color: var(--text-primary, #d4cdb8) !important;
     opacity: 1 !important;
 }
 
@@ -1101,10 +1213,6 @@
 
 
 .message.recent-entry {
-    opacity: 0;
-    animation: line-reveal 50ms ease forwards;
-    animation-delay: var(--reveal-delay, 0ms);
-    animation-fill-mode: both;
     transform: none !important;
 }
 
@@ -1262,6 +1370,10 @@
 .user-command-bubble .user-command-text {
     color: rgba(255, 255, 255, 0.95);
     font-weight: 500;
+}
+
+.user-command-bubble .user-command-expansion {
+    opacity: 0.7;
 }
 
 .user-command-bubble.awaiting-response {
@@ -1696,6 +1808,41 @@
     width: 100%;
 }
 
+/* Incoming text lights up word-by-word, left to right. This acts on the
+   rendered glyphs directly, so it remains visible with nested token spans. */
+@keyframes incoming-text-ripple {
+    0%, 100% {
+        filter: brightness(1);
+        text-shadow: none;
+    }
+    38% {
+        filter: brightness(1.28);
+        text-shadow: 0 0 2px rgba(255, 244, 190, 0.2);
+    }
+}
+
+.message.audio-sheen-active .log-text-word,
+.message.audio-sheen-active .message-content .inline-btn,
+.message.audio-sheen-active .comm-bubble .inline-btn,
+.message.audio-sheen-active .comm-action {
+    animation: incoming-text-ripple 280ms ease-out both !important;
+    animation-delay: calc(var(--word-idx, var(--btn-fallback-idx, 0)) * 20ms) !important;
+}
+
+/* The incoming sheen only animates brightness and shadow; preserve the permanent
+   immersion wave instead of replacing its transform animation. */
+.immersion-mode .message.audio-sheen-active .log-text-word,
+.immersion-mode .message.audio-sheen-active .message-content .inline-btn,
+.immersion-mode .message.audio-sheen-active .comm-bubble .inline-btn,
+.immersion-mode .message.audio-sheen-active .comm-action {
+    animation:
+        continuous-text-undulate 2.8s ease-in-out infinite,
+        incoming-text-ripple 280ms ease-out both !important;
+    animation-delay:
+        calc(var(--msg-line-delay, 0s) + var(--line-sub-delay, 0s) + var(--word-idx, var(--btn-fallback-idx, 0)) * 0.10s),
+        calc(var(--word-idx, var(--btn-fallback-idx, 0)) * 20ms) !important;
+}
+
 .hit-sheen-overlay {
     position: absolute;
     top: 0;
@@ -1915,6 +2062,31 @@ span.inline-btn {
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-target), transparent 82%) !important;
 }
 
+/* A selected inline entity uses the same subdued material as a command bubble.
+   Its backing is a pseudo-element so selection never changes line metrics. */
+.message-content .inline-btn.selected,
+.message-content .inline-btn.menu-active {
+    background: none !important;
+    -webkit-text-fill-color: currentColor !important;
+    border: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    isolation: isolate;
+    z-index: 0;
+}
+
+.message-content .inline-btn.selected::before,
+.message-content .inline-btn.menu-active::before {
+    content: '';
+    position: absolute;
+    inset: -0.14em -0.32em;
+    z-index: -1;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 5px;
+    background: var(--command-surface-bg, rgba(255, 255, 255, 0.08));
+    pointer-events: none;
+}
+
 .message-log-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
     background-color: rgba(255, 255, 255, 0.1) !important;
     border-color: color-mix(in srgb, var(--glow-color, #ffffff), #ffffff 18%) !important;
@@ -2092,7 +2264,7 @@ span.inline-btn {
 }
 
 .comm-text {
-    color: #fff;
+    color: var(--text-primary, #d4cdb8);
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
     font-weight: 500;
 }
@@ -2982,79 +3154,184 @@ span.inline-btn {
     --mume-wiki-link-color: #8b6b10;
 }
 
-/* Room names get a small location-marker highlight without changing line height. */
-.message-content .room-name-inline {
-    padding: 0 1.5em 0 3px !important;
-    border-radius: 3px;
-    background: linear-gradient(
-        90deg,
-        color-mix(in srgb, var(--mume-wiki-link-color, #c9a84c) 26%, transparent),
-        color-mix(in srgb, var(--mume-wiki-link-color, #c9a84c) 26%, transparent) calc(100% - 1.5em),
-        transparent 100%
-    ) !important;
-    box-shadow: none;
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
-}
-
-/* Main room titles are plain spans while their descriptions are merged separately. */
-.message.is-room-name .message-content .room-title-text {
+/* Base word token wrapper with subtle vertical text gradient */
+.log-text-word {
     display: inline-block;
-    padding: 0 1.5em 0 3px;
-    border-radius: 3px;
+    vertical-align: baseline;
     background: linear-gradient(
-        90deg,
-        color-mix(in srgb, var(--mume-wiki-link-color, #c9a84c) 26%, transparent),
-        color-mix(in srgb, var(--mume-wiki-link-color, #c9a84c) 26%, transparent) calc(100% - 1.5em),
-        transparent 100%
+        180deg,
+        color-mix(in srgb, currentColor 82%, #ffffff) 0%,
+        currentColor 100%
     );
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-/* Warm parchment callouts: a subtle story-note treatment instead of a chat bubble. */
-.message-log .comm-bubble-wrapper,
-.message-log .comm-bubble-wrapper.continuation {
-    display: block;
-    width: fit-content;
-    max-width: 100%;
-    margin: 4px 0 !important;
-    padding: 3px 8px;
-    border-left: 2px solid var(--mume-wiki-link-color, #c9a84c);
-    background: color-mix(in srgb, var(--mume-wiki-link-color, #c9a84c) 7%, transparent);
+/* Movement confirmations remain subdued, but should be easier to read than narrative text. */
+.message.movement .message-content {
+    opacity: 1;
 }
 
-.light-mode .message-log .comm-bubble-wrapper,
-.light-mode .message-log .comm-bubble-wrapper.continuation {
-    --mume-wiki-link-color: #8b6b10;
+.message.movement .message-content .log-text-word {
+    opacity: 0.75 !important;
 }
 
-.message-log .comm-content-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 5px;
+/* Successful inventory actions are useful confirmation, but should remain
+   visually quieter than narrative or combat output. */
+.message[data-subdued-action="true"] .message-content {
+    opacity: 1;
 }
 
-.message-log .comm-bubble,
-.message-log .comm-bubble-wrapper.continuation .comm-bubble {
-    display: block;
-    width: auto;
-    max-width: none;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
+.message[data-subdued-action="true"] .message-content .log-text-word,
+.message[data-subdued-action="true"] .message-content .inline-btn {
+    opacity: 0.75 !important;
+}
+
+/* ANSI green is reserved for live status values (score, stat, info, etc.).
+   Keep it fully legible even while surrounding narrative text is dimmed. */
+.message-content .ansi-green-highlight,
+.message-content .ansi-green-highlight * {
+    opacity: 1 !important;
+    filter: none !important;
+}
+
+.light-mode .log-text-word {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, currentColor 85%, #000000) 0%,
+        currentColor 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Subtle gradient on standard mode room titles, prompt entities, and inline buttons */
+.message-content .inline-btn:not([class*="inline-item-tier-"]),
+.message-content .room-name-inline,
+.message.is-room-name .message-content .room-title-text,
+.room-title-text,
+.custom-prompt-container .prompt-entity-inline {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--mume-wiki-link-color, #c9a84c) 76%, #ffffff) 0%,
+        var(--mume-wiki-link-color, #c9a84c) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.light-mode .message-content .inline-btn:not([class*="inline-item-tier-"]),
+.light-mode .message-content .room-name-inline,
+.light-mode .message.is-room-name .message-content .room-title-text,
+.light-mode .room-title-text,
+.light-mode .custom-prompt-container .prompt-entity-inline {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--mume-wiki-link-color, #8b6b10) 80%, #000000) 0%,
+        var(--mume-wiki-link-color, #8b6b10) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Very subtle undulating flag-like wave motion (Immersion Mode) */
+@keyframes continuous-text-undulate {
+    0%, 100% { transform: translateY(0px); }
+    28% { transform: translateY(-0.80px); }
+    54% { transform: translateY(0px); }
+    78% { transform: translateY(0.40px); }
+}
+
+.immersion-mode .message.is-room-name .message-content .room-title-text,
+.immersion-mode .room-title-text {
+    display: inline-block;
+    vertical-align: baseline;
+    animation: continuous-text-undulate 2.8s ease-in-out infinite;
+    animation-delay: var(--msg-line-delay, 0s);
+}
+
+.immersion-mode .message-content .inline-btn,
+.immersion-mode .message-content .room-name-inline {
+    display: inline-block;
+    vertical-align: baseline;
+    animation: continuous-text-undulate 2.8s ease-in-out infinite;
+    animation-delay: calc(var(--msg-line-delay, 0s) + var(--line-sub-delay, 0s) + var(--word-idx, var(--btn-fallback-idx, 0)) * 0.10s);
+}
+
+.immersion-mode .message-content .inline-btn:nth-of-type(6n + 1) { --btn-fallback-idx: 3; }
+.immersion-mode .message-content .inline-btn:nth-of-type(6n + 2) { --btn-fallback-idx: 7; }
+.immersion-mode .message-content .inline-btn:nth-of-type(6n + 3) { --btn-fallback-idx: 11; }
+.immersion-mode .message-content .inline-btn:nth-of-type(6n + 4) { --btn-fallback-idx: 15; }
+.immersion-mode .message-content .inline-btn:nth-of-type(6n + 5) { --btn-fallback-idx: 19; }
+.immersion-mode .message-content .inline-btn:nth-of-type(6n + 6) { --btn-fallback-idx: 23; }
+
+/* Sub-line delays for merged room descriptions (top-to-bottom cascade) */
+.room-description-merged .room-desc-line:nth-child(1) { --line-sub-delay: 0.22s; }
+.room-description-merged .room-desc-line:nth-child(2) { --line-sub-delay: 0.44s; }
+.room-description-merged .room-desc-line:nth-child(3) { --line-sub-delay: 0.66s; }
+.room-description-merged .room-desc-line:nth-child(4) { --line-sub-delay: 0.88s; }
+.room-description-merged .room-desc-line:nth-child(5) { --line-sub-delay: 1.10s; }
+.room-description-merged .room-desc-line:nth-child(6) { --line-sub-delay: 1.32s; }
+.room-description-merged .room-desc-line:nth-child(7) { --line-sub-delay: 1.54s; }
+.room-description-merged .room-desc-line:nth-child(8) { --line-sub-delay: 1.76s; }
+
+/* Regular text undulation wave cascading left-to-right & up-to-down */
+.immersion-mode .message-content .log-text-word,
+.immersion-mode .room-desc-line .log-text-word,
+.immersion-mode .message.movement .message-content .log-text-word,
+.immersion-mode .comm-bubble .log-text-word,
+.immersion-mode .comm-bubble .inline-btn,
+.immersion-mode .comm-bubble .comm-action {
+    display: inline-block;
+    vertical-align: baseline;
+    animation: continuous-text-undulate 2.8s ease-in-out infinite;
+    animation-delay: calc(var(--msg-line-delay, 0s) + var(--line-sub-delay, 0s) + var(--word-idx, 0) * 0.10s);
+}
+
+.immersion-mode .custom-prompt-container .prompt-entity-inline {
+    animation: continuous-text-undulate 2.8s ease-in-out infinite;
+}
+
+.immersion-mode .custom-prompt-container .prompt-entity-inline:nth-child(4n + 1) { animation-delay: 0.4s; }
+.immersion-mode .custom-prompt-container .prompt-entity-inline:nth-child(4n + 2) { animation-delay: 1.1s; }
+.immersion-mode .custom-prompt-container .prompt-entity-inline:nth-child(4n + 3) { animation-delay: 1.8s; }
+.immersion-mode .custom-prompt-container .prompt-entity-inline:nth-child(4n + 4) { animation-delay: 2.5s; }
+
+@media (prefers-reduced-motion: reduce) {
+    .immersion-mode .message-content .inline-btn,
+    .immersion-mode .message-content .room-name-inline,
+    .immersion-mode .message.is-room-name .message-content .room-title-text,
+    .immersion-mode .room-title-text,
+    .immersion-mode .message-content .log-text-word,
+    .immersion-mode .room-desc-line .log-text-word,
+    .immersion-mode .comm-bubble .log-text-word,
+    .immersion-mode .comm-bubble .inline-btn,
+    .immersion-mode .comm-bubble .comm-action,
+    .immersion-mode .custom-prompt-container .prompt-entity-inline {
+        animation: none !important;
+        text-shadow: none !important;
+        filter: none !important;
+        transform: none !important;
+    }
+}
+
+/* Main room titles are clean text spans with no background highlight. */
+.message.is-room-name .room-title-badge {
+    display: inline;
+    border: none;
+    background: none !important;
+    padding: 0;
+    margin: 0;
+}
+
+.message.is-room-name .message-content .room-title-text {
+    display: inline;
+    padding: 0;
+    border-radius: 0;
     box-shadow: none !important;
-    line-height: inherit;
+    text-shadow: none;
 }
-
-.message-log .comm-bubble:hover {
-    background: transparent !important;
-    border-color: transparent !important;
-    box-shadow: none !important;
-    transform: none;
-}
-
-
-

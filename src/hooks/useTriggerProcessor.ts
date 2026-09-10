@@ -15,24 +15,26 @@ export const useTriggerProcessor = (deps: {
 }) => {
     const { isSoundEnabledRef, soundTriggersRef, playSound, playRandomSound, buttonsRef, setButtons, buttonTimers, setActiveSet, actionsRef, executeCommandRef } = deps;
 
-    const processTriggers = useCallback((textOnly: string) => {
-        // Sound Triggers
-        soundTriggersRef?.current?.forEach(trig => {
-            if (!trig.pattern) return;
-            const hasBuffers = trig.buffers && trig.buffers.length > 0;
-            const hasBuffer = !!trig.buffer;
-            if (!hasBuffer && !hasBuffers) return;
+    const processTriggers = useCallback((textOnly: string, isRoomDescription: boolean = false) => {
+        // Sound Triggers (skip if line is part of a room description)
+        if (!isRoomDescription) {
+            soundTriggersRef?.current?.forEach(trig => {
+                if (!trig.pattern) return;
+                const hasBuffers = trig.buffers && trig.buffers.length > 0;
+                const hasBuffer = !!trig.buffer;
+                if (!hasBuffer && !hasBuffers) return;
 
-            const match = trig.isRegex ? new RegExp(trig.pattern, 'i').test(textOnly) : textOnly.toLowerCase().includes(trig.pattern.toLowerCase());
-            if (match && isSoundEnabledRef?.current) {
-                if (hasBuffers) {
-                    const randomIndex = Math.floor(Math.random() * trig.buffers!.length);
-                    playSound(trig.buffers![randomIndex]);
-                } else if (trig.buffer) {
-                    playSound(trig.buffer);
+                const match = trig.isRegex ? new RegExp(trig.pattern, 'i').test(textOnly) : textOnly.toLowerCase().includes(trig.pattern.toLowerCase());
+                if (match && isSoundEnabledRef?.current) {
+                    if (hasBuffers) {
+                        const randomIndex = Math.floor(Math.random() * trig.buffers!.length);
+                        playSound(trig.buffers![randomIndex]);
+                    } else if (trig.buffer) {
+                        playSound(trig.buffer);
+                    }
                 }
-            }
-        });
+            });
+        }
 
         // Button Triggers
         buttonsRef?.current?.forEach(b => {
