@@ -245,6 +245,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setRoomZone: s.userSession.game.setRoomZone,
         setRoomExits: s.userSession.game.setRoomExits, setDiscoveredItems: s.userSession.game.setDiscoveredItems,
         setMood: s.setMood,
+        setSpellSpeed: s.setSpellSpeed,
+        setAlertness: s.setAlertness,
         setBufferName: s.userSession.vitals.setBufferName, setPlayerHealthStatus: s.userSession.vitals.setPlayerHealthStatus,
         setOpponentHealthStatus: s.userSession.vitals.setOpponentHealthStatus,
         setBufferHealthStatus: s.userSession.vitals.setBufferHealthStatus, setOpponentName: s.userSession.vitals.setOpponentName,
@@ -253,7 +255,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setMumeEditState: s.setMumeEditState, setWhoList: s.userSession.game.setWhoList, setWhereList: s.userSession.game.setWhereList,
         opponentId: s.userSession.vitals.opponentId, setOpponentId: s.userSession.vitals.setOpponentId,
         detectLighting: env.detectLighting,
-        playMovementSound, playDoorSound, playAchievementSound, playEventMoveSound, setWeather: s.userSession.game.setWeather, setIsFoggy: s.userSession.game.setIsFoggy, 
+        playMovementSound, playDoorSound, playAchievementSound, playEventMoveSound, playEffect, setWeather: s.userSession.game.setWeather, setIsFoggy: s.userSession.game.setIsFoggy, 
         setStats: s.userSession.vitals.setStats, // ALWAYS update user session with real GMCP
         playerPositionRef: s.userSession.game.playerPositionRef, setIsRiding: s.userSession.game.setIsRiding, isRidingRef: s.userSession.game.isRidingRef, isSpectateMode: s.isSpectateMode, inlineCategories: s.inlineCategories,
         registerEntity: s.registry.registerEntity,

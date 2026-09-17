@@ -273,6 +273,15 @@ export class AudioManager {
                 return;
             }
             this.lastScheduledTimes.set(key, now);
+        } else if (key === 'hint') {
+            // A hint can be repeated across adjacent server lines; preserve the
+            // notification without layering several copies of the same effect.
+            const minDelay = 1.0;
+            const lastTime = this.lastScheduledTimes.get(key) ?? 0;
+            if (now < lastTime + minDelay) {
+                return;
+            }
+            this.lastScheduledTimes.set(key, now);
         }
 
         let actualBuffer = buffer;

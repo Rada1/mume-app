@@ -17,25 +17,19 @@ const COMPASS_DIRS: CompassDir[] = ['n', 'e', 's', 'w'];
 export const isTrailExit = (
     currentTerrain: string | number | null | undefined,
     targetTerrain: string | number | null | undefined,
-    exitFlags: string[] = [],
-    currentRoomName: string = '',
-    targetRoomName: string = ''
+    exitFlags: string[] = []
 ): { isRoad: boolean; isTrail: boolean } => {
     const isCurrentRoad = normalizeTerrain(currentTerrain) === 'Road';
     const isTargetRoad = normalizeTerrain(targetTerrain) === 'Road';
 
     const hasRoadFlag = exitFlags.some((f: string) => /road|trail|path/i.test(String(f)));
-    const curNameLow = currentRoomName.toLowerCase();
-    const tarNameLow = targetRoomName.toLowerCase();
-    const isTrailName = /trail|path/.test(curNameLow) || /trail|path/.test(tarNameLow);
-
     // If both ends are explicit Road terrain and have road flag/connection -> Road
     if (isCurrentRoad && isTargetRoad) {
         return { isRoad: true, isTrail: false };
     }
 
-    // If either has road flag, or either has trail in name (and not connecting two roads) -> Trail
-    if (hasRoadFlag || isTrailName) {
+    // Trail artwork describes this exit, so it must have explicit route metadata.
+    if (hasRoadFlag) {
         return { isRoad: false, isTrail: true };
     }
 
@@ -43,9 +37,9 @@ export const isTrailExit = (
 };
 
 /**
- * Returns active cardinal trail directions for a given room.
+ * Returns active cardinal route directions from explicit exit metadata.
  */
-export const getRoomTrailDirections = (
+export const getRoomRouteDirections = (
     vnum: string,
     currentRoomObj: any,
     ghostExits: Record<string, any> | undefined,
@@ -54,13 +48,8 @@ export const getRoomTrailDirections = (
 ): CompassDir[] => {
     const rData = preloaded[vnum];
     const currentTerrain = currentRoomObj?.terrain ?? rData?.[3];
-    if (normalizeTerrain(currentTerrain) === 'Road') {
-        return [];
-    }
-
-    const currentName = String(currentRoomObj?.name || rData?.[5] || '');
     const sId = rData ? String(rData[6]) : vnum;
-    const ardaExits = baseMapExits?.[sId]?.[4] || {};
+    const ardaExits = baseMapExits?.[sId]?.[4] || rData?.[4] || {};
     const activeDirs: CompassDir[] = [];
 
     for (const dir of COMPASS_DIRS) {
@@ -70,7 +59,6 @@ export const getRoomTrailDirections = (
         const targetVnum = String(ex.target || ex.gmcpDestId || '');
         const targetData = preloaded[targetVnum];
         const targetTerrain = targetData ? targetData[3] : undefined;
-        const targetName = String(targetData?.[5] || '');
 
         const ardaExit = ardaExits[dir];
         const combinedFlags = [
@@ -79,13 +67,28 @@ export const getRoomTrailDirections = (
             ...(ex.flags || [])
         ];
 
-        const { isTrail } = isTrailExit(currentTerrain, targetTerrain, combinedFlags, currentName, targetName);
-        if (isTrail) {
+        const { isRoad, isTrail } = isTrailExit(currentTerrain, targetTerrain, combinedFlags);
+        if (isRoad || isTrail) {
             activeDirs.push(dir);
         }
     }
 
     return activeDirs;
+};
+
+/** Returns route directions only when the room is a non-road trail tile. */
+export const getRoomTrailDirections = (
+    vnum: string,
+    currentRoomObj: any,
+    ghostExits: Record<string, any> | undefined,
+    preloaded: Record<string, any>,
+    baseMapExits?: Record<string, any>
+): CompassDir[] => {
+    const rData = preloaded[vnum];
+    const terrain = currentRoomObj?.terrain ?? rData?.[3];
+    return normalizeTerrain(terrain) === 'Road'
+        ? []
+        : getRoomRouteDirections(vnum, currentRoomObj, ghostExits, preloaded, baseMapExits);
 };
 
 /**

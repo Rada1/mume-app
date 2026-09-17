@@ -41,6 +41,9 @@ const MAPPER_FLAG_ASSETS = [
     'trail-all', 'trail-none', 'trail-n', 'trail-s', 'trail-e', 'trail-w',
     'trail-ne', 'trail-ns', 'trail-nw', 'trail-es', 'trail-ew', 'trail-sw',
     'trail-nes', 'trail-new', 'trail-nsw', 'trail-esw',
+    'road-all', 'road-none', 'road-n', 'road-s', 'road-e', 'road-w',
+    'road-ne', 'road-ns', 'road-nw', 'road-es', 'road-ew', 'road-sw',
+    'road-nes', 'road-new', 'road-nsw', 'road-esw',
 ] as const;
 
 for (const asset of MAPPER_FLAG_ASSETS) {

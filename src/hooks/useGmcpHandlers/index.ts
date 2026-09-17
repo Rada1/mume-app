@@ -20,6 +20,7 @@ import { useArchiveStore } from '../../stores/useArchiveStore';
 import type { MumeEditState } from '../../stores/useUIStore';
 import { normalizeCombatantName } from '../../utils/combatUtils';
 import { getMumeTimeFromEpoch, MUME_MONTHS } from '../../utils/mumeTimeUtils';
+import { isRidingFromGmcpRide } from '../../utils/gmcpRideUtils';
 
 interface GmcpHandlersProps {
     mapperRef: React.RefObject<MapperRef>;
@@ -34,6 +35,8 @@ interface GmcpHandlersProps {
     setRoomName: (name: string | null) => void;
     setPlayerPosition: (pos: string) => void;
     setMood?: (val: string) => void;
+    setSpellSpeed?: (val: string) => void;
+    setAlertness?: (val: string) => void;
     setRoomDesc: (desc: string | null) => void;
     setRoomExits: (exits: string[]) => void;
     setRoomZone: (zone: string | null) => void;
@@ -74,6 +77,7 @@ interface GmcpHandlersProps {
     sendCommand?: (cmd: string) => void;
     playAchievementSound?: () => void;
     playEventMoveSound?: () => void;
+    playEffect?: (name: string, options?: { pitch?: number; skipJitter?: boolean }) => void;
     pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string; msg?: string } | null>;
     gameTime: import('../../types').MumeTime | null;
     setGameTime: (time: import('../../types').MumeTime | null) => void;
@@ -241,12 +245,7 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
     }, [addEnvironmentEventMessage, props.gameTime, props.setGameTime, props.playAchievementSound, props.playEventMoveSound]);
 
     const onCharRide = useCallback((data: any) => {
-        // console.log('[GMCP] Char.Ride:', data);
-        const riding = data && (data.mount || data.mount_name || data.riding);
-        const targetSetter = props.isSpectateMode ? props.setPlayerPosition : props.setPlayerPosition; // Wait, setPlayerPosition is already mapped in GameContext
-        
-        // props.setPlayerPosition is mapped to s.setSpectatePosition in GameContext when in spectate mode!
-        
+        const riding = isRidingFromGmcpRide(data);
         if (riding) {
             if (props.setIsRiding) props.setIsRiding(true);
             props.setPlayerPosition('riding');

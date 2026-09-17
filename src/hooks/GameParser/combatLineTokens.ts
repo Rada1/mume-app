@@ -121,13 +121,16 @@ export function formatCombatLineTokens(tokens: Token[], isHitOrDamage?: boolean)
             // Split into alphanumeric words vs non-alphanumeric separators
             const pieces = token.content.split(/([a-zA-Z0-9]+|[^a-zA-Z0-9]+)/).filter(Boolean);
             let currentDimmed = '';
+            const dimmedClasses = [...(token.classes || []), 'combat-dimmed'];
+            const dimmedStyle = token.style;
 
             const flushDimmed = () => {
                 if (currentDimmed) {
                     rawResult.push({
                         type: 'text',
                         content: currentDimmed,
-                        classes: ['combat-dimmed']
+                        classes: dimmedClasses,
+                        ...(dimmedStyle ? { style: dimmedStyle } : {})
                     } as TextToken);
                     currentDimmed = '';
                 }

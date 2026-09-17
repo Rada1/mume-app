@@ -137,10 +137,11 @@ const fillAnimatedTerrainTile = (
 
 const drawLodBatches = (
     ctx: CanvasRenderingContext2D,
-    batches: Record<string, { x: number, y: number }[]>,
+    batches: Record<string, { x: number, y: number, vnum?: string, light?: number, sundeath?: number }[]>,
     s: number,
     tileBacking: string,
-    colorAlpha: number
+    colorAlpha: number,
+    rCtx: RenderContext
 ) => {
     ctx.save();
     ctx.fillStyle = tileBacking;
@@ -163,6 +164,13 @@ const drawLodBatches = (
         }
     }
     ctx.restore();
+
+    for (const color in batches) {
+        const rooms = batches[color];
+        for (let i = 0; i < rooms.length; i++) {
+            applyRoomShading(ctx, rooms[i], s, 1.0, rCtx);
+        }
+    }
 };
 
 const drawSingleTree = (
@@ -1527,40 +1535,71 @@ const getRevealSource = (vnum: string, rCtx: RenderContext): { time: number, dir
     return { time: earliestNeighborExploredAt, dir: sourceDir };
 };
 
+export const MMAPPER_ROOM_DARK_COLOR = '#a19494';
+export const MMAPPER_ROOM_NO_SUNDEATH_COLOR = '#d4c7c7';
+
 export const applyRoomShading = (ctx: CanvasRenderingContext2D, r: any, s: number, alphaMul: number, rCtx: any) => {
-    // baseMapExitsRef (from ardagmcp.xml) is keyed by server_id.
-    // preloaded (mume_map_data.json) is keyed by internal sequential id, with server_id at index [6].
-    const preloadedEntry = rCtx.preloaded[r.vnum];
+    // 1. Resolve room data: check localRoom, masterData (ardagmcp), preloaded (mume_map_data), or r directly
+    const localRoom = rCtx.allRooms?.[`m_${r.vnum}`] || rCtx.allRooms?.[r.vnum];
+    const preloadedEntry = rCtx.preloaded?.[r.vnum];
     const serverId = preloadedEntry && Array.isArray(preloadedEntry) ? String(preloadedEntry[6]) : r.vnum;
     const masterData = rCtx.baseMapExitsRef?.current?.[serverId] || rCtx.baseMapExitsRef?.current?.[r.vnum];
 
-    let light: any;
-    let sundeath: any;
+    let light: any = r.light;
+    let sundeath: any = r.sundeath;
+    let mobFlags: any = r.mobFlags;
+    let flags: any = r.flags;
 
-    if (masterData) {
+    if (localRoom) {
+        if (localRoom.light !== undefined) light = localRoom.light;
+        if (localRoom.sundeath !== undefined) sundeath = localRoom.sundeath;
+        if (localRoom.mobFlags) mobFlags = localRoom.mobFlags;
+        if (localRoom.flags) flags = localRoom.flags;
+    } else if (masterData) {
         light = Array.isArray(masterData) ? masterData[10] : masterData.light;
         sundeath = Array.isArray(masterData) ? masterData[11] : masterData.sundeath;
-    } else {
-        // Fall back to local room or batch data when no ardagmcp master data is available
-        const localRoom = rCtx.allRooms[`m_${r.vnum}`] || rCtx.allRooms[r.vnum];
-        light = localRoom?.light !== undefined ? localRoom.light : r.light;
-        sundeath = localRoom?.sundeath !== undefined ? localRoom.sundeath : r.sundeath;
+        mobFlags = Array.isArray(masterData) ? masterData[7] : masterData.mobFlags;
+    } else if (preloadedEntry && Array.isArray(preloadedEntry)) {
+        if (light === undefined) light = preloadedEntry[10];
+        if (sundeath === undefined) sundeath = preloadedEntry[11];
+        if (!mobFlags) mobFlags = preloadedEntry[7];
     }
 
-    let overlayAlpha = 0;
-    // light=1 → DARK room (always dark in MM2 format, e.g. caves with no torch)
-    if (light === 1 || light === '1') overlayAlpha += 0.13;
-    // sundeath=0 → NO_SUNDEATH (indoor/cave, never killed by sun) → extra dark
-    if (sundeath === 0 || sundeath === '0') overlayAlpha += 0.2;
+    const mobFlagsArr = Array.isArray(mobFlags) ? mobFlags : [];
+    const flagsArr = Array.isArray(flags) ? flags : [];
 
-    if (overlayAlpha > 0) {
+    // MMapper room shading parity (MapCanvasRoomDrawer.cpp:243-260):
+    // const bool isDark = room.getLightType() == RoomLightEnum::DARK;
+    // const bool hasNoSundeath = room.getSundeathType() == RoomSundeathEnum::NO_SUNDEATH;
+    // if (isDark) callbacks.visitNamedColorTint(room, RoomTintEnum::DARK);
+    // else if (hasNoSundeath) callbacks.visitNamedColorTint(room, RoomTintEnum::NO_SUNDEATH);
+    const isDark = (
+        light === 1 ||
+        light === '1' ||
+        String(light).toUpperCase() === 'DARK' ||
+        mobFlagsArr.includes('DARK') ||
+        mobFlagsArr.includes('NOLIGHT') ||
+        flagsArr.includes('DARK') ||
+        flagsArr.includes('NOLIGHT')
+    );
+
+    const hasNoSundeath = !isDark && (
+        sundeath === 0 ||
+        sundeath === '0' ||
+        String(sundeath).toUpperCase() === 'NO_SUNDEATH' ||
+        mobFlagsArr.includes('NO_SUNDEATH') ||
+        flagsArr.includes('NO_SUNDEATH')
+    );
+
+    const tintColor = isDark
+        ? MMAPPER_ROOM_DARK_COLOR
+        : (hasNoSundeath ? MMAPPER_ROOM_NO_SUNDEATH_COLOR : null);
+
+    if (tintColor) {
         ctx.save();
-        // Dark rooms are represented by a lighter tile in dark mode so the
-        // lighting cue remains legible against the dark map surface.
-        ctx.fillStyle = rCtx.isDarkMode
-            ? getClientThemeColor('--text-primary', '#d4cdb8')
-            : '#000000';
-        ctx.globalAlpha = overlayAlpha * alphaMul;
+        ctx.globalCompositeOperation = 'multiply';
+        ctx.fillStyle = tintColor;
+        ctx.globalAlpha = (rCtx.mapTileOpacity ?? 1) * alphaMul;
         fillTerrainTile(ctx, r.x, r.y, s);
         ctx.restore();
     }
@@ -1838,8 +1877,8 @@ export const drawTerrains = (
             for (const r of ring1Batches[color]) fillTerrainTile(ctx, r.x, r.y, s);
         }
         ctx.restore();
-        drawLodBatches(ctx, exploredBatches, s, tileBacking, tileOpacity);
-        if (unveilMap) drawLodBatches(ctx, revealedBatches, s, tileBacking, tileOpacity);
+        drawLodBatches(ctx, exploredBatches, s, tileBacking, tileOpacity, rCtx);
+        if (unveilMap) drawLodBatches(ctx, revealedBatches, s, tileBacking, tileOpacity, rCtx);
         return;
     }
 
@@ -1993,7 +2032,9 @@ export const drawTerrains = (
             }
             ctx.restore();
             
-            applyRoomShading(ctx, r, s, 1.0, rCtx);
+            if (!rCtx.showTerrainIcons) {
+                applyRoomShading(ctx, r, s, 1.0, rCtx);
+            }
         }
     }
     ctx.restore();
@@ -2026,6 +2067,8 @@ export const drawTerrains = (
                 drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects, tFloor, walls, trailSuffix);
                 if (perfMonitor.enabled) perfMonitor.addIconMs(performance.now() - tIconStart);
                 ctx.restore();
+
+                applyRoomShading(ctx, r, s, 1.0, rCtx);
             }
         }
     }
@@ -2133,7 +2176,9 @@ export const drawTerrains = (
                 }
                 ctx.restore();
 
-                applyRoomShading(ctx, r, s, 1.0, rCtx);
+                if (!rCtx.showTerrainIcons) {
+                    applyRoomShading(ctx, r, s, 1.0, rCtx);
+                }
             }
         }
 
@@ -2158,6 +2203,8 @@ export const drawTerrains = (
 
                     drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects3, tFloor3, walls, trailSuffix);
                     ctx.restore();
+
+                    applyRoomShading(ctx, r, s, 1.0, rCtx);
                 }
             }
         }
@@ -2199,7 +2246,9 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
             fillTerrainTile(ctx, rx, ry, s);
             ctx.restore();
         }
-        applyRoomShading(ctx, { ...room, x: rx, y: ry, vnum: String(room.id).startsWith('m_') ? room.id.substring(2) : room.id }, s, 1.0, rCtx);
+        if (!rCtx.showTerrainIcons) {
+            applyRoomShading(ctx, { ...room, x: rx, y: ry, vnum: String(room.id).startsWith('m_') ? room.id.substring(2) : room.id }, s, 1.0, rCtx);
+        }
     }
     // Correctly restore once AFTER the loop
     ctx.restore();
@@ -2235,6 +2284,8 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
 
             drawTerrainTileIcon(ctx, rx, ry, s, room.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnectsLocal, tFloorLocal, walls, trailSuffix);
             ctx.restore();
+
+            applyRoomShading(ctx, { ...room, x: rx, y: ry, vnum: String(room.id).startsWith('m_') ? room.id.substring(2) : room.id }, s, 1.0, rCtx);
         }
     }
 };

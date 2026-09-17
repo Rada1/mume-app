@@ -7,6 +7,8 @@ import { EFFECT_TIMER_CATALOG, findEffectTimerEntry } from '../../data/effectTim
 import { useEffectTimerStore } from '../../stores/useEffectTimerStore';
 
 const RECENT_WINDOW_MS = 15_000;
+const requiresConfirmation = (entry: { kind: string }) =>
+    entry.kind === 'spell' || entry.kind === 'sanctuary' || entry.kind === 'blind';
 
 const extractQuoted = (text: string) => text.match(/['"]([^'"]+)['"]/)?.[1]?.trim();
 
@@ -21,6 +23,10 @@ const extractTarget = (command: string, effectName: string) => {
 
 let lastEffectCommand: { entryId: string; target?: string; at: number } | null = null;
 
+/** Returns the confirmed local effect that ended on this line, if any. */
+export const getEndedEffectTimerEntry = (text: string) =>
+    EFFECT_TIMER_CATALOG.find(entry => entry.endPatterns?.some(pattern => pattern.test(text))) ?? null;
+
 export const recordEffectTimerCommand = (command: string) => {
     const lower = command.trim().toLowerCase();
     if (!/^(?:cast|c|commune|pray|quaff|drink|eat|use)\b/.test(lower)) return;
@@ -31,7 +37,10 @@ export const recordEffectTimerCommand = (command: string) => {
     if (!entry) return;
 
     const target = entry.kind === 'blind' ? extractTarget(command, spellName || entry.name) : undefined;
-    useEffectTimerStore.getState().addTimer(entry, 'command', target);
+    // Spell attempts are not active effects. Wait for MUME's completion line.
+    if (!requiresConfirmation(entry)) {
+        useEffectTimerStore.getState().addTimer(entry, 'command', target);
+    }
     lastEffectCommand = { entryId: entry.id, target, at: Date.now() };
 };
 
@@ -39,13 +48,12 @@ export const parseEffectTimerLine = (text: string) => {
     const lower = text.toLowerCase();
     const store = useEffectTimerStore.getState();
 
-    for (const entry of EFFECT_TIMER_CATALOG) {
-        if (entry.endPatterns?.some(pattern => pattern.test(text))) {
-            store.timers
-                .filter(timer => timer.catalogId === entry.id)
-                .forEach(timer => store.removeTimer(timer.id));
-            return true;
-        }
+    const endedEntry = getEndedEffectTimerEntry(text);
+    if (endedEntry) {
+        store.timers
+            .filter(timer => timer.catalogId === endedEntry.id)
+            .forEach(timer => store.removeTimer(timer.id));
+        return true;
     }
 
     const recent = lastEffectCommand && Date.now() - lastEffectCommand.at < RECENT_WINDOW_MS
@@ -59,7 +67,7 @@ export const parseEffectTimerLine = (text: string) => {
         return false;
     }
 
-    if (recent && /^(?:you feel|you are|ok\.|your spell|you suddenly|you begin)/i.test(text.trim())) {
+    if (recent && !requiresConfirmation(recent) && /^(?:you feel|you are|ok\.|your spell|you suddenly|you begin)/i.test(text.trim())) {
         store.addTimer(recent, 'parser', lastEffectCommand?.target);
         lastEffectCommand = null;
         return true;

@@ -3,8 +3,12 @@
  * @description Three-slider prompt popout for mood, spell speed, and alertness.
  */
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
+// CustomPromptBar owns the desktop prompt indicators. Import the shared
+// popover styles here so they are present whenever an indicator opens one,
+// rather than relying on the legacy PromptBox component being mounted.
+import './PromptBox.css';
 
 export interface DispositionSliderConfig {
     id: 'mood' | 'speed' | 'alert';
@@ -41,15 +45,30 @@ export const DispositionSliderPopout: React.FC<DispositionSliderPopoutProps> = (
     onSelect,
     onClose
 }) => {
+    const panelRef = useRef<HTMLDivElement>(null);
     const visibleSliders = slider ? [slider] : (sliders || []);
+    const popoutTop = anchorRect.top < 280
+        ? anchorRect.bottom + 12
+        : Math.max(16, anchorRect.top - 240);
+
+    useEffect(() => {
+        const closeOnOutsideClick = (event: MouseEvent) => {
+            if (panelRef.current && !panelRef.current.contains(event.target as Node)) onClose();
+        };
+        // Bubble after React's click handler so prompt controls can dispatch
+        // their command before an open slider is dismissed.
+        document.addEventListener('click', closeOnOutsideClick);
+        return () => document.removeEventListener('click', closeOnOutsideClick);
+    }, [onClose]);
 
     return ReactDOM.createPortal(
     <>
-        <div className="disposition-popout-backdrop" onClick={(e) => { e.stopPropagation(); onClose(); }} />
         <div
+            ref={panelRef}
             className={`disposition-popout${slider ? ' disposition-single-popout' : ''}`}
             style={{
-                bottom: (window.innerHeight - anchorRect.top) + 12,
+                top: popoutTop,
+                bottom: 'auto',
                 left: anchorRect.left + (anchorRect.width / 2)
             }}
             onClick={(e) => e.stopPropagation()}
@@ -59,7 +78,9 @@ export const DispositionSliderPopout: React.FC<DispositionSliderPopoutProps> = (
                 const currentIndex = getIndex(activeSlider.value, activeSlider.options);
                 return (
                     <div key={activeSlider.id} className="disposition-slider-column has-codes">
-                        <div className="disposition-slider-label">{activeSlider.label}</div>
+                        {slider
+                            ? <div className="disposition-slider-label disposition-slider-label--spacer" aria-hidden="true" />
+                            : <div className="disposition-slider-label">{activeSlider.label}</div>}
                         <div className="disposition-slider-codes">
                             {[...activeSlider.options.keys()].reverse().map((realIndex) => (
                                 <span
@@ -88,11 +109,11 @@ export const DispositionSliderPopout: React.FC<DispositionSliderPopoutProps> = (
                                 const realIndex = activeSlider.displayLabels.length - 1 - reverseIndex;
                                 const isActive = realIndex === currentIndex;
                                 return (
-                                    <button
-                                        key={displayLabel}
-                                        className={`disposition-option${isActive ? ' active' : ''}`}
-                                        onClick={() => onSelect(activeSlider.id, activeSlider.options[realIndex], realIndex)}
-                                    >
+                                <button
+                                    key={displayLabel}
+                                    className={`disposition-option${isActive ? ' active' : ''}`}
+                                    onClick={() => onSelect(activeSlider.id, activeSlider.options[realIndex], realIndex)}
+                                >
                                         {displayLabel}
                                     </button>
                                 );

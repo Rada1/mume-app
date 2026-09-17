@@ -50,37 +50,21 @@ export const ActionBox: FC<ActionBoxProps> = ({
         accountState
     } = useGame();
 
-    // In account mode every stage has its own purpose-built input (the AccountDeck
-    // menu, the creation panel's contextual field), so the generic command line is
-    // redundant — except at the login stage, where InputArea renders the login card.
-    const hideCommandInput = gameState === 'account' && accountState?.stage !== 'login';
+    // AccountDeck owns the account menu and character-creation inputs. The login
+    // and new-account confirmation stages are rendered by InputArea, including the
+    // free-form Y/N answer required after sending `new`.
+    const showsStandaloneAccountInput = accountState?.stage === 'login' ||
+        accountState?.stage === 'account-confirmation';
+    const hideCommandInput = gameState === 'account' && !showsStandaloneAccountInput;
 
     const { setPopoverState } = useUI();
-
     const bottomBarOpacity = useSettingsStore(s => s.bottomBarOpacity);
-    const setBottomBarOpacity = useSettingsStore(s => s.setBottomBarOpacity);
 
     return (
         <div
             className={`action-box${gameState === 'account' ? ' account-mode' : ''}`}
             style={{ opacity: bottomBarOpacity } as React.CSSProperties}
         >
-            {/* Floating Opacity Slider */}
-            {!viewport.isMobile && (
-                <div className="bottom-bar-opacity-slider-container" onPointerDown={(e) => e.stopPropagation()}>
-                    <span className="bottom-bar-opacity-label">Opacity:</span>
-                    <input
-                        type="range"
-                        min="0.1"
-                        max="1.0"
-                        step="0.05"
-                        value={bottomBarOpacity}
-                        onChange={(e) => setBottomBarOpacity(parseFloat(e.target.value))}
-                        className="bottom-bar-opacity-slider"
-                    />
-                    <span className="bottom-bar-opacity-value">{Math.round(bottomBarOpacity * 100)}%</span>
-                </div>
-            )}
             {gameState !== 'account' && (
                 <div className="action-box-controls">
                     {promptSlot && <div className="action-box-prompt-cell">{promptSlot}</div>}

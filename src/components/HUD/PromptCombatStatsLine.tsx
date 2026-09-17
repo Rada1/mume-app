@@ -3,7 +3,7 @@
  * @description Compact combat stat strip for the player side of the prompt box.
  */
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Sword, Shield } from 'lucide-react';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 
@@ -56,25 +56,60 @@ const DodgeBonusIcon: React.FC<{ size?: number }> = ({ size = 12 }) => (
 const PromptCombatStatsLine: React.FC = () => {
     const stats = useActiveVitals();
     const fmt = (value: number | undefined) => value !== undefined ? `${value}%` : '--';
-    
+
     const statPairs = [
         { id: 'ob', label: 'OB', value: stats.ob, icon: <Sword size={12} strokeWidth={2.5} /> },
         { id: 'db', label: 'DB', value: stats.db, icon: <DodgeBonusIcon size={12} /> },
         { id: 'pb', label: 'PB', value: stats.pb, icon: <Shield size={12} strokeWidth={2.5} /> },
         { id: 'armour', label: 'Armour', value: stats.armour, icon: <ArmourIcon size={12} /> }
     ];
+    const previousValuesRef = useRef<Record<string, number | undefined> | null>(null);
+    const [changeAnimations, setChangeAnimations] = useState<Record<string, { direction: 'up' | 'down'; key: number }>>({});
+
+    useEffect(() => {
+        const nextValues = Object.fromEntries(statPairs.map(({ id, value }) => [id, value]));
+        const previousValues = previousValuesRef.current;
+
+        if (previousValues) {
+            const changes = statPairs.filter(({ id, value }) =>
+                value !== undefined && previousValues[id] !== undefined && value !== previousValues[id]
+            );
+            if (changes.length > 0) {
+                setChangeAnimations(current => {
+                    const next = { ...current };
+                    for (const { id, value } of changes) {
+                        next[id] = {
+                            direction: value! > previousValues[id]! ? 'up' : 'down',
+                            key: (current[id]?.key || 0) + 1
+                        };
+                    }
+                    return next;
+                });
+            }
+        }
+
+        previousValuesRef.current = nextValues;
+    }, [stats.ob, stats.db, stats.pb, stats.armour]);
 
     return (
         <div 
             className="prompt-combat-stats-line" 
             aria-label="Combat stats"
         >
-            {statPairs.map(({ id, label, value, icon }) => (
+            {statPairs.map(({ id, label, value, icon }) => {
+                const animation = changeAnimations[id];
+                return (
                 <span key={id} className="prompt-combat-stat" title={label}>
                     <span className="stat-icon-wrapper">{icon}</span>
-                    <strong>{fmt(value)}</strong>
+                    <strong
+                        key={animation?.key || 0}
+                        className={animation ? `combat-stat-change-${animation.direction}` : undefined}
+                    >
+                        {fmt(value)}
+                    </strong>
                 </span>
-            ))}
+                );
+            })}
         </div>
     );
 };

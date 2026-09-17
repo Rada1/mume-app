@@ -615,6 +615,33 @@
     font-weight: 900;
 }
 
+.prompt-combat-stat strong.combat-stat-change-up,
+.prompt-combat-stat strong.combat-stat-change-down {
+    display: inline-block;
+    animation: combat-stat-change 900ms cubic-bezier(0.2, 0.85, 0.3, 1);
+}
+
+.prompt-combat-stat strong.combat-stat-change-up {
+    --combat-stat-change-color: #86efac;
+}
+
+.prompt-combat-stat strong.combat-stat-change-down {
+    --combat-stat-change-color: #fca5a5;
+}
+
+@keyframes combat-stat-change {
+    0% { transform: scale(1); color: var(--ansi-green, #55ff55); text-shadow: none; }
+    30% { transform: scale(1.45); color: var(--combat-stat-change-color); text-shadow: 0 0 10px currentColor; }
+    100% { transform: scale(1); color: var(--ansi-green, #55ff55); text-shadow: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .prompt-combat-stat strong.combat-stat-change-up,
+    .prompt-combat-stat strong.combat-stat-change-down {
+        animation: none;
+    }
+}
+
 .condition-badge {
     display: flex;
     align-items: center;
@@ -925,13 +952,6 @@
     text-shadow: none;
 }
 
-.disposition-popout-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 3500;
-    background: transparent;
-}
-
 .disposition-popout {
     --disposition-bg: #231c16;
     --disposition-border: #3d3020;
@@ -951,9 +971,14 @@
     border: 1px solid var(--disposition-border);
     border-radius: 12px;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.22);
-    z-index: 3501;
+    z-index: 10000003;
     pointer-events: auto;
-    animation: popover-bounce-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    /* The shared popover animation writes its own transform, which replaces the
+       translateX used to centre this fixed-position prompt control.  Keep the
+       positioned transform intact so it remains visible above the desktop bar. */
+    animation: none;
+    opacity: 1;
+    visibility: visible;
 }
 
 .light-mode .disposition-popout {
@@ -1021,6 +1046,13 @@
     line-height: 1;
     text-align: center;
     text-transform: uppercase;
+}
+
+/* The grid reserves its first row for a column label. Single-column prompt
+   sliders do not need a second visible title, but retain an invisible spacer
+   so the range and option rows keep their intended height and alignment. */
+.disposition-slider-label--spacer {
+    visibility: hidden;
 }
 
 .disposition-slider {

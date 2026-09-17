@@ -120,6 +120,7 @@ export function useMessageLog(
     // animate the room output it produces. The direction is consumed by the
     // next room title, so ordinary `look` output remains still.
     const pendingRoomArrivalRef = useRef<{ direction: MovementDirection; timestamp: number } | null>(null);
+    const pendingFocusRevealUntilRef = useRef(0);
 
     // Resource gains (XP/TP) arrive via GMCP, sometimes just *before* the combat line
     // that earned them. We queue them and attach to the next action line that flushes;
@@ -659,6 +660,31 @@ export function useMessageLog(
             }
         }
 
+        const receivedAt = Date.now();
+        // Arm focus only after the command echo has actually entered the log. Listening
+        // to the outbound socket event made the animation run before the server's prose
+        // existed, where it could be interrupted by the arriving response.
+        const echoedCommand = currentTextOnly.trim().replace(/^.*>\s*/, '');
+        const isFocusCommand = finalType === 'user' &&
+            /^(?:l|look|ex|exa|exam|examine)(?:\s|$)/i.test(echoedCommand);
+        const isMovementCommand = finalType === 'user' && !!normalizeMovementDirection(echoedCommand);
+        if (finalType === 'user') {
+            // Keep this generous enough to survive a burst of queued commands
+            // and their interleaved server prompts.
+            pendingFocusRevealUntilRef.current = (isFocusCommand || isMovementCommand) ? receivedAt + 4000 : 0;
+        }
+
+        const isFocusReveal = finalType !== 'user' &&
+            (pendingFocusRevealUntilRef.current > receivedAt || finalType === 'movement' || !!roomArrivalDirection) &&
+            (finalType === 'game' || finalType === 'movement' || finalType === 'room-name' || finalType === 'room-description') &&
+            !isEmpty;
+        // A prompt can belong to an earlier command while a newer look/move is
+        // already in flight. Only expiry clears the reveal; otherwise prompt
+        // ordering can make the next room or examine text miss its fade-in.
+        if (pendingFocusRevealUntilRef.current <= receivedAt) {
+            pendingFocusRevealUntilRef.current = 0;
+        }
+
         // Every incoming game line gets the same one-shot text cue. This keeps
         // multi-line responses (such as `who`) visually coherent.
         const shouldApplyAudioSheen = finalType !== 'prompt' && finalType !== 'user' && !isEmpty;
@@ -668,7 +694,7 @@ export function useMessageLog(
             tokens,
             textRaw: processedText,
             type: finalType,
-            timestamp: Date.now(),
+            timestamp: receivedAt,
             isCombat,
             isSubduedAction,
             combatSide,
@@ -707,6 +733,7 @@ export function useMessageLog(
             isSnoopInput: providedIsSnoopInput,
             isRipMessage: providedIsRipMessage,
             audioSheen: shouldApplyAudioSheen,
+            isFocusReveal,
             resourceGain,
             promptHPStatus,
             promptManaStatus,

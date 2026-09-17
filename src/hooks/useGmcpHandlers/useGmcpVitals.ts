@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react';
 import { GmcpCharVitals, GmcpCharInfo, CombatHealthStatus } from '../../types';
 import { normalizeCombatantName } from '../../utils/combatUtils';
 import { normalizeGmcpWeather } from '../../utils/weatherUtils';
+import { getDispositionSliderPitch } from '../../utils/dispositionSoundUtils';
 
 interface UseGmcpVitalsProps {
     setCurrentTerrain: (terrain: string) => void;
@@ -13,7 +14,10 @@ interface UseGmcpVitalsProps {
     setBufferName: (name: string | null) => void;
     setPlayerPosition: (pos: string) => void;
     setMood?: (val: string) => void;
+    setSpellSpeed?: (val: string) => void;
+    setAlertness?: (val: string) => void;
     sendCommand?: (cmd: string) => void;
+    playEffect?: (name: string, options?: { pitch?: number; skipJitter?: boolean }) => void;
     setCurrentWeather: (weather: import('../../types').WeatherType) => void;
     setIsFoggy: (isFoggy: boolean) => void;
     setCharacterInfo: React.Dispatch<React.SetStateAction<import('../../types').CharacterInfo>>;
@@ -38,7 +42,10 @@ export const useGmcpVitals = ({
     setBufferName,
     setPlayerPosition,
     setMood,
+    setSpellSpeed,
+    setAlertness,
     sendCommand,
+    playEffect,
     setCurrentWeather,
     setIsFoggy,
     setCharacterInfo,
@@ -53,6 +60,8 @@ export const useGmcpVitals = ({
     bufferName
 }: UseGmcpVitalsProps) => {
     const lastMoodRef = useRef<string | null>(null);
+    const lastSpellSpeedRef = useRef<string | null>(null);
+    const lastAlertnessRef = useRef<string | null>(null);
 
     const onCharVitals = useCallback((data: GmcpCharVitals) => {
         if (data.mood && !isSpectateMode) {
@@ -62,7 +71,28 @@ export const useGmcpVitals = ({
             setMood?.(nextMood);
 
             if (previousMood !== null && previousMood !== nextMood) {
+                playEffect?.('slider', { pitch: getDispositionSliderPitch('mood', nextMood), skipJitter: true });
                 sendCommand?.('info %O %D %k %A');
+            }
+        }
+
+        if (data['spell-effort'] && !isSpectateMode) {
+            const nextSpellSpeed = data['spell-effort'].toLowerCase();
+            const previousSpellSpeed = lastSpellSpeedRef.current;
+            lastSpellSpeedRef.current = nextSpellSpeed;
+            setSpellSpeed?.(nextSpellSpeed);
+            if (previousSpellSpeed !== null && previousSpellSpeed !== nextSpellSpeed) {
+                playEffect?.('slider', { pitch: getDispositionSliderPitch('spellSpeed', nextSpellSpeed), skipJitter: true });
+            }
+        }
+
+        if (data.alertness && !isSpectateMode) {
+            const nextAlertness = data.alertness.toLowerCase();
+            const previousAlertness = lastAlertnessRef.current;
+            lastAlertnessRef.current = nextAlertness;
+            setAlertness?.(nextAlertness);
+            if (previousAlertness !== null && previousAlertness !== nextAlertness) {
+                playEffect?.('slider', { pitch: getDispositionSliderPitch('alertness', nextAlertness), skipJitter: true });
             }
         }
 
@@ -153,7 +183,7 @@ export const useGmcpVitals = ({
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
             gmcpBus.emit('Char.Vitals', { ...data, isSnooped: false });
         });
-    }, [setCurrentTerrain, setCurrentWeather, setIsFoggy, setPlayerHealthStatus, setOpponentId, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, setPlayerPosition, setMood, sendCommand, findStatus, getCharNameFromId, isSpectateMode, detectLighting, playerPositionRef, setInCombat]);
+    }, [setCurrentTerrain, setCurrentWeather, setIsFoggy, setPlayerHealthStatus, setOpponentId, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, setPlayerPosition, setMood, setSpellSpeed, setAlertness, sendCommand, playEffect, findStatus, getCharNameFromId, isSpectateMode, detectLighting, playerPositionRef, setInCombat]);
 
     const onCharInfo = useCallback((data: GmcpCharInfo) => {
         // console.log('[GMCP] CharInfo:', data);

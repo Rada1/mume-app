@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { isLookCommand, isWhoCommand, isEqOrInvCommand, isFleeCommand, isGetCommand, isDropCommand } from './useCommandController';
+import { isLookCommand, isWhoCommand, isWhereCommand, isEqOrInvCommand, isFleeCommand, isGetCommand, isDropCommand } from './useCommandController';
 
 describe('useCommandController command helpers', () => {
     describe('isLookCommand', () => {
@@ -95,6 +95,21 @@ describe('useCommandController command helpers', () => {
             expect(isWhoCommand('stand')).toBe(false);
             expect(isWhoCommand('stab')).toBe(false);
             expect(isWhoCommand('scan')).toBe(false);
+        });
+    });
+
+    describe('isWhereCommand', () => {
+        it('matches where commands and abbreviations', () => {
+            expect(isWhereCommand('where')).toBe(true);
+            expect(isWhereCommand('whe gandalf')).toBe(true);
+            expect(isWhereCommand('wher')).toBe(true);
+            expect(isWhereCommand('stand; where gandalf')).toBe(true);
+        });
+
+        it('does not match other information commands', () => {
+            expect(isWhereCommand('who')).toBe(false);
+            expect(isWhereCommand('score')).toBe(false);
+            expect(isWhereCommand('')).toBe(false);
         });
     });
 

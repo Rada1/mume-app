@@ -24,8 +24,8 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         kind: 'spell',
         aliases: ['bless'],
         durationMs: min(30),
-        startPatterns: [/You feel righteous/i, /You bless/i, /renewed light shine upon you/i],
-        endPatterns: [/blessing .*wears off/i, /feel less blessed/i]
+        startPatterns: [/You feel righteous/i, /You bless/i, /renewed light shine upon you/i, /You begin to feel the light of Aman shine upon you/i],
+        endPatterns: [/blessing .*wears off/i, /feel less blessed/i, /The light of Aman fades away from you/i]
     },
     {
         id: 'spell-shield',
@@ -35,6 +35,14 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         durationMs: min(30),
         startPatterns: [/You feel protected/i],
         endPatterns: [/shield .*wears off/i]
+    },
+    {
+        id: 'spell-shroud',
+        name: 'Shroud',
+        kind: 'spell',
+        aliases: ['shroud'],
+        startPatterns: [/You are surrounded by a misty shroud/i],
+        endPatterns: [/(?:your|the) misty shroud .*?(?:fades|wears off|disappears|vanishes)/i, /You feel more exposed/i]
     },
     {
         id: 'spell-sense-life',

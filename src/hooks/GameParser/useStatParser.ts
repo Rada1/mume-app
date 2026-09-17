@@ -126,7 +126,9 @@ export function useStatParser(deps: StatParserDeps) {
 
     const parseCompactCombatInfo = useCallback((content: string) => {
         const trimmed = content.trim();
-        const match = trimmed.match(/^(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/);
+        // `info %O %D %k %A` may include percent signs and negative modifiers.
+        // Accept both its bare compact form and its formatted variant.
+        const match = trimmed.match(/^(-?\d+)%?\s+(-?\d+)%?\s+(-?\d+)%?\s+(-?\d+)%?$/);
         if (!match) return false;
 
         setStats(prev => ({

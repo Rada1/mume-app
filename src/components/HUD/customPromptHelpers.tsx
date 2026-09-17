@@ -30,9 +30,20 @@ export const HEALTH_MAP: Record<string, number> = {
     bad: 33, awful: 16, dying: 0, stunned: 25, none: 0
 };
 
+// MUME reports these descriptive bands during combat rather than exact values.
+export const HEALTH_COMBAT_RANGES: Record<string, string> = {
+    healthy: '100%', fine: '71–99%', hurt: '51–70%', wounded: '31–50%',
+    bad: '16–30%', awful: '6–15%', dying: '1–5%', stunned: '0%', none: '0%'
+};
+
 export const MANA_MAP: Record<string, number> = {
     full: 100, burning: 83, hot: 66, warm: 50,
     cold: 33, icy: 16, frozen: 0
+};
+
+export const MANA_COMBAT_RANGES: Record<string, string> = {
+    full: '100%', burning: '71–99%', hot: '51–70%', warm: '31–50%',
+    cold: '16–30%', icy: '6–15%', frozen: '0–5%'
 };
 
 export const MOVE_MAP: Record<string, number> = {

@@ -91,18 +91,86 @@
     color: #a8a29e;
 }
 
+/* Known per-tick regeneration modifier shown beside each current vital. */
+.custom-prompt-bar .prompt-regen-value {
+    --regen-stat-base-color: #7dd3fc;
+    color: var(--regen-stat-base-color);
+    font-size: 0.76em;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+.light-mode .custom-prompt-bar .prompt-regen-value {
+    --regen-stat-base-color: #0369a1;
+}
+
+.custom-prompt-bar .prompt-regen-value.regen-stat-change-up,
+.custom-prompt-bar .prompt-regen-value.regen-stat-change-down {
+    display: inline-block;
+    animation: prompt-regen-stat-change 900ms cubic-bezier(0.2, 0.85, 0.3, 1);
+}
+
+.custom-prompt-bar .prompt-regen-value.regen-stat-change-up {
+    --regen-stat-change-color: #86efac;
+}
+
+.custom-prompt-bar .prompt-regen-value.regen-stat-change-down {
+    --regen-stat-change-color: #fca5a5;
+}
+
+@keyframes prompt-regen-stat-change {
+    0% { transform: scale(1); color: var(--regen-stat-base-color); text-shadow: none; }
+    30% { transform: scale(1.45); color: var(--regen-stat-change-color); text-shadow: 0 0 10px currentColor; }
+    100% { transform: scale(1); color: var(--regen-stat-base-color); text-shadow: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .custom-prompt-bar .prompt-regen-value.regen-stat-change-up,
+    .custom-prompt-bar .prompt-regen-value.regen-stat-change-down {
+        animation: none;
+    }
+}
+
 .light-mode .custom-prompt-bar .prompt-stat-label {
     color: #78716c;
 }
 
 /* Vital percentages (HP/MANA/MP) use the same green as ANSI stat numbers in the log */
 .custom-prompt-bar .prompt-vitals-row .prompt-stat-value {
-    color: #22c55e;
+    --vital-stat-base-color: #22c55e;
+    color: var(--vital-stat-base-color);
     font-weight: 700;
 }
 
 .light-mode .custom-prompt-bar .prompt-vitals-row .prompt-stat-value {
-    color: #16a34a;
+    --vital-stat-base-color: #16a34a;
+}
+
+.custom-prompt-bar .prompt-vitals-row .prompt-stat-value.vital-stat-change-up,
+.custom-prompt-bar .prompt-vitals-row .prompt-stat-value.vital-stat-change-down {
+    display: inline-block;
+    animation: vital-stat-change 900ms cubic-bezier(0.2, 0.85, 0.3, 1);
+}
+
+.custom-prompt-bar .prompt-vitals-row .prompt-stat-value.vital-stat-change-up {
+    --vital-stat-change-color: #86efac;
+}
+
+.custom-prompt-bar .prompt-vitals-row .prompt-stat-value.vital-stat-change-down {
+    --vital-stat-change-color: #fca5a5;
+}
+
+@keyframes vital-stat-change {
+    0% { transform: scale(1); color: var(--vital-stat-base-color); text-shadow: none; }
+    30% { transform: scale(1.45); color: var(--vital-stat-change-color); text-shadow: 0 0 10px currentColor; }
+    100% { transform: scale(1); color: var(--vital-stat-base-color); text-shadow: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .custom-prompt-bar .prompt-vitals-row .prompt-stat-value.vital-stat-change-up,
+    .custom-prompt-bar .prompt-vitals-row .prompt-stat-value.vital-stat-change-down {
+        animation: none;
+    }
 }
 
 .custom-prompt-bar .prompt-stat-divider {

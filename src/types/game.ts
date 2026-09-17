@@ -108,6 +108,7 @@ export interface Message {
     isHitterImpact?: boolean;
     isRipMessage?: boolean;
     audioSheen?: boolean;
+    isFocusReveal?: boolean;
     isSubduedAction?: boolean;
     resourceGain?: ResourceGain;
     isSnoop?: boolean;

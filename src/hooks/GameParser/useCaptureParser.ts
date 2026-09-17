@@ -14,6 +14,7 @@ import { getArchiveListExpectedCount, mergeArchiveEntries, parseArchiveList, par
 import { useShaperEntityStore } from '../../shaper/model/useShaperEntityStore';
 import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
 import { useUIStore } from '../../stores/useUIStore';
+import { reconcileSelfEffectTimers } from '../../services/timers/reconcileEffectTimers';
 
 export interface CaptureParserDeps {
     captureSession: CaptureSession | null;
@@ -301,7 +302,10 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 case 'stats':
                     {
                         const affectedBy = parseAffectedByLines(lines);
-                        if (affectedBy) setCharacterInfo?.({ affectedBy });
+                        if (affectedBy !== null) {
+                            setCharacterInfo?.({ affectedBy });
+                            reconcileSelfEffectTimers(affectedBy);
+                        }
                     }
                     setStatsLines(lines);
                     break;
@@ -320,7 +324,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 case 'info':
                     {
                         const affectedBy = parseAffectedByLines(lines);
-                        if (affectedBy) setCharacterInfo?.({ affectedBy });
+                        if (affectedBy !== null) setCharacterInfo?.({ affectedBy });
                     }
                     setInfoLines(lines);
                     break;

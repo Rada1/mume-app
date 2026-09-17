@@ -11,6 +11,7 @@ import { useRoomStore } from '../../stores/useRoomStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { getMumeCommandMatch, replaceMumeCommandToken } from '../../utils/mumeCommandCatalog';
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
+import { getCastSpellFragment, getCastSpellSuggestions, replaceCastSpellArgument } from '../../utils/spellSuggestionUtils';
 
 
 
@@ -92,7 +93,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     const { ui, setUI } = useUI();
     const { viewport } = useBaseGame();
     const { stats } = useVitals();
-    const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode, accountState, env, popoverState } = useGame() as any;
+    const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode, accountState, env, popoverState, abilities = {}, characterClass = 'none' } = useGame() as any;
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
     const setLoginName = useSettingsStore(s => s.setLoginName);
@@ -517,6 +518,13 @@ const InputArea: React.FC<InputAreaProps> = ({
         requestAnimationFrame(() => inputRef.current?.focus());
     }, [input, setInput]);
 
+    const spellSuggestions = useMemo(() => getCastSpellSuggestions(input, abilities, characterClass), [abilities, characterClass, input]);
+    const isSpellCastInput = getCastSpellFragment(input) !== null;
+    const chooseSpellSuggestion = useCallback((spell: string) => {
+        setInput(replaceCastSpellArgument(input, spell));
+        requestAnimationFrame(() => inputRef.current?.focus());
+    }, [input, setInput]);
+
     const chooseCommandSuggestion = useCallback((entry: Parameters<typeof replaceMumeCommandToken>[1]) => {
         setInput(replaceMumeCommandToken(input, entry));
         requestAnimationFrame(() => inputRef.current?.focus());
@@ -529,9 +537,15 @@ const InputArea: React.FC<InputAreaProps> = ({
         input.trim().length > 0;
     const showTargetPopup = shouldSuggestMumeCommands &&
         hasCommandArgumentSpace &&
+        !isSpellCastInput &&
         (isCommandInputFocused || isTargetPickerForced) &&
         targetSuggestions.length > 0;
-    const showCompletionPopup = showCommandPopup || showTargetPopup;
+    const showSpellPopup = shouldSuggestMumeCommands &&
+        hasCommandArgumentSpace &&
+        isSpellCastInput &&
+        isCommandInputFocused &&
+        spellSuggestions.length > 0;
+    const showCompletionPopup = showCommandPopup || showTargetPopup || showSpellPopup;
     const visibleCommandSuggestions = useMemo(() => {
         if (!mumeCommandMatch.entry) return mumeCommandMatch.suggestions;
         const otherSuggestions = mumeCommandMatch.suggestions.filter(entry => entry.full !== mumeCommandMatch.entry?.full);
@@ -574,10 +588,29 @@ const InputArea: React.FC<InputAreaProps> = ({
         <div
             className="command-suggestion-popup"
             role="listbox"
-            aria-label={showTargetPopup ? 'MUME target suggestions' : 'MUME command suggestions'}
+            aria-label={showTargetPopup ? 'MUME target suggestions' : showSpellPopup ? 'MUME spell suggestions' : 'MUME command suggestions'}
             style={commandPopupStyle}
         >
-            {showTargetPopup
+            {showSpellPopup
+                ? spellSuggestions.map((entry, index) => {
+                    const hotkey = suggestionHotkeyForIndex(index);
+                    return (
+                    <button
+                        key={entry.key}
+                        type="button"
+                        className={`command-suggestion-option target-suggestion-option${index === 0 ? ' is-selected' : ''}`}
+                        onPointerDown={event => {
+                            event.preventDefault();
+                            chooseSpellSuggestion(entry.value);
+                        }}
+                    >
+                        {hotkey && <span className="command-suggestion-key">{hotkey}</span>}
+                        <span className="command-suggestion-name">{entry.label}</span>
+                        <span className="command-suggestion-full">spell</span>
+                    </button>
+                    );
+                })
+                : showTargetPopup
                 ? visibleTargetSuggestions.map((entry, index) => {
                     const hotkey = suggestionHotkeyForIndex(index);
                     return (
@@ -939,7 +972,14 @@ const InputArea: React.FC<InputAreaProps> = ({
                             onKeyDown={(e) => {
                                 if (showCompletionPopup && /^[0-9]$/.test(e.key)) {
                                     const optionIndex = e.key === '0' ? 9 : parseInt(e.key, 10) - 1;
-                                    if (showTargetPopup) {
+                                    if (showSpellPopup) {
+                                        const option = spellSuggestions[optionIndex];
+                                        if (option) {
+                                            e.preventDefault();
+                                            chooseSpellSuggestion(option.value);
+                                            return;
+                                        }
+                                    } else if (showTargetPopup) {
                                         const option = visibleTargetSuggestions[optionIndex];
                                         if (option) {
                                             e.preventDefault();
@@ -967,7 +1007,9 @@ const InputArea: React.FC<InputAreaProps> = ({
                                     useInputStore.getState().navigateHistory('down');
                                 } else if (e.key === 'Tab' && !viewport.isMobile) {
                                     e.preventDefault();
-                                    if (showTargetPopup && selectedTargetSuggestion) {
+                                    if (showSpellPopup && spellSuggestions[0]) {
+                                        chooseSpellSuggestion(spellSuggestions[0].value);
+                                    } else if (showTargetPopup && selectedTargetSuggestion) {
                                         setInput(replaceCommandArgumentToken(input, selectedTargetSuggestion.value));
                                         requestAnimationFrame(() => inputRef.current?.focus());
                                     } else if (mumeCommandMatch.entry) {

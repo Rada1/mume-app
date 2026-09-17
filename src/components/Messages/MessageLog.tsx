@@ -37,6 +37,23 @@ const formatTimestamp = (ts: number) => {
     return `[${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}]`;
 };
 
+const playedFocusRevealIds = new Set<string>();
+
+// Account output intentionally bypasses the entity tokenizer to preserve terminal
+// formatting. Wrap only its visible HTML text nodes so the login screen can still
+// participate in the continuous word-by-word ripple.
+const wrapHtmlWordsForRipple = (html: string): string => {
+    let wordIndex = 0;
+    return html.replace(/(>|^)([^<]+)(?=<|$)/g, (_match, boundary: string, text: string) => {
+        const wrappedText = text.replace(/(\S+)(\s*)/g, (_wordMatch, word: string, trailingSpace: string) => {
+            const wrappedWord = `<span class="log-text-word" style="--word-idx:${wordIndex}">${word}</span>`;
+            wordIndex += 1;
+            return `${wrappedWord}${trailingSpace}`;
+        });
+        return `${boundary}${wrappedText}`;
+    });
+};
+
 /**
  * Expands a user-typed command into the l(ook) display format.
  * Returns null when no expansion applies (typed full word, unknown cmd, or has args).
@@ -177,11 +194,21 @@ const MessageItem = React.memo(({
     };
 }) => {
     const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
+    const { gameState } = useBaseGame();
     const content = msg.html;
+    const accountRippleHtml = gameState === 'account' && (!msg.tokens || msg.tokens.length === 0)
+        ? wrapHtmlWordsForRipple(sanitizeMumeHtml(content))
+        : sanitizeMumeHtml(content);
+    const isLoginNamePrompt = /\bby what name do you wish to be known\?/i.test(msg.textRaw || msg.textOnly || '');
     const entityCountPrompt = msg.type === 'game' ? parseEntityCountPrompt(msg.textOnly || msg.textRaw || '') : null;
     const [isRecent] = React.useState(() => Date.now() - msg.timestamp < 3500);
     const isImpactRumble = isRecent && (msg.isHitImpact || msg.isDamageImpact);
     const impactRowRef = React.useRef<HTMLDivElement>(null);
+    const messageRootRef = React.useRef<HTMLDivElement>(null);
+    // Virtualized rows are reused, so bind the animation to its message ID rather
+    // than leaving a boolean active for whichever message occupies the row next.
+    const [focusRevealMessageId, setFocusRevealMessageId] = React.useState<string | null>(null);
+    const isFocusRevealActive = focusRevealMessageId === msg.id;
     // local state to handle the cleanup of the hit sheen animation
     const [sheenActive, setSheenActive] = React.useState(!!(msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage));
 
@@ -206,6 +233,37 @@ const MessageItem = React.memo(({
         ], { duration: 360, easing: 'ease-out' });
         return () => rumble.cancel();
     }, [isImpactRumble]);
+
+    React.useLayoutEffect(() => {
+        if (!msg.audioSheen || Date.now() - msg.timestamp > 1000 || !messageRootRef.current) return;
+
+        // Server messages and visual rows are not always the same thing: a single incoming
+        // line can wrap several times. Reset the sheen delay for every rendered row so each
+        // visible line receives its own left-to-right pass.
+        const words = Array.from(messageRootRef.current.querySelectorAll<HTMLElement>(
+            '.log-text-word, .inline-btn, .comm-action'
+        ));
+        const wordsPerVisualLine = new Map<number, number>();
+        words.forEach(word => {
+            const visualLine = Math.round(word.offsetTop);
+            const wordIndex = wordsPerVisualLine.get(visualLine) ?? 0;
+            wordsPerVisualLine.set(visualLine, wordIndex + 1);
+            word.style.setProperty('--sheen-word-delay', `${wordIndex * 20}ms`);
+        });
+    }, [msg.audioSheen, msg.id, msg.timestamp]);
+
+    React.useLayoutEffect(() => {
+        // Rapid movement can batch several server lines before React paints. Keep
+        // the reveal eligible through that short burst instead of dropping it.
+        if (!msg.isFocusReveal || Date.now() - msg.timestamp > 4000 || playedFocusRevealIds.has(msg.id)) return;
+
+        playedFocusRevealIds.add(msg.id);
+        setFocusRevealMessageId(msg.id);
+        const timer = window.setTimeout(() => {
+            setFocusRevealMessageId(activeId => activeId === msg.id ? null : activeId);
+        }, 1000);
+        return () => window.clearTimeout(timer);
+    }, [msg.id, msg.isFocusReveal, msg.timestamp]);
 
     const triggerParley = useCallback((e: React.MouseEvent) => {
         if (!setParley || !triggerHaptic || !playClickSound) return;
@@ -264,8 +322,9 @@ const MessageItem = React.memo(({
 
     return (
         <div
+            ref={messageRootRef}
             data-subdued-action={msg.isSubduedAction || undefined}
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}`}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${isLoginNamePrompt ? ' login-name-prompt' : ''}${msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}${isFocusRevealActive ? ' focus-reveal-active' : ''}`}
             style={{ 
                 '--reveal-delay': `${batchOffset * 15}ms`,
                 '--terrain-glow-color': msg.isRoomBlock && !msg.isRoomContentsLine ? getRoomTerrainGlowColor(msg.terrain) : undefined,
@@ -424,7 +483,7 @@ const MessageItem = React.memo(({
                                 })() : (
                                     <TokenRenderer
                                         tokens={msg.tokens}
-                                        fallbackHtml={sanitizeMumeHtml(content)}
+                                        fallbackHtml={accountRippleHtml}
                                         splitFirstWord={true}
                                         disableRoomInline={false}
                                         isRoomContentsLine={msg.isRoomContentsLine}
@@ -494,58 +553,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
     // and the input box is independent — subscribing here forced a full virtual-list re-map on
     // every prompt tick and every keystroke.
     const { scrollContainerRef, messagesEndRef, scrollToBottom, isLockedToBottomRef } = viewport;
-    const logMotionContentRef = useRef<HTMLDivElement>(null);
-    const requestedMoveRef = useRef<{ direction: string; timestamp: number } | null>(null);
-    const lastLogNudgeRef = useRef<{ direction: string; timestamp: number } | null>(null);
-
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-
-        const vectors = {
-            n: { x: 0, y: -1 }, s: { x: 0, y: 1 }, e: { x: 1, y: 0 }, w: { x: -1, y: 0 },
-            ne: { x: 0.7, y: -0.7 }, nw: { x: -0.7, y: -0.7 }, se: { x: 0.7, y: 0.7 }, sw: { x: -0.7, y: 0.7 },
-            u: { x: 0, y: -1 }, d: { x: 0, y: 1 }
-        } as const;
-        const getDirection = (event: Event) => normalizeMovementDirection(
-            (event as CustomEvent<{ dir?: string }>).detail?.dir
-        );
-        const rememberMove = (event: Event) => {
-            const direction = getDirection(event);
-            if (direction) requestedMoveRef.current = { direction, timestamp: Date.now() };
-        };
-        const nudgeLog = (event: Event) => {
-            const requested = requestedMoveRef.current;
-            const direction = getDirection(event) || (
-                requested && Date.now() - requested.timestamp < 2500
-                    ? normalizeMovementDirection(requested.direction)
-                    : null
-            );
-            if (!direction || !logMotionContentRef.current) return;
-            const lastNudge = lastLogNudgeRef.current;
-            if (lastNudge?.direction === direction && Date.now() - lastNudge.timestamp < 250) return;
-            lastLogNudgeRef.current = { direction, timestamp: Date.now() };
-            requestedMoveRef.current = null;
-
-            const vector = vectors[direction];
-            logMotionContentRef.current.animate([
-                { transform: 'translate3d(0, 0, 0)', easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
-                { transform: `translate3d(${vector.x * 13}px, ${vector.y * 10}px, 0)`, offset: 0.53, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' },
-                { transform: `translate3d(${-vector.x * 3.4}px, ${-vector.y * 2.6}px, 0)`, offset: 0.79, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' },
-                { transform: 'translate3d(0, 0, 0)' }
-            ], { duration: 780, easing: 'linear' });
-        };
-        const clearMove = () => { requestedMoveRef.current = null; };
-
-        window.addEventListener('mume-mapper-push-move', rememberMove);
-        window.addEventListener('mume-mapper-move-confirmed', nudgeLog);
-        window.addEventListener('mume-mapper-move-failed', clearMove);
-        return () => {
-            window.removeEventListener('mume-mapper-push-move', rememberMove);
-            window.removeEventListener('mume-mapper-move-confirmed', nudgeLog);
-            window.removeEventListener('mume-mapper-move-failed', clearMove);
-        };
-    }, []);
-
     // Highlight the selected character line in the log via a dynamic <style> rule.
     const selectedCharName = accountState?.selectedCharacter?.name ?? null;
     useEffect(() => {
@@ -997,7 +1004,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
             >
 
                 <div
-                    ref={logMotionContentRef}
                     style={{
                         height: `${virtualizer.getTotalSize()}px`,
                         width: '100%',

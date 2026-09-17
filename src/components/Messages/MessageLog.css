@@ -306,12 +306,84 @@
     cursor: pointer;
 }
 
+/* Separate bracket group after combat stats for spells, herblores, and conditions. */
+.prompt-affected-indicators {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.35em;
+    margin-left: 0.45em;
+    color: var(--text-primary, #d4cdb8);
+    font-size: 0.9em;
+}
+
+.prompt-affected-name {
+    --affected-base-color: #c4b5fd;
+    color: #c4b5fd;
+    font-weight: 700;
+}
+
+.light-mode .prompt-affected-name {
+    --affected-base-color: #6d28d9;
+    color: #6d28d9;
+}
+
+.prompt-affected-name.affected-change-up,
+.prompt-affected-name.affected-change-down {
+    display: inline-block;
+    animation-duration: 900ms;
+    animation-timing-function: cubic-bezier(0.2, 0.85, 0.3, 1);
+}
+
+.prompt-affected-name.affected-change-up {
+    animation-name: prompt-affect-enter;
+}
+
+.prompt-affected-name.affected-change-down {
+    animation-name: prompt-affect-exit;
+}
+
+@keyframes prompt-affect-enter {
+    0% { transform: scale(1); color: var(--affected-base-color); text-shadow: none; }
+    30% { transform: scale(1.45); color: #86efac; text-shadow: 0 0 10px currentColor; }
+    100% { transform: scale(1); color: var(--affected-base-color); text-shadow: none; }
+}
+
+@keyframes prompt-affect-exit {
+    0%, 35% { transform: scale(1.25); color: #fca5a5; text-shadow: 0 0 10px currentColor; opacity: 1; }
+    100% { transform: scale(0.85); color: #fca5a5; text-shadow: none; opacity: 0; }
+}
+
 .prompt-mode-indicator.active {
     color: var(--mume-wiki-link-color) !important;
 }
 
+.prompt-mode-indicator.mode-indicator-change {
+    animation: prompt-mode-indicator-change 900ms cubic-bezier(0.2, 0.85, 0.3, 1);
+}
+
+@keyframes prompt-mode-indicator-change {
+    0%, 100% { transform: scale(1); text-shadow: none; }
+    30% { transform: scale(1.45); text-shadow: 0 0 10px currentColor; }
+}
+
 .prompt-movement-indicator {
-    color: var(--mume-wiki-link-color) !important;
+    color: var(--mume-wiki-link-color);
+}
+
+.prompt-movement-indicator:not(.active) {
+    color: var(--text-primary, #d4cdb8);
+    opacity: 0.42;
+}
+
+.prompt-movement-indicator.movement-indicator-change-up,
+.prompt-movement-indicator.movement-indicator-change-down {
+    animation: prompt-movement-indicator-change 900ms cubic-bezier(0.2, 0.85, 0.3, 1);
+}
+
+@keyframes prompt-movement-indicator-change {
+    0%, 100% { transform: scale(1); text-shadow: none; }
+    30% { transform: scale(1.45); text-shadow: 0 0 10px currentColor; }
 }
 
 .prompt-control-group .prompt-stat-divider {
@@ -344,6 +416,43 @@
 
 .prompt-combat-stat-indicators .prompt-stat-value {
     color: var(--text-primary, #d4cdb8);
+}
+
+.prompt-combat-stat-indicators .prompt-stat-value.combat-stat-change-up,
+.prompt-combat-stat-indicators .prompt-stat-value.combat-stat-change-down {
+    display: inline-block;
+    animation: prompt-combat-stat-change 900ms cubic-bezier(0.2, 0.85, 0.3, 1);
+}
+
+.prompt-combat-stat-indicators .prompt-stat-value.combat-stat-change-up {
+    --combat-stat-change-color: #86efac;
+}
+
+.prompt-combat-stat-indicators .prompt-stat-value.combat-stat-change-down {
+    --combat-stat-change-color: #fca5a5;
+}
+
+@keyframes prompt-combat-stat-change {
+    0% { transform: scale(1); color: var(--text-primary, #d4cdb8); text-shadow: none; }
+    30% { transform: scale(1.45); color: var(--combat-stat-change-color); text-shadow: 0 0 10px currentColor; }
+    100% { transform: scale(1); color: var(--text-primary, #d4cdb8); text-shadow: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .prompt-combat-stat-indicators .prompt-stat-value.combat-stat-change-up,
+    .prompt-combat-stat-indicators .prompt-stat-value.combat-stat-change-down {
+        animation: none;
+    }
+
+    .prompt-movement-indicator.movement-indicator-change-up,
+    .prompt-movement-indicator.movement-indicator-change-down {
+        animation: none;
+    }
+
+    .prompt-affected-name.affected-change-up,
+    .prompt-affected-name.affected-change-down {
+        animation: none;
+    }
 }
 
 .prompt-metadata-line {
@@ -687,7 +796,7 @@
 
 /* Room name titles are slightly larger and stay at full brightness for rapid spatial scanning */
 .message.is-room-name .message-content {
-    font-size: 1.15em;
+    font-size: 1.2em;
     font-weight: 700;
     letter-spacing: 0.02em;
 }
@@ -1155,7 +1264,7 @@
 
 .comm-bubble {
     background: transparent;
-    border: 1px dotted #c9a84c;
+    border: 1px dotted var(--bubble-color, #c9a84c);
     border-radius: 20px 20px 20px 6px;
     padding: 2px 8px;
     color: var(--text-primary, #d4cdb8);
@@ -1178,7 +1287,7 @@
 
 .comm-bubble:hover {
     background-color: color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.08)), transparent 92%) !important;
-    border-color: #c9a84c !important;
+    border-color: var(--bubble-color, #c9a84c) !important;
     border-style: dotted !important;
     box-shadow: 
         0 4px 12px rgba(0, 0, 0, 0.3) !important;
@@ -1821,12 +1930,33 @@
     }
 }
 
+/* A quick focus pull for responses to look/examine. It resolves as one block,
+   leaving the normal word-by-word arrival sheen independent. */
+@keyframes focus-reveal {
+    0% {
+        filter: blur(1.35px);
+        opacity: 0.82;
+    }
+    65% {
+        filter: blur(0.18px);
+        opacity: 0.98;
+    }
+    100% {
+        filter: blur(0);
+        opacity: 1;
+    }
+}
+
+.message.focus-reveal-active .message-content {
+    animation: focus-reveal 1000ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
 .message.audio-sheen-active .log-text-word,
 .message.audio-sheen-active .message-content .inline-btn,
 .message.audio-sheen-active .comm-bubble .inline-btn,
 .message.audio-sheen-active .comm-action {
     animation: incoming-text-ripple 280ms ease-out both !important;
-    animation-delay: calc(var(--word-idx, var(--btn-fallback-idx, 0)) * 20ms) !important;
+    animation-delay: var(--sheen-word-delay, calc(var(--word-idx, var(--btn-fallback-idx, 0)) * 20ms)) !important;
 }
 
 /* The incoming sheen only animates brightness and shadow; preserve the permanent
@@ -1840,7 +1970,7 @@
         incoming-text-ripple 280ms ease-out both !important;
     animation-delay:
         calc(var(--msg-line-delay, 0s) + var(--line-sub-delay, 0s) + var(--word-idx, var(--btn-fallback-idx, 0)) * 0.10s),
-        calc(var(--word-idx, var(--btn-fallback-idx, 0)) * 20ms) !important;
+        var(--sheen-word-delay, calc(var(--word-idx, var(--btn-fallback-idx, 0)) * 20ms)) !important;
 }
 
 .hit-sheen-overlay {
@@ -2717,6 +2847,15 @@ span.inline-btn {
     color: #ffd700 !important; /* Gold header */
 }
 
+/* Keep the client title and the active login question immediately legible while
+   the rest of the terminal intro remains deliberately subdued. */
+.state-account .message.welcome-title .message-content,
+.state-account .message.welcome-title .message-content *,
+.state-account .message.login-name-prompt .message-content,
+.state-account .message.login-name-prompt .message-content * {
+    opacity: 1 !important;
+}
+
 /* Scroll padding for absolutely positioned login card on desktop */
 @media (min-width: 1025px) {
     .state-account .message-log {
@@ -3285,7 +3424,11 @@ span.inline-btn {
 .immersion-mode .message.movement .message-content .log-text-word,
 .immersion-mode .comm-bubble .log-text-word,
 .immersion-mode .comm-bubble .inline-btn,
-.immersion-mode .comm-bubble .comm-action {
+.immersion-mode .comm-bubble .comm-action,
+/* Account login and creation prompts use the same word-level wave as the
+   immersive log so instructions and inline choices feel like part of the world. */
+.state-account .message-content .log-text-word,
+.state-account .message-content .inline-btn {
     display: inline-block;
     vertical-align: baseline;
     animation: continuous-text-undulate 2.8s ease-in-out infinite;
@@ -3301,6 +3444,37 @@ span.inline-btn {
 .immersion-mode .custom-prompt-container .prompt-entity-inline:nth-child(4n + 3) { animation-delay: 1.8s; }
 .immersion-mode .custom-prompt-container .prompt-entity-inline:nth-child(4n + 4) { animation-delay: 2.5s; }
 
+/* Tiered equipment should feel quietly alive, not blink. A long, low-amplitude
+   brightness and halo cycle keeps artifacts through usable items noticeable. */
+@keyframes inline-item-tier-breathe {
+    0%, 100% {
+        filter: brightness(1) saturate(1);
+        box-shadow: 0 0 0 1px transparent, 0 0 2px transparent;
+    }
+    50% {
+        filter: brightness(1.12) saturate(1.08);
+        box-shadow:
+            0 0 0 1px color-mix(in srgb, var(--inline-item-tier-color) 26%, transparent),
+            0 0 8px color-mix(in srgb, var(--inline-item-tier-color) 34%, transparent);
+    }
+}
+
+.message-content .inline-btn[class*="inline-item-tier-"] {
+    animation: inline-item-tier-breathe 5.6s ease-in-out infinite;
+    animation-delay: calc(var(--word-idx, var(--btn-fallback-idx, 0)) * -0.19s);
+}
+
+/* Preserve the permanent vertical word wave in immersion mode while the tier
+   highlight breathes independently. */
+.immersion-mode .message-content .inline-btn[class*="inline-item-tier-"] {
+    animation:
+        continuous-text-undulate 2.8s ease-in-out infinite,
+        inline-item-tier-breathe 5.6s ease-in-out infinite;
+    animation-delay:
+        calc(var(--msg-line-delay, 0s) + var(--line-sub-delay, 0s) + var(--word-idx, var(--btn-fallback-idx, 0)) * 0.10s),
+        calc(var(--word-idx, var(--btn-fallback-idx, 0)) * -0.19s);
+}
+
 @media (prefers-reduced-motion: reduce) {
     .immersion-mode .message-content .inline-btn,
     .immersion-mode .message-content .room-name-inline,
@@ -3311,7 +3485,10 @@ span.inline-btn {
     .immersion-mode .comm-bubble .log-text-word,
     .immersion-mode .comm-bubble .inline-btn,
     .immersion-mode .comm-bubble .comm-action,
-    .immersion-mode .custom-prompt-container .prompt-entity-inline {
+    .immersion-mode .custom-prompt-container .prompt-entity-inline,
+    .state-account .message-content .log-text-word,
+    .state-account .message-content .inline-btn,
+    .message-content .inline-btn[class*="inline-item-tier-"] {
         animation: none !important;
         text-shadow: none !important;
         filter: none !important;

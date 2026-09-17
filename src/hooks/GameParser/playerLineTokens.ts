@@ -25,9 +25,11 @@ const isPlayerListHeader = (text: string) => {
         lower.length === 0 ||
         lower.startsWith('players') ||
         lower.startsWith('visible players') ||
-        lower.startsWith('player distance') ||
-        lower.startsWith('who    location') ||
-        lower.includes('players in the world')
+        /^player\s+distance\b/i.test(lower) ||
+        /^who\s+location\b/i.test(lower) ||
+        lower.includes('players in the world') ||
+        /^-{3,}$/.test(lower) ||
+        /^(?:no-?one|nobody)\b/i.test(lower)
     );
 };
 

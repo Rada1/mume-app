@@ -23,7 +23,10 @@ const COMMAND_CAPTURE_TYPES: Record<string, import('../../../types/capture').Cap
     quest: 'quests',
     quests: 'quests',
     who: 'who',
+    wh: 'who',
     where: 'where',
+    whe: 'where',
+    wher: 'where',
     achievement: 'achievement',
     achievements: 'achievement',
     examine: 'examine',
@@ -204,7 +207,7 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
     if (!isSystem && !fromDrawer) {
         // Manual command cleanup: ensure we aren't "stuck" in a silent background capture 
         // if the user manually triggers a known list command.
-        if (finalizeCapture && !['who', 'where'].includes(lowerCmd)) {
+        if (finalizeCapture && !['who', 'where', 'whe', 'wher', 'wh'].includes(lowerCmd)) {
             finalizeCapture();
         }
         

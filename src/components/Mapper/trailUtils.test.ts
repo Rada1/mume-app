@@ -1,36 +1,36 @@
 import { describe, it, expect } from 'vitest';
-import { isTrailExit, getRoomTrailDirections, getTrailPixmapSuffix } from './trailUtils';
+import { isTrailExit, getRoomRouteDirections, getRoomTrailDirections, getTrailPixmapSuffix } from './trailUtils';
 
 describe('trailUtils', () => {
     describe('isTrailExit', () => {
         it('returns false when no flags or trail names are present', () => {
-            const res = isTrailExit('Mountains', 'Mountains', [], 'Rocky Peak', 'High Crag');
+            const res = isTrailExit('Mountains', 'Mountains', []);
             expect(res.isRoad).toBe(false);
             expect(res.isTrail).toBe(false);
         });
 
         it('returns isRoad=true when both ends are Road', () => {
-            const res = isTrailExit('Road', 'Road', ['ROAD'], 'Great East Road', 'Great East Road');
+            const res = isTrailExit('Road', 'Road', ['ROAD']);
             expect(res.isRoad).toBe(true);
             expect(res.isTrail).toBe(false);
         });
 
         it('returns isTrail=true when exit has ROAD flag and origin is Mountains', () => {
-            const res = isTrailExit('Mountains', 'Mountains', ['ROAD'], 'Angmarian Trail', 'High Pass');
+            const res = isTrailExit('Mountains', 'Mountains', ['ROAD']);
             expect(res.isRoad).toBe(false);
             expect(res.isTrail).toBe(true);
         });
 
         it('returns isTrail=true when exit connects Road and Forest', () => {
-            const res = isTrailExit('Road', 'Forest', ['ROAD'], 'Great East Road', 'Dark Forest');
+            const res = isTrailExit('Road', 'Forest', ['ROAD']);
             expect(res.isRoad).toBe(false);
             expect(res.isTrail).toBe(true);
         });
 
-        it('returns isTrail=true when room name contains trail even without explicit flags', () => {
-            const res = isTrailExit('Hills', 'Hills', [], 'Mountain Trail', 'Windy Ridge');
+        it('does not infer a trail from room names without explicit exit flags', () => {
+            const res = isTrailExit('Hills', 'Hills', []);
             expect(res.isRoad).toBe(false);
-            expect(res.isTrail).toBe(true);
+            expect(res.isTrail).toBe(false);
         });
     });
 
@@ -67,6 +67,24 @@ describe('trailUtils', () => {
     });
 
     describe('getRoomTrailDirections', () => {
+        it('does not draw ordinary exits from a room whose name contains Path as trails', () => {
+            const localRoom = {
+                id: '200', terrain: 'Forest', name: 'A Dark Path in the Forest',
+                exits: {
+                    n: { target: '201', flags: ['TRAIL'] },
+                    s: { target: '202', flags: [] },
+                    w: { target: '203', flags: ['TRAIL'] }
+                }
+            };
+            const preloaded: Record<string, any> = {
+                '200': [10, 10, 0, 'Forest', {}, 'A Dark Path in the Forest', '200'],
+                '201': [10, 9, 0, 'Forest', {}], '202': [10, 11, 0, 'Forest', {}],
+                '203': [9, 10, 0, 'Forest', {}]
+            };
+
+            expect(getRoomTrailDirections('200', localRoom, localRoom.exits, preloaded)).toEqual(['n', 'w']);
+        });
+
         it('identifies trail exits from local room with flags', () => {
             const localRoom = {
                 id: '8657',
@@ -130,6 +148,25 @@ describe('trailUtils', () => {
             const trailDirs = getRoomTrailDirections('100', localRoom, localRoom.exits, preloaded);
             expect(trailDirs).toEqual([]);
             expect(getTrailPixmapSuffix(trailDirs)).toBeUndefined();
+        });
+
+        it('returns explicit route directions for a road tile', () => {
+            const localRoom = {
+                id: '100', terrain: 'Road',
+                exits: {
+                    n: { target: '101', flags: ['ROAD'] },
+                    e: { target: '102', flags: ['ROAD'] },
+                    s: { target: '103', flags: [] }
+                }
+            };
+            const preloaded: Record<string, any> = {
+                '100': [10, 10, 0, 'Road', {}],
+                '101': [10, 9, 0, 'Road', {}], '102': [11, 10, 0, 'Road', {}],
+                '103': [10, 11, 0, 'Field', {}]
+            };
+
+            expect(getRoomRouteDirections('100', localRoom, localRoom.exits, preloaded)).toEqual(['n', 'e']);
+            expect(getTrailPixmapSuffix(getRoomRouteDirections('100', localRoom, localRoom.exits, preloaded))).toBe('ne');
         });
     });
 });

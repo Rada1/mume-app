@@ -3,6 +3,10 @@ import { getZoneVisuals } from '../zoneFilters';
 import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, WALL_COLOR, LONG_CONNECTION_COLOR, getClientThemeColor } from '../mapperUtils';
 import { isTrailExit } from '../trailUtils';
 
+// MMapper terrain and trail pixmaps are the single source of route visuals.
+// Keep the former canvas-line overlay disabled so it cannot duplicate tile art.
+const DRAW_INTERNAL_ROUTE_OVERLAY = false;
+
 const hexToRgba = (hex: string, alpha: number): string => {
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
@@ -1000,10 +1004,9 @@ export const drawFeatures = (
                     }
                 }
 
-                if (ghostExits && Object.keys(ghostExits).length > 0 && camera.zoom < 3.0 && (camera.zoom >= (useOverviewRoutes ? 0.03 : 0.15) || unveilMap)) {
+                if (DRAW_INTERNAL_ROUTE_OVERLAY && ghostExits && Object.keys(ghostExits).length > 0 && camera.zoom < 3.0 && (camera.zoom >= (useOverviewRoutes ? 0.03 : 0.15) || unveilMap)) {
                     const currentRoomObj = localRoom || { terrain: tSector, exits: {} };
                     const isCurrentRoad = normalizeTerrain(currentRoomObj.terrain) === 'Road';
-                    const currentName = String(localRoom?.name || rData[5] || '').toLowerCase();
                     for (const dir in ghostExits) {
                         const exObj = ghostExits[dir]; if (!exObj) continue;
                         const targetVnum = String(exObj.target), targetData = preloaded[targetVnum];
@@ -1023,9 +1026,8 @@ export const drawFeatures = (
                                 ...(exObj.flags || [])
                             ];
                             const hasRoadFlag = combinedFlags.some((f: string) => /road|trail|path/i.test(String(f)));
-                            const targetName = String(targetData[5] || '').toLowerCase();
                             const currentTerrain = currentRoomObj.terrain;
-                            const trailInfo = isTrailExit(currentTerrain, targetData[3], combinedFlags, currentName, targetName);
+                            const trailInfo = isTrailExit(currentTerrain, targetData[3], combinedFlags);
                             const isTrail = trailInfo.isTrail;
                             const isRoad = trailInfo.isRoad;
 

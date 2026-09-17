@@ -49,6 +49,8 @@ const WHO_INFO_COMMAND_VERBS = new Set([
     'where', 'whe', 'wher'
 ]);
 
+const WHERE_COMMAND_VERBS = new Set(['where', 'whe', 'wher']);
+
 export const isWhoCommand = (cmd: string): boolean => {
     const trimmed = cmd.trim();
     if (!trimmed) return false;
@@ -56,6 +58,15 @@ export const isWhoCommand = (cmd: string): boolean => {
     return parts.some(part => {
         const firstWord = part.trim().toLowerCase().split(/\s+/)[0];
         return WHO_INFO_COMMAND_VERBS.has(firstWord);
+    });
+};
+
+export const isWhereCommand = (cmd: string): boolean => {
+    const trimmed = cmd.trim();
+    if (!trimmed) return false;
+    return trimmed.split(';').some(part => {
+        const firstWord = part.trim().toLowerCase().split(/\s+/)[0];
+        return WHERE_COMMAND_VERBS.has(firstWord);
     });
 };
 
@@ -247,6 +258,7 @@ export function useCommandController(deps: CommandControllerDeps) {
             // previous `who` sound after an unrelated `stand` command.
             clearCommandCompletionSounds();
             const isLook = isLookCommand(cmd);
+            const isWhere = isWhereCommand(cmd);
             const isWho = isWhoCommand(cmd);
             const isEqOrInv = isEqOrInvCommand(cmd);
             const isComm = isCommunicationCommand(cmd);
@@ -254,6 +266,8 @@ export function useCommandController(deps: CommandControllerDeps) {
             const canQueueReplySound = d.status === 'connected' && d.sessionMode !== 'replay';
             if (isLook && isSoundEnabled && d.playEffect && canQueueReplySound) {
                 queueCommandCompletionSound('look');
+            } else if (isWhere && isSoundEnabled && d.playEffect && canQueueReplySound) {
+                queueCommandCompletionSound('where');
             } else if (isWho && isSoundEnabled && d.playEffect && canQueueReplySound) {
                 queueCommandCompletionSound('who');
             } else if (isEqOrInv && isSoundEnabled && d.playEffect && canQueueReplySound) {

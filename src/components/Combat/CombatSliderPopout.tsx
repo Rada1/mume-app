@@ -3,7 +3,7 @@
  * @description Enhanced vertical pop-out slider with tick marks and labels for combat settings.
  */
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 
 interface CombatSliderPopoutProps {
@@ -33,18 +33,33 @@ export const CombatSliderPopout: React.FC<CombatSliderPopoutProps> = ({
     subrace,
     onFormSelect
 }) => {
+    const panelRef = useRef<HTMLDivElement>(null);
     const currentIndex = options.indexOf(value.toLowerCase());
     const isBeorningOrBear = ['beorning', 'bear'].includes(race?.toLowerCase() || '') || ['beorning', 'bear'].includes(subrace?.toLowerCase() || '');
     const currentForm = (race?.toLowerCase() === 'bear' || subrace?.toLowerCase() === 'bear') ? 'bear' : 'human';
     const formValue = currentForm === 'bear' ? 1 : 0;
+    const popoutTop = anchorRect.top < 280
+        ? anchorRect.bottom + 12
+        : Math.max(16, anchorRect.top - 240);
+
+    useEffect(() => {
+        const closeOnOutsideClick = (event: MouseEvent) => {
+            if (panelRef.current && !panelRef.current.contains(event.target as Node)) onClose();
+        };
+        // Bubble after React's click handler so prompt controls can dispatch
+        // their command before an open slider is dismissed.
+        document.addEventListener('click', closeOnOutsideClick);
+        return () => document.removeEventListener('click', closeOnOutsideClick);
+    }, [onClose]);
 
     return ReactDOM.createPortal(
         <>
-            <div className="disposition-popout-backdrop" onClick={(e) => { e.stopPropagation(); onClose(); }} />
             <div
+                ref={panelRef}
                 className={`disposition-popout ${isBeorningOrBear ? 'combat-form-popout' : 'combat-position-popout'}`}
                 style={{
-                    bottom: (window.innerHeight - anchorRect.top) + 12,
+                    top: popoutTop,
+                    bottom: 'auto',
                     left: anchorRect.left + (anchorRect.width / 2),
                     width: isBeorningOrBear ? '200px' : '148px',
                     gridTemplateColumns: isBeorningOrBear ? 'repeat(2, minmax(0, 1fr))' : '1fr',
@@ -54,7 +69,9 @@ export const CombatSliderPopout: React.FC<CombatSliderPopoutProps> = ({
                 <div className="disposition-popout-title">{isBeorningOrBear ? 'POSITION / FORM' : label}</div>
                 
                 <div className="disposition-slider-column has-codes">
-                    <div className="disposition-slider-label">POS</div>
+                    {isBeorningOrBear
+                        ? <div className="disposition-slider-label">POS</div>
+                        : <div className="disposition-slider-label disposition-slider-label--spacer" aria-hidden="true" />}
                     <div className="disposition-slider-codes">
                         {[...options.keys()].reverse().map((realIndex) => (
                             <span
@@ -119,11 +136,11 @@ export const CombatSliderPopout: React.FC<CombatSliderPopoutProps> = ({
                                 const isActive = currentForm === opt;
                                 const accentColor = isBearOpt ? '#fb923c' : '#38bdf8';
                                 return (
-                                    <button
-                                        key={opt}
-                                        className={`disposition-option${isActive ? ' active' : ''}`}
-                                        style={isActive ? { color: accentColor, textShadow: `0 0 8px ${accentColor}59` } : {}}
-                                        onClick={() => onFormSelect?.(opt as 'human' | 'bear')}
+                                <button
+                                    key={opt}
+                                    className={`disposition-option${isActive ? ' active' : ''}`}
+                                    style={isActive ? { color: accentColor, textShadow: `0 0 8px ${accentColor}59` } : {}}
+                                    onClick={() => onFormSelect?.(opt as 'human' | 'bear')}
                                     >
                                         {isBearOpt ? '🐾 BEAR' : '👤 HUMAN'}
                                     </button>

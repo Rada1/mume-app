@@ -143,6 +143,9 @@
     position: fixed;
     inset: 0;
     z-index: 4500;
+    /* This is a visual atmosphere layer; it must not sit above and consume
+       clicks intended for the prompt, skill deck, or command controls. */
+    pointer-events: none;
 }
 
 .is-mobile:not(.is-landscape) .environment-root.front {

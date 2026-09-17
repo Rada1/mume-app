@@ -33,7 +33,7 @@ import { buildPlayerLineTokens } from './playerLineTokens';
 import { formatCombatLineTokens } from './combatLineTokens';
 import { useUIStore } from '../../stores/useUIStore';
 import { useRoomStore } from '../../stores/useRoomStore';
-import { parseEffectTimerLine } from '../../services/timers/effectTimerParser';
+import { getEndedEffectTimerEntry, parseEffectTimerLine } from '../../services/timers/effectTimerParser';
 import { parseActionTimerLine } from '../../services/timers/actionTimerParser';
 import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { parseMagicKeyLine, upsertMagicKeyTarget } from '../../utils/magicKeyUtils';
@@ -42,6 +42,7 @@ import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir } f
 import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
 import { canBootstrapExpectedCapture } from './captureBootstrap';
 import { consumeCommandCompletionSound } from '../../services/audio/commandCompletionSounds';
+import { changesCombatStatsFromSpell } from '../../utils/spellCombatStatUtils';
 
 const decodeTextEntities = (text: string) => text
     .replace(/&gt;/gi, '>')
@@ -132,24 +133,33 @@ const isGameplayXmlLine = (text: string): boolean => {
         /&lt;\/?(?:room|name|description|character|player|object|exit|prompt|movement|header|status|enemy|movein|moveout|move_in|move_out)\b/i.test(text);
 };
 
+const isWhereTableHeader = (text: string): boolean => {
+    const clean = stripInlineMarkup(text).trim();
+    return /^player\s+distance\s+direction\s+room$/i.test(clean);
+};
+
 const isWhereTableLine = (text: string): boolean => {
     const clean = stripInlineMarkup(text).trim();
     if (!clean) return false;
-    if (/^player\s+distance\s+direction\s+room$/i.test(clean)) return true;
+    if (isWhereTableHeader(clean)) return true;
     if (/^-{5,}$/.test(clean)) return true;
-    if (/^no-?one\s+(?:is\s+)?(?:nearby|around|visible)/i.test(clean)) return true;
-    return /^[A-Z\u00C0-\u00DE][\w\u00C0-\u00FF'`-]{1,20}\s{2,}.+/.test(clean);
+    if (/^(?:no-?one|nobody)\s+(?:is\s+)?(?:nearby|around|visible)/i.test(clean)) return true;
+    return /^(?:[!*=+?~-]+\s*)?[A-Z\u00C0-\u00DE][\w\u00C0-\u00FF'`-]{1,20}[*!~]?\s{2,}.+/.test(clean);
 };
 
-const createWhereLine = (rawText: string, ansiConvert: any): DrawerLine => {
+const createWhereLine = (
+    rawText: string,
+    ansiConvert: any,
+    registerEntity?: (id: string, name: string, location: any, category?: string) => void
+): DrawerLine => {
     const text = stripInlineMarkup(rawText).trimEnd();
-    const isHeader = /^player\s+distance\s+direction\s+room$/i.test(text.trim()) || /^-{5,}$/.test(text.trim());
+    const isHeader = isWhereTableHeader(text) || /^-{5,}$/.test(text.trim());
     return {
         id: `where-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         text: text.trim(),
         rawText,
         html: ansiConvert.toHtml(text),
-        tokens: isHeader ? [{ type: 'text', content: text }] : (buildPlayerLineTokens(text) || [{ type: 'text', content: text }]),
+        tokens: isHeader ? [{ type: 'text', content: text }] : (buildPlayerLineTokens(text, registerEntity) || [{ type: 'text', content: text }]),
         isHeader,
         isItem: false
     };
@@ -262,7 +272,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const { setQuests } = deps;
     const { finalizeQuests } = useQuestsHandler(setQuests, deps.quests.activeQuests);
     const { registerEntity, extractNoun } = useEntityRegistry();
-    const nearbyCaptureRef = useRef<{ active: boolean; lines: DrawerLine[] }>({ active: false, lines: [] });
+    const nearbyCaptureRef = useRef<{ active: boolean; isSilent: boolean; lines: DrawerLine[] }>({ active: false, isSilent: false, lines: [] });
     const shopCaptureRef = useRef<{ active: boolean; items: import('../../types').ShopItem[] }>({ active: false, items: [] });
     const pendingHelpInterestRef = useRef(false);
     const pendingCommXmlRef = useRef<{ tag: string; line: string; isSnoop: boolean } | null>(null);
@@ -270,7 +280,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const finalizeNearbyCapture = useCallback(() => {
         if (!nearbyCaptureRef.current.active) return;
         setWhereLines([...nearbyCaptureRef.current.lines]);
-        nearbyCaptureRef.current = { active: false, lines: [] };
+        nearbyCaptureRef.current = { active: false, isSilent: false, lines: [] };
         if (deps.captureStage.current === 'where') deps.captureStage.current = 'none' as any;
     }, [setWhereLines, deps.captureStage]);
     
@@ -372,6 +382,12 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         isSpectateMode: deps.isSpectateMode
     });
 
+    const refreshEquipmentCombatStats = useCallback(() => {
+        // Equipment changes affect the prompt's OB, DB, PB, and armour values.
+        // Request the same compact info payload used after a mood change.
+        deps.executeCommandRef.current?.('info %O %D %k %A', false, true, true, false);
+    }, [deps.executeCommandRef]);
+
     const actionTracker = useActionTracker({
         capture,
         setInventoryLines: sessionSetInventoryLines,
@@ -379,8 +395,14 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setCharacterInfo,
         extractNoun,
         ansiConvert: deps.ansiConvert,
-        onWear: deps.playWearSound,
-        onRemove: deps.playRemoveSound,
+        onWear: () => {
+            deps.playWearSound();
+            refreshEquipmentCombatStats();
+        },
+        onRemove: () => {
+            deps.playRemoveSound();
+            refreshEquipmentCombatStats();
+        },
         onGet: () => deps.playEffect?.('get'),
         onDrop: () => deps.playEffect?.('drop')
     });
@@ -420,6 +442,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         playEffect: deps.playEffect,
         setPlayerPosition,
         setIsRiding,
+        refreshCombatStats: refreshEquipmentCombatStats,
         isSpectateMode: deps.isSpectateMode,
         setSpectatePosition: deps.setSpectatePosition,
     });
@@ -679,7 +702,12 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // causes an O(N²) feedback loop that freezes the browser.
         const activeCapture = capture.getActiveType();
         const expectedCaptureBeforeTokenize = normalizeStageToCaptureType(deps.captureStage.current) as any;
-        const isWhereCapture = !isSnoop && (activeCapture === 'where' || expectedCaptureBeforeTokenize === 'where');
+        const isWhereCapture = !isSnoop && (
+            activeCapture === 'where' ||
+            expectedCaptureBeforeTokenize === 'where' ||
+            nearbyCaptureRef.current.active ||
+            isWhereTableHeader(lineToParse)
+        );
         // Skip entity tokenization during account phase — account text is pure terminal output
         // and inline-btn padding/bold/letter-spacing break monospace column alignment.
         const isAccountPhase = !isSnoop && deps.gameState === 'account' && !isGameplayXmlLine(lineToParse);
@@ -897,21 +925,28 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             capture.isPendingSilent() &&
             expectedCaptureType !== 'none';
 
-        // Nearby is intentionally separate from the generic capture machine.
-        // It records only the tiny `where` table and never touches entity
-        // registration, account parsing, TokenRenderer data, or CaptureSession.
-        if (!isSnoop && (nearbyCaptureRef.current.active || expectedCaptureType === 'where')) {
+        // Nearby capture records the `where` table for the Nearby roster drawer tab.
+        // When triggered silently (e.g. from drawer refresh), it suppresses lines from the log.
+        // When triggered manually (e.g. user typed `where`), lines flow to the log with inline ally buttons.
+        const isWhereStart = isWhereTableHeader(textOnly);
+        if (!isSnoop && (nearbyCaptureRef.current.active || expectedCaptureType === 'where' || isWhereStart)) {
             if (isCaptureBoundary) {
                 finalizeNearbyCapture();
             } else if (isWhereTableLine(textOnly)) {
                 if (!nearbyCaptureRef.current.active) {
-                    nearbyCaptureRef.current = { active: true, lines: [] };
+                    const isSilent = capture.isPendingSilent();
+                    nearbyCaptureRef.current = { active: true, isSilent, lines: [] };
+                    if (isSilent) {
+                        capture.clearPendingFlags();
+                    }
                 }
-                nearbyCaptureRef.current.lines.push(createWhereLine(lineToParse, deps.ansiConvert));
+                nearbyCaptureRef.current.lines.push(createWhereLine(lineToParse, deps.ansiConvert, registerEntity));
                 if (nearbyCaptureRef.current.lines.length >= 40) {
                     finalizeNearbyCapture();
                 }
-                return;
+                if (nearbyCaptureRef.current.isSilent) {
+                    return;
+                }
             } else if (nearbyCaptureRef.current.active) {
                 finalizeNearbyCapture();
             } else if (expectedCaptureType === 'where') {
@@ -1068,9 +1103,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             }
         }
 
-        // Only build player tokens for 'who' in the main parser. Nearby/where
-        // uses the dedicated plain-table capture above.
-        if (!isSnoop && activeCapture === 'who') {
+        // Build player tokens for 'who' and 'where' in the main parser.
+        if (!isSnoop && (activeCapture === 'who' || nearbyCaptureRef.current.active || expectedCaptureType === 'where')) {
             finalTokens = buildPlayerLineTokens(textOnly, registerEntity) || finalTokens;
         }
 
@@ -1102,8 +1136,16 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             deps.playEffect?.('hungrythirsty');
         }
         if (!isSnoop) {
+            const endedEffect = getEndedEffectTimerEntry(textOnly);
             parseEffectTimerLine(textOnly);
+            if (endedEffect) {
+                const currentAffects = session.vitals.characterInfo.affectedBy || [];
+                setCharacterInfo({
+                    affectedBy: currentAffects.filter(affect => affect.trim().toLowerCase() !== endedEffect.name.toLowerCase())
+                });
+            }
             parseActionTimerLine(textOnly);
+            if (changesCombatStatsFromSpell(textOnly)) refreshEquipmentCombatStats();
         }
         if (time.parseTimeLine(lower)) msgType = 'info' as any;
 
