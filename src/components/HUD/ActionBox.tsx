@@ -1,64 +1,34 @@
 /**
  * @file ActionBox.tsx
- * @description Desktop action surface below the log: the CommandDeck ability bar
- * plus the command line (InputArea). Mobile uses LineCluster elsewhere; this is
- * desktop-only (rendered by MainContentLayer when !viewport.isMobile).
+ * @description Desktop HUD surface: renders the cohesive "This is You" console
+ * (or AccountDeck in account mode) bounded within the center column below the log.
  */
 
+// --- Logic Section ---
 import React, { FC } from 'react';
-import { useGame, useUI } from '../../context/GameContext';
+import { useGame } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
-import InputArea from '../Controls/InputArea';
-import { CommandDeck } from './CommandDeck';
-import { SkillsDeck } from './SkillsDeck';
-import { MovementPad } from './MovementPad';
+import { ThisIsYouConsole } from './ThisIsYouConsole';
 import { AccountDeck } from './AccountDeck';
-import OpponentRechargeTimer from '../Combat/OpponentRechargeTimer';
-import { ActionTimerDisplay } from './ActionTimerDisplay';
 import './ActionBox.css';
 
-interface ActionBoxProps {
-    handleSend: (e?: React.FormEvent) => void;
-    handleInputSwipe: (dir: 'up' | 'down' | 'left' | 'right' | 'sw') => void;
-    commandPreview: string | null;
-    setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
-    heldButton: unknown;
-    setHeldButton: React.Dispatch<React.SetStateAction<unknown>>;
-    wasDraggingRef: React.RefObject<boolean>;
-    // Desktop: the PromptBox rendered inside the action-box grid (center top cell)
-    // so the whole bottom bar reads as one gapless block. Null in account mode.
-    promptSlot?: React.ReactNode;
+export interface ActionBoxProps {
+    handleSend?: (e?: React.FormEvent) => void;
+    handleInputSwipe?: (dir: 'up' | 'down' | 'left' | 'right' | 'sw') => void;
+    commandPreview?: string | null;
+    setCommandPreview?: React.Dispatch<React.SetStateAction<string | null>>;
+    heldButton?: unknown;
+    setHeldButton?: React.Dispatch<React.SetStateAction<unknown>>;
+    wasDraggingRef?: React.RefObject<boolean>;
 }
 
-export const ActionBox: FC<ActionBoxProps> = ({
-    handleSend,
-    handleInputSwipe,
-    commandPreview,
-    promptSlot
-}) => {
-    const {
-        executeCommand,
-        viewport,
-        btn,
-        currentTerrain,
-        spatButtons,
-        setSpatButtons,
-        parley,
-        setParley,
-        whoList,
-        gameState,
-        accountState
-    } = useGame();
+// --- Render Section ---
+export const ActionBox: FC<ActionBoxProps> = () => {
+    const { gameState, accountState } = useGame();
+    const bottomBarOpacity = useSettingsStore(s => s.bottomBarOpacity);
 
-    // AccountDeck owns the account menu and character-creation inputs. The login
-    // and new-account confirmation stages are rendered by InputArea, including the
-    // free-form Y/N answer required after sending `new`.
     const showsStandaloneAccountInput = accountState?.stage === 'login' ||
         accountState?.stage === 'account-confirmation';
-    const hideCommandInput = gameState === 'account' && !showsStandaloneAccountInput;
-
-    const { setPopoverState } = useUI();
-    const bottomBarOpacity = useSettingsStore(s => s.bottomBarOpacity);
 
     return (
         <div
@@ -66,43 +36,12 @@ export const ActionBox: FC<ActionBoxProps> = ({
             style={{ opacity: bottomBarOpacity } as React.CSSProperties}
         >
             {gameState !== 'account' && (
-                <div className="action-box-controls">
-                    {promptSlot && <div className="action-box-prompt-cell">{promptSlot}</div>}
-                    <MovementPad />
-                    <CommandDeck />
-                    <SkillsDeck />
+                <div className="action-box-this-is-you-row">
+                    <ThisIsYouConsole />
                 </div>
             )}
-            {gameState === 'account' && <AccountDeck />}
-            {!hideCommandInput && (
-            <div className="action-box-input-row">
-                <div className="action-box-input-cell">
-                    <InputArea
-                        onSend={handleSend}
-                        onSwipe={handleInputSwipe}
-                        isMobile={viewport.isMobile}
-                        isKeyboardOpen={viewport.isKeyboardOpen}
-                        commandPreview={commandPreview}
-                        terrain={currentTerrain}
-                        spatButtons={spatButtons}
-                        setActiveSet={btn.setActiveSet}
-                        executeCommand={executeCommand}
-                        setSpatButtons={setSpatButtons}
-                        setPopoverState={setPopoverState}
-                        parley={parley}
-                        setParley={setParley}
-                        whoList={whoList}
-                        gameState={gameState}
-                        rightSlot={gameState !== 'account' ? (
-                            <>
-                                <OpponentRechargeTimer lane="player" />
-                                <ActionTimerDisplay />
-                            </>
-                        ) : undefined}
-                    />
-                </div>
-            </div>
-            )}
+
+            {gameState === 'account' && !showsStandaloneAccountInput && <AccountDeck />}
         </div>
     );
 };

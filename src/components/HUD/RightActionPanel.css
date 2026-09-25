@@ -1,0 +1,403 @@
+/**
+ * @file RightActionPanel.css
+ * @description Styles for the desktop right-side action panel (Variant A).
+ */
+
+.right-action-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    min-width: 0;
+    background: rgba(22, 17, 13, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-left: 1px solid rgba(201, 168, 76, 0.22);
+    box-sizing: border-box;
+    font-family: var(--font-mono, monospace);
+    color: #d8d2c2;
+    position: relative;
+    user-select: none;
+    overflow: hidden;
+}
+
+/* Category Tabs */
+.right-panel-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.18);
+    background: rgba(16, 12, 9, 0.65);
+    flex-shrink: 0;
+}
+
+.right-panel-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 4px 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border-radius: 5px;
+    background: rgba(201, 168, 76, 0.06);
+    border: 1px solid rgba(201, 168, 76, 0.16);
+    color: #a89f8c;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    white-space: nowrap;
+}
+
+.right-panel-tab:hover {
+    border-color: rgba(201, 168, 76, 0.4);
+    color: #e6decb;
+    background: rgba(201, 168, 76, 0.12);
+}
+
+.right-panel-tab.is-active {
+    background: rgba(201, 168, 76, 0.22);
+    border-color: var(--mume-gold, #c9a84c);
+    color: var(--mume-gold-bright, #f0cb67);
+    box-shadow: 0 0 8px rgba(201, 168, 76, 0.18);
+}
+
+/* Target Hint Notification */
+.right-panel-target-hint {
+    margin: 6px 8px 0;
+    padding: 5px 8px;
+    border-radius: 5px;
+    background: rgba(50, 30, 15, 0.95);
+    border: 1px solid rgba(201, 168, 76, 0.45);
+    color: #f0cb67;
+    font-size: 0.62rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.25;
+}
+
+/* Content Area */
+.right-panel-content {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.right-panel-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.right-panel-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.right-panel-content::-webkit-scrollbar-thumb {
+    background: rgba(201, 168, 76, 0.25);
+    border-radius: 2px;
+}
+
+/* Responsive Action Grid */
+.right-panel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 5px;
+    width: 100%;
+}
+
+.right-panel-action-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px 6px;
+    border-radius: 6px;
+    background: rgba(28, 22, 16, 0.85);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    color: #d4cdb8;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    min-width: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.right-panel-action-btn:hover {
+    background: rgba(45, 35, 25, 0.95);
+    border-color: var(--mume-gold, #c9a84c);
+    color: #f0cb67;
+    transform: translateY(-1px);
+}
+
+.right-panel-action-btn:active,
+.right-panel-action-btn.is-pressed {
+    transform: translateY(1px);
+    background: rgba(201, 168, 76, 0.22);
+    border-color: #f0cb67;
+}
+
+.right-panel-action-btn.is-danger:hover {
+    background: rgba(55, 18, 18, 0.95);
+    border-color: #ff6b6b;
+    color: #ff8585;
+}
+
+.right-panel-action-btn.is-danger .action-btn-label {
+    color: #ff7575;
+}
+
+.right-panel-action-btn.target-ready {
+    border-color: rgba(85, 255, 85, 0.45);
+    box-shadow: 0 0 6px rgba(85, 255, 85, 0.15);
+}
+
+.action-btn-key {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    font-size: 0.52rem;
+    color: #8a7a5e;
+    font-weight: 700;
+}
+
+.action-btn-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Class Selection Chips in Skills Deck */
+.right-panel-class-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.12);
+}
+
+.right-panel-class-chip {
+    flex: 1 1 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 2px 5px;
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    border-radius: 4px;
+    background: rgba(201, 168, 76, 0.06);
+    border: 1px solid rgba(201, 168, 76, 0.14);
+    color: #a89f8c;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.right-panel-class-chip.is-active {
+    background: rgba(201, 168, 76, 0.22);
+    border-color: #c9a84c;
+    color: #f0cb67;
+}
+
+.right-panel-class-chip.is-guild {
+    border-color: rgba(85, 255, 85, 0.5);
+    color: #55ff55;
+}
+
+/* Skill / Spell Tile */
+.right-panel-skill-tile {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 5px 6px;
+    border-radius: 5px;
+    background: rgba(24, 19, 14, 0.82);
+    border: 1px solid rgba(201, 168, 76, 0.16);
+    cursor: pointer;
+    transition: all 0.12s ease;
+    min-height: 40px;
+    box-sizing: border-box;
+}
+
+.right-panel-skill-tile:hover {
+    border-color: var(--mume-gold, #c9a84c);
+    background: rgba(38, 29, 20, 0.95);
+    transform: translateY(-1px);
+}
+
+.right-panel-skill-tile:active,
+.right-panel-skill-tile.is-pressed {
+    transform: translateY(1px);
+    background: rgba(201, 168, 76, 0.2);
+}
+
+.right-panel-skill-tile.is-dim {
+    opacity: 0.55;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.right-panel-skill-tile.is-passive {
+    cursor: default;
+    border-style: dashed;
+    border-color: rgba(201, 168, 76, 0.2);
+}
+
+.right-panel-skill-tile.is-passive:hover {
+    transform: none;
+    background: rgba(24, 19, 14, 0.82);
+}
+
+.skill-tile-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 2px;
+}
+
+.skill-tile-syntax {
+    font-size: 0.52rem;
+    color: #958b79;
+    font-family: monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.skill-tile-name {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #f0cb67;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.skill-tile-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.54rem;
+    color: #8a7a5e;
+    margin-top: 2px;
+}
+
+.skill-tile-mana {
+    color: #38bdf8;
+    font-weight: 600;
+    font-size: 0.55rem;
+    margin-right: 4px;
+}
+
+.skill-tile-pct {
+    font-weight: 700;
+    color: #55ff55;
+}
+
+.skill-tile-spell-meta {
+    color: #38bdf8;
+    font-weight: 600;
+}
+
+/* Movement Navigation Pad */
+.right-panel-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 4px;
+    background: rgba(18, 14, 10, 0.85);
+    border-top: 1px solid rgba(201, 168, 76, 0.16);
+    flex-shrink: 0;
+}
+
+.right-panel-navigation .movement-pad {
+    margin: 0;
+    padding: 4px;
+    gap: 3px;
+    grid-template-columns: repeat(3, 36px);
+    grid-template-rows: repeat(3, 27px);
+    background: rgba(22, 17, 13, 0.6);
+    border: 1px solid rgba(201, 168, 76, 0.16);
+}
+
+/* Footer Target Status */
+.right-panel-target-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    background: rgba(14, 10, 7, 0.95);
+    border-top: 1px solid rgba(201, 168, 76, 0.18);
+    font-size: 0.65rem;
+    flex-shrink: 0;
+}
+
+.target-bar-label {
+    color: #8a7a5e;
+    font-weight: 600;
+}
+
+.target-bar-value {
+    font-weight: 700;
+    color: #55ff55;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.target-bar-value.is-empty {
+    color: #6d6452;
+    cursor: default;
+}
+
+/* Account Mode Locked Overlay */
+.right-panel-locked-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(13, 10, 7, 0.88);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+    padding: 16px;
+    text-align: center;
+}
+
+.right-panel-locked-icon-ring {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(201, 168, 76, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    color: #f0cb67;
+}
+
+.right-panel-locked-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #f0cb67;
+    letter-spacing: 0.5px;
+}
+
+.right-panel-locked-subtitle {
+    font-size: 0.62rem;
+    color: #8a7a5e;
+}

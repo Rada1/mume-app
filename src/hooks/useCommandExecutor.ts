@@ -146,6 +146,9 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             recordEffectTimerCommand(finalCmd);
             recordCombatRechargeCommand(finalCmd);
             recordActionTimerCommand(finalCmd);
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('mume:command-executed', { detail: { cmd: finalCmd } }));
+            }
         }
 
         if (normalizedFinalCmd.startsWith('practice ')) {
@@ -174,8 +177,24 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             });
         }
 
-        // --- 8. Mapper Movement Hooks ---
+        // --- 8. Mapper Movement Hooks & Movement Pad Visual Feedback ---
         const moveCmd = finalCmd.toLowerCase().trim();
+        const padCommands: Record<string, string> = {
+            n: 'n', north: 'n',
+            s: 's', south: 's',
+            e: 'e', east: 'e',
+            w: 'w', west: 'w',
+            u: 'u', up: 'u',
+            d: 'd', down: 'd',
+            look: 'look', l: 'look',
+            exits: 'exits',
+            scan: 'scan'
+        };
+        const padCmd = padCommands[moveCmd];
+        if (padCmd && typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('mume:movement-command-press', { detail: { cmd: padCmd } }));
+        }
+
         const dirMap: Record<string, Direction> = {
             n: 'n', north: 'n', s: 's', south: 's', e: 'e', east: 'e', w: 'w', west: 'w',
             u: 'u', up: 'u', d: 'd', down: 'd', ne: 'ne', northeast: 'ne', nw: 'nw', northwest: 'nw',

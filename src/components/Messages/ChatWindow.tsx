@@ -1,6 +1,6 @@
 /**
  * @file ChatWindow.tsx
- * @description Communication-only chat window with custom thread scoping and a modern messaging input area.
+ * @description Communication-only chat window with terminal transcript layout.
  */
 
 import React from 'react';

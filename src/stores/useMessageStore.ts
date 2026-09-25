@@ -18,3 +18,7 @@ export const useMessageStore = create<MessageStore>((set) => ({
     clearUserMessages: () => set({ user: [] }),
     clearSpectateMessages: () => set({ spectate: [] }),
 }));
+
+if (typeof window !== 'undefined') {
+    (window as any).__MESSAGE_STORE__ = useMessageStore;
+}

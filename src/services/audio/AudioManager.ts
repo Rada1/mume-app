@@ -371,7 +371,9 @@ export class AudioManager {
         } else if (type === 'zone') {
             isLoop = loop ?? false;
             let configUrls: string | string[] | undefined = undefined;
-            const manifestConfig = (AUDIO_MANIFEST.ambient as any).zones[key];
+            const manifestConfig = (AUDIO_MANIFEST.ambient as any).zones[key]
+                || (key ? (AUDIO_MANIFEST.ambient as any).zones[`the ${key}`] : undefined)
+                || (key && key.startsWith('the ') ? (AUDIO_MANIFEST.ambient as any).zones[key.replace(/^the\s+/, '')] : undefined);
             const zoneVolumeMultiplier = (manifestConfig && typeof manifestConfig.volume === 'number')
                 ? manifestConfig.volume
                 : 1.0;

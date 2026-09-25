@@ -4,11 +4,13 @@ import { getZoneVisuals } from '../zoneFilters';
 import { perfMonitor } from '../../../utils/perfMonitor';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { drawNewArtTerrainIcon } from './drawNewMapArt';
-import { getRoomTrailDirections, getTrailPixmapSuffix } from '../trailUtils';
+import { getRoomRouteDirections, getTrailPixmapSuffix } from '../trailUtils';
 
 const TERRAIN_TILE_INSET = 0;
 const TERRAIN_ICON_OPACITY = 0.2;
+export const TERRAIN_LAYER_OPACITY = 0.3;
 const FIELD_ICON_OPACITY = 0.35;
+const DARK_MODE_TILE_BRIGHTNESS = 0.36;
 const FAR_ZOOM_TERRAIN_LOD = 0.04;
 const OVERVIEW_TERRAIN_ZOOM = 0.15;
 export const RING_REVEAL_MS = 0;
@@ -55,18 +57,18 @@ const getOverviewTerrainColor = (terrain: string | number, isDarkMode: boolean) 
         case 'Shallows':
         case 'Rapids':
         case 'Underwater':
-            return isDarkMode ? '#2f6f8e' : '#4fa9d8';
+            return isDarkMode ? '#1b4052' : '#4fa9d8';
         case 'Mountains':
-            return isDarkMode ? '#8f8175' : '#b6aaa0';
+            return isDarkMode ? '#514940' : '#b6aaa0';
         case 'Road':
-            return isDarkMode ? '#a48752' : '#b99755';
+            return isDarkMode ? '#5e4d31' : '#b99755';
         case 'Forest':
-            return isDarkMode ? '#42684a' : '#5f8f67';
+            return isDarkMode ? '#29412e' : '#5f8f67';
         default:
             if (rawTerrain.includes('trail') || rawTerrain.includes('path')) {
-                return isDarkMode ? '#a48752' : '#b99755';
+                return isDarkMode ? '#5e4d31' : '#b99755';
             }
-            return isDarkMode ? '#242628' : '#55585b';
+            return isDarkMode ? '#151617' : '#55585b';
     }
 };
 
@@ -550,7 +552,7 @@ const getOutdoorSpillWalls = (
     };
 };
 
-const drawTerrainTileIcon = (
+export const drawTerrainTileIcon = (
     ctx: CanvasRenderingContext2D,
     x: number,
     y: number,
@@ -626,13 +628,18 @@ export const drawTerrainIcon = (
         Underwater: 'underwater',
         Water: 'water',
     };
-    const mapperTerrain = imagesRef.current[`mmapper-terrain-${mapperTerrainSuffix[tName] || 'undefined'}`];
+    const isRoad = tName === 'Road';
+    const roadAssetKey = isRoad ? `mmapper-road-${trailSuffix || 'none'}` : undefined;
+    const mapperTerrain = isRoad
+        ? (imagesRef.current[roadAssetKey!] || imagesRef.current['mmapper-road-none'] || imagesRef.current['mmapper-terrain-road'])
+        : imagesRef.current[`mmapper-terrain-${mapperTerrainSuffix[tName] || 'undefined'}`];
+
     if (mapperTerrain && mapperTerrain.complete && mapperTerrain.naturalWidth > 0) {
         // Slightly overlap neighboring room textures so their source-image edge
         // pixels cannot form visible seams at the room boundaries.
         const bleed = Math.min(1, s_orig * 0.02);
         ctx.drawImage(mapperTerrain, x - bleed, y - bleed, s_orig + bleed * 2, s_orig + bleed * 2);
-        if (trailSuffix) {
+        if (trailSuffix && !isRoad) {
             const trailImg = imagesRef.current[`mmapper-trail-${trailSuffix}`];
             if (trailImg && trailImg.complete && trailImg.naturalWidth > 0) {
                 ctx.drawImage(trailImg, x, y, s_orig, s_orig);
@@ -1489,9 +1496,11 @@ export const drawTerrainIcon = (
           }
 
           if (trailSuffix) {
-              const trailImg = imagesRef.current[`mmapper-trail-${trailSuffix}`];
-              if (trailImg && trailImg.complete && trailImg.naturalWidth > 0) {
-                  ctx.drawImage(trailImg, x, y, s_orig, s_orig);
+              const routeImg = tName === 'Road'
+                  ? (imagesRef.current[`mmapper-road-${trailSuffix || 'none'}`] || imagesRef.current['mmapper-road-none'])
+                  : imagesRef.current[`mmapper-trail-${trailSuffix}`];
+              if (routeImg && routeImg.complete && routeImg.naturalWidth > 0) {
+                  ctx.drawImage(routeImg, x, y, s_orig, s_orig);
               }
           }
       }
@@ -1654,6 +1663,7 @@ export const drawExplorationRevealOverlay = (
         : (isDarkMode ? '#202020' : '#5c5c5c');
     const ring1Revealed = rCtx.ring1Revealed || buildRevealRings(rCtx, bX1, bY1, bX2, bY2, floorIndex).ring1Revealed;
     const ring2Peeked = rCtx.ring2Peeked || buildRevealRings(rCtx, bX1, bY1, bX2, bY2, floorIndex).ring2Peeked;
+    const ringRevealAlpha = TERRAIN_LAYER_OPACITY * (rCtx.mapTileOpacity ?? 1);
 
     ctx.save();
     ctx.fillStyle = ringRevealGray;
@@ -1667,7 +1677,7 @@ export const drawExplorationRevealOverlay = (
         const tx = Math.round(rData[0]) * s;
         const ty = Math.round(rData[1]) * s;
         const alphaMul = 1;
-        ctx.globalAlpha = 1;
+        ctx.globalAlpha = ringRevealAlpha;
         fillTerrainTile(ctx, tx, ty, s);
 
         if (!isMobile && (rCtx.showTerrainIcons || rCtx.lowEffects) && rCtx.camera.zoom > 0.05) {
@@ -1677,12 +1687,12 @@ export const drawExplorationRevealOverlay = (
             const exits = rData[4];
             const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
             const walls = getOutdoorSpillWalls(terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
-            const trailDirs = getRoomTrailDirections(vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
-            const trailSuffix = getTrailPixmapSuffix(trailDirs);
+            const routeDirs = getRoomRouteDirections(vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
+            const trailSuffix = getTrailPixmapSuffix(routeDirs);
 
             ctx.save();
             ctx.filter = 'grayscale(1)';
-            ctx.globalAlpha = alphaMul;
+            ctx.globalAlpha = ringRevealAlpha * alphaMul;
             drawTerrainTileIcon(ctx, tx, ty, s, terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls, trailSuffix);
             ctx.restore();
         }
@@ -1692,7 +1702,7 @@ export const drawExplorationRevealOverlay = (
     if (isMobile) {
         ctx.save();
         ctx.fillStyle = ringRevealGray;
-        ctx.globalAlpha = (rCtx.mapTileOpacity ?? 1) * 0.25;
+        ctx.globalAlpha = ringRevealAlpha * 0.25;
         for (const vnum of ring2Peeked) {
             const rData = preloaded[vnum];
             if (!rData) continue;
@@ -1752,7 +1762,7 @@ export const drawExplorationRevealOverlay = (
         contentCtx.restore();
 
         ctx.save();
-        ctx.globalAlpha = rCtx.mapTileOpacity ?? 1;
+        ctx.globalAlpha = ringRevealAlpha;
         ctx.drawImage(contentCanvas, Math.round(rData[0]) * s, Math.round(rData[1]) * s);
         ctx.restore();
     }
@@ -1766,7 +1776,7 @@ export const drawTerrains = (
     const { ctx, isDarkMode, explored, unveilMap, allRooms, preloaded, imagesRef, isTracingMode, mapTileVisuals, lighting } = rCtx;
     const terrainColors = mapTileVisuals?.terrainColors;
     const tileOpacity = rCtx.mapTileOpacity ?? 1;
-    const tileBacking = isDarkMode ? '#000000' : '#f2f2f7';
+    const tileBacking = isDarkMode ? 'rgba(0,0,0,0)' : '#f2f2f7';
     const tileBackingAlpha = tileOpacity;
     const s = GRID_SIZE;
     const useOverviewTerrainColors = false;
@@ -1838,7 +1848,7 @@ export const drawTerrains = (
                     ? newArtTileColor
                     : useOverviewTerrainColors
                     ? getOverviewTerrainColor(terrain, isDarkMode)
-                    : getTerrainColor(terrain, isDarkMode, 0.62, mergedTerrainColors);
+                    : getTerrainColor(terrain, isDarkMode, DARK_MODE_TILE_BRIGHTNESS, mergedTerrainColors);
                 const tx = Math.round(rx) * s;
                 const ty = Math.round(ry) * s;
 
@@ -2016,8 +2026,8 @@ export const drawTerrains = (
                     r.x,
                     r.y,
                     s,
-                    getTerrainColor('Field', isDarkMode, 0.62, terrainColors),
-                    getTerrainColor('Water', isDarkMode, 0.62, terrainColors)
+                    getTerrainColor('Field', isDarkMode, DARK_MODE_TILE_BRIGHTNESS, terrainColors),
+                    getTerrainColor('Water', isDarkMode, DARK_MODE_TILE_BRIGHTNESS, terrainColors)
                 );
             } else {
                 ctx.fillStyle = color;
@@ -2060,8 +2070,8 @@ export const drawTerrains = (
                 const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
                 if (perfMonitor.enabled) perfMonitor.addWallMs(performance.now() - tWallStart);
 
-                const trailDirs = getRoomTrailDirections(r.vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
-                const trailSuffix = getTrailPixmapSuffix(trailDirs);
+                const routeDirs = getRoomRouteDirections(r.vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
+                const trailSuffix = getTrailPixmapSuffix(routeDirs);
 
                 const tIconStart = perfMonitor.enabled ? performance.now() : 0;
                 drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects, tFloor, walls, trailSuffix);
@@ -2088,8 +2098,8 @@ export const drawTerrains = (
                 const exits = preloaded[r.vnum]?.[4];
                 const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
                 const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
-                const trailDirs = getRoomTrailDirections(r.vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
-                const trailSuffix = getTrailPixmapSuffix(trailDirs);
+                const routeDirs = getRoomRouteDirections(r.vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
+                const trailSuffix = getTrailPixmapSuffix(routeDirs);
 
                 drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls, trailSuffix);
             }
@@ -2130,8 +2140,8 @@ export const drawTerrains = (
             const exits = preloaded[r.vnum]?.[4];
             const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
             const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
-            const trailDirs = getRoomTrailDirections(r.vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
-            const trailSuffix = getTrailPixmapSuffix(trailDirs);
+            const routeDirs = getRoomRouteDirections(r.vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
+            const trailSuffix = getTrailPixmapSuffix(routeDirs);
 
             drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, rCtx.weather, 0, undefined, walls, trailSuffix);
             ctx.restore();
@@ -2161,8 +2171,8 @@ export const drawTerrains = (
                         r.x,
                         r.y,
                         s,
-                        getTerrainColor('Field', isDarkMode, 0.62, terrainColors),
-                        getTerrainColor('Water', isDarkMode, 0.62, terrainColors)
+                        getTerrainColor('Field', isDarkMode, DARK_MODE_TILE_BRIGHTNESS, terrainColors),
+                        getTerrainColor('Water', isDarkMode, DARK_MODE_TILE_BRIGHTNESS, terrainColors)
                     );
                 } else {
                     ctx.fillStyle = color;
@@ -2198,8 +2208,8 @@ export const drawTerrains = (
                     const exits = preloaded[r.vnum]?.[4];
                     const localRoom = allRooms[`m_${r.vnum}`] || allRooms[r.vnum];
                     const walls = getOutdoorSpillWalls(r.terrain, exits, preloaded, getRoomWalls(localRoom, exits, allRooms, preloaded, explored, unveilMap), gridX, gridY, rCtx.roomAtCoord);
-                    const trailDirs = getRoomTrailDirections(r.vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
-                    const trailSuffix = getTrailPixmapSuffix(trailDirs);
+                    const routeDirs = getRoomRouteDirections(r.vnum, localRoom, exits, preloaded, rCtx.baseMapExitsRef?.current);
+                    const trailSuffix = getTrailPixmapSuffix(routeDirs);
 
                     drawTerrainTileIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnects3, tFloor3, walls, trailSuffix);
                     ctx.restore();
@@ -2234,7 +2244,7 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
         };
         ctx.fillStyle = useOverviewTerrainColors
             ? getOverviewTerrainColor(room.terrain, isDarkMode)
-            : getTerrainColor(room.terrain, isDarkMode, 0.62, mergedTerrainColors);
+        : getTerrainColor(room.terrain, isDarkMode, DARK_MODE_TILE_BRIGHTNESS, mergedTerrainColors);
         ctx.globalAlpha = tileOpacity;
         fillTerrainTile(ctx, rx, ry, s);
 
@@ -2273,14 +2283,14 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
                 ...terrainColors,
                 ...zoneVis.terrainColors
             };
-            const localColor = getTerrainColor(room.terrain, isDarkMode, 0.62, mergedTerrainColors);
+            const localColor = getTerrainColor(room.terrain, isDarkMode, DARK_MODE_TILE_BRIGHTNESS, mergedTerrainColors);
             const tFloorLocal = (getTerrainName(room.terrain) === 'Tunnel' || getTerrainName(room.terrain) === 'Cavern') ? localColor : undefined;
             
             const rId = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;
             const exits = preloaded[rId]?.[4];
             const walls = getOutdoorSpillWalls(room.terrain, exits, preloaded, getRoomWalls(room, exits, allRooms, preloaded, rCtx.explored, rCtx.unveilMap), gridX, gridY, rCtx.roomAtCoord);
-            const trailDirs = getRoomTrailDirections(rId, room, exits, preloaded, rCtx.baseMapExitsRef?.current);
-            const trailSuffix = getTrailPixmapSuffix(trailDirs);
+            const routeDirs = getRoomRouteDirections(rId, room, exits, preloaded, rCtx.baseMapExitsRef?.current);
+            const trailSuffix = getTrailPixmapSuffix(routeDirs);
 
             drawTerrainTileIcon(ctx, rx, ry, s, room.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant, isSnow ? 'snow' : rCtx.weather, tConnectsLocal, tFloorLocal, walls, trailSuffix);
             ctx.restore();

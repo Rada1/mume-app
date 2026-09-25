@@ -1,0 +1,46 @@
+/**
+ * @file MapRoomInfoFooter.css
+ * @description Styling for the docked room info panel in the bottom left of the map drawer.
+ */
+
+.map-room-info-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 6px 10px;
+    background: rgba(18, 14, 10, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(201, 168, 76, 0.18);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.64rem;
+    color: #8a7a5e;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px 8px;
+    z-index: 10;
+    user-select: none;
+    pointer-events: auto;
+}
+
+.map-room-info-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    line-height: 1.25;
+    overflow: hidden;
+}
+
+.map-room-info-label {
+    color: #8a7a5e;
+    flex-shrink: 0;
+}
+
+.map-room-info-value {
+    font-weight: 700;
+    color: #d4cdb8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

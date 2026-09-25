@@ -140,8 +140,8 @@ export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, 
                 items: isNewPhysicalRoom ? [] : state.items,
                 // Exits often come in the same packet. Normalize keys to short canonical
                 // form so the joystick/renderer (which assume 'n'/'s'/'e'/'w') agree.
-                exits: data.exits ? Object.keys(normalizeExitMap(data.exits)) : state.exits,
-                rawExits: data.exits ? normalizeExitMap(data.exits) : state.rawExits
+                exits: data.exits ? Object.keys(normalizeExitMap(data.exits)) : (isNewPhysicalRoom ? [] : state.exits),
+                rawExits: data.exits ? normalizeExitMap(data.exits) : (isNewPhysicalRoom ? {} : state.rawExits)
             };
         });
     },

@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { ansiConvert, normalizeAnsiSequences, isAnsiGreenColor } from './ansi';
+import { ansiConvert, normalizeAnsiSequences, isAnsiGreenColor, stripAnsiCodes } from './ansi';
 import { Tokenizer } from '../services/parser/Tokenizer';
 
 describe('ANSI Normalization', () => {
@@ -100,6 +100,26 @@ describe('ANSI Green Color Detection', () => {
         expect(isAnsiGreenColor('rgb(255, 55, 55)')).toBe(false);
         expect(isAnsiGreenColor(undefined)).toBe(false);
         expect(isAnsiGreenColor('')).toBe(false);
+    });
+});
+
+describe('ANSI Stripping', () => {
+    it('strips standard ANSI escape sequences and colors', () => {
+        expect(stripAnsiCodes('\x1b[32mThe Common Room\x1b[0m')).toBe('The Common Room');
+        expect(stripAnsiCodes('\x1b[1;36mThe Shire\x1b[0m')).toBe('The Shire');
+        expect(stripAnsiCodes('\u001b[0;33m(Bree-land)\u001b[0m')).toBe('(Bree-land)');
+    });
+
+    it('strips MUME color tags and grey scales', () => {
+        expect(stripAnsiCodes('&304Rivendell&n')).toBe('Rivendell');
+        expect(stripAnsiCodes('&grey15Mirkwood')).toBe('Mirkwood');
+        expect(stripAnsiCodes('&rWarning&n')).toBe('Warning');
+    });
+
+    it('handles null, undefined, and plain text safely', () => {
+        expect(stripAnsiCodes(null)).toBe('');
+        expect(stripAnsiCodes(undefined)).toBe('');
+        expect(stripAnsiCodes('Plain Room')).toBe('Plain Room');
     });
 });
 

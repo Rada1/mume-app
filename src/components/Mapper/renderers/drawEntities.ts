@@ -496,6 +496,24 @@ export const drawEntities = (
     const anchor = resolveActiveRoomAnchor(rCtx, playerPosRef);
     const trail = playerTrailRef.current;
 
+    // Keep the player-room border in both map modes; only full-terrain mode
+    // adds the bright fill beneath it.
+    if (anchor && Math.abs(anchor.z - currentZ) < 1.0) {
+        const tileX = anchor.x * GRID_SIZE;
+        const tileY = anchor.y * GRID_SIZE;
+        ctx.save();
+        if (rCtx.showTerrainTiles !== false) {
+            ctx.globalCompositeOperation = 'screen';
+            ctx.fillStyle = 'rgba(255, 244, 205, 0.38)';
+            ctx.fillRect(tileX + 1, tileY + 1, GRID_SIZE - 2, GRID_SIZE - 2);
+            ctx.globalCompositeOperation = 'source-over';
+        }
+        ctx.strokeStyle = 'rgba(255, 226, 134, 0.84)';
+        ctx.lineWidth = 1.5 / rCtx.camera.zoom;
+        ctx.strokeRect(tileX + 1.5 / rCtx.camera.zoom, tileY + 1.5 / rCtx.camera.zoom, GRID_SIZE - 3 / rCtx.camera.zoom, GRID_SIZE - 3 / rCtx.camera.zoom);
+        ctx.restore();
+    }
+
     // 1. Player Trail — teardrop streak that retracts tail-first toward the player
     const TRAIL_DURATION = 450; // ms, must match useMapAnimation
     const wallNow = now;
@@ -560,7 +578,9 @@ export const drawEntities = (
 
         // 1. MMapper current-room selection texture, tinted with the client's
         // dark-brown map ink while preserving MMapper's exact bracket shape.
-        const roomSelection = getTintedMapperAsset(rCtx.imagesRef, 'mmapper-char-room-sel', '#4a341e');
+        const roomSelection = rCtx.showTerrainTiles === false
+            ? null
+            : getTintedMapperAsset(rCtx.imagesRef, 'mmapper-char-room-sel', '#4a341e');
         if (roomSelection) {
             ctx.save();
             ctx.globalAlpha = alpha;
@@ -734,8 +754,8 @@ export const drawEntities = (
         }
     }
 
-    // 5. Room Occupants (NPCs & Players, now partitioned by Group status)
-    drawRoomOccupants(rCtx, playerPosRef, characterName);
+    // Room NPC/player dots are intentionally hidden for now. The player marker
+    // remains the location indicator when the terrain window is active.
 };
 
 // --- Group Member Orbs ---
@@ -1343,7 +1363,7 @@ export const drawFilterHighlights = (
         x >= visibleBounds.left && x <= visibleBounds.right && y >= visibleBounds.top && y <= visibleBounds.bottom;
 
     // 0. Draw the active filter route from current room to nearest matching flag.
-    if (filterPathIds && filterPathIds.length > 1) {
+    if (rCtx.showTerrainTiles === false && filterPathIds && filterPathIds.length > 1) {
         const activeRawId = rCtx.activeId ? getRawRoomId(rCtx.activeId) : '';
         const activePathIndex = filterPathIds.findIndex(stepId => getRawRoomId(stepId) === activeRawId);
         const visibleFilterPathIds = activePathIndex >= 0
@@ -1533,7 +1553,9 @@ export const drawFilterHighlights = (
             drawWave(progress2);
 
             // 3. Draw a dotted connector path from player's room to the closest room (only if on same floor)
-            const playerCoords = playerPosRef.current || resolveActiveRoomAnchor(rCtx, playerPosRef);
+            const playerCoords = rCtx.showTerrainTiles === false
+                ? playerPosRef.current || resolveActiveRoomAnchor(rCtx, playerPosRef)
+                : null;
             if (playerCoords && Math.abs(playerCoords.z - currentZ) < 0.5) {
                 const px = playerCoords.x * GRID_SIZE + GRID_SIZE / 2;
                 const py = playerCoords.y * GRID_SIZE + GRID_SIZE / 2;

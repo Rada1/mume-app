@@ -9,6 +9,8 @@ interface PopoverActionButtonProps {
     depth?: number;
     isSubButton?: boolean;
     compact?: boolean;
+    terminal?: boolean;
+    showFavorite?: boolean;
     glowDelay?: string;
     favorites: string[];
     toggleFavorite: (e: React.MouseEvent, command: string) => void;
@@ -28,7 +30,7 @@ interface PopoverActionButtonProps {
 }
 
 export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
-    button, depth = 0, isSubButton = false, compact = false, glowDelay, favorites, toggleFavorite, popoverState, setPopoverState, setButtons, handleButtonClick, executeCommand, addMessage, handleTabClick, setGearTab, selectedObjectIds, clearObjectSelection, entities, keywordOverrides, direction
+    button, depth = 0, isSubButton = false, compact = false, terminal = false, showFavorite = true, glowDelay, favorites, toggleFavorite, popoverState, setPopoverState, setButtons, handleButtonClick, executeCommand, addMessage, handleTabClick, setGearTab, selectedObjectIds, clearObjectSelection, entities, keywordOverrides, direction
 }) => {
     const isFav = favorites.includes(button.command);
     
@@ -61,11 +63,17 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
 
     const isMenuAction = ['nav', 'menu', 'select-assign', 'select-recipient', 'select-container', 'assign', 'teleport-manage'].includes(button.actionType || '') || button.label === 'Look In';
     const label = button.label.replace(/%n/g, popoverState.context || '').replace(/%p/g, popoverState.parentNoun || '');
+    const actionVerb = button.command.trim().toLowerCase().split(/\s+/)[0];
+    const terminalTone = ['remove', 'drop'].includes(actionVerb)
+        ? ' terminal-action-demote'
+        : ['get', 'take', 'wear', 'wield', 'hold'].includes(actionVerb)
+            ? ' terminal-action-promote'
+            : '';
 
     if (compact) {
         return (
             <div
-                className="popover-action-chip"
+                className={terminal ? `terminal-action-row${terminalTone}` : 'popover-action-chip'}
                 data-menu-item="true"
                 data-is-menu={isMenuAction ? "true" : "false"}
                 onPointerDown={(e) => { e.stopPropagation(); }}
@@ -88,7 +96,8 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
                 } as any}
             >
                 <span style={{ pointerEvents: 'none' }}>{label}</span>
-                <span
+                {terminal && <span className="terminal-action-command">/{button.command.replace(/%n/g, popoverState.context || '').replace(/%p/g, popoverState.parentNoun || '')}</span>}
+                {!terminal && showFavorite && <span
                     onClick={(e) => toggleFavorite(e, button.command)}
                     style={{
                         color: isFav ? '#ffd700' : 'rgba(255,255,255,0.2)',
@@ -99,7 +108,7 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
                     }}
                 >
                     {isFav ? '★' : '☆'}
-                </span>
+                </span>}
             </div>
         );
     }

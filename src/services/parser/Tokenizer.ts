@@ -423,12 +423,14 @@ export class Tokenizer {
 
             const gmcpType = candidate.occupant.type!.toLowerCase();
             const commandTarget = this.getOccupantCommandTarget(candidate.occupant, content, occupants);
+            const isNpc = gmcpType === 'npc';
             out.push({
                 type: 'entity',
                 content,
                 entityId: String(candidate.occupant.id ?? `auto-${content.toLowerCase().replace(/[^a-z0-9]/g, '-')}`),
                 metadata: {
                     kind: gmcpType === 'npc' ? 'npc' : gmcpType === 'enemy' ? 'enemy' : gmcpType === 'neutral' ? 'neutral' : gmcpType === 'ally' ? 'ally' : 'player',
+                    isNpc,
                     category: toCategoryId(gmcpType) || 'cat-npc',
                     context: commandTarget,
                     location: 'room',
@@ -606,6 +608,7 @@ export class Tokenizer {
             metadata: {
                 kind,
                 category,
+                isNpc: kind === 'npc' || activeEntity.kind === 'npc',
                 context: resolvedContext,
                 location: this.currentLocation,
                 parent: context.parent || this.currentParent,

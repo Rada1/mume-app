@@ -22,6 +22,10 @@ export interface CharacterInfo {
     subclass: string;
     class: string;
     gold: number;
+    age?: string;
+    height?: string;
+    citizenships?: number;
+    warFame?: number;
     description?: string;
     whois?: string;
     title?: string;
@@ -128,6 +132,10 @@ export const initialVitalsState = {
         subclass: '',
         class: '',
         gold: 0,
+        age: '',
+        height: '',
+        citizenships: 0,
+        warFame: 0,
         affectedBy: []
     },
     target: null,
@@ -413,6 +421,11 @@ export const createVitalsActions = (set: any, get: any) => ({
                 subrace: data.subrace ?? state.characterInfo.subrace,
                 subclass: data.subclass ?? state.characterInfo.subclass,
                 class: data.class ?? state.characterInfo.class,
+                title: data.title ?? state.characterInfo.title,
+                age: data.age !== undefined ? String(data.age) : state.characterInfo.age,
+                height: data.height !== undefined ? String(data.height) : state.characterInfo.height,
+                citizenships: data.citizenships !== undefined ? Number(data.citizenships) : state.characterInfo.citizenships,
+                warFame: data.warFame !== undefined ? Number(data.warFame) : (data['war-fame'] !== undefined ? Number(data['war-fame']) : state.characterInfo.warFame),
                 description: data.description ?? state.characterInfo.description,
                 whois: data.whois ?? state.characterInfo.whois
             }

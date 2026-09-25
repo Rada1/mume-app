@@ -116,7 +116,7 @@
    the viewport's, keeping the art's center aligned with the log's center. */
 @media (min-width: 1025px) {
     .environment-root.back .background-layer {
-        left: calc((var(--desktop-map-width, 22vw) + 100% - var(--desktop-character-width, 22vw)) / 2);
+        left: calc((var(--desktop-map-width, 22vw) + 100% - var(--desktop-character-width, 210px)) / 2);
     }
 }
 
@@ -379,7 +379,7 @@
 /* Utility drawer push (right side) — matches map drawer push exactly */
 @media (min-width: 1024px) and (max-width: 1850px) {
     body.utility-drawer-open .app-viewport-shell {
-        padding-right: calc(var(--desktop-character-width, var(--drawer-width)) + var(--drawer-gap));
+        padding-right: calc(var(--desktop-character-width, 210px) + var(--drawer-gap));
     }
 }
 
@@ -2383,7 +2383,7 @@
 }
 
 .login-prompt-text {
-    font-family: 'Iosevka', monospace;
+    font-family: var(--font-mono, monospace);
     font-size: 0.95rem;
     color: var(--text-primary);
     text-align: center;
@@ -2491,7 +2491,7 @@
     border: 1px solid rgba(212, 170, 0, 0.2);
     border-radius: 8px;
     color: var(--text-primary);
-    font-family: 'Iosevka', monospace;
+    font-family: var(--font-mono, monospace);
     font-size: 0.9rem;
     padding: 10px 14px;
     text-align: left;
@@ -2537,7 +2537,7 @@
 }
 
 .creation-card-stat-label {
-    font-family: 'Iosevka', monospace;
+    font-family: var(--font-mono, monospace);
     font-size: 0.85rem;
     color: var(--text-primary);
     opacity: 0.85;
@@ -2570,7 +2570,7 @@
 }
 
 .creation-card-stat-value {
-    font-family: 'Iosevka', monospace;
+    font-family: var(--font-mono, monospace);
     font-size: 1rem;
     font-weight: 700;
     color: #ffd700;
@@ -2826,14 +2826,15 @@
     .content-layer {
         position: absolute !important;
         left: var(--desktop-map-width, 22vw) !important;
-        right: var(--desktop-character-width, 22vw) !important;
+        right: var(--desktop-character-width, 210px) !important;
         top: 0 !important;
         bottom: 0 !important;
         height: 100% !important;
         width: auto !important;
         max-width: none !important;
         margin: 0 !important;
-        padding: 0 !important;
+        padding: 8px !important;
+        box-sizing: border-box !important;
         z-index: 5000 !important;
     }
 
@@ -2852,6 +2853,8 @@
     }
 
     .header {
+        height: 40px;
+        min-height: 40px;
         border-radius: 0 !important;
         border: none !important;
         border-bottom: none !important;
@@ -2859,8 +2862,8 @@
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
         box-shadow: none !important;
-        margin: 0 !important;
-        padding: 6px 16px !important;
+        margin: -8px 0 0 !important;
+        padding: 4px 16px !important;
     }
 
     .light-mode .header {
@@ -2873,14 +2876,17 @@
     }
 
     .message-log-container {
-        border-radius: 0 !important;
-        border: none !important;
-        background-color: transparent !important;
-        box-shadow: none !important;
-        padding: 12px 18px !important;
+        border-radius: 8px !important;
+        border: 1px solid rgba(201, 168, 76, 0.35) !important;
+        background-color: rgba(12, 9, 6, 0.94) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+        padding: 0 !important;
         max-width: none !important;
         width: 100% !important;
         margin: 0 !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
 
     .message-log-wrapper {
@@ -2898,13 +2904,12 @@
     .action-box {
         border-radius: 0 !important;
         border: none !important;
-        border-top: 1px solid rgba(201, 168, 76, 0.14) !important;
-        background: rgba(30, 23, 16, 0.68) !important;
+        background: transparent !important;
         box-shadow: none !important;
-        margin: 0 !important;
+        margin: 6px 0 0 0 !important;
         padding: 0 !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
     }
 
     .immersion-mode .control-card-wrapper,
@@ -2923,18 +2928,55 @@
         background: rgba(255, 255, 255, 0.5) !important;
     }
 
-    /* Outer stacks touch borders exactly */
-    .left-drawer-stack {
-        border-right: none !important;
-    }
-
-    .right-drawer-stack {
-        border-left: none !important;
-    }
+    /* Outer stacks border styling handled in Drawers.css */
 
     /* Hide redundant middle resizers */
     .drawer-resize-handle--log-left,
     .drawer-resize-handle--log-right {
         display: none !important;
     }
+}
+
+/* --- Neutral immersion glass: preserve the scene color behind each panel --- */
+.app-container.immersion-mode .message-log-container {
+    background-color: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.app-container .message-log-container {
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.app-container.immersion-mode .control-card-wrapper,
+.app-container.immersion-mode .player-summary-panel,
+.app-container.immersion-mode .compact-item-reference,
+.app-container.immersion-mode .action-box .input-main-container,
+.app-container.immersion-mode .message-log-docked-input,
+.app-container.immersion-mode .custom-prompt-bar,
+.app-container.immersion-mode .map-room-info-header,
+.app-container.immersion-mode .map-room-info-footer {
+    background: rgba(0, 0, 0, 0.18) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    box-shadow: none !important;
+}
+
+.app-container.immersion-mode .right-panel-tabs,
+.app-container.immersion-mode .right-panel-navigation {
+    background: rgba(0, 0, 0, 0.18) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.app-container.immersion-mode .message-log-docked-input {
+    background: transparent !important;
+    border: 0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }

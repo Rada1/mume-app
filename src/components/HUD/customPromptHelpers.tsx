@@ -6,17 +6,18 @@
 // --- Logic Section ---
 import React from 'react';
 import { 
-    Sun, Moon, Flame, EyeOff, SunDim, SunMedium,
+    Sun, Moon, Flame, EyeOff, SunDim,
     Cloud, CloudRain, CloudLightning, Snowflake, Wind, CloudFog,
-    Clock, Building, Castle, Trees, Sprout, Mountain, MountainSnow,
+    Clock, House, Castle, Trees, Sprout, Mountain, MountainSnow,
     Waves, Footprints, Fish, Route, TreePine, Pickaxe, Compass
 } from 'lucide-react';
 import { GmcpOccupant, MumeTime } from '../../types';
+import { stripAnsiCodes } from '../../utils/ansi';
 
 export interface PromptEntityButton {
     label: string;
     id?: string;
-    category: 'cat-npc' | 'cat-object';
+    category: 'cat-player' | 'cat-npc' | 'cat-object';
 }
 
 export interface PromptEnvItem {
@@ -91,7 +92,7 @@ export const getTerrainIcon = (terrain?: string | null): React.ReactNode => {
         lower.includes('indoor') || lower.includes('inn') || lower.includes('shop') || 
         lower.includes('stable') || lower.includes('tavern') || lower.includes('house') ||
         lower.includes('basement') || lower.includes('cellar')) {
-        return <Building size={12} className="prompt-env-icon" style={{ color: '#d4cdb8' }} />;
+        return <House size={12} className="prompt-env-icon" style={{ color: '#d4cdb8' }} />;
     }
     if (lower.includes('city') || lower.includes('town') || lower.includes('street')) {
         return <Castle size={12} className="prompt-env-icon" style={{ color: '#cbd5e1' }} />;
@@ -161,7 +162,7 @@ export const getWeatherIcon = (weather?: string | null, isFoggy?: boolean): Reac
         return <Wind size={12} className="prompt-env-icon" style={{ color: '#94a3b8' }} />;
     }
     if (lower === 'clear') {
-        return <SunMedium size={12} className="prompt-env-icon" style={{ color: '#38bdf8' }} />;
+        return null;
     }
     return null;
 };
@@ -179,14 +180,23 @@ export const getTimeIcon = (): React.ReactNode => (
 );
 
 export const getRoomEntityLabel = (entity: string | GmcpOccupant): string => {
-    if (typeof entity === 'string') return entity.trim();
-    return entity.keyword?.trim() || entity.name?.trim() || entity.shortdesc?.trim() || entity.short?.trim() || '';
+    if (typeof entity === 'string') return stripAnsiCodes(entity);
+    return stripAnsiCodes(entity.keyword || entity.name || entity.shortdesc || entity.short || '');
 };
 
 export const getEntityButtonsForPrompt = (
     roomNpcs: Array<string | GmcpOccupant> = [],
     roomItems: Array<string | GmcpOccupant> = [],
+    roomPlayers: Array<string | GmcpOccupant> = [],
 ): PromptEntityButton[] => {
+    const players: PromptEntityButton[] = (roomPlayers || [])
+        .map(entity => ({
+            label: getRoomEntityLabel(entity),
+            id: typeof entity === 'string' || entity.id === undefined ? undefined : String(entity.id),
+            category: 'cat-player' as const,
+        }))
+        .filter(entity => Boolean(entity.label));
+
     const npcs: PromptEntityButton[] = (roomNpcs || [])
         .map(entity => ({
             label: getRoomEntityLabel(entity),
@@ -203,5 +213,5 @@ export const getEntityButtonsForPrompt = (
         }))
         .filter(entity => Boolean(entity.label));
 
-    return [...npcs, ...items];
+    return [...players, ...npcs, ...items];
 };

@@ -15,7 +15,7 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         kind: 'spell',
         aliases: ['armour', 'armor'],
         durationMs: min(30),
-        startPatterns: [/A blue transparent wall slowly appears/i, /encase .* in a blue transparent wall/i, /magic armou?r is revitalised/i],
+        startPatterns: [/A blue transparent (?:wall|shield)(?: slowly)? appears/i, /encase .* in a blue transparent (?:wall|shield)/i, /magic armou?r is revitalised/i],
         endPatterns: [/less protected/i, /armou?r spell .*wears off/i]
     },
     {

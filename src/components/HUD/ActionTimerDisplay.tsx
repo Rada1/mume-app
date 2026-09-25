@@ -8,7 +8,7 @@ import { useActionTimerStore } from '../../stores/useActionTimerStore';
 
 // --- Logic Section ---
 
-export const ActionTimerDisplay: React.FC = () => {
+export const ActionTimerDisplay: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
     const active = useActionTimerStore(state => state.activeTimer);
     const cancelTimer = useActionTimerStore(state => state.cancelTimer);
     const [elapsedMs, setElapsedMs] = useState(0);
@@ -138,6 +138,15 @@ export const ActionTimerDisplay: React.FC = () => {
 
     const { label, status } = getStatusTextAndLabel();
     const stopwatchText = `${(elapsedMs / 1000).toFixed(2)}s`;
+
+    if (compact && active.isFinished) return null;
+
+    if (compact) {
+        const action = active.type === 'spell' ? 'casting'
+            : active.name.toLowerCase() === 'bash' ? 'bashing'
+            : status.toLowerCase();
+        return <span className="terminal-action-status">{action} {(elapsedMs / 1000).toFixed(1)}s</span>;
+    }
 
     return (
         <div 

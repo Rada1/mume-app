@@ -7,7 +7,7 @@
 import React, { useEffect, useRef } from 'react';
 
 interface AnimatedPromptVitalProps {
-    value: string;
+    value: React.ReactNode;
     animation?: { direction: 'up' | 'down'; key: number };
 }
 

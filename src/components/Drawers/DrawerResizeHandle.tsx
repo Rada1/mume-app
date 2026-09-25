@@ -25,12 +25,16 @@ export const DrawerResizeHandle: React.FC<Props> = ({
     minHeight = 10,
     maxHeight = 90
 }) => {
+    const [isHovered, setIsHovered] = React.useState(false);
+    const [isDragging, setIsDragging] = React.useState(false);
+
     const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
+        setIsDragging(true);
 
         const drawer = (e.currentTarget as HTMLElement).closest(
-            '.map-drawer-desktop, .character-drawer-desktop, .log-card-drawer, .message-log-container, .chat-window-panel, .players-panel, .docked-panel, .help-panel, .mume-editor-panel, .mume-archive-panel'
+            '.map-drawer-desktop, .character-drawer-desktop, .log-card-drawer, .message-log-container, .chat-window-panel, .players-panel, .docked-panel, .help-panel, .mume-editor-panel, .mume-archive-panel, .right-drawer-stack, .left-drawer-stack, .right-action-panel'
         ) as HTMLElement | null;
         if (!drawer) return;
 
@@ -146,6 +150,7 @@ export const DrawerResizeHandle: React.FC<Props> = ({
             window.removeEventListener('pointermove', onMove);
             window.removeEventListener('pointerup', onUp);
             document.body.classList.remove('global-dragging');
+            setIsDragging(false);
         };
 
         document.body.classList.add('global-dragging');
@@ -155,8 +160,14 @@ export const DrawerResizeHandle: React.FC<Props> = ({
 
     return (
         <div
-            className={`drawer-resize-handle drawer-resize-handle--${handleType}`}
+            role="separator"
+            aria-orientation={handleType.includes('left') || handleType.includes('right') ? 'vertical' : 'horizontal'}
+            aria-label={`Resize handle ${handleType}`}
+            tabIndex={-1}
+            className={`drawer-resize-handle drawer-resize-handle--${handleType}${isHovered ? ' is-hovered' : ''}${isDragging ? ' is-active' : ''}`}
             onPointerDown={handlePointerDown}
+            onPointerEnter={() => setIsHovered(true)}
+            onPointerLeave={() => setIsHovered(false)}
         />
     );
 };

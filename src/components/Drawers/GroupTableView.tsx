@@ -57,7 +57,7 @@ const getState = (member: GroupTableMember) => {
 };
 
 const EmptyGroup = () => (
-    <div style={{ padding: '40px 20px', textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', fontSize: '0.9rem' }}>
+    <div style={{ padding: '24px 16px', textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', fontSize: '0.85rem' }}>
         No group members.
     </div>
 );
@@ -82,7 +82,7 @@ export const GroupTableView: React.FC<{ members: GroupMember[] }> = ({ members }
     if (members.length === 0) return <EmptyGroup />;
 
     return (
-        <div style={{ flex: 1, overflow: 'auto', padding: '18px 16px', fontFamily: 'var(--font-mono, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', whiteSpace: 'nowrap', lineHeight: 1.55 }}>
+        <div style={{ flex: 1, overflow: 'auto', padding: '10px 12px', fontFamily: 'var(--font-mono, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', whiteSpace: 'nowrap', lineHeight: 1.55 }}>
             <HeaderRow />
             {members.map((member) => {
                 const tableMember = member as GroupTableMember;

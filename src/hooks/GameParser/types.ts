@@ -43,7 +43,8 @@ export interface UseGameParserDeps {
         providedIsSnoopInput?: boolean,
         providedIsRipMessage?: boolean,
         providedIsSocial?: boolean,
-        resourceGain?: import('../../types').ResourceGain
+        resourceGain?: import('../../types').ResourceGain,
+        providedIsMagicRipple?: boolean
     ) => void;
     addSystemMessage: (msg: string) => void;
     executeCommandRef: MutableRefObject<ExecuteCommand | null>;
@@ -64,6 +65,7 @@ export interface UseGameParserDeps {
     stopIncantationSound: (playExplosion?: boolean) => void;
     playMagicExplosionSound: (options?: { volume?: number }) => void;
     playEffect: (name: string, options?: any) => void;
+    playArrowHitSound?: (options?: { pitch?: number, volume?: number }) => void;
     playDoorSound: (isOpen: boolean) => void;
     playMovementSound: (isRiding?: boolean, terrain?: string) => void;
     triggerHaptic: (ms: number) => void;

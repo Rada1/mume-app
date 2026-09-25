@@ -159,7 +159,13 @@ export interface GmcpCharInfo {
     subrace?: string;
     subclass?: string;
     class?: string;
+    title?: string;
     gold?: number;
+    age?: string | number;
+    height?: string | number;
+    citizenships?: number;
+    'war-fame'?: number;
+    warFame?: number;
     description?: string;
     whois?: string;
     isSnooped?: boolean;

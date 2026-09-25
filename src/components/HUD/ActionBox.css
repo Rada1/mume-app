@@ -1,26 +1,22 @@
 .action-box {
     display: flex;
     flex-direction: column;
-    background: rgba(30, 23, 16, 0.68);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(201, 168, 76, 0.14);
-    border-radius: var(--radius-card);
+    background: transparent;
     padding: 0;
-    margin-top: 12px;
+    margin-top: 4px;
     box-shadow: none;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s ease;
     width: 100%;
     box-sizing: border-box;
     pointer-events: auto;
     z-index: var(--z-hud-interactive);
-    overflow: hidden; /* Keep blur within rounded corners */
 }
 
 .action-box .input-area {
     margin-top: 0 !important;
-    background: transparent !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+    background: rgba(18, 14, 10, 0.95) !important;
+    border: 1px solid rgba(201, 168, 76, 0.22) !important;
+    border-radius: 5px;
 }
 
 .action-box-controls {
@@ -51,58 +47,100 @@
 
     .action-box {
         position: relative;
-        display: grid;
-        grid-template-columns:
-            var(--desktop-map-width, 22vw)
-            minmax(0, 1fr)
-            var(--desktop-character-width, 22vw);
-        /* The center column stacks the prompt box, command deck, timer lane and
-           input as four content-sized rows — no flexible gap between them. The
-           side columns (DPad / skills) span all four rows, so they rise to the top
-           of the prompt box (= the drawer bottom) and drop to the input's bottom,
-           forming the notch the prompt box slots into. Height is driven by this
-           content; account mode restores a fixed height below.
-           Rows: [prompt] [command deck] [input] — the timer lane lives in the
-           input's right slot, not its own row. */
-        grid-template-rows: auto auto auto;
+        display: flex;
+        flex-direction: column;
         flex-shrink: 0;
-        row-gap: 4px;
-        padding-top: 0 !important;
-        padding-bottom: 9px !important;
+        gap: 0;
+        padding: 0 !important;
         background: transparent !important;
         border: none !important;
-        border-radius: 0 !important;
         box-shadow: none !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
         overflow: visible;
-        width: 100vw;
-        margin-left: calc(-1 * var(--desktop-map-width, 22vw)) !important;
+        width: 100%;
+        margin: 6px 0 0 0 !important;
     }
 
-    .action-box-controls,
-    .action-box-input-row,
-    .action-box-timer-lane {
-        display: contents;
+    .action-box-input-row {
+        width: 100%;
+        min-width: 0;
     }
 
-    .action-box .movement-pad {
+    .action-box-this-is-you-row {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .action-box .action-box-reference-strip {
+        --character-panel-width: clamp(210px, 13vw, 260px);
         position: static;
         grid-column: 1;
         grid-row: 1 / -1;
         align-self: stretch;
-        justify-self: center;
-        height: 100%;
-        aspect-ratio: 1 / 1;
-        max-width: 100%;
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(3, 1fr);
-        margin: 0;
-        transform: none;
+        display: flex;
+        align-items: stretch;
+        justify-content: flex-end;
+        gap: 8px;
+        min-width: 0;
+        overflow: hidden;
     }
 
+    .action-box .action-box-character-toggle {
+        flex: 0 0 var(--character-panel-width);
+        width: var(--character-panel-width);
+        min-width: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+        text-align: left;
+    }
+
+    .action-box .action-box-character-toggle:focus-visible {
+        outline: 1px solid rgba(201, 168, 76, 0.75);
+        outline-offset: 2px;
+    }
+
+    .action-box .action-box-reference-strip .player-summary-panel {
+        align-self: stretch;
+        height: 100%;
+        min-width: 0;
+        margin: 0;
+        width: 100%;
+    }
+
+    .action-box .action-box-reference-collapsible {
+        display: flex;
+        align-self: stretch;
+        width: 0;
+        min-width: 0;
+        gap: 8px;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(18px);
+        transition:
+            width 320ms cubic-bezier(0.16, 1, 0.3, 1),
+            opacity 180ms ease,
+            transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .action-box .action-box-reference-strip.is-expanded .action-box-reference-collapsible {
+        width: calc(100% - var(--character-panel-width) - 8px);
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0);
+    }
+
+    .action-box .action-box-reference-collapsible .compact-item-reference {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+
+
     .action-box .action-box-prompt-cell,
-    .action-box .command-deck,
     .action-box-input-cell,
     .action-box-timer-lane {
         grid-column: 2;
@@ -110,7 +148,7 @@
         min-width: 0;
     }
 
-    /* Prompt box occupies the center's top cell; the side columns rise past it. */
+    /* Prompt box occupies the center's top cell. */
     .action-box .action-box-prompt-cell {
         grid-row: 1;
         align-self: start;
@@ -125,7 +163,7 @@
 
     /* Skills panel fills the bottom-bar column under the character drawer. */
     .action-box .skills-deck {
-        grid-column: 3;
+        grid-column: 4;
         grid-row: 1 / -1;
         align-self: stretch;
         width: 100%;
@@ -183,12 +221,12 @@
     }
 
     .action-box-input-cell {
-        grid-row: 3;
+        grid-row: 2;
         margin-top: 0;
     }
 
     .action-box-timer-lane {
-        grid-row: 3;
+        grid-row: 2;
         display: flex;
         align-self: end;
         justify-self: stretch;
@@ -333,6 +371,16 @@
     }
 }
 
+/* Preserve the frosted command field across terrain-specific input styles. */
+.app-container.immersion-mode:not(.terrain-none):not(.terrain-underground) .action-box .input-main-container,
+.app-container.immersion-mode.terrain-underground .action-box .input-main-container,
+.app-container.immersion-mode .action-box .input-main-container {
+    background: rgba(0, 0, 0, 0.18) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+}
+
 /* Account menu occupies the same bottom-bar grid as the game controls: the
    AccountDeck spans all three columns (it lays out its own status/center/detail
    sub-columns) in the top row, with the command input in the bottom row. */
@@ -358,4 +406,3 @@
         grid-row: 2;
     }
 }
-

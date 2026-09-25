@@ -336,9 +336,10 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 addMessageRef.current?.('system', 'Loading Master Map Data...');
             }
 
-            // 1. Load basic room coordinates (JSON)
-            // Use underscores exactly as they appear in the public/ directory.
-            const res = await fetch('/mume_map_data.json?v=' + Date.now());
+            // 1. Load basic room coordinates (JSON). This is a static bundled
+            // asset, so do not attach a timestamp: that used to defeat the
+            // browser cache and re-download 19 MB on every startup.
+            const res = await fetch('/mume_map_data.json');
             if (!res.ok) throw new Error('No preloaded map data');
             const data = await res.json();
 
@@ -372,12 +373,20 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 }
             }
 
-            // 3. For any remaining empty zones, use 3D geographic proximity search (threshold 30 units)
-            const knownRooms: { x: number; y: number; z: number; zone: string }[] = [];
+            // 3. For any remaining empty zones, use a 3D geographic proximity
+            // search (threshold 30 units). Bucket known rooms into 30-unit cells
+            // first, so each room checks only adjacent cells instead of scanning
+            // every known room (previously ~126 million comparisons at startup).
+            const zoneCellSize = 30;
+            const getZoneCellKey = (x: number, y: number, z: number) =>
+                `${Math.floor(x / zoneCellSize)},${Math.floor(y / zoneCellSize)},${Math.floor(z / zoneCellSize)}`;
+            const zoneCells: Record<string, { x: number; y: number; z: number; zone: string }[]> = {};
             for (const vnum in data) {
                 const r = data[vnum];
                 if (r[9] && typeof r[9] === 'string' && r[9].trim() !== '') {
-                    knownRooms.push({ x: r[0], y: r[1], z: r[2] || 0, zone: r[9] });
+                    const room = { x: r[0], y: r[1], z: r[2] || 0, zone: r[9] };
+                    const cellKey = getZoneCellKey(room.x, room.y, room.z);
+                    (zoneCells[cellKey] ||= []).push(room);
                 }
             }
 
@@ -387,15 +396,26 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     let minD = Infinity;
                     let bestZone = '';
                     const rx = r[0], ry = r[1], rz = r[2] || 0;
-                    for (let i = 0; i < knownRooms.length; i++) {
-                        const kr = knownRooms[i];
-                        const dx = kr.x - rx;
-                        const dy = kr.y - ry;
-                        const dz = kr.z - rz;
-                        const dist = dx * dx + dy * dy + dz * dz;
-                        if (dist < minD) {
-                            minD = dist;
-                            bestZone = kr.zone;
+                    const cellX = Math.floor(rx / zoneCellSize);
+                    const cellY = Math.floor(ry / zoneCellSize);
+                    const cellZ = Math.floor(rz / zoneCellSize);
+
+                    for (let dxCell = -1; dxCell <= 1; dxCell++) {
+                        for (let dyCell = -1; dyCell <= 1; dyCell++) {
+                            for (let dzCell = -1; dzCell <= 1; dzCell++) {
+                                const nearbyRooms = zoneCells[`${cellX + dxCell},${cellY + dyCell},${cellZ + dzCell}`];
+                                if (!nearbyRooms) continue;
+                                for (const kr of nearbyRooms) {
+                                    const dx = kr.x - rx;
+                                    const dy = kr.y - ry;
+                                    const dz = kr.z - rz;
+                                    const dist = dx * dx + dy * dy + dz * dz;
+                                    if (dist < minD) {
+                                        minD = dist;
+                                        bestZone = kr.zone;
+                                    }
+                                }
+                            }
                         }
                     }
                     if (minD < 900) {
@@ -458,7 +478,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             baseMapExitsRef.current = baseMapExits;
 
             try {
-                const markerRes = await fetch('/mume_map_markers.json?v=' + Date.now());
+                const markerRes = await fetch('/mume_map_markers.json');
                 if (markerRes.ok) {
                     const bundledMarkers = await markerRes.json() as Record<string, MapperMarker>;
                     const markerIds = Object.keys(bundledMarkers);

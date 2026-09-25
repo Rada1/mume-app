@@ -16,6 +16,8 @@ interface CapturedDetailsCardProps {
     isCapturingConsider?: boolean;
     whoisLines?: string[];
     isCapturingWhois?: boolean;
+    onRequestLook?: () => void;
+    onRequestConsider?: () => void;
 }
 
 interface AssessmentLine {
@@ -71,7 +73,9 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
     isCapturingExamine,
     isCapturingConsider,
     whoisLines,
-    isCapturingWhois
+    isCapturingWhois,
+    onRequestLook,
+    onRequestConsider
 }) => {
     // Remote allies aren't in the room, so they get identified via "whois"
     // instead of the look/consider grid.
@@ -107,8 +111,6 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
     const assessmentLines = (considerLines || []).map(toAssessmentLine);
     const isLoading = !!(isCapturingExamine || isCapturingConsider);
 
-    if (!isLoading && look.description.length === 0 && look.equipment.length === 0 && conditionLines.length === 0 && assessmentLines.length === 0) return null;
-
     return (
         <section className="captured-details-card" onPointerDown={(e) => e.stopPropagation()}>
             {conditionLines.length > 0 && (
@@ -136,7 +138,10 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
                             ))}
                         </div>
                     ) : (
-                        <div className="captured-detail-empty">No look details yet.</div>
+                        <div className="captured-detail-empty">
+                            <span>No look details yet.</span>
+                            {onRequestLook && <button type="button" className="captured-detail-request" onClick={onRequestLook}>Look</button>}
+                        </div>
                     )}
 
                     {look.equipment.length > 0 && (
@@ -162,13 +167,15 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
                         <div className="captured-assessment-list">
                             {assessmentLines.map((line, idx) => (
                                 <div className={`captured-assessment-row tone-${line.tone}`} key={`con-${idx}`}>
-                                    <span className="captured-assessment-label">{line.label}</span>
                                     <span className="captured-assessment-text" dangerouslySetInnerHTML={{ __html: line.html }} />
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="captured-detail-empty">No assessment yet.</div>
+                        <div className="captured-detail-empty">
+                            <span>No assessment yet.</span>
+                            {onRequestConsider && <button type="button" className="captured-detail-request" onClick={onRequestConsider}>Consider</button>}
+                        </div>
                     )}
                 </div>
             </div>

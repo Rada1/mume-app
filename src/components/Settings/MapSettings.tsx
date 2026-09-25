@@ -51,6 +51,8 @@ const MapSettings: React.FC = () => {
     const {
         showBackgroundImage,
         setShowBackgroundImage,
+        showTerrainTiles,
+        setShowTerrainTiles,
         showDebugEchoes,
         setShowDebugEchoes,
         useLegacyMapArt,
@@ -121,6 +123,23 @@ const MapSettings: React.FC = () => {
                     </div>
                     <button className={`setting-toggle ${showBackgroundImage ? 'active' : ''}`} onClick={() => setShowBackgroundImage(!showBackgroundImage)} style={toggleStyle(showBackgroundImage)}>
                         <div style={knobStyle(showBackgroundImage)} />
+                    </button>
+                </div>
+
+                <div style={rowStyle}>
+                    <div>
+                        <label className="setting-label" style={{ margin: 0 }}>Show Terrain Tiles</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>On: full map without a player marker or highlight. Off: local 3×3 view with your marker.</div>
+                    </div>
+                    <button
+                        type="button"
+                        className={`setting-toggle ${showTerrainTiles ? 'active' : ''}`}
+                        aria-label="Show Terrain Tiles"
+                        aria-pressed={showTerrainTiles}
+                        onClick={() => setShowTerrainTiles(!showTerrainTiles)}
+                        style={toggleStyle(showTerrainTiles)}
+                    >
+                        <div style={knobStyle(showTerrainTiles)} />
                     </button>
                 </div>
 

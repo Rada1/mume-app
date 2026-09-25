@@ -559,7 +559,7 @@
     position: relative;
     box-sizing: border-box;
     min-width: 0;
-    font-family: 'Iosevka', monospace;
+    font-family: var(--font-mono, monospace);
 }
 
 @media not ((max-width: 1024px) and (orientation: portrait)) {
@@ -832,7 +832,7 @@
     min-height: 20px;
     padding: 0 !important;
     font-size: var(--dynamic-log-size, 16px);
-    font-family: 'Iosevka', monospace !important;
+    font-family: var(--font-mono, monospace) !important;
 }
 
 .input-area.command-suggestions-open {
@@ -861,7 +861,7 @@
     word-break: break-word;
     pointer-events: none;
     color: var(--text-primary);
-    font-family: 'Iosevka', monospace;
+    font-family: var(--font-mono, monospace);
     font-size: var(--dynamic-log-size, 16px);
     line-height: 1.5;
     min-height: 1.4em;
@@ -896,7 +896,7 @@
 
 .command-suggestion-popup {
     position: fixed;
-    transform: translateY(-100%);
+    transform: none;
     max-height: 220px;
     overflow-y: auto;
     z-index: var(--z-modals-layer);

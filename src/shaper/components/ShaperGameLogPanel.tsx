@@ -46,10 +46,11 @@ export const ShaperGameLogPanel: React.FC<ShaperGameLogPanelProps> = ({ onClose 
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'ArrowUp') {
+        const isNumpad = e.location === 3 || e.code.startsWith('Numpad');
+        if (e.key === 'ArrowUp' && !isNumpad) {
             e.preventDefault();
             navigateHistory('up');
-        } else if (e.key === 'ArrowDown') {
+        } else if (e.key === 'ArrowDown' && !isNumpad) {
             e.preventDefault();
             navigateHistory('down');
         }

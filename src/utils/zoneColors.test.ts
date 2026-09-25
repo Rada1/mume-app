@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getZoneColor, DEFAULT_ZONE_COLOR, hashStringToColor, getZoneTextColor, hexToHsl } from './zoneColors';
+import { getZoneColor, getZoneAmbientGlow, DEFAULT_ZONE_COLOR, hashStringToColor, getZoneTextColor, hexToHsl } from './zoneColors';
 
 describe('zoneColors', () => {
     it('returns default color for null, undefined, or empty string', () => {
@@ -10,18 +10,21 @@ describe('zoneColors', () => {
         expect(getZoneColor('()')).toBe(DEFAULT_ZONE_COLOR);
     });
 
-    it('resolves curated mature zone colors for known zones', () => {
-        expect(getZoneColor('Valinor')).toBe('#d97706');
-        expect(getZoneColor('(Valinor)')).toBe('#d97706');
-        expect(getZoneColor('The Shire')).toBe('#16a34a');
-        expect(getZoneColor('the shire')).toBe('#16a34a');
-        expect(getZoneColor('Shire')).toBe('#16a34a');
-        expect(getZoneColor('(the Shire)')).toBe('#16a34a');
-        expect(getZoneColor('Rivendell')).toBe('#0284c7');
-        expect(getZoneColor('Bree')).toBe('#d97706');
-        expect(getZoneColor('Moria')).toBe('#c2410c');
-        expect(getZoneColor('Dol Guldur')).toBe('#7e22ce');
-        expect(getZoneColor('the Troll Warrens')).toBe('#dc2626');
+    it('groups known zones by culture while retaining distinct shades', () => {
+        expect(getZoneColor('Valinor')).toBe('#b7a65a');
+        expect(getZoneColor('(Valinor)')).toBe('#b7a65a');
+        expect(getZoneColor('The Shire')).toBe('#71a653');
+        expect(getZoneColor('the shire')).toBe('#71a653');
+        expect(getZoneColor('Shire')).toBe('#71a653');
+        expect(getZoneColor('(the Shire)')).toBe('#71a653');
+        expect(getZoneColor('Rivendell')).toBe('#318c66');
+        expect(getZoneColor('Bree')).toBe('#467db3');
+        expect(getZoneColor('Moria')).toBe('#aa454c');
+        expect(getZoneColor('Dol Guldur')).toBe('#7947b5');
+        expect(getZoneColor('the Troll Warrens')).toBe('#8246ad');
+        expect(getZoneColor('the Road to Tharbad')).toBe('#527ca1');
+        expect(getZoneColor('the Central Anduin Vale')).toBe('#528f97');
+        expect(getZoneAmbientGlow('Moria')).toBe('rgba(170, 69, 76, 0.18)');
     });
 
     it('generates a consistent deterministic color for unlisted zones', () => {
@@ -60,14 +63,14 @@ describe('zoneColors', () => {
         const shireText = getZoneTextColor('Shire');
         const shireHsl = hexToHsl(shireText);
         expect(shireHsl.l).toBeGreaterThanOrEqual(68);
-        expect(shireHsl.h).toBeGreaterThanOrEqual(135);
-        expect(shireHsl.h).toBeLessThanOrEqual(150);
+        expect(shireHsl.h).toBeGreaterThanOrEqual(90);
+        expect(shireHsl.h).toBeLessThanOrEqual(115);
 
         const rivendellText = getZoneTextColor('Rivendell');
         const rivendellHsl = hexToHsl(rivendellText);
         expect(rivendellHsl.l).toBeGreaterThanOrEqual(68);
-        expect(rivendellHsl.h).toBeGreaterThanOrEqual(195);
-        expect(rivendellHsl.h).toBeLessThanOrEqual(210);
+        expect(rivendellHsl.h).toBeGreaterThanOrEqual(145);
+        expect(rivendellHsl.h).toBeLessThanOrEqual(165);
 
         // Light mode: lightness clamped to <= 32%
         const breeTextLight = getZoneTextColor('Bree', true);

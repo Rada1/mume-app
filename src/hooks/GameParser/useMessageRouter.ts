@@ -154,7 +154,12 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
     }, []);
 
     const detectItemsInRoom = useCallback((textOnly: string, cleanLine: string, isDrawerHiding: boolean, options: RoomItemDetectionOptions = {}) => {
-        if (capture.hasSession() || isDrawerHiding) return;
+        // A `look` response is commonly handled as a capture session. Corpses
+        // are nevertheless loot sources, so retain them in roomItems even while
+        // that response is being captured; otherwise `get <item> ` has no way
+        // to offer the corpse as a source.
+        const containsCorpse = /\bcorpse\b/i.test(textOnly) || /<object\b[^>]*>[^<]*\bcorpse\b/i.test(cleanLine);
+        if ((capture.hasSession() && !containsCorpse) || isDrawerHiding) return;
         if (!shouldDetectRoomItemsFromLine(textOnly, cleanLine, options)) return;
 
         const objects: string[] = [];

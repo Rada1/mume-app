@@ -1210,11 +1210,7 @@ export const drawFeatures = (
                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
                 const zoneName = localRoom?.zone || rData[9] || '';
                 const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
-                const currentWallColor = isDarkMode
-                    ? '#2b1a12'
-                    : rCtx.useLegacyMapArt
-                    ? (zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR)
-                    : getClientThemeColor('--text-primary', '#2f2a20');
+                const currentWallColor = zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR;
                 const currentDoorColor = getClientThemeColor('--mume-wiki-link-color', isDarkMode ? '#c9a84c' : '#8b6b10');
 
                 // Calculate fade-in for newly explored rooms (skip for active room)
@@ -1566,11 +1562,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
         const wx = room.x * s, wy = room.y * s, cX = wx + s / 2, cY = wy + s / 2;
         const zoneName = room.zone || '';
         const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
-        const currentWallColor = isDarkMode
-            ? '#2b1a12'
-            : rCtx.useLegacyMapArt
-            ? (zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR)
-            : getClientThemeColor('--text-primary', '#2f2a20');
+        const currentWallColor = zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR;
         const currentDoorColor = getClientThemeColor('--mume-wiki-link-color', isDarkMode ? '#c9a84c' : '#8b6b10');
 
         // Local Connections
@@ -1696,11 +1688,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
             const wx = room.x * s, wy = room.y * s;
             const zoneName = room.zone || '';
             const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
-            const currentWallColor = isDarkMode
-                ? '#2b1a12'
-                : rCtx.useLegacyMapArt
-                ? (zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR)
-                : getClientThemeColor('--text-primary', '#2f2a20');
+            const currentWallColor = zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR;
             const currentDoorColor = getClientThemeColor('--mume-wiki-link-color', isDarkMode ? '#c9a84c' : '#8b6b10');
             for (const d of ['n', 's', 'e', 'w']) {
                 const rId = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;

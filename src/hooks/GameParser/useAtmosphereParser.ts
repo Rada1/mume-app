@@ -28,8 +28,7 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
     const {
         setIsFoggy, setLightningEnabled,
         setSpectateIsFoggy, setSpectateLightningEnabled,
-        triggerHaptic, playDoorSound, playRideSound, playStopRidingSound, playEffect,
-        setPlayerPosition, setSpectatePosition, setIsRiding, refreshCombatStats, isSpectateMode
+        triggerHaptic, playDoorSound
     } = deps;
 
     const parseAtmosphere = useCallback((lower: string, isSnoop: boolean = false) => {
@@ -65,44 +64,7 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
             playDoorSound?.(false);
         }
 
-        // --- Posture / Position / Riding ---
-        const posSetter = (isSnoop && setSpectatePosition) ? setSpectatePosition : setPlayerPosition;
-        
-        // Only first-person action confirmations represent a player position change.
-        // Room prose may mention mounts, reins, or riding without the player mounting.
-        const isMounting = /\byou\s+(?:mount|start riding|pick(?:s)? up some reins|pick(?:s)? up the reins)\b/.test(lower);
-        const isDismounting = /\byou\s+(?:dismount|stop riding)\b/.test(lower);
-        const isSelfSitting = /\byou\b.*\bsit(?: down| up)?\b/.test(lower);
-        const isSelfStanding = /\byou\b.*\bstand(?: up)?\b/.test(lower);
-        const isSelfResting = /\byou\b.*\b(?:rest|lie down)\b/.test(lower);
-        const isSelfSleeping = /\byou\b.*\bgo to sleep\b/.test(lower);
-
-        if (isMounting) {
-            setIsRiding?.(true);
-            posSetter('riding');
-            playRideSound?.();
-        } else if (isDismounting) {
-            setIsRiding?.(false);
-            posSetter('standing');
-            playStopRidingSound?.();
-        } else if (isSelfSitting || lower.includes('is now sitting')) {
-            posSetter('sitting');
-            if (!isSnoop && isSelfSitting) playEffect?.('rest', { pitch: 1.12, skipJitter: true });
-            if (!isSnoop && isSelfSitting) refreshCombatStats?.();
-        } else if (isSelfStanding || lower.includes('is now standing')) {
-            posSetter('standing');
-            if (!isSnoop && isSelfStanding) playEffect?.('rest', { pitch: 1.24, skipJitter: true });
-            if (!isSnoop && isSelfStanding) refreshCombatStats?.();
-        } else if (isSelfResting || lower.includes('is now resting')) {
-            posSetter('resting');
-            if (!isSnoop && isSelfResting) playEffect?.('rest', { pitch: 1, skipJitter: true });
-            if (!isSnoop && isSelfResting) refreshCombatStats?.();
-        } else if (isSelfSleeping || lower.includes('is now sleeping')) {
-            posSetter('sleeping');
-            if (!isSnoop && isSelfSleeping) playEffect?.('rest', { pitch: 0.8, skipJitter: true });
-            if (!isSnoop && isSelfSleeping) refreshCombatStats?.();
-        }
-    }, [setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, playRideSound, playStopRidingSound, playEffect, setPlayerPosition, setSpectatePosition, setIsRiding, refreshCombatStats, isSpectateMode]);
+    }, [setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound]);
 
     return { parseAtmosphere };
 }

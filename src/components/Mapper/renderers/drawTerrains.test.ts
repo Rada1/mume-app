@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { applyRoomShading, MMAPPER_ROOM_DARK_COLOR, MMAPPER_ROOM_NO_SUNDEATH_COLOR } from './drawTerrains';
+import { applyRoomShading, drawTerrainTileIcon, MMAPPER_ROOM_DARK_COLOR, MMAPPER_ROOM_NO_SUNDEATH_COLOR } from './drawTerrains';
 
 describe('applyRoomShading', () => {
     const createMockCtx = () => {
@@ -7,6 +7,7 @@ describe('applyRoomShading', () => {
             save: vi.fn(),
             restore: vi.fn(),
             fillRect: vi.fn(),
+            drawImage: vi.fn(),
             setTransform: vi.fn(),
             getTransform: vi.fn().mockReturnValue({ a: 1, d: 1, e: 0, f: 0 }),
             globalCompositeOperation: 'source-over',
@@ -114,5 +115,76 @@ describe('applyRoomShading', () => {
         applyRoomShading(ctx, r, 16, 1.0, rCtx);
 
         expect(ctx.fillStyle).toBe(MMAPPER_ROOM_NO_SUNDEATH_COLOR);
+    });
+});
+
+describe('drawTerrainTileIcon road & trail rendering', () => {
+    const createMockCtx = () => {
+        return {
+            save: vi.fn(),
+            restore: vi.fn(),
+            fillRect: vi.fn(),
+            drawImage: vi.fn(),
+            setTransform: vi.fn(),
+            getTransform: vi.fn().mockReturnValue({ a: 1, d: 1, e: 0, f: 0 }),
+            globalCompositeOperation: 'source-over',
+            fillStyle: '',
+            globalAlpha: 1.0,
+        } as unknown as CanvasRenderingContext2D;
+    };
+
+    const createMockImage = (name: string): HTMLImageElement => {
+        return {
+            name,
+            complete: true,
+            naturalWidth: 128,
+            naturalHeight: 128,
+        } as unknown as HTMLImageElement;
+    };
+
+    it('draws mmapper-road-ew for Road terrain with ew route suffix', () => {
+        const ctx = createMockCtx();
+        const roadEw = createMockImage('road-ew');
+        const imagesRef = {
+            current: {
+                'mmapper-road-ew': roadEw,
+                'mmapper-road-none': createMockImage('road-none'),
+            }
+        } as any;
+
+        drawTerrainTileIcon(ctx, 10, 20, 16, 'Road', false, { current: {} }, imagesRef, 0, 'clear', 0, undefined, undefined, 'ew');
+
+        expect(ctx.drawImage).toHaveBeenCalledWith(roadEw, expect.any(Number), expect.any(Number), expect.any(Number), expect.any(Number));
+    });
+
+    it('falls back to mmapper-road-none for Road terrain when no route suffix is present', () => {
+        const ctx = createMockCtx();
+        const roadNone = createMockImage('road-none');
+        const imagesRef = {
+            current: {
+                'mmapper-road-none': roadNone,
+            }
+        } as any;
+
+        drawTerrainTileIcon(ctx, 10, 20, 16, 'Road', false, { current: {} }, imagesRef, 0, 'clear', 0, undefined, undefined, undefined);
+
+        expect(ctx.drawImage).toHaveBeenCalledWith(roadNone, expect.any(Number), expect.any(Number), expect.any(Number), expect.any(Number));
+    });
+
+    it('draws base terrain and trail overlay for non-road terrain with route suffix', () => {
+        const ctx = createMockCtx();
+        const fieldImg = createMockImage('terrain-field');
+        const trailEwImg = createMockImage('trail-ew');
+        const imagesRef = {
+            current: {
+                'mmapper-terrain-field': fieldImg,
+                'mmapper-trail-ew': trailEwImg,
+            }
+        } as any;
+
+        drawTerrainTileIcon(ctx, 10, 20, 16, 'Field', false, { current: {} }, imagesRef, 0, 'clear', 0, undefined, undefined, 'ew');
+
+        expect(ctx.drawImage).toHaveBeenNthCalledWith(1, fieldImg, expect.any(Number), expect.any(Number), expect.any(Number), expect.any(Number));
+        expect(ctx.drawImage).toHaveBeenNthCalledWith(2, trailEwImg, 10, 20, 16, 16);
     });
 });

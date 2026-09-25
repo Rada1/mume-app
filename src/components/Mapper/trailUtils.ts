@@ -56,7 +56,7 @@ export const getRoomRouteDirections = (
         const ex = ghostExits?.[dir] || currentRoomObj?.exits?.[dir] || ardaExits[dir];
         if (!ex) continue;
 
-        const targetVnum = String(ex.target || ex.gmcpDestId || '');
+        const targetVnum = String(ex.target || ex.gmcpDestId || ardaExit?.target || '');
         const targetData = preloaded[targetVnum];
         const targetTerrain = targetData ? targetData[3] : undefined;
 

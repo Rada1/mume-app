@@ -30,7 +30,7 @@ interface CharacterCardProps {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-    Healthy: '#4ade80', Fine: '#86efac', Hurt: '#facc15', Wounded: '#fb923c',
+    Healthy: '#55ff55', Fine: '#86efac', Hurt: '#facc15', Wounded: '#fb923c',
     Bad: '#f87171', Awful: '#ef4444', Dying: '#dc2626', Stunned: '#c084fc'
 };
 const statusColor = (s: CombatHealthStatus | null | string | undefined): string => STATUS_COLOR[s || ''] || 'rgba(255,255,255,0.6)';
@@ -229,7 +229,6 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
         const now = Date.now();
         if (now - lastRefreshRef.current < 5000) return;
         lastRefreshRef.current = now;
-        executeCommand('info', true, true, true, true);
         executeCommand('quest', true, true, false, true);
         executeCommand('practice', true, true, false, true);
         executeCommand('achievement', true, true, false, true);
@@ -724,7 +723,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
                         <Section title="State" icon={<Compass size={10} strokeWidth={2.5} />} className="character-card-state">
                             <div className="char-card-info-grid">
                                 <InfoRow label="Position" value={
-                                    <span style={{ color: vitals.position === 'fighting' || vitals.position === 'dying' ? '#f87171' : '#4ade80' }}>
+                                    <span style={{ color: vitals.position === 'fighting' || vitals.position === 'dying' ? '#f87171' : 'var(--ansi-green, #55ff55)' }}>
                                         {positionLabel(vitals.position)}
                                     </span>
                                 } />

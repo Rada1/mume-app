@@ -214,4 +214,63 @@ describe('useSpellCompletionTracker', () => {
         expect(playIncantationSound).not.toHaveBeenCalled();
         expect(result.current.lastSpellCastTimeRef.current).toBe(0);
     });
+
+    it('triggers magiccomplete for Armour initial cast completion', () => {
+        const { result } = renderHook(() => useSpellCompletionTracker({ playIncantationSound, playEffect }));
+
+        act(() => {
+            result.current.handleSpellLine('You start to concentrate...', 'you start to concentrate...', false);
+        });
+
+        act(() => {
+            vi.advanceTimersByTime(1500);
+            result.current.handleSpellLine(
+                'A blue transparent shield appears around you.',
+                'a blue transparent shield appears around you.',
+                false
+            );
+        });
+
+        expect(playEffect).toHaveBeenCalledWith('magiccomplete');
+    });
+
+    it('triggers magiccomplete when "Nothing seems to happen." arrives after casting', () => {
+        const { result } = renderHook(() => useSpellCompletionTracker({ playIncantationSound, playEffect }));
+
+        act(() => {
+            result.current.handleSpellLine('[cast \'bless\']', '[cast \'bless\']', false);
+        });
+
+        act(() => {
+            vi.advanceTimersByTime(1200);
+            result.current.handleSpellLine(
+                'Nothing seems to happen.',
+                'nothing seems to happen.',
+                false
+            );
+        });
+
+        expect(playEffect).toHaveBeenCalledWith('magiccomplete');
+        expect(result.current.lastSpellCastTimeRef.current).toBe(0);
+    });
+
+    it('triggers magiccomplete when "You feel less thirsty." arrives after casting create water', () => {
+        const { result } = renderHook(() => useSpellCompletionTracker({ playIncantationSound, playEffect }));
+
+        act(() => {
+            result.current.handleSpellLine('[commune \'create water\']', '[commune \'create water\']', false);
+        });
+
+        act(() => {
+            vi.advanceTimersByTime(1200);
+            result.current.handleSpellLine(
+                'You feel less thirsty.',
+                'you feel less thirsty.',
+                false
+            );
+        });
+
+        expect(playEffect).toHaveBeenCalledWith('magiccomplete');
+        expect(result.current.lastSpellCastTimeRef.current).toBe(0);
+    });
 });

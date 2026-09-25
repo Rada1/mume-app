@@ -1,12 +1,12 @@
-import { useCallback, useRef, MutableRefObject } from 'react';
+import { useCallback, useEffect, useRef, MutableRefObject } from 'react';
 import { GRID_SIZE, normalizeTerrain } from './mapperUtils';
 import { RenderContext } from './renderers/rendererUtils';
 import type { CombatPulse } from './renderers/rendererUtils';
 import { CompactMapExit, MapperPrediction, RegionLabel } from './mapperTypes';
-import { drawTerrains, drawLocalTerrains, drawExplorationRevealOverlay, RING_REVEAL_BAKE_MS, RING_REVEAL_TOTAL_MS } from './renderers/drawTerrains';
+import { drawTerrains, drawLocalTerrains, drawExplorationRevealOverlay, RING_REVEAL_BAKE_MS, RING_REVEAL_TOTAL_MS, TERRAIN_LAYER_OPACITY } from './renderers/drawTerrains';
 import { drawFeatures, drawLocalFeatures, drawAnimatingFlags } from './renderers/drawFeatures';
 import { drawDoorLabels } from './renderers/drawDoorLabels';
-import { drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee, drawDoorHighlights, drawFilterHighlights } from './renderers/drawEntities';
+import { drawEntities, drawDeathIndicator, drawMarkers, drawMarquee, drawDoorHighlights, drawFilterHighlights } from './renderers/drawEntities';
 import { drawRegionLabels } from './renderers/drawRegionLabels';
 import { drawZoneFocusOverlay } from './renderers/zoneFocusOverlay';
 import { ZoneFilterConfig } from './zoneFilters';
@@ -205,6 +205,35 @@ export const useMapperRenderer = ({
     const zoneFocusGrayscale = useSettingsStore(s => s.zoneFocusGrayscale);
     const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
     const useLegacyMapArt = useSettingsStore(s => s.useLegacyMapArt);
+    const showTerrainTiles = useSettingsStore(s => s.showTerrainTiles);
+    const mapPulseStartedRef = useRef(-Infinity);
+    const mapPulseFadeStartedRef = useRef(Infinity);
+    const mapPulseRoomIdRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        const onCommand = (event: Event) => {
+            const detail = (event as CustomEvent<{ cmd: string; silent: boolean; isSystem: boolean }>).detail;
+            if (useSettingsStore.getState().showTerrainTiles || detail.silent || detail.isSystem || detail.cmd.trim().toLowerCase() !== 'map') return;
+            mapPulseStartedRef.current = performance.now();
+            mapPulseFadeStartedRef.current = Infinity;
+            mapPulseRoomIdRef.current = currentRoomId;
+            window.dispatchEvent(new CustomEvent('mume-mapper-wake', { detail: { duration: 900 } }));
+        };
+        window.addEventListener('mume-command-sent', onCommand);
+        return () => window.removeEventListener('mume-command-sent', onCommand);
+    }, [currentRoomId]);
+
+    useEffect(() => {
+        if (mapPulseStartedRef.current === -Infinity || mapPulseFadeStartedRef.current !== Infinity) return;
+        if (!currentRoomId || !mapPulseRoomIdRef.current || currentRoomId === mapPulseRoomIdRef.current) return;
+        mapPulseFadeStartedRef.current = performance.now();
+        window.dispatchEvent(new CustomEvent('mume-mapper-wake', { detail: { duration: 1000 } }));
+    }, [currentRoomId]);
+
+    useEffect(() => {
+        if (showTerrainTiles) mapPulseStartedRef.current = -Infinity;
+        window.dispatchEvent(new Event('mume-mapper-wake'));
+    }, [showTerrainTiles]);
 
     const layerCacheRef = useRef<MapperLayerCache | null>(null);
     const localSpatialIndexRef = useRef<Record<number, Record<string, string[]>>>({});
@@ -215,6 +244,11 @@ export const useMapperRenderer = ({
     const lastMapTileVisualsRef = useRef<any>(null);
     const lastMapTileOpacityRef = useRef<number>(1);
     const lastZoneFiltersRef = useRef<Record<string, ZoneFilterConfig> | null>(null);
+    // The master map arrives asynchronously and replaces both of these ref values.
+    // Keep that replacement in the static-layer cache key: otherwise a first paint
+    // that happens before loading finishes can leave a perfectly valid, but empty,
+    // tile cache on screen indefinitely.
+    const mapDataVersionRef = useRef({ preloaded: null as unknown, spatialIndex: null as unknown, version: 0 });
     const fullExploredRef = useRef<{ count: number, set: Set<string> }>({ count: 0, set: new Set() });
     const emptyExploredAtRef = useRef<Record<string, number>>({});
     const zoomLodRef = useRef({
@@ -434,8 +468,16 @@ export const useMapperRenderer = ({
 
         const lodParams = `${showTerrainIcons}_${showDoorLabels}_${lowEffects}`;
         const lodChanged = cache.lastLodParams !== lodParams;
+        const mapDataVersion = mapDataVersionRef.current;
+        const currentSpatialIndex = spatialIndexRef.current;
+        if (mapDataVersion.preloaded !== preloaded || mapDataVersion.spatialIndex !== currentSpatialIndex) {
+            mapDataVersion.preloaded = preloaded;
+            mapDataVersion.spatialIndex = currentSpatialIndex;
+            mapDataVersion.version += 1;
+        }
         const paramParts: [string, string | number | boolean][] = [
             ['z', curZInt], ['dark', isDarkMode], ['roomsV', cacheGeometryVersionRef.current],
+            ['mapData', mapDataVersion.version],
             // explored.size intentionally omitted: including it forced a full static-cache
             // rebuild on every room discovered (one per step while walking) — the discovery
             // lag. Freshly discovered rooms appear via the screen-space reveal overlay, then
@@ -443,7 +485,7 @@ export const useMapperRenderer = ({
             // movement settles. Makes discovery behave like reveal-all.
             ['unveil', unveilMap], ['treatExpl', treatMapAsExplored],
             ['weather', weather], ['zone', activeZone || ''], ['zonePre', activeZonePreloaded || ''],
-            ['legacyMapArt', useLegacyMapArt],
+            ['legacyMapArt', useLegacyMapArt], ['showPlayerLocation', !showTerrainTiles],
         ];
         const baseParams = paramParts.map(p => p[1]).join('_');
         const needsRebuild = cache.lastParams !== baseParams || (!isViewportInteracting && lodChanged) || zoomDiff > zoomThreshold || moveDist > moveThreshold || finalExplorationBakeDue || visualsChanged;
@@ -483,7 +525,8 @@ export const useMapperRenderer = ({
         ): RenderContext => ({
             ctx: targetCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
-            allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
+            allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds,
+            activeId: showTerrainTiles ? null : activeId, walkTargetId, walkPath, baseMapExitsRef,
             activeZone,
             activeZonePreloaded,
             triggerRender, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName, opponentId,
@@ -750,7 +793,60 @@ export const useMapperRenderer = ({
         const sW = baseW * (bZoom / camera.zoom);
         const sH = baseH * (bZoom / camera.zoom);
         
-        ctx.drawImage(cache.terrainCanvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
+        const playerRoom = playerPosRef.current ?? (activeRoom
+            ? { x: activeRoom.x, y: activeRoom.y, z: activeRoom.z || 0 }
+            : activePreloadedData
+                ? { x: activePreloadedData[0], y: activePreloadedData[1], z: activePreloadedData[2] || 0 }
+                : null);
+        const terrainWindow = !showTerrainTiles && playerRoom && Math.abs((playerRoom.z || 0) - currentZ) < 1
+            ? {
+                x: (Math.round(playerRoom.x) - 1) * GRID_SIZE,
+                y: (Math.round(playerRoom.y) - 1) * GRID_SIZE,
+                size: GRID_SIZE * 3
+            }
+            : null;
+        const pulseElapsed = performance.now() - mapPulseStartedRef.current;
+        const fadeElapsed = performance.now() - mapPulseFadeStartedRef.current;
+        if (!showTerrainTiles && playerRoom && mapPulseStartedRef.current !== -Infinity && fadeElapsed < 1000) {
+            const centerX = (playerRoom.x * GRID_SIZE + GRID_SIZE / 2 - camera.x) * camera.zoom * dpr;
+            const centerY = (playerRoom.y * GRID_SIZE + GRID_SIZE / 2 - camera.y) * camera.zoom * dpr;
+            const radius = Math.hypot(baseW, baseH) * Math.min(1, pulseElapsed / 900);
+            const fade = Math.min(1, pulseElapsed / 250) * (mapPulseFadeStartedRef.current === Infinity ? 1 : Math.max(0, 1 - fadeElapsed / 1000));
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            if (terrainWindow) {
+                ctx.rect(
+                    (terrainWindow.x - camera.x) * camera.zoom * dpr,
+                    (terrainWindow.y - camera.y) * camera.zoom * dpr,
+                    terrainWindow.size * camera.zoom * dpr,
+                    terrainWindow.size * camera.zoom * dpr
+                );
+            }
+            ctx.clip(terrainWindow ? 'evenodd' : 'nonzero');
+            ctx.globalAlpha = TERRAIN_LAYER_OPACITY * fade;
+            ctx.drawImage(cache.terrainCanvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
+            ctx.drawImage(cache.featureCanvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
+            ctx.restore();
+        }
+        if (!showTerrainTiles && !terrainWindow) return;
+        if (terrainWindow) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(
+                (terrainWindow.x - camera.x) * camera.zoom * dpr,
+                (terrainWindow.y - camera.y) * camera.zoom * dpr,
+                terrainWindow.size * camera.zoom * dpr,
+                terrainWindow.size * camera.zoom * dpr
+            );
+            ctx.clip();
+        }
+        if (showTerrainTiles || terrainWindow) {
+            ctx.save();
+            ctx.globalAlpha = TERRAIN_LAYER_OPACITY;
+            ctx.drawImage(cache.terrainCanvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
+            ctx.restore();
+        }
 
         const overlayFloorIndex = spatialIndexRef.current[curZInt];
         const screenRings = (() => {
@@ -770,7 +866,7 @@ export const useMapperRenderer = ({
             groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName,
             opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
             activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
-            mapTileVisuals, mapTileOpacity,
+            mapTileVisuals, mapTileOpacity, showTerrainTiles,
             zoneFilters,
             lighting,
             weather,
@@ -785,7 +881,7 @@ export const useMapperRenderer = ({
             joystickActive
         };
 
-        if (overlayFloorIndex && isExplorationOverlayActive) {
+        if ((showTerrainTiles || terrainWindow) && overlayFloorIndex && isExplorationOverlayActive) {
             ctx.save();
             ctx.imageSmoothingEnabled = false;
             ctx.scale(dpr * camera.zoom, dpr * camera.zoom);
@@ -816,23 +912,40 @@ export const useMapperRenderer = ({
         ctx.translate(-camera.x, -camera.y);
 
         const rCtx = baseDynamicRCtx;
-        drawGroupMembers(rCtx);
+        // Keep the map focused on geography and the local player position for
+        // now; group members are still available in the group UI.
         drawDeathIndicator(rCtx);
         drawFilterHighlights(rCtx, playerPosRef);
-        drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);
-        drawDoorHighlights(rCtx, playerPosRef);
+        if (!showTerrainTiles) {
+            drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);
+            drawDoorHighlights(rCtx, playerPosRef);
+        }
         drawMarkers(rCtx, stableMarkersRef, selectedMarkerId, camera.x, camera.y, camera.x + baseW/camera.zoom, camera.y + baseH/camera.zoom);
         drawRegionLabels(rCtx, regionLabels, selectedRegionLabelId);
+        if (showTerrainTiles && playerRoom && Math.abs((playerRoom.z || 0) - currentZ) < 1) {
+            const inset = 2 / camera.zoom;
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255, 226, 134, 0.95)';
+            ctx.lineWidth = 2 / camera.zoom;
+            ctx.strokeRect(
+                playerRoom.x * GRID_SIZE + inset,
+                playerRoom.y * GRID_SIZE + inset,
+                GRID_SIZE - inset * 2,
+                GRID_SIZE - inset * 2
+            );
+            ctx.restore();
+        }
         if (!isPerformanceMode) {
             drawAnimatingFlags(rCtx);
         }
 
         ctx.restore();
         drawMarquee(rCtx, marquee);
+        if (terrainWindow) ctx.restore();
 
 
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, entitiesRef, serverIdIndexRef, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, walkTargetId, walkPath, activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, selectedRegionLabelId]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, entitiesRef, serverIdIndexRef, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, walkTargetId, walkPath, activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, selectedRegionLabelId, showTerrainTiles]);
 
     return { drawMap, filterFitRef };
 };

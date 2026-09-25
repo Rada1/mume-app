@@ -1,21 +1,23 @@
 import React, { FC } from 'react';
 import Header from '../HUD/Header';
 import MessageLog from '../Messages/MessageLog';
-import ChatWindow from '../Messages/ChatWindow';
+import ChatWindow from '../Messages/ChatTranscriptWindow';
 import PlayersPanel from '../Players/PlayersPanel';
 import HelpPanel from '../Help/HelpPanel';
 import { MumeEditor } from '../Utility/MumeEditor';
 import { MumeArchive } from '../Utility/MumeArchive';
+import { LogDockedInput } from '../HUD/LogDockedInput';
 import InputArea from '../Controls/InputArea';
+import { RightActionPanel } from '../HUD/RightActionPanel';
 import { useGame, useUI, useLog } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { useHelpStore } from '../../stores/useHelpStore';
 import { useArchiveStore } from '../../stores/useArchiveStore';
-import { DockedPanelId, computeDockedPanelStyle } from '../../utils/dockedPanelUtils';
+import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
+import { DockedPanelId, computeDockedPanelStyle, getDockedWidth } from '../../utils/dockedPanelUtils';
 import { LineCluster } from './HUD/LineCluster';
-import CustomPromptBar from '../HUD/CustomPromptBar';
 import ActionBox from '../HUD/ActionBox';
 import { CharacterCard } from '../HUD/CharacterCard';
 import { useCharacterCardStore } from '../../stores/useCharacterCardStore';
@@ -100,11 +102,11 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
     const manualBgImage = useSettingsStore(s => s.bgImage);
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
+    const isCommandPanelOpen = useCommandPanelStore(s => s.isOpen);
     const isShopOpen = useUIStore(s => s.isShopOpen);
     const showPlayersPanel = useSettingsStore(s => s.showPlayersPanel);
     const isHelpOpen = useHelpStore(s => s.isOpen);
     const isArchiveOpen = useArchiveStore(s => s.isOpen);
-    const hidePrompt = useSettingsStore(s => s.hidePrompt);
 
     const isEditorOpen = Boolean(
         mumeEditState?.isOpen &&
@@ -117,14 +119,15 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const activeDockedPanels = React.useMemo(() => {
         if (gameState === 'account') return [] as readonly DockedPanelId[];
         const list: DockedPanelId[] = [];
-        if (showChatWindow) list.push('chat');
+        if (isEditorOpen) list.push('editor');
+        if (isArchiveOpen) list.push('archive');
         if (isShopOpen) list.push('shop');
         if (showPlayersPanel) list.push('players');
         if (isHelpOpen) list.push('help');
-        if (isArchiveOpen) list.push('archive');
-        if (isEditorOpen) list.push('editor');
+        if (showChatWindow) list.push('chat');
+        if (isCommandPanelOpen && !viewport.isMobile) list.push('commands');
         return list;
-    }, [gameState, showChatWindow, isShopOpen, showPlayersPanel, isHelpOpen, isArchiveOpen, isEditorOpen]);
+    }, [gameState, showChatWindow, isShopOpen, showPlayersPanel, isHelpOpen, isArchiveOpen, isEditorOpen, isCommandPanelOpen, viewport.isMobile]);
     const hasDockedPanels = activeDockedPanels.length > 0;
     const isSpectating = activeSession === 'spectate' || activeView === 'target';
     const roomCardTerrain = isSpectating ? spectateTerrain : currentTerrain;
@@ -341,7 +344,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         };
     }, []);
 
-    const { getLightingIcon, getWeatherIcon } = env;
+    const { getWeatherIcon } = env;
     const { isMobile, isLandscape } = viewport;
     const isReplaying = sessionMode === 'replay';
     const shouldShowAccountInput = gameState === 'account' && !isReplaying;
@@ -359,7 +362,17 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         && heldBtnActionType !== 'modifier';
 
     return (
-        <div className={`content-layer view-mode-${activeView}`}>
+        <div
+            className={`content-layer view-mode-${activeView}`}
+            style={{
+                '--terminal-pane-width': activeDockedPanels.length
+                    ? 'clamp(150px, 15vw, 280px)'
+                    : '0px',
+                '--terminal-panels-width': activeDockedPanels.length
+                    ? `calc(${activeDockedPanels.map(getDockedWidth).join(' + ')})`
+                    : '0px'
+            } as React.CSSProperties}
+        >
             {!viewport.isMobile && isImmersionMode && (
                 <div
                     style={{
@@ -439,7 +452,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             )}
             <Header
                 isLandscape={isLandscape}
-                getLightingIcon={getLightingIcon}
                 getWeatherIcon={getWeatherIcon}
             />
             <ReplayHUD />
@@ -498,14 +510,12 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         />
                         <TimerExpiryToast />
                         {gameState !== 'account' && <QuickButtonBar />}
+                        <LogDockedInput
+                            handleSend={handleSend}
+                            handleInputSwipe={handleInputSwipe}
+                            commandPreview={commandPreview}
+                        />
                     </div>
-
-                    {/* On mobile the prompt is a standalone row outside and below the log.
-                        On desktop it slots into the action-box grid (passed as promptSlot below) so
-                        the bottom bar is one gapless unit. */}
-                    {gameState !== 'account' && viewport.isMobile && !hidePrompt && (
-                        <CustomPromptBar onLogClick={handleLogClick} />
-                    )}
 
                     {!viewport.isMobile && (gameState !== 'account' || shouldShowAccountInput) && (
                         <ActionBox
@@ -516,16 +526,19 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             heldButton={heldButton}
                             setHeldButton={setHeldButton}
                             wasDraggingRef={wasDraggingRef}
-                            promptSlot={gameState !== 'account' && !hidePrompt ? (
-                                <CustomPromptBar onLogClick={handleLogClick} />
-                            ) : null}
                         />
                     )}
                 </div>
-                {showPlayersPanel && gameState !== 'account' && (
+                {isCommandPanelOpen && !viewport.isMobile && gameState !== 'account' && (
+                    <aside className="docked-panel command-docked-panel" style={computeDockedPanelStyle('commands', activeDockedPanels, false)} aria-label="Commands panel">
+                        <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" minWidth={14} maxWidth={50} />
+                        <RightActionPanel />
+                    </aside>
+                )}
+                {showPlayersPanel && (
                     <PlayersPanel style={computeDockedPanelStyle('players', activeDockedPanels, viewport.isMobile)} />
                 )}
-                {showChatWindow && gameState !== 'account' && (
+                {showChatWindow && (
                     <ChatWindow style={computeDockedPanelStyle('chat', activeDockedPanels, viewport.isMobile)} />
                 )}
                 {isShopOpen && gameState !== 'account' && (

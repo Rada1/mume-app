@@ -43,6 +43,7 @@ const ZONE_ALIGNMENT_BY_NAME: Record<string, ZoneAlignment> = {
     'the Gladden Fields': 'evil',
     'the Grey Havens': 'super-good',
     'the Lhun Valley': 'good',
+    'Lorien Surroundings': 'good',
     'the Lorien Surroundings': 'good',
     'the Midgewaters': 'neutral',
     'the Misty Mountains': 'evil',
@@ -64,7 +65,7 @@ export const EMBER_COLOR_BY_ALIGNMENT: Record<ZoneAlignment, EmberColorProfile> 
     'super-good': { hue: 132, saturation: 96, lightness: 68, glowLightness: 48 }, // Original bright Lothlórien emerald green
     good: { hue: 196, saturation: 48, lightness: 50, glowLightness: 36 },         // Muted twilight / starlight cyan
     neutral: { hue: 38, saturation: 45, lightness: 32, glowLightness: 20 },       // Antique beeswax candle / warm earth gold
-    evil: { hue: 272, saturation: 42, lightness: 26, glowLightness: 16 },         // Shadowy deep plum / dark amethyst
+    evil: { hue: 276, saturation: 98, lightness: 72, glowLightness: 54 },         // Vibrant luminous purple / bright amethyst
     'super-evil': { hue: 8, saturation: 55, lightness: 28, glowLightness: 18 }   // Smoldering dark cinder / iron rust red
 };
 

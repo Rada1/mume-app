@@ -41,23 +41,28 @@ export const PromptAffectedIndicators: React.FC = () => {
                 .filter(([name, active]) => active && name !== 'waiting')
                 .map(([name]) => conditionLabel(name)),
         ];
-        const seen = new Set<string>();
-        return names.filter(name => {
-            const normalized = normalizeAffectName(name);
-            if (!normalized || seen.has(normalized)) return false;
-            seen.add(normalized);
-            return true;
-        });
+        // The server can legitimately report the same named affect more than
+        // once (for example, multiple "unable to quit" sources). Keep each
+        // occurrence so each one gets its own entry/animation.
+        return names.filter(name => Boolean(normalizeAffectName(name)));
     }, [now, timers, vitals.characterInfo.affectedBy, vitals.conditions]);
 
-    const affectSignature = affects.map(normalizeAffectName).join('|');
+    const affectEntries = useMemo(() => {
+        const occurrences = new Map<string, number>();
+        return affects.map(name => {
+            const normalized = normalizeAffectName(name);
+            const occurrence = (occurrences.get(normalized) || 0) + 1;
+            occurrences.set(normalized, occurrence);
+            return { key: `${normalized}:${occurrence}`, name };
+        });
+    }, [affects]);
+    const affectSignature = affectEntries.map(affect => affect.key).join('|');
 
     useEffect(() => {
-        const nextNames = new Map(affects.map(name => [normalizeAffectName(name), name]));
+        const nextNames = new Map(affectEntries.map(affect => [affect.key, affect.name]));
         setDisplayedAffects(current => {
             const prior = new Map(current.map(affect => [affect.key, affect]));
-            const next = affects.map(name => {
-                const key = normalizeAffectName(name);
+            const next = affectEntries.map(({ key, name }) => {
                 const existing = prior.get(key);
                 return existing && existing.state !== 'exit'
                     ? existing
@@ -67,7 +72,7 @@ export const PromptAffectedIndicators: React.FC = () => {
                 .map(affect => ({ ...affect, state: 'exit' as const, animationKey: affect.animationKey + 1 }));
             return [...next, ...exiting];
         });
-    }, [affectSignature]);
+    }, [affectEntries, affectSignature]);
 
     useEffect(() => {
         const exits = displayedAffects.filter(affect => affect.state === 'exit');
@@ -81,16 +86,17 @@ export const PromptAffectedIndicators: React.FC = () => {
     if (displayedAffects.length === 0) return null;
 
     return (
-        <span className="prompt-affected-indicators" aria-label="Active affects">
-            <span className="custom-prompt-prefix">[</span>
-            {displayedAffects.map((affect, index) => (
-                <React.Fragment key={affect.key}>
-                    {index > 0 && <span className="prompt-stat-divider">|</span>}
-                    <span key={affect.animationKey} className={`prompt-affected-name affected-change-${affect.state === 'enter' ? 'up' : 'down'}`} title={`Affected by ${affect.name}`}>{affect.name}</span>
-                </React.Fragment>
-            ))}
-            <span className="custom-prompt-prefix">]</span>
-        </span>
+        <>
+            <span className="prompt-group-divider" aria-hidden="true">│</span>
+            <span className="prompt-affected-indicators" aria-label="Active affects">
+                {displayedAffects.map((affect, index) => (
+                    <React.Fragment key={affect.key}>
+                        {index > 0 && <span className="prompt-affected-divider" aria-hidden="true">·</span>}
+                        <span key={affect.animationKey} className={`prompt-affected-name affected-change-${affect.state === 'enter' ? 'up' : 'down'}`} title={`Affected by ${affect.name}`}>{affect.name}</span>
+                    </React.Fragment>
+                ))}
+            </span>
+        </>
     );
 };
 

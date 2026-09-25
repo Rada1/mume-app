@@ -223,6 +223,16 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 extraClasses.push(`inline-item-tier-${itemTier.tier}`);
             }
 
+            const isNpc = categoryAxes.categoryId === 'cat-npc' ||
+                tokenCategoryId === 'cat-npc' ||
+                tokenCategoryId === 'npc' ||
+                e.metadata?.kind === 'npc' ||
+                Boolean(e.metadata?.isNpc);
+            if (isNpc) {
+                extraClasses.push('inline-btn-npc');
+                extraClasses.push('npc-highlighter');
+            }
+
             const isRoom = categoryAxes.family === 'room' || e.metadata?.kind === 'room';
             if (isRoom && disableRoomInline) {
                 const roomTextStyle: React.CSSProperties = { ...(e.metadata?.style || {}) };
@@ -244,6 +254,9 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             props['data-cmd'] = propMetadata?.cmd || e.metadata?.cmd || propMetadata?.category || e.metadata?.category || (isAuto ? (e.metadata?.kind || content) : content);
             props['data-context'] = propMetadata?.context || defaultContext;
             props['data-category'] = tokenCategoryId;
+            if (isNpc) {
+                props['data-kind'] = 'npc';
+            }
             props['data-targetable'] = categoryAxes.isTargetable ? 'true' : 'false';
             if (propMetadata?.action || e.metadata?.action || isRoom) props['data-action'] = propMetadata?.action || e.metadata?.action || 'menu';
             
@@ -344,13 +357,15 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                                     return <span key={`sp-${wi}`}> </span>;
                                 }
                                 return (
-                                    <span
-                                        key={`w-${wi}`}
-                                        className={`log-text-word${ansiClasses ? ` ${ansiClasses}` : ''}`}
-                                        style={{ ...a.style, '--word-idx': baseWIdx + wi } as any}
-                                    >
-                                        {w}{wi < ansiWords.length - 1 ? ' ' : ''}
-                                    </span>
+                                    <React.Fragment key={`w-${wi}`}>
+                                        <span
+                                            className={`log-text-word${ansiClasses ? ` ${ansiClasses}` : ''}`}
+                                            style={{ ...a.style, '--word-idx': baseWIdx + wi } as any}
+                                        >
+                                            {w}
+                                        </span>
+                                        {wi < ansiWords.length - 1 ? ' ' : null}
+                                    </React.Fragment>
                                 );
                             })}
                         </React.Fragment>
@@ -392,13 +407,15 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                                     return <span key={`sp-${wi}`}> </span>;
                                 }
                                 return (
-                                    <span
-                                        key={`w-${wi}`}
-                                        className={`log-text-word${textClasses ? ` ${textClasses}` : ''}`}
-                                        style={{ ...textToken.style, '--word-idx': baseWIdx + wi } as any}
-                                    >
-                                        {w}{wi < textWords.length - 1 ? ' ' : ''}
-                                    </span>
+                                    <React.Fragment key={`w-${wi}`}>
+                                        <span
+                                            className={`log-text-word${textClasses ? ` ${textClasses}` : ''}`}
+                                            style={{ ...textToken.style, '--word-idx': baseWIdx + wi } as any}
+                                        >
+                                            {w}
+                                        </span>
+                                        {wi < textWords.length - 1 ? ' ' : null}
+                                    </React.Fragment>
                                 );
                             })}
                         </React.Fragment>

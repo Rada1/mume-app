@@ -172,7 +172,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Stable message routing: ensure snoop lines always land in the spectate bucket 
     // regardless of which view is currently active. This prevents "leaking" snoop 
     // data into the main log or losing our own tells while viewing the target.
-    const routedAddMessage = React.useCallback((type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: any, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: any, commTextTokens?: any, providedCombatSide?: any, providedIsHitImpact?: boolean, providedIsDamageImpact?: boolean, providedIsAvoidDamageImpact?: boolean, providedIsMissImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean, providedIsRipMessage?: boolean, providedIsSocial?: boolean) => {
+    const routedAddMessage = React.useCallback((type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: any, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: any, commTextTokens?: any, providedCombatSide?: any, providedIsHitImpact?: boolean, providedIsDamageImpact?: boolean, providedIsAvoidDamageImpact?: boolean, providedIsMissImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean, providedIsRipMessage?: boolean, providedIsSocial?: boolean, resourceGain?: import('../types').ResourceGain, providedIsMagicRipple?: boolean) => {
         const textOnly = (precalculated?.textOnly || text || '').replace(/\x1b\[[0-9;]*m/g, '').trim();
         const looksLikePrompt = textOnly.length <= 80 && (
             type === 'prompt' ||
@@ -192,7 +192,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Bump activity for atmospheric effects
         s.bumpActivity();
 
-        const args = [type, text, extra, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, isSystem, replyTarget, replyCommand, commSender, commAction, commText, commColor, commSenderTokens, commTextTokens, providedCombatSide, providedIsHitImpact, providedIsDamageImpact, providedIsAvoidDamageImpact, providedIsMissImpact, providedIsHitterImpact, providedIsSnoop, providedIsSnoopInput, providedIsRipMessage, providedIsSocial] as const;
+        const args = [type, text, extra, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, isSystem, replyTarget, replyCommand, commSender, commAction, commText, commColor, commSenderTokens, commTextTokens, providedCombatSide, providedIsHitImpact, providedIsDamageImpact, providedIsAvoidDamageImpact, providedIsMissImpact, providedIsHitterImpact, providedIsSnoop, providedIsSnoopInput, providedIsRipMessage, providedIsSocial, resourceGain, providedIsMagicRipple] as const;
         if (type === 'snoop' || type === 'snoop-command' || type === 'snoop-vitals' || providedIsSnoop) {
             (s.spectateSession.log.addMessage as any)(...args);
         } else {
@@ -736,6 +736,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setInfoLines: s.setInfoLines,
         setQuestLines: s.setQuestLines,
         setAchievementLines: s.setAchievementLines,
+        whoList: s.active.game.whoList,
+        whereList: s.active.game.whereList,
         setWhoList: s.active.game.setWhoList,
         setWhereList: s.active.game.setWhereList,
         
@@ -795,8 +797,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     executeCommandRef.current?.('where', true, true, false, true);
                 }
             } else if (drawer === 'character') {
-                if (ui.charTab === 'info') executeCommandRef.current?.('info', true, true, false, true);
-                else if (ui.charTab === 'quests') executeCommandRef.current?.('quest', true, true, false, true);
+                if (ui.charTab === 'quests') executeCommandRef.current?.('quest', true, true, false, true);
                 else if (ui.charTab === 'skills') executeCommandRef.current?.('practice', true, true, false, true);
                 else if (ui.charTab === 'achievements') executeCommandRef.current?.('achievement', true, true, false, true);
             }
@@ -965,6 +966,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const timers = [
             setTimeout(() => controller.executeCommand('inv', true, true, false, true), 700),
             setTimeout(() => controller.executeCommand('eq', true, true, false, true), 1200),
+            setTimeout(() => controller.executeCommand('who', true, true, false, true), 1700),
         ];
 
         return () => {

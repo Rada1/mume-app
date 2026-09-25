@@ -1,0 +1,153 @@
+/**
+ * @file MapRoomInfoHeader.css
+ * @description Styles for the map panel header with room name, zone, and Middle-earth calendar.
+ */
+
+.map-room-info-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 15;
+    background: rgba(18, 14, 10, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.18);
+    font-family: var(--font-mono, monospace);
+    user-select: none;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.map-header-primary-row {
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 28px;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.12);
+}
+
+.map-header-room-name {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--mume-gold-bright, #f0cb67);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.2px;
+}
+
+.map-header-zone-badge {
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(201, 168, 76, 0.12);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--mume-gold, #c9a84c);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.map-header-calendar-row {
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.64rem;
+    background: rgba(14, 10, 7, 0.6);
+    box-sizing: border-box;
+}
+
+.map-header-calendar-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+}
+
+.map-header-season-badge {
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    flex-shrink: 0;
+}
+
+.map-header-season-badge.season-winter {
+    color: #93c5fd;
+    border: 1px solid rgba(147, 197, 253, 0.35);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.map-header-season-badge.season-spring {
+    color: #86efac;
+    border: 1px solid rgba(134, 239, 172, 0.35);
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.map-header-season-badge.season-summer {
+    color: #fde047;
+    border: 1px solid rgba(253, 224, 71, 0.35);
+    background: rgba(234, 179, 8, 0.1);
+}
+
+.map-header-season-badge.season-autumn {
+    color: #fdba74;
+    border: 1px solid rgba(253, 186, 116, 0.35);
+    background: rgba(249, 115, 22, 0.1);
+}
+
+.map-header-date {
+    color: #d8d2c2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+}
+
+.map-header-sindarin {
+    color: #8c826f;
+    font-size: 0.58rem;
+    font-weight: 400;
+}
+
+.map-header-time-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    color: #38bdf8;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-left: 6px;
+}
+
+.map-header-current-time {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.map-header-solar-times {
+    color: #8c826f;
+    font-size: 0.58rem;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.map-header-time-label {
+    color: #8c826f;
+    font-size: 0.58rem;
+    font-weight: 400;
+}
+
+.map-header-time-value {
+    color: #38bdf8;
+    font-weight: 700;
+}

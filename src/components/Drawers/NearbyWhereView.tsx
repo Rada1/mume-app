@@ -11,11 +11,24 @@ import { LineItem } from './LineItem';
 interface NearbyWhereViewProps {
     lines: DrawerLine[];
     onRefresh: () => void;
+    hideFloatingRefresh?: boolean;
 }
 
-export const NearbyWhereView: React.FC<NearbyWhereViewProps> = ({ lines, onRefresh }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, position: 'relative', background: 'rgba(0,0,0,0.1)' }}>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '14px 12px 56px', fontFamily: 'var(--font-mono, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', whiteSpace: 'pre', color: 'rgba(255,255,255,0.86)' }}>
+export const NearbyWhereView: React.FC<NearbyWhereViewProps> = ({
+    lines,
+    onRefresh,
+    hideFloatingRefresh = false
+}) => (
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, position: 'relative', background: 'transparent' }}>
+        <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: hideFloatingRefresh ? '8px 10px 12px' : '14px 12px 56px',
+            fontFamily: 'var(--font-mono, monospace)',
+            fontSize: 'var(--dynamic-log-size, 16px)',
+            whiteSpace: 'pre',
+            color: 'rgba(255,255,255,0.86)'
+        }}>
             {lines.length > 0 ? (
                 lines.map(line => (
                     line.tokens && line.tokens.length > 0 ? (
@@ -34,37 +47,39 @@ export const NearbyWhereView: React.FC<NearbyWhereViewProps> = ({ lines, onRefre
                     )
                 ))
             ) : (
-                <div style={{ padding: '28px 8px', textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', whiteSpace: 'normal' }}>
+                <div style={{ padding: '24px 8px', textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', whiteSpace: 'normal' }}>
                     No nearby player data. Tap refresh to update.
                 </div>
             )}
         </div>
-        <button
-            className="refresh-button floating-refresh"
-            onClick={(event) => {
-                event.stopPropagation();
-                onRefresh();
-            }}
-            style={{
-                position: 'absolute',
-                bottom: '12px',
-                right: '12px',
-                zIndex: 110,
-                background: 'rgba(60, 60, 65, 0.6)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.15)',
-                color: 'rgba(255,255,255,0.9)',
-                width: '36px',
-                height: '36px',
-                borderRadius: '18px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-            }}
-        >
-            <RefreshCw size={18} />
-        </button>
+        {!hideFloatingRefresh && (
+            <button
+                className="refresh-button floating-refresh"
+                onClick={(event) => {
+                    event.stopPropagation();
+                    onRefresh();
+                }}
+                style={{
+                    position: 'absolute',
+                    bottom: '12px',
+                    right: '12px',
+                    zIndex: 110,
+                    background: 'rgba(60, 60, 65, 0.6)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    color: 'rgba(255,255,255,0.9)',
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '18px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                }}
+            >
+                <RefreshCw size={18} />
+            </button>
+        )}
     </div>
 );

@@ -1,0 +1,209 @@
+/**
+ * @file LogDockedInput.css
+ * @description Sleek command input bar docked directly inside the bottom of the message log container, matching the approved studio mockup.
+ */
+
+.message-log-docked-input {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: transparent;
+    border-top: 0;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 38px;
+}
+
+.docked-prompt-symbol {
+    color: #f0cb67;
+    font-weight: 700;
+    font-size: 13px;
+    font-family: var(--font-mono, monospace);
+    user-select: none;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.docked-parley-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    background: rgba(201, 168, 76, 0.15);
+    border: 1px solid rgba(201, 168, 76, 0.35);
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: var(--font-mono, monospace);
+    color: #f0cb67;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.12s ease;
+    flex-shrink: 0;
+}
+
+.docked-parley-chip:hover {
+    background: rgba(201, 168, 76, 0.25);
+}
+
+.docked-parley-chip .parley-cmd {
+    font-weight: 700;
+    color: #4ade80;
+}
+
+.docked-parley-chip .parley-tgt {
+    color: #38bdf8;
+}
+
+.docked-parley-chip .parley-x {
+    font-size: 13px;
+    line-height: 1;
+    color: #f87171;
+    margin-left: 2px;
+}
+
+.docked-input-form {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.docked-input-wrap {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    cursor: text;
+    height: 100%;
+}
+
+.docked-input-highlight {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: pre;
+    pointer-events: none;
+    font-family: var(--font-mono, monospace);
+    font-size: 12px;
+    line-height: 1.4;
+    padding: 0;
+    margin: 0;
+    user-select: none;
+}
+
+.docked-input-autocomplete {
+    color: rgba(240, 203, 103, 0.45);
+    font-weight: 700;
+}
+
+.docked-input-field {
+    width: 100%;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    color: #f5f0e1 !important;
+    font-family: var(--font-mono, monospace) !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+.docked-input-field.command-highlight-source {
+    color: transparent !important;
+    caret-color: #f5f0e1;
+    position: relative;
+    z-index: 2;
+}
+
+.docked-input-field::placeholder {
+    color: #6d6352 !important;
+    font-style: normal !important;
+}
+
+.docked-timers-cluster {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.docked-timers-cluster .terminal-action-status {
+    color: #d5bd7b;
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.docked-timers-cluster .action-timer-display {
+    margin: 0;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-family: var(--font-mono, monospace);
+    background: rgba(201, 168, 76, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    border-radius: 4px;
+    color: #f0cb67;
+    white-space: nowrap;
+}
+
+.docked-send-btn {
+    flex-shrink: 0;
+    background: rgba(201, 168, 76, 0.18);
+    border: 1px solid rgba(201, 168, 76, 0.38);
+    color: #f0cb67;
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    user-select: none;
+    line-height: 1.2;
+}
+
+.docked-cancel-btn {
+    flex-shrink: 0;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.38);
+    color: #f87171;
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+.docked-cancel-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.65);
+}
+
+.docked-send-btn:hover {
+    background: rgba(201, 168, 76, 0.32);
+    border-color: rgba(201, 168, 76, 0.6);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.docked-send-btn:active {
+    transform: translateY(0);
+    background: rgba(201, 168, 76, 0.4);
+}

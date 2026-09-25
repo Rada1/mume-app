@@ -3,6 +3,8 @@
  * @description Static configurations and helper functions for the dynamic EnvironmentGlow component.
  */
 
+import { getZoneColor, hexToHsl } from '../../utils/zoneColors';
+
 export interface HSLColor {
     h: number;
     s: number;
@@ -102,6 +104,23 @@ export const adjustForTheme = (color: HSLColor, isLightMode: boolean): HSLColor 
         s = Math.max(12, s * 0.5);
     }
     return { h, s, l };
+};
+
+export const getZoneGlowPalette = (
+    zone: string | null | undefined,
+    fallback: TerrainConfig,
+    isLightMode: boolean
+): { color1: HSLColor; color2: HSLColor } => {
+    if (!zone) return {
+        color1: adjustForTheme(fallback.color1, isLightMode),
+        color2: adjustForTheme(fallback.color2, isLightMode),
+    };
+    const { h, s } = hexToHsl(getZoneColor(zone));
+    const saturation = Math.max(38, Math.min(s, 72));
+    return {
+        color1: adjustForTheme({ h, s: saturation, l: 15 }, isLightMode),
+        color2: adjustForTheme({ h: (h + 12) % 360, s: Math.max(32, saturation - 9), l: 20 }, isLightMode),
+    };
 };
 
 export const lerp = (start: number, end: number, amt: number): number => {

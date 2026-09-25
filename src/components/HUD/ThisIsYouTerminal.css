@@ -1,0 +1,256 @@
+/**
+ * @file ThisIsYouTerminal.css
+ * @description Terminal-style layout for the live character console.
+ */
+
+/* --- Terminal Surface --- */
+.this-is-you-console {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.18fr);
+    gap: 0 20px;
+    padding: 9px 4px 8px;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 0;
+    box-shadow: none;
+    color: #d4cdb8;
+    user-select: text;
+    line-height: 1.45;
+}
+
+.this-is-you-tier-identity {
+    grid-column: 1 / -1;
+    padding: 0;
+    margin-bottom: 12px;
+    border: 0;
+    gap: 5px 18px;
+    font-size: 0.7rem;
+}
+
+.this-is-you-hero-strip { gap: 5px 9px; }
+.this-is-you-name {
+    order: -2;
+    color: #f0cb67;
+    font-size: 0.78rem;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+}
+.this-is-you-level-tag {
+    order: -1;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    color: #c9b88f;
+    font-size: 0.67rem;
+}
+.this-is-you-subtext,
+.this-is-you-bio-item,
+.this-is-you-stat-lbl,
+.this-is-you-stat-sub { color: #9a9182; }
+.this-is-you-bio-item strong,
+.this-is-you-bio-item strong.gold,
+.this-is-you-bio-item strong.cyan,
+.this-is-you-stat-val.xp,
+.this-is-you-stat-val.tp { color: #9bd2a5; }
+.this-is-you-xp-strip { gap: 12px; }
+.this-is-you-xp-box { gap: 4px; }
+.this-is-you-stat-lbl { font-size: 0.64rem; }
+
+.this-is-you-console .this-is-you-delta {
+    display: inline-block;
+    margin-left: 5px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    white-space: nowrap;
+    animation: stat-delta-arrive 180ms ease-out;
+}
+.this-is-you-console .this-is-you-delta.is-gain { color: #86efac; }
+.this-is-you-console .this-is-you-delta.is-loss { color: #f87171; }
+@keyframes stat-delta-arrive {
+    from { opacity: 0; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Aligned Terminal Columns --- */
+.this-is-you-tier-vitals { display: contents; }
+.this-is-you-vitals-group,
+.this-is-you-combat-slot,
+.this-is-you-tier-states { min-width: 0; }
+.this-is-you-vitals-group {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.this-is-you-combat-slot { grid-column: 2; }
+.this-is-you-tier-states {
+    grid-column: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+.this-is-you-vitals-group::before,
+.this-is-you-combat-slot::before,
+.this-is-you-tier-states::before {
+    display: block;
+    margin-bottom: 5px;
+    color: #c9a84c;
+    font-size: 0.61rem;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+}
+.this-is-you-vitals-group::before { content: 'VITALS'; }
+.this-is-you-combat-slot::before { content: 'COMBAT'; }
+.this-is-you-tier-states::before { content: 'STATE'; }
+
+.this-is-you-telemetry-cell {
+    display: grid;
+    grid-template-columns: 70px max-content max-content;
+    justify-content: start;
+    align-items: baseline;
+    gap: 6px;
+    min-height: 22px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+.this-is-you-cell-header { display: contents; }
+.this-is-you-cell-header .label {
+    grid-column: 1;
+    color: #9a9182 !important;
+    font-size: 0.66rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+.this-is-you-cell-header .regen {
+    grid-column: 3;
+    color: #75bc85;
+    font-size: 0.6rem;
+}
+.this-is-you-cell-val {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    color: #9bd2a5;
+    font-size: 0.69rem;
+    white-space: nowrap;
+}
+
+.this-is-you-capabilities-cell {
+    height: auto;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+.this-is-you-capabilities-cell .this-is-you-cell-header { display: none; }
+.this-is-you-capabilities-row {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    grid-template-rows: repeat(4, minmax(20px, auto));
+    grid-auto-flow: column;
+    justify-content: start;
+    gap: 1px 18px;
+    margin: 0;
+    color: #9a9182;
+    font-size: 0.67rem;
+}
+.this-is-you-capabilities-row > span {
+    display: grid;
+    grid-template-columns: 58px max-content auto;
+    align-items: baseline;
+    min-height: 20px;
+    white-space: nowrap;
+}
+.this-is-you-capabilities-row strong { margin-left: 2px; color: #9bd2a5; }
+.this-is-you-capabilities-row .this-is-you-delta { align-self: baseline; }
+
+/* --- Text Controls And Affects --- */
+.this-is-you-pills-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+}
+.this-is-you-pill-wrapper { display: block; min-width: 0; }
+.this-is-you-console .this-is-you-pill {
+    display: grid;
+    grid-template-columns: 82px minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 5px;
+    width: 100%;
+    min-height: 21px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    color: #d4cdb8;
+    font-size: 0.67rem;
+    text-align: left;
+    transform: none;
+}
+.this-is-you-console .this-is-you-pill:hover,
+.this-is-you-console .this-is-you-pill.is-active {
+    background: transparent;
+    border: 0;
+    transform: none;
+}
+.this-is-you-console .this-is-you-pill:hover .this-is-you-pill-value,
+.this-is-you-console .this-is-you-pill.is-active .this-is-you-pill-value {
+    text-decoration: underline dotted;
+    text-underline-offset: 3px;
+}
+.this-is-you-pill-category {
+    color: #9a9182;
+    font-size: 0.66rem;
+    font-weight: 500;
+    text-transform: none;
+}
+.this-is-you-pill-value { color: #9bd2a5; font-weight: 650; }
+.this-is-you-pill-arrow { opacity: 0.5; }
+.this-is-you-buffs-row {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: baseline;
+    gap: 3px 9px;
+    margin-top: 8px;
+    color: #9a9182;
+    font-size: 0.62rem;
+}
+.this-is-you-buffs-row::before {
+    content: '> condition:';
+    flex: 0 0 auto;
+    color: #c9a84c;
+}
+.this-is-you-buff-badge {
+    display: inline-flex;
+    gap: 3px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    font-size: 0.62rem;
+}
+.this-is-you-no-buffs { color: #9a9182; font-weight: 400; }
+
+@media (max-width: 780px) {
+    .this-is-you-console { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; }
+    .this-is-you-tier-states { grid-column: 1 / -1; }
+    .this-is-you-pills-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 18px; }
+}
+
+@media (max-width: 520px) {
+    .this-is-you-console { grid-template-columns: 1fr; }
+    .this-is-you-vitals-group,
+    .this-is-you-combat-slot,
+    .this-is-you-tier-states { grid-column: 1; }
+    .this-is-you-pills-row { grid-template-columns: 1fr; }
+}

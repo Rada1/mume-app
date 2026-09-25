@@ -34,14 +34,21 @@ export const SPELL_COMPLETION_CATALOG: SpellCompletionEntry[] = [
         spellName: 'Armour',
         classType: 'magic user',
         soundId: 'spell_armour',
-        messages: [{ pattern: 'Your magic armour is revitalised.', matchType: 'contains', note: 'Renewal' }]
+        messages: [
+            { pattern: 'Your magic armour is revitalised.', matchType: 'contains', note: 'Renewal' },
+            { pattern: /A blue transparent (?:wall|shield)(?: slowly)? appears/i, matchType: 'regex' },
+            { pattern: /encase .* in a blue transparent (?:wall|shield)/i, matchType: 'regex' }
+        ]
     },
     {
         spellId: 'shield',
         spellName: 'Shield',
         classType: 'magic user',
         soundId: 'spell_shield',
-        messages: [{ pattern: 'Your protection is revitalised.', matchType: 'contains', note: 'Renewal' }]
+        messages: [
+            { pattern: 'Your protection is revitalised.', matchType: 'contains', note: 'Renewal' },
+            { pattern: /You feel protected/i, matchType: 'regex' }
+        ]
     },
     {
         spellId: 'bless',
@@ -138,6 +145,16 @@ export const SPELL_COMPLETION_CATALOG: SpellCompletionEntry[] = [
         classType: 'cleric',
         soundId: 'spell_create_food',
         messages: [{ pattern: 'A magic mushroom suddenly appears.', matchType: 'contains' }]
+    },
+    {
+        spellId: 'create_water',
+        spellName: 'Create Water',
+        classType: 'cleric',
+        soundId: 'spell_create_water',
+        messages: [
+            { pattern: 'You feel less thirsty.', matchType: 'contains' },
+            { pattern: 'You create water.', matchType: 'contains' }
+        ]
     },
     {
         spellId: 'call_familiar',

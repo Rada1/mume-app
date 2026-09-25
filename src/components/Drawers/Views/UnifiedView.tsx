@@ -16,6 +16,7 @@ interface UnifiedViewProps {
     onRefresh?: () => void;
     emptyMessage?: string;
     category?: string;
+    hideFloatingRefresh?: boolean;
 }
 
 const getContainerIndexAndKeyword = (line: DrawerLine, lines: DrawerLine[]) => {
@@ -41,7 +42,8 @@ export const UnifiedView: React.FC<UnifiedViewProps> = ({
     lines,
     onRefresh,
     emptyMessage = "No information captured yet.",
-    category
+    category,
+    hideFloatingRefresh = false
 }) => {
     const { 
         expandedContainers, 
@@ -69,8 +71,8 @@ export const UnifiedView: React.FC<UnifiedViewProps> = ({
             }}>
                 {lines.length > 0 ? (
                     lines.map((line) => {
-                        const isExpanded = expandedContainers.has(line.id);
-                        const isLoading = isExpanded && !containerContents[line.id];
+                        const isExpanded = !!expandedContainers?.has?.(line.id);
+                        const isLoading = isExpanded && !containerContents?.[line.id];
                         const showChevron = line.isItem && isItemContainer(line.text);
 
                         const handleToggleExpand = () => {
@@ -160,7 +162,7 @@ export const UnifiedView: React.FC<UnifiedViewProps> = ({
                 )}
             </div>
 
-            {onRefresh && (
+            {!hideFloatingRefresh && onRefresh && (
                 <button
                     className="refresh-button floating-refresh"
                     onClick={(e) => {

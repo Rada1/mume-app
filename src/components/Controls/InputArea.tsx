@@ -9,9 +9,8 @@ import { useInputStore } from '../../stores/useInputStore';
 import { audioManager } from '../../services/audio/AudioManager';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { useUIStore } from '../../stores/useUIStore';
-import { getMumeCommandMatch, replaceMumeCommandToken } from '../../utils/mumeCommandCatalog';
-import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
-import { getCastSpellFragment, getCastSpellSuggestions, replaceCastSpellArgument } from '../../utils/spellSuggestionUtils';
+import { useCommandSuggestions } from '../../hooks/useCommandSuggestions';
+import { CommandSuggestionPopup } from './CommandSuggestionPopup';
 
 
 
@@ -54,35 +53,6 @@ const EXAMPLE_COMMANDS = [
     'flee'
 ];
 
-interface CommandTargetSuggestion {
-    key: string;
-    label: string;
-    value: string;
-    meta: string;
-}
-
-const replaceCommandArgumentToken = (command: string, target: string): string => {
-    const leadingWhitespace = command.match(/^\s*/)?.[0] ?? '';
-    const leadingTrimmed = command.trimStart();
-    const commandMatch = /^(\S+)(\s*)([\s\S]*)$/.exec(leadingTrimmed);
-    if (!commandMatch) return command;
-
-    const commandToken = commandMatch[1];
-    const spacing = commandMatch[2] || ' ';
-    const argumentText = commandMatch[3] || '';
-    const argumentLeading = argumentText.match(/^\s*/)?.[0] ?? '';
-    const argumentRest = argumentText.slice(argumentLeading.length);
-    const trailing = argumentRest.replace(/^\S*/, '');
-
-    return `${leadingWhitespace}${commandToken}${spacing}${argumentLeading}${target}${trailing || ' '}`;
-};
-
-const suggestionHotkeyForIndex = (index: number): string | null => {
-    if (index < 9) return String(index + 1);
-    if (index === 9) return '0';
-    return null;
-};
-
 const InputArea: React.FC<InputAreaProps> = ({
     onSend, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
     spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState, parley, setParley, whoList, gameState, rightSlot
@@ -108,9 +78,6 @@ const InputArea: React.FC<InputAreaProps> = ({
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const isSwiping = useRef(false);
     const [commandIndex, setCommandIndex] = useState(0);
-    const [isCommandInputFocused, setIsCommandInputFocused] = useState(false);
-    const [isTargetPickerForced, setIsTargetPickerForced] = useState(false);
-    const [commandPopupStyle, setCommandPopupStyle] = useState<React.CSSProperties>({});
 
     useEffect(() => {
         return () => {
@@ -447,213 +414,38 @@ const InputArea: React.FC<InputAreaProps> = ({
         accountState?.currentPrompt?.toLowerCase().includes('verify')
     );
     const currentMode = parley.mode || (parley.active ? 'parley' : 'command');
-    const shouldSuggestMumeCommands = gameState === 'playing' && currentMode === 'command' && !isPasswordMode;
-    const mumeCommandMatch = useMemo(
-        () => shouldSuggestMumeCommands ? getMumeCommandMatch(input) : getMumeCommandMatch(''),
-        [input, shouldSuggestMumeCommands]
-    );
-    const commandTextParts = useMemo(() => {
-        if (!shouldSuggestMumeCommands || !input) return null;
-        const leading = input.match(/^\s*/)?.[0] ?? '';
-        const withoutLeading = input.slice(leading.length);
-        const tokenMatch = /^(\S+)([\s\S]*)$/.exec(withoutLeading);
-        if (!tokenMatch) return null;
-        return {
-            leading,
-            token: tokenMatch[1],
-            suffix: tokenMatch[2],
-            isValid: mumeCommandMatch.isValid,
-            autocomplete: mumeCommandMatch.entry?.full.startsWith(tokenMatch[1].toLowerCase())
-                ? mumeCommandMatch.entry.full.slice(tokenMatch[1].length)
-                : ''
-        };
-    }, [input, mumeCommandMatch.entry, mumeCommandMatch.isValid, shouldSuggestMumeCommands]);
-    const hasCommandArgumentSpace = !!commandTextParts?.isValid && /^\s/.test(commandTextParts.suffix);
-    const targetFragment = useMemo(() => {
-        if (!hasCommandArgumentSpace || !commandTextParts) return '';
-        return (commandTextParts.suffix.match(/^\s*(\S*)/)?.[1] ?? '').toLowerCase();
-    }, [commandTextParts, hasCommandArgumentSpace]);
-    const targetSuggestions = useMemo<CommandTargetSuggestion[]>(() => {
-        if (!hasCommandArgumentSpace) return [];
 
-        return Object.values(chars || {})
-            .filter(char => {
-                const type = typeof char.type === 'string' ? char.type.toLowerCase() : '';
-                return type === 'npc' || type === 'enemy' || type === 'neutral' || char.pc === 0;
-            })
-            .map((char, index) => {
-                const value = getOccupantCommandKeyword(char, String(char.id ?? index));
-                const label = char.short || char.name || value;
-                const type = typeof char.type === 'string' ? char.type.toLowerCase() : 'npc';
-                return {
-                    key: `${char.id ?? index}-${value}`,
-                    label,
-                    value,
-                    meta: type
-                };
-            })
-            .filter(entry => entry.value && (!targetFragment || entry.value.toLowerCase().startsWith(targetFragment) || entry.label.toLowerCase().startsWith(targetFragment)))
-            .slice(0, 8);
-    }, [chars, hasCommandArgumentSpace, targetFragment]);
-    const selectedTargetSuggestion = targetSuggestions[0] ?? null;
-    const visibleTargetSuggestions = useMemo(() => {
-        return targetSuggestions;
-    }, [targetSuggestions]);
-
-    useEffect(() => {
-        if (targetPickerRequestId > 0) {
-            setIsTargetPickerForced(true);
-        }
-    }, [targetPickerRequestId]);
-
-    useEffect(() => {
-        if (!hasCommandArgumentSpace) {
-            setIsTargetPickerForced(false);
-        }
-    }, [hasCommandArgumentSpace]);
-
-    const chooseTargetSuggestion = useCallback((value: string) => {
-        setInput(replaceCommandArgumentToken(input, value));
-        setIsTargetPickerForced(false);
-        requestAnimationFrame(() => inputRef.current?.focus());
-    }, [input, setInput]);
-
-    const spellSuggestions = useMemo(() => getCastSpellSuggestions(input, abilities, characterClass), [abilities, characterClass, input]);
-    const isSpellCastInput = getCastSpellFragment(input) !== null;
-    const chooseSpellSuggestion = useCallback((spell: string) => {
-        setInput(replaceCastSpellArgument(input, spell));
-        requestAnimationFrame(() => inputRef.current?.focus());
-    }, [input, setInput]);
-
-    const chooseCommandSuggestion = useCallback((entry: Parameters<typeof replaceMumeCommandToken>[1]) => {
-        setInput(replaceMumeCommandToken(input, entry));
-        requestAnimationFrame(() => inputRef.current?.focus());
-    }, [input, setInput]);
-
-    const showCommandPopup = shouldSuggestMumeCommands &&
-        !hasCommandArgumentSpace &&
-        isCommandInputFocused &&
-        mumeCommandMatch.suggestions.length > 0 &&
-        input.trim().length > 0;
-    const showTargetPopup = shouldSuggestMumeCommands &&
-        hasCommandArgumentSpace &&
-        !isSpellCastInput &&
-        (isCommandInputFocused || isTargetPickerForced) &&
-        targetSuggestions.length > 0;
-    const showSpellPopup = shouldSuggestMumeCommands &&
-        hasCommandArgumentSpace &&
-        isSpellCastInput &&
-        isCommandInputFocused &&
-        spellSuggestions.length > 0;
-    const showCompletionPopup = showCommandPopup || showTargetPopup || showSpellPopup;
-    const visibleCommandSuggestions = useMemo(() => {
-        if (!mumeCommandMatch.entry) return mumeCommandMatch.suggestions;
-        const otherSuggestions = mumeCommandMatch.suggestions.filter(entry => entry.full !== mumeCommandMatch.entry?.full);
-        return [...otherSuggestions, mumeCommandMatch.entry];
-    }, [mumeCommandMatch.entry, mumeCommandMatch.suggestions]);
-
-    useEffect(() => {
-        if (!showCompletionPopup || !commandInputWrapRef.current) return;
-
-        const updatePopupPosition = () => {
-            const rect = commandInputWrapRef.current?.getBoundingClientRect();
-            if (!rect) return;
-
-            const viewportPadding = 8;
-            const desiredWidth = Math.min(340, window.innerWidth - viewportPadding * 2);
-            const left = Math.max(
-                viewportPadding,
-                Math.min(rect.left, window.innerWidth - desiredWidth - viewportPadding)
-            );
-
-            setCommandPopupStyle({
-                left,
-                top: Math.max(viewportPadding, rect.top - 10),
-                width: desiredWidth,
-                maxHeight: Math.max(120, rect.top - viewportPadding * 2)
-            });
-        };
-
-        updatePopupPosition();
-        window.addEventListener('resize', updatePopupPosition);
-        window.addEventListener('scroll', updatePopupPosition, true);
-
-        return () => {
-            window.removeEventListener('resize', updatePopupPosition);
-            window.removeEventListener('scroll', updatePopupPosition, true);
-        };
-    }, [showCompletionPopup]);
-
-    const commandSuggestionPopup = showCompletionPopup ? ReactDOM.createPortal(
-        <div
-            className="command-suggestion-popup"
-            role="listbox"
-            aria-label={showTargetPopup ? 'MUME target suggestions' : showSpellPopup ? 'MUME spell suggestions' : 'MUME command suggestions'}
-            style={commandPopupStyle}
-        >
-            {showSpellPopup
-                ? spellSuggestions.map((entry, index) => {
-                    const hotkey = suggestionHotkeyForIndex(index);
-                    return (
-                    <button
-                        key={entry.key}
-                        type="button"
-                        className={`command-suggestion-option target-suggestion-option${index === 0 ? ' is-selected' : ''}`}
-                        onPointerDown={event => {
-                            event.preventDefault();
-                            chooseSpellSuggestion(entry.value);
-                        }}
-                    >
-                        {hotkey && <span className="command-suggestion-key">{hotkey}</span>}
-                        <span className="command-suggestion-name">{entry.label}</span>
-                        <span className="command-suggestion-full">spell</span>
-                    </button>
-                    );
-                })
-                : showTargetPopup
-                ? visibleTargetSuggestions.map((entry, index) => {
-                    const hotkey = suggestionHotkeyForIndex(index);
-                    return (
-                    <button
-                        key={entry.key}
-                        type="button"
-                        className={`command-suggestion-option target-suggestion-option${selectedTargetSuggestion?.key === entry.key ? ' is-selected' : ''}`}
-                        onPointerDown={event => {
-                            event.preventDefault();
-                            chooseTargetSuggestion(entry.value);
-                        }}
-                    >
-                        {hotkey && <span className="command-suggestion-key">{hotkey}</span>}
-                        <span className="command-suggestion-name">{entry.value}</span>
-                        <span className="command-suggestion-full">
-                            {selectedTargetSuggestion?.key === entry.key ? 'selected' : entry.meta}
-                        </span>
-                    </button>
-                    );
-                })
-                : visibleCommandSuggestions.map((entry, index) => {
-                    const hotkey = suggestionHotkeyForIndex(index);
-                    return (
-                    <button
-                        key={entry.display}
-                        type="button"
-                        className={`command-suggestion-option${mumeCommandMatch.entry?.full === entry.full ? ' is-selected' : ''}`}
-                        onPointerDown={event => {
-                            event.preventDefault();
-                            chooseCommandSuggestion(entry);
-                        }}
-                    >
-                        {hotkey && <span className="command-suggestion-key">{hotkey}</span>}
-                        <span className="command-suggestion-name">{entry.display}</span>
-                        <span className="command-suggestion-full">
-                            {mumeCommandMatch.entry?.full === entry.full ? 'selected' : entry.full}
-                        </span>
-                    </button>
-                    );
-                })}
-        </div>,
-        document.body
-    ) : null;
+    const {
+        commandTextParts,
+        mumeCommandMatch,
+        showCompletionPopup,
+        showCommandPopup,
+        showTargetPopup,
+        showSpellPopup,
+        visibleCommandSuggestions,
+        targetSuggestions,
+        selectedTargetSuggestion,
+        spellSuggestions,
+        popupStyle: commandPopupStyle,
+        isFocused: isCommandInputFocused,
+        setIsFocused: setIsCommandInputFocused,
+        chooseCommandSuggestion,
+        chooseTargetSuggestion,
+        chooseSpellSuggestion,
+        handleSuggestionKeyDown
+    } = useCommandSuggestions({
+        input,
+        setInput,
+        gameState,
+        isPasswordMode,
+        currentMode,
+        abilities,
+        characterClass,
+        wrapRef: commandInputWrapRef,
+        inputRef,
+        isMobile: viewport.isMobile,
+        targetPickerRequestId
+    });
 
     // Keep command/login input focused on desktop during login, stage, or state transitions
     useEffect(() => {
@@ -831,7 +623,20 @@ const InputArea: React.FC<InputAreaProps> = ({
             className={`input-area ${terrainClass} input-container${showCompletionPopup ? ' command-suggestions-open' : ''}`}
             style={isHelpCardOpen ? { zIndex: 31000 } : undefined}
         >
-            {commandSuggestionPopup}
+            <CommandSuggestionPopup
+                show={showCompletionPopup}
+                style={commandPopupStyle}
+                showSpellPopup={showSpellPopup}
+                showTargetPopup={showTargetPopup}
+                spellSuggestions={spellSuggestions}
+                targetSuggestions={targetSuggestions}
+                selectedTargetKey={selectedTargetSuggestion?.key}
+                commandSuggestions={visibleCommandSuggestions}
+                selectedCommandFull={mumeCommandMatch.entry?.full}
+                onChooseSpell={chooseSpellSuggestion}
+                onChooseTarget={chooseTargetSuggestion}
+                onChooseCommand={chooseCommandSuggestion}
+            />
             {isLoginStage && (
                 <label className="remember-login-toggle">
                     <input
@@ -842,7 +647,8 @@ const InputArea: React.FC<InputAreaProps> = ({
                     <span>Remember login</span>
                 </label>
             )}
-            <div className="input-main-container" ref={containerRef}>
+            <div className="prompt-box-wrapper">
+                <div className="input-main-container" ref={containerRef}>
                 <form className="input-form" onSubmit={handleSubmit}>
                     {(() => {
                         const currentMode = parley.mode || (parley.active ? 'parley' : 'command');
@@ -970,52 +776,21 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 target.style.height = `${target.scrollHeight}px`;
                             }}
                             onKeyDown={(e) => {
-                                if (showCompletionPopup && /^[0-9]$/.test(e.key)) {
-                                    const optionIndex = e.key === '0' ? 9 : parseInt(e.key, 10) - 1;
-                                    if (showSpellPopup) {
-                                        const option = spellSuggestions[optionIndex];
-                                        if (option) {
-                                            e.preventDefault();
-                                            chooseSpellSuggestion(option.value);
-                                            return;
-                                        }
-                                    } else if (showTargetPopup) {
-                                        const option = visibleTargetSuggestions[optionIndex];
-                                        if (option) {
-                                            e.preventDefault();
-                                            chooseTargetSuggestion(option.value);
-                                            return;
-                                        }
-                                    } else if (showCommandPopup) {
-                                        const option = visibleCommandSuggestions[optionIndex];
-                                        if (option) {
-                                            e.preventDefault();
-                                            chooseCommandSuggestion(option);
-                                            return;
-                                        }
-                                    }
+                                if (handleSuggestionKeyDown(e)) {
+                                    return;
                                 }
+
+                                const isNumpad = e.location === 3 || e.code.startsWith('Numpad');
 
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();
                                     handleSubmit();
-                                } else if (e.key === 'ArrowUp') {
+                                } else if (e.key === 'ArrowUp' && !isNumpad) {
                                     e.preventDefault();
                                     useInputStore.getState().navigateHistory('up');
-                                } else if (e.key === 'ArrowDown') {
+                                } else if (e.key === 'ArrowDown' && !isNumpad) {
                                     e.preventDefault();
                                     useInputStore.getState().navigateHistory('down');
-                                } else if (e.key === 'Tab' && !viewport.isMobile) {
-                                    e.preventDefault();
-                                    if (showSpellPopup && spellSuggestions[0]) {
-                                        chooseSpellSuggestion(spellSuggestions[0].value);
-                                    } else if (showTargetPopup && selectedTargetSuggestion) {
-                                        setInput(replaceCommandArgumentToken(input, selectedTargetSuggestion.value));
-                                        requestAnimationFrame(() => inputRef.current?.focus());
-                                    } else if (mumeCommandMatch.entry) {
-                                        setInput(replaceMumeCommandToken(input, mumeCommandMatch.entry));
-                                        requestAnimationFrame(() => inputRef.current?.focus());
-                                    }
                                 }
                             }}
                             onFocus={() => {
@@ -1107,6 +882,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                     </div>
                 )}
                 </div>
+            </div>
 
         </div>
     );

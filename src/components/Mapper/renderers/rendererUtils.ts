@@ -74,6 +74,7 @@ export interface RenderContext {
     isTracingMode?: boolean;
     mapTileVisuals?: MapTileVisualAdjustments;
     mapTileOpacity?: number;
+    showTerrainTiles?: boolean;
     zoneFilters?: Record<string, ZoneFilterConfig>;
     lighting?: string;
     weather?: string;

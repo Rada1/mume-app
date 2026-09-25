@@ -31,6 +31,28 @@ export const MUME_WEEKDAYS = [
     'Sunday', 'Monday', 'Trewsday', 'Hevenly Day', 'Mersday', 'Highday', 'Sterday'
 ];
 
+export interface MumeMonthDetails {
+    season: 'Winter' | 'Spring' | 'Summer' | 'Autumn';
+    sindarin: string;
+    dawnStr: string;
+    duskStr: string;
+}
+
+export const MUME_MONTH_DETAILS: Record<string, MumeMonthDetails> = {
+    'Afteryule': { season: 'Winter', sindarin: 'Narwain', dawnStr: '8 am', duskStr: '6 pm' },
+    'Solmath': { season: 'Winter', sindarin: 'Ninui', dawnStr: '9 am', duskStr: '5 pm' },
+    'Rethe': { season: 'Winter', sindarin: 'Gwaeron', dawnStr: '8 am', duskStr: '6 pm' },
+    'Astron': { season: 'Spring', sindarin: 'Gwirith', dawnStr: '7 am', duskStr: '7 pm' },
+    'Thrimidge': { season: 'Spring', sindarin: 'Lothron', dawnStr: '7 am', duskStr: '8 pm' },
+    'Forelithe': { season: 'Spring', sindarin: 'Nórui', dawnStr: '6 am', duskStr: '8 pm' },
+    'Afterlithe': { season: 'Summer', sindarin: 'Cerveth', dawnStr: '5 am', duskStr: '9 pm' },
+    'Wedmath': { season: 'Summer', sindarin: 'Urui', dawnStr: '4 am', duskStr: '10 pm' },
+    'Halimath': { season: 'Summer', sindarin: 'Ivanneth', dawnStr: '5 am', duskStr: '9 pm' },
+    'Winterfilth': { season: 'Autumn', sindarin: 'Narbeleth', dawnStr: '6 am', duskStr: '8 pm' },
+    'Blotmath': { season: 'Autumn', sindarin: 'Hithui', dawnStr: '7 am', duskStr: '8 pm' },
+    'Foreyule': { season: 'Autumn', sindarin: 'Girithron', dawnStr: '7 am', duskStr: '7 pm' },
+};
+
 /**
  * Calculates MUME minutes elapsed since the start of year 2850.
  */

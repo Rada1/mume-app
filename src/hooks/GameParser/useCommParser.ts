@@ -13,6 +13,20 @@ export interface CommParserDeps {
     lastCommTimeRef?: React.MutableRefObject<number>;
 }
 
+const FALLBACK_COMM_COLORS: Record<string, string> = {
+    tell: 'var(--ansi-bright-green, #44ff70)',
+    say: 'var(--ansi-bright-cyan, #38bdf8)',
+    ask: 'var(--ansi-bright-cyan, #38bdf8)',
+    yell: 'var(--ansi-bright-magenta, #c084fc)',
+    shout: 'var(--ansi-bright-magenta, #fb7185)',
+    whisper: 'var(--ansi-bright-magenta, #a78bfa)',
+    narrate: 'var(--ansi-bright-yellow, #f5f749)',
+    pray: 'var(--ansi-bright-yellow, #facc15)',
+    sing: 'var(--ansi-bright-magenta, #f0abfc)',
+    song: 'var(--ansi-bright-magenta, #f0abfc)',
+    group: 'var(--ansi-bright-cyan, #38bdf8)',
+};
+
 export function useCommParser(deps: CommParserDeps) {
     const parseComm = useCallback((line: string, _textOnly: string, _lower: string) => {
         let replyTarget: string | undefined;
@@ -127,7 +141,10 @@ export function useCommParser(deps: CommParserDeps) {
                 commSender = sanitizeExtractedText(innerRaw.substring(0, rawActionStart)).trim();
                 commAction = actionMatch[2];
                 commText = sanitizeExtractedText(innerRaw.substring(rawTextStart)).trim();
-                commColor = extractColorAtRawIndex(rawActionIndex >= tagMatch.index ? rawActionIndex : line.length);
+                commColor = extractColorAtRawIndex(rawActionIndex >= tagMatch.index ? rawActionIndex : line.length) || extractColorAtRawIndex(line.length);
+                if (!commColor) {
+                    commColor = FALLBACK_COMM_COLORS[tag];
+                }
                 if (/^tells?\s+the\s+group$/i.test(commAction)) {
                     replyCommand = 'group';
                     replyTarget = undefined;
@@ -137,12 +154,18 @@ export function useCommParser(deps: CommParserDeps) {
                 commSender = undefined;
                 commAction = undefined;
                 commText = innerText;
-                commColor = extractColorAtRawIndex(tagMatch.index);
+                commColor = extractColorAtRawIndex(tagMatch.index) || FALLBACK_COMM_COLORS[tag];
             }
             return true;
         };
 
         parseXmlComm();
+
+        // Tell bodies use the log's normal text color even when the server
+        // switches ANSI colors partway through the message.
+        if (replyCommand === 'tell' && commText) {
+            commText = commText.replace(/\x1b\[[0-9;]*m/g, '');
+        }
 
         // Social/emote tags are game output, not conversations. Keep isSocial
         // for log grouping, but only real replyable channels become comm bubbles.

@@ -34,6 +34,7 @@ interface GmcpHandlersProps {
     setCharacterName: (name: string | null) => void;
     setRoomName: (name: string | null) => void;
     setPlayerPosition: (pos: string) => void;
+    mood?: string;
     setMood?: (val: string) => void;
     setSpellSpeed?: (val: string) => void;
     setAlertness?: (val: string) => void;
@@ -77,7 +78,7 @@ interface GmcpHandlersProps {
     sendCommand?: (cmd: string) => void;
     playAchievementSound?: () => void;
     playEventMoveSound?: () => void;
-    playEffect?: (name: string, options?: { pitch?: number; skipJitter?: boolean }) => void;
+    playEffect?: (name: string, options?: { pitch?: number; volume?: number; skipJitter?: boolean }) => void;
     pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string; msg?: string } | null>;
     gameTime: import('../../types').MumeTime | null;
     setGameTime: (time: import('../../types').MumeTime | null) => void;

@@ -177,8 +177,20 @@
     background: rgba(45, 36, 28, 0.92);
 }
 
-.deck-slot:active {
-    transform: translateY(1px);
+.deck-slot:active,
+.deck-slot.is-key-pressed {
+    transform: scale(0.95);
+    background: rgba(201, 168, 76, 0.22);
+    border-color: rgba(201, 168, 76, 0.6);
+    color: #f0dfa8;
+}
+
+.deck-slot.is-key-pressed {
+    box-shadow: inset 0 0 0 1px rgba(201, 168, 76, 0.25), 0 0 12px rgba(201, 168, 76, 0.2);
+}
+
+.deck-slot.is-key-pressed svg {
+    color: #f0dfa8;
 }
 
 .deck-slot svg {
@@ -270,6 +282,17 @@
 
 .light-mode .deck-slot svg {
     color: #8a6620;
+}
+
+.light-mode .deck-slot:active,
+.light-mode .deck-slot.is-key-pressed {
+    background: rgba(168, 122, 42, 0.2);
+    border-color: rgba(168, 122, 42, 0.6);
+    color: #8a6620;
+}
+
+.light-mode .deck-slot.is-key-pressed {
+    box-shadow: inset 0 0 0 1px rgba(168, 122, 42, 0.25), 0 0 10px rgba(168, 122, 42, 0.2);
 }
 
 .light-mode .deck-slot-label {

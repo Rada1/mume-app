@@ -44,16 +44,16 @@ export function useNumpadControls(
 
             if (!dir) return;
 
-            const activeEl = e.target as HTMLElement;
-            const tag = activeEl?.tagName;
-            if (tag === 'INPUT' || tag === 'TEXTAREA') {
+            const activeEl = (e.target || document.activeElement) as HTMLElement;
+            const isInputField = activeEl?.classList?.contains('input-field');
+            const isInputOrTextarea = activeEl?.tagName === 'INPUT' || activeEl?.tagName === 'TEXTAREA';
+            if (isInputOrTextarea && !isInputField) {
                 // Only allow numpad to trigger navigation if focused in the main chat/input area (.input-field)
-                if (!activeEl.classList.contains('input-field')) {
-                    return;
-                }
+                return;
             }
 
             e.preventDefault();
+            e.stopPropagation();
             emitNumpadCommandPress(dir);
 
             // Alt+numpad: toggle open/close on the exit in that direction
@@ -68,7 +68,7 @@ export function useNumpadControls(
             executeCommand(dir);
         };
 
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener('keydown', handleKeyDown, true);
+        return () => window.removeEventListener('keydown', handleKeyDown, true);
     }, [executeCommand, getExitState]);
 }

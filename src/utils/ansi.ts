@@ -171,3 +171,17 @@ export const isAnsiGreenColor = (color?: string): boolean => {
     return false;
 };
 
+// --- ANSI Stripping Section ---
+/**
+ * Strips all ANSI escape sequences, terminal control characters, and MUME color tags from a string.
+ */
+export const stripAnsiCodes = (text?: string | null): string => {
+    if (!text) return '';
+    return text
+        .replace(/[\u001b\x1b\u2190]\[[0-9;?]*[ -/]*[@-~]/g, '')
+        .replace(/[\u001b\x1b\u2190]/g, '')
+        .replace(/&([0-5]{3}|(?:grey|gray)\d+|[nrgbycwmpkdlNRGBYCWMPKDL+*=\-])/g, '')
+        .replace(/[\x00-\x1f\x7f-\x9f]/g, '')
+        .trim();
+};
+

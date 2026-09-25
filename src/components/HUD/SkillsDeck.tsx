@@ -7,13 +7,21 @@
  * the same target-ready / pick-a-target flow as the CommandDeck combat buttons.
  */
 
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Target, GraduationCap } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import { useMapper } from '../../context/useMapper';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
-import { PRACTICE_CLASS_SKILLS, PracticeClassKey, getGuildClassFromFlags } from '../../utils/practiceClassCatalog';
+import {
+    PRACTICE_CLASS_SKILLS,
+    PracticeClassKey,
+    PASSIVE_SKILLS,
+    TARGETED_SKILLS,
+    getGuildClassFromFlags,
+    getLearnedClassSkillCounts
+} from '../../utils/practiceClassCatalog';
+import { doesCommandMatchSkill } from '../../utils/commandFeedbackUtils';
 import type { PracticeSkill } from '../../types';
 import { SkillClassIcon } from './SkillClassIcon';
 import './CommandDeck.css';
@@ -31,33 +39,6 @@ interface SkillItem {
 }
 
 const CLASS_KEYS: PracticeClassKey[] = ['ranger', 'thief', 'warrior', 'mage', 'cleric'];
-
-const PASSIVE_SKILLS = new Set([
-    'cleaving weapons', 'concussion weapons', 'slashing weapons', 'stabbing weapons',
-    'two-handed weapons', 'unarmed combat', 'parry', 'endurance', 'dodge', 'missile',
-    'piercing weapons', 'awareness', 'swim', 'wilderness', 'leadership'
-]);
-
-// Skills/spells that act on a target (offensive, heals, buffs cast on someone).
-// Self/room skills (sneak, hide, armour-on-self, create light, earthquake…) are
-// intentionally excluded — they fire bare. Self-casts are still possible by
-// targeting your own pin.
-const TARGETED_SKILLS = new Set([
-    // ranger / thief / warrior
-    'bandage', 'command', 'dark oath', 'ride', 'track',
-    'attack', 'backstab', 'envenom', 'steal',
-    'bash', 'charge', 'kick', 'rescue',
-    // mage
-    'magic missile', 'armour', 'chill touch', 'burning hands', 'locate', 'shocking grasp',
-    'teleport', 'lightning bolt', 'colour spray', 'locate life', 'call lightning', 'enchant',
-    'scry', 'shield', 'charm', 'sleep', 'fireball', 'magic blast', 'dispel magic', 'silence',
-    'identify', 'portal',
-    // cleric
-    'cure light', 'smother', 'cure blindness', 'protection from evil', 'bless', 'cure serious',
-    'blindness', 'cure disease', 'strength', 'poison', 'summon', 'cure critic', 'cure critical',
-    'remove poison', 'curse', 'remove curse', 'black breath', 'dispel evil', 'energy drain',
-    'heal', 'transfer', 'fear', 'harm', 'hold', 'raise dead', 'sanctuary'
-]);
 
 const isValidClass = (c: string): c is PracticeClassKey => (CLASS_KEYS as string[]).includes(c);
 
@@ -79,6 +60,7 @@ export const SkillsDeck: FC = () => {
 
     const classLower = (characterClass || '').toLowerCase();
     const [skillClass, setSkillClass] = useState<PracticeClassKey>(isValidClass(classLower) ? classLower : 'ranger');
+    const learnedCounts = useMemo(() => getLearnedClassSkillCounts(abilities), [abilities]);
 
     useEffect(() => {
         if (isValidClass(classLower)) setSkillClass(classLower);
@@ -138,6 +120,15 @@ export const SkillsDeck: FC = () => {
     const hintTimerRef = useRef<number | undefined>(undefined);
     useEffect(() => () => window.clearTimeout(hintTimerRef.current), []);
 
+    const [pressedLabel, setPressedLabel] = useState<string | null>(null);
+    const pressTimerRef = useRef<number | undefined>(undefined);
+
+    const flashPressed = useCallback((label: string) => {
+        window.clearTimeout(pressTimerRef.current);
+        setPressedLabel(label);
+        pressTimerRef.current = window.setTimeout(() => setPressedLabel(null), 140);
+    }, []);
+
     const items = useMemo<SkillItem[]>(() => {
         const isSpell = skillClass === 'mage' || skillClass === 'cleric';
         return PRACTICE_CLASS_SKILLS[skillClass].map(name => {
@@ -157,6 +148,26 @@ export const SkillsDeck: FC = () => {
             };
         }).sort((a, b) => (b.state === 'ready' ? 1 : 0) - (a.state === 'ready' ? 1 : 0));
     }, [skillClass, abilities, practiceByName]);
+
+    const itemsRef = useRef(items);
+    useEffect(() => { itemsRef.current = items; }, [items]);
+
+    useEffect(() => {
+        const onCommandExecuted = (event: Event) => {
+            const cmd = (event as CustomEvent<{ cmd?: string }>).detail?.cmd;
+            if (!cmd) return;
+            const matched = itemsRef.current.find(item => doesCommandMatchSkill(cmd, item));
+            if (matched) {
+                flashPressed(matched.label);
+            }
+        };
+
+        window.addEventListener('mume:command-executed', onCommandExecuted);
+        return () => {
+            window.removeEventListener('mume:command-executed', onCommandExecuted);
+            window.clearTimeout(pressTimerRef.current);
+        };
+    }, [flashPressed]);
 
     const atGuildForThisClass = guildClass !== null && guildClass === skillClass;
 
@@ -183,6 +194,7 @@ export const SkillsDeck: FC = () => {
             }, 50);
             return;
         }
+        flashPressed(item.label);
         triggerHaptic?.(15);
         executeCommand(item.needsTarget && target ? `${item.cmd} ${target}` : item.cmd);
     };
@@ -208,7 +220,7 @@ export const SkillsDeck: FC = () => {
                         onClick={() => { setSkillClass(c); triggerHaptic?.(10); }}
                         title={guildClass === c ? `You can practice ${c} skills here` : undefined}
                     >
-                        {c}
+                        {c} {learnedCounts[c]}
                         {guildClass === c && <GraduationCap size={11} strokeWidth={2.4} className="deck-class-guild-icon" />}
                     </button>
                 ))}
@@ -247,7 +259,7 @@ export const SkillsDeck: FC = () => {
                             <button
                                 key={item.label}
                                 type="button"
-                                className={`deck-slot state-${item.state}${targetReady ? ' target-ready' : ''}${needsTargetHint === item.label ? ' needs-target' : ''}${canPractice ? ' can-practice' : ''}`}
+                                className={`deck-slot state-${item.state}${targetReady ? ' target-ready' : ''}${needsTargetHint === item.label ? ' needs-target' : ''}${canPractice ? ' can-practice' : ''}${pressedLabel === item.label ? ' is-key-pressed' : ''}`}
                                 onClick={() => fire(item)}
                                 title={targetReady ? `${item.cmd} ${target}` : item.cmd}
                             >

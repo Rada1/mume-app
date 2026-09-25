@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import './index.css';
 import './components/Messages/MessageLog.css';
 import './components/Messages/ChatWindow.css';
+import './components/Messages/ChatTranscriptWindow.css';
 import './components/Players/PlayersPanel.css';
 import './components/Controls/Stats.css';
 import './components/Controls/CustomButtons.css';
@@ -34,12 +35,14 @@ import { PerfHUD } from './components/Utility/PerfHUD';
 import { useSettingsStore } from './stores/useSettingsStore';
 import { useDisplayMode } from './hooks/useDisplayMode';
 import { normalizeTerrain } from './utils/terrainUtils';
-import { getRoomTerrainGlowColor } from './utils/roomTerrainVisuals';
+import { getZoneAmbientGlow } from './utils/zoneColors';
 import { toThemeLinkedColor } from './utils/themeLinkedColors';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { canAccessShaper } from './shaper/access/shaperAccess';
 import { ShaperAccessDialog } from './shaper/components/ShaperAccessDialog';
+import './styles/terminalPanels.css';
+import './components/HUD/MapTerminalDock.css';
 import { ShaperWorkspace } from './shaper/components/ShaperWorkspace';
 import { cleanupDevServiceWorkers } from './utils/devServiceWorkerCleanup';
 import { useZoneThemeSync } from './hooks/useZoneThemeSync';
@@ -87,6 +90,7 @@ const MudClient = () => {
         setCommandPreview,
         gameState,
         currentTerrain,
+        roomZone,
         accountState,
         status
     } = useGame();
@@ -239,7 +243,7 @@ const MudClient = () => {
         <div
             className={`app-container state-${gameState} stage-${accountState?.stage || 'none'} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isPerformanceMode ? 'performance-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
             style={{
-                ...(isImmersionMode ? { '--terrain-glow-color': getRoomTerrainGlowColor(currentTerrain) } : {})
+                ...(isImmersionMode ? { '--terrain-glow-color': getZoneAmbientGlow(gameState === 'account' ? null : roomZone) } : {})
             } as React.CSSProperties}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {

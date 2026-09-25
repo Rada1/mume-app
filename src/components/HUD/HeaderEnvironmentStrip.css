@@ -1,0 +1,162 @@
+/**
+ * @file HeaderEnvironmentStrip.css
+ * @description Compact card styling for the persistent room and environment HUD in the client header.
+ */
+
+.header-environment-strip {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+    flex: 1;
+}
+.header-environment-spacer {
+    flex: 1;
+}
+
+/* Card enclosure matching the compact equipment reference style */
+.header-environment-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    max-width: 100%;
+    padding: 3px 8px;
+    border: 1px solid rgba(201, 168, 76, 0.14);
+    border-radius: 6px;
+    background: rgba(20, 15, 11, 0.38);
+    color: #b8ad96;
+    font-family: var(--font-mono, monospace);
+    line-height: 1.2;
+    overflow: hidden;
+    white-space: nowrap;
+    user-select: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    opacity: 0.55;
+    filter: grayscale(85%);
+    transition: opacity 0.25s ease, filter 0.25s ease, border-color 0.25s ease;
+}
+
+.header-environment-card:hover {
+    opacity: 1;
+    filter: none;
+    border-color: rgba(201, 168, 76, 0.3);
+}
+
+.light-mode .header-environment-card {
+    border-color: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.66);
+    box-shadow: none;
+}
+
+/* Room name & zone */
+.header-environment-card .header-room-info {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    min-width: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+}
+
+.header-environment-card .header-room-name {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--mume-wiki-link-color, #c9a84c);
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.light-mode .header-environment-card .header-room-name {
+    color: var(--mume-wiki-link-color, #8b6b10);
+}
+
+.header-environment-card .header-room-zone {
+    font-size: 0.55rem;
+    font-weight: 500;
+    color: var(--text-faded, #8a7a5e);
+    opacity: 0.75;
+    flex-shrink: 0;
+}
+
+.light-mode .header-environment-card .header-room-zone {
+    color: #64748b;
+    opacity: 0.85;
+}
+
+/* Dividers */
+.header-environment-card .header-env-divider {
+    color: rgba(201, 168, 76, 0.22);
+    font-size: 0.62rem;
+    font-weight: 400;
+    padding: 0 1px;
+    flex-shrink: 0;
+}
+
+.light-mode .header-environment-card .header-env-divider {
+    color: rgba(139, 107, 16, 0.25);
+}
+
+.header-environment-card .header-env-sep {
+    color: rgba(255, 255, 255, 0.18);
+    font-weight: 700;
+    font-size: 0.58rem;
+    padding: 0 1px;
+    flex-shrink: 0;
+}
+
+.light-mode .header-environment-card .header-env-sep {
+    color: rgba(0, 0, 0, 0.2);
+}
+
+/* Environment metadata */
+.header-environment-card .header-env-items {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #a8a29e;
+    font-size: 0.56rem;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.light-mode .header-environment-card .header-env-items {
+    color: #57534e;
+}
+
+.header-environment-card .header-env-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.header-environment-card .header-env-item .prompt-env-icon {
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+/* Hunger & Thirst alerts */
+.header-environment-card .header-env-conditions {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-left: 2px;
+    flex-shrink: 0;
+}
+
+.header-environment-card .header-env-hungry {
+    color: #fbbf24;
+}
+
+.header-environment-card .header-env-thirsty {
+    color: #60a5fa;
+}
+
+/* Responsive collapse on narrow screens */
+@media (max-width: 800px) {
+    .header-environment-card .header-env-item span {
+        display: none;
+    }
+}

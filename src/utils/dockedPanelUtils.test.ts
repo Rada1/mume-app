@@ -1,33 +1,38 @@
 import { describe, it, expect } from 'vitest';
-import { computeDockedRight, computeDockedTop, getMobilePanelHeight, computeDockedPanelStyle, DockedPanelId } from './dockedPanelUtils';
+import { computeDockedRight, computeDockedTop, getMobilePanelHeight, computeDockedPanelStyle, getDockedWidth, DockedPanelId } from './dockedPanelUtils';
 
 describe('computeDockedRight', () => {
-    it('returns 10px for the rightmost open panel', () => {
+    it('places the rightmost open panel flush with the edge', () => {
         const active: DockedPanelId[] = ['chat', 'players', 'help'];
-        expect(computeDockedRight('chat', active)).toBe('10px');
+        expect(computeDockedRight('chat', active)).toBe('0px');
     });
 
     it('returns offset calculated from preceding panel for the second open panel', () => {
         const active: DockedPanelId[] = ['chat', 'players'];
-        expect(computeDockedRight('players', active)).toBe('calc(10px + var(--desktop-chat-width, 24vw) + 8px)');
+        expect(computeDockedRight('players', active)).toBe(`calc(${getDockedWidth('chat')})`);
     });
 
-    it('returns 10px if only help is open', () => {
+    it('places a lone help pane flush with the edge', () => {
         const active: DockedPanelId[] = ['help'];
-        expect(computeDockedRight('help', active)).toBe('10px');
+        expect(computeDockedRight('help', active)).toBe('0px');
     });
 
     it('slides help over when chat and players are both open', () => {
         const active: DockedPanelId[] = ['chat', 'players', 'help'];
-        expect(computeDockedRight('help', active)).toBe('calc(10px + var(--desktop-chat-width, 24vw) + 8px + var(--desktop-players-width, 24vw) + 8px)');
+        expect(computeDockedRight('help', active)).toBe(`calc(${getDockedWidth('chat')} + ${getDockedWidth('players')})`);
     });
 
     it('slides archive and editor to the left of help', () => {
         const active: DockedPanelId[] = ['chat', 'help', 'archive', 'editor'];
-        expect(computeDockedRight('chat', active)).toBe('10px');
-        expect(computeDockedRight('help', active)).toBe('calc(10px + var(--desktop-chat-width, 24vw) + 8px)');
-        expect(computeDockedRight('archive', active)).toBe('calc(10px + var(--desktop-chat-width, 24vw) + 8px + var(--desktop-help-width, 28vw) + 8px)');
-        expect(computeDockedRight('editor', active)).toBe('calc(10px + var(--desktop-chat-width, 24vw) + 8px + var(--desktop-help-width, 28vw) + 8px + var(--desktop-archive-width, 34vw) + 8px)');
+        expect(computeDockedRight('chat', active)).toBe('0px');
+        expect(computeDockedRight('help', active)).toBe(`calc(${getDockedWidth('chat')})`);
+        expect(computeDockedRight('archive', active)).toBe(`calc(${getDockedWidth('chat')} + ${getDockedWidth('help')})`);
+        expect(computeDockedRight('editor', active)).toBe(`calc(${getDockedWidth('chat')} + ${getDockedWidth('help')} + ${getDockedWidth('archive')})`);
+    });
+
+    it('keeps Commands closest to the log when several panes are open', () => {
+        const active: DockedPanelId[] = ['help', 'chat', 'commands'];
+        expect(computeDockedRight('commands', active)).toBe(`calc(${getDockedWidth('help')} + ${getDockedWidth('chat')})`);
     });
 });
 
@@ -57,10 +62,9 @@ describe('mobile docking and stacking', () => {
     it('generates desktop-specific docked style with right-docked offset', () => {
         const active: DockedPanelId[] = ['chat', 'players'];
         const style = computeDockedPanelStyle('chat', active, false);
-        expect(style.right).toBe('10px');
+        expect(style.right).toBe('0px');
         expect(style.left).toBeUndefined();
         expect(style.top).toBe('calc(env(safe-area-inset-top, 0px) + 52px)');
         expect(style.bottom).toBe('calc(env(safe-area-inset-bottom, 0px) + 10px)');
     });
 });
-

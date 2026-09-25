@@ -23,6 +23,7 @@ describe('confirmed spell timers', () => {
 
     it.each([
         ["cast 'armour'", 'A blue transparent wall slowly appears around you.', 'spell-armour'],
+        ["cast 'armour'", 'A blue transparent shield appears around you.', 'spell-armour'],
         ["cast 'bless'", 'You begin to feel the light of Aman shine upon you.', 'spell-bless'],
         ["cast 'shield'", 'You feel protected.', 'spell-shield'],
         ["cast 'sanctuary'", 'A white aura surrounds you.', 'spell-sanctuary'],

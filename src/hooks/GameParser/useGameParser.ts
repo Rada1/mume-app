@@ -356,6 +356,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         playKillSound: deps.playKillSound, 
         playLevelSound: deps.playLevelSound, 
         playEffect: deps.playEffect,
+        playArrowHitSound: deps.playArrowHitSound,
         setInCombat,
         characterName: session.game.characterName, 
         spectateCharacterName: deps.spectateCharacterName,
@@ -1155,8 +1156,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             deps.playMagicExplosionSound();
         }
         */
+        let isMagicRipple = false;
         if (!isEffectivelyRoomDesc) {
-            spellCompletion.handleSpellLine(textOnly, lower, isSnoop);
+            isMagicRipple = !!spellCompletion.handleSpellLine(textOnly, lower, isSnoop);
         }
 
         const finalType = router.routeMessage(msgType, textOnly, lower, lineToParse, textOnly, isEndPrompt, isSnoop) as MessageType;
@@ -1241,7 +1243,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 commResult.commSender ? tokenizeFresh(commResult.commSender) : undefined,
                 commResult.commText ? tokenizeFresh(commResult.commText) : undefined,
                 undefined, hasHitTag, hasDamageTag, hasAvoidDamageTag, hasMissTag,
-                undefined, isSnoop, undefined, isRipMessage, commResult.isSocial, resourceGain || undefined
+                undefined, isSnoop, undefined, isRipMessage, commResult.isSocial, resourceGain || undefined,
+                isMagicRipple
             );
 
             if (!isSnoop && finalType === 'prompt') {

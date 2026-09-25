@@ -65,6 +65,7 @@
 .header-right-cluster {
     display: flex;
     align-items: center;
+    align-self: center;
     justify-content: flex-end;
     gap: 8px;
     min-width: 0;
@@ -74,6 +75,7 @@
 .header-right-cluster .controls,
 .header-right-cluster .view-switcher {
     flex-wrap: nowrap;
+    align-items: center;
 }
 
 .header-env-indicator {

@@ -34,7 +34,6 @@ export const useActiveVitals = (): VitalsStore => {
     if (mode === 'replay' || mode === 'scrubbing') return replayStore;
     return (isSpectating && activeView === 'target' ? spectateStore : mainStore);
 };
-
 /**
  * Returns the currently active Vitals state (imperative getter).
  */
@@ -218,4 +217,29 @@ export const useActiveOpponent = () => {
     if (mode === 'replay' || mode === 'scrubbing') return { name: replayName, status: replayStatus };
     if (isSpectating) return { name: spectateName, status: spectateStatus };
     return { name: mainName, status: mainStatus };
+};
+
+/**
+ * Returns the active room exits and rawExits.
+ */
+export const useActiveRoomExits = () => {
+    const mode = useModeStore(state => state.mode);
+    const isSpectating = useModeStore(state => state.isSpectating && state.activeView === 'target');
+
+    const mainExits = useRoomStore(state => state.exits);
+    const mainRawExits = useRoomStore(state => state.rawExits);
+
+    const spectateExits = useSpectateRoomStore(state => state.exits);
+    const spectateRawExits = useSpectateRoomStore(state => state.rawExits);
+
+    const replayExits = useReplayRoomStore(state => state.exits);
+    const replayRawExits = useReplayRoomStore(state => state.rawExits);
+
+    if (mode === 'replay' || mode === 'scrubbing') {
+        return { exits: replayExits, rawExits: replayRawExits };
+    }
+    if (isSpectating) {
+        return { exits: spectateExits, rawExits: spectateRawExits };
+    }
+    return { exits: mainExits, rawExits: mainRawExits };
 };

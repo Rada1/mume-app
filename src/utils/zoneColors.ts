@@ -1,76 +1,66 @@
 /**
  * @file zoneColors.ts
- * @description Zone color mapping and deterministic color generator for room name highlight banners.
+ * @description Curated zone colors for immersion atmosphere and room highlights.
  */
 
 // --- Constants Section ---
 
 export const KNOWN_ZONE_COLORS: Record<string, string> = {
-    // High Good / Sacred Elven & Divine
-    'valinor': '#d97706', // Sacred starlight gold
-    'rivendell': '#0284c7', // Moonlit twilight sapphire (High Elves)
-    'lorien': '#65a30d', // Luminous golden mallorn lime-leaf (Galadriel)
-    'the lorien surroundings': '#4d7c0f',
-    'grey havens': '#06b6d4', // Coastal twilight silver-cyan (Elven ships)
-    'the grey havens': '#06b6d4',
-    'ost-in-edhil': '#059669', // Ancient city of the Elven smiths
-    'eregion': '#059669', // Holly lands
-    'tower hills': '#0284c7', // White Towers looking to the Sea
-    'the tower hills': '#0284c7',
-    'lhun valley': '#0284c7', // River Lhûn azure
-    'the lhun valley': '#0284c7',
+    // Elven realms: leaf, jade, and sea-green variations.
+    'valinor': '#b7a65a',
+    'rivendell': '#318c66',
+    'lorien': '#69a74b',
+    'lorien surroundings': '#538e58',
+    'the lorien surroundings': '#538e58',
+    'grey havens': '#3a9b83',
+    'ost-in-edhil': '#278969',
+    'eregion': '#328d65',
+    'lhun valley': '#458f85',
+    'southern mirkwood': '#3a7958',
 
-    // Pure Good / Pastoral Hobbits
-    'shire': '#16a34a', // Verdant clover emerald & rolling green hills
-    'the shire': '#16a34a',
+    // Realms of Men and their old roads: blue, steel, and indigo.
+    'bree': '#467db3',
+    'rohan': '#447eab',
+    'dunland': '#526ba4',
+    'tharbad': '#3e759d',
+    'fornost': '#496fa8',
+    'tower hills': '#4b88b4',
+    'weathertop': '#566da0',
+    'ancient broken road': '#657695',
+    'old east road': '#556f9c',
+    'old forest road': '#57708d',
+    'road to tharbad': '#527ca1',
+    'road to fornost': '#5875a4',
+    'road to grey havens': '#488697',
 
-    // Mortal Civilized / Neutral to Good
-    'bree': '#d97706', // Warm tavern candlelight amber & hearthfire
-    'rohan': '#ca8a04', // Windblown golden horse-plains
-    'blue mountains': '#2563eb', // Dwarven mountain lapis & granite cobalt
-    'the blue mountains': '#2563eb',
-    'tharbad': '#78350f', // Ruined river mud & weathered timber
-    'dunland': '#854d0e', // Rugged highland clan bronze & heather
-    'ancient broken road': '#64748b', // Cracked highway stone
-    'the ancient broken road': '#64748b',
+    // Dwarven stone and forges: crimson through ember red.
+    'moria': '#aa454c',
+    'blue mountains': '#ae5055',
+    'redhorn pass': '#b74b52',
 
-    // Wilderness & Ancient Neutral
-    'fangorn': '#15803d', // Ancient deepwood Ent-moss
-    'old forest': '#166534', // Primeval deep wildwood & dark root
-    'the old forest': '#166534',
-    'misty mountains': '#38bdf8', // Frosty glacial mountain peaks
-    'the misty mountains': '#38bdf8',
-    'midgewaters': '#3f6212', // Swarm-fen marsh reed
-    'the midgewaters': '#3f6212',
-    'gladden fields': '#4d7c0f', // Iris reed fen
-    'the gladden fields': '#4d7c0f',
+    // Orc, troll, and shadow-held lands: amethyst and bruised violet.
+    'troll warrens': '#8246ad',
+    'trollshaws': '#76509d',
+    'ettenmoors': '#8850a9',
+    'goblin-town': '#7950ae',
+    'dol guldur': '#7947b5',
+    'isengard': '#73529f',
+    'emyn-nu-fuin': '#684894',
+    'mordor': '#76418f',
+    'angmar': '#684c9b',
 
-    // Evil / Trolls / Gore & Savage Blood
-    'troll warrens': '#dc2626', // Gore red / savage carnage & blood
-    'the troll warrens': '#dc2626',
-    'trollshaws': '#991b1b', // Stone-troll highland rust & dried blood
-    'the trollshaws': '#991b1b',
-    'ettenmoors': '#9f1239', // Savage troll moorland maroon & bruised blood
-    'the ettenmoors': '#9f1239',
-    'redhorn pass': '#e11d48', // Blood-chilling blizzard pass
-    'the redhorn pass': '#e11d48',
-
-    // Evil / Orcs / Dark Sorcery / Shadow
-    'goblin-town': '#a16207', // Toxic sulfur-soot ochre & subterranean bile
-    'dol guldur': '#7e22ce', // Sorcerous dark necromancer purple
-    'moria': '#c2410c', // Abyssal molten cinder & shadow ember (Balrog)
-    'isengard': '#ea580c', // Smoldering forge iron & Uruk-hai furnaces
-    'mirkwood': '#065f46', // Venomous arachnid dark jade / spider shadow
-    'southern mirkwood': '#044332',
-    'emyn-nu-fuin': '#044332',
-    'mordor': '#b91c1c', // Land of Shadow / volcanic ash & magma
-    'angmar': '#0284c7', // Witch-king chilling wraith-frost
-
-    // Haunted / Undead / Cursed
-    'barrow-downs': '#0d9488', // Cold tomb-mist & spectral barrow teal
-    'the barrow-downs': '#0d9488',
-    'fornost': '#2563eb', // Spectral ruined kingdom cobalt
-    'weathertop': '#c2410c' // Charred ancient stone & Nazgûl attack
+    // Independent lands keep related but distinct natural colors.
+    'shire': '#71a653',
+    'fangorn': '#367c55',
+    'old forest': '#39715e',
+    'misty mountains': '#62899c',
+    'midgewaters': '#658e7c',
+    'gladden fields': '#619680',
+    'northern anduin vale': '#558e93',
+    'central anduin vale': '#528f97',
+    'swanfleet': '#628e9c',
+    'barrow-downs': '#6a8791',
+    'mirkwood': '#3a7958'
 };
 
 export const DEFAULT_ZONE_COLOR = '#475569';
@@ -124,6 +114,15 @@ export const getZoneColor = (zone: string | null | undefined): string => {
     }
 
     return hashStringToColor(clean);
+};
+
+/** Uses the zone palette as a translucent ambient glow behind the client. */
+export const getZoneAmbientGlow = (zone: string | null | undefined): string => {
+    const color = getZoneColor(zone);
+    const red = parseInt(color.slice(1, 3), 16);
+    const green = parseInt(color.slice(3, 5), 16);
+    const blue = parseInt(color.slice(5, 7), 16);
+    return `rgba(${red}, ${green}, ${blue}, 0.18)`;
 };
 
 /**

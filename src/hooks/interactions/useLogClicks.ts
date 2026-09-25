@@ -145,7 +145,6 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         } else {
             if (isLogBlankTapTarget(e.target)) {
                 clearObjectSelection();
-                setTarget(null);
                 setPopoverState(null);
                 lastLogClickRef.current = now;
                 return;
@@ -237,32 +236,18 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         const isRemoteCharacter = categoryAxes.isCharacter && categoryAxes.location === 'none';
         const getInspectState = () => {
             const shouldLook = isTargetableInline && action === 'menu' && categoryAxes.isTargetable && (categoryAxes.isObject || categoryAxes.isCharacter) && !isRemoteCharacter;
-            // Consider on both characters (threat assessment) and objects (weapon
-            // stats / weight), so the object popover surfaces "con" output too.
-            const shouldConsider = shouldLook;
             const shouldWhois = isTargetableInline && action === 'menu' && categoryAxes.isTargetable && isRemoteCharacter;
             return {
-                isCapturingExamine: shouldLook,
-                isCapturingConsider: shouldConsider,
+                // Inspection is deliberately player-initiated from the card.
+                // Opening an entity menu must not emit hidden look/con commands.
+                hasInspectionCard: shouldLook || shouldWhois,
+                isCapturingExamine: false,
+                isCapturingConsider: false,
                 capturedExamineLines: undefined,
                 capturedConsiderLines: undefined,
-                isCapturingWhois: shouldWhois,
+                isCapturingWhois: false,
                 capturedWhoisLines: undefined,
             };
-        };
-        const runInspectCommands = () => {
-            const inspect = getInspectState();
-            if (inspect.isCapturingExamine && contextStr) {
-                executeCommand(`look ${contextStr}`, true, true, false, false, { shouldFocus: false, fromUi: true });
-            }
-            if (inspect.isCapturingConsider && contextStr) {
-                setTimeout(() => {
-                    executeCommand(`con ${contextStr}`, true, true, false, false, { shouldFocus: false, fromUi: true });
-                }, 850);
-            }
-            if (inspect.isCapturingWhois && contextStr) {
-                executeCommand(`whois ${contextStr}`, true, true, false, false, { shouldFocus: false, fromUi: true });
-            }
         };
 
         const sourceButton = activeHeldButton
@@ -345,60 +330,53 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             const glowColor = targetEl.style.getPropertyValue('--glow-color').trim();
             const accentColor = glowColor || targetEl.style.color || undefined;
             const isAlreadySelected = shopStore.selectedTarget?.id === entityId;
-            if (isAlreadySelected) {
-                const isSameOpenMenu = popoverState?.entityId === entityId;
-                if (isSameOpenMenu) {
-                    setPopoverState(null);
-                    triggerHaptic(10);
-                    return;
-                }
-                const rect = targetEl.getBoundingClientRect();
-                const sourceRect = { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
-                setPopoverState({
-                    x: rect.left + rect.width / 2,
-                    y: rect.bottom,
-                    sourceHeight: rect.height,
-                    sourceRect,
-                    setId: cmd || category || 'selection',
+            const isSameOpenMenu = isAlreadySelected && popoverState?.entityId === entityId;
+            if (isSameOpenMenu) {
+                setPopoverState(null);
+                triggerHaptic(10);
+                return;
+            }
+            if (!isAlreadySelected) {
+                toggleObjectSelection({
+                    id: entityId,
+                    setId: cmd || undefined,
                     category: category || undefined,
                     context: contextStr || undefined,
                     displayName,
                     keyword: resolvedKeyword || undefined,
-                    entityId,
-                    menuDisplay,
                     accentColor,
-                    preferSide: 'top',
+                    menuDisplay,
                     parentNoun,
-                    isRoomDescription: isRoomDesc,
-                    ...getInspectState()
                 });
-                if (!isRoomDesc) {
-                    playEffect('actionmenu');
-                }
-                targetEl.classList.add('menu-active');
-                runInspectCommands();
-                triggerHaptic(20);
-                return;
             }
-            toggleObjectSelection({
-                id: entityId,
-                setId: cmd || undefined,
+            if (isSoundEnabled && !isRoomDesc) {
+                audioManager.playEffect('target', { skipJitter: true });
+            }
+            const rect = targetEl.getBoundingClientRect();
+            const sourceRect = { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+            setPopoverState({
+                x: rect.left + rect.width / 2,
+                y: rect.bottom,
+                sourceHeight: rect.height,
+                sourceRect,
+                setId: cmd || category || 'selection',
                 category: category || undefined,
                 context: contextStr || undefined,
                 displayName,
                 keyword: resolvedKeyword || undefined,
-                accentColor,
+                entityId,
                 menuDisplay,
+                accentColor,
+                preferSide: 'top',
                 parentNoun,
+                isRoomDescription: isRoomDesc,
+                ...getInspectState()
             });
-            setTarget(contextStr || null);
-            if (isSoundEnabled && !isRoomDesc) {
-                audioManager.playEffect('target', { skipJitter: true });
+            if (!isRoomDesc) {
+                playEffect('actionmenu');
             }
-            if (popoverState && popoverState.entityId !== entityId) {
-                setPopoverState(null);
-            }
-            triggerHaptic(40);
+            targetEl.classList.add('menu-active');
+            triggerHaptic(20);
             return;
         }
 
@@ -439,7 +417,6 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 playEffect('actionmenu');
             }
             targetEl.classList.add('menu-active');
-            runInspectCommands();
             triggerHaptic(20);
 
         } else if ((action === 'command' || action === 'preload') && cmd) {

@@ -13,11 +13,12 @@ interface UseGmcpVitalsProps {
     setOpponentName: (name: string | null) => void;
     setBufferName: (name: string | null) => void;
     setPlayerPosition: (pos: string) => void;
+    mood?: string;
     setMood?: (val: string) => void;
     setSpellSpeed?: (val: string) => void;
     setAlertness?: (val: string) => void;
     sendCommand?: (cmd: string) => void;
-    playEffect?: (name: string, options?: { pitch?: number; skipJitter?: boolean }) => void;
+    playEffect?: (name: string, options?: { pitch?: number; volume?: number; skipJitter?: boolean }) => void;
     setCurrentWeather: (weather: import('../../types').WeatherType) => void;
     setIsFoggy: (isFoggy: boolean) => void;
     setCharacterInfo: React.Dispatch<React.SetStateAction<import('../../types').CharacterInfo>>;
@@ -41,6 +42,7 @@ export const useGmcpVitals = ({
     setOpponentName,
     setBufferName,
     setPlayerPosition,
+    mood,
     setMood,
     setSpellSpeed,
     setAlertness,
@@ -59,9 +61,13 @@ export const useGmcpVitals = ({
     opponentId,
     bufferName
 }: UseGmcpVitalsProps) => {
-    const lastMoodRef = useRef<string | null>(null);
+    // UI sliders update optimistically before GMCP confirms them. Seed this
+    // baseline from the current UI mood so that confirmation is still a real
+    // change and can play its feedback effect.
+    const lastMoodRef = useRef<string | null>(mood?.toLowerCase() || null);
     const lastSpellSpeedRef = useRef<string | null>(null);
     const lastAlertnessRef = useRef<string | null>(null);
+    const lastGmcpPositionRef = useRef<string | null>(null);
 
     const onCharVitals = useCallback((data: GmcpCharVitals) => {
         if (data.mood && !isSpectateMode) {
@@ -71,7 +77,7 @@ export const useGmcpVitals = ({
             setMood?.(nextMood);
 
             if (previousMood !== null && previousMood !== nextMood) {
-                playEffect?.('slider', { pitch: getDispositionSliderPitch('mood', nextMood), skipJitter: true });
+                playEffect?.('slider', { pitch: getDispositionSliderPitch('mood', nextMood), volume: 0.5, skipJitter: true });
                 sendCommand?.('info %O %D %k %A');
             }
         }
@@ -118,8 +124,26 @@ export const useGmcpVitals = ({
             if (data.position === 'standing' && isCurrentlyRiding) {
                 // console.log('[GMCP] Ignoring position:standing because we are riding');
             } else {
+                const nextPosition = data.position.toLowerCase();
+                const previousPosition = lastGmcpPositionRef.current;
+                lastGmcpPositionRef.current = nextPosition;
                 setPlayerPosition(data.position);
                 playerPositionRef.current = data.position;
+
+                // Position effects are authoritative GMCP reactions only. Room
+                // descriptions frequently contain words such as “stand” or
+                // “rest”, which must never trigger sounds or stat refreshes.
+                if (!isSpectateMode && previousPosition !== null && previousPosition !== nextPosition) {
+                    const positionPitch: Record<string, number> = {
+                        sleeping: 0.8,
+                        resting: 1,
+                        sitting: 1.12,
+                        standing: 1.24,
+                        fighting: 1.24,
+                    };
+                    playEffect?.('rest', { pitch: positionPitch[nextPosition] ?? 1, skipJitter: true });
+                    sendCommand?.('info %O %D %k %A');
+                }
                 
                 // Sync combat state from position
                 if (setInCombat && !isSpectateMode) {
@@ -207,6 +231,11 @@ export const useGmcpVitals = ({
                 subrace: data.subrace ?? prev.subrace,
                 subclass: data.subclass ?? prev.subclass,
                 class: data.class ?? prev.class,
+                title: data.title ?? prev.title,
+                age: data.age !== undefined ? String(data.age) : prev.age,
+                height: data.height !== undefined ? String(data.height) : prev.height,
+                citizenships: data.citizenships !== undefined ? Number(data.citizenships) : prev.citizenships,
+                warFame: data.warFame !== undefined ? Number(data.warFame) : (data['war-fame'] !== undefined ? Number(data['war-fame']) : prev.warFame),
                 description: data.description ?? prev.description,
                 whois: data.whois ?? prev.whois
             };

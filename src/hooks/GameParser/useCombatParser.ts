@@ -40,6 +40,7 @@ export interface CombatParserDeps {
     playHitImpactSound?: (options?: { pitch?: number, volume?: number } | string) => void;
     playOofSound?: () => void;
     playEffect?: (name: string, options?: any) => void;
+    playArrowHitSound?: (options?: { pitch?: number, volume?: number }) => void;
     playSpectateHitImpactSound?: (options?: { pitch?: number, volume?: number } | string) => void;
     playSpectateOofSound?: () => void;
     setInCombat?: (inCombat: boolean, force?: boolean) => void;
@@ -75,11 +76,11 @@ export function useCombatParser(deps: CombatParserDeps) {
             cleanLine.includes('<hit>') || cleanLine.includes('<damage>') ||
             /<avoid_damage\b/i.test(cleanLine) || /<miss\b/i.test(cleanLine)
         );
-        const isSpecificCharge = /^you charge\b/i.test(cleanLower) || /\bcharges? (?:at|towards) you\b/i.test(cleanLower);
+        const isSpecificChargeOrShoot = /^you (?:charge|shoot)\b/i.test(cleanLower) || /\bcharges? (?:at|towards) you\b/i.test(cleanLower);
         const hasXmlTag = !!cleanLine && /<[a-zA-Z_]+[ >]/i.test(cleanLine);
-        if (hasXmlTag && !hasCombatTag && !isSpecificCharge) return { isMatch: false };
+        if (hasXmlTag && !hasCombatTag && !isSpecificChargeOrShoot) return { isMatch: false };
 
-        const isMatch = hasCombatTag || isSpecificCharge || isPlayerAttemptAvoidedLine(cleanLower) || isPlayerFailedAttackLine(cleanLower) || isOpponentFailedAttackLine(cleanLower) || (inCombatRef.current && (COMBAT_REGEX.test(cleanLower) || cleanLower.includes('dodge') || cleanLower.includes('parry') || cleanLower.includes('flee') || cleanLower.includes('fail')));
+        const isMatch = hasCombatTag || isSpecificChargeOrShoot || isPlayerAttemptAvoidedLine(cleanLower) || isPlayerFailedAttackLine(cleanLower) || isOpponentFailedAttackLine(cleanLower) || (inCombatRef.current && (COMBAT_REGEX.test(cleanLower) || cleanLower.includes('dodge') || cleanLower.includes('parry') || cleanLower.includes('flee') || cleanLower.includes('fail')));
         
         if (!isMatch) return { isMatch: false };
 
@@ -154,31 +155,21 @@ export function useCombatParser(deps: CombatParserDeps) {
         const isDeath = /you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) || /\bis dead!\s*r\.?i\.?p/i.test(lower);
         const isCombatEnd = isDeath || isFlee || /\bflees\s/i.test(lower) || /you stop fighting/i.test(lower);
 
+        if (/you are dead/i.test(lower) && setDeathRoomId && mapperRef?.current) {
+            const currentRoom = mapperRef.current.getCurrentRoom?.();
+            if (currentRoom?.id) setDeathRoomId(currentRoom.id.toString());
+        }
+
         if (isCombatEnd) {
             if (isSnoop && setSpectateInCombat) {
                 setSpectateInCombat(false, true);
                 setSpectateOpponentStatus?.(null);
                 setSpectateOpponentName?.(null);
             } else {
-                // Clear the opponent HUD display on unambiguous exit signals.
                 setOpponentHealthStatus(null);
                 setOpponentName(null);
             }
-            
-            if (/you are dead/i.test(lower) && setDeathRoomId && mapperRef?.current) {
-                const currentRoom = mapperRef.current.getCurrentRoom?.();
-                if (currentRoom?.id) {
-                    setDeathRoomId(currentRoom.id.toString());
-                }
-            }
-            
             return true;
-        } else if (/you are dead/i.test(lower) && setDeathRoomId && mapperRef?.current) {
-            // Also check for death even if not "in combat" (e.g. trap, fall)
-            const currentRoom = mapperRef.current.getCurrentRoom?.();
-            if (currentRoom?.id) {
-                setDeathRoomId(currentRoom.id.toString());
-            }
         }
         return false;
     }, [inCombatRef, setOpponentHealthStatus, setOpponentName, setDeathRoomId, mapperRef, setSpectateInCombat, setSpectateOpponentStatus, setSpectateOpponentName, playKillSound, playEffect]);
@@ -247,9 +238,27 @@ export function useCombatParser(deps: CombatParserDeps) {
             const isPlayerFailedAttack = isPlayerFailedAttackLine(lower);
             const isOpponentFailedAttack = isOpponentFailedAttackLine(lower);
 
+            const cleanLower = lower.replace(/^[\s\*]+/, '').trim();
+            const isPlayerShoot = /^you shoot\b/i.test(cleanLower);
+            const isUserInvolved = match.side === 'player' || match.isPlayerTarget;
+            const isMissOrAvoid = hasMissTag || hasAvoidDamageTag || isPlayerAvoidedAttempt || isPlayerFailedAttack || isOpponentFailedAttack || /\byou miss\b/i.test(lower) || /\bmisses you\b/i.test(lower) || /\byou (?:dodge|parry|deflect|evade|block|avoid)\b/i.test(lower) || (isPlayerShoot && /\b(?:miss|misses|missed|fails?)\b/i.test(lower));
+            const isPlayerShootHit = isPlayerShoot && !isMissOrAvoid && (hasHitTag || !lower.includes(' shoot at '));
+
+            const playArrowHit = () => {
+                if (deps.playArrowHitSound) deps.playArrowHitSound();
+                else deps.playEffect?.('arrowhit');
+            };
+
             if (hasHitTag) {
-                if (isSnoop) deps.playSpectateHitImpactSound?.(match.modifier);
-                else deps.playHitImpactSound?.(match.modifier);
+                if (isSnoop) {
+                    deps.playSpectateHitImpactSound?.(match.modifier);
+                } else if (isPlayerShootHit) {
+                    playArrowHit();
+                } else {
+                    deps.playHitImpactSound?.(match.modifier);
+                }
+            } else if (!isSnoop && isPlayerShootHit) {
+                playArrowHit();
             }
 
             if (hasDamageTag) {
@@ -257,11 +266,8 @@ export function useCombatParser(deps: CombatParserDeps) {
                 else deps.playOofSound?.();
             }
 
-            const isUserInvolved = match.side === 'player' || match.isPlayerTarget;
-            const isMissOrAvoid = hasMissTag || hasAvoidDamageTag || isPlayerAvoidedAttempt || isPlayerFailedAttack || isOpponentFailedAttack || /\byou miss\b/i.test(lower) || /\bmisses you\b/i.test(lower) || /\byou (?:dodge|parry|deflect|evade|block|avoid)\b/i.test(lower);
-
             if (!isSnoop && isUserInvolved && isMissOrAvoid) {
-                deps.playEffect?.('miss', { volume: 0.85 });
+                deps.playEffect?.('miss');
             }
 
             if (!isSnoop && (isPlayerAvoidedAttempt || isPlayerFailedAttack)) {

@@ -1,15 +1,21 @@
 /**
  * @file PromptModeIndicators.tsx
- * @description Interactive MUME prompt indicators backed by the shared slider popouts.
+ * @description Interactive MUME prompt indicators for movement, stance, and combat ratings.
  */
 
 // --- Logic Section ---
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useGame } from '../../context/GameContext';
+import { useGame, useUI } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { CombatSliderPopout } from '../Combat/CombatSliderPopout';
 import { DispositionSliderPopout, DispositionSliderConfig } from '../HUD/DispositionSliderPopout';
 import { PromptAffectedIndicators } from './PromptAffectedIndicators';
+import { calculateEquipmentSpellStats } from '../../utils/equipmentSpellStatsUtils';
+import { audioManager } from '../../services/audio/audioManager';
+import PromptMovementGroup, { MovementIndicatorItem } from '../HUD/PromptMovementGroup';
+import PromptStanceGroup, { StanceItem } from '../HUD/PromptStanceGroup';
+import PromptCombatStatsGroup, { CombatStatItem } from '../HUD/PromptCombatStatsGroup';
+import { PromptTargetSelector } from '../HUD/PromptTargetSelector';
 
 const MOOD_OPTIONS = ['wimpy', 'prudent', 'normal', 'brave', 'aggressive', 'berserk'];
 const MOOD_LABELS = ['WIMPY', 'PRUDENT', 'NORMAL', 'BRAVE', 'AGGRESSIVE', 'BERSERK'];
@@ -20,17 +26,27 @@ const ALERT_LABELS = ['NORMAL', 'CAREFUL', 'ATTENTIVE', 'VIGILANT', 'PARANOID'];
 const POSITION_OPTIONS = ['sleeping', 'resting', 'sitting', 'standing'];
 
 const POSITION_CODES: Record<string, number> = {
-    dying: 1,
-    incapacitated: 2,
-    stunned: 3,
-    sleeping: 4,
-    resting: 5,
-    sitting: 6,
-    fighting: 7,
-    standing: 8
+    dying: 1, incapacitated: 2, stunned: 3, sleeping: 4,
+    resting: 5, sitting: 6, fighting: 7, standing: 8
 };
 
 const POSITION_SLIDER_CODES = POSITION_OPTIONS.map(opt => POSITION_CODES[opt]);
+
+// A server prompt can replace this component just as an info response updates
+// combat values. Keep the comparison baseline across prompt instances.
+let lastRenderedCombatStats: Record<string, number | undefined> | null = null;
+let lastRenderedModeValues: Record<string, string> | null = null;
+let renderedModeAnimationKeys: Record<string, number> = {};
+
+const formatShortName = (val: string, map: Record<string, string>): string => {
+    const key = (val || '').toLowerCase();
+    return map[key] || (val ? `${val.charAt(0).toUpperCase()}${val.slice(1, 4)}` : 'Norm');
+};
+
+const MOOD_SHORT: Record<string, string> = { wimpy: 'Wimpy', prudent: 'Prud', normal: 'Norm', brave: 'Brave', aggressive: 'Aggr', berserk: 'Zerk' };
+const SPEED_SHORT: Record<string, string> = { quick: 'Quick', fast: 'Fast', normal: 'Norm', careful: 'Care', thorough: 'Thor' };
+const ALERT_SHORT: Record<string, string> = { normal: 'Norm', careful: 'Care', attentive: 'Attn', vigilant: 'Vigi', paranoid: 'Para' };
+const POS_SHORT: Record<string, string> = { sleeping: 'Sleep', resting: 'Rest', sitting: 'Sit', standing: 'Stand' };
 
 const getOptionCode = (value: string, options: string[]): number => {
     const normalized = value.toLowerCase();
@@ -40,40 +56,18 @@ const getOptionCode = (value: string, options: string[]): number => {
     return prefixIndex >= 0 ? prefixIndex + 1 : 1;
 };
 
-const PromptIndicatorButton: React.FC<{
-    label: string;
-    title: string;
-    onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
-    active?: boolean;
-    className?: string;
-}> = ({ label, title, onClick, active = false, className = '' }) => (
-    <button
-        type="button"
-        className={`prompt-mode-indicator ${className}${active ? ' active' : ''}`.trim()}
-        title={title}
-        aria-label={title}
-        onClick={onClick}
-    >
-        {label}
-    </button>
-);
-
 // --- Render Section ---
 export const PromptModeIndicators: React.FC = () => {
     const {
-        executeCommand,
-        mood,
-        setMood,
-        spellSpeed,
-        setSpellSpeed,
-        alertness,
-        setAlertness,
-        setPlayerPosition,
-        triggerHaptic,
-        playEffect,
+        executeCommand, mood, setMood, spellSpeed, setSpellSpeed,
+        alertness, setAlertness, setPlayerPosition, triggerHaptic,
         isSpectateMode
     } = useGame();
+    const { displayEqLines } = useUI();
     const vitals = useActiveVitals();
+    const equipmentSpellStats = calculateEquipmentSpellStats(
+        displayEqLines.filter(line => line.isItem).map(line => line.rawText || line.text)
+    );
     const [activeSlider, setActiveSlider] = useState<'position' | 'mood' | 'speed' | 'alert' | null>(null);
     const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
 
@@ -103,7 +97,7 @@ export const PromptModeIndicators: React.FC = () => {
             executeCommand(`cha alert ${value}`);
         }
         triggerHaptic(15);
-    }, [executeCommand, playEffect, setAlertness, setMood, setSpellSpeed, triggerHaptic]);
+    }, [executeCommand, setAlertness, setMood, setSpellSpeed, triggerHaptic]);
 
     const handlePositionSelect = useCallback((value: string, index: number) => {
         const currentPosition = vitals.position.toLowerCase();
@@ -111,62 +105,64 @@ export const PromptModeIndicators: React.FC = () => {
         setPlayerPosition(value);
         executeCommand(value === 'sleeping' ? 'sleep' : value === 'resting' ? 'rest' : value === 'sitting' ? 'sit' : 'stand');
         triggerHaptic(15);
-        playEffect('slider');
-    }, [executeCommand, playEffect, setPlayerPosition, triggerHaptic, vitals.position]);
+        audioManager.playEffect('slider');
+    }, [executeCommand, setPlayerPosition, triggerHaptic, vitals.position]);
 
     const handleMovementClick = useCallback((command: 'swim' | 'ride' | 'lead' | 'climb' | 'sneak', event: React.MouseEvent<HTMLButtonElement>) => {
         if (isSpectateMode) return;
         event.stopPropagation();
         triggerHaptic(10);
         executeCommand(command);
-        playEffect('slider');
-    }, [executeCommand, isSpectateMode, playEffect, triggerHaptic]);
+        audioManager.playEffect('slider');
+    }, [executeCommand, isSpectateMode, triggerHaptic]);
 
     const position = vitals.position.toLowerCase();
     const moodCode = getOptionCode(mood || 'normal', MOOD_OPTIONS);
     const speedCode = getOptionCode(spellSpeed || 'normal', SPEED_OPTIONS);
     const alertCode = getOptionCode(alertness || 'normal', ALERT_OPTIONS);
     const positionCode = POSITION_CODES[position] || POSITION_CODES.standing;
-    const previousModeValuesRef = useRef<Record<string, string> | null>(null);
     const [modeAnimationKeys, setModeAnimationKeys] = useState<Record<string, number>>({});
     const modeValues = useMemo(() => ({
-        position,
-        alertness: alertness || 'normal',
-        speed: spellSpeed || 'normal',
-        mood: mood || 'normal'
+        position, alertness: alertness || 'normal', speed: spellSpeed || 'normal', mood: mood || 'normal'
     }), [alertness, mood, position, spellSpeed]);
 
     useEffect(() => {
-        const previousValues = previousModeValuesRef.current;
+        const previousValues = lastRenderedModeValues;
         if (previousValues) {
             const changedModes = Object.keys(modeValues).filter(mode => previousValues[mode] !== modeValues[mode]);
             if (changedModes.length > 0) {
                 setModeAnimationKeys(current => {
                     const next = { ...current };
-                    for (const mode of changedModes) next[mode] = (current[mode] || 0) + 1;
+                    for (const m of changedModes) {
+                        const nextKey = (renderedModeAnimationKeys[m] || 0) + 1;
+                        renderedModeAnimationKeys[m] = nextKey;
+                        next[m] = nextKey;
+                    }
                     return next;
                 });
             }
         }
-        previousModeValuesRef.current = modeValues;
+        lastRenderedModeValues = modeValues;
     }, [modeValues]);
-    const movementIndicators = [
-        { id: 'swim', label: 'W', title: vitals.isSwimming ? 'Swimming — click to toggle' : 'Swim — click to toggle', active: vitals.isSwimming, command: 'swim' as const },
-        { id: 'ride', label: 'R', title: vitals.isRiding ? 'Riding — click to lead' : 'Ride — click to ride', active: vitals.isRiding, command: (vitals.isRiding ? 'lead' : 'ride') as const },
+
+    const movementIndicators: MovementIndicatorItem[] = useMemo(() => [
+        { id: 'swim', label: 'W', title: vitals.isSwimming ? 'Swimming — click to toggle' : 'Swim — click to toggle', active: vitals.isSwimming, command: 'swim' },
+        { id: 'ride', label: 'R', title: vitals.isRiding ? 'Riding — click to lead' : 'Ride — click to ride', active: vitals.isRiding, command: (vitals.isRiding ? 'lead' : 'ride') },
         {
             id: 'climb',
             label: vitals.climb?.toLowerCase().includes('safe') ? 'c' : 'C',
             title: vitals.climb ? (vitals.climb.toLowerCase().includes('safe') ? 'Climbing safely — click to toggle' : 'Climbing — click to toggle') : 'Climb — click to toggle',
             active: Boolean(vitals.climb),
-            command: 'climb' as const
+            command: 'climb'
         },
-        { id: 'sneak', label: 'S', title: vitals.sneak ? 'Sneaking — click to toggle' : 'Sneak — click to toggle', active: Boolean(vitals.sneak), command: 'sneak' as const }
-    ];
+        { id: 'sneak', label: 'S', title: vitals.sneak ? 'Sneaking — click to toggle' : 'Sneak — click to toggle', active: Boolean(vitals.sneak), command: 'sneak' }
+    ], [vitals.climb, vitals.isRiding, vitals.isSwimming, vitals.sneak]);
+
     const previousMovementStatesRef = useRef<Record<string, boolean> | null>(null);
     const [movementAnimations, setMovementAnimations] = useState<Record<string, { direction: 'up' | 'down'; key: number }>>({});
     const movementStates = useMemo(() => Object.fromEntries(
         movementIndicators.map(({ id, active }) => [id, active])
-    ), [vitals.climb, vitals.isRiding, vitals.isSwimming, vitals.sneak]);
+    ), [movementIndicators]);
 
     useEffect(() => {
         const previousStates = previousMovementStatesRef.current;
@@ -185,17 +181,53 @@ export const PromptModeIndicators: React.FC = () => {
         previousMovementStatesRef.current = movementStates;
     }, [movementStates]);
 
-    const previousCombatStatsRef = useRef<Record<string, number | undefined> | null>(null);
+    const stanceItems: StanceItem[] = useMemo(() => [
+        {
+            id: 'position',
+            tag: `P${positionCode}`,
+            code: `P${positionCode}`,
+            text: formatShortName(position, POS_SHORT),
+            title: `Position: ${position}`,
+            isActive: activeSlider === 'position',
+            animKey: modeAnimationKeys.position
+        },
+        {
+            id: 'alert',
+            tag: `A${alertCode}`,
+            code: `A${alertCode}`,
+            text: formatShortName(alertness || 'normal', ALERT_SHORT),
+            title: `Alertness: ${alertness || 'normal'}`,
+            isActive: activeSlider === 'alert',
+            animKey: modeAnimationKeys.alertness
+        },
+        {
+            id: 'speed',
+            tag: `S${speedCode}`,
+            code: `S${speedCode}`,
+            text: formatShortName(spellSpeed || 'normal', SPEED_SHORT),
+            title: `Spell speed: ${spellSpeed || 'normal'}`,
+            isActive: activeSlider === 'speed',
+            animKey: modeAnimationKeys.speed
+        },
+        {
+            id: 'mood',
+            tag: `M${moodCode}`,
+            code: `M${moodCode}`,
+            text: formatShortName(mood || 'normal', MOOD_SHORT),
+            title: `Mood: ${mood || 'normal'}`,
+            isActive: activeSlider === 'mood',
+            animKey: modeAnimationKeys.mood
+        }
+    ], [activeSlider, alertCode, alertness, modeAnimationKeys, mood, moodCode, position, positionCode, speedCode, spellSpeed]);
+
     const [combatStatAnimations, setCombatStatAnimations] = useState<Record<string, { direction: 'up' | 'down'; key: number }>>({});
     const combatStatValues = useMemo(() => ({
-        OB: vitals.ob,
-        DB: vitals.db,
-        PB: vitals.pb,
-        ARM: vitals.armour
-    }), [vitals.armour, vitals.db, vitals.ob, vitals.pb]);
+        OB: vitals.ob, DB: vitals.db, PB: vitals.pb, ARM: vitals.armour,
+        SA: equipmentSpellStats.spellAttack, SS: equipmentSpellStats.spellSave
+    }), [equipmentSpellStats.spellAttack, equipmentSpellStats.spellSave, vitals.armour, vitals.db, vitals.ob, vitals.pb]);
 
     useEffect(() => {
-        const previousValues = previousCombatStatsRef.current;
+        const previousValues = lastRenderedCombatStats;
         if (previousValues) {
             const changes = Object.entries(combatStatValues).filter(([label, value]) =>
                 value !== undefined && previousValues[label] !== undefined && value !== previousValues[label]
@@ -213,98 +245,42 @@ export const PromptModeIndicators: React.FC = () => {
                 });
             }
         }
-        previousCombatStatsRef.current = combatStatValues;
+        lastRenderedCombatStats = combatStatValues;
     }, [combatStatValues]);
 
-    const combatStats = [
-        { label: 'OB', name: 'Offensive bonus', description: 'Improves your chance to hit and the damage of your attacks.', value: vitals.ob },
+    const combatStats: CombatStatItem[] = useMemo(() => [
+        { label: 'OB', name: 'Offensive bonus', description: 'Improves your chance to hit and attack damage.', value: vitals.ob },
         { label: 'DB', name: 'Defensive bonus', description: 'Makes you harder for opponents to hit.', value: vitals.db },
-        { label: 'PB', name: 'Parry bonus', description: 'Improves your ability to parry incoming attacks.', value: vitals.pb },
-        { label: 'ARM', name: 'Armour', description: 'Reduces the damage you take from physical attacks.', value: vitals.armour }
-    ].filter(stat => stat.value !== undefined);
+        { label: 'PB', name: 'Parry bonus', description: 'Improves ability to parry incoming attacks.', value: vitals.pb },
+        { label: 'ARM', name: 'Armour', description: 'Reduces damage taken from physical attacks.', value: vitals.armour },
+        { label: 'SA', name: 'Spell attack', description: 'Known attack-spell modifier from equipped items.', value: equipmentSpellStats.spellAttack, equipmentOnly: true },
+        { label: 'SS', name: 'Spell save', description: 'Known saving-spell modifier from equipped items.', value: equipmentSpellStats.spellSave, equipmentOnly: true }
+    ].filter(stat => stat.value !== undefined && (!stat.equipmentOnly || stat.value !== 0)), [equipmentSpellStats.spellAttack, equipmentSpellStats.spellSave, vitals.armour, vitals.db, vitals.ob, vitals.pb]);
 
     return (
-        <span className="prompt-control-group">
-            <span className="custom-prompt-prefix">[</span>
-            {movementIndicators.length > 0 && (
-                <span className="prompt-movement-indicators" aria-label="Movement states">
-                    {movementIndicators.map((indicator, index) => {
-                        const animation = movementAnimations[indicator.id];
-                        return (
-                        <React.Fragment key={indicator.id}>
-                            {index > 0 && <span className="prompt-stat-divider">|</span>}
-                            <PromptIndicatorButton
-                                key={animation?.key || 0}
-                                label={indicator.label}
-                                title={indicator.title}
-                                active={indicator.active}
-                                className={`prompt-movement-indicator${animation ? ` movement-indicator-change-${animation.direction}` : ''}`}
-                                onClick={event => handleMovementClick(indicator.command, event)}
-                            />
-                        </React.Fragment>
-                        );
-                    })}
-                </span>
-            )}
-            {movementIndicators.length > 0 && <span className="prompt-stat-divider">|</span>}
-            <span className="prompt-mode-indicators" aria-label="Character settings">
-                <PromptIndicatorButton
-                    key={modeAnimationKeys.position || 0}
-                    label={`P${positionCode}`}
-                    title={`Position: ${position}`}
-                    active={activeSlider === 'position'}
-                    className={modeAnimationKeys.position ? 'mode-indicator-change' : ''}
-                    onClick={event => openSlider('position', event)}
-                />
-                <span className="prompt-stat-divider">|</span>
-                <PromptIndicatorButton
-                    key={modeAnimationKeys.alertness || 0}
-                    label={`A${alertCode}`}
-                    title={`Alertness: ${alertness || 'normal'}`}
-                    className={modeAnimationKeys.alertness ? 'mode-indicator-change' : ''}
-                    onClick={event => openSlider('alert', event)}
-                />
-                <span className="prompt-stat-divider">|</span>
-                <PromptIndicatorButton
-                    key={modeAnimationKeys.speed || 0}
-                    label={`S${speedCode}`}
-                    title={`Spell speed: ${spellSpeed || 'normal'}`}
-                    className={modeAnimationKeys.speed ? 'mode-indicator-change' : ''}
-                    onClick={event => openSlider('speed', event)}
-                />
-                <span className="prompt-stat-divider">|</span>
-                <PromptIndicatorButton
-                    key={modeAnimationKeys.mood || 0}
-                    label={`M${moodCode}`}
-                    title={`Mood: ${mood || 'normal'}`}
-                    className={modeAnimationKeys.mood ? 'mode-indicator-change' : ''}
-                    onClick={event => openSlider('mood', event)}
-                />
-            </span>
-            {combatStats.length > 0 && <span className="prompt-stat-divider">|</span>}
-            {combatStats.length > 0 && (
-                <span className="prompt-combat-stat-indicators" aria-label="Combat statistics">
-                    {combatStats.map((stat, index) => {
-                        const animation = combatStatAnimations[stat.label];
-                        return (
-                        <React.Fragment key={stat.label}>
-                            {index > 0 && <span className="prompt-stat-divider">|</span>}
-                            <span className="prompt-stat-item" title={`${stat.name}: ${stat.description}`}>
-                                <span className="prompt-stat-label">{stat.label}</span>
-                                <span
-                                    key={animation?.key || 0}
-                                    className={`prompt-stat-value${animation ? ` combat-stat-change-${animation.direction}` : ''}`}
-                                >
-                                    {stat.value}%
-                                </span>
-                            </span>
-                        </React.Fragment>
-                        );
-                    })}
-                </span>
-            )}
-            <span className="custom-prompt-prefix">]</span>
+        <div className="prompt-controls-line">
+            <span className="prompt-line-header">Stance</span>
+            <span className="prompt-header-divider">│</span>
+            <PromptMovementGroup
+                indicators={movementIndicators}
+                animations={movementAnimations}
+                onMovementClick={handleMovementClick}
+            />
+            <span className="prompt-group-divider">│</span>
+            <PromptStanceGroup
+                items={stanceItems}
+                onItemClick={openSlider}
+            />
+            <span className="prompt-group-divider">│</span>
+            <PromptCombatStatsGroup
+                stats={combatStats}
+                animations={combatStatAnimations}
+            />
             <PromptAffectedIndicators />
+            <span className="prompt-target-end">
+                <PromptTargetSelector />
+            </span>
+
             {activeSlider === 'position' && anchorRect && (
                 <CombatSliderPopout
                     label="POSITION"
@@ -325,7 +301,7 @@ export const PromptModeIndicators: React.FC = () => {
                     onClose={() => setActiveSlider(null)}
                 />
             )}
-        </span>
+        </div>
     );
 };
 

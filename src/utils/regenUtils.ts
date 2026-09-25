@@ -14,6 +14,8 @@ interface RegenInput {
     equipped: string[];
     race?: string;
     position?: string;
+    alertness?: string;
+    conditions?: { hungry?: boolean; thirsty?: boolean };
     age?: string | number;
     attributes?: Partial<Record<'int' | 'wis' | 'dex' | 'con' | 'wil', number>>;
     timers: EffectTimer[];
@@ -46,6 +48,16 @@ const POSITION_REGEN: Record<string, number> = {
     sitting: 1,
     resting: 2,
     sleeping: 4,
+};
+
+// Estimated until verified against live server measurements. Alertness slows every
+// natural recovery channel equally.
+const ALERTNESS_REGEN: Record<string, number> = {
+    normal: 0,
+    careful: -1,
+    attentive: -2,
+    vigilant: -3,
+    paranoid: -4,
 };
 
 const AGE_REGEN = [
@@ -97,7 +109,7 @@ const ageModifier = (age: string | number | undefined, race: string) => {
 };
 
 /** Adds every known active modifier. Unknown server data is deliberately omitted. */
-export const calculateRegen = ({ equipped, race = '', position = '', age, attributes = {}, timers, now }: RegenInput): RegenTotals => {
+export const calculateRegen = ({ equipped, race = '', position = '', alertness = '', conditions, age, attributes = {}, timers, now }: RegenInput): RegenTotals => {
     const totals = emptyTotals();
     const equipmentText = equipped.join(' ').toLowerCase();
     for (const entry of EQUIPMENT_REGEN) {
@@ -108,6 +120,12 @@ export const calculateRegen = ({ equipped, race = '', position = '', age, attrib
     if (raceKey) add(totals, RACE_REGEN[raceKey]);
     const positionBonus = POSITION_REGEN[position.toLowerCase()] || 0;
     add(totals, { hp: positionBonus, mana: positionBonus, move: positionBonus });
+    const alertnessPenalty = ALERTNESS_REGEN[alertness.toLowerCase()] || 0;
+    add(totals, { hp: alertnessPenalty, mana: alertnessPenalty, move: alertnessPenalty });
+    // MUME slows all recovery when the character needs food or water. These
+    // states do not stack; until exact live measurements are available, use a
+    // shared estimated -10 modifier for any active hunger/thirst condition.
+    if (conditions?.hungry || conditions?.thirsty) add(totals, { hp: -10, mana: -10, move: -10 });
     add(totals, ageModifier(age, normalizedRace));
     add(totals, {
         hp: (attributes.con || 0) * 0.1,

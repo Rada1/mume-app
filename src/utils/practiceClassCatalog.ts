@@ -41,6 +41,41 @@ export const PRACTICE_CLASS_SKILLS: Record<PracticeClassKey, string[]> = {
     ]
 };
 
+export const PASSIVE_SKILLS = new Set([
+    'cleaving weapons', 'concussion weapons', 'slashing weapons', 'stabbing weapons',
+    'two-handed weapons', 'unarmed combat', 'parry', 'endurance', 'dodge', 'missile',
+    'piercing weapons', 'awareness', 'swim', 'wilderness', 'leadership'
+]);
+
+// Skills/spells that act on a target (offensive, heals, buffs cast on someone).
+export const TARGETED_SKILLS = new Set([
+    // ranger / thief / warrior
+    'bandage', 'command', 'dark oath', 'ride', 'track',
+    'attack', 'backstab', 'envenom', 'steal',
+    'bash', 'charge', 'kick', 'rescue',
+    // mage
+    'magic missile', 'armour', 'chill touch', 'burning hands', 'locate', 'shocking grasp',
+    'teleport', 'lightning bolt', 'colour spray', 'locate life', 'call lightning', 'enchant',
+    'scry', 'shield', 'charm', 'sleep', 'fireball', 'magic blast', 'dispel magic', 'silence',
+    'identify', 'portal',
+    // cleric
+    'cure light', 'smother', 'cure blindness', 'protection from evil', 'bless', 'cure serious',
+    'blindness', 'cure disease', 'strength', 'poison', 'summon', 'cure critic', 'cure critical',
+    'remove poison', 'curse', 'remove curse', 'black breath', 'dispel evil', 'energy drain',
+    'heal', 'transfer', 'fear', 'harm', 'hold', 'raise dead', 'sanctuary'
+]);
+
+/** Counts learned class skills/spells from the current proficiency map. */
+export const getLearnedClassSkillCounts = (abilities: Record<string, number>): Record<PracticeClassKey, number> => {
+    const counts = {} as Record<PracticeClassKey, number>;
+    for (const classKey of Object.keys(PRACTICE_CLASS_SKILLS) as PracticeClassKey[]) {
+        counts[classKey] = PRACTICE_CLASS_SKILLS[classKey]
+            .filter(skill => (abilities[skill.toLowerCase()] ?? 0) > 0)
+            .length;
+    }
+    return counts;
+};
+
 const normalizePracticeName = (name: string): string => name
     .replace(/\([^)]*\)/g, '')
     .replace(/[^\w\s-]/g, '')
@@ -89,4 +124,3 @@ export const getGuildClassFromFlags = (flags: Array<string | undefined | null> |
     }
     return null;
 };
-

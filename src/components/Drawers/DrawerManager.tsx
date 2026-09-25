@@ -12,6 +12,9 @@ import { Lock, Compass } from 'lucide-react';
 import { DrawerResizeHandle } from './DrawerResizeHandle';
 import { AccountDrawer } from './AccountDrawer';
 import { CharacterCard } from '../HUD/CharacterCard';
+import { MapRoomInfoFooter } from '../HUD/MapRoomInfoFooter';
+import { MapRoomInfoHeader } from '../HUD/MapRoomInfoHeader';
+import { MovementPad } from '../HUD/MovementPad';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import './PlaceholderDrawers.css';
 
@@ -113,15 +116,10 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             {!viewport.isMobile && (
                 <div className="left-drawer-stack open">
+                    <DrawerResizeHandle handleType="right" widthVar="--desktop-map-width" minWidth={15} maxWidth={45} />
                     <div className="map-drawer-desktop open" style={{ opacity: mapDrawerOpacity } as React.CSSProperties}>
-                        <DrawerResizeHandle handleType="left" widthVar="--desktop-map-width" leftVar="--desktop-map-left" />
-                        <DrawerResizeHandle handleType="right" widthVar="--desktop-map-width" />
-                        <div className="drawer-header">
-                            <span className="drawer-title">
-                                Map & Room
-                            </span>
-                        </div>
                         <div className="drawer-content" style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                            <MapRoomInfoHeader />
                             {/* Pinned Full Map Canvas */}
                             <div className="map-canvas-full-viewport" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 1 }}>
                                 <Mapper
@@ -135,21 +133,6 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                                     setCommandPreview={setCommandPreview}
                                 />
 
-                                {/* Floating Opacity Slider */}
-                                <div className="map-opacity-slider-container" onPointerDown={(e) => e.stopPropagation()}>
-                                    <span className="map-opacity-label">Opacity:</span>
-                                    <input
-                                        type="range"
-                                        min="0.2"
-                                        max="1.0"
-                                        step="0.05"
-                                        value={mapDrawerOpacity}
-                                        onChange={(e) => setMapDrawerOpacity(parseFloat(e.target.value))}
-                                        className="map-opacity-slider"
-                                    />
-                                    <span className="map-opacity-value">{Math.round(mapDrawerOpacity * 100)}%</span>
-                                </div>
-
                                 {gameState === 'account' && (
                                     <div className="map-placeholder-overlay">
                                         <div className="map-placeholder-icon-ring">
@@ -160,7 +143,13 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                                     </div>
                                  )}
                             </div>
-
+                            {gameState === 'playing' && (
+                                <div className="map-movement-controls" aria-label="Map movement controls">
+                                    <span className="map-movement-label">move</span>
+                                    <MovementPad />
+                                </div>
+                            )}
+                            <MapRoomInfoFooter />
                         </div>
                     </div>
                 </div>
@@ -171,73 +160,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 rather than nested inside .left-drawer-stack, so it isn't at the mercy of that
                 ancestor's percentage-height resolution — it fills the gap below the map drawer
                 (between its bottom edge and the terrain strip) with its own explicit sizing. */}
-            {!viewport.isMobile && (
-                // Frosted-glass backdrop for the whole bottom band (stat bar + input box +
-                // the map/character drawer gap-fillers). Rendered at this same top level
-                // (rather than inside .content-layer, which sits at z-index 5000 as a whole
-                // stacking context) so a low z-index here actually puts it behind the action
-                // box / actions-slot content instead of blurring it from the front.
-                <div
-                    className="app-bottom-glass-strip"
-                    style={{
-                        position: 'fixed',
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        height: 'var(--log-terrain-bottom-offset, 0px)',
-                        zIndex: 2000,
-                        pointerEvents: 'none'
-                    }}
-                />
-            )}
 
-            {!viewport.isMobile && (
-                <div className="right-drawer-stack open">
-                    <div
-                        className="character-drawer-desktop open"
-                        style={{
-                            opacity: characterDrawerOpacity,
-                            ...(!isImmersionMode ? { filter: 'grayscale(100%)' } : {})
-                        } as React.CSSProperties}
-                    >
-                        <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" />
-                        <DrawerResizeHandle handleType="right" widthVar="--desktop-character-width" rightVar="--desktop-character-right" />
-                        <div className="drawer-header">
-                            <span className="drawer-title">
-                                Character
-                            </span>
-                        </div>
-                        <div className="drawer-content character-drawer-content" style={{ position: 'relative' }}>
-                            <CharacterCard embedded forceOpen />
-
-                            {/* Floating Opacity Slider */}
-                            <div className="character-opacity-slider-container" onPointerDown={(e) => e.stopPropagation()}>
-                                <span className="character-opacity-label">Opacity:</span>
-                                <input
-                                    type="range"
-                                    min="0.1"
-                                    max="1.0"
-                                    step="0.05"
-                                    value={characterDrawerOpacity}
-                                    onChange={(e) => setCharacterDrawerOpacity(parseFloat(e.target.value))}
-                                    className="character-opacity-slider"
-                                />
-                                <span className="character-opacity-value">{Math.round(characterDrawerOpacity * 100)}%</span>
-                            </div>
-
-                            {gameState === 'account' && (
-                                <div className="character-card-locked-overlay">
-                                    <div className="character-card-locked-icon-ring">
-                                        <Lock size={20} />
-                                    </div>
-                                    <span className="character-card-locked-title">Character Status</span>
-                                    <span className="character-card-locked-subtitle">Log in to activate character profile</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* Account Drawer — mobile only; desktop uses the AccountDeck in the bottom bar. */}
             {viewport.isMobile && (

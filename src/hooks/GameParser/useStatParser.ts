@@ -6,6 +6,8 @@
 import { useCallback } from 'react';
 import { GameStats, CharacterInfo } from '../../types';
 import { useVitalsStore } from '../../stores/useVitalsStore';
+import { parseCitizenshipAgeWarFameInfo } from '../../utils/characterInfoUtils';
+import { consumeCharacterInfoRefreshLine } from '../../utils/characterInfoRefreshTracker';
 
 export interface StatParserDeps {
     setMood: (val: string) => void;
@@ -27,6 +29,15 @@ export function useStatParser(deps: StatParserDeps) {
     } = deps;
 
     const parseGlobalStatus = useCallback((content: string, contentLower: string) => {
+        const refreshedCharacterInfo = consumeCharacterInfoRefreshLine(content);
+        if (refreshedCharacterInfo) {
+            if (refreshedCharacterInfo.wimpy !== undefined) {
+                setStats(prev => ({ ...prev, wimpy: refreshedCharacterInfo.wimpy }));
+            }
+            setCharacterInfo(prev => ({ ...prev, ...refreshedCharacterInfo }));
+            return true;
+        }
+
         // --- LEVEL COMMAND PARSER ---
         const levelMatch = content.match(/^Level\s+(\d+)\s+([\d,]+)\s+exp,\s+([\d,]+)\s+tp/i);
         if (levelMatch) {
@@ -67,9 +78,10 @@ export function useStatParser(deps: StatParserDeps) {
             const armorMatch = content.match(/\b(?:Armo?ur|Armor|Arm)\s*(?:=|:|is)?\s*(-?\d+)(?:%)?/i);
             const moodMatch = content.match(/your mood is (?:now )?(\w+)/i);
             const moodCompactMatch = content.match(/\bMood\s*:\s*(\w+)/i);
-            const wimpyMatch = content.match(/Wimpy(?:\s*set\s*to|:)?\s*(\d+)/i);
+            const wimpyMatch = content.match(/Wimpy(?:\s*(?:is\s*)?set\s*to|:)?\s*(\d+|off|brave)/i);
+            const wVal = wimpyMatch ? (/^(?:off|brave)$/i.test(wimpyMatch[1]) ? 0 : parseInt(wimpyMatch[1], 10)) : undefined;
 
-            if (obMatch || dbMatch || pbMatch || armorMatch || moodMatch || moodCompactMatch || wimpyMatch) {
+            if (obMatch || dbMatch || pbMatch || armorMatch || moodMatch || moodCompactMatch || wVal !== undefined) {
                 const moodValue = moodMatch ? moodMatch[1] : (moodCompactMatch ? moodCompactMatch[1] : null);
                 if (moodValue) {
                     setMood(moodValue.toLowerCase());
@@ -85,41 +97,25 @@ export function useStatParser(deps: StatParserDeps) {
                     ...(dbMatch && { db: parseInt(dbMatch[1]) }),
                     ...(pbMatch && { pb: parseInt(pbMatch[1]) }),
                     ...(armorMatch && { armour: parseInt(armorMatch[1]) }),
-                    ...(wimpyMatch && { wimpy: parseInt(wimpyMatch[1]) }),
+                    ...(wVal !== undefined && { wimpy: wVal }),
                 }));
                 return true;
             }
         }
 
-        // --- GOLD PARSER ---
-        const cleanContentBase = content.replace(/(\d),(\d)/g, '$1$2');
-        const trimmed = cleanContentBase.trim();
-        const isRawNumeric = /^\d+$/.test(trimmed);
-        const hasGoldKeywords = contentLower.includes('gold') || contentLower.includes('silver') || contentLower.includes('copper') ||
-                              contentLower.includes('lauren') || contentLower.includes('celeb') || contentLower.includes('busc');
-        
-        if (hasGoldKeywords || isRawNumeric) {
-            if (isRawNumeric) {
-                const g = parseInt(trimmed);
-                const total = g * 240;
-                setCharacterInfo(prev => ({ ...prev, gold: total }));
-                return true;
-            }
-
-            const cleanContent = cleanContentBase.replace(/[,:]/g, ' '); 
-            const goldM = cleanContent.match(/(\d+)\s*(?:gold|lauren)/i);
-            const silverM = cleanContent.match(/(\d+)\s*(?:silver|celeb)/i);
-            const copperM = cleanContent.match(/(\d+)\s*(?:copper|busc|pennies?|coins?|coins?)/i);
-            
-            if (goldM || silverM || copperM) {
-                const g = goldM ? parseInt(goldM[1]) : 0;
-                const s = silverM ? parseInt(silverM[1]) : 0;
-                const c = copperM ? parseInt(copperM[1]) : 0;
-                const total = (g * 240) + (s * 12) + c;
-                setCharacterInfo(prev => ({ ...prev, gold: total }));
-                return true;
-            }
+        // Compact `info %c %a %K`: citizenship count, age, and war fame.
+        // The same values may also arrive as named GMCP fields.
+        const compactCharacterInfo = parseCitizenshipAgeWarFameInfo(content);
+        if (compactCharacterInfo) {
+            setCharacterInfo(prev => ({
+                ...prev,
+                ...compactCharacterInfo
+            }));
+            return true;
         }
+
+        // Gold is intentionally updated only by the tracked `info %g` response.
+        // Score text and arbitrary numeric output must never alter the panel total.
 
         return false;
     }, [setMood, setStats, setCharacterInfo, inCombatRef, executeCommandRef]);
@@ -128,6 +124,19 @@ export function useStatParser(deps: StatParserDeps) {
         const trimmed = content.trim();
         // `info %O %D %k %A` may include percent signs and negative modifiers.
         // Accept both its bare compact form and its formatted variant.
+        const match5 = trimmed.match(/^(-?\d+)%?\s+(-?\d+)%?\s+(-?\d+)%?\s+(-?\d+)%?\s+(-?\d+)%?$/);
+        if (match5) {
+            setStats(prev => ({
+                ...prev,
+                ob: parseInt(match5[1]),
+                db: parseInt(match5[2]),
+                pb: parseInt(match5[3]),
+                armour: parseInt(match5[4]),
+                wimpy: parseInt(match5[5])
+            }));
+            return true;
+        }
+
         const match = trimmed.match(/^(-?\d+)%?\s+(-?\d+)%?\s+(-?\d+)%?\s+(-?\d+)%?$/);
         if (!match) return false;
 

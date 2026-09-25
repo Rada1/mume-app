@@ -459,10 +459,53 @@
            so the drawer sits between the sky-art strip and the terrain strip instead of
            overlapping them. */
         top: var(--log-sky-top-offset, 0px) !important;
-        bottom: var(--log-terrain-bottom-offset, 0px) !important;
+        bottom: 0 !important;
         width: var(--desktop-map-width, calc((100vw - clamp(600px, 38vw, 1000px)) / 2 - 2vw));
         gap: 0 !important;
+        padding: 8px 0 8px 8px !important;
+        box-sizing: border-box !important;
+        pointer-events: auto !important;
+        display: flex !important;
+        z-index: var(--z-drawer, 3000);
     }
+
+    .left-drawer-stack .drawer-resize-handle--right,
+    .map-drawer-desktop .drawer-resize-handle--right {
+        position: absolute;
+        right: -6px;
+        top: 0;
+        bottom: 0;
+        width: 12px;
+        cursor: ew-resize;
+        z-index: 10000;
+        display: block !important;
+        pointer-events: auto !important;
+    }
+
+    .left-drawer-stack .drawer-resize-handle--right::after,
+    .map-drawer-desktop .drawer-resize-handle--right::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 5px;
+        width: 2px;
+        background: transparent;
+        transition: background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .left-drawer-stack .drawer-resize-handle--right:hover::after,
+    .left-drawer-stack .drawer-resize-handle--right:active::after,
+    .left-drawer-stack .drawer-resize-handle--right.is-hovered::after,
+    .left-drawer-stack .drawer-resize-handle--right.is-active::after,
+    .map-drawer-desktop .drawer-resize-handle--right:hover::after,
+    .map-drawer-desktop .drawer-resize-handle--right:active::after,
+    .map-drawer-desktop .drawer-resize-handle--right.is-hovered::after,
+    .map-drawer-desktop .drawer-resize-handle--right.is-active::after {
+        background: rgba(201, 168, 76, 0.7);
+        box-shadow: 0 0 8px rgba(201, 168, 76, 0.5);
+    }
+
 
     .left-drawer-stack .map-drawer-desktop {
         position: relative;
@@ -474,12 +517,13 @@
         flex: 1 1 auto;
         min-height: 260px;
         pointer-events: auto;
-        border-radius: 0 !important;
-        border: none !important;
-        background: transparent !important;
-        box-shadow: none !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
+        border-radius: 8px !important;
+        border: 1px solid rgba(201, 168, 76, 0.22) !important;
+        background: rgba(18, 14, 10, 0.94) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        overflow: hidden !important;
     }
 
     .left-drawer-stack .map-drawer-desktop:not(:last-child) {
@@ -523,20 +567,12 @@
    that doesn't exist. Only shown when the background image itself is
    visible, i.e. immersion mode off. */
 @media (min-width: 1025px) {
-    :is(.light-mode, .dark-mode):not(.immersion-mode) .map-drawer-desktop .drawer-content::after,
     :is(.light-mode, .dark-mode):not(.immersion-mode) .character-drawer-desktop .drawer-content::after {
         content: '';
         position: absolute;
         inset: 0;
         z-index: 150;
         pointer-events: none;
-    }
-
-    :is(.light-mode, .dark-mode):not(.immersion-mode) .map-drawer-desktop .drawer-content::after {
-        background: linear-gradient(to right, transparent calc(100% - 140px), var(--bg-app) 100%);
-    }
-
-    :is(.light-mode, .dark-mode):not(.immersion-mode) .character-drawer-desktop .drawer-content::after {
         background: linear-gradient(to left, transparent calc(100% - 140px), var(--bg-app) 100%);
     }
 }
@@ -562,12 +598,7 @@
     pointer-events: none;
 }
 
-/* Map desktop keeps the mapper and log as the only primary work surfaces. */
-@media (min-width: 1025px) {
-    body.map-drawer-open .right-drawer-stack {
-        display: none !important;
-    }
-}
+/* Right panel remains open on desktop as the action deck */
 
 .character-drawer-desktop {
     position: absolute;
@@ -605,13 +636,53 @@
 @media (min-width: 1025px) {
     .right-drawer-stack {
         right: 0 !important;
-        /* Mirrors .left-drawer-stack: match the log's actual top/bottom edges so this
-           drawer sits between the sky-art strip and the terrain strip instead of
-           overlapping them. */
         top: var(--log-sky-top-offset, 0px) !important;
-        bottom: var(--log-terrain-bottom-offset, 0px) !important;
-        width: var(--desktop-character-width, calc((100vw - clamp(600px, 38vw, 1000px)) / 2 - 2vw));
+        bottom: 0 !important;
+        width: var(--desktop-character-width, 210px);
         gap: 0 !important;
+        padding: 8px 8px 8px 0 !important;
+        box-sizing: border-box !important;
+        pointer-events: auto !important;
+        display: flex !important;
+        z-index: var(--z-drawer, 3000);
+    }
+
+    .right-drawer-stack .right-action-panel {
+        border-radius: 8px !important;
+        border: 1px solid rgba(201, 168, 76, 0.22) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+        overflow: hidden !important;
+    }
+
+    .right-drawer-stack .drawer-resize-handle--left {
+        position: absolute;
+        left: -6px;
+        top: 0;
+        bottom: 0;
+        width: 12px;
+        cursor: ew-resize;
+        z-index: 10000;
+        display: block !important;
+        pointer-events: auto !important;
+    }
+
+    .right-drawer-stack .drawer-resize-handle--left::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 5px;
+        width: 2px;
+        background: transparent;
+        transition: background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .right-drawer-stack .drawer-resize-handle--left:hover::after,
+    .right-drawer-stack .drawer-resize-handle--left:active::after,
+    .right-drawer-stack .drawer-resize-handle--left.is-hovered::after,
+    .right-drawer-stack .drawer-resize-handle--left.is-active::after {
+        background: rgba(201, 168, 76, 0.7);
+        box-shadow: 0 0 8px rgba(201, 168, 76, 0.5);
     }
 
     .right-drawer-stack .character-drawer-desktop {
@@ -851,6 +922,17 @@
 .immersion-mode .map-drawer-desktop,
 .immersion-mode .character-drawer-desktop {
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+/* Neutral glass lets the immersion scene color show through the side panels. */
+.app-container.immersion-mode .left-drawer-stack .map-drawer-desktop,
+.app-container.immersion-mode .right-drawer-stack .right-action-panel,
+.app-container.immersion-mode .character-drawer-desktop {
+    background: rgba(0, 0, 0, 0.18) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    box-shadow: none !important;
 }
 
 /* ─── Drawer Resize Handles ───────────────────────────────── */

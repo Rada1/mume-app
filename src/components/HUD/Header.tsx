@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, Store, DraftingCompass, MessageSquare, Users, Clock, UtensilsCrossed, Droplets, CloudFog } from 'lucide-react';
+import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, Store, DraftingCompass, MessageSquare, Users, TerminalSquare } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
 import { useModeStore } from '../../stores/useModeStore';
@@ -8,18 +8,18 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useSessionStore } from '../../stores/useSessionStore';
 import { useArchiveStore } from '../../stores/useArchiveStore';
 import { useHelpStore } from '../../stores/useHelpStore';
+import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { canAccessShaper } from '../../shaper/access/shaperAccess';
-import { useMumeTime } from '../../hooks/useMumeTime';
 import { getTraitsForName } from '../../utils/inlineActionModel';
+import { getOnlinePlayerCount } from '../../utils/playerCountUtils';
 
 interface HeaderProps {
     isLandscape?: boolean;
-    getLightingIcon: () => React.ReactNode;
     getWeatherIcon: () => React.ReactNode;
 }
 
-const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
+const Header: React.FC<HeaderProps> = () => {
     const {
         btn,
         teleportTargets,
@@ -34,10 +34,8 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
         roomItems,
         executeCommand,
         addMessage,
-        env,
-        isFoggy,
-        gameTime,
-        entities
+        entities,
+        whoList
     } = useGame() as any;
 
     const { setActiveMapFilter, currentRoomId, rooms, preloadedCoordsRef } = useMapper();
@@ -46,10 +44,10 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
     const mode = useModeStore();
     const isSpectating = mode.isSpectating;
     const { spectateTarget, activeView, setActiveView } = mode;
-    const { target, setTarget, characterInfo, stats } = useVitals() as any;
+    const { target, setTarget, characterInfo } = useVitals() as any;
     const {
         ui, setUI, setIsSettingsOpen, setPopoverState,
-        setSettingsTab, replayer
+        setSettingsTab, replayer, whoLines
     } = useUI();
 
     const selectedTarget = useUIStore(state => state.selectedTarget);
@@ -69,6 +67,8 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
     const isHelpOpen = useHelpStore(state => state.isOpen);
     const setIsHelpOpen = useHelpStore(state => state.setIsOpen);
     const helpData = useHelpStore(state => state.helpData);
+    const isCommandPanelOpen = useCommandPanelStore(state => state.isOpen);
+    const setIsCommandPanelOpen = useCommandPanelStore(state => state.setIsOpen);
 
     const [isEnteringTarget, setIsEnteringTarget] = useState(false);
     const [manualTargetInput, setManualTargetInput] = useState('');
@@ -78,7 +78,18 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
     const displayedSpectateName = isSpectating
         ? (activeView === 'target' ? (characterInfo.name || spectateTarget) : spectateTarget)
         : null;
-    const currentTime = useMumeTime(gameTime);
+    const onlinePlayerCount = useMemo(() => {
+        return getOnlinePlayerCount(whoList, whoLines);
+    }, [whoList, whoLines]);
+
+    useEffect(() => {
+        if (gameState !== 'playing' || status !== 'connected') return;
+        executeCommand('who', true, true, false, true);
+        const interval = setInterval(() => {
+            executeCommand('who', true, true, false, true);
+        }, 60_000);
+        return () => clearInterval(interval);
+    }, [gameState, status, executeCommand]);
 
     const getTargetColor = () => {
         if (!target) return null;
@@ -157,15 +168,6 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
         return 'var(--color-target, #facc15)';
     };
 
-    const shouldShowEnvStatus = !isAccountScreen && (
-        env?.lighting !== 'none' ||
-        env?.weather !== 'none' ||
-        isFoggy ||
-        stats?.conditions?.hungry ||
-        stats?.conditions?.thirsty ||
-        currentTime
-    );
-
     const currentRoomLoadFlags = React.useMemo(() => {
         if (!currentRoomId) return [];
         const rawId = String(currentRoomId).replace(/^m_/, '');
@@ -209,16 +211,6 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
             targetInputRef.current.focus();
         }
     }, [isEnteringTarget]);
-
-    useEffect(() => {
-        const handleTrigger = () => {
-            setIsEnteringTarget(true);
-            setManualTargetInput('');
-            triggerHaptic?.(10);
-        };
-        window.addEventListener('mume-trigger-target-input', handleTrigger);
-        return () => window.removeEventListener('mume-trigger-target-input', handleTrigger);
-    }, [triggerHaptic]);
 
     useEffect(() => {
         if (characterInfo.name) {
@@ -355,36 +347,6 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
             <div style={{ flex: 1 }} />
 
             <div className="header-right-cluster">
-            {shouldShowEnvStatus && (
-                <div className="header-env-indicator" aria-label="Time, lighting, and weather">
-                    {currentTime && (
-                        <div className="header-env-time">
-                            <Clock size={11} className="header-env-muted-icon" />
-                            <span>
-                                {currentTime.hour === 0 ? '12' : (currentTime.hour > 12 ? currentTime.hour - 12 : currentTime.hour)}
-                                :{currentTime.minute < 10 ? `0${currentTime.minute}` : currentTime.minute}
-                                {currentTime.hour >= 12 ? ' PM' : ' AM'}
-                            </span>
-                        </div>
-                    )}
-                    {stats?.conditions?.hungry && (
-                        <UtensilsCrossed size={12} className="header-env-hungry" />
-                    )}
-                    {stats?.conditions?.thirsty && (
-                        <Droplets size={12} className="header-env-thirsty" />
-                    )}
-                    <div className="header-env-icons">
-                        {getLightingIcon()}
-                        {getWeatherIcon()}
-                        {isFoggy && <CloudFog size={12} className="header-env-muted-icon" />}
-                    </div>
-                    <span className="header-env-label">
-                        {env?.lighting && env.lighting !== 'none' ? env.lighting : ''}
-                        {env?.weather && env.weather !== 'none' && env.weather !== 'clear' ? ` | ${String(env.weather).replace('-', ' ')}` : ''}
-                    </span>
-                </div>
-            )}
-
             {/* Theater Mode Banner */}
             {replayer.state.isVisible && replayer.log && (
                 <div 
@@ -473,89 +435,6 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
                     </button>
                 )}
 
-                {!isAccountScreen && (
-                <div
-                    className={`status-indicator target-selector ${target ? 'has-target' : ''} ${isEnteringTarget ? 'entering-target' : ''} ${!target ? 'clickable-target' : ''}`}
-                    style={{
-                        maxWidth: viewport.isMobile ? (isEnteringTarget ? '100px' : '80px') : 'none',
-                        minWidth: viewport.isMobile ? '40px' : '90px',
-                        overflow: 'hidden',
-                        '--glow-color': getTargetColor() || undefined
-                    } as React.CSSProperties}
-                    title={target ? "Current Target (Click to clear)" : "Click to set target"}
-                    onClick={() => {
-                        if (target) {
-                            onClearTarget();
-                            triggerHaptic(5);
-                        } else if (!isEnteringTarget) {
-                            setIsEnteringTarget(true);
-                            setManualTargetInput('');
-                            triggerHaptic(10);
-                        }
-                    }}
-                >
-                    <Crosshair size={12} style={{ flexShrink: 0 }} />
-                    <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>
-                        {isEnteringTarget ? (
-                            <input
-                                ref={targetInputRef}
-                                type="text"
-                                value={manualTargetInput}
-                                onChange={(e) => setManualTargetInput(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        if (manualTargetInput.trim()) {
-                                            setTarget(manualTargetInput.trim());
-                                            triggerHaptic?.(15);
-                                        }
-                                        setIsEnteringTarget(false);
-                                        setTimeout(() => {
-                                            const mudInput = document.getElementById('mud-input');
-                                            if (mudInput) (mudInput as HTMLElement).focus();
-                                        }, 30);
-                                    } else if (e.key === 'Escape') {
-                                        setIsEnteringTarget(false);
-                                        setTimeout(() => {
-                                            const mudInput = document.getElementById('mud-input');
-                                            if (mudInput) (mudInput as HTMLElement).focus();
-                                        }, 30);
-                                    }
-                                }}
-                                onBlur={() => {
-                                    // Small delay to allow potential Enter key processing if needed, 
-                                    // though mostly just to clean up state
-                                    setTimeout(() => setIsEnteringTarget(false), 150);
-                                }}
-                                style={{
-                                    background: 'transparent',
-                                    border: 'none',
-                                    color: 'inherit',
-                                    outline: 'none',
-                                    width: '100%',
-                                    fontSize: '0.75rem',
-                                    fontWeight: 'bold',
-                                    padding: 0,
-                                    margin: 0,
-                                    textTransform: 'uppercase'
-                                }}
-                                placeholder="..."
-                            />
-                        ) : (
-                            <span style={{ 
-                                fontWeight: 'bold', 
-                                fontSize: '0.75rem', 
-                                overflow: 'hidden', 
-                                textOverflow: 'ellipsis', 
-                                whiteSpace: 'nowrap',
-                                opacity: target ? 1 : 0.7
-                            }}>
-                                {target ? target.toUpperCase() : (viewport.isMobile ? 'TARGET' : 'NO TARGET')}
-                            </span>
-                        )}
-                    </div>
-                </div>
-                )}
-
                 {!isAccountScreen && teleportTargetsCount > 0 && (
                     <div
                         className="status-indicator"
@@ -613,15 +492,44 @@ const Header: React.FC<HeaderProps> = ({ getLightingIcon, getWeatherIcon }) => {
                         )}
 
                         <button
+                            className={`menu-toggle-btn${isCommandPanelOpen ? ' active' : ''}`}
+                            onClick={() => {
+                                setIsCommandPanelOpen(!isCommandPanelOpen);
+                                triggerHaptic?.(10);
+                            }}
+                            title="Toggle Commands Panel"
+                            aria-label="Toggle Commands Panel"
+                            aria-pressed={isCommandPanelOpen}
+                            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
+                        >
+                            <TerminalSquare size={17} />
+                        </button>
+
+                        <button
                             className={`menu-toggle-btn${showPlayersPanel ? ' active' : ''}`}
                             onClick={() => {
                                 setShowPlayersPanel(!showPlayersPanel);
                                 triggerHaptic?.(10);
                             }}
-                            title="Toggle Players Panel"
-                            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
+                            title={`Toggle Players Panel${onlinePlayerCount > 0 ? ` (${onlinePlayerCount} online)` : ''}`}
+                            aria-label={`Toggle Players Panel${onlinePlayerCount > 0 ? `, ${onlinePlayerCount} players online` : ''}`}
+                            style={{ minWidth: '32px', height: '32px', width: 'auto', padding: onlinePlayerCount > 0 ? '0 6px' : 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
                         >
                             <Users size={17} />
+                            {onlinePlayerCount > 0 && (
+                                <span
+                                    className="player-count"
+                                    style={{
+                                        fontSize: '0.75rem',
+                                        fontWeight: 700,
+                                        lineHeight: 1,
+                                        letterSpacing: '-0.02em',
+                                        fontVariantNumeric: 'tabular-nums'
+                                    }}
+                                >
+                                    {onlinePlayerCount}
+                                </span>
+                            )}
                         </button>
 
                         <button

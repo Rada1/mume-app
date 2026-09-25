@@ -82,6 +82,9 @@ export interface PopoverState {
     isCapturingConsider?: boolean;
     capturedWhoisLines?: string[];
     isCapturingWhois?: boolean;
+    // Keep the inspect-card layout visible before the player explicitly gathers
+    // look/consider data.
+    hasInspectionCard?: boolean;
     openedByHover?: boolean;
     isRoomDescription?: boolean;
 }

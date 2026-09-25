@@ -9,6 +9,7 @@ import { useActiveVitals } from '../../stores/useActiveGameState';
 
 interface OpponentRechargeTimerProps {
     lane?: 'player' | 'opponent';
+    compact?: boolean;
 }
 
 // --- Logic Section ---
@@ -26,7 +27,7 @@ const getLatestTimer = (
         .filter(Boolean)
         .sort((a, b) => b.startedAt - a.startedAt)[0] || null;
 
-const OpponentRechargeTimer: React.FC<OpponentRechargeTimerProps> = ({ lane = 'opponent' }) => {
+const OpponentRechargeTimer: React.FC<OpponentRechargeTimerProps> = ({ lane = 'opponent', compact = false }) => {
     const active = useCombatRechargeStore(state => lane === 'player' ? state.active : state.opponentActive);
     const clearExpired = useCombatRechargeStore(state => state.clearExpired);
     const isInCombat = useActiveVitals().position === 'fighting';
@@ -54,7 +55,7 @@ const OpponentRechargeTimer: React.FC<OpponentRechargeTimerProps> = ({ lane = 'o
             const elapsed = currentNow - timer.startedAt;
             setElapsedMs(elapsed);
 
-            if (elapsed < FILL_MS && currentNow < timer.staleAt) {
+            if ((compact || elapsed < FILL_MS) && currentNow < timer.staleAt) {
                 animationFrameId = requestAnimationFrame(update);
             } else {
                 setIsFull(true);
@@ -75,7 +76,7 @@ const OpponentRechargeTimer: React.FC<OpponentRechargeTimerProps> = ({ lane = 'o
             cancelAnimationFrame(animationFrameId);
             window.clearTimeout(staleTimeout);
         };
-    }, [timer, clearExpired, isInCombat]);
+    }, [timer, clearExpired, isInCombat, compact]);
 
     const getStatusAndLabel = () => {
         if (!timer) return { label: '', status: '' };
@@ -111,6 +112,10 @@ const OpponentRechargeTimer: React.FC<OpponentRechargeTimerProps> = ({ lane = 'o
     const statusColor = hasConnected || isFull
         ? '#22c55e'
         : (lane === 'player' ? '#22d3ee' : '#ef4444');
+
+    if (compact) {
+        return <span className="terminal-action-status">attacking {(elapsedMs / 1000).toFixed(1)}s</span>;
+    }
 
     return (
         <div className={`combat-recharge-pill ${lane}-recharge confidence-${timer.confidence}${isFull ? ' is-charged' : ''}${hasConnected ? ' is-connected' : ''}`}>

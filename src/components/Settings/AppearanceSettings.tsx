@@ -116,6 +116,7 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                         onChange={(e) => setFontFamily(e.target.value)}
                         style={{ width: 'auto', minWidth: '150px', fontFamily: fontFamily, fontSize: '0.9rem' }}
                     >
+                        <option value={'ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace'}>Terminal (Default)</option>
                         <option value="'Iosevka', monospace">Iosevka</option>
                         <option value="'Input Mono', monospace">Input Mono</option>
                         <option value="'Input Mono Condensed', monospace">Input Mono Condensed</option>

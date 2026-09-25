@@ -1,0 +1,317 @@
+/**
+ * @file RightActionTerminal.css
+ * @description Terminal presentation for the desktop command panel.
+ */
+
+/* --- Heading and category line --- */
+.right-action-panel .right-panel-terminal-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px 9px;
+    color: #ddbd69;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.right-panel-terminal-prompt { font-weight: 700; }
+.right-panel-terminal-count {
+    margin-left: auto;
+    color: #958b79;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.right-action-panel .right-panel-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin: -5px -5px -5px 0;
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: #b8ad96;
+    cursor: pointer;
+}
+.right-action-panel .right-panel-close:hover,
+.right-action-panel .right-panel-close:focus-visible {
+    background: rgba(201, 168, 76, 0.16);
+    color: #f0cb67;
+}
+
+.right-action-panel .right-panel-tabs {
+    gap: clamp(6px, 3vw, 17px);
+    padding: 0 16px 10px;
+    background: transparent !important;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.22);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.right-action-panel .right-panel-tab {
+    flex: 0 1 auto;
+    width: auto;
+    padding: 3px 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 12px;
+    font-weight: 400;
+    color: #958b79;
+}
+
+.right-action-panel .right-panel-tab:hover,
+.right-action-panel .right-panel-tab.is-active {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #ddbd69;
+}
+
+.right-action-panel .right-panel-tab.is-active { font-weight: 700; }
+
+/* --- Clickable command rows --- */
+.right-action-panel .right-panel-content { padding: 7px 10px 0; }
+.right-action-panel .right-panel-grid { display: flex; flex-direction: column; gap: 0; }
+.right-action-panel .right-panel-action-btn {
+    position: relative;
+    width: 100%;
+    min-height: 39px;
+    display: grid;
+    grid-template-columns: 26px minmax(55px, 1fr) minmax(80px, 1.5fr) 14px;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 7px;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid rgba(160, 135, 84, 0.13);
+    border-radius: 0;
+    box-shadow: none;
+    color: #d9cfb7;
+    transform: none;
+}
+
+.right-action-panel .action-btn-target {
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #958b79;
+    font: inherit;
+    font-size: 11px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+.right-action-panel .action-btn-target span { color: #ddbd69; }
+.right-action-panel .action-btn-target:hover span { text-decoration: underline; }
+.right-action-panel .action-target-menu {
+    position: absolute;
+    top: 100%;
+    right: 12px;
+    z-index: 30;
+    width: min(250px, calc(100% - 24px));
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 4px;
+    background: var(--bg-app, #1d1814);
+    border: 1px solid rgba(201, 168, 76, 0.35);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+}
+.right-action-panel .action-target-menu button {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 7px;
+    border: 0;
+    background: transparent;
+    color: #d9cfb7;
+    font: inherit;
+    font-size: 11px;
+    text-align: left;
+    cursor: pointer;
+}
+.right-action-panel .action-target-menu button:hover { background: rgba(221, 189, 105, 0.12); }
+.right-action-panel .action-target-menu small { color: #958b79; }
+
+.right-action-panel .right-panel-action-btn:hover,
+.right-action-panel .right-panel-action-btn:focus-visible,
+.right-action-panel .right-panel-action-btn.is-pressed,
+.right-action-panel .right-panel-action-btn:active {
+    background: rgba(221, 189, 105, 0.1);
+    border-color: rgba(160, 135, 84, 0.13);
+    box-shadow: none;
+    transform: none;
+}
+
+.right-action-panel .right-panel-action-btn.target-ready {
+    border-bottom-color: rgba(160, 135, 84, 0.13);
+    box-shadow: inset 2px 0 rgba(85, 255, 85, 0.65);
+}
+
+.right-action-panel .action-btn-key {
+    position: static;
+    font-size: 11px;
+    color: #958b79;
+    font-weight: 400;
+}
+
+.right-action-panel .action-btn-label {
+    margin: 0;
+    font-size: 13px;
+    color: inherit;
+}
+
+.right-action-panel .action-btn-syntax {
+    color: #958b79;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.right-action-panel .action-btn-enter {
+    color: #ddbd69;
+    font-size: 11px;
+    text-align: right;
+}
+
+.right-action-panel .right-panel-action-btn.is-danger .action-btn-label { color: #ee8b83; }
+.right-action-panel .right-panel-action-btn.is-danger:hover { background: rgba(238, 139, 131, 0.1); }
+
+/* --- Skills and spells use the same row rhythm --- */
+.right-action-panel .right-panel-skill-tile {
+    position: relative;
+    min-height: 39px;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 7px;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid rgba(160, 135, 84, 0.13);
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+}
+
+.right-action-panel .right-panel-skill-tile:hover,
+.right-action-panel .right-panel-skill-tile.is-pressed {
+    background: rgba(221, 189, 105, 0.1);
+    border-bottom-color: rgba(160, 135, 84, 0.13);
+    transform: none;
+}
+
+.right-action-panel .skill-tile-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 2px;
+}
+
+.right-action-panel .skill-tile-syntax {
+    font-size: 10px;
+    color: #958b79;
+    font-family: monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.right-action-panel .skill-tile-target {
+    padding: 0 0 0 3px;
+    border: 0;
+    background: transparent;
+    color: #ddbd69;
+    font: inherit;
+    cursor: pointer;
+}
+.right-action-panel .skill-tile-target:hover { text-decoration: underline; }
+
+.right-action-panel .skill-tile-mana {
+    color: #38bdf8;
+    font-weight: 600;
+    font-size: 11px;
+    margin-right: 4px;
+}
+
+.right-action-panel .skill-tile-name { font-size: 12px; color: #d9cfb7; }
+.right-action-panel .skill-tile-meta { margin: 0 0 0 auto; gap: 8px; font-size: 11px; }
+.right-action-panel .right-panel-skill-tile.is-passive { border-style: solid; }
+
+/* --- Movement and target footer --- */
+.right-action-panel .right-panel-navigation {
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: transparent !important;
+    border-top: 1px solid rgba(201, 168, 76, 0.22);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.right-panel-move-label { color: #958b79; font-size: 11px; letter-spacing: 0.12em; }
+.right-action-panel .right-panel-navigation .movement-pad {
+    grid-template-columns: repeat(3, 27px);
+    grid-template-rows: repeat(3, 26px);
+    gap: 2px;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    backdrop-filter: none;
+}
+
+.right-action-panel .right-panel-navigation .movement-pad-cell {
+    padding: 2px;
+    background: transparent;
+    border: 0;
+    border-radius: 3px;
+    box-shadow: none;
+}
+
+.right-action-panel .right-panel-navigation .movement-pad-cell:hover,
+.right-action-panel .right-panel-navigation .movement-pad-cell.is-key-pressed { background: rgba(221, 189, 105, 0.14); }
+.right-action-panel .right-panel-navigation .movement-pad-label { display: none; }
+.right-action-panel .right-panel-navigation .movement-pad-key { top: 1px; left: 2px; font-size: 6px; }
+.right-action-panel .right-panel-navigation .movement-pad-cell svg { width: 14px; height: 14px; }
+.right-action-panel .right-panel-target-bar { padding: 9px 16px; background: transparent; }
+.right-action-panel .target-bar-label { font-weight: 400; text-transform: lowercase; }
+.right-action-panel .target-bar-value { font-weight: 400; }
+.right-action-panel button.target-bar-value {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+}
+.right-action-panel .right-panel-target-bar input {
+    width: 140px;
+    border: 0;
+    border-bottom: 1px solid #ddbd69;
+    outline: 0;
+    background: transparent;
+    color: #ddbd69;
+    font: inherit;
+}
+
+.app-container.immersion-mode .right-action-panel .right-panel-tabs,
+.app-container.immersion-mode .right-action-panel .right-panel-navigation {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+@media (max-width: 300px) {
+    .right-action-panel .action-btn-syntax { display: none; }
+    .right-action-panel .right-panel-action-btn { grid-template-columns: 26px 1fr 14px; }
+    .right-action-panel .right-panel-tabs { gap: 6px; padding-inline: 8px; }
+    .right-action-panel .right-panel-tab { font-size: 10px; }
+}

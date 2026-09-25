@@ -4,8 +4,8 @@
     --accent-rgb: 212, 170, 0;
     --accent-glow: rgba(var(--accent-rgb), 0.5);
     --map-accent: #fcd34d;
-    --font-main: 'Iosevka', monospace;
-    --font-mono: 'Iosevka', monospace;
+    --font-main: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    --font-mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
     --font-title: 'Kelt', 'Cinzel', 'Aniron', 'Times New Roman', serif;
     --font-serif: 'Merriweather', 'Times New Roman', serif;
     --radius-card: 12px;
@@ -89,8 +89,8 @@
 
 @media (min-width: 1025px) {
     :root {
-        --font-main: 'Iosevka', monospace;
-        --font-mono: 'Iosevka', monospace;
+        --font-main: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+        --font-mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
     }
 }
 

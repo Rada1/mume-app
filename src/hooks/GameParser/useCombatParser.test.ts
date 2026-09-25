@@ -208,5 +208,60 @@ describe('useCombatParser - checkCombatMatch', () => {
         result.current.parseCombatLine("you flee south.", "You flee south.", true);
         expect(effectsPlayed).toHaveLength(0);
     });
+
+    it('plays arrowhit sound effect when user shoots an arrow and lands a hit', () => {
+        const effects: string[] = [];
+        let hitImpact = false;
+        let arrowHit = false;
+
+        const deps: CombatParserDeps = {
+            ...createDeps(true),
+            playEffect: (name: string) => { effects.push(name); },
+            playHitImpactSound: () => { hitImpact = true; },
+            playArrowHitSound: () => { arrowHit = true; }
+        };
+
+        const { result } = renderHook(() => useCombatParser(deps));
+
+        // 1. XML <hit> shot message triggers playArrowHitSound without generic melee sound
+        result.current.parseCombatLine("you shoot a troll.", "<hit>You shoot a troll.</hit>");
+        expect(arrowHit).toBe(true);
+        expect(hitImpact).toBe(false);
+
+        // 2. Plain text shot hit message also triggers playArrowHitSound
+        arrowHit = false;
+        result.current.parseCombatLine("you shoot a bear hard.", "You shoot a bear hard.");
+        expect(arrowHit).toBe(true);
+
+        // 3. Fallback to playEffect('arrowhit') when playArrowHitSound is absent
+        const { result: fallback } = renderHook(() => useCombatParser({ ...createDeps(), playEffect: (name) => { effects.push(name); } }));
+        fallback.current.parseCombatLine("you shoot an orc.", "<hit>You shoot an orc.</hit>");
+        expect(effects).toContain('arrowhit');
+
+        // 4. Misses do NOT play arrowhit, they play miss
+        arrowHit = false;
+        effects.length = 0;
+        result.current.parseCombatLine("you shoot at an orc, but miss.", "<miss>You shoot at an orc, but miss.</miss>");
+        expect(arrowHit).toBe(false);
+        expect(effects).toEqual(['miss']);
+
+        // 5. Plain text miss
+        effects.length = 0;
+        result.current.parseCombatLine("you shoot at a deer, but miss.", "You shoot at a deer, but miss.");
+        expect(arrowHit).toBe(false);
+        expect(effects).toEqual(['miss']);
+
+        // 6. Failed attempt
+        effects.length = 0;
+        result.current.parseCombatLine("your attempt to shoot an orc fails.", "Your attempt to shoot an orc fails.");
+        expect(arrowHit).toBe(false);
+        expect(effects).toEqual(['miss']);
+
+        // 7. Opponent shooting / snoop mode does NOT play player arrowhit
+        arrowHit = false;
+        result.current.parseCombatLine("an orc shoots an arrow at you.", "<damage>An orc shoots an arrow at you.</damage>");
+        result.current.parseCombatLine("you shoot an orc hard.", "<hit>You shoot an orc hard.</hit>", true);
+        expect(arrowHit).toBe(false);
+    });
 });
 

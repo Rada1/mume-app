@@ -1,6 +1,6 @@
 .quick-button-bar {
     position: absolute;
-    bottom: 8px;
+    bottom: 48px;
     right: 16px;
     display: flex;
     flex-direction: column;
@@ -44,9 +44,13 @@
     will-change: transform, opacity;
 }
 
-.quick-chip:active {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.35);
+.quick-chip:active,
+.quick-chip.is-key-pressed {
+    background: rgba(201, 168, 76, 0.22);
+    border-color: rgba(201, 168, 76, 0.6);
+    color: #f0dfa8;
+    transform: scale(0.95);
+    box-shadow: inset 0 0 0 1px rgba(201, 168, 76, 0.25), 0 0 10px rgba(201, 168, 76, 0.2);
 }
 
 /* The + add button */

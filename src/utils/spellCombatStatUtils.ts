@@ -9,7 +9,7 @@ const COMBAT_STAT_SPELL_PATTERNS = [
     /\byou (?:begin to feel the light of aman shine upon you|feel righteous|bless)\b/i,
     /\b(?:renewed light shine upon you|blessing .*wears off|you feel less blessed|the light of aman fades away from you)\b/i,
     // Armour application and expiry.
-    /\b(?:a blue transparent wall slowly appears|you are encased .*blue transparent wall|magic armou?r is revitalised|armou?r spell .*wears off)\b/i,
+    /\b(?:a blue transparent (?:wall|shield)(?: slowly)? appears|you are encased .*blue transparent (?:wall|shield)|magic armou?r is revitalised|armou?r spell .*wears off)\b/i,
     // Shield application and expiry.
     /\byou feel (?:protected|less protected)\b/i,
     /\bshield .*wears off\b/i,

@@ -7,9 +7,10 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    background-color: transparent;
-    border: none;
-    box-shadow: none;
+    background-color: rgba(12, 9, 6, 0.94);
+    border: 1px solid rgba(201, 168, 76, 0.35);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     margin: 0 auto;
     width: 100%;
     max-width: var(--message-log-max-width, 100%);
@@ -56,7 +57,8 @@
 .immersion-mode .message-log-container,
 .app-container.immersion-mode .message-log-container {
     background-color: transparent !important;
-    border-color: transparent !important;
+    border: 1px solid rgba(201, 168, 76, 0.14) !important;
+    border-radius: 8px !important;
     box-shadow: none !important;
 }
 
@@ -710,14 +712,20 @@
     vertical-align: baseline;
     transform-origin: 50% 80%;
     white-space: pre;
-    animation: logCharRipple 0.36s cubic-bezier(0.2, 0.8, 0.25, 1) both;
-    animation-delay: var(--reveal-delay, 0s);
 }
 
 .log-word {
     display: inline-block;
     vertical-align: baseline;
     transform-origin: 50% 80%;
+}
+
+.immersion-mode .log-char {
+    animation: logCharRipple 0.36s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+    animation-delay: var(--reveal-delay, 0s);
+}
+
+.immersion-mode .log-word {
     animation: logCharRipple 0.36s cubic-bezier(0.2, 0.8, 0.25, 1) both;
     animation-delay: var(--reveal-delay, 0s);
 }
@@ -1201,8 +1209,16 @@
     flex-shrink: 0;
 }
 
+.comm-row {
+    align-items: flex-start;
+}
+
+.comm-content {
+    cursor: pointer;
+}
+
 .comm-sender {
-    color: color-mix(in srgb, var(--text-primary, #d4cdb8) 50%, transparent) !important;
+    color: var(--text-primary, #d4cdb8);
     opacity: 1 !important;
     font-weight: normal;
     font-style: normal;
@@ -1210,107 +1226,36 @@
 }
 
 .comm-action {
-    color: var(--text-primary, #d4cdb8) !important;
-    opacity: var(--message-dim-opacity, 0.50) !important;
+    color: inherit;
+    opacity: 1 !important;
     font-style: normal;
     font-size: inherit;
 }
 
-/* In comms, only the tagged speaker is an interactive entity. Keep its gold
-   inline-button treatment while the surrounding article and speech verb stay narrative. */
-.comm-sender .inline-btn,
-.comm-sender .inline-btn * {
-    --mume-wiki-link-color: #c9a84c;
-    --glow-color: var(--mume-wiki-link-color) !important;
-    color: var(--mume-wiki-link-color) !important;
-    opacity: 1 !important;
-    font-style: normal !important;
-    text-shadow: none !important;
-}
-
-.comm-sender .inline-btn {
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--mume-wiki-link-color) 76%, #ffffff) 0%,
-        var(--mume-wiki-link-color) 100%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: opacity(1) brightness(1.15) !important;
-    animation: none !important;
-    box-shadow: none !important;
-}
-
 .comm-sender .log-text-word,
 .comm-sender > span:not(.inline-btn) {
-    color: color-mix(in srgb, var(--text-primary, #d4cdb8) 50%, transparent) !important;
+    color: var(--text-primary, #d4cdb8);
     opacity: 1 !important;
-}
-
-.comm-bubble-wrapper {
-    margin-bottom: 8px;
-}
-
-.comm-bubble-wrapper.continuation {
-    margin-top: -6px;
-    margin-bottom: 8px;
-}
-
-.comm-bubble-wrapper.continuation .comm-bubble {
-    border-radius: 6px 20px 20px 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .comm-bubble {
     background: transparent;
-    border: 1px dotted var(--bubble-color, #c9a84c);
-    border-radius: 20px 20px 20px 6px;
-    padding: 2px 8px;
-    color: var(--text-primary, #d4cdb8);
-    flex-shrink: 1;
-    width: fit-content;
-    max-width: 100%;
-    align-self: flex-start;
+    border: none;
+    border-radius: 0;
+    padding: 0;
     box-shadow: none;
-    backdrop-filter: none;
-    position: relative;
-    line-height: 1.5;
-    word-break: break-word;
-    font-family: var(--font-mono, var(--font-main));
-    font-size: 0.95em;
-    display: block;
-    margin-left: 4px;
-    animation: none !important;
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-.comm-bubble:hover {
-    background-color: color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.08)), transparent 92%) !important;
-    border-color: var(--bubble-color, #c9a84c) !important;
-    border-style: dotted !important;
-    box-shadow: 
-        0 4px 12px rgba(0, 0, 0, 0.3) !important;
-    transform: translateY(-1px);
-}
-
-.comm-bubble .message-timestamp {
-    padding-top: 0;
-    font-size: 0.75em;
-    margin-right: 6px;
-    opacity: 0.5;
 }
 
 .comm-text {
-    margin-left: 2px;
-    color: var(--text-primary, #d4cdb8) !important;
+    margin-left: 0;
+    color: var(--text-primary, #d4cdb8);
     opacity: 1 !important;
 }
 
-.comm-text span,
-.comm-text * {
+.comm-text.tell-body,
+.comm-text.tell-body .log-text-word,
+.comm-text.tell-body span:not(.inline-btn) {
     color: var(--text-primary, #d4cdb8) !important;
-    opacity: 1 !important;
 }
 
 
@@ -3422,13 +3367,15 @@ span.inline-btn {
 .immersion-mode .message-content .log-text-word,
 .immersion-mode .room-desc-line .log-text-word,
 .immersion-mode .message.movement .message-content .log-text-word,
-.immersion-mode .comm-bubble .log-text-word,
-.immersion-mode .comm-bubble .inline-btn,
-.immersion-mode .comm-bubble .comm-action,
+.immersion-mode .message-log .comm-bubble .log-text-word,
+.immersion-mode .message-log .comm-bubble .inline-btn,
+.immersion-mode .message-log .comm-bubble .comm-action,
 /* Account login and creation prompts use the same word-level wave as the
    immersive log so instructions and inline choices feel like part of the world. */
-.state-account .message-content .log-text-word,
-.state-account .message-content .inline-btn {
+.immersion-mode.state-account .message-content .log-text-word,
+.immersion-mode.state-account .message-content .inline-btn,
+.immersion-mode .state-account .message-content .log-text-word,
+.immersion-mode .state-account .message-content .inline-btn {
     display: inline-block;
     vertical-align: baseline;
     animation: continuous-text-undulate 2.8s ease-in-out infinite;
@@ -3482,12 +3429,14 @@ span.inline-btn {
     .immersion-mode .room-title-text,
     .immersion-mode .message-content .log-text-word,
     .immersion-mode .room-desc-line .log-text-word,
-    .immersion-mode .comm-bubble .log-text-word,
-    .immersion-mode .comm-bubble .inline-btn,
-    .immersion-mode .comm-bubble .comm-action,
-    .immersion-mode .custom-prompt-container .prompt-entity-inline,
-    .state-account .message-content .log-text-word,
-    .state-account .message-content .inline-btn,
+    .immersion-mode .message-log .comm-bubble .log-text-word,
+        .immersion-mode .message-log .comm-bubble .inline-btn,
+        .immersion-mode .message-log .comm-bubble .comm-action,
+        .immersion-mode .custom-prompt-container .prompt-entity-inline,
+        .immersion-mode.state-account .message-content .log-text-word,
+        .immersion-mode.state-account .message-content .inline-btn,
+        .immersion-mode .state-account .message-content .log-text-word,
+        .immersion-mode .state-account .message-content .inline-btn,
     .message-content .inline-btn[class*="inline-item-tier-"] {
         animation: none !important;
         text-shadow: none !important;
@@ -3511,4 +3460,83 @@ span.inline-btn {
     border-radius: 0;
     box-shadow: none !important;
     text-shadow: none;
+}
+
+
+/* ==========================================================================
+   When Immersion Mode is disabled, turn off decorative log text animations
+   (focus-reveal remains universal across modes).
+   ========================================================================== */
+.app-container:not(.immersion-mode) .message-log .log-text-word,
+.app-container:not(.immersion-mode) .message-log .log-char,
+.app-container:not(.immersion-mode) .message-log .log-word,
+.app-container:not(.immersion-mode) .message-log .inline-btn,
+.app-container:not(.immersion-mode) .message-log .room-name-inline,
+.app-container:not(.immersion-mode) .message-log .room-title-text {
+    animation: none !important;
+}
+
+/* ==========================================================================
+   Room Arrival Line-by-Line Jiggle Animation (Bottom-to-Top)
+   ========================================================================== */
+.immersion-mode .message.room-jiggle-active .room-title-badge {
+    display: inline-block;
+    transform-origin: left center;
+    animation: room-line-jiggle 280ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+    animation-delay: var(--room-line-delay, 0ms);
+}
+
+.immersion-mode .message.room-jiggle-active .room-desc-line {
+    transform-origin: left center;
+    animation: room-line-jiggle 280ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+    animation-delay: var(--room-line-delay, 35ms);
+}
+
+.immersion-mode .message.room-jiggle-active:not(.is-room-name) .content-row {
+    transform-origin: left center;
+    animation: room-line-jiggle 280ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+    animation-delay: var(--room-line-delay, 0ms);
+}
+
+@keyframes room-line-jiggle {
+    0% { transform: translate3d(0, 0, 0); }
+    18% { transform: translate3d(-3px, 0, 0) rotate(-0.25deg); }
+    38% { transform: translate3d(2.5px, 0, 0) rotate(0.2deg); }
+    58% { transform: translate3d(-1.2px, 0, 0) rotate(-0.08deg); }
+    78% { transform: translate3d(0.6px, 0, 0) rotate(0.04deg); }
+    100% { transform: translate3d(0, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .immersion-mode .message.room-jiggle-active .room-title-badge,
+    .immersion-mode .message.room-jiggle-active .room-desc-line,
+    .immersion-mode .message.room-jiggle-active:not(.is-room-name) .content-row {
+        animation: none !important;
+    }
+}
+
+/* --- Inline entity hover and deliberate selection --- */
+.message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not(.room-name-inline) {
+    transition: background-color 130ms ease, border-color 130ms ease, color 130ms ease;
+}
+.message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not(.room-name-inline):hover {
+    background: color-mix(in srgb, var(--glow-color, var(--accent)) 12%, transparent) !important;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    -webkit-text-fill-color: currentColor;
+    text-decoration-style: solid;
+}
+.message-content .inline-btn.selected:not(.room-name-inline),
+.message-content .inline-btn.menu-active:not(.room-name-inline) {
+    background: color-mix(in srgb, var(--glow-color, var(--accent)) 18%, transparent) !important;
+    text-decoration: underline !important;
+    text-decoration-style: solid !important;
+    text-decoration-thickness: 2px !important;
+    box-shadow: none !important;
+}
+.message-content .inline-btn.selected:not(.room-name-inline)::before,
+.message-content .inline-btn.menu-active:not(.room-name-inline)::before,
+.message-content .inline-btn.selected:not(.room-name-inline)::after,
+.message-content .inline-btn.menu-active:not(.room-name-inline)::after {
+    content: none !important;
 }

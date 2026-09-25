@@ -57,7 +57,7 @@ export const DEFAULT_MAP_BACKGROUND_VISUALS: MapBackgroundVisualAdjustments = {
     tintOpacity: 0.46,
 };
 
-const DEFAULT_FONT_FAMILY = "'Iosevka', monospace";
+const DEFAULT_FONT_FAMILY = 'ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace';
 const LEGACY_DEFAULT_FONT_FAMILY = "'Roboto Mono', monospace";
 
 interface SettingsState {
@@ -117,6 +117,7 @@ interface SettingsState {
     showMapperToolbar: boolean;
     isTextRevealEnabled: boolean;
     showBackgroundImage: boolean;
+    showTerrainTiles: boolean;
     useLegacyMapArt: boolean;
     mapDrawerOpacity: number;
     characterDrawerOpacity: number;
@@ -184,6 +185,7 @@ interface SettingsState {
     setShowMapperToolbar: (val: boolean) => void;
     setIsTextRevealEnabled: (val: boolean) => void;
     setShowBackgroundImage: (val: boolean) => void;
+    setShowTerrainTiles: (val: boolean) => void;
     setUseLegacyMapArt: (val: boolean) => void;
     setMapDrawerOpacity: (val: number) => void;
     setMapTileVisuals: (val: Partial<MapTileVisualAdjustments>) => void;
@@ -298,7 +300,7 @@ export const useSettingsStore = create<SettingsState>()(
             showControls: true,
             showOrganicTerrain: true,
             hidePrompt: false,
-            showBlockHeaders: true,
+            showBlockHeaders: false,
             
             isSoundEnabled: true,
             isDiscordEnabled: true,
@@ -324,6 +326,7 @@ export const useSettingsStore = create<SettingsState>()(
             showMapperToolbar: false,
             isTextRevealEnabled: false,
             showBackgroundImage: true,
+            showTerrainTiles: true,
             useLegacyMapArt: true,
             mapDrawerOpacity: 1.0,
             characterDrawerOpacity: 1.0,
@@ -430,6 +433,7 @@ export const useSettingsStore = create<SettingsState>()(
             setShowMapperToolbar: (showMapperToolbar) => set({ showMapperToolbar }),
             setIsTextRevealEnabled: (isTextRevealEnabled) => set({ isTextRevealEnabled }),
             setShowBackgroundImage: (showBackgroundImage) => set({ showBackgroundImage }),
+            setShowTerrainTiles: (showTerrainTiles) => set({ showTerrainTiles }),
             setUseLegacyMapArt: (useLegacyMapArt) => set({ useLegacyMapArt }),
             setMapDrawerOpacity: (mapDrawerOpacity) => set({ mapDrawerOpacity }),
             setCharacterDrawerOpacity: (characterDrawerOpacity) => set({ characterDrawerOpacity }),
@@ -476,7 +480,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 26,
+            version: 27,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -559,7 +563,7 @@ export const useSettingsStore = create<SettingsState>()(
                 
                 if (version < 9) {
                     if (persistedState.showBlockHeaders === undefined) {
-                        persistedState.showBlockHeaders = true;
+                        persistedState.showBlockHeaders = false;
                     }
                 }
 
@@ -678,6 +682,12 @@ export const useSettingsStore = create<SettingsState>()(
 
                 if (version < 26) {
                     persistedState.isImmersionMode = false;
+                }
+
+                if (version < 27) {
+                    if (!persistedState.fontFamily || persistedState.fontFamily === "'Iosevka', monospace") {
+                        persistedState.fontFamily = DEFAULT_FONT_FAMILY;
+                    }
                 }
 
                 return persistedState;

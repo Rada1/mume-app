@@ -66,6 +66,17 @@ describe('useCommParser - XML comm requirement', () => {
         expect(escapedParsed.replyTarget).toBe('Gandalf');
     });
 
+    it('keeps the entire tell body in the normal text color', () => {
+        const { result } = renderHook(() => useCommParser(createDeps()));
+        const line = "<tell>Empunr tells you: \x1b[37m'I've been attached since 2007ish but back for longer than a \x1b[92mweek since 2012ish :)'\x1b[0m</tell>";
+
+        const parsed = result.current.parseComm(line, '', line.toLowerCase());
+
+        expect(parsed.replyCommand).toBe('tell');
+        expect(parsed.commText).toBe("'I've been attached since 2007ish but back for longer than a week since 2012ish :)'");
+        expect(parsed.commColor).toBeDefined();
+    });
+
     it('keeps XML social output out of comm bubbles', () => {
         const { result } = renderHook(() => useCommParser(createDeps()));
 

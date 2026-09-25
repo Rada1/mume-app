@@ -4,7 +4,7 @@ import Rain from './Rain';
 import { Embers } from './Embers';
 import { useInputStore } from '../../stores/useInputStore';
 import { EnvironmentGlow } from './EnvironmentGlow';
-import { getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
+import { getZoneAmbientGlow } from '../../utils/zoneColors';
 
 const BACKGROUND_MAP_OPACITY = 0.18;
 const BACKGROUND_MAP_OPACITY_NO_IMMERSION = BACKGROUND_MAP_OPACITY * 0.35;
@@ -73,24 +73,24 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
         }
     }, [currentImage, triggerFade]);
 
-    // Smooth cross-fade when moving between rooms with different terrain glows
-    const currentTerrainGlow = getRoomTerrainGlowColor(terrain);
+    // Smooth cross-fade when moving between zone palettes.
+    const currentZoneGlow = getZoneAmbientGlow(zone);
     const [auraState, setAuraState] = React.useState({
-        currentGlow: currentTerrainGlow,
+        currentGlow: currentZoneGlow,
         prevGlow: null as string | null,
         triggerFade: false
     });
 
     React.useEffect(() => {
         setAuraState(prev => {
-            if (prev.currentGlow === currentTerrainGlow) return prev;
+            if (prev.currentGlow === currentZoneGlow) return prev;
             return {
                 prevGlow: prev.currentGlow,
-                currentGlow: currentTerrainGlow,
+                currentGlow: currentZoneGlow,
                 triggerFade: false
             };
         });
-    }, [currentTerrainGlow]);
+    }, [currentZoneGlow]);
 
     React.useEffect(() => {
         if (auraState.prevGlow && !auraState.triggerFade) {
@@ -178,7 +178,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                     </>
                 )}
                 {isImmersionMode && (
-                    <EnvironmentGlow terrain={terrain || undefined} lighting={lighting} input={input} />
+                    <EnvironmentGlow terrain={terrain || undefined} zone={zone} lighting={lighting} input={input} />
                 )}
                 {isImmersionMode && (
                     <div className={`storm-overlay-layer ${weather === 'heavy-rain' ? 'active' : ''}`} />

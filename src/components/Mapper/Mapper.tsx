@@ -5,7 +5,7 @@
  */
 
 import React, { useRef, useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
-import { Eye, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Eye, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useGame, useLog, useVitals, useUI } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useModeStore } from '../../stores/useModeStore';
@@ -67,13 +67,14 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const {
         triggerHaptic, executeCommand, btn, joystick, playClickSound,
         setIsTrackpadModifierActive, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode,
-        selectedObjectIds, lighting, inCombat, viewport, gameState, roomZone
+        selectedObjectIds, lighting, inCombat, viewport, gameState, roomZone,
+        roomName, currentTerrain, weather
     } = useGame();
     const { isLandscape } = viewport;
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
     const { setPopoverState, popoverState, ui } = useUI();
-    const { playerColor, npcColor, enemyColor, objectColor, targetColor, showBackgroundImage } = useSettingsStore();
+    const { playerColor, npcColor, enemyColor, objectColor, targetColor, showBackgroundImage, showTerrainTiles } = useSettingsStore();
     // The map is always rendered in dark mode regardless of the global app theme.
     const isDarkMode = true;
     const displayPlayerColor = playerColor;
@@ -262,6 +263,12 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     }, [setMarkers, setExploredMarkers]);
 
     const effectiveLighting = isImmersionMode ? (gameState === 'account' ? 'moon' : (lighting || 'none')) : 'none';
+    const clearMapRoute = useCallback(() => {
+        setActiveMapFilter(null);
+        setMapSearchQuery('');
+        setSelectedRegionLabelId(null);
+        triggerRender();
+    }, [setActiveMapFilter, setMapSearchQuery, triggerRender]);
 
     return (
         <div className={`mapper-container lighting-state-${effectiveLighting} ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''} ${(!showBackgroundImage || !isImmersionMode) ? 'no-bg-image' : ''}`} style={{ 
@@ -351,12 +358,24 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 joystickActive={joystick?.joystickActive}
             />
 
+
+
+
             {!isWalking && filterPathIds && filterPathIds.length > 1 && closestRoomId && (
                 <div 
                     className="map-go-there-popup"
                     onPointerDown={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
                 >
+                    <button
+                        className="map-go-there-close"
+                        type="button"
+                        aria-label="Clear map route"
+                        title="Clear search and route"
+                        onClick={clearMapRoute}
+                    >
+                        <X size={13} strokeWidth={2.5} />
+                    </button>
                     <div className="map-go-there-info">
                         Shortest Path: {filterPathDistance} {filterPathDistance === 1 ? 'room' : 'rooms'}
                     </div>
@@ -427,7 +446,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
                 return (
                     <>
-                        {!joystick?.joystickActive && (
+                        {!showTerrainTiles && !joystick?.joystickActive && (
                             <div className="map-swipe-hints-container">
                                 <div className={`map-swipe-hint n ${hasNorth ? 'active' : ''}`}>
                                     <ChevronUp className="hint-chevron" size={16} strokeWidth={2.8} />

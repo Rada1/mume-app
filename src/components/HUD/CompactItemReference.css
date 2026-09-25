@@ -1,0 +1,82 @@
+.compact-item-reference {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-width: 0;
+    padding: 6px 5px;
+    border: 1px solid rgba(201, 168, 76, 0.14);
+    border-radius: 7px;
+    background: rgba(20, 15, 11, 0.38);
+    color: #b8ad96;
+    font-family: var(--font-mono, monospace);
+    overflow: hidden;
+    opacity: 0.55;
+    filter: grayscale(85%);
+    transition: opacity 0.25s ease, filter 0.25s ease, border-color 0.25s ease;
+}
+
+.compact-item-reference:hover,
+.compact-item-reference:focus-within {
+    opacity: 1;
+    filter: none;
+    border-color: rgba(201, 168, 76, 0.3);
+}
+
+.compact-item-reference-title {
+    flex: 0 0 auto;
+    color: #8a7a5e;
+    font-size: 0.48rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.compact-item-reference-list {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    margin-top: 4px;
+    overflow: hidden;
+}
+
+.compact-item-reference-line,
+.compact-item-reference-empty {
+    overflow: hidden;
+    color: #c7b889;
+    font-size: 0.51rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.compact-item-reference-empty { color: #796d5c; }
+
+/* Same subtle left-to-right tier wash used by equipment links in the log. The
+   item text itself stays in the reference panel's normal object colour. */
+.compact-item-reference-line[class*="inline-item-tier-"] {
+    border-radius: 2px;
+    padding: 0 2px;
+    background:
+        linear-gradient(90deg, color-mix(in srgb, var(--inline-item-tier-color) 26%, transparent), transparent 84%),
+        color-mix(in srgb, var(--inline-item-tier-color) 9%, transparent);
+    box-shadow: none;
+}
+
+.inline-item-tier-artifact { --inline-item-tier-color: #f6c453; }
+.inline-item-tier-legendary { --inline-item-tier-color: #c9a4ff; }
+.inline-item-tier-focus { --inline-item-tier-color: #8bd3ff; }
+.inline-item-tier-power { --inline-item-tier-color: #f59e0b; }
+.inline-item-tier-important { --inline-item-tier-color: #f0abfc; }
+.inline-item-tier-good { --inline-item-tier-color: #7dd3fc; }
+.inline-item-tier-usable { --inline-item-tier-color: #34d399; }
+
+.light-mode .compact-item-reference {
+    border-color: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.66);
+}
+
+.light-mode .compact-item-reference-title { color: #64748b; }
+.light-mode .compact-item-reference-line { color: #475569; }

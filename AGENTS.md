@@ -28,7 +28,7 @@ The MUME Client is an **AI-Native, Hook-Driven Mobile Client** for the MUME MUD.
 | **Fix Broad Highlighting** | `src/services/parser/Tokenizer.ts`, `src/hooks/useEntityRegistry.ts` |
 | **Spectate Rotation** | `src/hooks/useSpectateAutomator.ts`, `src/hooks/GameParser/useGameParser.ts` |
 | **Manage Entity Traits** | `src/utils/inlineActionModel.ts`, `src/utils/categorizationUtils.ts`, `src/components/Settings/TraitSettings.tsx` |
-| **Manage Sliding Docked Panels** | `src/utils/dockedPanelUtils.ts`, `src/components/Help/HelpPanel.tsx`, `src/stores/useHelpStore.ts` |
+| **Manage Sliding Docked Panels** | `src/utils/dockedPanelUtils.ts`, `src/components/Layout/MainContentLayer.tsx`, `src/styles/terminalPanels.css`, `src/stores/useCommandPanelStore.ts`, `src/components/Help/HelpPanel.tsx`, `src/stores/useHelpStore.ts` |
 | **Zone Colors & Highlights** | `src/utils/zoneColors.ts`, `src/hooks/useZoneThemeSync.ts`, `src/components/Messages/MessageLog.tsx`, `src/components/Messages/MessageLog.css` |
 
 ## Inline Action Model

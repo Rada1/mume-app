@@ -14,6 +14,7 @@ import {
     LIGHTING_COLORS,
     LIGHT_WAVE_HEIGHT_MULTIPLIER,
     adjustForTheme,
+    getZoneGlowPalette,
     lerp,
     lerpHue
 } from './environmentGlowUtils';
@@ -21,12 +22,14 @@ import './EnvironmentGlow.css';
 
 interface EnvironmentGlowProps {
     terrain?: string;
+    zone?: string | null;
     lighting?: string;
     input: string;
 }
 
 export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
     terrain,
+    zone,
     lighting = 'none',
     input,
 }) => {
@@ -51,14 +54,15 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
 
     const targetColors = useMemo(() => {
         const lightingRaw = LIGHTING_COLORS[lighting] || LIGHTING_COLORS.none;
+        const fallback = normTerrain === 'account-blue' ? config : TERRAIN_CONFIGS.default;
+        const palette = getZoneGlowPalette(zone, fallback, isLightMode);
         return {
-            color1: adjustForTheme(config.color1, isLightMode),
-            color2: adjustForTheme(config.color2, isLightMode),
+            ...palette,
             lightingColor: adjustForTheme(lightingRaw, isLightMode),
             speed: config.speed,
             amplitude: config.amplitude,
         };
-    }, [config, isLightMode, lighting]);
+    }, [config, isLightMode, lighting, normTerrain, zone]);
 
     const currentColors = useRef({
         c1: { ...targetColors.color1 },
@@ -247,7 +251,7 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
             // 1. Lighting-colored wave (larger, behind)
             drawWave(0, 0.9, 0.35, leftY - 0.08, rightY - 0.08, cur.cL);
 
-            // 2. Terrain-colored wave (smaller, in front)
+            // 2. Zone-colored wave (smaller, in front)
             drawWave(Math.PI * 0.6, 1.4, 0.6, leftY, rightY, cur.c1);
 
             frameId = requestAnimationFrame(render);

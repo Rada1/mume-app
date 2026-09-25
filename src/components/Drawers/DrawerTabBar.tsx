@@ -19,7 +19,7 @@ interface DrawerTabBarProps {
 // --- Logic Section ---
 
 export const DrawerTabBar: React.FC<DrawerTabBarProps> = ({ tabs, active, onChange }) => (
-    <div style={{
+    <div className="drawer-tab-bar" style={{
         display: 'flex',
         borderBottom: '1px solid rgba(232, 176, 32, 0.18)',
         background: 'rgba(0, 0, 0, 0.15)',
@@ -31,6 +31,7 @@ export const DrawerTabBar: React.FC<DrawerTabBarProps> = ({ tabs, active, onChan
             return (
                 <button
                     key={tab.id}
+                    className={`drawer-tab-button${isActive ? ' is-active' : ''}`}
                     onClick={() => onChange(tab.id)}
                     style={{
                         flex: 1,

@@ -8,6 +8,7 @@ describe('changesCombatStatsFromSpell', () => {
         'You feel less blessed.',
         'The light of Aman fades away from you.',
         'A blue transparent wall slowly appears around you.',
+        'A blue transparent shield appears around you.',
         'Your armour spell wears off.',
         'You feel protected.',
         'Shield spell wears off.',

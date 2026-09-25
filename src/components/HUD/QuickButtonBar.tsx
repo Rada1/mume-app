@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 import { useGame } from '../../context/GameContext';
+import { doesCommandMatchQuickButton } from '../../utils/commandFeedbackUtils';
 import './QuickButtonBar.css';
 
 const SWIPE_THRESHOLD = 40;
@@ -11,11 +12,12 @@ interface QuickChipProps {
     label: string;
     command: string;
     hotkey?: string;
+    isPressed?: boolean;
     onFire: () => void;
     onRemove: () => void;
 }
 
-const QuickChip: React.FC<QuickChipProps> = ({ label, command, hotkey, onFire, onRemove }) => {
+const QuickChip: React.FC<QuickChipProps> = ({ label, command, hotkey, isPressed, onFire, onRemove }) => {
     const [offsetX, setOffsetX] = useState(0);
     const [isDismissing, setIsDismissing] = useState(false);
     const pointerStartX = useRef<number | null>(null);
@@ -62,7 +64,7 @@ const QuickChip: React.FC<QuickChipProps> = ({ label, command, hotkey, onFire, o
 
     return (
         <button
-            className={`quick-chip${isDismissing ? ' is-dismissing' : ''}`}
+            className={`quick-chip${isDismissing ? ' is-dismissing' : ''}${isPressed ? ' is-key-pressed' : ''}`}
             style={{
                 transform: `translateX(${translateX}px)`,
                 opacity,
@@ -117,10 +119,40 @@ export const QuickButtonBar: React.FC = () => {
         closeCreate();
     }, [commandInput, labelInput, nextDefaultLabel, addQuickButton, triggerHaptic, closeCreate]);
 
-    const handleFire = useCallback((command: string) => {
+    const [pressedId, setPressedId] = useState<string | null>(null);
+    const pressTimerRef = useRef<number | undefined>(undefined);
+
+    const flashPressed = useCallback((id: string) => {
+        window.clearTimeout(pressTimerRef.current);
+        setPressedId(id);
+        pressTimerRef.current = window.setTimeout(() => setPressedId(null), 140);
+    }, []);
+
+    const quickButtonsRef = useRef(quickButtons);
+    useEffect(() => { quickButtonsRef.current = quickButtons; }, [quickButtons]);
+
+    useEffect(() => {
+        const onCommandExecuted = (event: Event) => {
+            const cmd = (event as CustomEvent<{ cmd?: string }>).detail?.cmd;
+            if (!cmd) return;
+            const matched = quickButtonsRef.current.find(btn => doesCommandMatchQuickButton(cmd, btn.command));
+            if (matched) {
+                flashPressed(matched.id);
+            }
+        };
+
+        window.addEventListener('mume:command-executed', onCommandExecuted);
+        return () => {
+            window.removeEventListener('mume:command-executed', onCommandExecuted);
+            window.clearTimeout(pressTimerRef.current);
+        };
+    }, [flashPressed]);
+
+    const handleFire = useCallback((command: string, id?: string) => {
+        if (id) flashPressed(id);
         triggerHaptic(15);
         executeCommand(command);
-    }, [triggerHaptic, executeCommand]);
+    }, [triggerHaptic, executeCommand, flashPressed]);
 
     // Global hotkey F1-F12 mapping
     useEffect(() => {
@@ -134,7 +166,7 @@ export const QuickButtonBar: React.FC = () => {
                         e.preventDefault();
                         e.stopPropagation();
                         const btn = quickButtons[btnIndex];
-                        handleFire(btn.command);
+                        handleFire(btn.command, btn.id);
                     }
                 }
             }
@@ -225,7 +257,8 @@ export const QuickButtonBar: React.FC = () => {
                             label={btn.label}
                             command={btn.command}
                             hotkey={origIndex !== -1 ? `F${origIndex + 1}` : undefined}
-                            onFire={() => handleFire(btn.command)}
+                            isPressed={pressedId === btn.id}
+                            onFire={() => handleFire(btn.command, btn.id)}
                             onRemove={() => removeQuickButton(btn.id)}
                         />
                     );

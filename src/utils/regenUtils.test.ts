@@ -40,4 +40,17 @@ describe('calculateRegen', () => {
 ])('adds the configured regeneration bonus while %s', (position, bonus) => {
         expect(calculateRegen({ equipped: [], position, timers: [] })).toEqual({ hp: bonus, mana: bonus, move: bonus });
     });
+
+    it.each([
+        ['normal', 0], ['careful', -1], ['attentive', -2], ['vigilant', -3], ['paranoid', -4],
+    ])('applies the estimated %s alertness penalty to every regen stat', (alertness, penalty) => {
+        expect(calculateRegen({ equipped: [], alertness, timers: [] })).toEqual({ hp: penalty, mana: penalty, move: penalty });
+    });
+
+    it('applies one hunger or thirst penalty across every regen stat without stacking', () => {
+        expect(calculateRegen({ equipped: [], conditions: { hungry: true }, timers: [] }))
+            .toEqual({ hp: -10, mana: -10, move: -10 });
+        expect(calculateRegen({ equipped: [], conditions: { hungry: true, thirsty: true }, timers: [] }))
+            .toEqual({ hp: -10, mana: -10, move: -10 });
+    });
 });

@@ -9,6 +9,7 @@ import { isEnvironmentEventLine } from '../utils/environmentEventUtils';
 import { hasXmlTag } from '../utils/xmlTagUtils';
 import { getActiveVitals, getActiveCombat } from '../stores/useActiveGameState';
 import { normalizeMovementDirection, MovementDirection } from '../utils/movementDirections';
+import { matchSpellCompletion } from '../constants/spellCompletionMessages';
 
 // ---------------------------------------------------------------------------
 // Regex constants
@@ -229,13 +230,12 @@ export function useMessageLog(
         if (roomNameIdx !== -1) {
             const roomBlockTerrain = pending[roomNameIdx].terrain;
             const roomArrivalDirection = pending[roomNameIdx].roomArrivalDirection;
-            // Description lines sometimes arrive as separate (unmerged) game lines.
-            // Use the known GMCP room description to keep those in the description
-            // section so the divider lands before the actual contents, not the desc.
             const roomDescNorm = ((roomDescRef && roomDescRef.current) || roomContext.roomDesc || '')
                 .replace(/\x1b\[[0-9;]*m/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+            const isRoomArrival = !!roomArrivalDirection || !!pending[roomNameIdx].isRoomArrival;
             let markedContentsStart = false;
             let prevSection: RoomSection | null = null;
+            const contentIndices: number[] = [];
             for (let i = roomNameIdx + 1; i < pending.length; i++) {
                 const m = pending[i];
                 if (
@@ -271,12 +271,36 @@ export function useMessageLog(
                     isRoomBlock: true,
                     terrain: m.terrain ?? roomBlockTerrain,
                     roomArrivalDirection,
+                    isRoomArrival,
                     isRoomContentsStart: !markedContentsStart && isContents,
                     isRoomContentsLine,
                     roomSection,
                     isRoomSectionStart
                 };
-                if (isContents) markedContentsStart = true;
+                if (isContents) {
+                    markedContentsStart = true;
+                    contentIndices.push(i);
+                }
+            }
+
+            const roomContentCount = contentIndices.length;
+            const totalDescLines = (pending[roomNameIdx].html?.match(/<div class="room-desc-line">/g) || []).length;
+            pending[roomNameIdx] = {
+                ...pending[roomNameIdx],
+                isRoomArrival,
+                roomContentCount,
+                roomLineIndex: isRoomArrival ? (roomContentCount + totalDescLines) : undefined
+            };
+
+            if (isRoomArrival) {
+                for (let k = 0; k < contentIndices.length; k++) {
+                    const idx = contentIndices[k];
+                    pending[idx] = {
+                        ...pending[idx],
+                        roomContentCount,
+                        roomLineIndex: contentIndices.length - 1 - k
+                    };
+                }
             }
         }
 
@@ -354,7 +378,8 @@ export function useMessageLog(
         providedIsSnoopInput?: boolean,
         providedIsRipMessage?: boolean,
         providedIsSocial?: boolean,
-        resourceGain?: import('../types').ResourceGain
+        resourceGain?: import('../types').ResourceGain,
+        providedIsMagicRipple?: boolean
     ) => {
         const combatOverride = extra === true || (typeof extra === 'object' && extra?.isCombat);
         let currentText = text;
@@ -672,6 +697,10 @@ export function useMessageLog(
             // Keep this generous enough to survive a burst of queued commands
             // and their interleaved server prompts.
             pendingFocusRevealUntilRef.current = (isFocusCommand || isMovementCommand) ? receivedAt + 4000 : 0;
+            if (isMovementCommand) {
+                const dir = normalizeMovementDirection(echoedCommand);
+                if (dir) pendingRoomArrivalRef.current = { direction: dir, timestamp: receivedAt };
+            }
         }
 
         const isFocusReveal = finalType !== 'user' &&
@@ -688,6 +717,7 @@ export function useMessageLog(
         // Every incoming game line gets the same one-shot text cue. This keeps
         // multi-line responses (such as `who`) visually coherent.
         const shouldApplyAudioSheen = finalType !== 'prompt' && finalType !== 'user' && !isEmpty;
+        const isMagicRipple = !!providedIsMagicRipple || (!providedIsSnoop && (matchSpellCompletion(currentTextOnly) !== null));
         const msg: Message = {
             id: mid || Math.random().toString(36).substring(7),
             html,
@@ -734,6 +764,7 @@ export function useMessageLog(
             isRipMessage: providedIsRipMessage,
             audioSheen: shouldApplyAudioSheen,
             isFocusReveal,
+            isMagicRipple,
             resourceGain,
             promptHPStatus,
             promptManaStatus,

@@ -361,7 +361,11 @@ export const useMapAnimation = ({
     }, [isDraggingRef]);
 
     useEffect(() => {
-        const wake = () => triggerAnimation();
+        const wake = (event: Event) => {
+            const duration = (event as CustomEvent<{ duration?: number }>).detail?.duration;
+            if (duration) wakeUntilRef.current = Math.max(wakeUntilRef.current, Date.now() + duration);
+            triggerAnimation();
+        };
         window.addEventListener('mume-mapper-camera-change', wake);
         window.addEventListener('mume-mapper-wake', wake);
         return () => {

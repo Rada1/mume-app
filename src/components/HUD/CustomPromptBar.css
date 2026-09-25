@@ -1,6 +1,6 @@
 /**
  * @file CustomPromptBar.css
- * @description Styling for the stationary CustomPromptBar outside the message log.
+ * @description Styling for CustomPromptBar organized as a clean, cohesive info panel matching the message log theme.
  */
 
 .custom-prompt-bar {
@@ -8,8 +8,8 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 3px;
-    padding: 6px 14px 7px 14px;
-    background: rgba(18, 14, 10, 0.85);
+    padding: 5px 12px 6px 12px;
+    background: rgba(18, 14, 10, 0.88);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-top: 1px solid rgba(201, 168, 76, 0.22);
@@ -20,16 +20,18 @@
     flex-shrink: 0;
     z-index: 20;
     font-family: var(--font-mono, monospace);
-    font-size: 0.84rem;
-    line-height: 1.35;
+    font-size: 0.82rem;
+    line-height: 1.3;
     user-select: none;
     -webkit-user-select: none;
     --mume-wiki-link-color: #c9a84c;
+    --prompt-positive: #c6c0ae;
+    --prompt-positive-light: #6f6a60;
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.35);
 }
 
 .light-mode .custom-prompt-bar {
-    background: rgba(245, 240, 230, 0.92);
+    background: rgba(245, 240, 230, 0.94);
     border-top: 1px solid rgba(139, 107, 16, 0.25);
     border-bottom: 1px solid rgba(180, 160, 120, 0.3);
     --mume-wiki-link-color: #8b6b10;
@@ -45,184 +47,476 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    padding: 4px 8px 5px 8px;
+    padding: 3px 8px 4px 8px;
 }
 
+/* Base Rows */
 .custom-prompt-bar .prompt-row {
     display: inline-flex;
-    align-items: center;
+    align-items: baseline;
     flex-wrap: wrap;
     min-width: 0;
+    width: 100%;
     line-height: 1.25;
 }
 
 .custom-prompt-bar .prompt-vitals-row,
-.custom-prompt-bar .prompt-controls-row {
-    gap: 0.35em;
-}
-
-.custom-prompt-bar .prompt-controls-row {
-    max-width: 100%;
-}
-
-.custom-prompt-bar .prompt-combat-stat-indicators {
-    display: inline-flex;
-    align-items: baseline;
+.custom-prompt-bar .prompt-controls-row,
+.custom-prompt-bar .prompt-metadata-line {
     gap: 0.45em;
-    margin-left: 0.35em;
 }
 
-.custom-prompt-bar .custom-prompt-prefix {
-    color: var(--text-primary, #d4cdb8);
-    font-weight: 700;
+.custom-prompt-bar .prompt-vitals-row {
+    cursor: pointer;
 }
 
-.custom-prompt-bar .prompt-stat-item {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.25em;
-    color: var(--text-primary, #d4cdb8);
+.custom-prompt-bar .prompt-vitals-row:focus-visible {
+    outline: 1px dotted var(--mume-wiki-link-color, #c9a84c);
+    outline-offset: 2px;
 }
 
-.custom-prompt-bar .prompt-stat-label {
-    font-size: 0.78em;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    color: #a8a29e;
-}
+/* Keep the live status first; room metadata is intentionally omitted here. */
+.custom-prompt-bar .prompt-metadata-line { display: none; }
+.custom-prompt-bar .prompt-vitals-row { order: 1; }
+.custom-prompt-bar .prompt-controls-row { order: 2; }
 
-/* Known per-tick regeneration modifier shown beside each current vital. */
-.custom-prompt-bar .prompt-regen-value {
-    --regen-stat-base-color: #7dd3fc;
-    color: var(--regen-stat-base-color);
-    font-size: 0.76em;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-}
-
-.light-mode .custom-prompt-bar .prompt-regen-value {
-    --regen-stat-base-color: #0369a1;
-}
-
-.custom-prompt-bar .prompt-regen-value.regen-stat-change-up,
-.custom-prompt-bar .prompt-regen-value.regen-stat-change-down {
+/* Line Headers (Vitals, Stance, Environment) */
+.custom-prompt-bar .prompt-line-header {
+    color: #8a7a5e;
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    user-select: none;
+    flex-shrink: 0;
+    width: 82px;
     display: inline-block;
-    animation: prompt-regen-stat-change 900ms cubic-bezier(0.2, 0.85, 0.3, 1);
 }
 
-.custom-prompt-bar .prompt-regen-value.regen-stat-change-up {
-    --regen-stat-change-color: #86efac;
-}
-
-.custom-prompt-bar .prompt-regen-value.regen-stat-change-down {
-    --regen-stat-change-color: #fca5a5;
-}
-
-@keyframes prompt-regen-stat-change {
-    0% { transform: scale(1); color: var(--regen-stat-base-color); text-shadow: none; }
-    30% { transform: scale(1.45); color: var(--regen-stat-change-color); text-shadow: 0 0 10px currentColor; }
-    100% { transform: scale(1); color: var(--regen-stat-base-color); text-shadow: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .custom-prompt-bar .prompt-regen-value.regen-stat-change-up,
-    .custom-prompt-bar .prompt-regen-value.regen-stat-change-down {
-        animation: none;
-    }
-}
-
-.light-mode .custom-prompt-bar .prompt-stat-label {
+.light-mode .custom-prompt-bar .prompt-line-header {
     color: #78716c;
 }
 
-/* Vital percentages (HP/MANA/MP) use the same green as ANSI stat numbers in the log */
-.custom-prompt-bar .prompt-vitals-row .prompt-stat-value {
-    --vital-stat-base-color: #22c55e;
-    color: var(--vital-stat-base-color);
+.custom-prompt-bar .prompt-header-divider {
+    color: rgba(201, 168, 76, 0.35);
+    font-weight: 400;
+    user-select: none;
+    margin-right: 0.25em;
+    flex-shrink: 0;
+}
+
+.light-mode .custom-prompt-bar .prompt-header-divider {
+    color: rgba(139, 107, 16, 0.35);
+}
+
+/* The bottom-bar prompt is self-describing; reserve its horizontal space for
+   live values rather than repeating row headings. */
+.custom-prompt-bar .prompt-line-header,
+.custom-prompt-bar .prompt-header-divider {
+    display: none;
+}
+
+/* Subtle inline dividers */
+.custom-prompt-bar .prompt-stat-divider,
+.custom-prompt-bar .prompt-group-divider {
+    color: rgba(201, 168, 76, 0.32);
+    font-weight: 400;
+    user-select: none;
+    padding: 0 1px;
+}
+
+.light-mode .custom-prompt-bar .prompt-stat-divider,
+.light-mode .custom-prompt-bar .prompt-group-divider {
+    color: rgba(139, 107, 16, 0.35);
+}
+
+/* Labels and values */
+.custom-prompt-bar .prompt-stat-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3em;
+    color: var(--text-primary, #d4cdb8);
+}
+
+.custom-prompt-bar .prompt-stat-label,
+.custom-prompt-bar .prompt-label-prefix {
+    font-size: 0.76em;
     font-weight: 700;
+    letter-spacing: 0.03em;
+    color: #8a7a5e;
+    text-transform: uppercase;
 }
 
-.light-mode .custom-prompt-bar .prompt-vitals-row .prompt-stat-value {
-    --vital-stat-base-color: #16a34a;
+.light-mode .custom-prompt-bar .prompt-stat-label,
+.light-mode .custom-prompt-bar .prompt-label-prefix {
+    color: #78716c;
 }
 
-.custom-prompt-bar .prompt-vitals-row .prompt-stat-value.vital-stat-change-up,
-.custom-prompt-bar .prompt-vitals-row .prompt-stat-value.vital-stat-change-down {
-    display: inline-block;
-    animation: vital-stat-change 900ms cubic-bezier(0.2, 0.85, 0.3, 1);
+/* Vital status and numbers */
+.custom-prompt-bar .prompt-vital-status {
+    font-weight: 700;
+    color: var(--prompt-positive);
 }
 
-.custom-prompt-bar .prompt-vitals-row .prompt-stat-value.vital-stat-change-up {
-    --vital-stat-change-color: #86efac;
+.light-mode .custom-prompt-bar .prompt-vital-status {
+    color: var(--prompt-positive-light);
 }
 
-.custom-prompt-bar .prompt-vitals-row .prompt-stat-value.vital-stat-change-down {
-    --vital-stat-change-color: #fca5a5;
+.custom-prompt-bar .vital-hp.tier-hurt .prompt-vital-status { color: #facc15; }
+.custom-prompt-bar .vital-hp.tier-wounded .prompt-vital-status { color: #fb923c; }
+.custom-prompt-bar .vital-hp.tier-bad .prompt-vital-status,
+.custom-prompt-bar .vital-hp.tier-awful .prompt-vital-status,
+.custom-prompt-bar .vital-hp.tier-dying .prompt-vital-status { color: #ef4444; }
+
+.custom-prompt-bar .prompt-vital-raw {
+    margin-left: 0.3em;
+    color: var(--text-primary, #d4cdb8);
+    opacity: 0.5;
+    font-size: 0.76em;
+    font-weight: 600;
+    letter-spacing: 0;
 }
 
-@keyframes vital-stat-change {
-    0% { transform: scale(1); color: var(--vital-stat-base-color); text-shadow: none; }
-    30% { transform: scale(1.45); color: var(--vital-stat-change-color); text-shadow: 0 0 10px currentColor; }
-    100% { transform: scale(1); color: var(--vital-stat-base-color); text-shadow: none; }
+.light-mode .custom-prompt-bar .prompt-vital-raw {
+    color: var(--text-primary, #1c1917);
+    opacity: 0.5;
+}
+
+.custom-prompt-bar .prompt-regen-value {
+    --regen-stat-base-color: var(--text-primary, #d4cdb8);
+    color: var(--regen-stat-base-color);
+    opacity: 0.5;
+    font-size: 0.76em;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.light-mode .custom-prompt-bar .prompt-regen-value {
+    --regen-stat-base-color: var(--text-primary, #1c1917);
+    opacity: 0.5;
+}
+
+/* Opponent */
+.custom-prompt-bar .prompt-opponent-info {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35em;
+}
+
+.custom-prompt-bar .prompt-opponent-departing {
+    animation: prompt-opponent-depart 650ms ease-out both;
+}
+
+.custom-prompt-bar .prompt-opponent-arriving {
+    animation: prompt-opponent-arrive 650ms cubic-bezier(0.2, 0.82, 0.22, 1) both;
+}
+
+@keyframes prompt-opponent-depart {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes prompt-opponent-arrive {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .custom-prompt-bar .prompt-vitals-row .prompt-stat-value.vital-stat-change-up,
-    .custom-prompt-bar .prompt-vitals-row .prompt-stat-value.vital-stat-change-down {
+    .custom-prompt-bar .prompt-opponent-departing,
+    .custom-prompt-bar .prompt-opponent-arriving {
         animation: none;
     }
-}
-
-.custom-prompt-bar .prompt-stat-divider {
-    color: rgba(255, 255, 255, 0.25);
-}
-
-.light-mode .custom-prompt-bar .prompt-stat-divider {
-    color: rgba(0, 0, 0, 0.25);
 }
 
 .custom-prompt-bar .prompt-vs-label {
     color: #ef4444;
-    font-weight: 700;
-    font-size: 0.85em;
-    margin-left: 0.4em;
-    margin-right: 0.2em;
+    display: inline-flex;
+    align-items: center;
 }
 
-.custom-prompt-bar .prompt-opponent-name {
-    color: #f87171;
+.message.prompt .custom-prompt-bar .prompt-opponent-inline {
+    --mume-wiki-link-color: #c9a84c;
+    --glow-color: var(--mume-wiki-link-color);
+    color: var(--mume-wiki-link-color) !important;
     font-weight: 700;
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+    cursor: pointer;
+}
+
+.light-mode .message.prompt .custom-prompt-bar .prompt-opponent-inline {
+    --mume-wiki-link-color: #8b6b10;
 }
 
 .custom-prompt-bar .prompt-opponent-status {
-    color: #fca5a5;
-    font-size: 0.9em;
+    font-size: 0.88em;
 }
 
-.custom-prompt-bar .prompt-metadata-line {
+.custom-prompt-bar .prompt-combat-opponent {
     display: inline-flex;
     align-items: baseline;
-    gap: 1.25ch;
-    line-height: 1.25;
-    flex-wrap: wrap;
-    width: 100%;
-    max-height: 75px;
-    overflow-y: auto;
+    gap: 0.35em;
+    color: #ef6a67;
+    font-weight: 700;
 }
 
-.custom-prompt-bar .prompt-environment-line {
-    color: #a8a29e;
+.custom-prompt-bar .prompt-combat-opponent .prompt-opponent-inline {
+    --glow-color: #ef6a67;
+    color: #ef6a67 !important;
+    cursor: pointer;
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+}
+
+.custom-prompt-bar .prompt-opponent-health .prompt-vital-status {
+    color: #ef6a67;
+}
+
+.custom-prompt-bar .prompt-target-selector {
     display: inline-flex;
     align-items: center;
-    line-height: 1.2;
+    gap: 0.3em;
+    min-height: 20px;
+    max-width: 150px;
+    padding: 2px 6px;
+    overflow: hidden;
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 4px;
+    background: rgba(201, 168, 76, 0.07);
+    color: rgba(212, 205, 184, 0.64);
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.custom-prompt-bar .prompt-target-selector.has-target {
+    border-color: color-mix(in srgb, var(--color-target, #c9a84c), transparent 38%);
+    background: color-mix(in srgb, var(--color-target, #c9a84c), transparent 91%);
+    color: var(--color-target, #c9a84c);
+}
+
+.custom-prompt-bar .prompt-target-selector:hover,
+.custom-prompt-bar .prompt-target-selector:focus-visible {
+    border-color: rgba(201, 168, 76, 0.62);
+    color: #e6d3a1;
+    outline: none;
+}
+
+.custom-prompt-bar .prompt-target-selector > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.custom-prompt-bar .prompt-target-selector input {
+    width: 70px;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-transform: uppercase;
+}
+
+/* --- Line 2: Controls & Ratings --- */
+.custom-prompt-bar .prompt-controls-line {
+    display: inline-flex;
+    align-items: baseline;
     flex-wrap: wrap;
-    gap: 0.25em;
+    gap: 0.5em;
+    width: 100%;
+}
+
+/* Affects stay with the left-aligned combat values; only the target selector
+   is held at the far end of the prompt row. */
+.custom-prompt-bar .prompt-target-end {
+    display: inline-flex;
+    align-items: baseline;
+    margin-left: auto;
+}
+
+.custom-prompt-bar .prompt-affected-indicators {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.35em;
+    margin-left: 0;
+    font-size: inherit;
+}
+
+.custom-prompt-bar .prompt-affected-divider {
+    color: rgba(201, 168, 76, 0.32);
+    font-weight: 400;
+    user-select: none;
+}
+
+.custom-prompt-bar .prompt-group {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35em;
+}
+
+/* Interactive link buttons (Traverse & Stance) */
+.custom-prompt-bar .prompt-action-link {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.15em;
+    transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.custom-prompt-bar .prompt-move-link {
+    font-weight: 700;
+}
+
+.custom-prompt-bar .prompt-move-link:not(.active) {
+    color: var(--text-primary, #d4cdb8);
+    opacity: 0.5;
+}
+
+.light-mode .custom-prompt-bar .prompt-move-link:not(.active) {
+    color: var(--text-primary, #1c1917);
+    opacity: 0.5;
+}
+
+.custom-prompt-bar .prompt-move-link.active,
+.custom-prompt-bar .prompt-move-link.is-active {
+    color: var(--prompt-positive) !important;
+    text-shadow: 0 0 5px rgba(85, 255, 85, 0.28);
+    opacity: 1;
+}
+
+.light-mode .custom-prompt-bar .prompt-move-link.active,
+.light-mode .custom-prompt-bar .prompt-move-link.is-active {
+    color: var(--prompt-positive-light) !important;
+    text-shadow: 0 0 5px rgba(22, 163, 74, 0.22);
+    opacity: 1;
+}
+
+.custom-prompt-bar .prompt-move-link:hover,
+.custom-prompt-bar .prompt-move-link:focus-visible {
+    color: var(--prompt-positive) !important;
+    outline: none;
+    opacity: 1;
+}
+
+.light-mode .custom-prompt-bar .prompt-move-link:hover,
+.light-mode .custom-prompt-bar .prompt-move-link:focus-visible {
+    color: var(--prompt-positive-light) !important;
+    outline: none;
+    opacity: 1;
+}
+
+.custom-prompt-bar .prompt-stance-link {
+    display: inline-flex;
+    align-items: baseline;
+    font-weight: 700;
+}
+
+.custom-prompt-bar .prompt-stance-link .prompt-stat-label {
+    color: var(--prompt-positive) !important;
+    opacity: 1;
+    font-size: 1em;
+    letter-spacing: normal;
+}
+
+.light-mode .custom-prompt-bar .prompt-stance-link .prompt-stat-label {
+    color: var(--prompt-positive-light) !important;
+    opacity: 1;
+}
+
+.custom-prompt-bar .prompt-stance-link .prompt-stat-value {
+    color: var(--prompt-positive) !important;
+    font-weight: 700;
+}
+
+.light-mode .custom-prompt-bar .prompt-stance-link .prompt-stat-value {
+    color: var(--prompt-positive-light) !important;
+}
+
+.custom-prompt-bar .prompt-stance-link:hover,
+.custom-prompt-bar .prompt-stance-link:focus-visible,
+.custom-prompt-bar .prompt-stance-link.active,
+.custom-prompt-bar .prompt-stance-link.is-active {
+    outline: none;
+}
+
+.custom-prompt-bar .prompt-stance-link:hover .prompt-stat-label,
+.custom-prompt-bar .prompt-stance-link:focus-visible .prompt-stat-label,
+.custom-prompt-bar .prompt-stance-link.active .prompt-stat-label,
+.custom-prompt-bar .prompt-stance-link.is-active .prompt-stat-label {
+    color: var(--prompt-positive) !important;
+    opacity: 1;
+}
+
+.custom-prompt-bar .prompt-stance-link:hover .prompt-stat-value,
+.custom-prompt-bar .prompt-stance-link:focus-visible .prompt-stat-value,
+.custom-prompt-bar .prompt-stance-link.active .prompt-stat-value,
+.custom-prompt-bar .prompt-stance-link.is-active .prompt-stat-value {
+    color: var(--prompt-positive) !important;
+    text-shadow: 0 0 5px rgba(85, 255, 85, 0.24);
+}
+
+.light-mode .custom-prompt-bar .prompt-stance-link:hover .prompt-stat-label,
+.light-mode .custom-prompt-bar .prompt-stance-link:focus-visible .prompt-stat-label,
+.light-mode .custom-prompt-bar .prompt-stance-link.active .prompt-stat-label,
+.light-mode .custom-prompt-bar .prompt-stance-link.is-active .prompt-stat-label,
+.light-mode .custom-prompt-bar .prompt-stance-link:hover .prompt-stat-value,
+.light-mode .custom-prompt-bar .prompt-stance-link:focus-visible .prompt-stat-value,
+.light-mode .custom-prompt-bar .prompt-stance-link.active .prompt-stat-value,
+.light-mode .custom-prompt-bar .prompt-stance-link.is-active .prompt-stat-value {
+    color: var(--prompt-positive-light) !important;
+}
+
+/* Combat Stats */
+.custom-prompt-bar .prompt-stat-entry {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.2em;
+}
+
+.custom-prompt-bar .prompt-combat-group .prompt-stat-label,
+.custom-prompt-bar .prompt-combat-group .prompt-label-prefix {
+    color: var(--text-primary, #d4cdb8);
+    opacity: 0.5;
+}
+
+.light-mode .custom-prompt-bar .prompt-combat-group .prompt-stat-label,
+.light-mode .custom-prompt-bar .prompt-combat-group .prompt-label-prefix {
+    color: var(--text-primary, #1c1917);
+    opacity: 0.5;
+}
+
+.custom-prompt-bar .prompt-stat-entry .prompt-val-text {
+    color: var(--prompt-positive);
+    font-weight: 700;
+}
+
+.light-mode .custom-prompt-bar .prompt-stat-entry .prompt-val-text {
+    color: var(--prompt-positive-light);
+}
+
+/* --- Line 3: Surroundings (Environment & Room) --- */
+.custom-prompt-bar .prompt-environment-line {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4em;
+    color: #a8a29e;
 }
 
 .custom-prompt-bar .prompt-env-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.3em;
+    gap: 0.25em;
 }
 
 .custom-prompt-bar .prompt-env-icon {
@@ -231,9 +525,73 @@
 }
 
 .custom-prompt-bar .prompt-entities-line {
-    display: inline;
-    line-height: 1.2;
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.4em;
     color: var(--text-primary, #d4cdb8);
+}
+
+.custom-prompt-bar .prompt-entity-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28em;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-primary, #d4cdb8);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    opacity: 0.72;
+    transition: color 150ms ease, opacity 150ms ease;
+}
+
+.custom-prompt-bar .prompt-entity-summary:hover,
+.custom-prompt-bar .prompt-entity-summary:focus-visible,
+.custom-prompt-bar .prompt-entity-summary.is-expanded {
+    color: var(--mume-wiki-link-color, #c9a84c);
+    opacity: 1;
+    outline: none;
+}
+
+.custom-prompt-bar .prompt-entity-summary svg {
+    color: currentColor;
+}
+
+.custom-prompt-bar .prompt-room-name {
+    color: var(--text-primary, #d4cdb8);
+    font-weight: 700;
+    opacity: 0.5;
+}
+
+.custom-prompt-bar .prompt-room-zone {
+    color: var(--text-primary, #d4cdb8);
+    opacity: 0.5;
+    font-size: 0.82em;
+}
+
+.custom-prompt-bar .prompt-env-icon-only,
+.custom-prompt-bar .prompt-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+    color: var(--text-primary, #d4cdb8);
+}
+
+.custom-prompt-bar .prompt-env-icon-only .prompt-env-icon {
+    width: 13px;
+    height: 13px;
+}
+
+.custom-prompt-bar .prompt-env-icon-only > span {
+    opacity: 0.5;
+}
+
+.custom-prompt-bar .prompt-time {
+    color: var(--text-primary, #d4cdb8);
+    opacity: 0.5;
+    font-size: 0.88em;
 }
 
 .custom-prompt-bar .prompt-entity-inline {
@@ -243,6 +601,9 @@
     cursor: pointer;
     text-decoration: underline dotted;
     text-underline-offset: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
     transition: opacity 0.15s ease, text-decoration-color 0.15s ease;
 }
 
@@ -256,18 +617,97 @@
     --mume-wiki-link-color: #8b6b10;
 }
 
-.immersion-mode .custom-prompt-bar .prompt-entity-inline {
-    animation: continuous-zone-bloom 4.2s ease-in-out infinite;
+.entity-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+    vertical-align: middle;
 }
 
-.immersion-mode .custom-prompt-bar .prompt-entity-inline:nth-child(4n + 1) { animation-delay: 0.4s; }
-.immersion-mode .custom-prompt-bar .prompt-entity-inline:nth-child(4n + 2) { animation-delay: 1.1s; }
-.immersion-mode .custom-prompt-bar .prompt-entity-inline:nth-child(4n + 3) { animation-delay: 1.8s; }
-.immersion-mode .custom-prompt-bar .prompt-entity-inline:nth-child(4n + 4) { animation-delay: 2.5s; }
+.entity-dot-cat-npc {
+    background: #f87171;
+    box-shadow: 0 0 4px rgba(248, 113, 113, 0.5);
+}
+
+.entity-dot-cat-object {
+    background: #c9a84c;
+    box-shadow: 0 0 4px rgba(201, 168, 76, 0.5);
+}
+
+.entity-dot-cat-player {
+    background: #38bdf8;
+    box-shadow: 0 0 4px rgba(56, 189, 248, 0.5);
+}
+
+/* --- Change Animations --- */
+.custom-prompt-bar .prompt-regen-value.regen-stat-change-up,
+.custom-prompt-bar .prompt-regen-value.regen-stat-change-down {
+    display: inline-block;
+    animation: prompt-regen-stat-change 900ms cubic-bezier(0.2, 0.85, 0.3, 1);
+}
+
+.custom-prompt-bar .prompt-regen-value.regen-stat-change-up { --regen-stat-change-color: #86efac; }
+.custom-prompt-bar .prompt-regen-value.regen-stat-change-down { --regen-stat-change-color: #fca5a5; }
+
+@keyframes prompt-regen-stat-change {
+    0% { transform: scale(1); color: var(--regen-stat-base-color); opacity: 0.5; text-shadow: none; }
+    30% { transform: scale(1.45); color: var(--regen-stat-change-color); opacity: 1; text-shadow: 0 0 10px currentColor; }
+    100% { transform: scale(1); color: var(--regen-stat-base-color); opacity: 0.5; text-shadow: none; }
+}
+
+/* Combat Stat Animations */
+.custom-prompt-bar .prompt-stat-value.combat-stat-change-up,
+.combat-stat-change-up {
+    display: inline-block;
+    --combat-stat-change-color: #86efac;
+    animation: prompt-combat-stat-change 900ms cubic-bezier(0.2, 0.85, 0.3, 1) !important;
+}
+
+.custom-prompt-bar .prompt-stat-value.combat-stat-change-down,
+.combat-stat-change-down {
+    display: inline-block;
+    --combat-stat-change-color: #fca5a5;
+    animation: prompt-combat-stat-change 900ms cubic-bezier(0.2, 0.85, 0.3, 1) !important;
+}
+
+@keyframes prompt-combat-stat-change {
+    0% { transform: scale(1); text-shadow: none; }
+    30% { transform: scale(1.45); color: var(--combat-stat-change-color) !important; text-shadow: 0 0 10px currentColor; }
+    100% { transform: scale(1); text-shadow: none; }
+}
+
+/* Movement Indicator Animations */
+.movement-indicator-change-up,
+.movement-indicator-change-down {
+    display: inline-block;
+    animation: prompt-movement-indicator-change 900ms cubic-bezier(0.2, 0.85, 0.3, 1) !important;
+}
+
+@keyframes prompt-movement-indicator-change {
+    0%, 100% { transform: scale(1); text-shadow: none; }
+    30% { transform: scale(1.45); text-shadow: 0 0 10px currentColor; }
+}
+
+/* Mode / Stance Change Animation */
+.mode-indicator-change {
+    animation: prompt-mode-indicator-change 900ms cubic-bezier(0.2, 0.85, 0.3, 1) !important;
+}
+
+@keyframes prompt-mode-indicator-change {
+    0%, 100% { transform: scale(1); text-shadow: none; }
+    30% { transform: scale(1.35); text-shadow: 0 0 8px currentColor; }
+}
 
 @media (prefers-reduced-motion: reduce) {
-    .immersion-mode .custom-prompt-bar .prompt-entity-inline {
+    .custom-prompt-bar .prompt-regen-value.regen-stat-change-up,
+    .custom-prompt-bar .prompt-regen-value.regen-stat-change-down,
+    .combat-stat-change-up,
+    .combat-stat-change-down,
+    .movement-indicator-change-up,
+    .movement-indicator-change-down,
+    .mode-indicator-change {
         animation: none !important;
-        text-shadow: none !important;
     }
 }

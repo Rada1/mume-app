@@ -762,7 +762,7 @@
 .char-card-info-value {
     font-size: 0.62rem;
     font-weight: 700;
-    color: #4ade80;
+    color: var(--ansi-green, #55ff55);
     text-align: right;
     word-break: break-word;
 }

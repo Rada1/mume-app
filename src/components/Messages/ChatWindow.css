@@ -273,6 +273,27 @@
     line-height: 1.35;
 }
 
+.chat-window-panel .log-text-word {
+    display: inline !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    -webkit-text-fill-color: currentColor !important;
+}
+
+.chat-window-panel .comm-text,
+.chat-window-panel .comm-text *,
+.chat-window-panel .comm-sender,
+.chat-window-panel .comm-sender *,
+.chat-window-panel .log-text-word,
+.chat-window-panel .log-char,
+.chat-window-panel .log-word,
+.chat-window-panel .inline-btn,
+.chat-window-panel .first-word-static,
+.chat-window-panel .remaining-reveal-animated {
+    animation: none !important;
+    transform: none !important;
+}
+
 .chat-window-entry .comm-bubble:hover {
     background-color: color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.08)), transparent 92%) !important;
     border-color: color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.65)), transparent 5%) !important;

@@ -9,7 +9,7 @@ import {
     Compass, Swords, MessageSquare, CloudSun, Footprints,
     ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
     ChevronsUp, ChevronsDown, Heart, Zap,
-    ArrowUpLeft, ArrowUpRight, ArrowDownLeft, ArrowDownRight 
+    ArrowUpLeft, ArrowUpRight, ArrowDownLeft, ArrowDownRight, CircleHelp
 } from 'lucide-react';
 import { GmcpOccupant, Message, Token } from '../../types';
 import { ansiConvert } from '../../utils/ansi';
@@ -37,7 +37,21 @@ const formatTimestamp = (ts: number) => {
     return `[${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}]`;
 };
 
+type ItemActionAnimation = 'get' | 'drop' | 'wear' | 'remove';
+
+// These are confirmation lines emitted by the game, not the commands the player
+// typed. Keeping the visual cue here makes it work for buttons, aliases, and
+// manually typed commands alike.
+const getItemActionAnimation = (text: string): ItemActionAnimation | null => {
+    if (/^you\s+(?:(?:\w+\s+){0,3})?(?:get|take|pick)\b/i.test(text)) return 'get';
+    if (/^you\s+(?:(?:\w+\s+){0,3})?drop\b/i.test(text)) return 'drop';
+    if (/^you\s+(?:(?:\w+\s+){0,3})?(?:wear|put on|wield|hold|fasten|sling|slip|tie|buckle|don|drape|loop|attach|wrap)\b/i.test(text)) return 'wear';
+    if (/^you\s+(?:(?:\w+\s+){0,3})?(?:remove|stop using)\b/i.test(text)) return 'remove';
+    return null;
+};
+
 const playedFocusRevealIds = new Set<string>();
+const playedRoomJiggleIds = new Set<string>();
 
 // Account output intentionally bypasses the entity tokenizer to preserve terminal
 // formatting. Wrap only its visible HTML text nodes so the login screen can still
@@ -194,32 +208,67 @@ const MessageItem = React.memo(({
     };
 }) => {
     const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
+    const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
     const { gameState } = useBaseGame();
     const content = msg.html;
-    const accountRippleHtml = gameState === 'account' && (!msg.tokens || msg.tokens.length === 0)
+    const accountRippleHtml = isImmersionMode && gameState === 'account' && (!msg.tokens || msg.tokens.length === 0)
         ? wrapHtmlWordsForRipple(sanitizeMumeHtml(content))
         : sanitizeMumeHtml(content);
     const isLoginNamePrompt = /\bby what name do you wish to be known\?/i.test(msg.textRaw || msg.textOnly || '');
+    const statusNotice = (msg.textOnly || msg.textRaw || '').trim().toLowerCase();
+    const isHungryNotice = statusNotice === 'you are hungry.';
+    const isThirstyNotice = statusNotice === 'you are thirsty.';
+    const regenSlowTooltip = isHungryNotice
+        ? 'Regeneration of all vitals slowed! Find something to eat quickly.'
+        : isThirstyNotice
+            ? 'Regeneration of all vitals slowed! Find something to drink quickly.'
+            : undefined;
     const entityCountPrompt = msg.type === 'game' ? parseEntityCountPrompt(msg.textOnly || msg.textRaw || '') : null;
     const [isRecent] = React.useState(() => Date.now() - msg.timestamp < 3500);
-    const isImpactRumble = isRecent && (msg.isHitImpact || msg.isDamageImpact);
+    const itemActionAnimation = getItemActionAnimation(msg.textOnly || msg.textRaw || '');
+    const isImpactRumble = isImmersionMode && isRecent && (msg.isHitImpact || msg.isDamageImpact);
     const impactRowRef = React.useRef<HTMLDivElement>(null);
     const messageRootRef = React.useRef<HTMLDivElement>(null);
     // Virtualized rows are reused, so bind the animation to its message ID rather
     // than leaving a boolean active for whichever message occupies the row next.
     const [focusRevealMessageId, setFocusRevealMessageId] = React.useState<string | null>(null);
     const isFocusRevealActive = focusRevealMessageId === msg.id;
+    const [magicRippleMessageId, setMagicRippleMessageId] = React.useState<string | null>(null);
+    const [itemActionMessageId, setItemActionMessageId] = React.useState<string | null>(null);
+    const isMagicRippleActive = magicRippleMessageId === msg.id;
+    const isItemActionActive = itemActionMessageId === msg.id;
     // local state to handle the cleanup of the hit sheen animation
-    const [sheenActive, setSheenActive] = React.useState(!!(msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage));
+    const [sheenActive, setSheenActive] = React.useState(!!(isImmersionMode && (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage)));
 
     React.useEffect(() => {
-        if (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage) {
+        if (isImmersionMode && (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage)) {
             const timer = setTimeout(() => {
                 setSheenActive(false);
             }, 2000);
             return () => clearTimeout(timer);
         }
-    }, [msg.isHitImpact, msg.isDamageImpact, msg.isRipMessage]);
+    }, [isImmersionMode, msg.isHitImpact, msg.isDamageImpact, msg.isRipMessage]);
+
+    // The parser already tags spell completions and action confirmations. These
+    // short-lived classes are deliberately keyed by message ID so a virtualized
+    // row cannot replay an old effect when it is recycled for another message.
+    React.useEffect(() => {
+        if (!isImmersionMode || !msg.isMagicRipple || Date.now() - msg.timestamp > 3500) return;
+        setMagicRippleMessageId(msg.id);
+        const timer = window.setTimeout(() => {
+            setMagicRippleMessageId(activeId => activeId === msg.id ? null : activeId);
+        }, 900);
+        return () => window.clearTimeout(timer);
+    }, [isImmersionMode, msg.id, msg.isMagicRipple, msg.timestamp]);
+
+    React.useEffect(() => {
+        if (!isImmersionMode || !itemActionAnimation || Date.now() - msg.timestamp > 3500) return;
+        setItemActionMessageId(msg.id);
+        const timer = window.setTimeout(() => {
+            setItemActionMessageId(activeId => activeId === msg.id ? null : activeId);
+        }, 520);
+        return () => window.clearTimeout(timer);
+    }, [isImmersionMode, itemActionAnimation, msg.id, msg.timestamp]);
 
     React.useEffect(() => {
         if (!isImpactRumble || !impactRowRef.current) return;
@@ -235,7 +284,7 @@ const MessageItem = React.memo(({
     }, [isImpactRumble]);
 
     React.useLayoutEffect(() => {
-        if (!msg.audioSheen || Date.now() - msg.timestamp > 1000 || !messageRootRef.current) return;
+        if (!isImmersionMode || !msg.audioSheen || Date.now() - msg.timestamp > 1000 || !messageRootRef.current) return;
 
         // Server messages and visual rows are not always the same thing: a single incoming
         // line can wrap several times. Reset the sheen delay for every rendered row so each
@@ -250,7 +299,7 @@ const MessageItem = React.memo(({
             wordsPerVisualLine.set(visualLine, wordIndex + 1);
             word.style.setProperty('--sheen-word-delay', `${wordIndex * 20}ms`);
         });
-    }, [msg.audioSheen, msg.id, msg.timestamp]);
+    }, [isImmersionMode, msg.audioSheen, msg.id, msg.timestamp]);
 
     React.useLayoutEffect(() => {
         // Rapid movement can batch several server lines before React paints. Keep
@@ -293,6 +342,26 @@ const MessageItem = React.memo(({
         }, 50);
     }, [msg.replyCommand, msg.replyTarget, setParley, triggerHaptic, playClickSound]);
 
+    const [isRoomJiggleActive, setIsRoomJiggleActive] = React.useState(false);
+
+    React.useLayoutEffect(() => {
+        if (!isImmersionMode || !msg.isRoomArrival || Date.now() - msg.timestamp > 4000 || playedRoomJiggleIds.has(msg.id)) return;
+
+        if (playedRoomJiggleIds.size > 2000) {
+            const iter = playedRoomJiggleIds.values();
+            for (let i = 0; i < 500; i++) {
+                const val = iter.next().value;
+                if (val) playedRoomJiggleIds.delete(val);
+            }
+        }
+        playedRoomJiggleIds.add(msg.id);
+        setIsRoomJiggleActive(true);
+        const timer = window.setTimeout(() => {
+            setIsRoomJiggleActive(false);
+        }, 1600);
+        return () => window.clearTimeout(timer);
+    }, [isImmersionMode, msg.id, msg.isRoomArrival, msg.timestamp]);
+
     const showTimestamp = isTimestampEnabled &&
         !msg.isRoomName &&
         msg.type !== 'room-description' &&
@@ -302,12 +371,17 @@ const MessageItem = React.memo(({
         <span className="message-timestamp">{formatTimestamp(msg.timestamp)}</span>
     ) : null;
 
-    const extractRoomDescription = (html: string) => {
+    const extractRoomDescription = (html: string, baseReverseIdx = 0) => {
         const startIdx = html.indexOf('<div class="room-desc-line">');
         if (startIdx === -1) return '';
         const raw = html.substring(startIdx);
-        return raw.replace(/(<div class="room-desc-line">)([\s\S]*?)(<\/div>)/g, (_match, open, inner, close) => {
+        const totalDescLines = (raw.match(/<div class="room-desc-line">/g) || []).length;
+        let lineIdx = 0;
+        return raw.replace(/(<div class="room-desc-line">)([\s\S]*?)(<\/div>)/g, (_match, _open, inner, close) => {
             let wIdx = 0;
+            const reverseLineIdx = baseReverseIdx + (totalDescLines - 1 - lineIdx);
+            const currentLineDelay = reverseLineIdx * 35;
+            lineIdx++;
             const wrappedInner = inner.replace(/(>|^)([^<]+)(<|$)/g, (_m: string, before: string, text: string, after: string) => {
                 const words = text.replace(/(\S+)(\s*)/g, (_wm: string, word: string, space: string) => {
                     const span = `<span class="log-text-word" style="--word-idx:${wIdx};">${word}</span>${space}`;
@@ -316,7 +390,7 @@ const MessageItem = React.memo(({
                 });
                 return `${before}${words}${after}`;
             });
-            return `${open}${wrappedInner}${close}`;
+            return `<div class="room-desc-line" style="--room-line-delay:${currentLineDelay}ms;">${wrappedInner}${close}`;
         });
     };
 
@@ -324,9 +398,12 @@ const MessageItem = React.memo(({
         <div
             ref={messageRootRef}
             data-subdued-action={msg.isSubduedAction || undefined}
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${isLoginNamePrompt ? ' login-name-prompt' : ''}${msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}${isFocusRevealActive ? ' focus-reveal-active' : ''}`}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${isLoginNamePrompt ? ' login-name-prompt' : ''}${regenSlowTooltip ? ' regen-slow-notice' : ''}${isImmersionMode && msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}${isFocusRevealActive ? ' focus-reveal-active' : ''}${isMagicRippleActive ? ' magic-ripple-active' : ''}${isItemActionActive && itemActionAnimation ? ` item-action-${itemActionAnimation}` : ''}${isImmersionMode && isRoomJiggleActive ? ' room-jiggle-active' : ''}`}
+            data-regeneration-tooltip={regenSlowTooltip}
+            title={regenSlowTooltip}
             style={{ 
                 '--reveal-delay': `${batchOffset * 15}ms`,
+                '--room-line-delay': `${(msg.roomLineIndex ?? (batchOffset || 0)) * 35}ms`,
                 '--terrain-glow-color': msg.isRoomBlock && !msg.isRoomContentsLine ? getRoomTerrainGlowColor(msg.terrain) : undefined,
                 // A negative delay starts the infinite wave at a varied phase
                 // immediately, instead of holding freshly received text still.
@@ -413,25 +490,21 @@ const MessageItem = React.memo(({
             ) : msg.type === 'practice-class-header' ? (
                 <PracticeClassHeaderCard label={ansiConvert.toHtml(msg.textRaw || '')} />
             ) : ((msg.type === 'comm' || msg.type === 'comm-continue' || msg.isComm) && (msg.commSender || msg.commText)) ? (
-                <div className={`comm-bubble-wrapper ${msg.type === 'comm-continue' ? 'continuation' : ''}`}>
-
-                    <div className="comm-content-row">
-                        <div
-                            className="comm-bubble"
-                            style={{ color: msg.commColor, cursor: 'pointer', '--bubble-color': msg.commColor, '--glow-color': msg.commColor } as React.CSSProperties}
-                            onClick={triggerParley}
-                        >
-                            {timestampEl}
-                            {msg.type !== 'comm-continue' && (
-                                <>
-                                    <span className="comm-sender"><TokenRenderer tokens={msg.commSenderTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} /></span>
-                                    <span className="comm-action" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
-                                </>
-                            )}
-                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} splitFirstWord={true} /></span>
-                        </div>
-                        <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
+                <div className={`content-row comm-row${msg.type === 'comm-continue' ? ' continuation' : ''}`} ref={impactRowRef}>
+                    {timestampEl}
+                    <div
+                        className="message-content comm-content"
+                        onClick={triggerParley}
+                    >
+                        {msg.type !== 'comm-continue' && (
+                            <>
+                                <span className="comm-sender"><TokenRenderer tokens={msg.commSenderTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} /></span>
+                                <span className="comm-action" style={{ color: msg.commColor || (msg.replyCommand === 'tell' ? 'var(--ansi-bright-green, #22c55e)' : undefined) }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
+                            </>
+                        )}
+                        <span className={`comm-text${msg.replyCommand === 'tell' ? ' tell-body' : ''}`}><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} splitFirstWord={true} /></span>
                     </div>
+                    <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                 </div>
             ) : (
                 <div className="content-row" ref={impactRowRef}>
@@ -489,6 +562,11 @@ const MessageItem = React.memo(({
                                         isRoomContentsLine={msg.isRoomContentsLine}
                                     />
                                 )}
+                                {regenSlowTooltip && (
+                                    <span className="regen-slow-info-cue" aria-hidden="true">
+                                        <CircleHelp size={12} strokeWidth={2.2} />
+                                    </span>
+                                )}
                                 <ResourceGainBadge gain={msg.resourceGain} />
                                 {msg.isHitImpact && sheenActive && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
@@ -514,7 +592,7 @@ const MessageItem = React.memo(({
                                 {msg.isRoomName && msg.tokens && msg.html?.includes('room-desc-line') && (
                                     <div 
                                         className="room-description-merged" 
-                                        dangerouslySetInnerHTML={{ __html: extractRoomDescription(msg.html) }} 
+                                        dangerouslySetInnerHTML={{ __html: extractRoomDescription(msg.html, msg.roomContentCount ?? 0) }}
                                     />
                                 )}
                             </div>
@@ -553,6 +631,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     // and the input box is independent — subscribing here forced a full virtual-list re-map on
     // every prompt tick and every keystroke.
     const { scrollContainerRef, messagesEndRef, scrollToBottom, isLockedToBottomRef } = viewport;
+
     // Highlight the selected character line in the log via a dynamic <style> rule.
     const selectedCharName = accountState?.selectedCharacter?.name ?? null;
     useEffect(() => {

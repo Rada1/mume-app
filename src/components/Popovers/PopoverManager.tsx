@@ -463,7 +463,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         );
     }
 
-    const hasCapturedDetails = !!(popoverState.isCapturingExamine || popoverState.isCapturingConsider || popoverState.capturedExamineLines || popoverState.capturedConsiderLines);
+    const hasCapturedDetails = !!(popoverState.hasInspectionCard || popoverState.isCapturingExamine || popoverState.isCapturingConsider || popoverState.capturedExamineLines || popoverState.capturedConsiderLines);
     const isParleyType = popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target';
     const isAnchoredDropdown = !!popoverState.sourceRect && !isParleyType && popoverState.type !== 'menu' && popoverState.type !== undefined;
     return (

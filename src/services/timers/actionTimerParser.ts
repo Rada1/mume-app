@@ -111,13 +111,13 @@ export const parseActionTimerLine = (text: string) => {
     // 2. Clear active timers on cancel/interrupt/completion patterns
     if (active && !active.isFinished) {
         // Interrupt / Fail lines
-        if (/lost your concentration|failed|nothing seems to happen|you can't|you cannot|interrupted|stop bandaging|too exhausted|already bashed|aren't we funny/i.test(text)) {
+        if (/lost your concentration|failed|you can't|you cannot|interrupted|stop bandaging|too exhausted|already bashed|aren't we funny/i.test(text)) {
             store.completeTimer(true);
             return true;
         }
 
         // Spell completion success indicators
-        if (active.type === 'spell' && /you feel|ok\.|your spell|you begin to feel|you conjure|a blue transparent wall|a white aura/i.test(text.toLowerCase())) {
+        if (active.type === 'spell' && /you feel|ok\.|your spell|you begin to feel|you conjure|a blue transparent wall|a white aura|nothing seems to happen/i.test(text.toLowerCase())) {
             store.completeTimer(false);
             return true;
         }

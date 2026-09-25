@@ -7,7 +7,7 @@
  * can reuse this deck in the map gutter for the center action buttons.
  */
 
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     Swords, MessageSquare, Wrench, Home,
     Sword, HeartPulse, Footprints, Target, ScrollText,
@@ -16,6 +16,7 @@ import {
 import { useGame } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
+import { doesCommandMatchDeckItem } from '../../utils/commandFeedbackUtils';
 import './CommandDeck.css';
 
 type TabKey = 'combat' | 'social' | 'utility' | 'room';
@@ -89,6 +90,15 @@ export const CommandDeck: FC = () => {
     const hintTimerRef = useRef<number | undefined>(undefined);
     useEffect(() => () => window.clearTimeout(hintTimerRef.current), []);
 
+    const [pressedLabel, setPressedLabel] = useState<string | null>(null);
+    const pressTimerRef = useRef<number | undefined>(undefined);
+
+    const flashPressed = useCallback((label: string) => {
+        window.clearTimeout(pressTimerRef.current);
+        setPressedLabel(label);
+        pressTimerRef.current = window.setTimeout(() => setPressedLabel(null), 140);
+    }, []);
+
     const items = useMemo<DeckItem[]>(() => (
         STATIC[activeTab].map(item => ({
             label: item.label,
@@ -96,6 +106,26 @@ export const CommandDeck: FC = () => {
             needsTarget: item.cmd.endsWith(' ')
         }))
     ), [activeTab]);
+
+    const itemsRef = useRef(items);
+    useEffect(() => { itemsRef.current = items; }, [items]);
+
+    useEffect(() => {
+        const onCommandExecuted = (event: Event) => {
+            const cmd = (event as CustomEvent<{ cmd?: string }>).detail?.cmd;
+            if (!cmd) return;
+            const matched = itemsRef.current.find(item => doesCommandMatchDeckItem(cmd, item));
+            if (matched) {
+                flashPressed(matched.label);
+            }
+        };
+
+        window.addEventListener('mume:command-executed', onCommandExecuted);
+        return () => {
+            window.removeEventListener('mume:command-executed', onCommandExecuted);
+            window.clearTimeout(pressTimerRef.current);
+        };
+    }, [flashPressed]);
 
     const fire = (item: DeckItem) => {
         if (item.needsTarget && !target) {
@@ -114,27 +144,62 @@ export const CommandDeck: FC = () => {
             }, 50);
             return;
         }
+        flashPressed(item.label);
         triggerHaptic?.(15);
         executeCommand(item.needsTarget && target ? `${item.cmd}${target}`.trim() : item.cmd.trim());
     };
 
-    // Number-row hotkeys (1-9, 0) fire the first ten slots, but only when the
-    // command line isn't focused so typing isn't hijacked.
+    // The visible number badges are command-line shortcuts, not instant-cast
+    // hotkeys. Keep the action editable (and require Enter to send it), just
+    // like choosing a command from the input's suggestion list.
+    const primeCommand = (item: DeckItem) => {
+        triggerHaptic?.(10);
+        setInput(item.cmd);
+        requestAnimationFrame(() => {
+            const input = document.getElementById('mud-input') as HTMLTextAreaElement | null;
+            if (!input) return;
+            input.focus();
+            input.style.height = 'auto';
+            input.style.height = `${input.scrollHeight}px`;
+        });
+    };
+
+    // Number-row hotkeys (1-9, 0) populate the matching action in the command
+    // bar. They intentionally work while that bar is focused as well; otherwise
+    // its normal focused state would make the visible shortcuts unusable.
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.code.startsWith('Numpad') || e.location === 3) return;
+            if (e.defaultPrevented) return;
             const active = document.activeElement as HTMLElement | null;
-            if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) return;
+            const isCommandBar = active?.id === 'mud-input';
+            if (active && !isCommandBar && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) return;
+            // Once a deck command has opened the input's suggestion list, its
+            // number badges take precedence (for example: 1 = the first kill
+            // target). Never let the deck consume that follow-up key.
+            if (document.querySelector('.command-suggestion-popup')) return;
             if (!/^[0-9]$/.test(e.key)) return;
+
+            // Only trigger number shortcuts when the command bar is empty.
+            // If the player has already typed anything (e.g. "go 2"),
+            // let the number be typed into the input instead of hijacking it.
+            const mudInputEl = document.getElementById('mud-input') as HTMLTextAreaElement | null;
+            const currentText = isCommandBar
+                ? ((active as HTMLTextAreaElement).value ?? '')
+                : (mudInputEl?.value ?? useInputStore.getState().input ?? '');
+
+            if (currentText.length > 0) return;
+
             const idx = e.key === '0' ? 9 : parseInt(e.key, 10) - 1;
             if (idx < items.length) {
                 e.preventDefault();
-                fire(items[idx]);
+                primeCommand(items[idx]);
             }
         };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
-    });
+    }, [items, triggerHaptic, setInput]);
 
     const iconFor = (item: DeckItem): React.ComponentType<{ size?: number; strokeWidth?: number }> => {
         if (activeTab === 'social') return MessageSquare;
@@ -180,7 +245,7 @@ export const CommandDeck: FC = () => {
                             <button
                                 key={item.label}
                                 type="button"
-                                className={`deck-slot state-ready${targetReady ? ' target-ready' : ''}${needsTargetHint === item.label ? ' needs-target' : ''}`}
+                                className={`deck-slot state-ready${targetReady ? ' target-ready' : ''}${needsTargetHint === item.label ? ' needs-target' : ''}${pressedLabel === item.label ? ' is-key-pressed' : ''}`}
                                 onClick={() => fire(item)}
                                 title={item.needsTarget && target ? `${item.cmd}${target}` : item.cmd.trim()}
                             >
