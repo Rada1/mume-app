@@ -196,18 +196,8 @@
         display: none !important;
     }
 
-    /* Shrink gutter to just the input bar when keyboard is open (excluding account stages) */
+    /* Hide map gutter when keyboard is open in gameplay mode */
     .kb-open .mobile-bottom-gutter:not(.account-gutter) {
-        height: auto !important;
-        min-height: 52px;
-        padding: 4px 8px 6px 8px !important;
-        border-radius: 0;
-        z-index: var(--z-hud-interactive);
-        box-sizing: border-box;
-    }
-
-    .kb-open .mobile-bottom-gutter .mobile-mapper-touch-surface,
-    .kb-open .mobile-prompt-timer-lane {
         display: none !important;
     }
 }

@@ -27,10 +27,11 @@ interface PopoverActionButtonProps {
     entities: Record<string, GameEntity>;
     keywordOverrides?: Record<string, string>;
     direction?: string;
+    onRequestWhois?: () => void;
 }
 
 export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
-    button, depth = 0, isSubButton = false, compact = false, terminal = false, showFavorite = true, glowDelay, favorites, toggleFavorite, popoverState, setPopoverState, setButtons, handleButtonClick, executeCommand, addMessage, handleTabClick, setGearTab, selectedObjectIds, clearObjectSelection, entities, keywordOverrides, direction
+    button, depth = 0, isSubButton = false, compact = false, terminal = false, showFavorite = true, glowDelay, favorites, toggleFavorite, popoverState, setPopoverState, setButtons, handleButtonClick, executeCommand, addMessage, handleTabClick, setGearTab, selectedObjectIds, clearObjectSelection, entities, keywordOverrides, direction, onRequestWhois
 }) => {
     const isFav = favorites.includes(button.command);
     
@@ -46,6 +47,8 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
             if (isExecute) handleButtonClick(button, e, popoverState.context, undefined, popoverState.parentNoun, direction);
             setPopoverState(null);
             addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
+        } else if (/^whois(?:\s|$)/i.test(button.command) && onRequestWhois) {
+            onRequestWhois();
         } else if (button.label === 'Look In') {
             const target = sanitizeGameTarget(popoverState.context || '');
             executeCommand(`look in ${target}`, false, false);

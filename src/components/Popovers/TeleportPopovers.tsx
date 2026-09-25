@@ -33,52 +33,155 @@ export const TeleportSavePopover: React.FC<TeleportSaveProps> = ({ popoverState,
         setPopoverState(null);
     };
     return (
-        <div style={{ padding: '12px', minWidth: '200px' }}>
-            <div style={{ fontSize: '0.8rem', color: 'var(--accent)', marginBottom: '10px', fontWeight: 'bold' }}>STORE ROOM</div>
-            <input type="text" placeholder="Label" autoFocus ref={inputRef} onKeyDown={(e) => { if (e.key === 'Enter') doSave(); else if (e.key === 'Escape') setPopoverState(null); }} style={{ width: '100%', background: 'var(--input-bg, rgba(255,255,255,0.1))', border: '1px solid var(--border-color, rgba(255,255,255,0.2))', color: 'var(--text-primary, #fff)', padding: '8px', borderRadius: '6px', marginBottom: '10px' }} />
-            <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={doSave} style={{ flex: 1, background: 'var(--accent)', border: 'none', color: 'var(--ansi-black, #000)', padding: '8px', borderRadius: '6px', fontWeight: 'bold' }}>Save</button>
-                <button onClick={() => setPopoverState(null)} style={{ flex: 1, background: 'var(--input-bg, rgba(255,255,255,0.1))', border: 'none', color: 'var(--text-primary, #fff)', padding: '8px', borderRadius: '6px' }}>Cancel</button>
+        <div className="terminal-teleport-popover">
+            <div className="terminal-teleport-header">
+                <span className="terminal-teleport-prompt">&gt;</span>
+                <span className="terminal-teleport-title">store magic key</span>
+                <span className="terminal-teleport-key-badge">{popoverState.teleportId}</span>
             </div>
-        </div>
-    );
-};
-
-export const TeleportSelectPopover: React.FC<{ popoverState: PopoverState, setPopoverState: (val: PopoverState | null) => void, teleportTargets: TeleportTarget[], executeCommand: (cmd: string) => void }> = ({ popoverState, setPopoverState, teleportTargets, executeCommand }) => {
-    const activeTargets = pruneExpiredMagicKeys(teleportTargets);
-    return (
-        <>
-            <div className="popover-header" style={{ padding: '8px 12px', fontSize: '0.7rem', opacity: 0.5 }}>TARGET FOR {popoverState.spellCommand?.toUpperCase()}</div>
-            <div className="popover-scroll" style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                {activeTargets.map(t => (
-                    <div key={t.id} className="popover-item" data-menu-item="true" onClick={() => { executeCommand(buildKeyedSpellCommand(popoverState.spellCommand || "cast 'teleport'", t)); setPopoverState(null); }}>
-                        <span>{t.label || t.name}</span>
-                        <span style={{ fontSize: '0.6rem', opacity: 0.5 }}>{t.expiresAt ? Math.ceil((t.expiresAt - Date.now()) / 3600000) : '?'}h</span>
-                    </div>
-                ))}
-            </div>
-            <div style={{ display: 'flex', borderTop: '1px solid var(--border-color, rgba(255,255,255,0.1))' }}>
-                <div className="popover-item" style={{ flex: 1, textAlign: 'center', opacity: 0.6 }} onClick={() => setPopoverState({ ...popoverState, type: 'teleport-manage' })}>Manage</div>
-                <div className="popover-item" style={{ flex: 1, color: 'var(--ansi-red, #ff5555)', textAlign: 'center' }} onClick={() => setPopoverState(null)}>Cancel</div>
-            </div>
-        </>
-    );
-};
-
-export const TeleportManagePopover: React.FC<{ teleportTargets: TeleportTarget[], setTeleportTargets: React.Dispatch<React.SetStateAction<TeleportTarget[]>>, setPopoverState: (val: PopoverState | null) => void }> = ({ teleportTargets, setTeleportTargets, setPopoverState }) => (
-    <>
-        <div className="popover-header" style={{ color: 'var(--accent)' }}>MAGIC KEYS</div>
-        <div className="popover-scroll" style={{ maxHeight: '250px', overflowY: 'auto', minWidth: '220px' }}>
-            {pruneExpiredMagicKeys(teleportTargets).map(t => (
-                <div key={t.id} className="popover-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                    <div style={{ minWidth: 0 }}>
-                        <input value={t.label || t.name} onChange={(e) => setTeleportTargets(prev => renameMagicKeyTarget(prev, t.id, e.target.value))} style={{ width: '100%', background: 'transparent', border: 0, color: 'var(--text-primary, #fff)' }} />
-                        <div style={{ fontSize: '0.6rem', opacity: 0.4 }}>{t.id}</div>
-                    </div>
-                    <button onClick={() => setTeleportTargets(prev => prev.filter(x => x.id !== t.id))} style={{ background: 'var(--ansi-red, rgba(255,0,0,0.1))', opacity: 0.2, border: 'none', color: 'var(--text-primary, #fff)', width: '24px', height: '24px', borderRadius: '12px' }}>x</button>
+            <div className="terminal-teleport-body">
+                <input
+                    type="text"
+                    placeholder="Enter room label..."
+                    autoFocus
+                    ref={inputRef}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') doSave();
+                        else if (e.key === 'Escape') setPopoverState(null);
+                    }}
+                    className="terminal-teleport-input"
+                />
+                <div className="terminal-teleport-actions">
+                    <button type="button" onClick={doSave} className="terminal-teleport-btn terminal-teleport-btn-primary">
+                        save [enter]
+                    </button>
+                    <button type="button" onClick={() => setPopoverState(null)} className="terminal-teleport-btn">
+                        cancel
+                    </button>
                 </div>
-            ))}
+            </div>
         </div>
-        <div className="popover-item" style={{ borderTop: '1px solid var(--border-color, rgba(255,255,255,0.1))', textAlign: 'center' }} onClick={() => setPopoverState(null)}>Close</div>
-    </>
-);
+    );
+};
+
+export const TeleportSelectPopover: React.FC<{
+    popoverState: PopoverState;
+    setPopoverState: (val: PopoverState | null) => void;
+    teleportTargets: TeleportTarget[];
+    executeCommand: (cmd: string) => void;
+}> = ({ popoverState, setPopoverState, teleportTargets, executeCommand }) => {
+    const activeTargets = pruneExpiredMagicKeys(teleportTargets);
+    const spellLabel = (popoverState.spellCommand || "cast 'teleport'").toLowerCase();
+
+    return (
+        <div className="terminal-teleport-popover">
+            <div className="terminal-teleport-header">
+                <span className="terminal-teleport-prompt">&gt;</span>
+                <span className="terminal-teleport-title">{spellLabel}</span>
+                <span className="terminal-teleport-count">{activeTargets.length} key{activeTargets.length !== 1 ? 's' : ''}</span>
+            </div>
+
+            <div className="terminal-teleport-scroll">
+                {activeTargets.length === 0 ? (
+                    <div className="terminal-teleport-empty">No active magic keys stored.</div>
+                ) : (
+                    activeTargets.map(t => {
+                        const hoursLeft = t.expiresAt ? Math.max(0, Math.ceil((t.expiresAt - Date.now()) / 3600000)) : null;
+                        return (
+                            <button
+                                key={t.id}
+                                type="button"
+                                className="terminal-teleport-row"
+                                data-menu-item="true"
+                                onClick={() => {
+                                    executeCommand(buildKeyedSpellCommand(popoverState.spellCommand || "cast 'teleport'", t));
+                                    setPopoverState(null);
+                                }}
+                            >
+                                <span className="terminal-teleport-row-name">{t.label || t.name}</span>
+                                <span className="terminal-teleport-row-cmd">{t.id}</span>
+                                {hoursLeft !== null && (
+                                    <span className="terminal-teleport-row-expiry">{hoursLeft}h</span>
+                                )}
+                            </button>
+                        );
+                    })
+                )}
+            </div>
+
+            <div className="terminal-teleport-footer">
+                <button
+                    type="button"
+                    className="terminal-teleport-footer-btn"
+                    onClick={() => setPopoverState({ ...popoverState, type: 'teleport-manage' })}
+                >
+                    manage keys
+                </button>
+                <button
+                    type="button"
+                    className="terminal-teleport-footer-btn terminal-teleport-footer-cancel"
+                    onClick={() => setPopoverState(null)}
+                >
+                    cancel
+                </button>
+            </div>
+        </div>
+    );
+};
+
+export const TeleportManagePopover: React.FC<{
+    teleportTargets: TeleportTarget[];
+    setTeleportTargets: React.Dispatch<React.SetStateAction<TeleportTarget[]>>;
+    setPopoverState: (val: PopoverState | null) => void;
+}> = ({ teleportTargets, setTeleportTargets, setPopoverState }) => {
+    const activeTargets = pruneExpiredMagicKeys(teleportTargets);
+
+    return (
+        <div className="terminal-teleport-popover terminal-teleport-manage">
+            <div className="terminal-teleport-header">
+                <span className="terminal-teleport-prompt">&gt;</span>
+                <span className="terminal-teleport-title">manage magic keys</span>
+                <span className="terminal-teleport-count">{activeTargets.length} key{activeTargets.length !== 1 ? 's' : ''}</span>
+            </div>
+
+            <div className="terminal-teleport-scroll">
+                {activeTargets.length === 0 ? (
+                    <div className="terminal-teleport-empty">No active keys.</div>
+                ) : (
+                    activeTargets.map(t => (
+                        <div key={t.id} className="terminal-teleport-manage-row">
+                            <div className="terminal-teleport-manage-info">
+                                <input
+                                    value={t.label || t.name}
+                                    onChange={(e) => setTeleportTargets(prev => renameMagicKeyTarget(prev, t.id, e.target.value))}
+                                    className="terminal-teleport-manage-input"
+                                    placeholder="Room label..."
+                                />
+                                <span className="terminal-teleport-manage-id">{t.id}</span>
+                            </div>
+                            <button
+                                type="button"
+                                className="terminal-teleport-delete-btn"
+                                onClick={() => setTeleportTargets(prev => prev.filter(x => x.id !== t.id))}
+                                title={`Delete ${t.label || t.name}`}
+                            >
+                                &times;
+                            </button>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            <div className="terminal-teleport-footer">
+                <button
+                    type="button"
+                    className="terminal-teleport-footer-btn"
+                    onClick={() => setPopoverState(null)}
+                    style={{ width: '100%', textAlign: 'center' }}
+                >
+                    close
+                </button>
+            </div>
+        </div>
+    );
+};

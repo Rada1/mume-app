@@ -43,6 +43,7 @@ import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImpor
 import { canBootstrapExpectedCapture } from './captureBootstrap';
 import { consumeCommandCompletionSound } from '../../services/audio/commandCompletionSounds';
 import { changesCombatStatsFromSpell } from '../../utils/spellCombatStatUtils';
+import { parseShopVariant } from '../../utils/shopVariantParser';
 
 const decodeTextEntities = (text: string) => text
     .replace(/&gt;/gi, '>')
@@ -274,6 +275,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const { registerEntity, extractNoun } = useEntityRegistry();
     const nearbyCaptureRef = useRef<{ active: boolean; isSilent: boolean; lines: DrawerLine[] }>({ active: false, isSilent: false, lines: [] });
     const shopCaptureRef = useRef<{ active: boolean; items: import('../../types').ShopItem[] }>({ active: false, items: [] });
+    const shopVariantCaptureRef = useRef<import('../../types').ShopVariant[]>([]);
+    const shopVariantLineRef = useRef<string | null>(null);
     const pendingHelpInterestRef = useRef(false);
     const pendingCommXmlRef = useRef<{ tag: string; line: string; isSnoop: boolean } | null>(null);
     const textMapperStateRef = useRef(createTextMapperState());
@@ -964,6 +967,27 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // --- Shop List Capture ---
         if (!isSnoop && !isAccountPhase) {
             const shopStore = useUIStore.getState();
+            const variantProduct = shopStore.shopVariantRequest;
+            if (variantProduct !== null) {
+                const candidate = shopVariantLineRef.current
+                    ? `${shopVariantLineRef.current} ${textOnly.trim()}` : textOnly;
+                const variant = parseShopVariant(candidate);
+                if (variant) {
+                    if (/\band$/i.test(variant.price)) {
+                        shopVariantLineRef.current = candidate;
+                    } else {
+                        shopVariantCaptureRef.current.push(variant);
+                        shopVariantLineRef.current = null;
+                    }
+                    return;
+                }
+                if (isCaptureBoundary || (textOnly.trim() === '' && shopVariantCaptureRef.current.length > 0)) {
+                    shopStore.setShopVariants(variantProduct, shopVariantCaptureRef.current);
+                    shopStore.setShopVariantRequest(null);
+                    shopVariantCaptureRef.current = [];
+                    shopVariantLineRef.current = null;
+                }
+            }
             if (shopCaptureRef.current.active) {
                 if (isCaptureBoundary) {
                     if (shopCaptureRef.current.items.length > 0) {
@@ -1046,6 +1070,28 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (!isSnoop && effectiveCaptureBoundary) {
             if (capture.hasSession()) {
                 capture.finalizeSession();
+            } else if (['whois', 'examine', 'consider'].includes(expectedCaptureType)) {
+                const uiStore = useUIStore.getState();
+                const currentPopover = uiStore.popoverState;
+                if (currentPopover?.isCapturingWhois && expectedCaptureType === 'whois') {
+                    uiStore.setPopoverState({
+                        ...currentPopover,
+                        capturedWhoisLines: [],
+                        isCapturingWhois: false
+                    });
+                } else if (currentPopover?.isCapturingExamine && expectedCaptureType === 'examine') {
+                    uiStore.setPopoverState({
+                        ...currentPopover,
+                        capturedExamineLines: [],
+                        isCapturingExamine: false
+                    });
+                } else if (currentPopover?.isCapturingConsider && expectedCaptureType === 'consider') {
+                    uiStore.setPopoverState({
+                        ...currentPopover,
+                        capturedConsiderLines: [],
+                        isCapturingConsider: false
+                    });
+                }
             }
             capture.clearPendingFlags?.();
             if (deps.captureStage.current !== 'none') {

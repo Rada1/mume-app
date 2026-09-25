@@ -247,6 +247,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 capturedConsiderLines: undefined,
                 isCapturingWhois: false,
                 capturedWhoisLines: undefined,
+                  whoisTarget: undefined,
             };
         };
 

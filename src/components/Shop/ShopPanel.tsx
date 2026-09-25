@@ -1,11 +1,14 @@
+/** @file ShopPanel.tsx - Shop drawer command and selection controls. */
 import React, { useRef, useCallback, useEffect, useState } from 'react';
-import { X, Search } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 import { useGame, useUI } from '../../context/GameContext';
 import { ShopItem } from '../../types';
 import { findRoomShopkeeper } from '../../utils/shopkeeperUtils';
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
+import { ShopItemGroup } from './ShopItemGroup';
+import { ShopPanelHeader } from './ShopPanelHeader';
 import './ShopPanel.css';
+import './ShopPanelTerminal.css';
 
 type ShopAction = 'buy' | 'show' | 'compare';
 type InvAction = 'sell' | 'value' | 'mend';
@@ -30,6 +33,10 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ style }) => {
     const isShopOpen      = useUIStore(s => s.isShopOpen);
     const setIsShopOpen   = useUIStore(s => s.setIsShopOpen);
     const shopItems        = useUIStore(s => s.shopItems);
+    const shopVariants     = useUIStore(s => s.shopVariants);
+    const shopVariantRequest = useUIStore(s => s.shopVariantRequest);
+    const setShopVariantRequest = useUIStore(s => s.setShopVariantRequest);
+    const setShopVariants = useUIStore(s => s.setShopVariants);
     const shopBalance              = useUIStore(s => s.shopBalance);
     const setShopBalance           = useUIStore(s => s.setShopBalance);
     const setShopBalanceRequested  = useUIStore(s => s.setShopBalanceRequested);
@@ -43,13 +50,22 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ style }) => {
     const { triggerHaptic, executeCommand, roomNpcs, roomName, entities, viewport } = useGame() as any;
     const { handleTabClick, setGearTab } = useUI() as any;
     const [search, setSearch] = useState('');
+    const [expandedProduct, setExpandedProduct] = useState<number | null>(null);
     const selectedTarget = useUIStore(s => s.selectedTarget);
 
     const shopkeeper = findRoomShopkeeper(roomNpcs, entities ?? {});
 
     const shopkeeperName = shopkeeperNameFromStore || (shopkeeper ? shopkeeper.name : null);
 
-    useEffect(() => { if (!isShopOpen) setSearch(''); }, [isShopOpen]);
+    useEffect(() => { if (!isShopOpen) { setSearch(''); setExpandedProduct(null); } }, [isShopOpen]);
+
+    const toggleProduct = useCallback((num: number) => {
+        if (expandedProduct === num) { setExpandedProduct(null); return; }
+        setExpandedProduct(num);
+        setShopVariants(num, []);
+        setShopVariantRequest(num);
+        executeCommand(`list ${num}`);
+    }, [expandedProduct, executeCommand, setShopVariants, setShopVariantRequest]);
 
     const filteredItems = search.trim()
         ? shopItems.filter(item => {
@@ -201,43 +217,10 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ style }) => {
         <aside className="docked-panel chat-window-panel shop-panel" style={style} aria-label="Shop">
             {!viewport?.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-shop-width" minWidth={18} maxWidth={60} />}
 
-            <div className="chat-window-header">
-                <span>Shop</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span className="chat-window-count">
-                        {shopkeeperName ? `Dealing with: ${shopkeeperName}` : (roomName || 'Store')}
-                    </span>
-                    <button
-                        type="button"
-                        onClick={handleClose}
-                        title="Close shop"
-                        aria-label="Close shop"
-                        style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '2px' }}
-                    >
-                        <X size={14} />
-                    </button>
-                </div>
-            </div>
+            <ShopPanelHeader shopkeeperName={shopkeeperName} roomName={roomName}
+                itemCount={shopItems.length} balance={shopBalance}
+                search={search} onSearch={setSearch} onClose={handleClose} />
 
-            {/* Search bar */}
-            <div className="shop-search-bar">
-                <Search className="shop-search-icon" size={14} />
-                <input
-                    className="shop-search-input"
-                    type="text"
-                    placeholder="Search items…"
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    onPointerDown={e => e.stopPropagation()}
-                />
-                {search && (
-                    <button className="shop-search-clear" onClick={() => setSearch('')}>
-                        <X size={12} />
-                    </button>
-                )}
-            </div>
-
-            {/* Item list */}
             <div className="shop-panel-content">
                 {filteredItems.length === 0 ? (
                     <div className="shop-panel-empty">
@@ -245,39 +228,16 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ style }) => {
                     </div>
                 ) : (
                     <div className="shop-item-list">
-                        {filteredItems.map(item => {
-                            const isFirstCompare = compareFirst === item.num;
-                            const isSelected = selectedTarget?.id === `shopitem:${item.num}`;
-                            return (
-                                <div
-                                    key={item.num}
-                                    className={`shop-item-row${isSelected ? ' selected' : ''}${isTargeting ? ' targeting' : ''}${isFirstCompare ? ' compare-selected' : ''}`}
-                                    onPointerDown={() => handleItemPress(item)}
-                                >
-                                    <span className="shop-item-num">{item.num}.</span>
-                                    <span className="shop-item-name">{item.name}</span>
-                                    {item.vnum && <span className="shop-item-vnum">&lt;{item.vnum}&gt;</span>}
-                                    <span className="shop-item-price">{item.price}</span>
-                                </div>
-                            );
-                        })}
+                        {filteredItems.map(item => <ShopItemGroup key={item.num} item={item}
+                            variants={shopVariants[item.num]} expanded={expandedProduct === item.num}
+                            loading={shopVariantRequest === item.num}
+                            selectedNum={selectedTarget?.category === 'shopitem' ? Number(selectedTarget.context) : null}
+                            compareNum={compareFirst} targeting={isTargeting}
+                            onSelect={handleItemPress} onToggle={toggleProduct}
+                            onInspect={num => executeCommand(`show ${num}`)} />)}
                     </div>
                 )}
             </div>
-
-            {/* Balance bar */}
-            {shopBalance && (
-                <div className="shop-balance-bar">
-                    <span className="shop-balance-label">Balance:</span>
-                    <span className="shop-balance-value">
-                        {shopBalance.split(/([\d,]+)/g).map((part, i) =>
-                            /^[\d,]+$/.test(part)
-                                ? <span key={i} className="shop-balance-num">{part}</span>
-                                : part
-                        )}
-                    </span>
-                </div>
-            )}
 
             {/* Action buttons — styled like DrawerHoldCommandButton (WHOIS/CHAT style) */}
             <div className="shop-panel-tab-bar">

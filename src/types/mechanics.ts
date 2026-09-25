@@ -10,6 +10,12 @@ export interface ShopItem {
     vnum?: string;
 }
 
+export interface ShopVariant {
+    num: number;
+    condition: string;
+    price: string;
+}
+
 export interface PracticeSkill {
     name: string;
     sessions: string;

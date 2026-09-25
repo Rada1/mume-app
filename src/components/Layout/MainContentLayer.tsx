@@ -557,9 +557,9 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
             {isMobile ? (
                 /* Mobile Layout: InputArea in control-card-wrapper */
-                (gameState !== 'account' || (shouldShowAccountInput && isLandscape)) && (
+                (shouldShowAccountInput && isLandscape) && (
                     <div className="control-card-wrapper">
-                        {((shouldShowAccountInput && isLandscape) || (gameState !== 'account' && isLandscape)) && (
+                        {(shouldShowAccountInput && isLandscape) && (
                             <InputArea
                                 onSend={handleSend}
                                 onSwipe={handleInputSwipe}

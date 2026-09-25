@@ -15,6 +15,7 @@ import { useStatDeltas } from '../../hooks/useStatDeltas';
 import { useCharacterConditions } from '../../hooks/useCharacterConditions';
 import { useCharacterInfoRefresh } from '../../hooks/useCharacterInfoRefresh';
 import { StatDelta } from './StatDelta';
+import { TerminalProgression } from './TerminalProgression';
 import { ThisIsYouStatePill, StateOption } from './ThisIsYouStatePill';
 import {
     formatHeight,
@@ -127,24 +128,9 @@ export const ThisIsYouConsole: FC = () => {
                 <span className="this-is-you-bio-item">Cit: <strong className="cyan" title="Citizenships count">{formatNumber(characterInfo?.citizenships)}</strong></span>
               </div>
 
-              <div className="this-is-you-xp-strip">
-                <div className="this-is-you-xp-box">
-                  <span className="this-is-you-stat-lbl">XP:</span>
-                  <strong className="this-is-you-stat-val xp">{formatNumber(characterInfo?.xp)}</strong>
-                  <StatDelta delta={deltas.xp} />
-                  {characterInfo?.tnl !== undefined && (
-                    <span className="this-is-you-stat-sub">({formatNumber(characterInfo.tnl)} next)</span>
-                  )}
-                </div>
-                <div className="this-is-you-xp-box">
-                  <span className="this-is-you-stat-lbl">TP:</span>
-                  <strong className="this-is-you-stat-val tp">{formatNumber(characterInfo?.tp)}</strong>
-                  <StatDelta delta={deltas.tp} />
-                  {characterInfo?.tpnl !== undefined && (
-                    <span className="this-is-you-stat-sub">({formatNumber(characterInfo.tpnl)} skill)</span>
-                  )}
-                </div>
-              </div>
+              <TerminalProgression characterName={name}
+                xp={characterInfo?.xp} tp={characterInfo?.tp}
+                tnl={characterInfo?.tnl} tpnl={characterInfo?.tpnl} />
             </div>
 
             {/* TIER 2: Vitals & Combat Capabilities (Attack, Dodge, Parry, Armor) */}

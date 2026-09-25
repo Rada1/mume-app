@@ -126,6 +126,8 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     containerId: lastRequestedContainerIdRef.current,
                     command: pendingFlagsRef.current.command
                 }
+                : ['whois', 'examine', 'consider'].includes(type)
+                    ? { command: pendingFlagsRef.current.command }
                 : ['board_list', 'board_read', 'mail_list', 'mail_read', 'book_read'].includes(type)
                     ? { archiveView }
                     : ['shaper_mob_stat', 'shaper_obj_stat', 'shaper_mob_info', 'shaper_obj_info', 'shaper_mob_find', 'shaper_obj_find',
@@ -342,7 +344,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 case 'examine': {
                     const store = useUIStore.getState();
                     const currentPopover = store.popoverState;
-                    if (currentPopover) {
+                    if (currentPopover?.isCapturingExamine) {
                         store.setPopoverState({
                             ...currentPopover,
                             capturedExamineLines: lines.map(l => l.html || l.text),
@@ -354,7 +356,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 case 'consider': {
                     const store = useUIStore.getState();
                     const currentPopover = store.popoverState;
-                    if (currentPopover) {
+                    if (currentPopover?.isCapturingConsider) {
                         store.setPopoverState({
                             ...currentPopover,
                             capturedConsiderLines: lines.map(l => l.html || l.text),
@@ -366,7 +368,10 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 case 'whois': {
                     const store = useUIStore.getState();
                     const currentPopover = store.popoverState;
-                    if (currentPopover) {
+                    // Background commands can replace pending command metadata before
+                    // the first Whois line arrives. The active Whois capture is the
+                    // reliable response boundary here.
+                    if (currentPopover?.isCapturingWhois) {
                         store.setPopoverState({
                             ...currentPopover,
                             capturedWhoisLines: lines.map(l => l.html || l.text),

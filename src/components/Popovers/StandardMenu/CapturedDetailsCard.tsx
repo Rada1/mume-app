@@ -79,7 +79,7 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
 }) => {
     // Remote allies aren't in the room, so they get identified via "whois"
     // instead of the look/consider grid.
-    if (isCapturingWhois || (whoisLines && whoisLines.length > 0)) {
+    if (isCapturingWhois || whoisLines !== undefined) {
         const lines = sanitizeLines(whoisLines);
         return (
             <section className="captured-details-card" onPointerDown={(e) => e.stopPropagation()}>

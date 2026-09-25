@@ -207,3 +207,12 @@
     transform: translateY(0);
     background: rgba(201, 168, 76, 0.4);
 }
+
+.app-container.is-mobile .message-log-docked-input {
+    border-top: 1px solid rgba(201, 168, 76, 0.16);
+    background: rgba(18, 14, 10, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 6px 10px;
+    z-index: 25;
+}

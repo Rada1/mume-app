@@ -9,6 +9,8 @@ import { GameContextType, UIContextType } from '../../../context/GameContext/typ
 import { ArrowLeft, BookOpen, Info, UtensilsCrossed, Droplets, Menu, ChevronLeft, HelpCircle, Play, Plus, KeyRound, Clock, Link2, Activity, MapPin, Timer, UserCircle, LogOut } from 'lucide-react';
 import { useMapper } from '../../../context/useMapper';
 import { MapFilterBar } from '../../Mapper/MapFilterBar';
+import { MapRoomInfoHeader } from '../../HUD/MapRoomInfoHeader';
+import { MapRoomInfoFooter } from '../../HUD/MapRoomInfoFooter';
 
 import InputArea from '../../Controls/InputArea';
 import OpponentRechargeTimer from '../../Combat/OpponentRechargeTimer';
@@ -20,7 +22,7 @@ import './MobileCommandDeck.css';
 type CreationOption = { id: string; label: string };
 const EMPTY_CREATION_OPTIONS: CreationOption[] = [];
 const MOBILE_GUTTER_HEIGHT_KEY = 'mume.mobileGutterHeightPx';
-const MIN_MOBILE_GUTTER_HEIGHT = 180;
+const MIN_MOBILE_GUTTER_HEIGHT = 240;
 const MAX_MOBILE_GUTTER_RATIO = 0.58;
 
 const capitalize = (str: string): string => {
@@ -1048,21 +1050,24 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 >
                     {/* Map slide */}
                     <div
-                        className="mobile-mapper-touch-surface gutter-panel-card map-under-command-bar"
+                        className="mobile-mapper-touch-surface gutter-panel-card"
                         style={{
                             width: '100%',
-                            height: 'calc(100% + 124px)',
+                            height: '100%',
                             flexShrink: 0,
                             position: 'relative',
-                            marginBottom: '-124px',
                             pointerEvents: isShown ? 'auto' : 'none',
-                            touchAction: 'none'
+                            touchAction: 'none',
+                            overflow: 'hidden'
                         }}
                     >
+                        {/* Map Header */}
+                        <MapRoomInfoHeader />
+
                         {/* Header Group: Tactical Buttons */}
                         <div style={{
                             position: 'absolute',
-                            top: '0',
+                            top: '84px',
                             left: '0',
                             right: '0',
                             display: 'flex',
@@ -1126,125 +1131,91 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             setHeldButton={setHeldButton}
                             setCommandPreview={setCommandPreview}
                         />
+
+                        {/* Z-indicator and Find button - positioned above MapRoomInfoFooter */}
+                        {isShown && (
+                            <div style={{
+                                position: 'absolute',
+                                bottom: '46px',
+                                left: '12px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '4px',
+                                alignItems: 'flex-start',
+                                zIndex: 12,
+                                pointerEvents: 'none',
+                            }}>
+                                <div className="gutter-map-filter-host" style={{ pointerEvents: 'auto' }}>
+                                    <MapFilterBar
+                                        activeMapFilter={activeMapFilter}
+                                        mapSearchQuery={mapSearchQuery}
+                                        setActiveMapFilter={setActiveMapFilter}
+                                        setMapSearchQuery={setMapSearchQuery}
+                                        triggerHaptic={triggerHaptic}
+                                    />
+                                </div>
+                                <div className="map-z-indicator" style={{
+                                    position: 'relative',
+                                    bottom: 'auto',
+                                    left: 'auto',
+                                    height: 'auto',
+                                    minHeight: 0,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    padding: '2px 6px',
+                                    borderRadius: '4px',
+                                    background: isDarkMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.75)',
+                                    backdropFilter: 'blur(4px)',
+                                    WebkitBackdropFilter: 'blur(4px)',
+                                    border: isDarkMode ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.12)',
+                                    color: 'var(--text-faded)',
+                                    fontSize: '0.55rem',
+                                    fontFamily: 'monospace',
+                                    fontWeight: 800,
+                                    lineHeight: 1,
+                                    opacity: 1,
+                                    transform: 'scale(0.9)',
+                                    transformOrigin: 'bottom left',
+                                    pointerEvents: 'none',
+                                }}>
+                                    Z: {viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? (rooms[currentRoomId].z || 0).toFixed(1) : '0.0')}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Mobile portrait condition indicator. Time and lighting live in the header and footer. */}
+                        {isMobile && !isLandscape && isShown && (stats.conditions?.hungry || stats.conditions?.thirsty) && (
+                            <div className="mobile-portrait-env-indicator" style={{
+                                position: 'absolute',
+                                bottom: '46px',
+                                right: '12px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                padding: '2px 6px',
+                                background: isDarkMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.75)',
+                                backdropFilter: 'blur(4px)',
+                                borderRadius: '4px',
+                                border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(0, 0, 0, 0.12)',
+                                zIndex: 12,
+                                pointerEvents: 'none',
+                                color: 'var(--text-faded)',
+                                transform: 'scale(0.9)',
+                                transformOrigin: 'bottom right'
+                            }}>
+                                {stats.conditions?.hungry && (
+                                    <UtensilsCrossed size={12} style={{ color: '#fbbf24' }} />
+                                )}
+                                {stats.conditions?.thirsty && (
+                                    <Droplets size={12} style={{ color: '#60a5fa' }} />
+                                )}
+                            </div>
+                        )}
+
+                        {/* Map Footer */}
+                        <MapRoomInfoFooter />
                     </div>
                 </div>
-            </div>
-
-            {/* Command Bar at the BOTTOM of the gutter */}
-            <div
-                className="mobile-gutter-input-wrapper"
-                style={{
-                    position: 'relative',
-                    zIndex: 1,
-                    padding: '8px 0 0 0',
-                    flexShrink: 0,
-                    marginBottom: '16px' 
-                }}
-            >
-                {/* Z-indicator and Find button - bottom-left above command bar */}
-                {isShown && (
-                    <div style={{
-                        position: 'absolute',
-                        bottom: 'calc(100% + 4px)',
-                        left: '12px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '4px',
-                        alignItems: 'flex-start',
-                        zIndex: 2,
-                        pointerEvents: 'none',
-                    }}>
-                        <div className="gutter-map-filter-host" style={{ pointerEvents: 'auto' }}>
-                            <MapFilterBar
-                                activeMapFilter={activeMapFilter}
-                                mapSearchQuery={mapSearchQuery}
-                                setActiveMapFilter={setActiveMapFilter}
-                                setMapSearchQuery={setMapSearchQuery}
-                                triggerHaptic={triggerHaptic}
-                            />
-                        </div>
-                        <div className="map-z-indicator" style={{
-                            position: 'relative',
-                            bottom: 'auto',
-                            left: 'auto',
-                            height: 'auto',
-                            minHeight: 0,
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            background: isDarkMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.75)',
-                            backdropFilter: 'blur(4px)',
-                            WebkitBackdropFilter: 'blur(4px)',
-                            border: isDarkMode ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.12)',
-                            color: 'var(--text-faded)',
-                            fontSize: '0.55rem',
-                            fontFamily: 'monospace',
-                            fontWeight: 800,
-                            lineHeight: 1,
-                            opacity: 1,
-                            transform: 'scale(0.9)',
-                            transformOrigin: 'bottom left',
-                            pointerEvents: 'none',
-                        }}>
-                            Z: {viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? (rooms[currentRoomId].z || 0).toFixed(1) : '0.0')}
-                        </div>
-                    </div>
-                )}
-
-                {/* Mobile portrait condition indicator. Time and lighting live in the header. */}
-                {isMobile && !isLandscape && isShown && (stats.conditions?.hungry || stats.conditions?.thirsty) && (
-                    <div className="mobile-portrait-env-indicator" style={{
-                        position: 'absolute',
-                        bottom: 'calc(100% - 4px)',
-                        right: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        padding: '2px 6px',
-                        background: isDarkMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.75)',
-                        backdropFilter: 'blur(4px)',
-                        borderRadius: '4px',
-                        border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(0, 0, 0, 0.12)',
-                        zIndex: 2,
-                        pointerEvents: 'none',
-                        color: 'var(--text-faded)',
-                        transform: 'scale(0.9)',
-                        transformOrigin: 'bottom right'
-                    }}>
-                        {stats.conditions?.hungry && (
-                            <UtensilsCrossed size={12} style={{ color: '#fbbf24' }} />
-                        )}
-                        {stats.conditions?.thirsty && (
-                            <Droplets size={12} style={{ color: '#60a5fa' }} />
-                        )}
-                    </div>
-                )}
-
-                {gameState !== 'account' && (
-                    <div className="prompt-timer-lane mobile-prompt-timer-lane" aria-hidden="true">
-                        <OpponentRechargeTimer lane="player" />
-                        <ActionTimerDisplay />
-                    </div>
-                )}
-
-                <InputArea
-                    onSend={handleSend}
-                    onSwipe={handleInputSwipe}
-                    isMobile={isMobile}
-                    isKeyboardOpen={viewport.isKeyboardOpen}
-                    commandPreview={null}
-                    spatButtons={spatButtons}
-                    setActiveSet={btn.setActiveSet}
-                    executeCommand={executeCommand}
-                    setSpatButtons={setSpatButtons}
-                    setPopoverState={setPopoverState}
-                    parley={parley}
-                    setParley={setParley}
-                    whoList={whoList}
-                    gameState={gameState}
-                    terrain={currentTerrain}
-                />
             </div>
         </div>
     );

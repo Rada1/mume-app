@@ -137,6 +137,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         : [];
     const resolvedTraitIds = resolvedTraitSections.map(section => section.trait.id);
     const resolvedTraitButtonIds = new Set(getButtonIdsForTraits(resolvedTraitSections.map(section => section.trait)));
+    const canObserve = resolvedTraitIds.includes('trait-observable');
 
     // Build action sections from resolved traits only.
     const entity = popoverState.entityId ? entities[popoverState.entityId] : null;
@@ -188,20 +189,33 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     const requestInspection = (kind: 'look' | 'consider') => {
         if (!targetContext) return;
         const isLook = kind === 'look';
-        if (isInlineMenu) {
-            executeCommand(`${isLook ? 'look' : 'con'} ${targetContext}`, false, false);
-            setPopoverState(null);
-            return;
-        }
-        setPopoverState({
-            ...popoverState,
+        setIsChoosingCategory(false);
+        setPopoverState(current => current ? ({
+            ...current,
+            isChoosingCategory: false,
             hasInspectionCard: true,
             isCapturingExamine: isLook,
             isCapturingConsider: !isLook,
-            capturedExamineLines: isLook ? undefined : popoverState.capturedExamineLines,
-            capturedConsiderLines: isLook ? popoverState.capturedConsiderLines : undefined,
-        });
+            capturedExamineLines: isLook ? undefined : current.capturedExamineLines,
+            capturedConsiderLines: isLook ? current.capturedConsiderLines : undefined,
+            isCapturingWhois: false,
+            capturedWhoisLines: undefined,
+        }) : null);
         executeCommand(`${isLook ? 'look' : 'con'} ${targetContext}`, true, true, false, false, { shouldFocus: false, fromUi: true });
+    };
+
+    const requestWhois = () => {
+        if (!targetContext) return;
+        setIsChoosingCategory(false);
+        setPopoverState(current => current ? ({
+            ...current,
+            isChoosingCategory: false,
+            hasInspectionCard: true,
+            isCapturingWhois: true,
+            capturedWhoisLines: undefined,
+            whoisTarget: targetContext
+        }) : null);
+        executeCommand(`whois ${targetContext}`, true, true, false, false, { shouldFocus: false, fromUi: true });
     };
 
     const renderActionButtons = () => {
@@ -253,7 +267,9 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                 return true;
             });
             seenCommandsSize = actionButtons.length;
-            const manipulationButtons = actionButtons.filter(button => !isInformationButton(button));
+            const manipulationButtons = actionButtons.filter(button =>
+                !isInformationButton(button) || /^whois(?:\s|$)/i.test(button.command)
+            );
             return (
                 <div className="inline-action-groups" aria-label="Available actions">
                     {manipulationButtons.length > 0 && (
@@ -261,7 +277,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                             <span className="inline-action-group-label">Actions</span>
                             <div className="inline-action-list">
                                 {manipulationButtons.map(button => (
-                                    <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} compact terminal glowDelay="0s" />
+                                    <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} compact terminal glowDelay="0s" />
                                 ))}
                             </div>
                         </div>
@@ -437,13 +453,13 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                             {!isTacticalSet && popoverState.assignSourceId && (
                                 <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} style={{ borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => { const setName = safeSetId; const dir = popoverState.assignSwipeDir; setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: setName }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: 'menu' } } : { ...b, command: setName, label: setName, actionType: 'menu' }) : b)); setPopoverState(null); addMessage('system', `Assigned sub-menu '${setName}'${dir ? ` to swipe ${dir}` : ''}.`); }}>Assign {safeSetId.toUpperCase()} as Menu</div>
                             )}
-                            {isInlineMenu && !isCompactInline && (
+                            {isInlineMenu && !isCompactInline && canObserve && (
                                 <div className="terminal-inspect-actions" aria-label="Inspection commands">
                                     <button type="button" className="terminal-inspect-row" onPointerDown={event => event.stopPropagation()} onClick={() => requestInspection('look')}><span>look</span><span>/look {targetContext}</span></button>
                                     <button type="button" className="terminal-inspect-row" onPointerDown={event => event.stopPropagation()} onClick={() => requestInspection('consider')}><span>consider</span><span>/con {targetContext}</span></button>
                                 </div>
                             )}
-                            {!isCompactInline && !isInlineMenu && (
+                            {!isCompactInline && (!isInlineMenu || popoverState.isCapturingWhois || popoverState.capturedWhoisLines !== undefined || popoverState.isCapturingExamine || popoverState.isCapturingConsider || popoverState.capturedExamineLines !== undefined || popoverState.capturedConsiderLines !== undefined) && (
                                 <CapturedDetailsCard
                                     examineLines={popoverState.capturedExamineLines}
                                     considerLines={popoverState.capturedConsiderLines}

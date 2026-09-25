@@ -76,6 +76,10 @@ export interface UIState {
     setIsShopOpen: (open: boolean) => void;
     shopItems: import('../types').ShopItem[];
     setShopItems: (items: import('../types').ShopItem[]) => void;
+    shopVariantRequest: number | null;
+    setShopVariantRequest: (num: number | null) => void;
+    shopVariants: Record<number, import('../types').ShopVariant[]>;
+    setShopVariants: (num: number, items: import('../types').ShopVariant[]) => void;
     heldShopAction: 'buy' | 'show' | 'compare' | 'sell' | 'value' | null;
     setHeldShopAction: (action: 'buy' | 'show' | 'compare' | 'sell' | 'value' | null) => void;
     compareFirstTarget: number | null;
@@ -96,7 +100,7 @@ export interface UIState {
     setIsDrawerPeeking: (peeking: boolean) => void;
     setMapExpanded: (expanded: boolean) => void;
     
-    setPopoverState: (state: PopoverState | null) => void;
+    setPopoverState: (state: PopoverState | null | ((previous: PopoverState | null) => PopoverState | null)) => void;
     setMumeEditState: (state: MumeEditState | ((prev: MumeEditState) => MumeEditState)) => void;
     setIsNewbieMode: (mode: boolean) => void;
     setIsSettingsOpen: (open: boolean) => void;
@@ -172,6 +176,10 @@ export const useUIStore = create<UIState>((set) => ({
     setIsShopOpen: (open) => set({ isShopOpen: open }),
     shopItems: [],
     setShopItems: (items) => set({ shopItems: items }),
+    shopVariantRequest: null,
+    setShopVariantRequest: (num) => set({ shopVariantRequest: num }),
+    shopVariants: {},
+    setShopVariants: (num, items) => set((state) => ({ shopVariants: { ...state.shopVariants, [num]: items } })),
     heldShopAction: null,
     setHeldShopAction: (action) => set({ heldShopAction: action }),
     compareFirstTarget: null,
@@ -201,7 +209,9 @@ export const useUIStore = create<UIState>((set) => ({
     setIsDrawerPeeking: (peeking) => set({ isDrawerPeeking: peeking }),
     setMapExpanded: (expanded) => set({ mapExpanded: expanded }),
 
-    setPopoverState: (state) => set({ popoverState: state }),
+    setPopoverState: (update) => set((state) => ({
+        popoverState: typeof update === 'function' ? update(state.popoverState) : update
+    })),
     setMumeEditState: (updater) => set((state) => ({ 
         mumeEditState: typeof updater === 'function' ? updater(state.mumeEditState) : updater 
     })),

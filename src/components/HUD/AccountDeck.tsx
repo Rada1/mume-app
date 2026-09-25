@@ -11,7 +11,7 @@
 import React, { FC, useState } from 'react';
 import {
     Play, Plus, KeyRound, Clock, Link2, Activity,
-    Info, BookOpen, ArrowLeft, UserCircle, LogOut, MapPin, Timer
+    Info, BookOpen, ArrowLeft, LogOut, MapPin, Timer, Users
 } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import type { GameContextType } from '../../context/GameContext/types';
@@ -19,16 +19,21 @@ import type { AccountState, CharacterEntry } from '../../types';
 import { AccountAnsiLine } from '../Drawers/AccountAnsiLine';
 import { AccountCreationPanel } from '../Drawers/AccountCreationPanel';
 import './AccountDeck.css';
+import './AccountDeckTerminal.css';
 
 const capitalize = (v: string): string => (v ? v.charAt(0).toUpperCase() + v.slice(1) : '');
 
 const MENU_TABS: { cmd: string; label: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number }> }[] = [
-    { cmd: 'play', label: 'Play', icon: Play },
+    { cmd: 'play', label: 'Characters', icon: Users },
     { cmd: 'create', label: 'Create', icon: Plus },
-    { cmd: 'password', label: 'Password', icon: KeyRound },
-    { cmd: 'time', label: 'Time', icon: Clock },
-    { cmd: 'link', label: 'Link', icon: Link2 },
-    { cmd: 'lag', label: 'Lag', icon: Activity }
+    { cmd: 'account', label: 'Account', icon: KeyRound }
+];
+
+const ACCOUNT_TOOLS = [
+    { cmd: 'password', label: 'Change password', icon: KeyRound },
+    { cmd: 'time', label: 'Game time', icon: Clock },
+    { cmd: 'link', label: 'Connection details', icon: Link2 },
+    { cmd: 'lag', label: 'Game lag', icon: Activity }
 ];
 
 const DATA_TITLES: Record<string, string> = { time: 'Game Time', link: 'Link Status', lag: 'Lag Report' };
@@ -148,8 +153,22 @@ export const AccountDeck: FC = () => {
         );
     } else if (selectedMenuCommand === 'create') {
         center = (
-            <div className="account-form-row">
-                <button className="account-btn account-btn-primary" onClick={() => executeCommand('create')}><Plus size={14} /> Create character</button>
+            <div className="account-create-start">
+                <div className="account-section-heading"><span>Create character</span><span>New journey</span></div>
+                <p>Begin character creation. Choose a people, class, name, and attributes in the next steps.</p>
+                <div className="account-form-row">
+                    <button className="account-btn account-btn-primary" onClick={() => executeCommand('create')}><Plus size={14} /> Begin creation</button>
+                </div>
+            </div>
+        );
+    } else if (selectedMenuCommand === 'account') {
+        center = (
+            <div className="account-tool-list">
+                {ACCOUNT_TOOLS.map(({ cmd, label, icon: Icon }) => (
+                    <button className="account-tool-row" type="button" key={cmd} onClick={() => selectMenuCommand(cmd)}>
+                        <Icon size={14} /><span>{label}</span><code>{cmd}</code>
+                    </button>
+                ))}
             </div>
         );
     } else if (selectedMenuCommand === 'time' || selectedMenuCommand === 'link' || selectedMenuCommand === 'lag') {
@@ -166,6 +185,15 @@ export const AccountDeck: FC = () => {
         // play / default — character list + name input + actions
         center = (
             <>
+                <div className="account-command-guide" aria-label="Available account commands">
+                    <span><code>play &lt;name&gt;</code> enter Middle-earth</span>
+                    <span><code>create</code> new character</span>
+                    <span><code>list</code> all characters</span>
+                    <span><code>info</code> details</span>
+                    <span><code>practice</code> skills</span>
+                    <span><code>help</code> all commands</span>
+                </div>
+                <div className="account-section-heading"><span>Your characters</span><span>{characters.length} total</span></div>
                 {renderCharChips()}
                 <div className="account-form-row">
                     <input
@@ -191,16 +219,14 @@ export const AccountDeck: FC = () => {
 
     return (
         <div className="account-deck" onClick={e => e.stopPropagation()}>
-            {/* Status column */}
-            <div className="account-col account-status">
-                <div className="account-col-label">ACCOUNT</div>
-                <div className="account-status-name"><UserCircle size={15} /> Signed in</div>
-                <div className="account-status-meta">{characters.length ? `${characters.length} character${characters.length === 1 ? '' : 's'}` : 'Menu'}</div>
+            <div className="account-terminal-heading">
+                <strong>&gt; MUME / ACCOUNT</strong>
+                <span>{characters.length} CHARACTER{characters.length === 1 ? '' : 'S'}</span>
                 <div className="account-status-actions">
                     {(selectedMenuCommand || selected) && (
                         <button className="account-btn account-btn-sm" onClick={goBack}><ArrowLeft size={14} /> Menu</button>
                     )}
-                    <button className="account-btn account-btn-sm" onClick={() => { triggerHaptic(20); executeCommand('quit'); }} title="Quit"><LogOut size={14} /></button>
+                    <button className="account-btn account-btn-sm" onClick={() => { triggerHaptic(20); executeCommand('quit'); }} title="Quit" aria-label="Quit account"><LogOut size={14} /></button>
                 </div>
             </div>
 
@@ -209,7 +235,7 @@ export const AccountDeck: FC = () => {
                 <div className="account-tab-rail" role="tablist" aria-label="Account menu">
                     {MENU_TABS.map(tab => {
                         const Icon = tab.icon;
-                        const active = selectedMenuCommand === tab.cmd || (!selectedMenuCommand && tab.cmd === 'play');
+                        const active = selectedMenuCommand === tab.cmd || (!selectedMenuCommand && tab.cmd === 'play') || (tab.cmd === 'account' && ['password', 'time', 'link', 'lag'].includes(selectedMenuCommand || ''));
                         return (
                             <button
                                 key={tab.cmd}

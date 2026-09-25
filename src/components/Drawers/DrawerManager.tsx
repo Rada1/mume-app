@@ -114,7 +114,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 }}
             />
 
-            {!viewport.isMobile && (
+            {(!viewport.isMobile || viewport.isLandscape) && (
                 <div className="left-drawer-stack open">
                     <DrawerResizeHandle handleType="right" widthVar="--desktop-map-width" minWidth={15} maxWidth={45} />
                     <div className="map-drawer-desktop open" style={{ opacity: mapDrawerOpacity } as React.CSSProperties}>

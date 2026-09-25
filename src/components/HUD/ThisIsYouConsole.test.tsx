@@ -176,7 +176,7 @@ describe('ThisIsYouConsole Component', () => {
         render(<ThisIsYouConsole />);
 
         const combatPanel = screen.getByRole('group', { name: 'Combat' });
-        expect(combatPanel.textContent).toContain('Attack: 137');
+        expect(combatPanel.textContent).toContain('Offense: 137');
         expect(combatPanel.textContent).toContain('Parry: 25');
         expect(combatPanel.textContent).toContain('Dodge: 23');
         expect(combatPanel.textContent).toContain('Armor: 1');

@@ -44,8 +44,7 @@
     background-color: var(--bg-app);
 }
 
-/* In immersion mode, adopt the room card's translucent obsidian glass,
-   backdrop blur, dynamic terrain glow, and Middle-earth gold hairline inlay. */
+/* In immersion mode, let the scene continue behind the log without a frame. */
 .immersion-mode .log-opaque-backdrop,
 .app-container.immersion-mode .log-opaque-backdrop {
     background: transparent !important;
@@ -57,8 +56,8 @@
 .immersion-mode .message-log-container,
 .app-container.immersion-mode .message-log-container {
     background-color: transparent !important;
-    border: 1px solid rgba(201, 168, 76, 0.14) !important;
-    border-radius: 8px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
     box-shadow: none !important;
 }
 
@@ -783,6 +782,12 @@
     opacity: var(--message-dim-opacity, 0.50);
     /* Universal hovering depth for all text segments */
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+/* The condition itself stays legible while the surrounding status line remains subdued. */
+.message-content .regen-slow-word {
+    opacity: 1 !important;
+    filter: none !important;
 }
 
 /* Wrapper spans should not generate visual boxes or distort text opacity */

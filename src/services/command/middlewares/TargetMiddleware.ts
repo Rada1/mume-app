@@ -31,10 +31,20 @@ export const TargetMiddleware: CommandMiddleware = (cmd, { target }) => {
 
         if (isCastOrSkill || isStandaloneCombat) {
             if (isCastOrSkill) {
-                // Heuristic: if command is just 'cast "spell"' or 'skill "name"' with no extra word, append target
-                const parts = lower.split(/\s+/);
-                if (parts.length <= 2 || (parts[0] === 'cast' && parts.length <= 3 && cmd.includes("'"))) {
-                    finalCmd = `${cmd.trim()} ${target}`;
+                // Parse: cast <spell> [args] or skill <skill> [args]
+                // Accounts for single-word, single-quoted, and double-quoted spell/skill names
+                const match = cmd.match(/^(?:cast|skill)\s+(?:'([^']+)'|"([^"]+)"|(\S+))(?:\s+(.*))?$/i);
+                if (match) {
+                    const actionName = (match[1] || match[2] || match[3] || '').trim().toLowerCase();
+                    const existingArgs = (match[4] || '').trim();
+
+                    // Keyed spells (teleport, portal, scry, watch room) require magic keys, not combat targets
+                    const isKeyed = ['teleport', 'portal', 'scry', 'watch room', 'tp', 'tele'].includes(actionName);
+
+                    // Only auto-append target if no argument was provided and it's not a keyed spell
+                    if (!existingArgs && !isKeyed) {
+                        finalCmd = `${cmd.trim()} ${target}`;
+                    }
                 }
             } else {
                 // Standalone combat verb - always append if we have a target

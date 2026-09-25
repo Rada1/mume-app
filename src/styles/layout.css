@@ -318,8 +318,12 @@
         box-sizing: border-box !important;
     }
     
-    .kb-open .content-layer {
-        padding-bottom: 58px !important; /* Matches gutter height in kb-open state */
+    .kb-open:not(.state-account) .content-layer {
+        padding-bottom: 0px !important;
+    }
+    
+    .kb-open.state-account .content-layer {
+        padding-bottom: 58px !important;
     }
     
     .state-account .content-layer {
@@ -2836,6 +2840,11 @@
         padding: 8px !important;
         box-sizing: border-box !important;
         z-index: 5000 !important;
+    }
+
+    /* The account deck spans the viewport, including the map column. */
+    .state-account .content-layer:has(.account-deck) {
+        z-index: calc(var(--z-drawer, 9200) + 1) !important;
     }
 
     .app-header-glass-strip {

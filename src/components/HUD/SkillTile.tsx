@@ -24,9 +24,10 @@ interface SkillTileProps {
     targetChoices?: CommandTargetSuggestion[];
     onChooseTarget?: (target: string) => void;
     onTypeTarget?: () => void;
+    practice?: { enabled: boolean; label: string; onClick: () => void };
 }
 
-export const SkillTile: FC<SkillTileProps> = ({ item, isSpellClass, isPressed, onClick, target, targetChoices, onChooseTarget, onTypeTarget }) => {
+export const SkillTile: FC<SkillTileProps> = ({ item, isSpellClass, isPressed, onClick, target, targetChoices, onChooseTarget, onTypeTarget, practice }) => {
     // --- Logic Section ---
     const [isOpen, setIsOpen] = useState(false);
     const metaLabel = item.isPassive ? 'Passive' : item.isKnown ? (isSpellClass ? 'Spell' : 'Learned') : '--';
@@ -60,6 +61,11 @@ export const SkillTile: FC<SkillTileProps> = ({ item, isSpellClass, isPressed, o
                 <span className={isSpellClass ? 'skill-tile-spell-meta' : undefined}>{metaLabel}</span>
                 {item.pct !== null && <span className="skill-tile-pct">{item.pct}%</span>}
             </div>
+            {practice && <button type="button" className="skill-tile-practice" disabled={!practice.enabled}
+                aria-label={`${practice.label} ${item.name}`}
+                onClick={event => { event.stopPropagation(); practice.onClick(); }}>
+                {practice.label}
+            </button>}
             {isOpen && hasTarget && <div className="action-target-menu" role="group" aria-label={`${item.name} targets`}
                 onClick={event => event.stopPropagation()}>
                 {targetChoices?.map(choice => <button key={choice.key} type="button"

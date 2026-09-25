@@ -1,0 +1,256 @@
+/**
+ * @file AccountDeckTerminal.css
+ * @description Desktop account menu styled as a compact terminal workspace.
+ */
+
+/* --- Desktop layout --- */
+@media (min-width: 1025px) {
+    .account-deck:not(.account-deck-wide) {
+        grid-template-columns: minmax(0, 1.7fr) minmax(220px, 0.75fr);
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 0 18px;
+        padding: 8px 16px 10px;
+        background: rgba(20, 15, 11, 0.95);
+        color: #d4cdb8;
+    }
+
+    .account-deck .account-terminal-heading {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-height: 30px;
+        border-bottom: 1px solid rgba(201, 168, 76, 0.22);
+        color: #958b79;
+        font-size: 10px;
+        letter-spacing: 0.07em;
+    }
+
+    .account-terminal-heading strong { color: #ddbd69; font-size: 12px; }
+    .account-terminal-heading .account-status-actions { margin: 0 0 0 auto; }
+
+    .account-deck .account-center,
+    .account-deck .account-detail { padding-top: 7px; }
+
+    .account-deck .account-detail {
+        padding-left: 18px;
+        border-left: 1px solid rgba(201, 168, 76, 0.18);
+    }
+
+    .account-deck .account-tab-rail {
+        gap: 14px;
+        flex-wrap: nowrap;
+        border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+        padding: 0 0 7px;
+    }
+
+    .account-deck .account-tab,
+    .account-deck .account-mini-tab {
+        padding: 2px 1px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        color: #958b79;
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: none;
+    }
+
+    .account-deck .account-tab:hover,
+    .account-deck .account-tab.is-active,
+    .account-deck .account-mini-tab:hover,
+    .account-deck .account-mini-tab.is-active {
+        border: 0;
+        background: transparent;
+        color: #ddbd69;
+    }
+
+    .account-deck .account-tab.is-active::before { content: '['; margin-right: 4px; }
+    .account-deck .account-tab.is-active::after { content: ']'; margin-left: 4px; }
+
+    .account-deck .account-center-body { overflow: hidden; }
+    .account-deck .account-command-guide {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0 12px;
+        flex-shrink: 0;
+    }
+
+    .account-command-guide span {
+        border-bottom: 1px solid rgba(201, 168, 76, 0.12);
+        padding: 4px 0;
+        color: #958b79;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 10px;
+    }
+
+    .account-command-guide code {
+        margin-right: 5px;
+        color: #ddbd69;
+        font: inherit;
+        font-weight: 700;
+    }
+
+    .account-section-heading {
+        display: flex;
+        justify-content: space-between;
+        color: #ddbd69;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+    }
+
+    .account-section-heading span:last-child { color: #958b79; font-weight: 400; }
+
+    .account-deck .account-char-list {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0 12px;
+        max-height: none;
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        align-content: start;
+    }
+
+    .account-deck .account-char-chip {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 1px 5px;
+        min-width: 0;
+        padding: 5px 2px;
+        border: 0;
+        border-top: 1px solid rgba(201, 168, 76, 0.14);
+        border-radius: 0;
+        background: transparent;
+        color: #d4cdb8;
+    }
+
+    .account-deck .account-char-chip:hover,
+    .account-deck .account-char-chip.is-active {
+        border-color: rgba(201, 168, 76, 0.32);
+        background: rgba(201, 168, 76, 0.08);
+        color: #ddbd69;
+    }
+
+    .account-deck .account-char-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 11px;
+    }
+
+    .account-deck .account-char-meta { align-self: center; color: #958b79; font-size: 10px; white-space: nowrap; }
+    .account-deck .account-char-detail { grid-column: 1 / -1; min-width: 0; overflow: hidden; white-space: nowrap; color: #958b79; }
+    .account-deck .account-char-detail span { overflow: hidden; text-overflow: ellipsis; }
+
+    .account-deck .account-form-row { flex-wrap: nowrap; margin-top: 0; }
+    .account-deck .account-input {
+        min-width: 0;
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(201, 168, 76, 0.2);
+        border-radius: 4px;
+        color: #ddbd69;
+    }
+
+    .account-deck .account-input:focus { background: rgba(201, 168, 76, 0.07); border-color: #ddbd69; }
+    .account-deck .account-btn {
+        border-color: rgba(201, 168, 76, 0.2);
+        border-radius: 4px;
+        background: transparent;
+        color: #b8ad96;
+        font-weight: 500;
+    }
+
+    .account-deck .account-btn:hover:not(:disabled) { border-color: #ddbd69; background: rgba(201, 168, 76, 0.1); color: #ddbd69; }
+    .account-deck .account-btn-primary { border-color: rgba(201, 168, 76, 0.5); color: #ddbd69; }
+
+    .account-deck .account-col-label {
+        color: #ddbd69;
+        font-size: 10px;
+        letter-spacing: 0.07em;
+    }
+
+    .account-deck .account-empty { color: #958b79; }
+
+    .account-deck .account-tool-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0 14px;
+    }
+
+    .account-tool-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        padding: 10px 2px;
+        border: 0;
+        border-top: 1px solid rgba(201, 168, 76, 0.18);
+        background: transparent;
+        color: #d4cdb8;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .account-tool-row:hover { color: #ddbd69; background: rgba(201, 168, 76, 0.07); }
+    .account-tool-row code { margin-left: auto; color: #958b79; font: inherit; }
+    .account-deck .account-create-start p { color: #958b79; margin: 12px 0 18px; }
+
+    .account-deck-wide {
+        background: rgba(20, 15, 11, 0.95);
+        color: #d4cdb8;
+        padding: 12px 16px;
+    }
+
+    .account-deck-wide .cmd-action-panel { gap: 12px; }
+    .account-deck-wide .cmd-action-header { border-bottom: 1px solid rgba(201, 168, 76, 0.22); padding-bottom: 8px; }
+    .account-deck-wide .cmd-action-title,
+    .account-deck-wide .creation-points-header { color: #ddbd69; }
+    .account-deck-wide .creation-options-list { gap: 0 14px; }
+    .account-deck-wide .account-menu-btn,
+    .account-deck-wide .creation-option-btn,
+    .account-deck-wide .stat-editor-row,
+    .account-deck-wide .account-stat-step {
+        border: 0;
+        border-top: 1px solid rgba(201, 168, 76, 0.18);
+        border-radius: 0;
+        background: transparent;
+        color: #d4cdb8;
+    }
+
+    .account-deck-wide .account-menu-btn:hover:not(:disabled),
+    .account-deck-wide .creation-option-btn:hover:not(:disabled),
+    .account-deck-wide .account-stat-step:hover:not(:disabled) {
+        background: rgba(201, 168, 76, 0.08);
+        color: #ddbd69;
+    }
+
+    .account-deck-wide .account-stat-label { color: #b8ad96; }
+    .account-deck-wide .account-stat-value { color: #ddbd69; }
+}
+
+@media (min-width: 1025px) and (max-width: 1350px) {
+    .account-deck .account-command-guide,
+    .account-deck .account-char-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* --- Light theme --- */
+@media (min-width: 1025px) {
+    .light-mode .account-deck:not(.account-deck-wide) { background: rgba(251, 248, 240, 0.96); color: #4a4032; }
+    .light-mode .account-deck .account-char-chip,
+    .light-mode .account-deck .account-tab,
+    .light-mode .account-deck .account-mini-tab,
+    .light-mode .account-tool-row { background: transparent; color: #5d5344; }
+    .light-mode .account-deck .account-tab.is-active,
+    .light-mode .account-deck .account-mini-tab.is-active,
+    .light-mode .account-deck .account-char-chip.is-active { background: rgba(139, 107, 16, 0.07); color: #806017; }
+    .light-mode .account-deck .account-btn,
+    .light-mode .account-deck .account-input { background: transparent; color: #5d5344; border-color: rgba(139, 107, 16, 0.24); }
+    .light-mode .account-deck .account-btn-primary { color: #806017; }
+}

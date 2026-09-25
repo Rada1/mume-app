@@ -216,6 +216,7 @@ const MessageItem = React.memo(({
         : sanitizeMumeHtml(content);
     const isLoginNamePrompt = /\bby what name do you wish to be known\?/i.test(msg.textRaw || msg.textOnly || '');
     const statusNotice = (msg.textOnly || msg.textRaw || '').trim().toLowerCase();
+    const statusCondition = /^(?:you are|you begin to feel) (hungry|thirsty)\.$/.exec(statusNotice)?.[1];
     const isHungryNotice = statusNotice === 'you are hungry.';
     const isThirstyNotice = statusNotice === 'you are thirsty.';
     const regenSlowTooltip = isHungryNotice
@@ -553,7 +554,13 @@ const MessageItem = React.memo(({
                                             {formatted && <span className="room-zone-name">{formatted}</span>}
                                         </span>
                                     );
-                                })() : (
+                                })() : statusCondition ? (
+                                    <>
+                                        <span>{statusNotice.startsWith('you begin') ? 'You begin to feel ' : 'You are '}</span>
+                                        <span className="regen-slow-word">{statusCondition}</span>
+                                        <span>.</span>
+                                    </>
+                                ) : (
                                     <TokenRenderer
                                         tokens={msg.tokens}
                                         fallbackHtml={accountRippleHtml}

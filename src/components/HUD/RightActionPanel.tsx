@@ -15,9 +15,10 @@ import {
 } from '../../utils/practiceClassCatalog';
 import { RightPanelTabs } from './RightPanelTabs';
 import { ActionCommandRow } from './ActionCommandRow';
-import { SkillTile } from './SkillTile';
+import { RightPanelSkills } from './RightPanelSkills';
+import { useGuildPracticeActions } from '../../hooks/useGuildPracticeActions';
 import { getRoomTargetSuggestions } from '../../utils/commandSuggestionUtils';
-import type { GmcpOccupant } from '../../types';
+import type { GmcpOccupant, PracticeData } from '../../types';
 import { MainTab, ActionItem, COMBAT_ACTIONS, UTILITY_ACTIONS, CLASS_KEYS } from './rightActionData';
 import { getSkillOrSpellSyntax, getSpellManaCost } from '../../utils/spellSyntaxUtils';
 import './RightActionPanel.css';
@@ -31,13 +32,14 @@ export const RightActionPanel: FC = () => {
     } = useGame() as {
         executeCommand: (cmd: string, silent?: boolean, hideInHistory?: boolean, skipHistory?: boolean, sys?: boolean) => void;
         triggerHaptic?: (ms: number) => void; abilities?: Record<string, number>; gameState?: string; characterClass?: string;
-        practice?: { practiceData?: { skills?: Array<{ name: string; mana?: string }> } | null };
+        practice?: { practiceData?: PracticeData | null };
         roomPlayers?: GmcpOccupant[]; roomNpcs?: GmcpOccupant[]; roomItems?: GmcpOccupant[];
         setTarget: (target: string | null) => void;
         characterName?: string;
     };
     const { target } = useActiveVitals() as { target: string | null };
     const { roomNum } = useActiveRoom();
+    const guildPractice = useGuildPracticeActions(gameState === 'playing', roomNum, roomNpcs, practice?.practiceData, executeCommand);
     const setInput = useInputStore(s => s.setInput);
     const requestTargetPicker = useInputStore(s => s.requestTargetPicker);
     const [activeTab, setActiveTab] = useState<MainTab>(() => {
@@ -238,41 +240,22 @@ export const RightActionPanel: FC = () => {
                 )}
 
                 {activeTab === 'skills' && (
-                    <>
-                        <div className="right-panel-class-chips">
-                            {CLASS_KEYS.map(ck => (
-                                <button
-                                    key={ck}
-                                    type="button"
-                                    className={`right-panel-class-chip${selectedClass === ck ? ' is-active' : ''}`}
-                                    onClick={() => { setSelectedClass(ck); triggerHaptic?.(10); }}
-                                >
-                                    {ck}
-                                </button>
-                            ))}
-                        </div>
-                        <div className="right-panel-grid">
-                            {displayedSkills.map(s => (
-                                <SkillTile
-                                    key={s.name}
-                                    item={s}
-                                    isSpellClass={isSpellClass}
-                                    isPressed={pressedLabel === s.name}
-                                    onClick={() => fireSkill(s.name, isSpellClass)}
-                                    target={TARGETED_SKILLS.has(s.name.toLowerCase()) ? skillTarget(s.name) : null}
-                                    targetChoices={TARGETED_SKILLS.has(s.name.toLowerCase()) ? getRoomTargetSuggestions(
-                                        [...roomPlayers, ...roomNpcs], roomItems, skillTargetKind(s.name), characterName
-                                    ) : []}
-                                    onChooseTarget={value => setTargetOverrides(current => ({ ...current, [s.name]: value }))}
-                                    onTypeTarget={() => {
-                                        setInput(isSpellClass ? `cast '${s.name.toLowerCase()}' ` : `${s.name.toLowerCase()} `);
-                                        requestTargetPicker();
-                                        window.setTimeout(() => document.getElementById('mud-input')?.focus(), 50);
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    </>
+                    <RightPanelSkills items={displayedSkills} selectedClass={selectedClass}
+                        onSelectClass={key => { setSelectedClass(key); triggerHaptic?.(10); }}
+                        isSpellClass={isSpellClass} pressedLabel={pressedLabel}
+                        guildAvailable={guildPractice.available} sessionsLeft={guildPractice.sessionsLeft}
+                        trainingFor={guildPractice.trainingFor}
+                        onPractice={name => { triggerHaptic?.(20); executeCommand(`practice ${name.toLowerCase()}`); }}
+                        onFire={fireSkill} targetFor={skillTarget}
+                        choicesFor={name => getRoomTargetSuggestions(
+                            [...roomPlayers, ...roomNpcs], roomItems, skillTargetKind(name), characterName
+                        )}
+                        onChooseTarget={(name, value) => setTargetOverrides(current => ({ ...current, [name]: value }))}
+                        onTypeTarget={name => {
+                            setInput(isSpellClass ? `cast '${name.toLowerCase()}' ` : `${name.toLowerCase()} `);
+                            requestTargetPicker();
+                            window.setTimeout(() => document.getElementById('mud-input')?.focus(), 50);
+                        }} />
                 )}
             </div>
 

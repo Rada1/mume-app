@@ -916,8 +916,8 @@ export const useMapperRenderer = ({
         // now; group members are still available in the group UI.
         drawDeathIndicator(rCtx);
         drawFilterHighlights(rCtx, playerPosRef);
+        drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);
         if (!showTerrainTiles) {
-            drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);
             drawDoorHighlights(rCtx, playerPosRef);
         }
         drawMarkers(rCtx, stableMarkersRef, selectedMarkerId, camera.x, camera.y, camera.x + baseW/camera.zoom, camera.y + baseH/camera.zoom);

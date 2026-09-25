@@ -73,7 +73,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         wrapRef: commandInputWrapRef,
         inputRef,
         isMobile: viewport.isMobile,
-        placement: 'bottom'
+        placement: viewport.isMobile ? 'top' : 'bottom'
     });
 
     const showsStandaloneAccountInput = accountState?.stage === 'login' ||
@@ -100,8 +100,8 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         }
 
         if (e.key === 'Enter') {
-            e.preventDefault();
-            handleSubmit();
+            // Let the form's onSubmit handle form submission to avoid double-execution
+            return;
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
             useInputStore.getState().navigateHistory('up');
@@ -114,7 +114,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         }
     }, [handleSuggestionKeyDown, handleSubmit, setInput]);
 
-    if (viewport.isMobile || hideCommandInput) {
+    if (hideCommandInput) {
         return null;
     }
 

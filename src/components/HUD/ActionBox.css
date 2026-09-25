@@ -389,7 +389,7 @@
        row for the account deck (it manages its own internal scroll). */
     .action-box.account-mode {
         grid-template-rows: 0px minmax(0, 1fr) auto;
-        height: clamp(150px, 16vh, 220px);
+        height: clamp(285px, 35vh, 390px);
     }
 
     .action-box.account-mode .account-deck {

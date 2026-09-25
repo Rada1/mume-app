@@ -1,0 +1,43 @@
+/**
+ * @file TerminalProgression.css
+ * @description Compact terminal progress lines for XP and TP.
+ */
+
+/* --- Session progress layout --- */
+.this-is-you-console .terminal-progress {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-family: var(--font-mono, monospace);
+}
+
+.terminal-progress-row {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    font-size: 0.65rem;
+    line-height: 1.35;
+    white-space: nowrap;
+}
+
+.terminal-progress-kind { color: #958b79; }
+.terminal-progress-session { color: #9bd2a5; font-variant-numeric: tabular-nums; }
+
+.terminal-progress-gain {
+    color: #ddbd69;
+    font-weight: 800;
+    animation: terminal-progress-arrive 350ms ease-out;
+}
+
+@keyframes terminal-progress-arrive {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .terminal-progress-gain { animation: none; }
+}
+
+.light-mode .terminal-progress-session { color: #286c43; }
+.light-mode .terminal-progress-gain { color: #806017; }

@@ -1,6 +1,34 @@
-/** Tracks the ordered, separate response lines from compact `info %` commands. */
+/**
+ * @file characterInfoRefreshTracker.ts
+ * @description Tracks ordered responses from compact character info commands.
+ */
 export type CharacterInfoRefreshField = 'citizenships' | 'age' | 'height' | 'warFame' | 'gold' | 'wimpy';
 
+// --- Height response validation ---
+const HEIGHT_WORDS = [
+    'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
+    'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen',
+    'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'
+];
+
+const heightPart = (value: string): number | null => {
+    if (/^\d{1,2}$/.test(value)) return Number(value);
+    const index = HEIGHT_WORDS.indexOf(value.toLowerCase());
+    return index < 0 ? null : index;
+};
+
+const isHeightResponse = (value: string): boolean => {
+    const feetAndInches = value.match(/^([a-z]+|\d{1,2})\s+(?:feet|foot)\s+([a-z]+|\d{1,2})(?:\s+inches?)?$/i);
+    if (feetAndInches) {
+        const feet = heightPart(feetAndInches[1]);
+        const inches = heightPart(feetAndInches[2]);
+        return feet !== null && feet >= 1 && feet <= 20 && inches !== null && inches <= 11;
+    }
+    const centimetres = value.match(/^(\d{2,3})(?:\.\d)?\s+centimet(?:re|er)s?$/i);
+    return centimetres !== null && Number(centimetres[1]) >= 30 && Number(centimetres[1]) <= 500;
+};
+
+// --- Refresh sequence ---
 let pendingFields: CharacterInfoRefreshField[] = [];
 let expiresAt = 0;
 let notifyOnConsume = false;
@@ -51,9 +79,8 @@ export const consumeCharacterInfoRefreshLine = (content: string, now = Date.now(
     }
 
     if (field === 'height') {
-        // MUME prints a human-readable measurement. Do not accept unrelated
-        // login/quest text while the response is pending.
-        if (!/\b(?:feet|foot|inches?|centimet(?:re|er)s?)\b/i.test(value)) return null;
+        // Equipment slots can mention feet while the info response is pending.
+        if (!isHeightResponse(value)) return null;
         consumeField();
         return { height: value };
     }

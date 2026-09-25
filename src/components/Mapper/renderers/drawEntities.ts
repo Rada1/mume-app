@@ -663,11 +663,22 @@ export const drawEntities = (
             }
 
             if (predictedPoints.length > 1) {
-                const movementColor = rCtx.playerColor || '#4a341e';
+                const movementColor = rCtx.playerColor || (rCtx.showTerrainTiles !== false ? '#ffd700' : '#4a341e');
                 ctx.save();
                 // MMapper's prespammed path is a solid, centered 0.1-room-unit
                 // line with a small point at its endpoint.
-                ctx.globalAlpha = 0.78;
+                ctx.globalAlpha = rCtx.showTerrainTiles !== false ? 0.95 : 0.78;
+                // Add high-contrast outline under tiles so it stands out brightly over complex terrain
+                if (rCtx.showTerrainTiles !== false) {
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
+                    ctx.lineWidth = GRID_SIZE * 0.1 + 2 / rCtx.camera.zoom;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(predictedPoints[0].x, predictedPoints[0].y);
+                    for (const point of predictedPoints.slice(1)) ctx.lineTo(point.x, point.y);
+                    ctx.stroke();
+                }
                 ctx.strokeStyle = movementColor;
                 ctx.lineWidth = GRID_SIZE * 0.1;
                 ctx.lineCap = 'round';
@@ -677,6 +688,13 @@ export const drawEntities = (
                 ctx.moveTo(predictedPoints[0].x, predictedPoints[0].y);
                 for (const point of predictedPoints.slice(1)) ctx.lineTo(point.x, point.y);
                 ctx.stroke();
+                if (rCtx.showTerrainTiles !== false) {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+                    const endpoint = predictedPoints[predictedPoints.length - 1];
+                    ctx.beginPath();
+                    ctx.arc(endpoint.x, endpoint.y, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
                 ctx.fillStyle = movementColor;
                 const endpoint = predictedPoints[predictedPoints.length - 1];
                 ctx.beginPath();

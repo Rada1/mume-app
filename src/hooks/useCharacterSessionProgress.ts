@@ -34,6 +34,7 @@ export const useCharacterSessionProgress = (
     const startTpRef = useRef<number | null>(null);
     const prevXpRef = useRef<number | null>(null);
     const prevTpRef = useRef<number | null>(null);
+    const gainTimersRef = useRef<number[]>([]);
 
     const [floatingGains, setFloatingGains] = useState<FloatingGainItem[]>([]);
     const [lastXpGainKey, setLastXpGainKey] = useState(0);
@@ -61,52 +62,42 @@ export const useCharacterSessionProgress = (
         }
     }
 
-    // Effect to monitor XP & TP increments for floating gain animation
+    // Monitor both gains independently; a single update may award XP and TP.
     useEffect(() => {
         if (safeXp <= 0 && safeTp <= 0) return;
-
-        // Check XP increment
+        const gains: FloatingGainItem[] = [];
         if (prevXpRef.current !== null && safeXp > prevXpRef.current) {
-            const delta = safeXp - prevXpRef.current;
-            const newItem: FloatingGainItem = {
+            gains.push({
                 id: `xp-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
                 type: 'xp',
-                amount: delta
-            };
-
-            setFloatingGains(prev => [...prev.slice(-4), newItem]);
+                amount: safeXp - prevXpRef.current
+            });
             setLastXpGainKey(k => k + 1);
-
-            const timer = window.setTimeout(() => {
-                setFloatingGains(prev => prev.filter(item => item.id !== newItem.id));
-            }, 1300);
-
-            prevXpRef.current = safeXp;
-            return () => window.clearTimeout(timer);
         }
         prevXpRef.current = safeXp;
-
-        // Check TP increment
         if (prevTpRef.current !== null && safeTp > prevTpRef.current) {
-            const delta = safeTp - prevTpRef.current;
-            const newItem: FloatingGainItem = {
+            gains.push({
                 id: `tp-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
                 type: 'tp',
-                amount: delta
-            };
-
-            setFloatingGains(prev => [...prev.slice(-4), newItem]);
+                amount: safeTp - prevTpRef.current
+            });
             setLastTpGainKey(k => k + 1);
-
-            const timer = window.setTimeout(() => {
-                setFloatingGains(prev => prev.filter(item => item.id !== newItem.id));
-            }, 1300);
-
-            prevTpRef.current = safeTp;
-            return () => window.clearTimeout(timer);
         }
         prevTpRef.current = safeTp;
+        if (!gains.length) return;
+        setFloatingGains(prev => [...prev, ...gains].slice(-5));
+        gains.forEach(item => {
+            const timer = window.setTimeout(() => {
+                setFloatingGains(prev => prev.filter(gain => gain.id !== item.id));
+                gainTimersRef.current = gainTimersRef.current.filter(active => active !== timer);
+            }, 2400);
+            gainTimersRef.current.push(timer);
+        });
     }, [safeXp, safeTp]);
+
+    useEffect(() => () => {
+        gainTimersRef.current.forEach(window.clearTimeout);
+    }, []);
 
     const baselineXp = startXpRef.current ?? safeXp;
     const baselineTp = startTpRef.current ?? safeTp;
