@@ -4,7 +4,7 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 import { CategoryOverride, EntityKind } from '../../types';
 import CategoryTraitCards from './CategoryTraitCards';
 import TraitSettings from './TraitSettings';
-import { getCategoryColorWithOverrides, toCategoryId } from '../../utils/inlineActionModel';
+import { getCategoryColorWithOverrides, getKindForCategory, toCategoryId } from '../../utils/inlineActionModel';
 import { fromThemeLinkedColorInput, LinkedColorTheme, toColorInputHex, toThemeLinkedColor } from '../../utils/themeLinkedColors';
 
 interface ButtonSettingsProps {
@@ -19,8 +19,10 @@ interface ButtonSettingsProps {
     setActiveSet: (set: string) => void;
 }
 
-const getCategoryColor = (id: string, configs: CategoryOverride[], fallback: string, theme: LinkedColorTheme): string =>
-    getCategoryColorWithOverrides(id, configs, fallback, {}, theme);
+const getCategoryColor = (id: string, configs: CategoryOverride[], fallback: string, theme: LinkedColorTheme): string => {
+    const kind = getKindForCategory(id);
+    return getCategoryColorWithOverrides(id, configs, fallback, kind ? { [kind]: fallback } : {}, theme);
+};
 
 const setCategoryColor = (
     id: string,

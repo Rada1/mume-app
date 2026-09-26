@@ -1,6 +1,7 @@
 import { CustomButton, SwipeDirection } from '../types';
 import { sanitizeGameTarget } from './gameUtils';
 import { decodeCommandEntities } from './commandTextUtils';
+import { canCommandAcceptTarget, applyTargetToCommand } from './commandTargetUtils';
 
 const DOOR_ACTION_COMMANDS = new Set(['open', 'close', 'lock', 'unlock', 'knock']);
 
@@ -78,6 +79,11 @@ export const getButtonCommand = (
             } else {
                 cmd = cmd.replace(/ %n/g, '').replace(/%n/g, '');
             }
+        }
+
+        if (!consumedTarget && target && actionType === 'command' && canCommandAcceptTarget(cmd)) {
+            cmd = applyTargetToCommand(cmd, target);
+            consumedTarget = true;
         }
     }
 

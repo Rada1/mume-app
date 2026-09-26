@@ -152,6 +152,9 @@ export function useActionTracker(deps: ActionTrackerDeps) {
             }); return;
         }
         
+        // Taking a mount's reins changes posture; it does not add an inventory item.
+        if (/^You pick up .+['’]s reins and start riding (?:him|her|it)\.$/i.test(textOnly)) return;
+
         const getMatch = cleanLine.match(/^You (?:get|take|pick) (.*?)(?: from (.*?))?\.$/i);
         if (getMatch) {
             const itemRaw = getMatch[1];

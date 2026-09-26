@@ -8,13 +8,10 @@ import { useGame, useUI } from '../../context/GameContext';
 import { DrawerShell } from './DrawerShell';
 import { Mapper } from '../Mapper/Mapper';
 import { MapperRef } from '../Mapper/mapperTypes';
-import { Lock, Compass } from 'lucide-react';
 import { DrawerResizeHandle } from './DrawerResizeHandle';
 import { AccountDrawer } from './AccountDrawer';
 import { CharacterCard } from '../HUD/CharacterCard';
-import { MapRoomInfoFooter } from '../HUD/MapRoomInfoFooter';
 import { MapRoomInfoHeader } from '../HUD/MapRoomInfoHeader';
-import { MovementPad } from '../HUD/MovementPad';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import './PlaceholderDrawers.css';
 
@@ -37,7 +34,8 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     } = useGame() as any;
     const mapperDesktopRef = React.useRef<MapperRef>(null);
     const { ui, setUI } = useUI();
-    const { mapDrawerOpacity, setMapDrawerOpacity, characterDrawerOpacity, setCharacterDrawerOpacity } = useSettingsStore();
+    const { mapDrawerOpacity, setMapDrawerOpacity, characterDrawerOpacity, setCharacterDrawerOpacity, hideMapHeaderFooter } = useSettingsStore();
+    const showMapDrawer = gameState !== 'account' || sessionMode === 'replay';
 
     // Body classes for desktop layout
     React.useEffect(() => {
@@ -114,12 +112,12 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 }}
             />
 
-            {(!viewport.isMobile || viewport.isLandscape) && (
+            {(!viewport.isMobile || viewport.isLandscape) && showMapDrawer && (
                 <div className="left-drawer-stack open">
                     <DrawerResizeHandle handleType="right" widthVar="--desktop-map-width" minWidth={15} maxWidth={45} />
-                    <div className="map-drawer-desktop open" style={{ opacity: mapDrawerOpacity } as React.CSSProperties}>
+                    <div className={`map-drawer-desktop open${hideMapHeaderFooter ? ' hide-header-footer' : ''}`} style={{ opacity: mapDrawerOpacity } as React.CSSProperties}>
                         <div className="drawer-content" style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                            <MapRoomInfoHeader />
+                            {!hideMapHeaderFooter && <MapRoomInfoHeader />}
                             {/* Pinned Full Map Canvas */}
                             <div className="map-canvas-full-viewport" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 1 }}>
                                 <Mapper
@@ -132,24 +130,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                                     setHeldButton={setHeldButton}
                                     setCommandPreview={setCommandPreview}
                                 />
-
-                                {gameState === 'account' && (
-                                    <div className="map-placeholder-overlay">
-                                        <div className="map-placeholder-icon-ring">
-                                            <Compass size={24} className="placeholder-pulse-element" />
-                                        </div>
-                                        <span className="map-placeholder-title">Map & Navigation</span>
-                                        <span className="map-placeholder-subtitle">Log in to activate navigation map</span>
-                                    </div>
-                                 )}
                             </div>
-                            {gameState === 'playing' && (
-                                <div className="map-movement-controls" aria-label="Map movement controls">
-                                    <span className="map-movement-label">move</span>
-                                    <MovementPad />
-                                </div>
-                            )}
-                            <MapRoomInfoFooter />
                         </div>
                     </div>
                 </div>

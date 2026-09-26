@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 /**
  * @file ChatEntry.test.tsx
- * @description Unit tests for ChatEntry verifying message body spacing and ANSI phrase colors.
+ * @description Unit tests for ChatEntry spacing and separate sender/action rendering.
  */
 
 import React from 'react';
@@ -18,7 +18,7 @@ vi.mock('../../context/GameContext', () => ({
 
 vi.mock('../../stores/useSettingsStore', () => ({
     useSettingsStore: (fn: any) => fn({
-        playerColor: undefined,
+        playerColor: '#7da8e8',
         enemyColor: undefined,
         neutralColor: undefined,
         npcColor: undefined,
@@ -43,6 +43,12 @@ describe('ChatEntry', () => {
             commAction: 'tells you',
             commText: "'I think you are confused, nobody is called hi'",
             commColor: 'var(--ansi-bright-green, #44ff70)',
+            commSenderTokens: [{
+                type: 'entity',
+                content: 'Sauron',
+                entityId: 'sauron',
+                metadata: { category: 'cat-player', kind: 'player', style: { color: 'var(--ansi-bright-green)' } }
+            }],
             commTextTokens: [
                 {
                     type: 'text',
@@ -56,6 +62,10 @@ describe('ChatEntry', () => {
         const phrase = container.querySelector('.chat-window-phrase');
         expect(phrase?.textContent).toBe('Sauron tells you:');
         expect((phrase as HTMLElement)?.style.color).toBe('var(--ansi-bright-green, #44ff70)');
+        expect(container.querySelector('.chat-window-action')?.textContent).toBe(' tells you:');
+        const sender = container.querySelector('.chat-window-sender .inline-btn') as HTMLElement;
+        expect(sender).toBeTruthy();
+        expect(sender.style.getPropertyValue('--glow-color')).toBe('#7da8e8');
 
         const textContainer = container.querySelector('.chat-window-text');
         // Verify textContent has all spaces intact
@@ -64,7 +74,7 @@ describe('ChatEntry', () => {
         expect(textContainer?.textContent).not.toBe("'Ithinkyouareconfused,nobodyiscalledhi'");
     });
 
-    it('colors says as cyan, yells as purple/magenta, and tells as green', () => {
+    it('keeps different channel verbs separate from sender names', () => {
         const sayMessage: Message = {
             id: 'say-1',
             type: 'comm',
@@ -81,6 +91,7 @@ describe('ChatEntry', () => {
         const { container: sayContainer } = render(<ChatEntry message={sayMessage} />);
         const sayPhrase = sayContainer.querySelector('.chat-window-phrase') as HTMLElement;
         expect(sayPhrase.textContent).toBe('A traveler says:');
+        expect(sayContainer.querySelector('.chat-window-action')?.textContent).toBe(' says:');
         expect(sayPhrase.style.color).toContain('cyan');
 
         const yellMessage: Message = {
@@ -99,6 +110,7 @@ describe('ChatEntry', () => {
         const { container: yellContainer } = render(<ChatEntry message={yellMessage} />);
         const yellPhrase = yellContainer.querySelector('.chat-window-phrase') as HTMLElement;
         expect(yellPhrase.textContent).toBe('An orc yells:');
+        expect(yellContainer.querySelector('.chat-window-action')?.textContent).toBe(' yells:');
         expect(yellPhrase.style.color).toContain('magenta');
     });
 });

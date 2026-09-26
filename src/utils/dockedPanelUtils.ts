@@ -3,10 +3,10 @@
  * @description Coordinates desktop sliding dock panels and calculates dynamic right-offsets.
  */
 
-export type DockedPanelId = 'commands' | 'chat' | 'shop' | 'players' | 'help' | 'archive' | 'editor';
+export type DockedPanelId = 'commands' | 'chat' | 'shop' | 'players' | 'gear' | 'help' | 'archive' | 'editor';
 
 export const DOCKED_PANEL_ORDER: readonly DockedPanelId[] = [
-    'editor', 'archive', 'shop', 'players', 'help', 'chat', 'commands'
+    'editor', 'archive', 'shop', 'gear', 'players', 'help', 'chat', 'commands'
 ] as const;
 
 export const PANEL_WIDTH_VARS: Record<DockedPanelId, string> = {
@@ -14,6 +14,7 @@ export const PANEL_WIDTH_VARS: Record<DockedPanelId, string> = {
     chat: '--desktop-chat-width',
     shop: '--desktop-shop-width',
     players: '--desktop-players-width',
+    gear: '--desktop-gear-width',
     help: '--desktop-help-width',
     archive: '--desktop-archive-width',
     editor: '--desktop-editor-width'
@@ -24,6 +25,7 @@ export const PANEL_DEFAULT_WIDTHS: Record<DockedPanelId, string> = {
     chat: '24vw',
     shop: '30vw',
     players: '24vw',
+    gear: '30vw',
     help: '28vw',
     archive: '34vw',
     editor: '32vw'
@@ -52,27 +54,25 @@ export function computeDockedRight(
 }
 
 /**
- * Returns dynamic mobile panel height depending on how many panels are open simultaneously.
+ * Height for mobile sliding panels opening from header tabs: full height from header down to bottom inset.
  */
-export function getMobilePanelHeight(totalActivePanels: number): string {
-    if (totalActivePanels >= 3) return '24vh';
-    if (totalActivePanels === 2) return '30vh';
-    return '38vh';
+export const MOBILE_DOCKED_HEIGHT = 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 62px)';
+
+/**
+ * Returns mobile panel height for sliding header panels.
+ */
+export function getMobilePanelHeight(_totalActivePanels: number = 1): string {
+    return MOBILE_DOCKED_HEIGHT;
 }
 
 /**
- * Computes CSS `top` offset for a docked panel on mobile, stacking downward from the top.
+ * Computes CSS `top` offset for a docked panel on mobile.
  */
 export function computeDockedTop(
-    panelId: DockedPanelId,
-    activePanels: readonly DockedPanelId[]
+    _panelId: DockedPanelId,
+    _activePanels: readonly DockedPanelId[]
 ): string {
-    const idx = activePanels.indexOf(panelId);
-    const baseTop = 'calc(env(safe-area-inset-top, 0px) + 50px)';
-    if (idx <= 0) return baseTop;
-
-    const heightVal = getMobilePanelHeight(activePanels.length);
-    return `calc(${baseTop} + ${idx} * (var(--mobile-docked-height, ${heightVal}) + 8px))`;
+    return 'calc(env(safe-area-inset-top, 0px) + 50px)';
 }
 
 /**
@@ -84,6 +84,7 @@ export function computeDockedPanelStyle(
     isMobile: boolean
 ): React.CSSProperties {
     if (isMobile) {
+        const idx = activePanels.indexOf(panelId);
         const mobileHeight = getMobilePanelHeight(activePanels.length);
         return {
             top: computeDockedTop(panelId, activePanels),
@@ -93,7 +94,8 @@ export function computeDockedPanelStyle(
             maxWidth: 'none',
             minWidth: '0',
             height: `var(--mobile-docked-height, ${mobileHeight})`,
-            bottom: 'auto'
+            bottom: 'calc(env(safe-area-inset-bottom, 0px) + 10px)',
+            zIndex: 60000 + Math.max(0, idx)
         };
     }
 

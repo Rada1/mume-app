@@ -28,7 +28,7 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
     const {
         setIsFoggy, setLightningEnabled,
         setSpectateIsFoggy, setSpectateLightningEnabled,
-        triggerHaptic, playDoorSound
+        triggerHaptic, playDoorSound, playRideSound, playStopRidingSound, playEffect, setIsRiding, setPlayerPosition
     } = deps;
 
     const parseAtmosphere = useCallback((lower: string, isSnoop: boolean = false) => {
@@ -52,6 +52,17 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
             setTimeout(() => lightningSetter(false), 500);
         }
 
+        // MUME reports mount changes as text even when Char.Ride does not arrive.
+        if (!isSnoop && /^you pick up .+['’]s reins and start riding (?:him|her|it)\.$/.test(lower)) {
+            setIsRiding?.(true);
+            setPlayerPosition('riding');
+            playRideSound?.();
+        } else if (!isSnoop && /^you stop riding\b.*\.$/.test(lower)) {
+            setIsRiding?.(false);
+            setPlayerPosition('standing');
+            playStopRidingSound?.();
+        }
+
         // --- Environmental Sounds ---
         const isKnockAtEntrance = /\bknock(?:s|ed|ing)?\b.*\b(?:door|gate|hatch|portcullis|entrance)\b|\b(?:door|gate|hatch|portcullis|entrance)\b.*\bknock(?:s|ed|ing)?\b/.test(lower);
         if (isKnockAtEntrance) {
@@ -64,7 +75,7 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
             playDoorSound?.(false);
         }
 
-    }, [setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound]);
+    }, [setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, playRideSound, playStopRidingSound, playEffect, setIsRiding, setPlayerPosition]);
 
     return { parseAtmosphere };
 }

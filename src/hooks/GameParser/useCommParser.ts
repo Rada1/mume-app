@@ -161,12 +161,6 @@ export function useCommParser(deps: CommParserDeps) {
 
         parseXmlComm();
 
-        // Tell bodies use the log's normal text color even when the server
-        // switches ANSI colors partway through the message.
-        if (replyCommand === 'tell' && commText) {
-            commText = commText.replace(/\x1b\[[0-9;]*m/g, '');
-        }
-
         // Social/emote tags are game output, not conversations. Keep isSocial
         // for log grouping, but only real replyable channels become comm bubbles.
         if (replyCommand) {

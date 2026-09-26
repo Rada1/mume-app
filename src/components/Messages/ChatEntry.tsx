@@ -29,6 +29,7 @@ export const ChatEntry: React.FC<{ message: Message; triggerParley?: (event: Rea
     const details = getChatMessageDetails(message);
     if (!details) return null;
     const fallbackText = getFallbackHtml(details.text);
+    const phrase = getChatTranscriptPhrase(details);
 
     return (
         <article className={`chat-window-entry${details.isOutgoing ? ' chat-window-entry-outgoing' : ''}`}>
@@ -37,9 +38,16 @@ export const ChatEntry: React.FC<{ message: Message; triggerParley?: (event: Rea
             </time>
             <div className="chat-window-line">
                 <span className="chat-window-phrase" style={details.color ? { color: details.color } : undefined}>
-                    {getChatTranscriptPhrase(details)}
+                    {details.isOutgoing ? phrase : (
+                        <>
+                            <span className="chat-window-sender">
+                                <TokenRenderer tokens={message.commSenderTokens} fallbackHtml={getFallbackHtml(details.sender)} preferSettingsEntityColor />
+                            </span>
+                            <span className="chat-window-action">{phrase.slice(details.sender.length)}</span>
+                        </>
+                    )}
                 </span>
-                <div className="chat-window-text">
+                <div className="chat-window-text" style={details.color ? { color: details.color } : undefined}>
                     {details.isOutgoing ? details.text : <TokenRenderer tokens={message.commTextTokens} fallbackHtml={fallbackText} />}
                 </div>
             </div>

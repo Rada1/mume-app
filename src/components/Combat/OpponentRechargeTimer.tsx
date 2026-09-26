@@ -6,6 +6,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useCombatRechargeStore } from '../../stores/useCombatRechargeStore';
 import { useActiveVitals } from '../../stores/useActiveGameState';
+import { useActionTimerStore } from '../../stores/useActionTimerStore';
 
 interface OpponentRechargeTimerProps {
     lane?: 'player' | 'opponent';
@@ -31,6 +32,7 @@ const OpponentRechargeTimer: React.FC<OpponentRechargeTimerProps> = ({ lane = 'o
     const active = useCombatRechargeStore(state => lane === 'player' ? state.active : state.opponentActive);
     const clearExpired = useCombatRechargeStore(state => state.clearExpired);
     const isInCombat = useActiveVitals().position === 'fighting';
+    const isBusyWithAction = useActionTimerStore(state => !!state.activeTimer && !state.activeTimer.isFinished && state.activeTimer.durationMs > 1000);
     const timer = useMemo(() => getLatestTimer(active), [active]);
     const initialNow = Date.now();
     const [isFull, setIsFull] = useState(() => !!timer && initialNow - timer.startedAt >= FILL_MS);
@@ -104,7 +106,7 @@ const OpponentRechargeTimer: React.FC<OpponentRechargeTimerProps> = ({ lane = 'o
         return { label, status };
     };
 
-    if (!timer || !isVisible || !isInCombat) return null;
+    if (!timer || !isVisible || !isInCombat || (compact && lane === 'player' && isBusyWithAction)) return null;
 
     const { label, status } = getStatusAndLabel();
     const stopwatchText = `${Math.min(FILL_MS / 1000, elapsedMs / 1000).toFixed(2)}s`;

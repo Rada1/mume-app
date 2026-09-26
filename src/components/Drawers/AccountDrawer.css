@@ -1,0 +1,22 @@
+/**
+ * @file AccountDrawer.css
+ * @description Account actions in the desktop Commands panel.
+ */
+
+/* --- Account Command Layout --- */
+.command-docked-panel > .cmd-action-panel,
+.command-docked-panel > .char-detail-panel {
+    height: 100%;
+    overflow: hidden;
+}
+
+.account-command-actions {
+    gap: 7px;
+    overflow-y: auto;
+}
+
+.account-command-actions > button {
+    width: 100%;
+    min-height: 36px;
+    padding: 7px 10px;
+}

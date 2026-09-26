@@ -20,11 +20,15 @@ export interface ObjectDragSource {
     row: ObjectDragRow;
     noun: string;
     label: string;
+    itemId?: string;
+    parentContainerNoun?: string;
+    parentContainerId?: string;
 }
 
 export type ObjectDropTarget =
     | { type: 'row'; row: ObjectDragRow; slot?: string }
-    | { type: 'entity'; entityId: string; noun: string; label: string };
+    | { type: 'entity'; entityId: string; noun: string; label: string }
+    | { type: 'container'; containerId: string; noun: string; label: string };
 
 export interface ObjectDragState {
     source: ObjectDragSource;

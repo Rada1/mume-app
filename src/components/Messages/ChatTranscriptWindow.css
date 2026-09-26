@@ -100,7 +100,7 @@
 .chat-window-line { min-width: 0; }
 
 .chat-transcript-panel .chat-window-phrase {
-    color: var(--accent);
+    color: var(--text-primary);
     font-size: 12px;
     font-weight: 700;
     overflow-wrap: anywhere;

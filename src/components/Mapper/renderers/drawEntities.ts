@@ -4,30 +4,6 @@
 import { RenderContext, getSeed } from './rendererUtils';
 import { GRID_SIZE, DIRS, WALL_COLOR, getGateState, getExitTargetId, getClientThemeColor } from '../mapperUtils';
 
-const tintedMapperAssets: Record<string, HTMLCanvasElement> = {};
-
-const getTintedMapperAsset = (
-    imagesRef: RenderContext['imagesRef'],
-    key: string,
-    color: string
-): HTMLCanvasElement | null => {
-    const image = imagesRef.current[key];
-    if (!image || !image.complete || image.naturalWidth <= 0) return null;
-    const cacheKey = `${key}_${color}`;
-    if (tintedMapperAssets[cacheKey]) return tintedMapperAssets[cacheKey];
-
-    const canvas = document.createElement('canvas');
-    canvas.width = image.naturalWidth;
-    canvas.height = image.naturalHeight;
-    const tintCtx = canvas.getContext('2d');
-    if (!tintCtx) return null;
-    tintCtx.drawImage(image, 0, 0);
-    tintCtx.globalCompositeOperation = 'source-in';
-    tintCtx.fillStyle = color;
-    tintCtx.fillRect(0, 0, canvas.width, canvas.height);
-    tintedMapperAssets[cacheKey] = canvas;
-    return canvas;
-};
 import { getMemberColor } from '../../../utils/groupUtils';
 import { COLOR_NPC, COLOR_PLAYER, COLOR_OBJ } from '../../../utils/categorizationUtils';
 import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
@@ -61,6 +37,211 @@ const resolveActiveRoomAnchor = (
     const preloadedRoom = rCtx.preloaded[rawId] || (localId ? rCtx.preloaded[localId] : undefined);
     return preloadedRoom ? { x: preloadedRoom[0], y: preloadedRoom[1], z: preloadedRoom[2] || 0 } : null;
 };
+
+const getDirFromVector = (dx: number, dy: number, dz: number): string | null => {
+    if (Math.abs(dx) < 0.05 && Math.abs(dy) < 0.05) {
+        if (dz > 0.05) return 'u';
+        if (dz < -0.05) return 'd';
+        return null;
+    }
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    if (angle >= -22.5 && angle < 22.5) return 'e';
+    if (angle >= 22.5 && angle < 67.5) return 'se';
+    if (angle >= 67.5 && angle < 112.5) return 's';
+    if (angle >= 112.5 && angle < 157.5) return 'sw';
+    if (angle >= 157.5 || angle < -157.5) return 'w';
+    if (angle >= -157.5 && angle < -112.5) return 'nw';
+    if (angle >= -112.5 && angle < -67.5) return 'n';
+    if (angle >= -67.5 && angle < -22.5) return 'ne';
+    return null;
+};
+
+const normalizeDirString = (dir: string): string => {
+    const d = dir.toLowerCase().trim();
+    if (d === 'north' || d === 'n') return 'n';
+    if (d === 'south' || d === 's') return 's';
+    if (d === 'east' || d === 'e') return 'e';
+    if (d === 'west' || d === 'w') return 'w';
+    if (d === 'up' || d === 'u') return 'u';
+    if (d === 'down' || d === 'd') return 'd';
+    if (d === 'northeast' || d === 'ne') return 'ne';
+    if (d === 'northwest' || d === 'nw') return 'nw';
+    if (d === 'southeast' || d === 'se') return 'se';
+    if (d === 'southwest' || d === 'sw') return 'sw';
+    return d;
+};
+
+const resolveBoxMoveDirection = (
+    anchor: RoomAnchor,
+    rCtx: RenderContext,
+    trail: { x: number; y: number; z: number; alpha: number; startTime?: number }[]
+): { dir: string; alpha: number } | null => {
+    const wallNow = rCtx.now;
+    const TRAIL_DURATION = 650;
+
+    const moveAnim = rCtx.moveAnimRef?.current;
+    if (moveAnim && (moveAnim.phase === 'gliding' || moveAnim.phase === 'bouncing') && moveAnim.queue.length > 0) {
+        const seg = moveAnim.queue[0];
+        const dx = seg.to.x - seg.from.x;
+        const dy = seg.to.y - seg.from.y;
+        const dz = seg.to.z - seg.from.z;
+        const dir = getDirFromVector(dx, dy, dz);
+        if (dir) return { dir, alpha: 1.0 };
+    }
+
+    const preMove = rCtx.preMoveRef?.current;
+    if (preMove && preMove.dir) {
+        const elapsed = wallNow - preMove.time;
+        if (elapsed < TRAIL_DURATION) {
+            const alpha = Math.max(0, 1.0 - elapsed / TRAIL_DURATION);
+            return { dir: normalizeDirString(preMove.dir), alpha };
+        }
+    }
+
+    if (trail.length > 0) {
+        const lastT = trail[trail.length - 1] as any;
+        const elapsed = wallNow - (lastT.startTime ?? 0);
+        if (elapsed < TRAIL_DURATION) {
+            const dx = anchor.x - lastT.x;
+            const dy = anchor.y - lastT.y;
+            const dz = anchor.z - lastT.z;
+            const dir = getDirFromVector(dx, dy, dz);
+            if (dir) {
+                const alpha = Math.max(0, 1.0 - elapsed / TRAIL_DURATION);
+                return { dir, alpha };
+            }
+        }
+    }
+
+    return null;
+};
+
+const drawBoxMovementArrow = (
+    ctx: CanvasRenderingContext2D,
+    tileX: number,
+    tileY: number,
+    tileSize: number,
+    dir: string,
+    alpha: number,
+    zoom: number
+) => {
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, Math.max(0, alpha));
+
+    const arrowLen = 10 / zoom;
+    const arrowWidth = 8 / zoom;
+    const gap = 2.5 / zoom;
+
+    ctx.fillStyle = 'rgba(255, 226, 134, 0.95)';
+    ctx.strokeStyle = '#111111';
+    ctx.lineWidth = 1.2 / zoom;
+
+    const midX = tileX + tileSize / 2;
+    const midY = tileY + tileSize / 2;
+    const rightX = tileX + tileSize;
+    const bottomY = tileY + tileSize;
+
+    let tipX = 0, tipY = 0;
+    let b1X = 0, b1Y = 0;
+    let b2X = 0, b2Y = 0;
+
+    switch (dir) {
+        case 'e':
+            tipX = rightX + gap + arrowLen;
+            tipY = midY;
+            b1X = rightX + gap;
+            b1Y = midY - arrowWidth / 2;
+            b2X = rightX + gap;
+            b2Y = midY + arrowWidth / 2;
+            break;
+        case 'w':
+            tipX = tileX - gap - arrowLen;
+            tipY = midY;
+            b1X = tileX - gap;
+            b1Y = midY - arrowWidth / 2;
+            b2X = tileX - gap;
+            b2Y = midY + arrowWidth / 2;
+            break;
+        case 's':
+            tipX = midX;
+            tipY = bottomY + gap + arrowLen;
+            b1X = midX - arrowWidth / 2;
+            b1Y = bottomY + gap;
+            b2X = midX + arrowWidth / 2;
+            b2Y = bottomY + gap;
+            break;
+        case 'n':
+            tipX = midX;
+            tipY = tileY - gap - arrowLen;
+            b1X = midX - arrowWidth / 2;
+            b1Y = tileY - gap;
+            b2X = midX + arrowWidth / 2;
+            b2Y = tileY - gap;
+            break;
+        case 'ne':
+            tipX = rightX + gap + arrowLen * 0.707;
+            tipY = tileY - gap - arrowLen * 0.707;
+            b1X = rightX + gap;
+            b1Y = tileY - gap - arrowWidth * 0.707;
+            b2X = rightX + gap + arrowWidth * 0.707;
+            b2Y = tileY - gap;
+            break;
+        case 'nw':
+            tipX = tileX - gap - arrowLen * 0.707;
+            tipY = tileY - gap - arrowLen * 0.707;
+            b1X = tileX - gap;
+            b1Y = tileY - gap - arrowWidth * 0.707;
+            b2X = tileX - gap - arrowWidth * 0.707;
+            b2Y = tileY - gap;
+            break;
+        case 'se':
+            tipX = rightX + gap + arrowLen * 0.707;
+            tipY = bottomY + gap + arrowLen * 0.707;
+            b1X = rightX + gap;
+            b1Y = bottomY + gap + arrowWidth * 0.707;
+            b2X = rightX + gap + arrowWidth * 0.707;
+            b2Y = bottomY + gap;
+            break;
+        case 'sw':
+            tipX = tileX - gap - arrowLen * 0.707;
+            tipY = bottomY + gap + arrowLen * 0.707;
+            b1X = tileX - gap;
+            b1Y = bottomY + gap + arrowWidth * 0.707;
+            b2X = tileX - gap - arrowWidth * 0.707;
+            b2Y = bottomY + gap;
+            break;
+        case 'u':
+            tipX = midX;
+            tipY = tileY - gap - arrowLen;
+            b1X = midX - arrowWidth / 2;
+            b1Y = tileY - gap;
+            b2X = midX + arrowWidth / 2;
+            b2Y = tileY - gap;
+            break;
+        case 'd':
+            tipX = midX;
+            tipY = bottomY + gap + arrowLen;
+            b1X = midX - arrowWidth / 2;
+            b1Y = bottomY + gap;
+            b2X = midX + arrowWidth / 2;
+            b2Y = bottomY + gap;
+            break;
+        default:
+            ctx.restore();
+            return;
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(tipX, tipY);
+    ctx.lineTo(b1X, b1Y);
+    ctx.lineTo(b2X, b2Y);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.restore();
+};
+
 
 const getActiveRoomKeys = (rCtx: RenderContext): Set<string> => {
     const keys = new Set<string>();
@@ -496,18 +677,11 @@ export const drawEntities = (
     const anchor = resolveActiveRoomAnchor(rCtx, playerPosRef);
     const trail = playerTrailRef.current;
 
-    // Keep the player-room border in both map modes; only full-terrain mode
-    // adds the bright fill beneath it.
+    // A single gold outline identifies the player's tile without changing its terrain.
     if (anchor && Math.abs(anchor.z - currentZ) < 1.0) {
         const tileX = anchor.x * GRID_SIZE;
         const tileY = anchor.y * GRID_SIZE;
         ctx.save();
-        if (rCtx.showTerrainTiles !== false) {
-            ctx.globalCompositeOperation = 'screen';
-            ctx.fillStyle = 'rgba(255, 244, 205, 0.38)';
-            ctx.fillRect(tileX + 1, tileY + 1, GRID_SIZE - 2, GRID_SIZE - 2);
-            ctx.globalCompositeOperation = 'source-over';
-        }
         ctx.strokeStyle = 'rgba(255, 226, 134, 0.84)';
         ctx.lineWidth = 1.5 / rCtx.camera.zoom;
         ctx.strokeRect(tileX + 1.5 / rCtx.camera.zoom, tileY + 1.5 / rCtx.camera.zoom, GRID_SIZE - 3 / rCtx.camera.zoom, GRID_SIZE - 3 / rCtx.camera.zoom);
@@ -564,7 +738,7 @@ export const drawEntities = (
         const px = anchor.x * GRID_SIZE + GRID_SIZE / 2, py = anchor.y * GRID_SIZE + GRID_SIZE / 2;
         const alpha = Math.max(0, 1 - Math.abs(anchor.z - currentZ));
 
-        drawPlayerZoomBeacon(rCtx, anchor, alpha);
+        if (!rCtx.showTerrainTiles) drawPlayerZoomBeacon(rCtx, anchor, alpha);
 
         // Update exit swipe hint coordinates for mobile overlay
         updateExitSwipeHintCoordinates(
@@ -575,18 +749,6 @@ export const drawEntities = (
             !!rCtx.isMobile,
             !!rCtx.joystickActive
         );
-
-        // 1. MMapper current-room selection texture, tinted with the client's
-        // dark-brown map ink while preserving MMapper's exact bracket shape.
-        const roomSelection = rCtx.showTerrainTiles === false
-            ? null
-            : getTintedMapperAsset(rCtx.imagesRef, 'mmapper-char-room-sel', '#4a341e');
-        if (roomSelection) {
-            ctx.save();
-            ctx.globalAlpha = alpha;
-            ctx.drawImage(roomSelection, px - GRID_SIZE / 2, py - GRID_SIZE / 2, GRID_SIZE, GRID_SIZE);
-            ctx.restore();
-        }
 
         // 3. Client-side movement predictions ("prespammed path", MMapper-style).
         // The queue holds only the directions of moves sent but not yet confirmed.
@@ -1381,7 +1543,7 @@ export const drawFilterHighlights = (
         x >= visibleBounds.left && x <= visibleBounds.right && y >= visibleBounds.top && y <= visibleBounds.bottom;
 
     // 0. Draw the active filter route from current room to nearest matching flag.
-    if (rCtx.showTerrainTiles === false && filterPathIds && filterPathIds.length > 1) {
+    if (filterPathIds && filterPathIds.length > 1) {
         const activeRawId = rCtx.activeId ? getRawRoomId(rCtx.activeId) : '';
         const activePathIndex = filterPathIds.findIndex(stepId => getRawRoomId(stepId) === activeRawId);
         const visibleFilterPathIds = activePathIndex >= 0
@@ -1570,10 +1732,8 @@ export const drawFilterHighlights = (
             drawWave(progress1);
             drawWave(progress2);
 
-            // 3. Draw a dotted connector path from player's room to the closest room (only if on same floor)
-            const playerCoords = rCtx.showTerrainTiles === false
-                ? playerPosRef.current || resolveActiveRoomAnchor(rCtx, playerPosRef)
-                : null;
+            // 3. Keep the direct connector visible in both terrain and classic map views.
+            const playerCoords = playerPosRef.current || resolveActiveRoomAnchor(rCtx, playerPosRef);
             if (playerCoords && Math.abs(playerCoords.z - currentZ) < 0.5) {
                 const px = playerCoords.x * GRID_SIZE + GRID_SIZE / 2;
                 const py = playerCoords.y * GRID_SIZE + GRID_SIZE / 2;

@@ -10,6 +10,7 @@ import { hasXmlTag } from '../utils/xmlTagUtils';
 import { getActiveVitals, getActiveCombat } from '../stores/useActiveGameState';
 import { normalizeMovementDirection, MovementDirection } from '../utils/movementDirections';
 import { matchSpellCompletion } from '../constants/spellCompletionMessages';
+import { foldRoomEntityStatus } from '../utils/roomEntityStatus';
 
 // ---------------------------------------------------------------------------
 // Regex constants
@@ -207,6 +208,7 @@ export function useMessageLog(
             batchId: currentBatchId,
             inRoomBatch: hasRoomInBatch,
         }));
+        pending = foldRoomEntityStatus(pending);
 
         // Attach any queued resource gains (GMCP arrived just before this text) to the
         // first real action line in this batch — the line that actually earned them.

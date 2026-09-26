@@ -479,7 +479,7 @@
       "label": "Doors",
       "command": "doors",
       "setId": "Tactical",
-      "actionType": "menu",
+      "actionType": "command",
       "display": "floating",
       "hideIfUnknown": false,
       "style": {

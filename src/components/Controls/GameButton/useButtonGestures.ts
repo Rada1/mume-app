@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { CustomButton, PopoverState, SwipeDirection, ExecuteCommand } from '../../../types';
 
 import { getButtonCommand } from '../../../utils/buttonUtils';
+import type { UseTacticalTargetingReturn } from './useTacticalTargeting';
 
 export interface UseButtonGesturesProps {
     button: CustomButton;
@@ -34,6 +35,7 @@ export interface UseButtonGesturesProps {
     initAudio: () => void;
     setRayParams: React.Dispatch<React.SetStateAction<{ angle: number, length: number, opacity: number, color?: string }>>;
     isMobile?: boolean;
+    tacticalTargeting?: UseTacticalTargetingReturn;
 }
 
 export const useButtonGestures = ({
@@ -62,13 +64,15 @@ export const useButtonGestures = ({
     isSoundEnabled,
     initAudio,
     setRayParams,
-    isMobile
+    isMobile,
+    tacticalTargeting
 }: UseButtonGesturesProps) => {
     const rayFrameRef = useRef<number | null>(null);
     const pendingRayRef = useRef<{ angle: number, length: number, opacity: number, color?: string } | null>(null);
     const lastPreviewRef = useRef<string | null>(null);
     const lastActiveDirRef = useRef<SwipeDirection | 'center' | null>(null);
     const lastCancellingRef = useRef(false);
+    const currentCommandRef = useRef<string>(button.command);
 
     const getNextCommandPrefixes = useCallback((prev?: { commandPrefixes?: string[] } | null) => {
         const prefixes = prev?.commandPrefixes || [];
@@ -120,8 +124,9 @@ export const useButtonGestures = ({
                     el._startY = null;
                 }
             }
+            tacticalTargeting?.resetTargeting();
         }
-    }, [heldButton?.id, heldButton?.didFire, button.id, setActiveDir, setIsCancelling, updateRay]);
+    }, [heldButton?.id, heldButton?.didFire, button.id, setActiveDir, setIsCancelling, updateRay, tacticalTargeting]);
 
     // --- Interaction Start ---
     const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -138,6 +143,7 @@ export const useButtonGestures = ({
             if (e.cancelable) e.preventDefault();
             initAudio(); 
             const el = e.currentTarget as any;
+            el._primaryPointerId = e.pointerId;
             try { el.setPointerCapture(e.pointerId); } catch(err) {}
 
             const rect = el.getBoundingClientRect();
@@ -174,13 +180,18 @@ export const useButtonGestures = ({
             updateRay(0, 0, 0, button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
             el.style.setProperty('--cancel-opacity', '0');
             el.style.setProperty('--cancel-scale', '0');
+            currentCommandRef.current = button.command;
+            tacticalTargeting?.startHoldTimer(button.command);
         }
-    }, [isEditMode, handleDragStart, button, setWheelPos, wasDraggingRef, triggerHaptic, setHeldButton, initAudio, updateRay, getNextCommandPrefixes]);
+    }, [isEditMode, handleDragStart, button, setWheelPos, wasDraggingRef, triggerHaptic, setHeldButton, initAudio, updateRay, getNextCommandPrefixes, tacticalTargeting]);
 
     // --- Gesture Recording & Feedback ---
     const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         if (isEditMode) return;
         const el = e.currentTarget as any;
+        if (el._primaryPointerId !== undefined && el._primaryPointerId !== null && e.pointerId !== el._primaryPointerId) {
+            return;
+        }
         if (!el._startX) return;
 
         // Failsafe for desktop: if no buttons are pressed, clean up orphaned state
@@ -235,11 +246,18 @@ export const useButtonGestures = ({
         const distVal = Math.sqrt(dxVal * dxVal + dyVal * dyVal);
 
         const isLong = joystick.isTargetModifierActive;
-        const preview = getButtonCommand(button, dxVal, dyVal, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
+        const effectiveTarget = tacticalTargeting?.pendingTargetRef?.current || tacticalTargeting?.pendingTarget || target;
+        const preview = getButtonCommand(button, dxVal, dyVal, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, effectiveTarget, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
         const nextPreview = preview?.cmd || null;
+        if (preview?.cmd) {
+            currentCommandRef.current = preview.cmd;
+        }
         if (lastPreviewRef.current !== nextPreview) {
             lastPreviewRef.current = nextPreview;
             setCommandPreview(nextPreview);
+            if (preview?.cmd) {
+                tacticalTargeting?.startHoldTimer(preview.cmd);
+            }
         }
         if (preview?.cmd) {
             document.documentElement.style.setProperty(
@@ -260,8 +278,8 @@ export const useButtonGestures = ({
         el._lastAngle = snappedAngle;
 
         const isSwipedOut = el._maxDist > 25;
-        const cancelX = window.innerWidth / 2 + 200;
-        const cancelY = window.innerHeight / 2;
+        const cancelX = isMobile ? (window.innerWidth - 40) : (window.innerWidth / 2 + 200);
+        const cancelY = isMobile ? (window.innerHeight * 0.12) : (window.innerHeight / 2);
         const distToCancelBubble = Math.sqrt(Math.pow(e.clientX - cancelX, 2) + Math.pow(e.clientY - cancelY, 2));
         const isCancelZone = distToCancelBubble < 45;
 
@@ -349,7 +367,7 @@ export const useButtonGestures = ({
         const rayLength = isDial ? 140 : distVal + 55;
         updateRay(snappedAngle, rayLength, shouldShowRay ? 1 : 0, rayColor);
 
-    }, [isEditMode, heldButton, button, activeDir, setActiveDir, setCommandPreview, wasDraggingRef, setHeldButton, joystick, target, setIsCancelling, triggerHaptic, setPopoverState, isSoundEnabled, playClickSound, updateRay, isMobile, getNextCommandPrefixes]);
+    }, [isEditMode, heldButton, button, activeDir, setActiveDir, setCommandPreview, wasDraggingRef, setHeldButton, joystick, target, setIsCancelling, triggerHaptic, setPopoverState, isSoundEnabled, playClickSound, updateRay, isMobile, getNextCommandPrefixes, tacticalTargeting]);
 
     // --- Execution & Termination ---
     const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -358,6 +376,10 @@ export const useButtonGestures = ({
         try { el.releasePointerCapture(e.pointerId); } catch(err) {}
         
         if (isEditMode) return;
+        if (el._primaryPointerId !== undefined && el._primaryPointerId !== null && e.pointerId !== el._primaryPointerId) {
+            return;
+        }
+        el._primaryPointerId = null;
 
         if (heldButton?.id === button.id && heldButton.didFire) {
             setHeldButton(null);
@@ -407,7 +429,9 @@ export const useButtonGestures = ({
         const finalDx = isReturnToCenter ? 0 : dx;
         const finalDy = isReturnToCenter ? 0 : dy;
 
-        const previewCmd = getButtonCommand(button, finalDx, finalDy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
+        tacticalTargeting?.cancelHoldTimer();
+        const effectiveTarget = tacticalTargeting?.pendingTargetRef?.current || tacticalTargeting?.pendingTarget || target;
+        const previewCmd = getButtonCommand(button, finalDx, finalDy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, effectiveTarget, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
 
         setHeldButton(null);
         setCommandPreview(null);
@@ -427,15 +451,25 @@ export const useButtonGestures = ({
         el._startTime = null;
         el._maxDist = 0;
 
-        if (el._didFire) { el._didFire = false; return; }
+        if (el._didFire) {
+            tacticalTargeting?.resetTargeting();
+            el._didFire = false;
+            return;
+        }
 
-        const cancelX = window.innerWidth / 2 + 200;
-        const cancelY = window.innerHeight / 2;
+        const cancelX = isMobile ? (window.innerWidth - 40) : (window.innerWidth / 2 + 200);
+        const cancelY = isMobile ? (window.innerHeight * 0.12) : (window.innerHeight / 2);
         const distToCancelBubble = Math.sqrt(Math.pow(currentX - cancelX, 2) + Math.pow(currentY - cancelY, 2));
 
-        if (finalIsCancelling || distToCancelBubble < 45) return;
+        if (finalIsCancelling || distToCancelBubble < 45) {
+            tacticalTargeting?.resetTargeting();
+            return;
+        }
 
-        if (button.actionType === 'modifier') return;
+        if (button.actionType === 'modifier') {
+            tacticalTargeting?.resetTargeting();
+            return;
+        }
 
         if (previewCmd && previewCmd.cmd && previewCmd.cmd.trim() !== '') {
             if (previewCmd.actionType === 'nav') {
@@ -505,7 +539,9 @@ export const useButtonGestures = ({
         if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') {
             setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
         }
-    }, [isEditMode, heldButton, button, joystick, target, isCancelling, setHeldButton, setCommandPreview, setActiveDir, setIsCancelling, setActiveSet, triggerHaptic, setPopoverState, executeCommand, handleButtonClick, setButtons, updateRay]);
+
+        tacticalTargeting?.resetTargeting();
+    }, [isEditMode, heldButton, button, joystick, target, isCancelling, setHeldButton, setCommandPreview, setActiveDir, setIsCancelling, setActiveSet, triggerHaptic, setPopoverState, executeCommand, handleButtonClick, setButtons, updateRay, tacticalTargeting]);
 
     const onPointerCancel = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         const el = e.currentTarget as any;
@@ -556,5 +592,5 @@ export const useButtonGestures = ({
         }
     }, [isEditMode, wasDraggingRef, setEditButton, button]);
 
-    return { onPointerDown, onPointerMove, onPointerUp, onPointerCancel, onClick };
+    return { onPointerDown, onPointerMove, onPointerUp, onPointerCancel, onClick, currentCommandRef };
 };

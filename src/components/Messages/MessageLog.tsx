@@ -26,6 +26,7 @@ import { useRoomStore } from '../../stores/useRoomStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { decodeCommandEntities } from '../../utils/commandTextUtils';
+import { getInlineGlowColor } from '../../utils/inlineActionModel';
 import { getMumeCommandMatch } from '../../utils/mumeCommandCatalog';
 import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { getRoomTerrainVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
@@ -209,12 +210,15 @@ const MessageItem = React.memo(({
 }) => {
     const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
     const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
-    const { gameState } = useBaseGame();
+    const theme = useSettingsStore(s => s.theme);
+    const roomColorSetting = useSettingsStore(s => s.roomColor);
+    const { gameState, inlineCategories } = useBaseGame();
     const content = msg.html;
     const accountRippleHtml = isImmersionMode && gameState === 'account' && (!msg.tokens || msg.tokens.length === 0)
         ? wrapHtmlWordsForRipple(sanitizeMumeHtml(content))
         : sanitizeMumeHtml(content);
     const isLoginNamePrompt = /\bby what name do you wish to be known\?/i.test(msg.textRaw || msg.textOnly || '');
+    const isStatAffectLine = /^\s*-\s+\S+/.test(msg.textOnly || msg.textRaw || '');
     const statusNotice = (msg.textOnly || msg.textRaw || '').trim().toLowerCase();
     const statusCondition = /^(?:you are|you begin to feel) (hungry|thirsty)\.$/.exec(statusNotice)?.[1];
     const isHungryNotice = statusNotice === 'you are hungry.';
@@ -399,7 +403,7 @@ const MessageItem = React.memo(({
         <div
             ref={messageRootRef}
             data-subdued-action={msg.isSubduedAction || undefined}
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${isLoginNamePrompt ? ' login-name-prompt' : ''}${regenSlowTooltip ? ' regen-slow-notice' : ''}${isImmersionMode && msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}${isFocusRevealActive ? ' focus-reveal-active' : ''}${isMagicRippleActive ? ' magic-ripple-active' : ''}${isItemActionActive && itemActionAnimation ? ` item-action-${itemActionAnimation}` : ''}${isImmersionMode && isRoomJiggleActive ? ' room-jiggle-active' : ''}`}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${isLoginNamePrompt ? ' login-name-prompt' : ''}${isStatAffectLine ? ' stat-affect-line' : ''}${regenSlowTooltip ? ' regen-slow-notice' : ''}${isImmersionMode && msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}${isFocusRevealActive ? ' focus-reveal-active' : ''}${isMagicRippleActive ? ' magic-ripple-active' : ''}${isItemActionActive && itemActionAnimation ? ` item-action-${itemActionAnimation}` : ''}${isImmersionMode && isRoomJiggleActive ? ' room-jiggle-active' : ''}`}
             data-regeneration-tooltip={regenSlowTooltip}
             title={regenSlowTooltip}
             style={{ 
@@ -499,11 +503,11 @@ const MessageItem = React.memo(({
                     >
                         {msg.type !== 'comm-continue' && (
                             <>
-                                <span className="comm-sender"><TokenRenderer tokens={msg.commSenderTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} /></span>
-                                <span className="comm-action" style={{ color: msg.commColor || (msg.replyCommand === 'tell' ? 'var(--ansi-bright-green, #22c55e)' : undefined) }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
+                                <span className="comm-sender"><TokenRenderer tokens={msg.commSenderTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} preferSettingsEntityColor /></span>
+                                <span className="comm-action" style={{ color: msg.commColor }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
                             </>
                         )}
-                        <span className={`comm-text${msg.replyCommand === 'tell' ? ' tell-body' : ''}`}><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} splitFirstWord={true} /></span>
+                        <span className={`comm-text${msg.replyCommand === 'tell' ? ' tell-body' : ''}`} style={{ color: msg.commColor }}><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} splitFirstWord={true} /></span>
                     </div>
                     <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                 </div>
@@ -542,8 +546,18 @@ const MessageItem = React.memo(({
                                 {msg.isRoomName ? (() => {
                                     const rawZone = (msg.roomZone || useRoomStore.getState().roomZone)?.trim();
                                     const formatted = rawZone ? (rawZone.startsWith('(') && rawZone.endsWith(')') ? rawZone : `(${rawZone})`) : null;
+                                    const resolvedRoomColor = getInlineGlowColor('cat-room', inlineCategories, {
+                                        room: colors?.roomColor || roomColorSetting || undefined,
+                                    }, theme) || colors?.roomColor || roomColorSetting || '#22c55e';
                                     return (
-                                        <span className="room-title-badge">
+                                        <span
+                                            className="room-title-badge"
+                                            style={{
+                                                '--glow-color': resolvedRoomColor,
+                                                '--room-color': resolvedRoomColor,
+                                                color: resolvedRoomColor
+                                            } as React.CSSProperties}
+                                        >
                                             <TokenRenderer
                                                 tokens={msg.tokens}
                                                 fallbackHtml={msg.tokens ? undefined : sanitizeMumeHtml(content)}
@@ -804,6 +818,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
     }, [onPointerUp, onMouseUp]);
 
     const isUserScrollingRef = React.useRef(false);
+    const [isReadingHistory, setIsReadingHistory] = React.useState(false);
+    const liveLogRef = useRef<HTMLDivElement>(null);
     const userScrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const lastScrollTopRef = useRef(0);
 
@@ -838,8 +854,15 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 viewport.isLockedToBottomRef.current = isNearBottom;
             }
         }
+        setIsReadingHistory(!viewport.isLockedToBottomRef.current);
 
     }, [viewport, scrollContainerRef]);
+
+    const returnToLive = useCallback(() => {
+        viewport.isLockedToBottomRef.current = true;
+        setIsReadingHistory(false);
+        requestAnimationFrame(() => viewport.scrollToBottom(true, true, 'ReturnToLive'));
+    }, [viewport]);
 
     const onWheelRef = useRef(onWheel);
     useEffect(() => { onWheelRef.current = onWheel; }, [onWheel]);
@@ -1032,6 +1055,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
         const isThrottled = now - lastScrollCallRef.current < 16;
 
         if (isNewMessage) {
+            if (lastMsg?.type === 'user') setIsReadingHistory(false);
             // In Spectate and Replay Mode, we always want to follow the action 
             // unless the user manually scrolled up.
             if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user' || isSpectateMode || sessionMode === 'replay') {
@@ -1048,6 +1072,29 @@ const MessageLog: React.FC<MessageLogProps> = ({
             });
         }
     }, [messages, viewport, isNewbieMode, lastUserMsgIndex, virtualizer, isSpectateMode, sessionMode]);
+
+    React.useLayoutEffect(() => {
+        if (isReadingHistory && liveLogRef.current) {
+            liveLogRef.current.scrollTop = liveLogRef.current.scrollHeight;
+        }
+    }, [isReadingHistory, displayMessages]);
+
+    // The live quarter is a readout. Wheel input anywhere in the split log
+    // should move history, while live output stays pinned to its newest line.
+    React.useEffect(() => {
+        const liveLog = liveLogRef.current;
+        const historyLog = scrollContainerRef.current;
+        if (!isReadingHistory || !liveLog || !historyLog) return;
+
+        const scrollHistory = (event: WheelEvent) => {
+            if (event.ctrlKey) return;
+            event.preventDefault();
+            historyLog.scrollTop += event.deltaY;
+            onWheelRef.current?.(event as any);
+        };
+        liveLog.addEventListener('wheel', scrollHistory, { passive: false });
+        return () => liveLog.removeEventListener('wheel', scrollHistory);
+    }, [isReadingHistory, scrollContainerRef]);
 
     React.useEffect(() => {
         const container = scrollContainerRef.current;
@@ -1075,7 +1122,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const virtualItems = virtualizer.getVirtualItems();
 
     return (
-        <div className="message-log-layout" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
+        <div className={`message-log-layout${isReadingHistory ? ' reading-history' : ''}`} style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
             <div
                 className={`message-log${inCombat ? ' combat-mode' : ''}${isSpectateMode ? ' spectate-mode' : ''}`}
                 ref={scrollContainerRef}
@@ -1145,6 +1192,35 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 </div>
                 <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: '4px', flexShrink: 0 }} />
             </div>
+            {isReadingHistory && (
+                <div className="message-log-live-pane">
+                    <div className="message-log-live-heading">
+                        <button type="button" onClick={returnToLive} aria-label="Return to latest log output">Back to live ↓</button>
+                    </div>
+                    <div className="message-log message-log-live-content" ref={liveLogRef} aria-label="Latest game events">
+                        {displayMessages.slice(-30).map((msg, index) => (
+                            <MessageItem
+                                key={msg.id}
+                                msg={msg}
+                                inCombat={inCombat}
+                                scrollToBottom={returnToLive}
+                                executeCommand={executeCommand}
+                                setParley={setParley}
+                                triggerHaptic={triggerHaptic}
+                                playClickSound={playClickSound}
+                                isTimestampEnabled={isTimestampEnabled}
+                                isNewbieMode={isNewbieMode}
+                                viewport={viewport}
+                                isTextRevealEnabled={isTextRevealEnabled}
+                                isAwaitingResponse={msg.type === 'user' && msg.id === awaitingResponseUserId}
+                                batchOffset={0}
+                                colors={colors}
+                                lineIndex={displayMessages.length - Math.min(30, displayMessages.length) + index}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

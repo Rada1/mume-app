@@ -185,10 +185,7 @@ export const useAudioEffects = () => {
         const effectName = isWaterTerrain ? 'watermove' : 'move';
 
         if (isRiding) {
-            playEffect(effectName, { pitch: 2.0, volume: 0.6 });
-            setTimeout(() => {
-                playEffect(effectName, { pitch: 2.0, volume: 0.45 });
-            }, 300);
+            playEffect('ride');
         } else {
             playEffect(effectName, { pitch: 1.05, volume: 0.6 });
         }

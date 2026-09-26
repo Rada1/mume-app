@@ -6,7 +6,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { UiMode, TeleportTarget, InlineCategoryConfig, ZoneMusicMapping, CategoryOverride, CustomTraitConfig } from '../types';
-import { COLOR_ALLY, COLOR_NPC, canonicalizeCategoryId } from '../utils/categorizationUtils';
+import { COLOR_ALLY, COLOR_ENEMY, COLOR_NEUTRAL, COLOR_NPC, COLOR_OBJ, COLOR_ROOM, canonicalizeCategoryId } from '../utils/categorizationUtils';
 import { getKindForCategory, getTraitConfig, toCategoryId, toTraitId } from '../utils/inlineActionModel';
 import { DEFAULT_URL } from '../constants';
 import type { MapBackgroundVisualAdjustments, MapTileVisualAdjustments } from '../components/Mapper/mapperTypes';
@@ -119,6 +119,7 @@ interface SettingsState {
     showBackgroundImage: boolean;
     showTerrainTiles: boolean;
     useLegacyMapArt: boolean;
+    hideMapHeaderFooter: boolean;
     mapDrawerOpacity: number;
     characterDrawerOpacity: number;
     bottomBarOpacity: number;
@@ -187,6 +188,7 @@ interface SettingsState {
     setShowBackgroundImage: (val: boolean) => void;
     setShowTerrainTiles: (val: boolean) => void;
     setUseLegacyMapArt: (val: boolean) => void;
+    setHideMapHeaderFooter: (val: boolean) => void;
     setMapDrawerOpacity: (val: number) => void;
     setMapTileVisuals: (val: Partial<MapTileVisualAdjustments>) => void;
     setMapBackgroundVisuals: (val: Partial<MapBackgroundVisualAdjustments>) => void;
@@ -281,13 +283,13 @@ export const useSettingsStore = create<SettingsState>()(
             fontFamily: DEFAULT_FONT_FAMILY,
             uiMode: 'auto',
             isHighlighterEnabled: true,
-            objectColor: 'rgba(251, 146, 60, 0.95)',
+            objectColor: COLOR_OBJ,
             playerColor: COLOR_ALLY,
             npcColor: COLOR_NPC,
-            enemyColor: '#ef4444',
-            neutralColor: '#eab308',
+            enemyColor: COLOR_ENEMY,
+            neutralColor: COLOR_NEUTRAL,
             targetColor: '#facc15',
-            roomColor: '#22c55e',
+            roomColor: COLOR_ROOM,
             
             disableSmoothScroll: false,
             isTimestampEnabled: false,
@@ -328,6 +330,7 @@ export const useSettingsStore = create<SettingsState>()(
             showBackgroundImage: true,
             showTerrainTiles: true,
             useLegacyMapArt: true,
+            hideMapHeaderFooter: false,
             mapDrawerOpacity: 1.0,
             characterDrawerOpacity: 1.0,
             bottomBarOpacity: 1.0,
@@ -435,6 +438,7 @@ export const useSettingsStore = create<SettingsState>()(
             setShowBackgroundImage: (showBackgroundImage) => set({ showBackgroundImage }),
             setShowTerrainTiles: (showTerrainTiles) => set({ showTerrainTiles }),
             setUseLegacyMapArt: (useLegacyMapArt) => set({ useLegacyMapArt }),
+            setHideMapHeaderFooter: (hideMapHeaderFooter) => set({ hideMapHeaderFooter }),
             setMapDrawerOpacity: (mapDrawerOpacity) => set({ mapDrawerOpacity }),
             setCharacterDrawerOpacity: (characterDrawerOpacity) => set({ characterDrawerOpacity }),
             setBottomBarOpacity: (bottomBarOpacity) => set({ bottomBarOpacity }),
@@ -718,6 +722,7 @@ export const useSettingsStore = create<SettingsState>()(
                 };
                 merged.showBackgroundImage = merged.showBackgroundImage ?? true;
                 merged.useLegacyMapArt = merged.useLegacyMapArt ?? true;
+                merged.hideMapHeaderFooter = merged.hideMapHeaderFooter ?? false;
                 merged.showChatWindow = merged.showChatWindow ?? false;
                 merged.showPlayersPanel = merged.showPlayersPanel ?? false;
                 let validFilters = merged.zoneFilters;

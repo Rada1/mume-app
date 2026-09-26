@@ -9,6 +9,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ThisIsYouConsole } from './ThisIsYouConsole';
 import { hasCondition, formatHeight, formatNumber } from './thisIsYouHelpers';
+import { useCharacterPanelStore } from '../../stores/useCharacterPanelStore';
 
 const mockExecuteCommand = vi.fn();
 const mockSetMood = vi.fn();
@@ -31,7 +32,7 @@ vi.mock('../../context/GameContext', () => ({
             height: 'six feet two inches',
             age: 500,
             gold: 1500,
-            citizenships: 'Gondor',
+            citizenships: 6,
             xp: 12000000,
             xpnl: 0,
             tp: 110000,
@@ -113,6 +114,7 @@ describe('ThisIsYouConsole Component', () => {
         mockCombatState.inCombat = false;
         mockCombatState.opponentName = null;
         mockCombatState.opponentHealthStatus = null;
+        useCharacterPanelStore.setState({ isMinimized: false });
     });
 
     afterEach(() => {
@@ -183,5 +185,52 @@ describe('ThisIsYouConsole Component', () => {
         expect(combatPanel.textContent).toContain('Wimpy: 30');
         expect(combatPanel.textContent).not.toContain('a snarling wolf');
         expect(combatPanel.textContent).not.toContain('Wounded');
+    });
+
+    it('minimizes the panel when clicking the minimize toggle button', () => {
+        render(<ThisIsYouConsole />);
+
+        const minimizeBtn = screen.getByRole('button', { name: /Minimize character panel/i });
+        expect(minimizeBtn).toBeDefined();
+
+        fireEvent.click(minimizeBtn);
+
+        expect(useCharacterPanelStore.getState().isMinimized).toBe(true);
+
+        const expandBtn = screen.getByRole('button', { name: /Expand character panel/i });
+        expect(expandBtn).toBeDefined();
+
+        // Exactly the top row items are displayed (Cit, Height, Age, Gold, Progression)
+        expect(screen.getByText(/Cit:/i)).toBeDefined();
+        expect(screen.getByText('6')).toBeDefined();
+        expect(screen.getByText(/Height:/i)).toBeDefined();
+        expect(screen.getByText('6\' 2"')).toBeDefined();
+        expect(screen.getByText(/Age:/i)).toBeDefined();
+        expect(screen.getByText('500')).toBeDefined();
+        expect(screen.getByText(/XP:/i)).toBeDefined();
+        expect(screen.getByText(/TP:/i)).toBeDefined();
+
+        // Mini vitals are not rendered
+        expect(screen.queryByRole('group', { name: /Mini Vitals Summary/i })).toBeNull();
+    });
+
+    it('expands the panel when clicking anywhere on the minimized header', () => {
+        useCharacterPanelStore.setState({ isMinimized: true });
+        render(<ThisIsYouConsole />);
+
+        const minimizedHeader = screen.getByRole('button', { name: /Character panel minimized. Click to expand./i });
+        fireEvent.click(minimizedHeader);
+
+        expect(useCharacterPanelStore.getState().isMinimized).toBe(false);
+    });
+
+    it('expands the panel when pressing Enter on the minimized header', () => {
+        useCharacterPanelStore.setState({ isMinimized: true });
+        render(<ThisIsYouConsole />);
+
+        const minimizedHeader = screen.getByRole('button', { name: /Character panel minimized. Click to expand./i });
+        fireEvent.keyDown(minimizedHeader, { key: 'Enter' });
+
+        expect(useCharacterPanelStore.getState().isMinimized).toBe(false);
     });
 });

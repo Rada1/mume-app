@@ -166,7 +166,7 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
             props.addMessage('system', msg, undefined, undefined, undefined, { textOnly: msg, lower: msg.toLowerCase() });
         }
         props.setCharacterName(name);
-    }, [props.characterName, props.setAbilities, props.addMessage, props.setCharacterName, props.isSpectateMode]);
+    }, [props.characterName, props.setAbilities, props.addMessage, props.setCharacterName, props.isSpectateMode, props.playEffect]);
 
     const onComm = useCallback((_sender: string, _chan: string, _msg: string) => {
         // Comm bubbles are rendered from XML-tagged text lines only. GMCP comm
@@ -258,7 +258,7 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
             if (props.setIsRiding) props.setIsRiding(false);
             props.setPlayerPosition('standing');
         }
-    }, [props.setIsRiding, props.setPlayerPosition, props.setInCombat, props.setOpponentId, props.setOpponentName, props.setOpponentHealthStatus, props.isSpectateMode]);
+    }, [props.setIsRiding, props.setPlayerPosition, props.setInCombat, props.setOpponentId, props.setOpponentName, props.setOpponentHealthStatus]);
 
     return {
         onRoomInfo,

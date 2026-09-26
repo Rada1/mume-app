@@ -144,7 +144,7 @@ export const ActionTimerDisplay: React.FC<{ compact?: boolean }> = ({ compact = 
     if (compact) {
         const action = active.type === 'spell' ? 'casting'
             : active.name.toLowerCase() === 'bash' ? 'bashing'
-            : status.toLowerCase();
+            : active.name.toLowerCase().replace(/\s+lock$/, '').toLowerCase();
         return <span className="terminal-action-status">{action} {(elapsedMs / 1000).toFixed(1)}s</span>;
     }
 

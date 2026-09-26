@@ -14,6 +14,10 @@ import { calculateRegen, formatRegen } from '../../utils/regenUtils';
 import { useStatDeltas } from '../../hooks/useStatDeltas';
 import { useCharacterConditions } from '../../hooks/useCharacterConditions';
 import { useCharacterInfoRefresh } from '../../hooks/useCharacterInfoRefresh';
+import { getMovementModeActions } from '../../hooks/useMovementModeActions';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useCharacterPanelStore } from '../../stores/useCharacterPanelStore';
+import { ThisIsYouVitalsTier } from './ThisIsYouVitalsTier';
 import { StatDelta } from './StatDelta';
 import { TerminalProgression } from './TerminalProgression';
 import { ThisIsYouStatePill, StateOption } from './ThisIsYouStatePill';
@@ -29,6 +33,9 @@ import './ThisIsYouConsole.css';
 import './ThisIsYouTerminal.css';
 
 export const ThisIsYouConsole: FC = () => {
+    const isMinimized = useCharacterPanelStore(s => s.isMinimized);
+    const toggleMinimized = useCharacterPanelStore(s => s.toggleMinimized);
+    const setIsMinimized = useCharacterPanelStore(s => s.setIsMinimized);
     const {
         characterInfo,
         characterName,
@@ -112,12 +119,42 @@ export const ThisIsYouConsole: FC = () => {
     }), [characterInfo?.gold, characterInfo?.xp, characterInfo?.tp, vitals.hp, vitals.mana,
         vitals.move, vitals.ob, vitals.pb, vitals.db, vitals.armour, vitals.wimpy]);
     const deltas = useStatDeltas(characterInfo?.name || characterName || '', statValues);
+    const movementModes = getMovementModeActions(vitals);
+
+    const handleToggleClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        triggerHaptic(10);
+        toggleMinimized();
+    };
+
+    const handleHeaderClick = () => {
+        if (isMinimized) {
+            triggerHaptic(10);
+            setIsMinimized(false);
+        }
+    };
 
     // --- Render Section ---
     return (
-        <section className="this-is-you-console" aria-label="Character Status Console">
+        <section
+            className={`this-is-you-console${isMinimized ? ' is-minimized' : ''}`}
+            aria-label="Character Status Console"
+        >
             {/* TIER 1: Identity, Full Bio Metrics & Progression */}
-            <div className="this-is-you-tier-identity">
+            <div
+                className="this-is-you-tier-identity"
+                onClick={handleHeaderClick}
+                role={isMinimized ? 'button' : undefined}
+                tabIndex={isMinimized ? 0 : undefined}
+                onKeyDown={isMinimized ? (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleHeaderClick();
+                    }
+                } : undefined}
+                title={isMinimized ? 'Click to expand character panel' : undefined}
+                aria-label={isMinimized ? 'Character panel minimized. Click to expand.' : undefined}
+            >
               <div className="this-is-you-hero-strip">
                 <span className="this-is-you-level-tag">Lv.{level}</span>
                 <strong className="this-is-you-name">{name}</strong>
@@ -128,63 +165,41 @@ export const ThisIsYouConsole: FC = () => {
                 <span className="this-is-you-bio-item">Cit: <strong className="cyan" title="Citizenships count">{formatNumber(characterInfo?.citizenships)}</strong></span>
               </div>
 
-              <TerminalProgression characterName={name}
-                xp={characterInfo?.xp} tp={characterInfo?.tp}
-                tnl={characterInfo?.tnl} tpnl={characterInfo?.tpnl} />
+              <div className="this-is-you-identity-actions">
+                <TerminalProgression characterName={name}
+                  xp={characterInfo?.xp} tp={characterInfo?.tp}
+                  tnl={characterInfo?.tnl} tpnl={characterInfo?.tpnl} />
+                <button
+                  type="button"
+                  className="this-is-you-toggle-btn"
+                  onClick={handleToggleClick}
+                  aria-label={isMinimized ? 'Expand character panel' : 'Minimize character panel'}
+                  title={isMinimized ? 'Expand character panel (slide up)' : 'Minimize character panel (slide down)'}
+                >
+                  {isMinimized ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                </button>
+              </div>
             </div>
+
+            <div className="this-is-you-body-wrapper">
+              <div className="this-is-you-body-inner">
 
             {/* TIER 2: Vitals & Combat Capabilities (Attack, Dodge, Parry, Armor) */}
-            <div className="this-is-you-tier-vitals">
-              {/* Pure Numerical Vitals */}
-              <div className="this-is-you-vitals-group" role="group" aria-label="Vitals">
-                <div className="this-is-you-telemetry-cell">
-                  <div className="this-is-you-cell-header">
-                    <span className="label hp">HEALTH</span>
-                    <span className="regen" title="Regen rate per tick">({formatRegen(regen.hp)})</span>
-                  </div>
-                  <div className={`this-is-you-cell-val${(vitals.hp ?? 100) < 30 ? ' is-critical' : ''}`}>
-                    {vitals.hp ?? '—'}{vitals.maxHp ? ` / ${vitals.maxHp}` : ''}<StatDelta delta={deltas.hp} />
-                  </div>
-                </div>
-
-                <div className="this-is-you-telemetry-cell">
-                  <div className="this-is-you-cell-header">
-                    <span className="label mana">MANA</span>
-                    <span className="regen" title="Regen rate per tick">({formatRegen(regen.mana)})</span>
-                  </div>
-                  <div className="this-is-you-cell-val">
-                    {vitals.mana ?? '—'}{vitals.maxMana ? ` / ${vitals.maxMana}` : ''}<StatDelta delta={deltas.mana} />
-                  </div>
-                </div>
-
-                <div className="this-is-you-telemetry-cell">
-                  <div className="this-is-you-cell-header">
-                    <span className="label move">MOVES</span>
-                    <span className="regen" title="Regen rate per tick">({formatRegen(regen.move)})</span>
-                  </div>
-                  <div className="this-is-you-cell-val">
-                    {vitals.move ?? '—'}{vitals.maxMove ? ` / ${vitals.maxMove}` : ''}<StatDelta delta={deltas.move} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Combat capabilities */}
-              <div className="this-is-you-combat-slot" role="group" aria-label="Combat">
-                  <div className="this-is-you-capabilities-cell">
-                    <div className="this-is-you-cell-header">
-                      <span>Combat Ratings</span>
-                      <span className="sub">Gear &amp; Stance</span>
-                    </div>
-                    <div className="this-is-you-capabilities-row">
-                      <span title="Offensive Power (OB): strike accuracy and damage">Offense: <strong>{vitals.ob ?? '—'}</strong><StatDelta delta={deltas.ob} /></span>
-                      <span title="Parry Deflection (PB): weapon blocking rating">Parry: <strong>{vitals.pb ?? '—'}</strong><StatDelta delta={deltas.pb} /></span>
-                      <span title="Defensive Evasion (DB): makes you harder to hit">Dodge: <strong>{vitals.db ?? '—'}</strong><StatDelta delta={deltas.db} /></span>
-                      <span title="Armor Absorption (ARM): physical damage reduction">Armor: <strong>{vitals.armour ?? '—'}</strong><StatDelta delta={deltas.armour} /></span>
-                      <span title="Wimpy Threshold (%y): automatically flee combat when health drops below this value">Wimpy: <strong>{vitals.wimpy !== undefined && vitals.wimpy !== null ? vitals.wimpy : '—'}</strong><StatDelta delta={deltas.wimpy} /></span>
-                    </div>
-                  </div>
-              </div>
-            </div>
+            <ThisIsYouVitalsTier
+                hp={vitals.hp}
+                maxHp={vitals.maxHp}
+                mana={vitals.mana}
+                maxMana={vitals.maxMana}
+                move={vitals.move}
+                maxMove={vitals.maxMove}
+                ob={vitals.ob}
+                pb={vitals.pb}
+                db={vitals.db}
+                armour={vitals.armour}
+                wimpy={vitals.wimpy}
+                regen={regen}
+                deltas={deltas}
+            />
 
             {/* TIER 3: Category-Explicit State Pills + Self-Describing Buffs */}
             <div className="this-is-you-tier-states" role="group" aria-label="State">
@@ -215,6 +230,22 @@ export const ThisIsYouConsole: FC = () => {
                 />
               </div>
             </div>
+            <div className="this-is-you-tier-modes" role="group" aria-label="Movement and stealth">
+              {movementModes.map(mode => (
+                <button
+                  key={mode.id}
+                  type="button"
+                  className="this-is-you-mode-row"
+                  aria-label={`${mode.label} ${mode.active ? 'on' : 'off'}. Click to toggle.`}
+                  aria-pressed={mode.active}
+                  title={`Send: ${mode.command}`}
+                  disabled={isSpectateMode}
+                  onClick={() => { triggerHaptic(10); executeCommand(mode.command); }}
+                >
+                  <span>{mode.label}</span><strong>{mode.active ? 'On' : 'Off'}</strong>
+                </button>
+              ))}
+            </div>
             <div className="this-is-you-buffs-row" aria-label="Active buffs and affects">
                   {activeConditions.length === 0 && <span className="this-is-you-no-buffs">steady · no active effects</span>}
                   {activeConditions.map(condition => (
@@ -222,6 +253,8 @@ export const ThisIsYouConsole: FC = () => {
                       <strong className="this-is-you-buff-name">{condition}</strong>
                     </span>
                   ))}
+            </div>
+              </div>
             </div>
         </section>
     );

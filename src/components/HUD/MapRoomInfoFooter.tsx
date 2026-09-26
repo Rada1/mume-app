@@ -9,10 +9,12 @@ import { useGame } from '../../context/GameContext';
 import { useActiveVitals, useActiveRoomExits } from '../../stores/useActiveGameState';
 import { useMumeTime } from '../../hooks/useMumeTime';
 import { MUME_MONTH_DETAILS } from '../../utils/mumeTimeUtils';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import './MapRoomInfoFooter.css';
 
 export const MapRoomInfoFooter: FC = () => {
     // --- Logic Section ---
+    const hideMapHeaderFooter = useSettingsStore(s => s.hideMapHeaderFooter);
     const { currentTerrain, gameTime } = useGame();
     const { lighting, weather } = useActiveVitals();
     const { exits } = useActiveRoomExits();
@@ -40,6 +42,8 @@ export const MapRoomInfoFooter: FC = () => {
         : '—';
 
     // --- Render Section ---
+    if (hideMapHeaderFooter) return null;
+
     return (
         <div className="map-room-info-footer" role="region" aria-label="Room details">
             <div className="map-room-info-item">

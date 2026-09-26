@@ -65,6 +65,72 @@
     margin-left: 2px;
 }
 
+.docked-target-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 4px;
+    background: rgba(201, 168, 76, 0.15);
+    border: 1px solid rgba(201, 168, 76, 0.35);
+    color: #e0c070;
+    font-size: 0.68rem;
+    font-weight: 700;
+    font-family: inherit;
+    white-space: nowrap;
+    user-select: none;
+    transition: all 0.15s ease;
+    margin-right: 5px;
+    flex-shrink: 0;
+}
+
+.docked-target-badge:hover {
+    background: rgba(201, 168, 76, 0.25);
+    border-color: rgba(201, 168, 76, 0.6);
+}
+
+.docked-target-name {
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: text;
+}
+
+.docked-target-edit {
+    width: 110px;
+    min-width: 48px;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    user-select: text;
+}
+
+.docked-target-x {
+    font-size: 11px;
+    line-height: 1;
+    color: #f87171;
+    margin-left: 2px;
+    opacity: 0.8;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.docked-target-badge:hover .docked-target-x {
+    opacity: 1;
+}
+
 .docked-input-form {
     flex: 1 1 0;
     min-width: 0;
@@ -173,6 +239,22 @@
     transition: all 0.12s ease;
     user-select: none;
     line-height: 1.2;
+}
+
+.docked-login-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.docked-remember-login {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #a99b7e;
+    font: 10px var(--font-mono, monospace);
+    white-space: nowrap;
 }
 
 .docked-cancel-btn {

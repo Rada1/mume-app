@@ -35,7 +35,6 @@ import { useUIStore } from '../../stores/useUIStore';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { getEndedEffectTimerEntry, parseEffectTimerLine } from '../../services/timers/effectTimerParser';
 import { parseActionTimerLine } from '../../services/timers/actionTimerParser';
-import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { parseMagicKeyLine, upsertMagicKeyTarget } from '../../utils/magicKeyUtils';
 import { parseResourceGainLine } from '../../utils/resourceGainUtils';
 import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir } from './textMapperEvents';
@@ -641,14 +640,21 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // MUME does not send <movein>/<moveout> wrapper tags.
         // Movement messages arrive as: "A <character>Name</character> leaves east."
         // or: "A <character>Name</character> has arrived from the north."
-        // We detect these by the presence of a <character> tag plus movement verb patterns.
-        {
-            const lowerLine = lineToParse.toLowerCase();
-            const hasCharTag = /<character>|&lt;character/i.test(lineToParse);
-            if (hasCharTag) {
-                if (lowerLine.includes(' arrived from ') || lowerLine.includes(' arrives from ')) {
+        if (!isSnoop || deps.isSpectateMode) {
+            const cleanLower = stripAnsiCodes(lineToParse)
+                .replace(/<[^>]+>|&lt;[^&]+&gt;/g, '')
+                .toLowerCase()
+                .trim();
+            if (!cleanLower.startsWith('you ') && !cleanLower.startsWith("you're ") && !cleanLower.startsWith("you've ")) {
+                const hasCharTag = /<character>|&lt;character/i.test(lineToParse);
+                const isEnter = (hasCharTag && (cleanLower.includes(' arrived from ') || cleanLower.includes(' arrives from ') || cleanLower.includes(' rides in from '))) ||
+                    /\b(arrived\s+from|arrives\s+from|rides\s+in\s+from)\b/i.test(cleanLower);
+                const isExit = (hasCharTag && (/\bleaves\b/i.test(cleanLower) || cleanLower.includes(' flees ') || cleanLower.includes(' fled ') || cleanLower.includes(' rides '))) ||
+                    /\b(leaves|flees|fled|rides)\s+(north|south|east|west|up|down|towards|into|to the)\b/i.test(cleanLower);
+
+                if (isEnter) {
                     deps.playEffect?.('enter', { skipJitter: true });
-                } else if (/\bleaves\b/.test(lowerLine) || lowerLine.includes(' flees ') || lowerLine.includes(' fled ')) {
+                } else if (isExit) {
                     deps.playEffect?.('exit', { skipJitter: true });
                 }
             }
@@ -873,12 +879,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         const promptInfo = prompt.parsePrompt(textOnly, isSnoop);
-        if (!isSnoop && promptInfo.isMatch) {
-            const active = useActionTimerStore.getState().activeTimer;
-            if (active && !active.isFinished && Date.now() - active.startedAt > 400) {
-                useActionTimerStore.getState().completeTimer(false);
-            }
-        }
         if (!isSnoop && capture.shouldSuppressCommandEcho(textOnly, promptInfo.attachedText)) {
             return;
         }
@@ -1179,8 +1179,164 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         atmosphere.parseAtmosphere(lower, isSnoop);
-        if (!isSnoop && /^(?:you are hungry|you are thirsty)\.$/i.test(textOnly.trim())) {
+        if ((!isSnoop || deps.isSpectateMode) && /^(?:you are hungry|you are thirsty)\.$/i.test(textOnly.trim())) {
             deps.playEffect?.('hungrythirsty');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            textOnly.includes('You finish gathering the wood into a pile and set it on fire.') ||
+            textOnly.includes('You put some wood in the fire.')
+        )) {
+            deps.playEffect?.('campfire');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.includes('alas, you cannot go that way') || 
+            lower.includes('arglebargle, glop-glyf') || 
+            lower.startsWith("you don't have any") || 
+            lower.includes('seems to be closed') ||
+            lower.includes('seems to be too large') ||
+            lower.includes('seems to be too small')
+        )) {
+            deps.playEffect?.('error');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (lower.includes('your spell backfired') || lower.includes('mispronounced the magical words') || lower.includes('spell backfired'))) {
+            deps.playEffect?.('backfire');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && lower.includes('you carefully examine the ground around you, looking for tracks')) {
+            deps.playEffect?.('tracking');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.startsWith('you wear ') || lower.includes('you wear ') ||
+            lower.startsWith('you cover your ') || lower.includes('you cover your ') ||
+            lower.startsWith('you place ') || lower.startsWith('you put on ')
+        )) {
+            deps.playEffect?.('wear');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && lower.startsWith('you eat ')) {
+            deps.playEffect?.('eat');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && lower.startsWith('you drink ')) {
+            deps.playEffect?.('drink');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && /\bgives\s+you\b/i.test(lower)) {
+            deps.playEffect?.('get');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (lower.startsWith('you put ') || lower.includes('you put '))) {
+            deps.playEffect?.('drop');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && lower.includes('bash at ') && lower.includes('sends') && lower.includes('sprawling')) {
+            deps.playEffect?.('bash');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (lower === 'you stored it.' || lower.includes('your mind is too full to store it') || lower.includes('stored it.'))) {
+            deps.playEffect?.('magiccomplete');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && /the lightning bolts?\s+hits?\b.*with full impact/i.test(lower)) {
+            deps.playEffect?.('lightningbolt');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            (lower.includes('energy in') && lower.includes('legs') && lower.includes('refresh')) ||
+            lower.includes('energy begins to flow within')
+        )) {
+            deps.playEffect?.('bob');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && lower.includes('the earth trembles beneath your feet')) {
+            deps.playEffect?.('earthquake');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.includes('you begin to feel the light of aman shine upon you') ||
+            lower.includes('you feel a renewed light shine upon you')
+        )) {
+            deps.playEffect?.('bless');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && lower.includes('scratches and bruises disappear')) {
+            deps.playEffect?.('curelight');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && lower.includes('scars fade away and a feeling of health comes over you')) {
+            deps.playEffect?.('cureserious');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.includes('you start glowing') ||
+            lower.includes('glows brightly') ||
+            lower.includes('starts to glow')
+        )) {
+            deps.playEffect?.('sanctuary');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && lower.includes('a warm feeling fills your body')) {
+            deps.playEffect?.('heal');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.includes('blue transparent shield') ||
+            lower.includes('magic armour is revitalised') ||
+            lower.includes('magic armor is revitalised')
+        )) {
+            deps.playEffect?.('armour');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.includes('has been kicked out of the group') ||
+            lower.includes('kicked out of the group')
+        )) {
+            deps.playEffect?.('ungroup');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.includes('is now a group member')
+        )) {
+            deps.playEffect?.('group');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.includes('you feel protected') ||
+            lower.includes('protection is revitalised') ||
+            lower.includes('protection is revitalized')
+        )) {
+            deps.playEffect?.('shield');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.includes('you feel less protected') ||
+            lower.includes('less protected')
+        )) {
+            deps.playEffect?.('affectdown');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.includes('surrounded by a misty shroud') ||
+            lower.includes('misty shroud')
+        )) {
+            deps.playEffect?.('shroud');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.includes('sensitive of magical auras') ||
+            lower.includes('sensitive to magical auras') ||
+            lower.includes('magical auras')
+        )) {
+            deps.playEffect?.('detectmagic');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.includes('crackle of thunder') ||
+            lower.includes('thunder in the distance')
+        )) {
+            deps.playEffect?.('thunderrumble', { filterFrequency: 500 });
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.startsWith('you found ') || lower.includes('you found ') ||
+            lower.startsWith('you dig up ') || lower.includes('you dig up ') ||
+            lower.includes('you have finished mixing') ||
+            lower.includes('you produced ')
+        )) {
+            deps.playEffect?.('reveal');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.startsWith('you sell ') || lower.includes('you sell ') ||
+            (lower.includes('here you have ') && lower.includes(' for that')) ||
+            (lower.includes('i can offer ') && lower.includes(' for that'))
+        )) {
+            deps.playEffect?.('sell');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.startsWith('you buy ') || lower.includes('you buy ') ||
+            lower.includes("that'll be ") ||
+            lower.includes('that will be ') ||
+            lower.includes('there you are') ||
+            lower.includes('they should be done shortly') ||
+            lower.includes("i'll be forced to sell")
+        )) {
+            deps.playEffect?.('buy');
         }
         if (!isSnoop) {
             const endedEffect = getEndedEffectTimerEntry(textOnly);
@@ -1234,7 +1390,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         if (isVisible) {
-            if (finalType === 'weather' && !isSnoop) {
+            if (finalType === 'weather' && (!isSnoop || deps.isSpectateMode)) {
                 deps.playEffect?.('weather');
             }
             const mid = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -1275,7 +1431,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             const hasDamageTag = lineToParse.includes('<damage>');
             const hasAvoidDamageTag = lineToParse.includes('<avoid_damage>');
             const hasMissTag = lineToParse.includes('<miss>');
-            const isRipMessage = !isSnoop && /\bis dead!\s*r\.?i\.?p/i.test(textOnly);
+            const isRipMessage = (!isSnoop || deps.isSpectateMode) && /\bis dead!\s*r\.?i\.?p/i.test(textOnly);
             if (!isSnoop && (hasHitTag || hasDamageTag)) {
                 const eventTime = Date.now();
                 if (hasHitTag) gmcpBus.emit('Game.CombatPulse', { direction: 'outgoing', time: eventTime });
@@ -1292,6 +1448,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 undefined, isSnoop, undefined, isRipMessage, commResult.isSocial, resourceGain || undefined,
                 isMagicRipple
             );
+            if ((!isSnoop || deps.isSpectateMode) && commResult.isSocial) {
+                deps.playEffect?.('social');
+            }
 
             if (!isSnoop && finalType === 'prompt') {
                 const parts: string[] = [];

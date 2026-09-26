@@ -46,7 +46,9 @@ const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
         iconScale: 1
     };
     let swipeCommands = button.swipeCommands ? { ...button.swipeCommands } : button.swipeCommands;
-    const swipeActionTypes = button.swipeActionTypes ? { ...button.swipeActionTypes } : button.swipeActionTypes;
+    let swipeActionTypes = button.id === 'tactical-doors'
+        ? undefined
+        : (button.swipeActionTypes ? { ...button.swipeActionTypes } : button.swipeActionTypes);
 
     if (button.id === 'tactical-warrior' && swipeCommands) {
         Object.entries(swipeCommands).forEach(([dir, command]) => {
@@ -72,26 +74,28 @@ const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
         swipeCommands = { ...(swipeCommands || {}), ...DOOR_SWIPE_COMMANDS };
     }
 
-    const longSwipeActionTypes = button.longSwipeActionTypes
-        ? Object.fromEntries(
-            Object.entries(button.longSwipeActionTypes).map(([dir, actionType]) => [
-                dir,
-                actionType === 'select-assign' ? 'assign' : actionType
-            ])
-        ) as CustomButton['longSwipeActionTypes']
-        : button.longSwipeActionTypes;
+    const longSwipeActionTypes = button.id === 'tactical-doors'
+        ? undefined
+        : (button.longSwipeActionTypes
+            ? Object.fromEntries(
+                Object.entries(button.longSwipeActionTypes).map(([dir, actionType]) => [
+                    dir,
+                    actionType === 'select-assign' ? 'assign' : actionType
+                ])
+            ) as CustomButton['longSwipeActionTypes']
+            : button.longSwipeActionTypes);
 
     return {
         ...button,
         setId: normalizedSetId,
         label: button.id === 'tactical-charmie' ? 'Ch' : button.id === 'tactical-doors' ? 'Doors' : button.label,
         command: button.id === 'tactical-charmie' ? 'order followers' : button.id === 'tactical-doors' ? 'doors' : button.command,
-        actionType: button.id === 'tactical-charmie' ? 'modifier' : button.id === 'tactical-doors' ? 'menu' : button.actionType,
+        actionType: button.id === 'tactical-charmie' ? 'modifier' : button.id === 'tactical-doors' ? 'command' : button.actionType,
         style: button.id === 'tactical-charmie' ? normalizedCharmieStyle : button.style,
         position: button.id === 'tactical-charmie' ? { ...button.position, w: 34, h: 34 } : button.position,
         swipeCommands,
         swipeActionTypes,
-        longActionType: button.longActionType === 'select-assign' ? 'assign' : button.longActionType,
+        longActionType: button.id === 'tactical-doors' ? undefined : (button.longActionType === 'select-assign' ? 'assign' : button.longActionType),
         longSwipeActionTypes
     };
 };

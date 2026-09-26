@@ -141,7 +141,7 @@ export function useCombatParser(deps: CombatParserDeps) {
     }, [inCombatRef, groupMembers, spectateCharacterName, roomPlayers]);
 
     const handleCombatExit = useCallback((lower: string, isSnoop: boolean = false, originalText?: string) => {
-        if (/\bis dead!\s*r\.?i\.?p/i.test(lower) && !isSnoop) {
+        if (/\bis dead!\s*r\.?i\.?p/i.test(lower) && (!isSnoop || deps.isSpectateMode)) {
             playKillSound?.();
             // Fire the loot prompt off the R.I.P. line directly — by the time this
             // line is parsed, GMCP has usually already cleared the fighting position,
@@ -151,7 +151,7 @@ export function useCombatParser(deps: CombatParserDeps) {
         }
 
         const isFlee = /^you flee\b/i.test(lower);
-        if (isFlee && !isSnoop) playEffect?.('flee');
+        if (isFlee && (!isSnoop || deps.isSpectateMode)) playEffect?.('flee');
         const isDeath = /you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) || /\bis dead!\s*r\.?i\.?p/i.test(lower);
         const isCombatEnd = isDeath || isFlee || /\bflees\s/i.test(lower) || /you stop fighting/i.test(lower);
 
@@ -211,11 +211,11 @@ export function useCombatParser(deps: CombatParserDeps) {
             return true;
         }
  else if (/you gain a level!/i.test(lower)) {
-            if (!isSnoop) playLevelSound?.();
+            if (!isSnoop || deps.isSpectateMode) playLevelSound?.();
             return true;
         }
         return false;
-    }, [setCharacterInfo, triggerXpTicker, triggerTpTicker, playLevelSound]);
+    }, [setCharacterInfo, triggerXpTicker, triggerTpTicker, playLevelSound, deps.isSpectateMode]);
 
     const parseCombatLine = useCallback((textOnly: string, cleanLine: string, isSnoop: boolean = false): any => {
         const lower = textOnly.toLowerCase();
@@ -266,7 +266,7 @@ export function useCombatParser(deps: CombatParserDeps) {
                 else deps.playOofSound?.();
             }
 
-            if (!isSnoop && isUserInvolved && isMissOrAvoid) {
+            if ((!isSnoop || deps.isSpectateMode) && isUserInvolved && isMissOrAvoid) {
                 deps.playEffect?.('miss');
             }
 

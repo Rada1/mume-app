@@ -314,20 +314,21 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 6px 4px;
+    padding: 8px 6px;
     background: rgba(18, 14, 10, 0.85);
     border-top: 1px solid rgba(201, 168, 76, 0.16);
     flex-shrink: 0;
 }
 
 .right-panel-navigation .movement-pad {
-    margin: 0;
-    padding: 4px;
-    gap: 3px;
-    grid-template-columns: repeat(3, 36px);
-    grid-template-rows: repeat(3, 27px);
+    margin: 0 auto;
+    padding: 6px;
+    gap: 4px;
+    grid-template-columns: repeat(3, clamp(44px, 5.8vw, 54px));
+    grid-template-rows: repeat(3, clamp(38px, 5.2vw, 46px));
     background: rgba(22, 17, 13, 0.6);
     border: 1px solid rgba(201, 168, 76, 0.16);
+    border-radius: 8px;
 }
 
 /* Footer Target Status */
@@ -360,6 +361,47 @@
 .target-bar-value.is-empty {
     color: #6d6452;
     cursor: default;
+}
+
+.target-bar-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.target-bar-clear-btn {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 11px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+    opacity: 0.8;
+    transition: opacity 0.15s, background-color 0.15s;
+}
+
+.target-bar-clear-btn:hover {
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.target-bar-form {
+    display: flex;
+    align-items: center;
+}
+
+.target-bar-form input {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(201, 168, 76, 0.4);
+    border-radius: 4px;
+    color: #fff;
+    font-size: 0.65rem;
+    font-family: inherit;
+    padding: 2px 6px;
+    width: 90px;
+    outline: none;
 }
 
 /* Account Mode Locked Overlay */

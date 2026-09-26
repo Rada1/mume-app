@@ -105,6 +105,45 @@
     contain: paint;
 }
 
+/* Keep recent events visible while the main virtualized log is in scrollback. */
+.message-log-layout.reading-history > .message-log {
+    flex: 0 0 75%;
+}
+
+.message-log-live-pane {
+    display: flex;
+    flex: 1 1 25%;
+    min-height: 0;
+    flex-direction: column;
+    position: relative;
+    border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+    background: transparent;
+}
+
+.message-log-live-heading {
+    position: absolute;
+    top: 5px;
+    right: 12px;
+    z-index: 2;
+}
+
+.message-log-live-heading button {
+    color: var(--text-secondary, #a9a294);
+    border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+    border-radius: 4px;
+    background: var(--bg-app, #191411);
+    padding: 2px 7px;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.message-log-live-content {
+    flex: 1;
+    min-height: 0;
+    overflow-anchor: none;
+}
+
 .newbie-mode .message-log {
     background: transparent !important;
     border: none !important;
@@ -878,6 +917,17 @@
     filter: opacity(1) brightness(1.15);
 }
 
+/* Info-type messages (Affected by, stat lines, score, affects) stay at full brightness */
+.message.info .message-content,
+.message.info .message-content span,
+.message.info .message-content .log-text-word,
+.message.stat-affect-line .message-content,
+.message.stat-affect-line .message-content span,
+.message.stat-affect-line .message-content .log-text-word {
+    opacity: 1 !important;
+    filter: none !important;
+}
+
 /* Objects already have their 'boost' baked into the CSS variable to match drawers */
 .message-content .inline-btn.auto-item,
 .message-content .inline-btn.auto-obj {
@@ -901,6 +951,14 @@
 
 .message-content .inline-btn {
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.48);
+}
+
+/* Account character rows are clickable, but remain regular terminal text. */
+.message.account-character-list .message-content .account-char-name {
+    font-size: inherit !important;
+    line-height: inherit !important;
+    font-family: inherit;
+    letter-spacing: inherit;
 }
 
 .message-content .inline-btn[class*="inline-item-tier-"] {
@@ -960,11 +1018,11 @@
 }
 
 /* Category-based color mappings */
-.inline-btn[data-category="npc"] { --glow-color: var(--color-npc) !important; }
-.inline-btn[data-category="player"] { --glow-color: var(--color-player) !important; }
-.inline-btn[data-category="object"] { --glow-color: var(--color-obj) !important; }
-.inline-btn[data-category="account"] { --glow-color: var(--color-account) !important; }
-.inline-btn[data-category="quest"] { --glow-color: var(--color-quest) !important; }
+.inline-btn[data-category="npc"] { --glow-color: var(--color-npc); }
+.inline-btn[data-category="player"] { --glow-color: var(--color-player); }
+.inline-btn[data-category="object"] { --glow-color: var(--color-obj); }
+.inline-btn[data-category="account"] { --glow-color: var(--color-account); }
+.inline-btn[data-category="quest"] { --glow-color: var(--color-quest); }
 
 /* Dynamic Target Highlighting (Reactive) */
 .target-highlighter.is-target {
@@ -1237,12 +1295,6 @@
     font-size: inherit;
 }
 
-.comm-sender .log-text-word,
-.comm-sender > span:not(.inline-btn) {
-    color: var(--text-primary, #d4cdb8);
-    opacity: 1 !important;
-}
-
 .comm-bubble {
     background: transparent;
     border: none;
@@ -1257,10 +1309,10 @@
     opacity: 1 !important;
 }
 
-.comm-text.tell-body,
-.comm-text.tell-body .log-text-word,
-.comm-text.tell-body span:not(.inline-btn) {
-    color: var(--text-primary, #d4cdb8) !important;
+.comm-content .comm-text .log-text-word {
+    background-image: none !important;
+    -webkit-background-clip: initial !important;
+    -webkit-text-fill-color: currentColor !important;
 }
 
 
@@ -1813,10 +1865,7 @@
 .inline-btn:not(.comm-bubble):not(.reply-btn) {
     border-radius: 4px;
     padding: 0;
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-decoration-color: var(--glow-color, currentColor);
-    text-underline-offset: 3px;
+    text-decoration: none;
 }
 
 /* Text selection should not retain inline-button underlines or alter the selection line box. */
@@ -3200,47 +3249,36 @@ span.inline-btn {
 .message-content .inline-btn.auto-obj,
 .message-content .inline-btn[data-category="object"],
 .message-log-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
-    color: inherit !important;
+    color: var(--glow-color, var(--mume-wiki-link-color, #c9a84c)) !important;
     text-shadow: none !important;
 }
 
-/* Match the MUME Wiki's warm hyperlink colors throughout the log. */
-.message-content .inline-btn,
-.message-content .inline-btn[data-category],
+/* Room titles obey the room color settings, falling back to wiki gold. */
 .message-content .room-name-inline,
 .message-content .room-name-inline span,
-.message-content .room-name-inline *,
-.message.is-room-name .message-content .room-title-text,
-.message.is-room-name .message-content .room-title-text *,
-.room-title-text,
-.room-title-text * {
-    --mume-wiki-link-color: #c9a84c;
-    --glow-color: var(--mume-wiki-link-color) !important;
-    color: var(--mume-wiki-link-color) !important;
+.message-content .room-name-inline * {
+    color: var(--glow-color, var(--room-color, var(--mume-wiki-link-color, #c9a84c))) !important;
 }
 
-.light-mode .message-content .inline-btn,
-.light-mode .message-content .inline-btn[data-category],
+.message.is-room-name .message-content,
+.message.is-room-name .message-content .room-title-badge,
+.message.is-room-name .message-content .room-title-text,
+.room-title-text {
+    --mume-wiki-link-color: var(--room-color, #c9a84c);
+    color: var(--glow-color, var(--room-color, var(--mume-wiki-link-color, #c9a84c))) !important;
+}
+
 .light-mode .message-content .room-name-inline,
 .light-mode .message-content .room-name-inline span,
 .light-mode .message-content .room-name-inline *,
 .light-mode .message.is-room-name .message-content .room-title-text,
-.light-mode .message.is-room-name .message-content .room-title-text *,
-.light-mode .room-title-text,
-.light-mode .room-title-text * {
-    --mume-wiki-link-color: #8b6b10;
+.light-mode .room-title-text {
+    --mume-wiki-link-color: var(--room-color, #8b6b10);
 }
 
-/* Prompt metadata sits outside .message-content, so give its entity buttons
-   the same warm link color explicitly. */
+/* Prompt entities also use their resolved category color. */
 .custom-prompt-container .prompt-entity-inline {
-    --mume-wiki-link-color: #c9a84c;
-    --glow-color: var(--mume-wiki-link-color) !important;
-    color: var(--mume-wiki-link-color) !important;
-}
-
-.light-mode .custom-prompt-container .prompt-entity-inline {
-    --mume-wiki-link-color: #8b6b10;
+    color: var(--glow-color, var(--mume-wiki-link-color, #c9a84c)) !important;
 }
 
 /* Base word token wrapper with subtle vertical text gradient */
@@ -3285,6 +3323,19 @@ span.inline-btn {
     filter: none !important;
 }
 
+/* All weather messages must be rendered at 100% opacity. */
+.message.weather .message-content,
+.message.weather .message-content *,
+.message.weather .log-text-word,
+.message.weather-block-start .message-content,
+.message.weather-block-start .message-content *,
+.message.weather-block-start .log-text-word,
+.message-content .weather,
+.message-content .weather * {
+    opacity: 1 !important;
+    filter: none !important;
+}
+
 .light-mode .log-text-word {
     background: linear-gradient(
         180deg,
@@ -3296,35 +3347,38 @@ span.inline-btn {
     background-clip: text;
 }
 
-/* Subtle gradient on standard mode room titles, prompt entities, and inline buttons */
-.message-content .inline-btn:not([class*="inline-item-tier-"]),
-.message-content .room-name-inline,
+/* Room titles keep their subtle text treatment, colored by the configured room color. */
 .message.is-room-name .message-content .room-title-text,
-.room-title-text,
-.custom-prompt-container .prompt-entity-inline {
+.room-title-text {
     background: linear-gradient(
         180deg,
-        color-mix(in srgb, var(--mume-wiki-link-color, #c9a84c) 76%, #ffffff) 0%,
-        var(--mume-wiki-link-color, #c9a84c) 100%
+        color-mix(in srgb, var(--glow-color, var(--room-color, var(--mume-wiki-link-color, #c9a84c))) 76%, #ffffff) 0%,
+        var(--glow-color, var(--room-color, var(--mume-wiki-link-color, #c9a84c))) 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
-.light-mode .message-content .inline-btn:not([class*="inline-item-tier-"]),
-.light-mode .message-content .room-name-inline,
 .light-mode .message.is-room-name .message-content .room-title-text,
-.light-mode .room-title-text,
-.light-mode .custom-prompt-container .prompt-entity-inline {
+.light-mode .room-title-text {
     background: linear-gradient(
         180deg,
-        color-mix(in srgb, var(--mume-wiki-link-color, #8b6b10) 80%, #000000) 0%,
-        var(--mume-wiki-link-color, #8b6b10) 100%
+        color-mix(in srgb, var(--glow-color, var(--room-color, var(--mume-wiki-link-color, #8b6b10))) 80%, #000000) 0%,
+        var(--glow-color, var(--room-color, var(--mume-wiki-link-color, #8b6b10))) 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+/* Inline actions display their resolved color without a text gradient. */
+.message-content .inline-btn,
+.custom-prompt-container .prompt-entity-inline {
+    background-image: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    -webkit-text-fill-color: currentColor;
 }
 
 /* Very subtle undulating flag-like wave motion (Immersion Mode) */

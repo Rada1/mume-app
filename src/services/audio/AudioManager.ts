@@ -238,14 +238,7 @@ export class AudioManager {
         const now = ctx.currentTime;
         let playTime = now;
 
-        if (key === 'enter' || key === 'exit') {
-            const minDelay = 0.1;
-            const lastTime = this.lastScheduledTimes.get(key) ?? 0;
-            if (lastTime > now - 0.01) {
-                playTime = Math.max(lastTime + minDelay, now);
-            }
-            this.lastScheduledTimes.set(key, playTime);
-        } else if (key === 'flee') {
+        if (key === 'flee') {
             const minDelay = 1.5;
             const lastTime = this.lastScheduledTimes.get(key) ?? 0;
             if (now < lastTime + minDelay) {
@@ -297,30 +290,29 @@ export class AudioManager {
             actualBuffer = reversed;
         }
 
-        const source = ctx.createBufferSource();
-        source.buffer = actualBuffer;
-
         const basePitch = options?.pitch ?? config.defaultPitch ?? 1.0;
         const jitterRange = options?.skipJitter ? 0 : 0.24;
-        const jitter = (Math.random() * jitterRange - (jitterRange / 2));
-        source.playbackRate.value = basePitch + jitter;
-
-        const gainNode = ctx.createGain();
         const baseVol = options?.volume ?? config.defaultVolume ?? 1.0;
-        gainNode.gain.value = this.getEffectiveVolume(baseVol, false);
+        for (let hit = 0; hit < (config.repeatCount ?? 1); hit++) {
+            const source = ctx.createBufferSource();
+            source.buffer = actualBuffer;
+            const jitter = Math.random() * jitterRange - jitterRange / 2;
+            source.playbackRate.value = basePitch + jitter;
 
-        if (options?.filterFrequency) {
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = options.filterFrequency;
-            source.connect(filter);
-            filter.connect(gainNode);
-        } else {
-            source.connect(gainNode);
+            const gainNode = ctx.createGain();
+            gainNode.gain.value = this.getEffectiveVolume(baseVol, false);
+            if (options?.filterFrequency) {
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = options.filterFrequency;
+                source.connect(filter);
+                filter.connect(gainNode);
+            } else {
+                source.connect(gainNode);
+            }
+            gainNode.connect(ctx.destination);
+            source.start(playTime + hit * (config.repeatInterval ?? 0));
         }
-
-        gainNode.connect(ctx.destination);
-        source.start(playTime);
     }
 
     public async setAmbient(type: 'terrain' | 'weather' | 'zone', options: AmbientOptions) {

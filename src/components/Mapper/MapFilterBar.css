@@ -1,0 +1,351 @@
+/**
+ * @file MapFilterBar.css
+ * @description Truly borderless, authentic terminal styling for Map room filtering & Z-elevation telemetry.
+ */
+
+.map-filter-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 10px;
+    box-sizing: border-box;
+    background: transparent;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    font-family: var(--font-mono, monospace);
+    pointer-events: auto;
+    transition: all 150ms ease;
+}
+
+/* Top Row: Z-Readout, Find Search Input, Active Pill, Clear, Collapse */
+.map-filter-top-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    height: 22px;
+}
+
+/* Z-Level Readout - Clean inline terminal text, no boxes */
+.map-filter-z-readout {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    color: #8a7a5e;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.map-filter-z-readout .z-label {
+    color: #8a7a5e;
+}
+
+.map-filter-z-readout .z-val {
+    color: #d4cdb8;
+}
+
+.map-filter-z-readout .z-val.non-zero {
+    color: #f0cb67;
+}
+
+.map-filter-divider {
+    color: rgba(255, 255, 255, 0.15);
+    font-size: 11px;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+/* Search Box - Completely borderless command prompt */
+.map-filter-search-box {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+}
+
+.map-filter-prompt {
+    color: #f0cb67;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 1;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.map-filter-prompt-label {
+    color: #8a7a5e;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.map-filter-search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #d4cdb8;
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 1;
+    padding: 0;
+}
+
+.map-filter-search-input::placeholder {
+    color: #5a5245;
+}
+
+/* Active Filter - Clean bracketed terminal text */
+.map-filter-active-pill {
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: #55ff55;
+    font-size: 10.5px;
+    font-weight: 700;
+    flex-shrink: 0;
+    user-select: none;
+    letter-spacing: 0.02em;
+}
+
+/* Clear Button - Terminal text button */
+.map-filter-clear-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2px;
+    background: transparent;
+    border: none;
+    color: #8a7a5e;
+    font-size: 10px;
+    font-family: inherit;
+    cursor: pointer;
+    flex-shrink: 0;
+    user-select: none;
+    transition: color 120ms ease;
+}
+
+.map-filter-clear-btn:hover {
+    color: #f87171;
+}
+
+/* Collapse/Expand Toggle - Clean borderless chevron */
+.map-filter-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    width: 18px;
+    height: 18px;
+    background: transparent;
+    border: none;
+    color: #8a7a5e;
+    cursor: pointer;
+    flex-shrink: 0;
+    user-select: none;
+    transition: color 120ms ease;
+}
+
+.map-filter-toggle-btn:hover {
+    color: #d4cdb8;
+}
+
+/* Bottom Row: Horizontal Filter Chips Toolbar - Bracketed terminal links */
+.map-filter-chips-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 2px 0 1px 0;
+}
+
+.map-filter-chips-row::-webkit-scrollbar {
+    display: none;
+}
+
+/* Terminal Chip Item - Bracketed borderless keyword */
+.map-filter-chip {
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: #8a7a5e;
+    font-size: 10px;
+    font-family: inherit;
+    font-weight: 600;
+    line-height: 1;
+    flex-shrink: 0;
+    user-select: none;
+    transition: color 120ms ease;
+}
+
+.map-filter-chip:hover {
+    color: #d4cdb8;
+}
+
+.map-filter-chip.active {
+    color: #55ff55;
+    font-weight: 700;
+}
+
+.map-filter-chip.expanded {
+    color: #f0cb67;
+}
+
+.map-filter-chip .chip-bracket {
+    color: rgba(255, 255, 255, 0.18);
+    transition: color 120ms ease;
+}
+
+.map-filter-chip:hover .chip-bracket {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.map-filter-chip.active .chip-bracket {
+    color: rgba(85, 255, 85, 0.5);
+}
+
+.map-filter-chip-main {
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.map-filter-chip-symbol {
+    font-size: 10px;
+    line-height: 1;
+}
+
+.map-filter-chip-label {
+    font-size: 10px;
+    line-height: 1;
+}
+
+.map-filter-chip-chevron {
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0 0 1px;
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 8px;
+    opacity: 0.6;
+    transition: opacity 120ms ease;
+}
+
+.map-filter-chip-chevron:hover {
+    opacity: 1;
+}
+
+.map-filter-chip.expanded .map-filter-chip-chevron {
+    opacity: 1;
+}
+
+/* Subflags Dropup - Crisp terminal directory menu */
+.map-filter-dropup {
+    min-width: 100px;
+    background: rgba(16, 12, 9, 0.72);
+    border: 1px solid rgba(201, 168, 76, 0.28);
+    border-radius: 2px;
+    padding: 3px 2px;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.map-filter-dropup-header {
+    padding: 1px 6px 3px 6px;
+    font-size: 9px;
+    font-weight: 700;
+    color: #c9a84c;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 2px;
+    letter-spacing: 0.05em;
+    user-select: none;
+}
+
+.map-filter-dropup-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.map-filter-subflag {
+    height: 20px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 6px;
+    border-radius: 2px;
+    border: none;
+    background: transparent;
+    color: #8a7a5e;
+    font-size: 10px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    white-space: nowrap;
+    transition: all 100ms ease;
+}
+
+.map-filter-subflag:hover {
+    color: #d4cdb8;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.map-filter-subflag.active {
+    color: #55ff55;
+    font-weight: 700;
+    background: rgba(85, 255, 85, 0.1);
+}
+
+.map-filter-subflag .subflag-indicator {
+    font-size: 7px;
+    line-height: 1;
+}
+
+.map-filter-subflag.active .subflag-indicator {
+    color: #55ff55;
+}

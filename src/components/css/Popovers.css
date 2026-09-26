@@ -609,7 +609,7 @@
     border-radius: 16px;
     min-width: 220px;
     box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.05);
-    z-index: 60000;
+    z-index: 75000;
     padding: 10px;
     display: flex;
     flex-direction: column;

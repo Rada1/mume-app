@@ -17,15 +17,12 @@ import { useGame } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
 import { doesCommandMatchDeckItem } from '../../utils/commandFeedbackUtils';
+import { useDeckTargeting, DeckItem } from './useDeckTargeting';
+import { TacticalTargetBar } from '../Controls/GameButton/TacticalTargetBar';
+import { RightPanelTargetBar } from './RightPanelTargetBar';
 import './CommandDeck.css';
 
 type TabKey = 'combat' | 'social' | 'utility' | 'room';
-
-interface DeckItem {
-    label: string;
-    cmd: string;
-    needsTarget: boolean;
-}
 
 const STATIC: Record<TabKey, { label: string; cmd: string }[]> = {
     combat: [
@@ -43,7 +40,7 @@ const STATIC: Record<TabKey, { label: string; cmd: string }[]> = {
         { label: 'Score', cmd: 'score' }, { label: 'Inventory', cmd: 'inventory' },
         { label: 'Equipment', cmd: 'equipment' }, { label: 'Time', cmd: 'time' },
         { label: 'Weather', cmd: 'weather' }, { label: 'Group', cmd: 'group' },
-        { label: 'Who', cmd: 'who' }, { label: 'Affects', cmd: 'affects' }
+        { label: 'Who', cmd: 'who' }
     ],
     room: [
         { label: 'Watch', cmd: 'watch' }, { label: 'Camp', cmd: 'camp' },
@@ -65,9 +62,11 @@ const LABEL_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWid
 };
 
 export const CommandDeck: FC = () => {
-    const { executeCommand, triggerHaptic } = useGame() as {
+    const { executeCommand, triggerHaptic, setTarget, characterName } = useGame() as {
         executeCommand: (cmd: string) => void;
         triggerHaptic?: (ms: number) => void;
+        setTarget: (target: string | null) => void;
+        characterName?: string;
     };
     const { target } = useActiveVitals() as { target: string | null };
     const setInput = useInputStore(s => s.setInput);
@@ -148,6 +147,15 @@ export const CommandDeck: FC = () => {
         triggerHaptic?.(15);
         executeCommand(item.needsTarget && target ? `${item.cmd}${target}`.trim() : item.cmd.trim());
     };
+
+    const deckTargeting = useDeckTargeting({
+        target,
+        setTarget,
+        executeCommand,
+        triggerHaptic,
+        flashPressed,
+        fire
+    });
 
     // The visible number badges are command-line shortcuts, not instant-cast
     // hotkeys. Keep the action editable (and require Enter to send it), just
@@ -246,7 +254,10 @@ export const CommandDeck: FC = () => {
                                 key={item.label}
                                 type="button"
                                 className={`deck-slot state-ready${targetReady ? ' target-ready' : ''}${needsTargetHint === item.label ? ' needs-target' : ''}${pressedLabel === item.label ? ' is-key-pressed' : ''}`}
-                                onClick={() => fire(item)}
+                                onPointerDown={(e) => deckTargeting.handlePointerDown(item, e)}
+                                onPointerUp={(e) => deckTargeting.handlePointerUp(item, e)}
+                                onPointerCancel={deckTargeting.handlePointerCancel}
+                                onClick={(e) => deckTargeting.handleClick(item, e)}
                                 title={item.needsTarget && target ? `${item.cmd}${target}` : item.cmd.trim()}
                             >
                                 {hotkey && <span className="deck-slot-key">{hotkey}</span>}
@@ -257,6 +268,18 @@ export const CommandDeck: FC = () => {
                     })}
                 </div>
             </div>
+
+            <RightPanelTargetBar target={target} setTarget={setTarget} triggerHaptic={triggerHaptic} />
+
+            <TacticalTargetBar
+                isOpen={deckTargeting.isTargetMenuOpen}
+                currentTarget={target}
+                selectedTarget={deckTargeting.pendingTarget}
+                onSelectTarget={deckTargeting.handleSelectTarget}
+                roomOccupants={deckTargeting.roomOccupants}
+                roomItems={deckTargeting.roomItems}
+                characterName={characterName}
+            />
         </div>
     );
 };

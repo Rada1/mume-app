@@ -45,124 +45,24 @@
 
 }
 
-/* --- Map Movement Section --- */
-.app-container .map-movement-controls {
-    position: absolute;
-    left: 50%;
-    bottom: 65px;
-    transform: translateX(-50%);
-    z-index: 12;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 7px;
-    pointer-events: auto;
-}
-
-.app-container .map-movement-label {
-    color: #958b79;
-    font-family: var(--font-mono, monospace);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-}
-
-.app-container .map-movement-controls .movement-pad {
-    grid-template-columns: repeat(3, 44px);
-    grid-template-rows: repeat(3, 44px);
-    gap: 4px;
-    padding: 4px;
-    margin: 0;
-    background: rgba(28, 22, 17, 0.72);
-    border: 0;
-    border-radius: 0;
-    backdrop-filter: blur(8px);
-}
-
-.app-container .map-movement-controls .movement-pad-cell {
-    padding: 2px;
-    background: transparent;
-    border: 0;
-    border-radius: 3px;
-    box-shadow: none;
-}
-
-.app-container .map-movement-controls .movement-pad-cell:hover,
-.app-container .map-movement-controls .movement-pad-cell.is-key-pressed {
-    background: rgba(221, 189, 105, 0.14);
-}
-
-.app-container .map-movement-controls .movement-pad-label { display: none; }
-.app-container .map-movement-controls .movement-pad-key { top: 3px; left: 4px; font-size: 8px; }
-.app-container .map-movement-controls .movement-pad-cell svg { width: 22px; height: 22px; }
 
 /* --- Header Section --- */
 .app-container .map-room-info-header {
     border: 0 !important;
-    background: var(--bg-app) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: transparent !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
     font-family: var(--font-mono, monospace);
-    color: var(--text-primary);
+    color: #d4cdb8;
 }
 
-.app-container .map-terminal-title {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    min-height: 28px;
-    padding: 7px 10px 3px;
-    color: var(--accent);
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.app-container .map-terminal-title > span { font-weight: 700; }
-
-.app-container .map-header-primary-row,
-.app-container .map-header-calendar-row {
+.app-container.immersion-mode .map-room-info-header {
     border: 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     background: transparent !important;
-    padding: 3px 10px !important;
-}
-
-.app-container .map-header-room-name { font-weight: 600; }
-
-.app-container .map-header-zone-badge,
-.app-container .map-header-season-badge {
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    padding: 0 !important;
-    font-weight: 500;
-}
-
-.app-container .map-header-season-badge { margin-right: 4px; }
-
-/* --- Footer Section --- */
-.app-container .map-room-info-footer {
-    border: 0 !important;
-    background: var(--bg-app) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    padding: 7px 10px 9px !important;
-    font-family: var(--font-mono, monospace);
-    font-size: 11px;
-    gap: 3px 8px;
-}
-
-.app-container .map-room-info-label { text-transform: lowercase; }
-.app-container .map-room-info-item:nth-child(1) .map-room-info-label::before,
-.app-container .map-room-info-item:nth-child(3) .map-room-info-label::before {
-    content: '> ';
-    color: var(--accent);
-}
-
-.app-container .map-room-info-value { font-weight: 500; }
-
-.app-container.immersion-mode .map-room-info-header,
-.app-container.immersion-mode .map-room-info-footer {
-    border: 0 !important;
-    background: rgba(0, 0, 0, 0.18) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    box-shadow: none !important;
 }

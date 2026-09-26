@@ -53,14 +53,14 @@ export const getRoomRouteDirections = (
     const activeDirs: CompassDir[] = [];
 
     for (const dir of COMPASS_DIRS) {
-        const ex = ghostExits?.[dir] || currentRoomObj?.exits?.[dir] || ardaExits[dir];
+        const ardaExit = ardaExits[dir];
+        const ex = ghostExits?.[dir] || currentRoomObj?.exits?.[dir] || ardaExit;
         if (!ex) continue;
 
         const targetVnum = String(ex.target || ex.gmcpDestId || ardaExit?.target || '');
         const targetData = preloaded[targetVnum];
         const targetTerrain = targetData ? targetData[3] : undefined;
 
-        const ardaExit = ardaExits[dir];
         const combinedFlags = [
             ...(ardaExit?.flags || []),
             ...(currentRoomObj?.exits?.[dir]?.flags || []),

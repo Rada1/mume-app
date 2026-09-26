@@ -17,6 +17,39 @@
     font-family: var(--font-mono, monospace);
     width: 100%;
     box-sizing: border-box;
+    transition: padding 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.this-is-you-console.is-minimized {
+    padding: 4px 8px;
+    gap: 0;
+}
+
+.this-is-you-body-wrapper {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
+    opacity: 1;
+}
+
+.this-is-you-console.is-minimized .this-is-you-body-wrapper {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.this-is-you-body-inner {
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transform: translateY(0);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.this-is-you-console.is-minimized .this-is-you-body-inner {
+    transform: translateY(10px);
 }
 
 /* Floating XP Gain Animation */

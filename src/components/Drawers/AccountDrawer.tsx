@@ -10,6 +10,7 @@ import type { GameContextType } from '../../context/GameContext/types';
 import type { AccountState, CharacterEntry } from '../../types';
 import { AccountAnsiLine } from './AccountAnsiLine';
 import { AccountCreationPanel } from './AccountCreationPanel';
+import './AccountDrawer.css';
 
 // --- Logic Section ---
 
@@ -223,9 +224,30 @@ export const AccountDrawer: React.FC = () => {
         return <div className="cmd-action-panel"><AccountHeader title="Change Password" onBack={goBack} /><div className="cmd-action-body"><input className="cmd-name-input" type="password" value={passwordInput} onChange={e => setPasswordInput(e.target.value)} placeholder="New password..." /><button className="char-play-btn" disabled={!passwordInput.trim()} onClick={() => { executeCommand(`password ${passwordInput.trim()}`); setPasswordInput(''); }}>Change Password</button></div></div>;
     }
     if (selectedMenuCommand === 'time' || selectedMenuCommand === 'link' || selectedMenuCommand === 'lag') return renderDataPanel(selectedMenuCommand);
+    if (selectedMenuCommand === 'account') {
+        return (
+            <div className="cmd-action-panel">
+                <AccountHeader title="Account" onBack={goBack} />
+                <div className="cmd-action-body account-command-actions">
+                    <button className="char-secondary-btn" onClick={() => selectMenuCommand('password')}>Change password</button>
+                    <button className="char-secondary-btn" onClick={() => selectMenuCommand('time')}>Game time</button>
+                    <button className="char-secondary-btn" onClick={() => selectMenuCommand('link')}>Connection details</button>
+                    <button className="char-secondary-btn" onClick={() => selectMenuCommand('lag')}>Game lag</button>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="char-select-panel" style={{ padding: 12, gap: 10 }}>
+        <div className="cmd-action-panel account-command-panel">
+            <AccountHeader title="Commands" subtitle="Account menu" />
+            <div className="cmd-action-body account-command-actions">
+                <button className="char-play-btn" onClick={() => selectMenuCommand('play')}>Characters</button>
+                <button className="char-secondary-btn" onClick={() => selectMenuCommand('create')}>Create character</button>
+                <button className="char-secondary-btn" onClick={() => selectMenuCommand('account')}>Account options</button>
+                <button className="char-secondary-btn" onClick={() => selectMenuCommand('list')}>Refresh characters</button>
+                <button className="char-secondary-btn" onClick={() => executeCommand('quit')}>Quit</button>
+            </div>
             {accountState.characters.length > 0 && (
                 <div className="cmd-play-char-list">
                     {accountState.characters.map((entry: CharacterEntry) => <CharacterButton key={entry.name} entry={entry} onClick={() => selectCharacter(entry)} />)}

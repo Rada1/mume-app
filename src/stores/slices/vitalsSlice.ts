@@ -193,20 +193,6 @@ const firstString = (...values: unknown[]): string | null => {
     return null;
 };
 
-const resolveWaitingCondition = (data: GmcpCharVitals): boolean | null => {
-    if (typeof data.waiting === 'boolean') return data.waiting;
-    const fields = [data.position, data.status, data.state].filter(Boolean).map(value => String(value).toLowerCase());
-    if (fields.some(value => value === 'waiting' || value.includes('waiting'))) return true;
-    if (fields.some(value => ['standing', 'fighting', 'sleeping', 'sitting', 'resting'].includes(value))) return false;
-
-    const conditions = data.conditions;
-    if (Array.isArray(conditions)) return conditions.some(condition => String(condition).toLowerCase() === 'waiting');
-    if (typeof conditions === 'string') return conditions.toLowerCase().includes('waiting');
-    if (conditions && typeof conditions === 'object' && 'waiting' in conditions) return !!conditions.waiting;
-
-    return null;
-};
-
 /**
  * Creates the vitals actions for a Zustand store.
  * @param set The Zustand set function
@@ -318,11 +304,6 @@ export const createVitalsActions = (set: any, get: any) => ({
                 }
             }
 
-            const waitingCondition = resolveWaitingCondition(data);
-            if (waitingCondition !== null) {
-                updates.conditions = { ...((state as any).conditions || {}), waiting: waitingCondition };
-            }
-
             if (data.position) {
                 const rawPosition = String(data.position).toLowerCase();
 
@@ -373,6 +354,7 @@ export const createVitalsActions = (set: any, get: any) => ({
 
             if (data.carrying !== undefined) (updates as any).carrying = data.carrying ?? null;
             if (data.ridden !== undefined) (updates as any).isRidden = !!data.ridden;
+            if (data.ride !== undefined) updates.isRiding = data.ride === true;
             if (data.climb !== undefined) (updates as any).climb = data.climb ?? null;
             if (data.sneak !== undefined) (updates as any).sneak = data.sneak ?? null;
             if (data.hidden !== undefined) (updates as any).isHidden = !!data.hidden;
@@ -461,12 +443,10 @@ export const createVitalsActions = (set: any, get: any) => ({
             const rawPosition = String(nextPos).toLowerCase();
             const isCurrentlyRiding = state.position === 'riding' || state.position === 'mounted' || state.isRiding;
             if (rawPosition === 'standing' && isCurrentlyRiding) return state;
-            const waiting = rawPosition === 'waiting' || rawPosition.includes('waiting');
             return {
                 ...state,
                 position: rawPosition,
-                inCombat: rawPosition === 'fighting',
-                conditions: { ...((state as any).conditions || {}), waiting }
+                inCombat: rawPosition === 'fighting'
             };
         });
     },

@@ -1,143 +1,64 @@
 /**
  * @file MapFilterBar.tsx
- * @description Overlay controls for filtering highlighted map rooms by flag type.
+ * @description Docked bottom console bar for Map room search, category filtering, and Z-elevation telemetry.
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ChevronDown, Search, X } from 'lucide-react';
-
-// --- Configuration ---
-
-type CategoryId = 'mounts' | 'shops' | 'guilds' | 'travel' | 'resources' | 'services' | 'danger' | 'mobs' | 'quests';
-
-interface SubFlag {
-    id: string;
-    label: string;
-}
-
-interface Category {
-    id: CategoryId;
-    label: string;
-    symbol: string;
-    subFlags: SubFlag[];
-}
-
-const CATEGORIES: Category[] = [
-    {
-        id: 'mounts', label: 'Mounts', symbol: '♘',
-        subFlags: [
-            { id: 'HORSE', label: 'Horse' },
-            { id: 'MULE', label: 'Mule' },
-            { id: 'PACK_HORSE', label: 'Pack Horse' },
-            { id: 'WARG', label: 'Warg' },
-            { id: 'STABLE', label: 'Stable' },
-        ]
-    },
-    {
-        id: 'shops', label: 'Shops', symbol: '$',
-        subFlags: [
-            { id: 'SHOP', label: 'General' },
-            { id: 'WEAPON_SHOP', label: 'Weapon' },
-            { id: 'ARMOUR_SHOP', label: 'Armour' },
-            { id: 'FOOD_SHOP', label: 'Food' },
-            { id: 'PET_SHOP', label: 'Pet' },
-        ]
-    },
-    {
-        id: 'guilds', label: 'Guilds', symbol: 'G',
-        subFlags: [
-            { id: 'GUILD', label: 'General' },
-            { id: 'WARRIOR_GUILD', label: 'Warrior' },
-            { id: 'CLERIC_GUILD', label: 'Cleric' },
-            { id: 'RANGER_GUILD', label: 'Ranger' },
-            { id: 'MAGE_GUILD', label: 'Mage' },
-            { id: 'SCOUT_GUILD', label: 'Scout' },
-        ]
-    },
-    {
-        id: 'travel', label: 'Travel', symbol: 'T',
-        subFlags: [
-            { id: 'BOAT', label: 'Boat' },
-            { id: 'FERRY', label: 'Ferry' },
-            { id: 'COACH', label: 'Coach' },
-        ]
-    },
-    {
-        id: 'resources', label: 'Resources', symbol: '♣',
-        subFlags: [
-            { id: 'HERB', label: 'Herb' },
-            { id: 'WATER', label: 'Water' },
-            { id: 'FOOD', label: 'Food' },
-        ]
-    },
-    {
-        id: 'services', label: 'Services', symbol: 'R',
-        subFlags: [
-            { id: 'RENT', label: 'Inn' },
-            { id: 'MAIL', label: 'Mail' },
-        ]
-    },
-    {
-        id: 'danger', label: 'Danger', symbol: '!',
-        subFlags: [
-            { id: 'DEATHTRAP', label: 'Deathtrap' },
-        ]
-    },
-    {
-        id: 'mobs', label: 'Enemies', symbol: 'X',
-        subFlags: [
-            { id: 'AGGRESSIVE_MOB', label: 'Aggressive' },
-            { id: 'ELITE_MOB', label: 'Elite' },
-            { id: 'SUPER_MOB', label: 'Supermob' },
-        ]
-    },
-    {
-        id: 'quests', label: 'Quests', symbol: '?',
-        subFlags: [
-            { id: 'QUEST_MOB', label: 'Quest Mobs' },
-        ]
-    },
-];
-
-const getCategoryForFilter = (filter: string | null): CategoryId | null => {
-    if (!filter) return null;
-    for (const cat of CATEGORIES) {
-        if (cat.id === filter) return cat.id;
-        if (cat.subFlags.some(sf => sf.id === filter)) return cat.id;
-    }
-    return null;
-};
-
-const getLabelForFilter = (filter: string | null): string | null => {
-    if (!filter) return null;
-    for (const cat of CATEGORIES) {
-        if (cat.id === filter) return cat.label;
-        const sf = cat.subFlags.find(f => f.id === filter);
-        if (sf) return sf.label;
-    }
-    return null;
-};
+import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import { useMapper } from '../../context/useMapper';
+import {
+    CATEGORIES,
+    CategoryId,
+    getCategoryForFilter,
+    getLabelForFilter
+} from './MapFilterCategories';
+import { MapFilterSubflagsDropup } from './MapFilterSubflagsDropup';
+import './MapFilterBar.css';
 
 // --- Props ---
 
-interface MapFilterBarProps {
-    activeMapFilter: string | null;
-    mapSearchQuery: string;
-    setActiveMapFilter: React.Dispatch<React.SetStateAction<string | null>>;
-    setMapSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+export interface MapFilterBarProps {
+    activeMapFilter?: string | null;
+    mapSearchQuery?: string;
+    setActiveMapFilter?: React.Dispatch<React.SetStateAction<string | null>>;
+    setMapSearchQuery?: React.Dispatch<React.SetStateAction<string>>;
     triggerHaptic?: (ms: number) => void;
+    showZIndicator?: boolean;
+    viewZ?: number | null;
 }
 
 // --- Component ---
 
 export const MapFilterBar: React.FC<MapFilterBarProps> = ({
-    activeMapFilter,
-    mapSearchQuery,
-    setActiveMapFilter,
-    setMapSearchQuery,
-    triggerHaptic
+    activeMapFilter: propActiveMapFilter,
+    mapSearchQuery: propMapSearchQuery,
+    setActiveMapFilter: propSetActiveMapFilter,
+    setMapSearchQuery: propSetMapSearchQuery,
+    triggerHaptic,
+    showZIndicator = true,
+    viewZ: propViewZ
 }) => {
-    const [isCollapsed, setIsCollapsed] = useState(true);
+    const mapperContext = useMapper();
+
+    const activeMapFilter = propActiveMapFilter !== undefined
+        ? propActiveMapFilter
+        : mapperContext.activeMapFilter;
+
+    const setActiveMapFilter = propSetActiveMapFilter || mapperContext.setActiveMapFilter;
+
+    const mapSearchQuery = propMapSearchQuery !== undefined
+        ? propMapSearchQuery
+        : mapperContext.mapSearchQuery;
+
+    const setMapSearchQuery = propSetMapSearchQuery || mapperContext.setMapSearchQuery;
+
+    const effectiveViewZ = propViewZ !== undefined ? propViewZ : mapperContext.viewZ;
+    const currentRoom = mapperContext.currentRoomId ? mapperContext.rooms[mapperContext.currentRoomId] : null;
+    const zDisplay = effectiveViewZ !== null && effectiveViewZ !== undefined
+        ? Number(effectiveViewZ).toFixed(1)
+        : (currentRoom?.z !== undefined ? Number(currentRoom.z).toFixed(1) : '0.0');
+
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const [expandedCategory, setExpandedCategory] = useState<CategoryId | null>(null);
     const [activeButtonEl, setActiveButtonEl] = useState<HTMLElement | null>(null);
     const [dropupLeft, setDropupLeft] = useState<number | null>(null);
@@ -145,7 +66,7 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
 
     const activeCategory = getCategoryForFilter(activeMapFilter);
     const activeFilterLabel = getLabelForFilter(activeMapFilter);
-    const hasActive = !!(activeMapFilter || mapSearchQuery.trim());
+    const hasActive = !!(activeMapFilter || (mapSearchQuery && mapSearchQuery.trim()));
 
     // Update dropup left offset dynamically relative to the bar
     const updateDropupPosition = useCallback(() => {
@@ -164,7 +85,7 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
         return () => window.removeEventListener('resize', updateDropupPosition);
     }, [updateDropupPosition]);
 
-    // Close drop-up when tapping outside the bar
+    // Close drop-up when clicking outside
     useEffect(() => {
         if (!expandedCategory) return;
         const handlePointerDown = (e: PointerEvent) => {
@@ -220,16 +141,7 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
         setDropupLeft(null);
     };
 
-    const handleScroll = () => {
-        updateDropupPosition();
-    };
-
-    const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-        if (e.deltaY !== 0) {
-            e.currentTarget.scrollLeft += e.deltaY;
-            updateDropupPosition();
-        }
-    };
+    const activeCatObj = expandedCategory ? CATEGORIES.find(c => c.id === expandedCategory) : null;
 
     return (
         <div
@@ -237,117 +149,121 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
             className={`map-filter-bar ${isCollapsed ? 'collapsed' : ''}`}
             onPointerDown={e => e.stopPropagation()}
             onClick={e => e.stopPropagation()}
+            role="search"
+            aria-label="Map Search and Filters"
         >
-            {/* Collapse toggle */}
-            <button
-                type="button"
-                className={`map-filter-parent ${hasActive ? 'has-active-filter' : ''}`}
-                aria-expanded={!isCollapsed}
-                title={isCollapsed ? 'Show map filters' : 'Hide map filters'}
-                onClick={() => {
-                    triggerHaptic?.(15);
-                    setIsCollapsed(c => !c);
-                    if (!isCollapsed) setExpandedCategory(null);
-                }}
-            >
-                <Search size={14} strokeWidth={2.2} />
-                <span>Find</span>
-                {activeFilterLabel && <span className="map-filter-active-chip">{activeFilterLabel}</span>}
-                <ChevronDown className="map-filter-chevron" size={14} strokeWidth={2.2} />
-            </button>
+            {/* Subflags Dropup Panel */}
+            {activeCatObj && (
+                <MapFilterSubflagsDropup
+                    category={activeCatObj}
+                    activeMapFilter={activeMapFilter}
+                    dropupLeft={dropupLeft}
+                    onSelectSubFlag={handleSubFlagTap}
+                />
+            )}
 
-            {!isCollapsed && (
-                <>
-                    {/* Active Drop-up panel rendered at the bar level to escape overflow-x clipping */}
-                    {expandedCategory && dropupLeft !== null && (
-                        <div
-                            className="map-filter-dropup"
-                            role="listbox"
-                            aria-label={`${CATEGORIES.find(c => c.id === expandedCategory)?.label} sub-filters`}
-                            style={{
-                                position: 'absolute',
-                                bottom: 'calc(100% + 4px)',
-                                left: `${dropupLeft}px`,
-                                zIndex: 3100
-                            }}
-                        >
-                            {CATEGORIES.find(c => c.id === expandedCategory)?.subFlags.map(sf => (
-                                <button
-                                    key={sf.id}
-                                    type="button"
-                                    className={`map-filter-subflag ${activeMapFilter === sf.id ? 'active' : ''}`}
-                                    aria-pressed={activeMapFilter === sf.id}
-                                    onClick={() => handleSubFlagTap(sf.id)}
-                                >
-                                    {sf.label}
-                                </button>
-                            ))}
+            {/* Top Row: Z-Readout, Divider, Find Prompt & Input, Active Pill, Clear, Collapse Toggle */}
+            <div className="map-filter-top-row">
+                {showZIndicator && (
+                    <>
+                        <div className="map-filter-z-readout" title={`Elevation Z: ${zDisplay}`}>
+                            <span className="z-label">Z:</span>
+                            <strong className={`z-val ${zDisplay !== '0.0' ? 'non-zero' : ''}`}>{zDisplay}</strong>
                         </div>
-                    )}
+                        <span className="map-filter-divider" aria-hidden="true">·</span>
+                    </>
+                )}
 
-                    {/* Search bar row */}
-                    <div className="map-filter-search-row">
-                        <input
-                            className="map-filter-search"
-                            value={mapSearchQuery}
-                            onChange={e => setMapSearchQuery(e.target.value)}
-                            placeholder="Search room notes..."
-                            aria-label="Search room notes"
-                        />
-                        {hasActive && (
-                            <button
-                                type="button"
-                                className="map-filter-clear"
-                                onClick={handleClear}
-                                title="Clear filter"
-                                aria-label="Clear filter"
-                            >
-                                <X size={11} strokeWidth={2.5} />
-                            </button>
-                        )}
+                <div className="map-filter-search-box">
+                    <span className="map-filter-prompt" aria-hidden="true">&gt;</span>
+                    <span className="map-filter-prompt-label">find:</span>
+                    <input
+                        className="map-filter-search-input"
+                        value={mapSearchQuery}
+                        onChange={e => setMapSearchQuery(e.target.value)}
+                        placeholder="filter room name, note..."
+                        aria-label="Filter room name or note"
+                    />
+                </div>
+
+                {activeFilterLabel && (
+                    <div className="map-filter-active-pill" title={`Active filter: ${activeFilterLabel}`}>
+                        <span>[{activeFilterLabel}]</span>
                     </div>
+                )}
 
-                    {/* Category buttons */}
-                    <div 
-                        className="map-filter-buttons" 
-                        role="toolbar" 
-                        aria-label="Map filters"
-                        onWheel={handleWheel}
-                        onScroll={handleScroll}
+                {hasActive && (
+                    <button
+                        type="button"
+                        className="map-filter-clear-btn"
+                        onClick={handleClear}
+                        title="Clear filter and search"
+                        aria-label="Clear filter and search"
                     >
-                        {CATEGORIES.map(cat => {
-                            const isCatActive = activeCategory === cat.id;
-                            const isExpanded = expandedCategory === cat.id;
-                            return (
-                                <div key={cat.id} className="map-filter-category-wrap">
-                                    <div className={`map-filter-button-chip ${isCatActive ? 'active' : ''} ${isExpanded ? 'expanded' : ''}`}>
-                                        <button
-                                            type="button"
-                                            className="map-filter-button-main"
-                                            title={`${cat.label} filter`}
-                                            onClick={() => handleSelectCategory(cat.id)}
-                                        >
-                                            <span className="map-filter-symbol" aria-hidden="true">{cat.symbol}</span>
-                                            <span className="map-filter-label">{cat.label}</span>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="map-filter-button-chevron-target"
-                                            title={`Toggle ${cat.label} sub-filters`}
-                                            onClick={(e) => handleToggleDropdown(cat.id, e.currentTarget.parentElement!)}
-                                        >
-                                            <ChevronDown
-                                                className={`map-filter-sub-chevron${isExpanded ? ' rotated' : ''}`}
-                                                size={12}
-                                                strokeWidth={2.2}
-                                            />
-                                        </button>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </>
+                        [clear]
+                    </button>
+                )}
+
+                <button
+                    type="button"
+                    className="map-filter-toggle-btn"
+                    onClick={() => {
+                        triggerHaptic?.(10);
+                        setIsCollapsed(prev => !prev);
+                        if (!isCollapsed) setExpandedCategory(null);
+                    }}
+                    title={isCollapsed ? 'Show filter categories' : 'Hide filter categories'}
+                    aria-expanded={!isCollapsed}
+                    aria-label={isCollapsed ? 'Expand filter categories' : 'Collapse filter categories'}
+                >
+                    {isCollapsed ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                </button>
+            </div>
+
+            {/* Bottom Row: Horizontal Filter Chips Toolbar */}
+            {!isCollapsed && (
+                <div
+                    className="map-filter-chips-row"
+                    role="toolbar"
+                    aria-label="Map Filter Categories"
+                    onWheel={e => {
+                        if (e.deltaY !== 0) {
+                            e.currentTarget.scrollLeft += e.deltaY;
+                            updateDropupPosition();
+                        }
+                    }}
+                    onScroll={updateDropupPosition}
+                >
+                    {CATEGORIES.map(cat => {
+                        const isCatActive = activeCategory === cat.id;
+                        const isExpanded = expandedCategory === cat.id;
+                        return (
+                            <div key={cat.id} className={`map-filter-chip ${isCatActive ? 'active' : ''} ${isExpanded ? 'expanded' : ''}`}>
+                                <span className="chip-bracket">[</span>
+                                <button
+                                    type="button"
+                                    className="map-filter-chip-main"
+                                    title={`Filter by ${cat.label}`}
+                                    onClick={() => handleSelectCategory(cat.id)}
+                                >
+                                    <span className="map-filter-chip-symbol" aria-hidden="true">{cat.symbol}</span>
+                                    <span className="map-filter-chip-label">{cat.label}</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    className="map-filter-chip-chevron"
+                                    title={`Toggle ${cat.label} sub-filters`}
+                                    aria-haspopup="listbox"
+                                    aria-expanded={isExpanded}
+                                    onClick={(e) => handleToggleDropdown(cat.id, e.currentTarget.parentElement!)}
+                                >
+                                    ▾
+                                </button>
+                                <span className="chip-bracket">]</span>
+                            </div>
+                        );
+                    })}
+                </div>
             )}
         </div>
     );

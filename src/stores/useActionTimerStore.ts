@@ -75,12 +75,20 @@ export const useActionTimerStore = create<ActionTimerState>((set) => ({
 
 // Subscribe to vitals store changes to complete timers when the player exits the waiting state.
 let lastWaiting: boolean | undefined = undefined;
+const PENDING_WAIT_MS = 6000;
 
 useVitalsStore.subscribe((state) => {
     const waiting = state.conditions?.waiting;
     if (waiting !== lastWaiting) {
         const prevWaiting = lastWaiting;
         lastWaiting = waiting;
+        if (waiting === true && prevWaiting !== true) {
+            const actionStore = useActionTimerStore.getState();
+            const pending = actionStore.pendingAction;
+            if (pending && Date.now() - pending.sentAt < PENDING_WAIT_MS) {
+                actionStore.startTimer(pending.name, pending.type);
+            }
+        }
         
         if (prevWaiting === true && waiting === false) {
             const active = useActionTimerStore.getState().activeTimer;
@@ -91,4 +99,3 @@ useVitalsStore.subscribe((state) => {
         }
     }
 });
-

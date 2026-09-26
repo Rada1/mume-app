@@ -75,6 +75,15 @@ export const parseActionTimerLine = (text: string) => {
     const active = store.activeTimer;
     console.log('[ActionTimer] parseActionTimerLine:', text, 'pending:', pending, 'active:', active);
 
+    // MUME's tracking start is an unambiguous player response. It can arrive
+    // after the pending command expires or another command replaces it.
+    if (/^you carefully examine the ground around you, looking for tracks/i.test(text.trim())) {
+        if (active?.name !== 'Tracking' || active.isFinished) {
+            store.startTimer('Tracking', 'skill', 10000);
+        }
+        return true;
+    }
+
     // 1. Transition pending to active on start patterns
     if (pending && Date.now() - pending.sentAt < PENDING_TTL_MS) {
         let matched = false;
@@ -93,7 +102,7 @@ export const parseActionTimerLine = (text: string) => {
                 matched = true;
             } else if (pending.name === 'Subduing' && /you start to subdue/i.test(text)) {
                 matched = true;
-            } else if (pending.name === 'Tracking' && /you (?:start to search for tracks|begin to track)/i.test(text)) {
+            } else if (pending.name === 'Tracking' && /you (?:start to search for tracks|begin to track|carefully examine the ground around you, looking for tracks)/i.test(text)) {
                 matched = true;
             } else if (pending.name === 'Camping' && /you start to camp|you begin to camp/i.test(text)) {
                 matched = true;
@@ -129,6 +138,10 @@ export const parseActionTimerLine = (text: string) => {
         }
 
         if (active.name === 'Bash' && /you slam into|you send.*sprawling|sprawling/i.test(text)) {
+            store.completeTimer(false);
+            return true;
+        }
+        if (active.name === 'Tracking' && /you stop searching\./i.test(text)) {
             store.completeTimer(false);
             return true;
         }

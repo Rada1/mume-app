@@ -3,7 +3,7 @@
  * @description Extracts character statistics, gold, and score details from game output.
  */
 
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { GameStats, CharacterInfo } from '../../types';
 import { useVitalsStore } from '../../stores/useVitalsStore';
 import { parseCitizenshipAgeWarFameInfo } from '../../utils/characterInfoUtils';
@@ -19,6 +19,8 @@ export interface StatParserDeps {
 }
 
 export function useStatParser(deps: StatParserDeps) {
+    const isAffectedBySectionRef = useRef(false);
+
     const {
         setMood,
         setStats,
@@ -35,6 +37,26 @@ export function useStatParser(deps: StatParserDeps) {
                 setStats(prev => ({ ...prev, wimpy: refreshedCharacterInfo.wimpy }));
             }
             setCharacterInfo(prev => ({ ...prev, ...refreshedCharacterInfo }));
+            return true;
+        }
+
+        const contentTrimmed = content.trim();
+
+        if (/^affected by:?$/i.test(contentTrimmed)) {
+            isAffectedBySectionRef.current = true;
+            return false;
+        }
+
+        if (isAffectedBySectionRef.current) {
+            const affectMatch = contentTrimmed.match(/^-\s*(.+?)\s*$/);
+            if (affectMatch) {
+                return true;
+            } else {
+                isAffectedBySectionRef.current = false;
+            }
+        }
+
+        if (/^needed:\s+[\d,]+\s+xp/i.test(contentTrimmed) || contentLower.startsWith('needed:')) {
             return true;
         }
 

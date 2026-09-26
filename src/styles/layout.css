@@ -247,11 +247,16 @@
 }
 
 /* --- Shared Sliding Docked Panel Styles (Chat, Players, Help, Archive, Editor) --- */
+.content-layer.has-docked-panels,
+.content-layer:has(.docked-panel) {
+    z-index: 65000 !important;
+}
+
 .docked-panel {
     position: fixed;
     top: calc(env(safe-area-inset-top, 0px) + 52px);
     bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
-    z-index: 60000;
+    z-index: 65000 !important;
     min-height: 0;
     display: flex;
     flex-direction: column;
@@ -276,7 +281,12 @@
         width: calc(100% - 16px) !important;
         max-width: none !important;
         min-width: 0 !important;
-        bottom: auto !important;
+        top: calc(env(safe-area-inset-top, 0px) + 50px) !important;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 10px) !important;
+        height: auto !important;
+        background: rgba(12, 15, 22, 0.96) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
     }
 }
 
@@ -287,13 +297,33 @@
 
 @media (max-width: 1024px) and (orientation: portrait) {
     .docked-panel {
-        top: auto;
-        left: 8px;
+        left: 8px !important;
         right: 8px !important;
-        bottom: 8px;
-        width: auto;
-        max-width: none;
-        height: min(45%, 320px);
+        width: calc(100% - 16px) !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        top: calc(env(safe-area-inset-top, 0px) + 50px) !important;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 10px) !important;
+        height: auto !important;
+        background: rgba(12, 15, 22, 0.96) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+    }
+}
+
+/* Suppress mobile HUD buttons, command deck, and tactical bar when docked panels are open */
+@media (max-width: 1024px) {
+    body.has-docked-panels .mobile-bottom-gutter,
+    body.has-docked-panels .hud-clusters-absolute-layer,
+    body.has-docked-panels .mobile-tactical-buttons-persistent,
+    body.has-docked-panels .mobile-command-deck-persistent,
+    .app-container:has(.docked-panel) .mobile-bottom-gutter,
+    .app-container:has(.docked-panel) .hud-clusters-absolute-layer,
+    .app-container:has(.docked-panel) .mobile-tactical-buttons-persistent,
+    .app-container:has(.docked-panel) .mobile-command-deck-persistent {
+        opacity: 0 !important;
+        pointer-events: none !important;
+        visibility: hidden !important;
     }
 }
 
@@ -2967,9 +2997,7 @@
 .app-container.immersion-mode .compact-item-reference,
 .app-container.immersion-mode .action-box .input-main-container,
 .app-container.immersion-mode .message-log-docked-input,
-.app-container.immersion-mode .custom-prompt-bar,
-.app-container.immersion-mode .map-room-info-header,
-.app-container.immersion-mode .map-room-info-footer {
+.app-container.immersion-mode .custom-prompt-bar {
     background: rgba(0, 0, 0, 0.18) !important;
     border-color: rgba(255, 255, 255, 0.12) !important;
     backdrop-filter: blur(10px) !important;

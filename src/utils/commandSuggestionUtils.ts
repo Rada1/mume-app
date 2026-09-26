@@ -3,8 +3,9 @@
  * @description Helper functions and interfaces for command, spell, and target suggestion processing.
  */
 
-import type { GmcpOccupant } from '../types';
+import type { DrawerLine, GmcpOccupant } from '../types';
 import { getOccupantCommandKeyword } from './occupantKeywordUtils';
+import { extractMumeKeyword } from './keywordUtils';
 
 // --- Type Section ---
 
@@ -43,6 +44,17 @@ export const getRoomTargetSuggestions = (
         return [{ key: `${occupant.id ?? index}-${value}`, label, value, meta: type || kind }];
     });
 };
+
+export const getGearTargetSuggestions = (
+    lines: DrawerLine[],
+    kind: 'inventory' | 'worn'
+): CommandTargetSuggestion[] => lines.flatMap((line, index) => {
+    if (!line.isItem || line.isHeader) return [];
+    const label = line.text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    const value = line.context || extractMumeKeyword(label);
+    if (!label || !value) return [];
+    return [{ key: line.entityId || line.stableId || line.id || `${kind}-${index}`, label, value, meta: kind }];
+});
 
 /**
  * Replaces or appends the target argument for a command string.

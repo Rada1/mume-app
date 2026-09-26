@@ -33,9 +33,9 @@
     --map-land-surface: #171614;
     
     /* Inline Button Colors */
-    --color-npc: rgba(253, 224, 71, 0.95);    /* Bright Pastel Yellow */
-    --color-player: #89CFF0;                 /* Baby Blue */
-    --color-obj: rgba(251, 146, 60, 0.95);    /* Vibrant Orange */
+    --color-npc: #ababab;
+    --color-player: #6c71f9;
+    --color-obj: #ababab;
     --color-account: rgba(125, 211, 252, 0.9); /* Blue-ish */
     --color-target: #facc15;                 /* Target Gold */
     --color-quest: rgba(125, 211, 252, 0.9);  /* Quest Blue */

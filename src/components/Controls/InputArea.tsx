@@ -60,7 +60,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     const input = useInputStore(s => s.input);
     const setInput = useInputStore(s => s.setInput);
     const targetPickerRequestId = useInputStore(s => s.targetPickerRequestId);
-    const { ui, setUI } = useUI();
+    const { ui, setUI, displayInventoryLines, displayEqLines } = useUI();
     const { viewport } = useBaseGame();
     const { stats } = useVitals();
     const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode, accountState, env, popoverState, abilities = {}, characterClass = 'none' } = useGame() as any;
@@ -427,6 +427,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         selectedTargetSuggestion,
         spellSuggestions,
         popupStyle: commandPopupStyle,
+        placement: commandPlacement,
         isFocused: isCommandInputFocused,
         setIsFocused: setIsCommandInputFocused,
         chooseCommandSuggestion,
@@ -444,7 +445,9 @@ const InputArea: React.FC<InputAreaProps> = ({
         wrapRef: commandInputWrapRef,
         inputRef,
         isMobile: viewport.isMobile,
-        targetPickerRequestId
+        targetPickerRequestId,
+        inventoryLines: displayInventoryLines,
+        wornLines: displayEqLines
     });
 
     // Keep command/login input focused on desktop during login, stage, or state transitions
@@ -626,6 +629,7 @@ const InputArea: React.FC<InputAreaProps> = ({
             <CommandSuggestionPopup
                 show={showCompletionPopup}
                 style={commandPopupStyle}
+                placement={commandPlacement}
                 showSpellPopup={showSpellPopup}
                 showTargetPopup={showTargetPopup}
                 spellSuggestions={spellSuggestions}
@@ -872,7 +876,10 @@ const InputArea: React.FC<InputAreaProps> = ({
                             <button
                                 type="button"
                                 className="msg-cancel-btn"
-                                onClick={() => executeCommand('', false, false, false)}
+                                onClick={() => {
+                                    triggerHaptic?.(20);
+                                    executeCommand('', false, false, false);
+                                }}
                                 onPointerDown={(e) => e.stopPropagation()}
                                 title="Cancel Current Action (Send Newline)"
                             >

@@ -431,3 +431,81 @@
     border-color: rgba(45, 150, 115, 0.4);
     color: #1f6b52;
 }
+
+/* Command Deck Docked Target Bar */
+.command-deck .right-panel-target-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 6px;
+    background: rgba(14, 10, 7, 0.85);
+    border: 1px solid rgba(201, 168, 76, 0.18);
+    border-radius: 6px;
+    font-size: 0.65rem;
+    margin-top: 2px;
+}
+
+.command-deck .target-bar-label {
+    color: #8a7a5e;
+    font-weight: 600;
+}
+
+.command-deck .target-bar-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.command-deck .target-bar-value {
+    font-weight: 700;
+    color: #55ff55;
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.command-deck .target-bar-value.is-empty {
+    color: #6d6452;
+}
+
+.command-deck .target-bar-clear-btn {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 10px;
+    line-height: 1;
+    padding: 1px 3px;
+    border-radius: 3px;
+    opacity: 0.8;
+}
+
+.command-deck .target-bar-clear-btn:hover {
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.command-deck .target-bar-form {
+    display: flex;
+    align-items: center;
+}
+
+.command-deck .target-bar-form input {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(201, 168, 76, 0.4);
+    border-radius: 4px;
+    color: #fff;
+    font-size: 0.65rem;
+    font-family: inherit;
+    padding: 1px 5px;
+    width: 90px;
+    outline: none;
+}
+

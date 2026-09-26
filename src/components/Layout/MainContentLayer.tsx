@@ -3,12 +3,14 @@ import Header from '../HUD/Header';
 import MessageLog from '../Messages/MessageLog';
 import ChatWindow from '../Messages/ChatTranscriptWindow';
 import PlayersPanel from '../Players/PlayersPanel';
+import GearPanel from '../GearPanel';
 import HelpPanel from '../Help/HelpPanel';
 import { MumeEditor } from '../Utility/MumeEditor';
 import { MumeArchive } from '../Utility/MumeArchive';
 import { LogDockedInput } from '../HUD/LogDockedInput';
 import InputArea from '../Controls/InputArea';
 import { RightActionPanel } from '../HUD/RightActionPanel';
+import { AccountDrawer } from '../Drawers/AccountDrawer';
 import { useGame, useUI, useLog } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -16,6 +18,7 @@ import { useUIStore } from '../../stores/useUIStore';
 import { useHelpStore } from '../../stores/useHelpStore';
 import { useArchiveStore } from '../../stores/useArchiveStore';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
+import { useGearPanelStore } from '../../stores/useGearPanelStore';
 import { DockedPanelId, computeDockedPanelStyle, getDockedWidth } from '../../utils/dockedPanelUtils';
 import { LineCluster } from './HUD/LineCluster';
 import ActionBox from '../HUD/ActionBox';
@@ -103,8 +106,10 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const manualBgImage = useSettingsStore(s => s.bgImage);
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
     const isCommandPanelOpen = useCommandPanelStore(s => s.isOpen);
+    const setIsCommandPanelOpen = useCommandPanelStore(s => s.setIsOpen);
     const isShopOpen = useUIStore(s => s.isShopOpen);
     const showPlayersPanel = useSettingsStore(s => s.showPlayersPanel);
+    const isGearPanelOpen = useGearPanelStore(s => s.isOpen);
     const isHelpOpen = useHelpStore(s => s.isOpen);
     const isArchiveOpen = useArchiveStore(s => s.isOpen);
 
@@ -117,18 +122,31 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     );
 
     const activeDockedPanels = React.useMemo(() => {
-        if (gameState === 'account') return [] as readonly DockedPanelId[];
+        if (gameState === 'account') return isCommandPanelOpen && !viewport.isMobile ? ['commands'] as readonly DockedPanelId[] : [] as readonly DockedPanelId[];
         const list: DockedPanelId[] = [];
         if (isEditorOpen) list.push('editor');
         if (isArchiveOpen) list.push('archive');
         if (isShopOpen) list.push('shop');
+        if (isGearPanelOpen) list.push('gear');
         if (showPlayersPanel) list.push('players');
         if (isHelpOpen) list.push('help');
         if (showChatWindow) list.push('chat');
         if (isCommandPanelOpen && !viewport.isMobile) list.push('commands');
         return list;
-    }, [gameState, showChatWindow, isShopOpen, showPlayersPanel, isHelpOpen, isArchiveOpen, isEditorOpen, isCommandPanelOpen, viewport.isMobile]);
+    }, [gameState, showChatWindow, isShopOpen, isGearPanelOpen, showPlayersPanel, isHelpOpen, isArchiveOpen, isEditorOpen, isCommandPanelOpen, viewport.isMobile]);
     const hasDockedPanels = activeDockedPanels.length > 0;
+
+    React.useEffect(() => {
+        if (gameState === 'account' && !viewport.isMobile) setIsCommandPanelOpen(true);
+    }, [gameState, accountState.stage, viewport.isMobile, setIsCommandPanelOpen]);
+
+    React.useEffect(() => {
+        document.body.classList.toggle('has-docked-panels', hasDockedPanels);
+        return () => {
+            document.body.classList.remove('has-docked-panels');
+        };
+    }, [hasDockedPanels]);
+
     const isSpectating = activeSession === 'spectate' || activeView === 'target';
     const roomCardTerrain = isSpectating ? spectateTerrain : currentTerrain;
 
@@ -363,7 +381,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     return (
         <div
-            className={`content-layer view-mode-${activeView}`}
+            className={`content-layer view-mode-${activeView}${hasDockedPanels ? ' has-docked-panels' : ''}`}
             style={{
                 '--terminal-pane-width': activeDockedPanels.length
                     ? 'clamp(150px, 15vw, 280px)'
@@ -517,7 +535,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         />
                     </div>
 
-                    {!viewport.isMobile && (gameState !== 'account' || shouldShowAccountInput) && (
+                    {!viewport.isMobile && gameState !== 'account' && (
                         <ActionBox
                             handleSend={handleSend}
                             handleInputSwipe={handleInputSwipe}
@@ -529,14 +547,17 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         />
                     )}
                 </div>
-                {isCommandPanelOpen && !viewport.isMobile && gameState !== 'account' && (
+                {isCommandPanelOpen && !viewport.isMobile && (
                     <aside className="docked-panel command-docked-panel" style={computeDockedPanelStyle('commands', activeDockedPanels, false)} aria-label="Commands panel">
                         <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" minWidth={14} maxWidth={50} />
-                        <RightActionPanel />
+                        {gameState === 'account' ? <AccountDrawer /> : <RightActionPanel />}
                     </aside>
                 )}
                 {showPlayersPanel && (
                     <PlayersPanel style={computeDockedPanelStyle('players', activeDockedPanels, viewport.isMobile)} />
+                )}
+                {isGearPanelOpen && gameState !== 'account' && (
+                    <GearPanel style={computeDockedPanelStyle('gear', activeDockedPanels, viewport.isMobile)} />
                 )}
                 {showChatWindow && (
                     <ChatWindow style={computeDockedPanelStyle('chat', activeDockedPanels, viewport.isMobile)} />

@@ -7,7 +7,7 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    z-index: 9500; /* Above shop panel (--z-drawer: 9200) */
+    z-index: 70000; /* Above docked panels (65000) and shop drawer */
     position: relative;
     padding: 4px 12px;
     margin-top: 0;

@@ -1,26 +1,24 @@
 /**
  * @file MapRoomInfoHeader.tsx
- * @description Docked top telemetry in the left map drawer (Option A).
- * Displays room name, zone, and Middle-earth calendar/chronometer (Season, Month, Day, Time).
+ * @description Compact map environmental telemetry header for the desktop map drawer.
+ * Displays time, dawn/dusk solar hours, weather, season, date, and month in a clean,
+ * monotone terminal style matching the MUME client aesthetic.
  */
 
+// --- Logic Section ---
 import React, { FC } from 'react';
 import { useGame } from '../../context/GameContext';
-import { useActiveRoom } from '../../stores/useActiveGameState';
+import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useMumeTime } from '../../hooks/useMumeTime';
 import { MUME_MONTH_DETAILS } from '../../utils/mumeTimeUtils';
-import { stripAnsiCodes } from '../../utils/ansi';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import './MapRoomInfoHeader.css';
 
 export const MapRoomInfoHeader: FC = () => {
-    // --- Logic Section ---
-    const { gameState, gameTime } = useGame();
-    const { roomName, roomZone } = useActiveRoom();
+    const hideMapHeaderFooter = useSettingsStore(s => s.hideMapHeaderFooter);
+    const { gameTime, viewport } = useGame();
+    const { weather } = useActiveVitals();
     const currentTime = useMumeTime(gameTime);
-
-    const isAccount = gameState === 'account';
-    const displayRoom = isAccount ? 'Map & Navigation' : (stripAnsiCodes(roomName) || 'Wilderness');
-    const displayZone = isAccount ? 'Middle-earth' : stripAnsiCodes(roomZone);
 
     const monthDetails = MUME_MONTH_DETAILS[currentTime.month] || {
         season: 'Spring' as const,
@@ -36,46 +34,45 @@ export const MapRoomInfoHeader: FC = () => {
     const displayMinute = minute < 10 ? `0${minute}` : `${minute}`;
     const formattedTime = `${displayHour}:${displayMinute} ${ampm}`;
 
-    const seasonClass = `season-${monthDetails.season.toLowerCase()}`;
+    const formattedWeather = weather ? weather.toLowerCase() : 'none';
 
     // --- Render Section ---
+    if (hideMapHeaderFooter || viewport?.isMobile) return null;
+
     return (
-        <div className="map-room-info-header" role="region" aria-label="Room header and calendar">
-            <div className="map-terminal-title"><span aria-hidden="true">&gt;</span> map</div>
-            {/* Row 1: Room Name and Zone Badge */}
-            <div className="map-header-primary-row">
-                <span className="map-header-room-name" title={displayRoom}>
-                    {displayRoom}
-                </span>
-                {displayZone && (
-                    <span className="map-header-zone-badge" title={`Zone: ${displayZone}`}>
-                        {displayZone}
+        <div className="map-room-info-header" role="region" aria-label="Map environmental telemetry">
+            {/* Row 1: Time, Dawn/Dusk, and Weather */}
+            <div className="map-header-telemetry-row">
+                <div className="map-header-solar-group">
+                    <span className="map-telemetry-item">
+                        <span className="map-header-label">time:</span>
+                        <strong className="map-header-val time">{formattedTime}</strong>
                     </span>
-                )}
+                    <span className="map-telemetry-item map-solar-times">
+                        <span className="map-header-label">dawn:</span>
+                        <span className="map-header-val">{monthDetails.dawnStr}</span>
+                        <span className="map-solar-sep">·</span>
+                        <span className="map-header-label">dusk:</span>
+                        <span className="map-header-val">{monthDetails.duskStr}</span>
+                    </span>
+                </div>
+                <div className="map-header-weather-group">
+                    <span className="map-telemetry-item">
+                        <span className="map-header-label">weather:</span>
+                        <strong className="map-header-val weather">{formattedWeather}</strong>
+                    </span>
+                </div>
             </div>
 
-            {/* Row 2: Chronometer & Calendar Ribbon */}
+            {/* Row 2: Season, Date, Month (Sindarin) */}
             <div className="map-header-calendar-row">
-                <div className="map-header-calendar-left">
-                    <span className={`map-header-season-badge ${seasonClass}`}>
-                        {monthDetails.season}
-                    </span>
-                    <span className="map-header-date">
-                        {currentTime.day} {currentTime.month}
-                        {monthDetails.sindarin && (
-                            <span className="map-header-sindarin"> ({monthDetails.sindarin})</span>
-                        )}
-                    </span>
+                <div className="map-header-season-group">
+                    <strong className="map-header-season">{monthDetails.season}</strong>
+                    <span className="map-header-date">{currentTime.day} {currentTime.month}</span>
                 </div>
-                <div className="map-header-time-box">
-                    <span className="map-header-current-time">
-                        <span className="map-header-time-label">Time:</span>
-                        <span className="map-header-time-value">{formattedTime}</span>
-                    </span>
-                    <span className="map-header-solar-times">
-                        Sunrise {monthDetails.dawnStr} · Sunset {monthDetails.duskStr}
-                    </span>
-                </div>
+                {monthDetails.sindarin && (
+                    <span className="map-header-sindarin">{monthDetails.sindarin}</span>
+                )}
             </div>
         </div>
     );

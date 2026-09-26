@@ -12,6 +12,8 @@ import { useActiveVitals, useActiveCombat } from '../../stores/useActiveGameStat
 import { useActiveRoom } from '../../stores/useActiveGameState';
 import { PromptModeIndicators } from '../Messages/PromptModeIndicators';
 import { useEffectTimerStore } from '../../stores/useEffectTimerStore';
+import { useSettingsStore } from '../../stores/useSettingsStore';
+import { getInlineGlowColor } from '../../utils/inlineActionModel';
 import { useMumeTime } from '../../hooks/useMumeTime';
 import { calculateRegen, formatRegen } from '../../utils/regenUtils';
 import { AnimatedPromptVital } from './AnimatedPromptVital';
@@ -64,6 +66,21 @@ export const CustomPromptBar: FC<CustomPromptBarProps> = ({ onLogClick, classNam
     } = useGame();
     const currentTime = useMumeTime(gameTime);
     const activeTimers = useEffectTimerStore(state => state.timers);
+    const inlineSettings = useSettingsStore();
+    const promptEntityColor = (category: string): React.CSSProperties => {
+        const canonical = category === 'cat-player' ? 'cat-ally'
+            : category === 'cat-object' ? 'cat-room-object' : category;
+        const color = getInlineGlowColor(canonical, inlineSettings.inlineCategories, {
+            ally: inlineSettings.playerColor,
+            player: inlineSettings.playerColor,
+            enemy: inlineSettings.enemyColor,
+            neutral: inlineSettings.neutralColor,
+            npc: inlineSettings.npcColor,
+            object: inlineSettings.objectColor,
+            room: inlineSettings.roomColor,
+        }, inlineSettings.theme);
+        return { '--glow-color': color || 'var(--mume-wiki-link-color, #c9a84c)' } as React.CSSProperties;
+    };
     const priorCombatRef = useRef(false);
     const priorOpponentRef = useRef<string | null>(null);
     const [isOpponentHandoff, setIsOpponentHandoff] = useState(false);
@@ -297,6 +314,7 @@ export const CustomPromptBar: FC<CustomPromptBarProps> = ({ onLogClick, classNam
                         <span className="prompt-combat-opponent">
                             <span
                                 className="inline-btn prompt-opponent-inline"
+                                style={promptEntityColor('cat-enemy')}
                                 data-action="menu"
                                 data-category="cat-enemy"
                                 data-cmd="cat-enemy"
@@ -368,6 +386,7 @@ export const CustomPromptBar: FC<CustomPromptBarProps> = ({ onLogClick, classNam
                                                     {index > 0 && <span className="prompt-stat-divider">·</span>}
                                                     <span
                                                         className={`inline-btn prompt-entity-inline entity-kind-${entity.category}${isOpponentHandoff && isOpponentRoomEntity(entity.label, opponentName) ? ' prompt-opponent-departing' : ''}`}
+                                                        style={promptEntityColor(entity.category)}
                                                         data-action="menu"
                                                         data-category={entity.category}
                                                         data-cmd={entity.category}
@@ -409,6 +428,7 @@ export const CustomPromptBar: FC<CustomPromptBarProps> = ({ onLogClick, classNam
                                                     {index > 0 && <span className="prompt-stat-divider">·</span>}
                                                     <span
                                                         className={`inline-btn prompt-entity-inline entity-kind-${entity.category}`}
+                                                        style={promptEntityColor(entity.category)}
                                                         data-action="menu"
                                                         data-category={entity.category}
                                                         data-cmd={entity.category}

@@ -4,9 +4,12 @@
  */
 
 // --- Logic Section ---
-import React, { FC, useRef, useCallback } from 'react';
-import { useGame, useVitals } from '../../context/GameContext';
+import React, { FC, useRef, useCallback, useEffect, useState } from 'react';
+import { Target } from 'lucide-react';
+import { useGame, useUI, useVitals } from '../../context/GameContext';
+import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import OpponentRechargeTimer from '../Combat/OpponentRechargeTimer';
 import { ActionTimerDisplay } from './ActionTimerDisplay';
 import { useCommandSuggestions } from '../../hooks/useCommandSuggestions';
@@ -33,15 +36,42 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         setParley,
         abilities,
         characterClass,
-        executeCommand
+        executeCommand,
+        setTarget,
+        triggerHaptic
     } = useGame();
+    const { target } = useActiveVitals();
     const { stats } = useVitals();
+    const { displayInventoryLines, displayEqLines } = useUI();
 
     const input = useInputStore(s => s.input);
     const setInput = useInputStore(s => s.setInput);
+    const rememberLogin = useSettingsStore(s => s.rememberLogin);
+    const loginName = useSettingsStore(s => s.loginName);
+    const loginPassword = useSettingsStore(s => s.loginPassword);
+    const setLoginName = useSettingsStore(s => s.setLoginName);
+    const setLoginPassword = useSettingsStore(s => s.setLoginPassword);
+    const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
     const inputRef = useRef<HTMLInputElement>(null);
+    const targetInputRef = useRef<HTMLInputElement>(null);
+    const cancelTargetEditRef = useRef(false);
+    const [isEditingTarget, setIsEditingTarget] = useState(false);
+    const [targetDraft, setTargetDraft] = useState('');
     const commandInputWrapRef = useRef<HTMLDivElement>(null);
     const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        if (isEditingTarget) {
+            targetInputRef.current?.focus();
+            targetInputRef.current?.select();
+        }
+    }, [isEditingTarget]);
+
+    const finishTargetEdit = useCallback((value: string) => {
+        setTarget(value.trim() || null);
+        setIsEditingTarget(false);
+        inputRef.current?.focus();
+    }, [setTarget]);
 
     const currentMode = parley?.mode || (parley?.active ? 'parley' : 'command');
 
@@ -57,6 +87,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         selectedTargetSuggestion,
         spellSuggestions,
         popupStyle,
+        placement,
         setIsFocused,
         chooseCommandSuggestion,
         chooseTargetSuggestion,
@@ -72,13 +103,31 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         characterClass,
         wrapRef: commandInputWrapRef,
         inputRef,
-        isMobile: viewport.isMobile,
-        placement: viewport.isMobile ? 'top' : 'bottom'
+        isMobile: Boolean(viewport?.isMobile),
+        placement: viewport?.isMobile ? 'top' : 'bottom',
+        inventoryLines: displayInventoryLines,
+        wornLines: displayEqLines
     });
 
     const showsStandaloneAccountInput = accountState?.stage === 'login' ||
         accountState?.stage === 'account-confirmation';
-    const hideCommandInput = gameState === 'account' && !showsStandaloneAccountInput;
+    const isLoginStage = gameState === 'account' && accountState?.stage === 'login';
+    const loginPrompt = accountState?.currentPrompt?.toLowerCase() || '';
+    const isPasswordPrompt = isLoginStage && (isPasswordMode || loginPrompt.includes('password') || loginPrompt.includes('verify'));
+    const isNamePrompt = isLoginStage && (loginPrompt.includes('by what name') || loginPrompt.includes('enter new account name'));
+    const lastFilledPromptRef = useRef('');
+
+    useEffect(() => {
+        if (!isLoginStage || !rememberLogin) {
+            lastFilledPromptRef.current = '';
+            return;
+        }
+        const promptKey = isPasswordPrompt ? 'password' : isNamePrompt ? 'name' : '';
+        if (!promptKey || lastFilledPromptRef.current === promptKey) return;
+        lastFilledPromptRef.current = promptKey;
+        const savedValue = isPasswordPrompt ? loginPassword : loginName;
+        if (savedValue) setInput(savedValue);
+    }, [isLoginStage, isPasswordPrompt, isNamePrompt, rememberLogin, loginName, loginPassword, setInput]);
     const showRotatingSuggestion = gameState === 'playing' && currentMode === 'command' && !input && !commandPreview;
     const rotatingCommand = useRotatingCommandSuggestion(showRotatingSuggestion);
 
@@ -90,9 +139,13 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
 
     const handleSubmit = useCallback((e?: React.FormEvent) => {
         if (e) e.preventDefault();
+        if (isLoginStage && rememberLogin && input.trim()) {
+            if (isPasswordPrompt) setLoginPassword(input.trim());
+            else if (isNamePrompt) setLoginName(input.trim());
+        }
         handleSend(e);
         inputRef.current?.focus();
-    }, [handleSend]);
+    }, [handleSend, input, isLoginStage, isPasswordPrompt, isNamePrompt, rememberLogin, setLoginName, setLoginPassword]);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
         if (handleSuggestionKeyDown(e)) {
@@ -114,14 +167,10 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         }
     }, [handleSuggestionKeyDown, handleSubmit, setInput]);
 
-    if (hideCommandInput) {
-        return null;
-    }
-
     const placeholder = isPasswordMode
         ? 'Enter password...'
         : (gameState === 'account'
-            ? 'Enter username...'
+            ? (showsStandaloneAccountInput ? 'Enter username...' : 'Enter account command...')
             : (showRotatingSuggestion ? `Try: ${rotatingCommand}...` : 'Enter command...'));
 
     return (
@@ -137,6 +186,63 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
             )}
 
             <form className="docked-input-form" onSubmit={handleSubmit}>
+                {gameState === 'playing' && (target || isEditingTarget) && (
+                    <div className="docked-target-badge">
+                        <Target size={11} strokeWidth={2.4} />
+                        {isEditingTarget ? (
+                            <input
+                                ref={targetInputRef}
+                                className="docked-target-edit"
+                                aria-label="Edit target"
+                                value={targetDraft}
+                                onChange={event => setTargetDraft(event.target.value)}
+                                onKeyDown={event => {
+                                    if (event.key === 'Enter') {
+                                        event.preventDefault();
+                                        finishTargetEdit(targetDraft);
+                                    } else if (event.key === 'Escape') {
+                                        event.preventDefault();
+                                        cancelTargetEditRef.current = true;
+                                        setIsEditingTarget(false);
+                                        inputRef.current?.focus();
+                                    }
+                                }}
+                                onBlur={() => {
+                                    if (cancelTargetEditRef.current) {
+                                        cancelTargetEditRef.current = false;
+                                        return;
+                                    }
+                                    finishTargetEdit(targetDraft);
+                                }}
+                            />
+                        ) : (
+                            <button
+                                type="button"
+                                className="docked-target-name"
+                                onClick={() => {
+                                    triggerHaptic?.(10);
+                                    setTargetDraft(target || '');
+                                    setIsEditingTarget(true);
+                                }}
+                                title={`Edit target: ${target}`}
+                                aria-label={`Edit target: ${target}`}
+                            >{target}</button>
+                        )}
+                        <button
+                            type="button"
+                            className="docked-target-x"
+                            onMouseDown={event => event.preventDefault()}
+                            onClick={() => {
+                                triggerHaptic?.(10);
+                                setIsEditingTarget(false);
+                                setTarget(null);
+                                inputRef.current?.focus();
+                            }}
+                            title="Clear target"
+                            aria-label="Clear target"
+                        >✕</button>
+                    </div>
+                )}
                 <div
                     ref={commandInputWrapRef}
                     className="docked-input-wrap"
@@ -190,7 +296,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
             <CommandSuggestionPopup
                 show={showCompletionPopup}
                 style={popupStyle}
-                placement="bottom"
+                placement={placement}
                 showSpellPopup={showSpellPopup}
                 showTargetPopup={showTargetPopup}
                 spellSuggestions={spellSuggestions}
@@ -214,7 +320,10 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                 <button
                     type="button"
                     className="docked-cancel-btn"
-                    onClick={() => executeCommand('', false, false, false)}
+                    onClick={() => {
+                        triggerHaptic?.(20);
+                        executeCommand('', false, false, false);
+                    }}
                     onPointerDown={event => event.stopPropagation()}
                     title="Cancel current action (send newline)"
                     aria-label="Cancel current action"
@@ -223,12 +332,22 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                 </button>
             )}
 
+            {isLoginStage && (
+                <div className="docked-login-actions">
+                    <label className="docked-remember-login">
+                        <input type="checkbox" checked={rememberLogin} onChange={event => setRememberLogin(event.target.checked)} />
+                        Remember login
+                    </label>
+                    {isNamePrompt && <button type="button" className="docked-send-btn" onClick={() => executeCommand('new')}>NEW ACCOUNT</button>}
+                </div>
+            )}
+
             <button
                 type="button"
                 className="docked-send-btn"
                 onClick={() => handleSubmit()}
             >
-                SEND
+                {isLoginStage ? 'LOGIN' : 'SEND'}
             </button>
         </div>
     );

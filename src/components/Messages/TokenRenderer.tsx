@@ -69,6 +69,7 @@ export interface TokenRendererProps {
     wordReveal?: boolean;
     disableRoomInline?: boolean;
     isRoomContentsLine?: boolean;
+    preferSettingsEntityColor?: boolean;
     metadata?: {
         id?: string;
         context?: string;
@@ -88,6 +89,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
     wordReveal = false,
     disableRoomInline = false,
     isRoomContentsLine = false,
+    preferSettingsEntityColor = false,
     metadata: propMetadata
 }) => {
     const { target, opponentId, opponentName } = useTokenHighlight();
@@ -103,6 +105,12 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
     })));
     const { inlineCategories, selectedObjectIds, inCombat } = useBaseGame();
     const { popoverState } = useUI();
+
+    const resolvedRoomColor = useMemo(() => {
+        return getInlineGlowColor('cat-room', inlineCategories, {
+            room: settings.roomColor || undefined,
+        }, settings.theme) || settings.roomColor || '#22c55e';
+    }, [inlineCategories, settings.roomColor, settings.theme]);
 
     if (!tokens || tokens.length === 0) {
         if (!fallbackHtml) return null;
@@ -129,7 +137,17 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             }
         }
         if (disableRoomInline) {
-            return <span className="room-title-text" dangerouslySetInnerHTML={{ __html: fallbackHtml }} />;
+            return (
+                <span
+                    className="room-title-text"
+                    style={{
+                        '--glow-color': resolvedRoomColor,
+                        '--room-color': resolvedRoomColor,
+                        color: resolvedRoomColor
+                    } as React.CSSProperties}
+                    dangerouslySetInnerHTML={{ __html: fallbackHtml }}
+                />
+            );
         }
         return <span dangerouslySetInnerHTML={{ __html: fallbackHtml }} />;
     }
@@ -236,10 +254,16 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             const isRoom = categoryAxes.family === 'room' || e.metadata?.kind === 'room';
             if (isRoom && disableRoomInline) {
                 const roomTextStyle: React.CSSProperties = { ...(e.metadata?.style || {}) };
-                if (e.metadata?.color && !roomTextStyle.color) roomTextStyle.color = e.metadata.color;
+                const roomColor = e.metadata?.color || e.metadata?.glowColor || resolvedRoomColor;
+                if (roomColor) {
+                    roomTextStyle['--glow-color'] = roomColor;
+                    roomTextStyle['--room-color'] = roomColor;
+                    if (!roomTextStyle.color) roomTextStyle.color = roomColor;
+                }
                 return (
                     <span
                         key={idx}
+                        className="room-title-text"
                         style={Object.keys(roomTextStyle).length > 0 ? roomTextStyle : undefined}
                     >
                         {content}
@@ -293,22 +317,31 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 props.className = `${props.className} is-opponent`.trim();
             }
 
-            // Resolve display color: explicit glowColor (e.g. who-list) > getInlineGlowColor (override → user setting → category default) > token ANSI color
+            // The selected category or kind color takes priority over parser hints.
             let style: React.CSSProperties = { ...(e.metadata?.style || {}) };
 
-            const categoryColor: string | null = e.metadata?.glowColor ||
-                getInlineGlowColor(tokenCategoryId, inlineCategories, {
+            const categoryColor: string | null = getInlineGlowColor(tokenCategoryId, inlineCategories, {
                     player:  settings.playerColor  || undefined,
+                    ally:    settings.playerColor  || undefined,
                     all:     settings.playerColor  || undefined,
                     enemy:   settings.enemyColor   || undefined,
                     neutral: settings.neutralColor || undefined,
                     npc:     settings.npcColor     || undefined,
                     object:  settings.objectColor  || undefined,
                     room:    settings.roomColor    || undefined,
-                }, settings.theme) || e.metadata?.color || null;
+                }, settings.theme) || e.metadata?.glowColor || e.metadata?.color || null;
             
-            if (categoryColor) {
-                style['--glow-color'] = categoryColor;
+            const senderSettingsColor = preferSettingsEntityColor
+                ? categoryAxes.categoryId === 'cat-enemy' ? settings.enemyColor
+                    : categoryAxes.categoryId === 'cat-neutral' ? settings.neutralColor
+                        : categoryAxes.categoryId === 'cat-npc' ? settings.npcColor
+                            : settings.playerColor
+                : null;
+            const entityColor = senderSettingsColor || (isRoom && e.metadata?.style?.color
+                ? e.metadata.style.color
+                : categoryColor);
+            if (entityColor) {
+                style['--glow-color'] = entityColor;
             }
 
             const tokenWordIdx = typeof idx === 'number' ? idx : 0;

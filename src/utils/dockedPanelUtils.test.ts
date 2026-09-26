@@ -37,25 +37,24 @@ describe('computeDockedRight', () => {
 });
 
 describe('mobile docking and stacking', () => {
-    it('calculates dynamic mobile height based on active panel count', () => {
-        expect(getMobilePanelHeight(1)).toBe('38vh');
-        expect(getMobilePanelHeight(2)).toBe('30vh');
-        expect(getMobilePanelHeight(3)).toBe('24vh');
+    it('returns full-height mobile docked height', () => {
+        expect(getMobilePanelHeight(1)).toBe('calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 62px)');
+        expect(getMobilePanelHeight(2)).toBe('calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 62px)');
     });
 
-    it('stacks panels downward from the top on mobile', () => {
+    it('positions panels from top below header on mobile', () => {
         const active: DockedPanelId[] = ['chat', 'players'];
         expect(computeDockedTop('chat', active)).toBe('calc(env(safe-area-inset-top, 0px) + 50px)');
-        expect(computeDockedTop('players', active)).toBe('calc(calc(env(safe-area-inset-top, 0px) + 50px) + 1 * (var(--mobile-docked-height, 30vh) + 8px))');
+        expect(computeDockedTop('players', active)).toBe('calc(env(safe-area-inset-top, 0px) + 50px)');
     });
 
-    it('generates mobile-specific docked style with full width and top positioning', () => {
+    it('generates mobile-specific docked style with full width and top-to-bottom positioning', () => {
         const active: DockedPanelId[] = ['chat'];
         const style = computeDockedPanelStyle('chat', active, true);
         expect(style.left).toBe('8px');
         expect(style.right).toBe('8px');
         expect(style.width).toBe('calc(100% - 16px)');
-        expect(style.bottom).toBe('auto');
+        expect(style.bottom).toBe('calc(env(safe-area-inset-bottom, 0px) + 10px)');
         expect(style.top).toBe('calc(env(safe-area-inset-top, 0px) + 50px)');
     });
 

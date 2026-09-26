@@ -29,7 +29,11 @@ The MUME Client is an **AI-Native, Hook-Driven Mobile Client** for the MUME MUD.
 | **Spectate Rotation** | `src/hooks/useSpectateAutomator.ts`, `src/hooks/GameParser/useGameParser.ts` |
 | **Manage Entity Traits** | `src/utils/inlineActionModel.ts`, `src/utils/categorizationUtils.ts`, `src/components/Settings/TraitSettings.tsx` |
 | **Manage Sliding Docked Panels** | `src/utils/dockedPanelUtils.ts`, `src/components/Layout/MainContentLayer.tsx`, `src/styles/terminalPanels.css`, `src/stores/useCommandPanelStore.ts`, `src/components/Help/HelpPanel.tsx`, `src/stores/useHelpStore.ts` |
+| **Character Console / Who Am I** | `src/components/HUD/ThisIsYouConsole.tsx`, `src/stores/useCharacterPanelStore.ts`, `src/components/HUD/ThisIsYouVitalsTier.tsx`, `src/components/HUD/ThisIsYouTerminal.css` |
 | **Zone Colors & Highlights** | `src/utils/zoneColors.ts`, `src/hooks/useZoneThemeSync.ts`, `src/components/Messages/MessageLog.tsx`, `src/components/Messages/MessageLog.css` |
+| **Map Telemetry & Overlays** | `src/components/HUD/MapRoomInfoHeader.tsx`, `src/components/Settings/MapSettings.tsx`, `src/stores/useSettingsStore.ts` |
+| **Map Find & Filter Controls** | `src/components/Mapper/MapFilterBar.tsx`, `src/components/Mapper/MapFilterCategories.ts`, `src/components/Mapper/MapFilterBar.css` |
+| **Tactical Mobile Targeting** | `src/components/Controls/GameButton/TacticalTargetBar.tsx`, `src/components/Controls/GameButton/useTacticalTargeting.ts`, `src/utils/commandTargetUtils.ts` |
 
 ## Inline Action Model
 Inline log actions must always follow:

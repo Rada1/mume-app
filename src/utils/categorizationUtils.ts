@@ -22,13 +22,13 @@ import { LinkedColorTheme } from './themeLinkedColors';
 
 // --- Color Fallbacks ---
 
-export const COLOR_NPC = 'rgba(150, 253, 48, 0.95)';
+export const COLOR_NPC = '#ababab';
 export const COLOR_PLAYER = '#4173e6';
-export const COLOR_OBJ = 'rgba(251, 146, 60, 0.95)';
-export const COLOR_ALLY = '#55a5e2';
-export const COLOR_ENEMY = '#ef4444';
-export const COLOR_NEUTRAL = '#eab308';
-export const COLOR_ROOM = '#22c55e';
+export const COLOR_OBJ = '#ababab';
+export const COLOR_ALLY = '#6c71f9';
+export const COLOR_ENEMY = '#f35353';
+export const COLOR_NEUTRAL = '#c9a84c';
+export const COLOR_ROOM = '#59bd3d';
 
 // --- Legacy Alias Section ---
 

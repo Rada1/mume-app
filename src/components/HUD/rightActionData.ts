@@ -35,7 +35,6 @@ export const UTILITY_ACTIONS: ActionItem[] = [
     { label: 'Weather', cmd: 'weather', needsTarget: false, icon: Cloud },
     { label: 'Inv', cmd: 'inventory', needsTarget: false, icon: BookOpen },
     { label: 'Eq', cmd: 'equipment', needsTarget: false, icon: Shield },
-    { label: 'Affects', cmd: 'affects', needsTarget: false, icon: HeartPulse },
     { label: 'Group', cmd: 'group', needsTarget: false, icon: Users },
     { label: 'Get', cmd: 'get ', needsTarget: true, targetKind: 'objects', icon: BookOpen }
 ];

@@ -38,6 +38,7 @@ interface AnimationProps {
     walkPath?: string[];
     activeMapFilter?: string | null;
     mapSearchQuery?: string;
+    hasFilterRoute?: boolean;
     entitiesRef: React.MutableRefObject<any>;
     isMobile?: boolean;
     isLandscape?: boolean;
@@ -48,7 +49,7 @@ export const useMapAnimation = ({
     drawMap, rooms, markers, currentRoomId, isDragging, renderVersion,
     canvasRef, camera, playerPosRef, moveAnimRef, playerTrailRef, getDPR, marquee, autoCenter,
     stableRoomsRef, stableRoomIdRef, stableMarkersRef, firstExploredAtRef, preloadedCoordsRef,
-    preMoveRef, walkTargetId, walkPath, isDraggingRef, activeMapFilter, mapSearchQuery,
+    preMoveRef, walkTargetId, walkPath, isDraggingRef, activeMapFilter, mapSearchQuery, hasFilterRoute,
     entitiesRef, isMobile, isLandscape, filterFitRef
 }: AnimationProps) => {
     const requestRef = useRef<number | null>(null);
@@ -334,6 +335,10 @@ export const useMapAnimation = ({
             wakeUntilRef.current = 0;
         }
 
+        // The dashed Find route and destination pulse use `now` while drawing.
+        // Keep producing frames until the route is cleared, even after camera fit ends.
+        if (hasFilterRoute) needsNextFrame = true;
+
         const drawStart = performance.now();
         drawMapRef.current(ctx, dpr, w, h, marquee, effectiveIsDragging);
         perfMonitor.recordFrame(performance.now() - drawStart);
@@ -379,7 +384,7 @@ export const useMapAnimation = ({
         triggerAnimation();
     // NOTE: currentRoomId intentionally excluded — room changes are handled by
     // the wake key system (wakeUntilRef) without needing to restart the loop.
-    }, [triggerAnimation, renderVersion, walkTargetId, activeMapFilter]);
+    }, [triggerAnimation, renderVersion, walkTargetId, activeMapFilter, mapSearchQuery, hasFilterRoute]);
 
     useEffect(() => {
         return () => {

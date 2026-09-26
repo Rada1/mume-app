@@ -22,17 +22,30 @@ interface PendingDrag {
     lastY: number;
     frame: number | null;
     targetKey: string;
+    mouseDragOnMove: boolean;
 }
 
 interface UseObjectDragCommandsProps {
     executeCommand: ExecuteCommand;
     triggerHaptic?: (ms: number) => void;
+    mouseDragOnMove?: boolean;
+    onDrop?: (source: ObjectDragSource, target: ObjectDropTarget) => void;
 }
 
-const getDatasetTarget = (el: Element | null): ObjectDropTarget | null => {
+export const getObjectDropTarget = (el: Element | null): ObjectDropTarget | null => {
     const node = el as HTMLElement | null;
+    const containerEl = node?.closest<HTMLElement>('[data-object-drop-container]');
     const rowEl = node?.closest<HTMLElement>('[data-object-drop-row]');
     const entityEl = node?.closest<HTMLElement>('[data-object-drop-entity]');
+
+    if (containerEl) {
+        const noun = containerEl.dataset.objectDropNoun;
+        const containerId = containerEl.dataset.objectDropContainer;
+        if (noun && containerId) return {
+            type: 'container', containerId, noun,
+            label: containerEl.dataset.objectDropLabel || noun
+        };
+    }
 
     if (entityEl) {
         const noun = entityEl.dataset.objectDropNoun;
@@ -61,11 +74,16 @@ const isSameRow = (source: ObjectDragSource, target: ObjectDropTarget): boolean 
 const getTargetKey = (target: ObjectDropTarget | null): string => {
     if (!target) return '';
     if (target.type === 'entity') return `entity:${target.entityId}`;
+    if (target.type === 'container') return `container:${target.containerId}`;
     return `row:${target.row}:${target.slot || ''}`;
 };
 
-const isValidTarget = (source: ObjectDragSource, target: ObjectDropTarget | null): target is ObjectDropTarget => {
-    if (!target || isSameRow(source, target)) return false;
+export const isValidObjectDragTarget = (source: ObjectDragSource, target: ObjectDropTarget | null): target is ObjectDropTarget => {
+    if (!target) return false;
+    if (target.type === 'container') return source.row === 'inventory'
+        && !source.parentContainerNoun && source.itemId !== target.containerId;
+    if (source.parentContainerNoun) return target.type === 'row' && target.row === 'inventory';
+    if (isSameRow(source, target)) return false;
     if (target.type === 'entity') return source.row === 'inventory';
     if (source.row === 'inventory') return target.row === 'worn' || target.row === 'room';
     if (source.row === 'worn') return target.row === 'inventory';
@@ -74,6 +92,10 @@ const isValidTarget = (source: ObjectDragSource, target: ObjectDropTarget | null
 };
 
 const buildDropCommand = (source: ObjectDragSource, target: ObjectDropTarget): string | null => {
+    if (target.type === 'container') return source.row === 'inventory' && !source.parentContainerNoun
+        && source.itemId !== target.containerId ? `put ${source.noun} ${target.noun}` : null;
+    if (source.parentContainerNoun) return target.type === 'row' && target.row === 'inventory'
+        ? `get ${source.noun} ${source.parentContainerNoun}` : null;
     if (target.type === 'entity') return `give ${source.noun} ${target.noun}`;
     if (source.row === 'inventory' && target.row === 'worn' && target.slot === 'wielded') {
         return `wield ${source.noun}`;
@@ -87,8 +109,10 @@ const buildDropCommand = (source: ObjectDragSource, target: ObjectDropTarget): s
 
 export const getObjectDragCommand = buildDropCommand;
 
-export const useObjectDragCommands = ({ executeCommand, triggerHaptic }: UseObjectDragCommandsProps) => {
+export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDragOnMove = false, onDrop }: UseObjectDragCommandsProps) => {
     const pendingRef = useRef<PendingDrag | null>(null);
+    const onDropRef = useRef(onDrop);
+    onDropRef.current = onDrop;
     const suppressClickUntilRef = useRef(0);
     const setObjectDragState = useUIStore(s => s.setObjectDragState);
 
@@ -112,8 +136,8 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic }: UseObje
         document.documentElement.style.setProperty('--object-drag-x', `${pending.lastX}px`);
         document.documentElement.style.setProperty('--object-drag-y', `${pending.lastY}px`);
 
-        const target = getDatasetTarget(document.elementFromPoint(pending.lastX, pending.lastY));
-        const validTarget = isValidTarget(pending.source, target) ? target : null;
+        const target = getObjectDropTarget(document.elementFromPoint(pending.lastX, pending.lastY));
+        const validTarget = isValidObjectDragTarget(pending.source, target) ? target : null;
         const targetKey = getTargetKey(validTarget);
 
         if (targetKey !== pending.targetKey) {
@@ -134,8 +158,15 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic }: UseObje
         const dx = event.clientX - pending.startX;
         const dy = event.clientY - pending.startY;
         if (!pending.active && Math.hypot(dx, dy) > MOVE_TOLERANCE_PX) {
-            clearPending(false);
-            return;
+            if (!pending.mouseDragOnMove) {
+                clearPending(false);
+                return;
+            }
+            clearTimeout(pending.timer);
+            pending.active = true;
+            document.body.classList.add('object-chip-dragging');
+            triggerHaptic?.(22);
+            setObjectDragState({ source: pending.source, x: event.clientX, y: event.clientY, target: null });
         }
 
         if (!pending.active) return;
@@ -145,7 +176,7 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic }: UseObje
         if (pending.frame === null) {
             pending.frame = requestAnimationFrame(updateDragFrame);
         }
-    }, [clearPending, updateDragFrame]);
+    }, [clearPending, setObjectDragState, triggerHaptic, updateDragFrame]);
 
     const finishDrag = useCallback((event: PointerEvent) => {
         const pending = pendingRef.current;
@@ -153,12 +184,13 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic }: UseObje
 
         if (pending.active) {
             event.preventDefault();
-            const target = getDatasetTarget(document.elementFromPoint(event.clientX, event.clientY));
-            if (isValidTarget(pending.source, target)) {
+            const target = getObjectDropTarget(document.elementFromPoint(event.clientX, event.clientY));
+            if (isValidObjectDragTarget(pending.source, target)) {
                 const command = buildDropCommand(pending.source, target);
                 if (command) {
                     triggerHaptic?.(35);
                     executeCommand(command, false, false, false, false, { fromUi: true });
+                    onDropRef.current?.(pending.source, target);
                 }
             }
             clearPending(true);
@@ -217,7 +249,8 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic }: UseObje
             lastX: startX,
             lastY: startY,
             frame: null,
-            targetKey: ''
+            targetKey: '',
+            mouseDragOnMove: mouseDragOnMove && event.pointerType === 'mouse'
         };
-    }, [setObjectDragState, triggerHaptic]);
+    }, [mouseDragOnMove, setObjectDragState, triggerHaptic]);
 };

@@ -67,6 +67,16 @@ describe('trailUtils', () => {
     });
 
     describe('getRoomTrailDirections', () => {
+        it('uses base map exits without referencing an uninitialized exit', () => {
+            const preloaded: Record<string, any> = {
+                '100': [0, 0, 0, 'Forest', {}, 'Trail', '100'],
+                '101': [0, 1, 0, 'Forest', {}]
+            };
+            const baseMapExits = { '100': [0, 0, 0, 'Forest', { n: { target: '101', flags: ['TRAIL'] } }] };
+
+            expect(getRoomRouteDirections('100', null, undefined, preloaded, baseMapExits)).toEqual(['n']);
+        });
+
         it('does not draw ordinary exits from a room whose name contains Path as trails', () => {
             const localRoom = {
                 id: '200', terrain: 'Forest', name: 'A Dark Path in the Forest',

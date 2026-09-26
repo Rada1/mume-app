@@ -9,8 +9,6 @@ import { GameContextType, UIContextType } from '../../../context/GameContext/typ
 import { ArrowLeft, BookOpen, Info, UtensilsCrossed, Droplets, Menu, ChevronLeft, HelpCircle, Play, Plus, KeyRound, Clock, Link2, Activity, MapPin, Timer, UserCircle, LogOut } from 'lucide-react';
 import { useMapper } from '../../../context/useMapper';
 import { MapFilterBar } from '../../Mapper/MapFilterBar';
-import { MapRoomInfoHeader } from '../../HUD/MapRoomInfoHeader';
-import { MapRoomInfoFooter } from '../../HUD/MapRoomInfoFooter';
 
 import InputArea from '../../Controls/InputArea';
 import OpponentRechargeTimer from '../../Combat/OpponentRechargeTimer';
@@ -73,6 +71,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
     const setLoginName = useSettingsStore(s => s.setLoginName);
     const setLoginPassword = useSettingsStore(s => s.setLoginPassword);
+    const hideMapHeaderFooter = useSettingsStore(s => s.hideMapHeaderFooter);
 
     // Mobile DOCKED (Gutter) Mode
     const isReplaying = (useGame() as GameContextType).sessionMode === 'replay';
@@ -1061,13 +1060,10 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             overflow: 'hidden'
                         }}
                     >
-                        {/* Map Header */}
-                        <MapRoomInfoHeader />
-
                         {/* Header Group: Tactical Buttons */}
                         <div style={{
                             position: 'absolute',
-                            top: '84px',
+                            top: '12px',
                             left: '0',
                             right: '0',
                             display: 'flex',
@@ -1132,62 +1128,23 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             setCommandPreview={setCommandPreview}
                         />
 
-                        {/* Z-indicator and Find button - positioned above MapRoomInfoFooter */}
+                        {/* Docked Map Filter & Z Bar */}
                         {isShown && (
-                            <div style={{
-                                position: 'absolute',
-                                bottom: '46px',
-                                left: '12px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '4px',
-                                alignItems: 'flex-start',
-                                zIndex: 12,
-                                pointerEvents: 'none',
-                            }}>
-                                <div className="gutter-map-filter-host" style={{ pointerEvents: 'auto' }}>
-                                    <MapFilterBar
-                                        activeMapFilter={activeMapFilter}
-                                        mapSearchQuery={mapSearchQuery}
-                                        setActiveMapFilter={setActiveMapFilter}
-                                        setMapSearchQuery={setMapSearchQuery}
-                                        triggerHaptic={triggerHaptic}
-                                    />
-                                </div>
-                                <div className="map-z-indicator" style={{
-                                    position: 'relative',
-                                    bottom: 'auto',
-                                    left: 'auto',
-                                    height: 'auto',
-                                    minHeight: 0,
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    padding: '2px 6px',
-                                    borderRadius: '4px',
-                                    background: isDarkMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.75)',
-                                    backdropFilter: 'blur(4px)',
-                                    WebkitBackdropFilter: 'blur(4px)',
-                                    border: isDarkMode ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.12)',
-                                    color: 'var(--text-faded)',
-                                    fontSize: '0.55rem',
-                                    fontFamily: 'monospace',
-                                    fontWeight: 800,
-                                    lineHeight: 1,
-                                    opacity: 1,
-                                    transform: 'scale(0.9)',
-                                    transformOrigin: 'bottom left',
-                                    pointerEvents: 'none',
-                                }}>
-                                    Z: {viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? (rooms[currentRoomId].z || 0).toFixed(1) : '0.0')}
-                                </div>
-                            </div>
+                            <MapFilterBar
+                                activeMapFilter={activeMapFilter}
+                                mapSearchQuery={mapSearchQuery}
+                                setActiveMapFilter={setActiveMapFilter}
+                                setMapSearchQuery={setMapSearchQuery}
+                                triggerHaptic={triggerHaptic}
+                                viewZ={viewZ}
+                            />
                         )}
 
                         {/* Mobile portrait condition indicator. Time and lighting live in the header and footer. */}
                         {isMobile && !isLandscape && isShown && (stats.conditions?.hungry || stats.conditions?.thirsty) && (
                             <div className="mobile-portrait-env-indicator" style={{
                                 position: 'absolute',
-                                bottom: '46px',
+                                bottom: '36px',
                                 right: '12px',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -1211,9 +1168,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                 )}
                             </div>
                         )}
-
-                        {/* Map Footer */}
-                        <MapRoomInfoFooter />
                     </div>
                 </div>
             </div>

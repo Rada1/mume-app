@@ -514,25 +514,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 />
             )}
 
-            {!effectiveIsMinimized && !isMobile && (
-                <div className="map-z-indicator" style={{
-                    position: 'absolute',
-                    bottom: '10px',
-                    left: '10px',
-                    color: isDarkMode ? '#9ca3af' : '#6b7280',
-                    background: isDarkMode ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.75)',
-                    padding: '4px 8px',
-                    zIndex: 9999,
-                    fontSize: '10px',
-                    pointerEvents: 'none',
-                    borderRadius: '4px',
-                    border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.12)',
-                    fontFamily: 'monospace',
-                    opacity: 0.8
-                }}>
-                    Z: {viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? (rooms[currentRoomId].z || 0).toFixed(1) : '0.0')}
-                </div>
-            )}
 
 
             {isTracingMode && (

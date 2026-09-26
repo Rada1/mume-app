@@ -110,12 +110,12 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
         position: { x: 380, y: 0, w: 90, h: 40 },
         trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
     }),
-    withAssignLongActions({
+    {
         id: "tactical-doors",
         label: "Doors",
         command: "doors",
         setId: "tactical",
-        actionType: "menu",
+        actionType: "command",
         display: "floating",
         hideIfUnknown: false,
         isVisible: true,
@@ -123,5 +123,5 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
         position: { x: 475, y: 0, w: 90, h: 40 },
         swipeCommands: DOOR_SWIPE_COMMANDS,
         trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
-    })
+    }
 ];

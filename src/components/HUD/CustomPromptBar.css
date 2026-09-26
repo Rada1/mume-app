@@ -235,12 +235,9 @@
 }
 
 .message.prompt .custom-prompt-bar .prompt-opponent-inline {
-    --mume-wiki-link-color: #c9a84c;
-    --glow-color: var(--mume-wiki-link-color);
-    color: var(--mume-wiki-link-color) !important;
+    color: var(--glow-color, var(--mume-wiki-link-color, #c9a84c)) !important;
     font-weight: 700;
-    text-decoration: underline dotted;
-    text-underline-offset: 2px;
+    text-decoration: none;
     cursor: pointer;
 }
 
@@ -261,11 +258,9 @@
 }
 
 .custom-prompt-bar .prompt-combat-opponent .prompt-opponent-inline {
-    --glow-color: #ef6a67;
-    color: #ef6a67 !important;
+    color: var(--glow-color, #ef6a67) !important;
     cursor: pointer;
-    text-decoration: underline dotted;
-    text-underline-offset: 2px;
+    text-decoration: none;
 }
 
 .custom-prompt-bar .prompt-opponent-health .prompt-vital-status {
@@ -595,12 +590,9 @@
 }
 
 .custom-prompt-bar .prompt-entity-inline {
-    --mume-wiki-link-color: #c9a84c;
-    --glow-color: var(--mume-wiki-link-color) !important;
-    color: var(--mume-wiki-link-color) !important;
+    color: var(--glow-color, var(--mume-wiki-link-color, #c9a84c)) !important;
     cursor: pointer;
-    text-decoration: underline dotted;
-    text-underline-offset: 2px;
+    text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: 0.3em;

@@ -171,6 +171,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         walkPath: props.walkPath,
         activeMapFilter: props.activeMapFilter,
         mapSearchQuery: props.mapSearchQuery,
+        hasFilterRoute: !!(props.closestRoomId && props.filterPathIds && props.filterPathIds.length > 1),
         entitiesRef,
         isMobile,
         isLandscape,

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, Store, DraftingCompass, MessageSquare, Users, TerminalSquare } from 'lucide-react';
+import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, Store, DraftingCompass, MessageSquare, Users, TerminalSquare, Backpack } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
 import { useModeStore } from '../../stores/useModeStore';
@@ -9,6 +9,7 @@ import { useSessionStore } from '../../stores/useSessionStore';
 import { useArchiveStore } from '../../stores/useArchiveStore';
 import { useHelpStore } from '../../stores/useHelpStore';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
+import { useGearPanelStore } from '../../stores/useGearPanelStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { canAccessShaper } from '../../shaper/access/shaperAccess';
 import { getTraitsForName } from '../../utils/inlineActionModel';
@@ -69,6 +70,8 @@ const Header: React.FC<HeaderProps> = () => {
     const helpData = useHelpStore(state => state.helpData);
     const isCommandPanelOpen = useCommandPanelStore(state => state.isOpen);
     const setIsCommandPanelOpen = useCommandPanelStore(state => state.setIsOpen);
+    const isGearPanelOpen = useGearPanelStore(state => state.isOpen);
+    const setIsGearPanelOpen = useGearPanelStore(state => state.setIsOpen);
 
     const [isEnteringTarget, setIsEnteringTarget] = useState(false);
     const [manualTargetInput, setManualTargetInput] = useState('');
@@ -503,6 +506,20 @@ const Header: React.FC<HeaderProps> = () => {
                             style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
                         >
                             <TerminalSquare size={17} />
+                        </button>
+
+                        <button
+                            className={`menu-toggle-btn${isGearPanelOpen ? ' active' : ''}`}
+                            onClick={() => {
+                                setIsGearPanelOpen(!isGearPanelOpen);
+                                triggerHaptic?.(10);
+                            }}
+                            title="Toggle Equipment and Inventory"
+                            aria-label="Toggle Equipment and Inventory"
+                            aria-pressed={isGearPanelOpen}
+                            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
+                        >
+                            <Backpack size={17} />
                         </button>
 
                         <button

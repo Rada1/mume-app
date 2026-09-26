@@ -36,7 +36,6 @@ const DECK_ALIASES: Record<string, string[]> = {
     Weather: ['weather', 'wea'],
     Group: ['group', 'gro'],
     Who: ['who', 'wh'],
-    Affects: ['affects', 'aff'],
     Watch: ['watch', 'wat'],
     Camp: ['camp'],
     'Camp Rent': ['camp rent'],

@@ -21,6 +21,8 @@ import { getRoomTargetSuggestions } from '../../utils/commandSuggestionUtils';
 import type { GmcpOccupant, PracticeData } from '../../types';
 import { MainTab, ActionItem, COMBAT_ACTIONS, UTILITY_ACTIONS, CLASS_KEYS } from './rightActionData';
 import { getSkillOrSpellSyntax, getSpellManaCost } from '../../utils/spellSyntaxUtils';
+import { MovementPad } from './MovementPad';
+import { RightPanelTargetBar } from './RightPanelTargetBar';
 import './RightActionPanel.css';
 import './RightActionTerminal.css';
 
@@ -44,7 +46,7 @@ export const RightActionPanel: FC = () => {
     const requestTargetPicker = useInputStore(s => s.requestTargetPicker);
     const [activeTab, setActiveTab] = useState<MainTab>(() => {
         const saved = localStorage.getItem('mume-right-panel-tab');
-        if (saved === 'spells') return 'skills';
+        if (saved === 'spells' || saved === 'move') return 'combat';
         return (['combat', 'skills', 'utility'] as string[]).includes(saved || '') ? (saved as MainTab) : 'combat';
     });
 
@@ -56,8 +58,6 @@ export const RightActionPanel: FC = () => {
     const [needsTargetHint, setNeedsTargetHint] = useState<string | null>(null);
     const [pressedLabel, setPressedLabel] = useState<string | null>(null);
     const [targetOverrides, setTargetOverrides] = useState<Record<string, string>>({});
-    const [isEditingTarget, setIsEditingTarget] = useState(false);
-    const [targetDraft, setTargetDraft] = useState('');
     const pressTimerRef = useRef<number | undefined>(undefined);
     const hintTimerRef = useRef<number | undefined>(undefined);
     const hasSyncRef = useRef(false);
@@ -259,23 +259,13 @@ export const RightActionPanel: FC = () => {
                 )}
             </div>
 
-            {/* Target Status Bar */}
-            <div className="right-panel-target-bar">
-                <span className="target-bar-label">Target:</span>
-                {isEditingTarget ? (
-                    <form onSubmit={event => { event.preventDefault(); setTarget(targetDraft.trim() || null); setIsEditingTarget(false); }}>
-                        <input autoFocus aria-label="Type target" value={targetDraft}
-                            onChange={event => setTargetDraft(event.target.value)}
-                            onKeyDown={event => { if (event.key === 'Escape') setIsEditingTarget(false); }} />
-                    </form>
-                ) : (
-                    <button type="button" className={`target-bar-value${!target ? ' is-empty' : ''}`}
-                        title="Click to type a target"
-                        onClick={() => { setTargetDraft(target || ''); setIsEditingTarget(true); }}>
-                        {target || 'None'}
-                    </button>
-                )}
+            {/* Movement Controls Section - Always visible */}
+            <div className="right-panel-navigation" role="region" aria-label="Movement Controls">
+                <MovementPad />
             </div>
+
+            {/* Target Status Bar */}
+            <RightPanelTargetBar target={target} setTarget={setTarget} />
         </aside>
     );
 };

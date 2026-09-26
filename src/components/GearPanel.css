@@ -1,0 +1,39 @@
+/** @file GearPanel.css — Sparse terminal styling for equipment and inventory. */
+
+/* --- Panel Section --- */
+.gear-panel { position: fixed; z-index: 60000; width: var(--desktop-gear-width, 30vw); min-width: 280px; max-width: 60vw; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-app); color: var(--text-primary); border: 1px solid rgba(201,168,76,.2); font-family: var(--font-mono, monospace); }
+.gear-panel-header { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 12px 10px; color: var(--accent); font-size: 13px; }
+.gear-panel-header > span { display: flex; align-items: center; gap: 8px; }
+.gear-panel-header::before { content: '>'; color: var(--accent); }
+.gear-panel-header > button, .gear-refresh, .gear-container-toggle { background: transparent; border: 0; color: var(--text-dim); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 4px; }
+.gear-panel-header > button:hover, .gear-refresh:hover, .gear-container-toggle:hover { color: var(--accent); }
+.gear-panel-body { flex: 1; min-height: 0; overflow: auto; padding: 4px 12px 20px; }
+
+/* --- Sections Section --- */
+.gear-section { margin-top: 9px; }
+.gear-section-heading { display: flex; align-items: center; justify-content: space-between; color: var(--text-primary); border-bottom: 1px solid rgba(201,168,76,.16); }
+.gear-section-heading.is-drop-target { background: rgba(201,168,76,.08); border-bottom-color: rgba(201,168,76,.65); }
+.gear-section-toggle { display: inline-flex; align-items: center; gap: 5px; padding: 7px 0; border: 0; background: transparent; color: inherit; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.gear-section-toggle:hover { color: var(--accent); }
+.gear-section-body { padding: 4px 0 8px 17px; }
+.gear-section-body.is-drop-target { background: rgba(201,168,76,.08); outline: 1px dashed rgba(201,168,76,.42); outline-offset: -1px; }
+.gear-empty, .gear-container-note { display: block; color: var(--text-dim); font-size: 11px; padding: 5px 0; }
+.gear-item-row { display: flex; align-items: baseline; min-height: 24px; gap: 4px; }
+.gear-item-row:hover, .gear-item-row.is-selected { background: rgba(201,168,76,.07); }
+.gear-item-row.is-drop-target { background: rgba(201,168,76,.16); outline: 1px dashed rgba(201,168,76,.65); outline-offset: -1px; }
+.gear-item-select { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 8px; padding: 3px 0; border: 0; background: transparent; text-align: left; font: inherit; font-size: 12px; cursor: pointer; }
+.object-chip-dragging .gear-item-select { cursor: grabbing; }
+.gear-slot { flex: 0 0 135px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gear-item-text { min-width: 0; overflow-wrap: anywhere; }
+.gear-article { color: var(--text-dim); }
+.gear-item-name { color: var(--color-obj); text-decoration: underline dotted; text-underline-offset: 3px; }
+.gear-condition { color: var(--text-dim); }
+.gear-container-toggle { flex: 0 0 24px; align-self: center; }
+.gear-container-contents { margin: 2px 0 5px 12px; padding-left: 12px; border-left: 1px solid rgba(201,168,76,.4); }
+.gear-item-row.is-nested .gear-item-select { padding-left: 0; }
+.gear-actions { flex: 0 0 auto; padding: 9px 12px 12px; border-top: 1px solid rgba(201,168,76,.22); }
+.gear-actions-label { display: block; color: var(--accent); font-size: 11px; margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gear-action-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.gear-action-buttons button { padding: 5px 9px; border: 1px solid rgba(201,168,76,.35); border-radius: 3px; background: rgba(201,168,76,.07); color: var(--accent); font: inherit; font-size: 11px; cursor: pointer; }
+.gear-action-buttons button:hover { background: rgba(201,168,76,.16); }
+@media (max-width: 768px) { .gear-panel { min-width: 0; max-width: none; } .gear-slot { flex-basis: 110px; } }

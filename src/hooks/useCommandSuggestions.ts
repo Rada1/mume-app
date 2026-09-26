@@ -9,10 +9,11 @@ import { getMumeCommandMatch, replaceMumeCommandToken, MumeCommandEntry, MumeCom
 import { getCastSpellFragment, getCastSpellSuggestions, replaceCastSpellArgument, SpellSuggestion } from '../utils/spellSuggestionUtils';
 import { useRoomStore } from '../stores/useRoomStore';
 import { useInputStore } from '../stores/useInputStore';
-import { GameState } from '../types/game';
+import { DrawerLine, GameState } from '../types/game';
 import {
     CommandTargetSuggestion,
     CommandTextParts,
+    getGearTargetSuggestions,
     getRoomTargetSuggestions,
     replaceCommandArgumentToken
 } from '../utils/commandSuggestionUtils';
@@ -23,25 +24,18 @@ export interface UseCommandSuggestionsOptions {
     abilities?: Record<string, number>; characterClass?: string;
     wrapRef?: RefObject<HTMLElement | null>; inputRef?: RefObject<HTMLInputElement | HTMLTextAreaElement | null>;
     isMobile?: boolean; targetPickerRequestId?: number; placement?: 'top' | 'bottom';
+    inventoryLines?: DrawerLine[]; wornLines?: DrawerLine[];
 }
 
 export interface UseCommandSuggestionsReturn {
-    commandTextParts: CommandTextParts | null;
-    mumeCommandMatch: MumeCommandMatch;
-    showCompletionPopup: boolean;
-    showCommandPopup: boolean; showTargetPopup: boolean; showSpellPopup: boolean;
-    visibleCommandSuggestions: MumeCommandEntry[];
-    targetSuggestions: CommandTargetSuggestion[];
-    selectedTargetSuggestion: CommandTargetSuggestion | null;
-    spellSuggestions: SpellSuggestion[];
-    popupStyle: CSSProperties;
-    isFocused: boolean;
-    setIsFocused: (val: boolean) => void;
-    setIsTargetPickerForced: (val: boolean) => void;
-    chooseCommandSuggestion: (entry: MumeCommandEntry) => void;
-    chooseTargetSuggestion: (val: string) => void;
-    chooseSpellSuggestion: (val: string) => void;
-    handleSuggestionKeyDown: (e: KeyboardEvent) => boolean;
+    commandTextParts: CommandTextParts | null; mumeCommandMatch: MumeCommandMatch;
+    showCompletionPopup: boolean; showCommandPopup: boolean; showTargetPopup: boolean; showSpellPopup: boolean;
+    visibleCommandSuggestions: MumeCommandEntry[]; targetSuggestions: CommandTargetSuggestion[];
+    selectedTargetSuggestion: CommandTargetSuggestion | null; spellSuggestions: SpellSuggestion[];
+    popupStyle: CSSProperties; placement: 'top' | 'bottom';
+    isFocused: boolean; setIsFocused: (val: boolean) => void; setIsTargetPickerForced: (val: boolean) => void;
+    chooseCommandSuggestion: (entry: MumeCommandEntry) => void; chooseTargetSuggestion: (val: string) => void;
+    chooseSpellSuggestion: (val: string) => void; handleSuggestionKeyDown: (e: KeyboardEvent) => boolean;
 }
 
 export const useCommandSuggestions = ({
@@ -56,8 +50,11 @@ export const useCommandSuggestions = ({
     inputRef,
     isMobile = false,
     targetPickerRequestId: propTargetPickerRequestId,
-    placement = 'bottom'
+    placement: propPlacement,
+    inventoryLines = [],
+    wornLines = []
 }: UseCommandSuggestionsOptions): UseCommandSuggestionsReturn => {
+    const effectivePlacement: 'top' | 'bottom' = propPlacement ?? (isMobile ? 'top' : 'bottom');
     const [isFocused, setIsFocused] = useState(false);
     const [popupStyle, setPopupStyle] = useState<CSSProperties>({});
     const [isTargetPickerForced, setIsTargetPickerForced] = useState(false);
@@ -101,10 +98,14 @@ export const useCommandSuggestions = ({
     const targetSuggestions = useMemo<CommandTargetSuggestion[]>(() => {
         if (!hasCommandArgumentSpace) return [];
 
-        const command = commandTextParts?.token.toLowerCase() || '';
+        const command = mumeCommandMatch.entry?.full || commandTextParts?.token.toLowerCase() || '';
+        const gearKind = command === 'wear' ? 'inventory' : command === 'remove' ? 'worn' : null;
         const kind = /^(get|take|pick)$/.test(command) ? 'objects'
             : /^(assist|rescue|follow)$/.test(command) ? 'allies' : 'characters';
-        return getRoomTargetSuggestions(Object.values(chars || {}), roomItems, kind)
+        const suggestions = gearKind
+            ? getGearTargetSuggestions(gearKind === 'inventory' ? inventoryLines : wornLines, gearKind)
+            : getRoomTargetSuggestions(Object.values(chars || {}), roomItems, kind);
+        return suggestions
             .filter(entry => {
                 if (!entry.value) return false;
                 if (!targetFragment) return true;
@@ -117,7 +118,7 @@ export const useCommandSuggestions = ({
                     labelLower.split(/\s+/).some(w => w.startsWith(targetFragment));
             })
             .slice(0, 8);
-    }, [chars, roomItems, commandTextParts?.token, hasCommandArgumentSpace, targetFragment]);
+    }, [chars, roomItems, inventoryLines, wornLines, commandTextParts?.token, mumeCommandMatch.entry, hasCommandArgumentSpace, targetFragment]);
 
     const selectedTargetSuggestion = targetSuggestions[0] ?? null;
 
@@ -187,14 +188,13 @@ export const useCommandSuggestions = ({
             if (!rect) return;
 
             const viewportPadding = 8;
-            const desiredWidth = Math.min(320, window.innerWidth - viewportPadding * 2);
-            const left = Math.max(
-                viewportPadding,
-                Math.min(rect.left, window.innerWidth - desiredWidth - viewportPadding)
-            );
+            const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
+            const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+            const desiredWidth = Math.min(320, viewportWidth - viewportPadding * 2);
+            const left = Math.max(viewportPadding, Math.min(rect.left, viewportWidth - desiredWidth - viewportPadding));
 
-            if (placement === 'bottom') {
-                const spaceBelow = window.innerHeight - rect.bottom - viewportPadding;
+            if (effectivePlacement === 'bottom') {
+                const spaceBelow = viewportHeight - rect.bottom - viewportPadding;
                 setPopupStyle({
                     left,
                     top: Math.round(rect.bottom + 4),
@@ -203,11 +203,12 @@ export const useCommandSuggestions = ({
                     transform: 'none'
                 });
             } else {
+                const spaceAbove = rect.top - viewportPadding - 6;
                 setPopupStyle({
                     left,
                     top: Math.max(viewportPadding, rect.top - 6),
                     width: desiredWidth,
-                    maxHeight: Math.max(120, rect.top - viewportPadding * 2),
+                    maxHeight: Math.max(80, Math.min(260, spaceAbove)),
                     transform: 'translateY(-100%)'
                 });
             }
@@ -216,12 +217,14 @@ export const useCommandSuggestions = ({
         updatePopupPosition();
         window.addEventListener('resize', updatePopupPosition);
         window.addEventListener('scroll', updatePopupPosition, true);
+        window.visualViewport?.addEventListener('resize', updatePopupPosition);
 
         return () => {
             window.removeEventListener('resize', updatePopupPosition);
             window.removeEventListener('scroll', updatePopupPosition, true);
+            window.visualViewport?.removeEventListener('resize', updatePopupPosition);
         };
-    }, [placement, showCompletionPopup, wrapRef]);
+    }, [effectivePlacement, showCompletionPopup, wrapRef]);
 
     const handleSuggestionKeyDown = useCallback((e: KeyboardEvent): boolean => {
         const isNumpad = e.location === 3 || e.code.startsWith('Numpad');
@@ -281,6 +284,7 @@ export const useCommandSuggestions = ({
         selectedTargetSuggestion,
         spellSuggestions,
         popupStyle,
+        placement: effectivePlacement,
         isFocused, setIsFocused, setIsTargetPickerForced,
         chooseCommandSuggestion, chooseTargetSuggestion, chooseSpellSuggestion,
         handleSuggestionKeyDown

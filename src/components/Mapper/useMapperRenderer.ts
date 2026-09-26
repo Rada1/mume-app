@@ -922,19 +922,6 @@ export const useMapperRenderer = ({
         }
         drawMarkers(rCtx, stableMarkersRef, selectedMarkerId, camera.x, camera.y, camera.x + baseW/camera.zoom, camera.y + baseH/camera.zoom);
         drawRegionLabels(rCtx, regionLabels, selectedRegionLabelId);
-        if (showTerrainTiles && playerRoom && Math.abs((playerRoom.z || 0) - currentZ) < 1) {
-            const inset = 2 / camera.zoom;
-            ctx.save();
-            ctx.strokeStyle = 'rgba(255, 226, 134, 0.95)';
-            ctx.lineWidth = 2 / camera.zoom;
-            ctx.strokeRect(
-                playerRoom.x * GRID_SIZE + inset,
-                playerRoom.y * GRID_SIZE + inset,
-                GRID_SIZE - inset * 2,
-                GRID_SIZE - inset * 2
-            );
-            ctx.restore();
-        }
         if (!isPerformanceMode) {
             drawAnimatingFlags(rCtx);
         }

@@ -7,6 +7,9 @@ import { useButtonGestures } from './useButtonGestures';
 import { ButtonLabel } from './ButtonLabel';
 import { ButtonSwipeOverlay } from './ButtonSwipeOverlay';
 import { CircularVitals } from './CircularVitals';
+import { useTacticalTargeting } from './useTacticalTargeting';
+import { TacticalTargetBar } from './TacticalTargetBar';
+import { useRoomStore } from '../../../stores/useRoomStore';
 
 interface GameButtonProps {
     button: CustomButton;
@@ -85,11 +88,23 @@ export const GameButton: React.FC<GameButtonProps> = ({
         radius: button.style.borderRadius || 8
     });
 
+    const tacticalTargeting = useTacticalTargeting({
+        activeTarget: target,
+        isMobile,
+        setCommandPreview,
+        triggerHaptic
+    });
+
+    const roomChars = useRoomStore(s => s.chars);
+    const roomItems = useRoomStore(s => s.items);
+    const roomOccupants = React.useMemo(() => Object.values(roomChars), [roomChars]);
+
     const gestures = useButtonGestures({
         button, isEditMode, handleDragStart, wasDraggingRef, triggerHaptic, setHeldButton, heldButton,
         joystick, target, setCommandPreview, setActiveDir, activeDir, setIsCancelling, isCancelling,
         setPopoverState, executeCommand, setActiveSet, handleButtonClick, setButtons, setEditButton,
-        setWheelPos, playClickSound, isSoundEnabled, initAudio, setRayParams, isMobile
+        setWheelPos, playClickSound, isSoundEnabled, initAudio, setRayParams, isMobile,
+        tacticalTargeting
     });
 
     if (button.display === 'inline') return null;
@@ -99,10 +114,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
     useEffect(() => {
         if (heldButton?.id === button.id && heldButton.dx !== undefined && heldButton.dy !== undefined) {
-            const preview = getButtonCommand(button, heldButton.dx, heldButton.dy, undefined, undefined, heldButton.modifiers, joystick, target, joystick.isActive, heldButton.commandPrefixes);
+            const effectiveTarget = tacticalTargeting.pendingTarget || target;
+            const preview = getButtonCommand(button, heldButton.dx, heldButton.dy, undefined, undefined, heldButton.modifiers, joystick, effectiveTarget, joystick.isActive, heldButton.commandPrefixes);
             setCommandPreview(preview?.cmd || null);
         }
-    }, [joystick.isActive, heldButton?.id, button.id, joystick.currentDir, joystick.isTargetModifierActive, target, setCommandPreview]);
+    }, [joystick.isActive, heldButton?.id, button.id, joystick.currentDir, joystick.isTargetModifierActive, target, tacticalTargeting.pendingTarget, setCommandPreview]);
 
     const handleSwap = React.useCallback(() => {
         if (!activeDir || (activeDir as any) === 'center') return;
@@ -182,9 +198,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
         if (!colorVal) return defaultVal;
         const hex = colorVal.replace('#', '');
         if (hex.length < 6) return defaultVal;
-        const r = parseInt(hex.substring(0, 2), 16);
-        const g = parseInt(hex.substring(2, 4), 16);
-        const b = parseInt(hex.substring(4, 6), 16);
+        const r = parseInt(hex.substring(0, 2), 16), g = parseInt(hex.substring(2, 4), 16), b = parseInt(hex.substring(4, 6), 16);
         return !isNaN(r) ? `${r}, ${g}, ${b}` : defaultVal;
     };
 
@@ -195,10 +209,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
             data-id={button.id}
             data-variant={variant}
             style={{
-                left: useDefaultPositioning ? `${button.style.x}%` : undefined,
-                top: useDefaultPositioning ? `${button.style.y}%` : undefined,
-                width: useDefaultPositioning ? `${button.style.w}px` : undefined,
-                height: useDefaultPositioning ? `${button.style.h}px` : undefined,
+                left: useDefaultPositioning ? `${button.style.x}%` : undefined, top: useDefaultPositioning ? `${button.style.y}%` : undefined,
+                width: useDefaultPositioning ? `${button.style.w}px` : undefined, height: useDefaultPositioning ? `${button.style.h}px` : undefined,
                 backgroundColor: button.style.transparent ? 'transparent' : (button.style.backgroundColor || 'rgba(255,255,255,0.05)'),
                 borderColor: button.style.borderColor || 'rgba(255,255,255,0.2)',
                 borderWidth: `${button.style.borderWidth !== undefined ? button.style.borderWidth : 1}px`,
@@ -249,8 +261,20 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     buttonRect={buttonRef.current?.getBoundingClientRect()}
                     rayParams={rayParams}
                     onSwap={handleSwap}
+                    isMobile={isMobile}
                 />
             )}
+            <TacticalTargetBar
+                isOpen={tacticalTargeting.isTargetColumnOpen}
+                currentTarget={target}
+                selectedTarget={tacticalTargeting.pendingTarget}
+                onSelectTarget={(val) => {
+                    const currentCmd = gestures.currentCommandRef?.current || button.command;
+                    tacticalTargeting.handleSelectTarget(val, currentCmd);
+                }}
+                roomOccupants={roomOccupants}
+                roomItems={roomItems}
+            />
             {iconNode
                 ? <span className="custom-btn-icon-node">{iconNode}</span>
                 : <ButtonLabel button={button} />}

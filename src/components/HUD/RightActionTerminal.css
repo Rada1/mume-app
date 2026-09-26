@@ -258,40 +258,83 @@
 
 /* --- Movement and target footer --- */
 .right-action-panel .right-panel-navigation {
-    justify-content: space-between;
-    padding: 12px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 8px;
     background: transparent !important;
     border-top: 1px solid rgba(201, 168, 76, 0.22);
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    flex-shrink: 0;
 }
 
-.right-panel-move-label { color: #958b79; font-size: 11px; letter-spacing: 0.12em; }
 .right-action-panel .right-panel-navigation .movement-pad {
-    grid-template-columns: repeat(3, 27px);
-    grid-template-rows: repeat(3, 26px);
-    gap: 2px;
-    padding: 0;
-    margin: 0;
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    backdrop-filter: none;
+    display: grid;
+    grid-template-columns: repeat(3, clamp(44px, 5.8vw, 54px));
+    grid-template-rows: repeat(3, clamp(38px, 5.2vw, 46px));
+    gap: 4px;
+    padding: 6px;
+    margin: 0 auto;
+    background: rgba(22, 17, 13, 0.7);
+    border: 1px solid rgba(201, 168, 76, 0.22);
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
 .right-action-panel .right-panel-navigation .movement-pad-cell {
-    padding: 2px;
-    background: transparent;
-    border: 0;
-    border-radius: 3px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 2px 3px;
+    background: rgba(35, 28, 22, 0.82);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 6px;
+    color: #d4c9b0;
     box-shadow: none;
+    cursor: pointer;
+    transition: all 0.12s ease;
 }
 
-.right-action-panel .right-panel-navigation .movement-pad-cell:hover,
-.right-action-panel .right-panel-navigation .movement-pad-cell.is-key-pressed { background: rgba(221, 189, 105, 0.14); }
-.right-action-panel .right-panel-navigation .movement-pad-label { display: none; }
-.right-action-panel .right-panel-navigation .movement-pad-key { top: 1px; left: 2px; font-size: 6px; }
-.right-action-panel .right-panel-navigation .movement-pad-cell svg { width: 14px; height: 14px; }
+.right-action-panel .right-panel-navigation .movement-pad-cell:hover {
+    background: rgba(50, 40, 30, 0.95);
+    border-color: rgba(201, 168, 76, 0.5);
+    color: #f0cb67;
+}
+
+.right-action-panel .right-panel-navigation .movement-pad-cell:active,
+.right-action-panel .right-panel-navigation .movement-pad-cell.is-key-pressed {
+    transform: scale(0.95);
+    background: rgba(201, 168, 76, 0.22);
+    border-color: rgba(201, 168, 76, 0.65);
+    color: #f0cb67;
+}
+
+.right-action-panel .right-panel-navigation .movement-pad-label {
+    display: block;
+    font-size: 8px;
+    font-weight: 600;
+    line-height: 1;
+    color: #b8ad96;
+    text-transform: uppercase;
+}
+
+.right-action-panel .right-panel-navigation .movement-pad-key {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    font-size: 6.5px;
+    font-weight: 700;
+    color: #8a7a5e;
+}
+
+.right-action-panel .right-panel-navigation .movement-pad-cell svg {
+    width: 17px;
+    height: 17px;
+}
 .right-action-panel .right-panel-target-bar { padding: 9px 16px; background: transparent; }
 .right-action-panel .target-bar-label { font-weight: 400; text-transform: lowercase; }
 .right-action-panel .target-bar-value { font-weight: 400; }
@@ -325,3 +368,4 @@
     .right-action-panel .right-panel-tabs { gap: 6px; padding-inline: 8px; }
     .right-action-panel .right-panel-tab { font-size: 10px; }
 }
+

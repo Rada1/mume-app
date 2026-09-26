@@ -125,6 +125,12 @@ export const useGmcpGroup = ({
                 youIdRef.current = Number(you.id);
             }
             publishActiveMapId(you, 'Group.Set');
+            if (typeof you.waiting === 'boolean') {
+                setStats((prev: { conditions?: Record<string, boolean> }) => ({
+                    ...prev,
+                    conditions: { ...(prev.conditions || {}), waiting: you.waiting }
+                }));
+            }
         }
 
         const others = members.filter(m => !isSelfMember(m));
