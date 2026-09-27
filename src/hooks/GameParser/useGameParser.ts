@@ -1240,6 +1240,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if ((!isSnoop || deps.isSpectateMode) && /\bgives\s+you\b/i.test(lower)) {
             deps.playEffect?.('get');
         }
+        if ((!isSnoop || deps.isSpectateMode) && lower.startsWith('you recovered ') && lower.includes(' and put it in your ')) {
+            deps.playEffect?.('get');
+        }
         if ((!isSnoop || deps.isSpectateMode) && (lower.startsWith('you put ') || lower.includes('you put '))) {
             deps.playEffect?.('drop');
         }
