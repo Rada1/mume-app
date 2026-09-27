@@ -10,6 +10,7 @@ import { ThisIsYouConsole } from './ThisIsYouConsole';
 import './ActionBox.css';
 
 export interface ActionBoxProps {
+    mobile?: boolean;
     handleSend?: (e?: React.FormEvent) => void;
     handleInputSwipe?: (dir: 'up' | 'down' | 'left' | 'right' | 'sw') => void;
     commandPreview?: string | null;
@@ -20,12 +21,12 @@ export interface ActionBoxProps {
 }
 
 // --- Render Section ---
-export const ActionBox: FC<ActionBoxProps> = () => {
+export const ActionBox: FC<ActionBoxProps> = ({ mobile = false }) => {
     const bottomBarOpacity = useSettingsStore(s => s.bottomBarOpacity);
 
     return (
         <div
-            className="action-box"
+            className={`action-box${mobile ? ' is-mobile' : ''}`}
             style={{ opacity: bottomBarOpacity } as React.CSSProperties}
         >
             <div className="action-box-this-is-you-row">

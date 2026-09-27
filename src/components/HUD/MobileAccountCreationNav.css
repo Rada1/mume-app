@@ -1,0 +1,36 @@
+/**
+ * @file MobileAccountCreationNav.css
+ * @description Floating action pills for mobile character creation.
+ */
+
+.mobile-creation-floating-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    grid-column: 1 / -1;
+    width: 100%;
+    padding-top: 4px;
+    pointer-events: auto;
+}
+
+.mobile-creation-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 9px;
+    border-radius: 4px;
+    border: 1px solid rgba(201, 168, 76, 0.4);
+    background: rgba(18, 14, 10, 0.96);
+    color: #d4cdb8;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.mobile-creation-nav-btn:active {
+    transform: scale(0.95);
+    background: rgba(201, 168, 76, 0.2);
+}

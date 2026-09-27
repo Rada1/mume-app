@@ -26,7 +26,7 @@ export const RightPanelTargetBar: FC<RightPanelTargetBarProps> = ({ target, setT
 
     return (
         <div className="right-panel-target-bar">
-            <span className="target-bar-label">Target:</span>
+            <span className="target-bar-label">Global Target:</span>
             {isEditingTarget ? (
                 <form
                     className="target-bar-form"
@@ -37,9 +37,9 @@ export const RightPanelTargetBar: FC<RightPanelTargetBarProps> = ({ target, setT
                 >
                     <input
                         autoFocus
-                        aria-label="Type target"
+                        aria-label="Type global target"
                         value={targetDraft}
-                        placeholder="target..."
+                        placeholder="global target..."
                         onChange={event => setTargetDraft(event.target.value)}
                         onKeyDown={event => {
                             if (event.key === 'Escape') setIsEditingTarget(false);
@@ -52,7 +52,7 @@ export const RightPanelTargetBar: FC<RightPanelTargetBarProps> = ({ target, setT
                     <button
                         type="button"
                         className={`target-bar-value${!target ? ' is-empty' : ''}`}
-                        title="Click to type a target"
+                        title="Click to type the global target"
                         onClick={() => {
                             triggerHaptic?.(10);
                             setTargetDraft(target || '');
@@ -65,8 +65,8 @@ export const RightPanelTargetBar: FC<RightPanelTargetBarProps> = ({ target, setT
                         <button
                             type="button"
                             className="target-bar-clear-btn"
-                            title="Clear target"
-                            aria-label="Clear target"
+                            title="Clear global target"
+                            aria-label="Clear global target"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 triggerHaptic?.(15);

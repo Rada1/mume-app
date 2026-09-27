@@ -28,7 +28,8 @@
     flex-direction: column;
     background: var(--bg-app);
     --mobile-gutter-height: 110px;
-    transition: --terrain-glow-color 3.0s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --mobile-map-panel-height: 110px;
+    transition: --terrain-glow-color 5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .app-container.immersion-mode {
@@ -53,9 +54,9 @@
         inset 0 0 0 1px rgba(232, 176, 32, 0.24),
         inset 0 0 16px var(--terrain-glow-color, transparent),
         inset 0 0 40px var(--terrain-glow-color, transparent);
-    transition: --terrain-glow-color 3.0s cubic-bezier(0.25, 0.1, 0.25, 1),
-                border-color 3.0s cubic-bezier(0.25, 0.1, 0.25, 1),
-                box-shadow 3.0s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: --terrain-glow-color 5s cubic-bezier(0.25, 0.1, 0.25, 1),
+                border-color 5s cubic-bezier(0.25, 0.1, 0.25, 1),
+                box-shadow 5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 
@@ -63,15 +64,13 @@
 .app-container.has-drawer-open {
     --mobile-gutter-height: 42vh;
     --mobile-gutter-height: 42dvh;
+    --mobile-map-panel-height: 42vh;
+    --mobile-map-panel-height: 42dvh;
 }
 
 .app-container.state-account.is-mobile:not(.is-landscape) {
     --mobile-gutter-height: 50vh;
     --mobile-gutter-height: 50dvh;
-}
-
-.app-container.kb-open {
-    --mobile-gutter-height: 58px;
 }
 
 .background-layer {
@@ -313,11 +312,11 @@
 
 /* Suppress mobile HUD buttons, command deck, and tactical bar when docked panels are open */
 @media (max-width: 1024px) {
-    body.has-docked-panels .mobile-bottom-gutter,
+    body.has-docked-panels .mobile-map-panel,
     body.has-docked-panels .hud-clusters-absolute-layer,
     body.has-docked-panels .mobile-tactical-buttons-persistent,
     body.has-docked-panels .mobile-command-deck-persistent,
-    .app-container:has(.docked-panel) .mobile-bottom-gutter,
+    .app-container:has(.docked-panel) .mobile-map-panel,
     .app-container:has(.docked-panel) .hud-clusters-absolute-layer,
     .app-container:has(.docked-panel) .mobile-tactical-buttons-persistent,
     .app-container:has(.docked-panel) .mobile-command-deck-persistent {
@@ -338,29 +337,17 @@
     }
 }
 
-/* Portrait: no extra padding needed — the tab bar sits below the 280px map gutter,
-   not below the content layer, so it doesn't overlap the input area. */
+/* Portrait: the map is a normal flex sibling below the content layer. */
 @media (max-width: 1024px) and (orientation: portrait) {
     .content-layer {
         padding: calc(env(safe-area-inset-top, 0px) + 42px) 0 0 0 !important;
-        padding-bottom: var(--mobile-gutter-height) !important;
         transition: none !important;
         box-sizing: border-box !important;
     }
-    
-    .kb-open:not(.state-account) .content-layer {
-        padding-bottom: 0px !important;
-    }
-    
-    .kb-open.state-account .content-layer {
-        padding-bottom: 58px !important;
-    }
-    
+
     .state-account .content-layer {
-        /* If keyboard is NOT open in account state, we still need full gutter padding 
-           unless the gutter itself shrinks. Since the gutter is var(--mobile-gutter-height),
-           we should match it here to avoid collision. */
-        padding-bottom: var(--mobile-gutter-height) !important;
+        /* Account mode has no map panel; the log fills the available screen. */
+        padding-bottom: 0 !important;
     }
 
     .app-container:not(.state-account) .content-layer > .input-container {

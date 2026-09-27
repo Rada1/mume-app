@@ -1,0 +1,30 @@
+/**
+ * @file MobileHeaderTime.css
+ * @description Quiet two-line clock fitted into the left side of the mobile header.
+ */
+
+/* --- Mobile Header Clock --- */
+.mobile-header-time {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    overflow: hidden;
+    color: #a79d89;
+    font-family: var(--font-mono, monospace);
+    line-height: 1.25;
+    white-space: nowrap;
+    pointer-events: none !important;
+}
+
+.mobile-header-time-current {
+    color: #9bd2a5;
+    font-size: 0.62rem;
+    font-weight: 700;
+}
+
+.mobile-header-time-solar {
+    font-size: 0.52rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

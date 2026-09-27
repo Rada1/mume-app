@@ -79,7 +79,8 @@ describe('PlayersPanel', () => {
         // Group content is visible
         expect(screen.getByText('Ellessar')).toBeDefined();
         // Nearby content is visible
-        expect(screen.getByText('Glorfindel - Rivendell Valley')).toBeDefined();
+        expect(screen.getByText('Glorfindel')).toBeDefined();
+        expect(screen.getByText(/Rivendell Valley/)).toBeDefined();
         // Online content is visible
         expect(screen.getByText('Elrond [High Elf]')).toBeDefined();
     });

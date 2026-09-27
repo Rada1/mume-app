@@ -5,6 +5,7 @@ import { ExecuteCommand } from '../../types';
 import './DpadCluster.css';
 import { TrackpadSwipeWheel } from './TrackpadSwipeWheel';
 import { getButtonCommand } from '../../utils/buttonUtils';
+import { MovementPadCommandWheel } from './MovementPadCommandWheel';
 
 interface DpadClusterProps {
     heldButton?: any;
@@ -25,6 +26,18 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
         handleJoystickEnd,
         currentDir
     } = joystick || {};
+    const [isLongSwipeWheelActive, setIsLongSwipeWheelActive] = React.useState(false);
+
+    React.useEffect(() => {
+        if (!joystick?.joystickActive) {
+            setIsLongSwipeWheelActive(false);
+            return;
+        }
+        if (!currentDir || isLongSwipeWheelActive) return;
+
+        const timer = window.setTimeout(() => setIsLongSwipeWheelActive(true), 500);
+        return () => window.clearTimeout(timer);
+    }, [joystick?.joystickActive, currentDir, isLongSwipeWheelActive]);
 
     // While a directional swipe gesture is active, let the atmosphere overlays step aside
     // (see environment.css) so the swipe wheel and map stay responsive in immersion mode.
@@ -66,11 +79,15 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
             className="dpad-container-with-sidebar"
             style={{ pointerEvents: 'none' }}
         >
-            <TrackpadSwipeWheel 
-                active={joystick.joystickActive && !joystick.isSwipeWheelHidden} 
-                currentDir={currentDir || null} 
-                isModifierActive={isTrackpadModifierActive}
-            />
+            {joystick.isTargetModifierActive || isLongSwipeWheelActive ? (
+                <MovementPadCommandWheel currentDir={currentDir || null} />
+            ) : (
+                <TrackpadSwipeWheel 
+                    active={joystick.joystickActive && !joystick.isSwipeWheelHidden} 
+                    currentDir={currentDir || null} 
+                    isModifierActive={isTrackpadModifierActive}
+                />
+            )}
         </div>
     );
 };

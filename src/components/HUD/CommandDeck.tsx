@@ -8,77 +8,53 @@
  */
 
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-    Swords, MessageSquare, Wrench, Home,
-    Sword, HeartPulse, Footprints, Target, ScrollText,
-    Eye, Tent, Droplets, BedDouble
-} from 'lucide-react';
+import { Target } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
+import { useUI } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
 import { doesCommandMatchDeckItem } from '../../utils/commandFeedbackUtils';
+import { getRememberedCommandTarget, isCompatibleGlobalTarget, rememberCommandTarget } from '../../utils/commandTargetMemory';
 import { useDeckTargeting, DeckItem } from './useDeckTargeting';
 import { TacticalTargetBar } from '../Controls/GameButton/TacticalTargetBar';
 import { RightPanelTargetBar } from './RightPanelTargetBar';
+import { DeckCategoryWheel } from './DeckCategoryWheel';
+import { DECK_ACTIONS, DECK_TABS, DECK_LABEL_ICONS, DEFAULT_DECK_ICON, type TabKey } from './commandDeckData';
+import type { DrawerLine } from '../../types';
+import type { CommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 import './CommandDeck.css';
 
-type TabKey = 'combat' | 'social' | 'utility' | 'room';
-
-const STATIC: Record<TabKey, { label: string; cmd: string }[]> = {
-    combat: [
-        { label: 'Kill', cmd: 'kill ' },
-        { label: 'Flee', cmd: 'flee' },
-        { label: 'Consider', cmd: 'consider ' },
-        { label: 'Assist', cmd: 'assist ' }
-    ],
-    social: [
-        { label: 'Say', cmd: 'say ' }, { label: 'Narrate', cmd: 'narrate ' },
-        { label: 'Gtell', cmd: 'gtell ' }, { label: 'Yell', cmd: 'yell ' },
-        { label: 'Tell', cmd: 'tell ' }, { label: 'Emote', cmd: 'emote ' }
-    ],
-    utility: [
-        { label: 'Score', cmd: 'score' }, { label: 'Inventory', cmd: 'inventory' },
-        { label: 'Equipment', cmd: 'equipment' }, { label: 'Time', cmd: 'time' },
-        { label: 'Weather', cmd: 'weather' }, { label: 'Group', cmd: 'group' },
-        { label: 'Who', cmd: 'who' }
-    ],
-    room: [
-        { label: 'Watch', cmd: 'watch' }, { label: 'Camp', cmd: 'camp' },
-        { label: 'Camp Rent', cmd: 'camp rent' }, { label: 'Drink Water', cmd: 'drink water' }
-    ]
-};
-
-const TABS: { key: TabKey; label: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number }> }[] = [
-    { key: 'combat', label: 'Combat', icon: Swords },
-    { key: 'social', label: 'Social', icon: MessageSquare },
-    { key: 'utility', label: 'Utility', icon: Wrench },
-    { key: 'room', label: 'Room', icon: Home }
-];
-
-const LABEL_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
-    Kill: Sword, Flee: Footprints,
-    Consider: Target, Assist: HeartPulse,
-    Watch: Eye, Camp: Tent, 'Camp Rent': BedDouble, 'Drink Water': Droplets
-};
-
 export const CommandDeck: FC = () => {
-    const { executeCommand, triggerHaptic, setTarget, characterName } = useGame() as {
-        executeCommand: (cmd: string) => void;
+    const { executeCommand, triggerHaptic, setTarget, characterName, viewport, parser, containerContents } = useGame() as {
+        executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
         triggerHaptic?: (ms: number) => void;
         setTarget: (target: string | null) => void;
         characterName?: string;
+        viewport?: { isMobile: boolean };
+        parser?: {
+            setPendingFlags: (silent: boolean, fromDrawer: boolean, command?: string) => void;
+            setLastRequestedContainerId?: (containerId: string | null) => void;
+        };
+        containerContents?: Record<string, DrawerLine[]>;
     };
     const { target } = useActiveVitals() as { target: string | null };
+    const { displayInventoryLines, displayEqLines } = useUI();
     const setInput = useInputStore(s => s.setInput);
     const requestTargetPicker = useInputStore(s => s.requestTargetPicker);
 
-    const [activeTab, setActiveTab] = useState<TabKey>(() => {
+    const [activeTab, setActiveTab] = useState<TabKey | null>(() => {
         const saved = localStorage.getItem('mud-deck-tab');
-        return (['combat', 'social', 'utility', 'room'] as string[]).includes(saved || '') ? (saved as TabKey) : 'combat';
+        const isKnownTab = (['combat', 'social', 'utility', 'room', 'personal', 'consume'] as string[]).includes(saved || '');
+        const isMobileOnlyTab = saved === 'personal' || saved === 'consume';
+        return isKnownTab && (viewport?.isMobile || !isMobileOnlyTab) ? (saved as TabKey) : 'combat';
     });
 
+    useEffect(() => {
+        if (!viewport?.isMobile && (activeTab === 'personal' || activeTab === 'consume')) setActiveTab('utility');
+    }, [activeTab, viewport?.isMobile]);
+
     const selectTab = (key: TabKey) => {
-        setActiveTab(key);
+        setActiveTab(current => viewport?.isMobile && current === key ? null : key);
         localStorage.setItem('mud-deck-tab', key);
         triggerHaptic?.(10);
     };
@@ -99,10 +75,12 @@ export const CommandDeck: FC = () => {
     }, []);
 
     const items = useMemo<DeckItem[]>(() => (
-        STATIC[activeTab].map(item => ({
+        (activeTab ? DECK_ACTIONS[activeTab] : []).map(item => ({
             label: item.label,
             cmd: item.cmd,
-            needsTarget: item.cmd.endsWith(' ')
+            needsTarget: item.needsTarget ?? item.cmd.endsWith(' '),
+            targetKind: item.targetKind,
+            holdOpensMenuOnly: item.holdOpensMenuOnly,
         }))
     ), [activeTab]);
 
@@ -127,7 +105,16 @@ export const CommandDeck: FC = () => {
     }, [flashPressed]);
 
     const fire = (item: DeckItem) => {
-        if (item.needsTarget && !target) {
+        if (item.targetKind) {
+            flashPressed(item.label);
+            triggerHaptic?.(10);
+            setInput(item.cmd);
+            document.getElementById('mud-input')?.focus();
+            return;
+        }
+        const effectiveTarget = getRememberedCommandTarget(item.cmd)
+            || (isCompatibleGlobalTarget(item.cmd, target) ? target : null);
+        if (item.needsTarget && !effectiveTarget) {
             // No target selected — make it obvious one is required rather than
             // silently priming the input (which read as "nothing happened").
             triggerHaptic?.(30);
@@ -145,16 +132,30 @@ export const CommandDeck: FC = () => {
         }
         flashPressed(item.label);
         triggerHaptic?.(15);
-        executeCommand(item.needsTarget && target ? `${item.cmd}${target}`.trim() : item.cmd.trim());
+        if (item.needsTarget && effectiveTarget) {
+            rememberCommandTarget(item.cmd, effectiveTarget);
+        }
+        executeCommand(item.needsTarget && effectiveTarget ? `${item.cmd}${effectiveTarget}`.trim() : item.cmd.trim());
     };
+
+    const requestContainerContents = useCallback((source: CommandTargetSuggestion) => {
+        if (!parser || !source.containerId || !source.containerCommand) return;
+        parser.setPendingFlags(true, true, source.containerCommand);
+        parser.setLastRequestedContainerId?.(source.containerId);
+        executeCommand(source.containerCommand, true, true, false, true);
+    }, [executeCommand, parser]);
 
     const deckTargeting = useDeckTargeting({
         target,
-        setTarget,
         executeCommand,
         triggerHaptic,
         flashPressed,
-        fire
+        fire,
+        inventoryLines: displayInventoryLines,
+        wornLines: displayEqLines,
+        containerContents,
+        requestContainerContents,
+        characterName,
     });
 
     // The visible number badges are command-line shortcuts, not instant-cast
@@ -210,10 +211,7 @@ export const CommandDeck: FC = () => {
     }, [items, triggerHaptic, setInput]);
 
     const iconFor = (item: DeckItem): React.ComponentType<{ size?: number; strokeWidth?: number }> => {
-        if (activeTab === 'social') return MessageSquare;
-        if (activeTab === 'utility') return LABEL_ICONS[item.label] || ScrollText;
-        if (activeTab === 'room') return LABEL_ICONS[item.label] || Home;
-        return LABEL_ICONS[item.label] || Swords;
+        return DECK_LABEL_ICONS[item.label] || DEFAULT_DECK_ICON;
     };
 
     return (
@@ -224,31 +222,58 @@ export const CommandDeck: FC = () => {
                     <span>Pick a target for <strong>{needsTargetHint}</strong> — tap a name in the room or log</span>
                 </div>
             )}
+            {viewport?.isMobile && (
+                <div className="mobile-global-target-control">
+                    <RightPanelTargetBar target={target} setTarget={setTarget} triggerHaptic={triggerHaptic} />
+                </div>
+            )}
             <div className="deck-tab-rail" role="tablist" aria-label="Action loadouts">
-                {TABS.map(tab => {
+                {DECK_TABS.filter(tab => viewport?.isMobile || (tab.key !== 'personal' && tab.key !== 'consume')).map(tab => {
                     const Icon = tab.icon;
+                    const categoryActions = DECK_ACTIONS[tab.key].map(item => ({
+                        ...item,
+                        needsTarget: item.needsTarget ?? item.cmd.endsWith(' '),
+                    }));
                     return (
-                        <button
-                            key={tab.key}
-                            type="button"
-                            role="tab"
-                            aria-selected={activeTab === tab.key}
-                            className={`deck-tab${activeTab === tab.key ? ' is-active' : ''}`}
-                            onClick={() => selectTab(tab.key)}
-                        >
-                            <Icon size={13} strokeWidth={2.2} />
-                            <span>{tab.label}</span>
-                        </button>
+                        viewport?.isMobile
+                            ? <DeckCategoryWheel
+                                key={tab.key}
+                                label={tab.label}
+                                icon={Icon}
+                                active={activeTab === tab.key}
+                                actions={categoryActions}
+                                onTap={() => selectTab(tab.key)}
+                                onChoose={fire}
+                                onHoldAction={deckTargeting.openTargetMenuFor}
+                                onSelectTarget={deckTargeting.handleSelectTarget}
+                                onReleaseTargetMenu={deckTargeting.releaseHeldTargetMenu}
+                                onCancelTargetMenu={deckTargeting.closeTargetMenu}
+                            />
+                            : <button
+                                key={tab.key}
+                                type="button"
+                                role="tab"
+                                aria-selected={activeTab === tab.key}
+                                className={`deck-tab${activeTab === tab.key ? ' is-active' : ''}`}
+                                onClick={() => selectTab(tab.key)}
+                            >
+                                <Icon size={13} strokeWidth={2.2} />
+                                <span>{tab.label}</span>
+                            </button>
                     );
                 })}
             </div>
 
-            <div className="deck-grid-wrap">
+            {activeTab && !viewport?.isMobile && <div className="deck-grid-wrap">
                 <div className="deck-grid" aria-label={`${activeTab} actions`}>
                     {items.map((item, i) => {
                         const Icon = iconFor(item);
                         const hotkey = i < 9 ? String(i + 1) : i === 9 ? '0' : null;
-                        const targetReady = item.needsTarget && !!target;
+                        const itemTarget = item.needsTarget && !item.targetKind
+                            ? getRememberedCommandTarget(item.cmd)
+                                || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
+                            : null;
+                        const targetReady = !!itemTarget;
                         return (
                             <button
                                 key={item.label}
@@ -258,7 +283,8 @@ export const CommandDeck: FC = () => {
                                 onPointerUp={(e) => deckTargeting.handlePointerUp(item, e)}
                                 onPointerCancel={deckTargeting.handlePointerCancel}
                                 onClick={(e) => deckTargeting.handleClick(item, e)}
-                                title={item.needsTarget && target ? `${item.cmd}${target}` : item.cmd.trim()}
+                                aria-label={item.label}
+                                title={itemTarget ? `${item.cmd}${itemTarget}` : item.cmd.trim()}
                             >
                                 {hotkey && <span className="deck-slot-key">{hotkey}</span>}
                                 <Icon size={17} strokeWidth={2} />
@@ -267,18 +293,43 @@ export const CommandDeck: FC = () => {
                         );
                     })}
                 </div>
-            </div>
+            </div>}
 
-            <RightPanelTargetBar target={target} setTarget={setTarget} triggerHaptic={triggerHaptic} />
+            {!viewport?.isMobile && <RightPanelTargetBar target={target} setTarget={setTarget} triggerHaptic={triggerHaptic} />}
 
             <TacticalTargetBar
                 isOpen={deckTargeting.isTargetMenuOpen}
-                currentTarget={target}
+                currentTarget={deckTargeting.activeItem?.targetKind
+                    ? null
+                    : getRememberedCommandTarget(deckTargeting.activeItem?.cmd || '')
+                        || (isCompatibleGlobalTarget(deckTargeting.activeItem?.cmd || '', target) ? target : null)}
                 selectedTarget={deckTargeting.pendingTarget}
                 onSelectTarget={deckTargeting.handleSelectTarget}
+                columns={deckTargeting.isStagedTargetMenu ? [
+                    {
+                        title: deckTargeting.activeItem?.targetKind === 'room-object-container' ? 'Item' : 'Object',
+                        suggestions: deckTargeting.firstArgumentSuggestions,
+                        selectedTarget: deckTargeting.selectedFirstArgument,
+                        selectedKey: deckTargeting.selectedFirstArgumentKey,
+                        emptyText: deckTargeting.firstArgumentEmptyText,
+                    },
+                    {
+                        title: deckTargeting.activeItem?.targetKind === 'inventory-recipient' ? 'Recipient' : deckTargeting.activeItem?.targetKind === 'inventory-container' ? 'Container' : 'Get From',
+                        suggestions: deckTargeting.secondArgumentSuggestions,
+                        selectedTarget: deckTargeting.selectedSecondArgument,
+                        selectedKey: deckTargeting.selectedSecondArgumentKey,
+                    },
+                ] : undefined}
+                onSelectColumnTarget={(value, columnIndex, suggestion) => deckTargeting.handleSelectTarget(value, false, columnIndex, suggestion)}
                 roomOccupants={deckTargeting.roomOccupants}
                 roomItems={deckTargeting.roomItems}
                 characterName={characterName}
+                suggestions={deckTargeting.targetSuggestions}
+                title={deckTargeting.targetMenuTitle}
+                commandLabel={deckTargeting.activeItem?.cmd.trim() || deckTargeting.activeItem?.label}
+                isInteractive={!deckTargeting.isTargetMenuHeld}
+                isBlurred={deckTargeting.isTargetMenuHeld}
+                onDismiss={deckTargeting.closeTargetMenu}
             />
         </div>
     );

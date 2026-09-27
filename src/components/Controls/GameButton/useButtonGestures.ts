@@ -6,6 +6,8 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { CustomButton, PopoverState, SwipeDirection, ExecuteCommand } from '../../../types';
 
 import { getButtonCommand } from '../../../utils/buttonUtils';
+import { rememberCommandTarget } from '../../../utils/commandTargetMemory';
+import { canCommandAcceptTarget } from '../../../utils/commandTargetUtils';
 import type { UseTacticalTargetingReturn } from './useTacticalTargeting';
 
 export interface UseButtonGesturesProps {
@@ -110,6 +112,7 @@ export const useButtonGestures = ({
 
     // --- Auto-Reset on External Fire ---
     React.useEffect(() => {
+        if (!heldButton && tacticalTargeting?.isTargetColumnOpen) return;
         if (!heldButton || (heldButton && (heldButton.id !== button.id || heldButton.didFire))) {
             setActiveDir(null);
             lastActiveDirRef.current = null;
@@ -206,6 +209,17 @@ export const useButtonGestures = ({
             return;
         }
 
+        if (tacticalTargeting?.isTargetColumnOpen
+            && document.elementFromPoint?.(e.clientX, e.clientY)?.closest('.tactical-target-bar')) {
+            // Let the target popover use this part of the held gesture. A later
+            // swipe starts from where the finger leaves the target list.
+            el._startX = e.clientX;
+            el._startY = e.clientY;
+            el._maxDist = 0;
+            setHeldButton(prev => prev?.id === button.id ? { ...prev, dx: 0, dy: 0 } : prev);
+            return;
+        }
+
         const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
         const dist = Math.sqrt(dx * dx + dy * dy);
         el._maxDist = Math.max(el._maxDist || 0, dist);
@@ -246,7 +260,9 @@ export const useButtonGestures = ({
         const distVal = Math.sqrt(dxVal * dxVal + dyVal * dyVal);
 
         const isLong = joystick.isTargetModifierActive;
-        const effectiveTarget = tacticalTargeting?.pendingTargetRef?.current || tacticalTargeting?.pendingTarget || target;
+        const effectiveTarget = tacticalTargeting
+            ? tacticalTargeting.getEffectiveTarget(currentCommandRef.current || button.command)
+            : target;
         const preview = getButtonCommand(button, dxVal, dyVal, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, effectiveTarget, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
         const nextPreview = preview?.cmd || null;
         if (preview?.cmd) {
@@ -381,6 +397,21 @@ export const useButtonGestures = ({
         }
         el._primaryPointerId = null;
 
+        // A long-press keeps pointer capture on the game button, so row events
+        // from the portaled target menu arrive here instead of on the row.
+        // Resolve the row at the finger position before deciding whether to
+        // execute the held command or close an unselected menu.
+        const targetList = tacticalTargeting?.isTargetColumnOpen
+            ? document.elementFromPoint?.(e.clientX, e.clientY)?.closest('.tactical-target-bar-list') as HTMLElement | null | undefined
+            : null;
+        const targetRow = targetList?.matches('[data-scrolling="true"]')
+            ? null
+            : document.elementFromPoint?.(e.clientX, e.clientY)?.closest('.tactical-target-bar-item') as HTMLElement | null | undefined;
+        if (targetList) targetList.dataset.scrolling = 'false';
+        if (targetRow?.dataset.targetValue && tacticalTargeting) {
+            tacticalTargeting.handleSelectTarget(targetRow.dataset.targetValue, currentCommandRef.current || button.command);
+        }
+
         if (heldButton?.id === button.id && heldButton.didFire) {
             setHeldButton(null);
             lastPreviewRef.current = null;
@@ -415,6 +446,24 @@ export const useButtonGestures = ({
             return;
         }
 
+        if (tacticalTargeting?.isTargetColumnOpen) {
+            tacticalTargeting.releaseTargetMenu();
+            setHeldButton(null);
+            setCommandPreview(null);
+            lastPreviewRef.current = null;
+            document.documentElement.style.removeProperty('--preview-glow-color');
+            setActiveDir(null);
+            lastActiveDirRef.current = null;
+            setIsCancelling(false);
+            lastCancellingRef.current = false;
+            updateRay(0, 0, 0);
+            el._startX = null;
+            el._startY = null;
+            el._startTime = null;
+            el._maxDist = 0;
+            return;
+        }
+
         const currentX = e.clientX;
         const currentY = e.clientY;
         const startX = el._startX || currentX;
@@ -430,7 +479,27 @@ export const useButtonGestures = ({
         const finalDy = isReturnToCenter ? 0 : dy;
 
         tacticalTargeting?.cancelHoldTimer();
-        const effectiveTarget = tacticalTargeting?.pendingTargetRef?.current || tacticalTargeting?.pendingTarget || target;
+        const currentTargetCommand = currentCommandRef.current || button.command;
+        const effectiveTarget = tacticalTargeting
+            ? tacticalTargeting.getEffectiveTarget(currentTargetCommand)
+            : target;
+        if (tacticalTargeting?.isTargetColumnOpen && !effectiveTarget) {
+            setHeldButton(null);
+            setCommandPreview(null);
+            lastPreviewRef.current = null;
+            document.documentElement.style.removeProperty('--preview-glow-color');
+            setActiveDir(null);
+            lastActiveDirRef.current = null;
+            setIsCancelling(false);
+            lastCancellingRef.current = false;
+            updateRay(0, 0, 0);
+            el._startX = null;
+            el._startY = null;
+            el._startTime = null;
+            el._maxDist = 0;
+            tacticalTargeting.resetTargeting();
+            return;
+        }
         const previewCmd = getButtonCommand(button, finalDx, finalDy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, effectiveTarget, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
 
         setHeldButton(null);
@@ -472,6 +541,9 @@ export const useButtonGestures = ({
         }
 
         if (previewCmd && previewCmd.cmd && previewCmd.cmd.trim() !== '') {
+            if (effectiveTarget && canCommandAcceptTarget(currentTargetCommand)) {
+                rememberCommandTarget(currentTargetCommand, effectiveTarget);
+            }
             if (previewCmd.actionType === 'nav') {
                 setActiveSet(previewCmd.cmd);
                 triggerHaptic(35);

@@ -915,7 +915,7 @@ export const useMapperRenderer = ({
         // Keep the map focused on geography and the local player position for
         // now; group members are still available in the group UI.
         drawDeathIndicator(rCtx);
-        drawFilterHighlights(rCtx, playerPosRef);
+        drawFilterHighlights(rCtx);
         drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);
         if (!showTerrainTiles) {
             drawDoorHighlights(rCtx, playerPosRef);

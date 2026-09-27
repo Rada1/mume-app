@@ -14,6 +14,7 @@ import { calculateRegen, formatRegen } from '../../utils/regenUtils';
 import { useStatDeltas } from '../../hooks/useStatDeltas';
 import { useCharacterConditions } from '../../hooks/useCharacterConditions';
 import { useCharacterInfoRefresh } from '../../hooks/useCharacterInfoRefresh';
+import { useSwipeUpToMinimize } from '../../hooks/useSwipeUpToMinimize';
 import { getMovementModeActions } from '../../hooks/useMovementModeActions';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useCharacterPanelStore } from '../../stores/useCharacterPanelStore';
@@ -35,10 +36,10 @@ import './ThisIsYouTerminal.css';
 export const ThisIsYouConsole: FC = () => {
     const isMinimized = useCharacterPanelStore(s => s.isMinimized);
     const toggleMinimized = useCharacterPanelStore(s => s.toggleMinimized);
-    const setIsMinimized = useCharacterPanelStore(s => s.setIsMinimized);
     const {
         characterInfo,
         characterName,
+        viewport,
         gameState,
         executeCommand,
         triggerHaptic,
@@ -81,7 +82,6 @@ export const ThisIsYouConsole: FC = () => {
     // Command dispatchers for state pills
     const handleStateSelect = (kind: 'pos' | 'alert' | 'mood' | 'speed', option: StateOption) => {
         if (isSpectateMode) return;
-        triggerHaptic(15);
         if (kind === 'pos') {
             setPlayerPosition(option.value as 'standing' | 'sitting' | 'resting' | 'sleeping');
             if (option.command) executeCommand(option.command);
@@ -128,41 +128,44 @@ export const ThisIsYouConsole: FC = () => {
     };
 
     const handleHeaderClick = () => {
-        if (isMinimized) {
-            triggerHaptic(10);
-            setIsMinimized(false);
-        }
+        triggerHaptic(10);
+        toggleMinimized();
     };
+    const swipeHandlers = useSwipeUpToMinimize(Boolean(viewport?.isMobile && !isMinimized), () => {
+        triggerHaptic(10);
+        toggleMinimized();
+    });
 
     // --- Render Section ---
     return (
         <section
             className={`this-is-you-console${isMinimized ? ' is-minimized' : ''}`}
             aria-label="Character Status Console"
+            {...swipeHandlers}
         >
             {/* TIER 1: Identity, Full Bio Metrics & Progression */}
             <div
                 className="this-is-you-tier-identity"
                 onClick={handleHeaderClick}
-                role={isMinimized ? 'button' : undefined}
-                tabIndex={isMinimized ? 0 : undefined}
-                onKeyDown={isMinimized ? (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                    if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
                         e.preventDefault();
                         handleHeaderClick();
                     }
-                } : undefined}
-                title={isMinimized ? 'Click to expand character panel' : undefined}
-                aria-label={isMinimized ? 'Character panel minimized. Click to expand.' : undefined}
+                }}
+                title={isMinimized ? 'Click to expand character panel' : 'Click to minimize character panel'}
+                aria-label={isMinimized ? 'Character panel minimized. Click to expand.' : 'Character panel expanded. Click to minimize.'}
             >
               <div className="this-is-you-hero-strip">
                 <span className="this-is-you-level-tag">Lv.{level}</span>
                 <strong className="this-is-you-name">{name}</strong>
                 <span className="this-is-you-subtext">{ancestry}{subclass}</span>
-                <span className="this-is-you-bio-item">Height: <strong>{formatHeight(characterInfo?.height)}</strong></span>
-                <span className="this-is-you-bio-item">Age: <strong>{characterInfo?.age || '—'}</strong></span>
+                <span className="this-is-you-bio-item this-is-you-desktop-detail">Height: <strong>{formatHeight(characterInfo?.height)}</strong></span>
+                <span className="this-is-you-bio-item this-is-you-desktop-detail">Age: <strong>{characterInfo?.age || '—'}</strong></span>
                 <span className="this-is-you-bio-item">Gold: <strong className="gold">{formatNumber(characterInfo?.gold)}</strong><StatDelta delta={deltas.gold} /></span>
-                <span className="this-is-you-bio-item">Cit: <strong className="cyan" title="Citizenships count">{formatNumber(characterInfo?.citizenships)}</strong></span>
+                <span className="this-is-you-bio-item this-is-you-desktop-detail">Cit: <strong className="cyan" title="Citizenships count">{formatNumber(characterInfo?.citizenships)}</strong></span>
               </div>
 
               <div className="this-is-you-identity-actions">
@@ -208,24 +211,28 @@ export const ThisIsYouConsole: FC = () => {
                   category="Position"
                   value={currentPosition}
                   options={POSITION_OPTIONS}
+                  onInteract={() => triggerHaptic(15)}
                   onSelect={opt => handleStateSelect('pos', opt)}
                 />
                 <ThisIsYouStatePill
                   category="Alertness"
                   value={currentAlertness}
                   options={ALERTNESS_OPTIONS}
+                  onInteract={() => triggerHaptic(15)}
                   onSelect={opt => handleStateSelect('alert', opt)}
                 />
                 <ThisIsYouStatePill
                   category="Mood"
                   value={currentMood}
                   options={MOOD_OPTIONS}
+                  onInteract={() => triggerHaptic(15)}
                   onSelect={opt => handleStateSelect('mood', opt)}
                 />
                 <ThisIsYouStatePill
                   category="Cast Speed"
                   value={currentSpellSpeed}
                   options={SPELL_SPEED_OPTIONS}
+                  onInteract={() => triggerHaptic(15)}
                   onSelect={opt => handleStateSelect('speed', opt)}
                 />
               </div>
@@ -240,7 +247,7 @@ export const ThisIsYouConsole: FC = () => {
                   aria-pressed={mode.active}
                   title={`Send: ${mode.command}`}
                   disabled={isSpectateMode}
-                  onClick={() => { triggerHaptic(10); executeCommand(mode.command); }}
+                  onClick={() => { triggerHaptic(15); executeCommand(mode.command); }}
                 >
                   <span>{mode.label}</span><strong>{mode.active ? 'On' : 'Off'}</strong>
                 </button>

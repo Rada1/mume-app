@@ -141,6 +141,8 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             const positionPopover = () => {
                 const winH = window.innerHeight, winW = window.innerWidth;
                 el.style.maxHeight = '';
+                el.style.top = '';
+                el.style.bottom = '';
                 // Measure with offset* (layout box) rather than getBoundingClientRect,
                 // whose width/height are distorted by the scale() bounce-in animation.
                 const compactRoot = el.querySelector('.inline-action-compact') as HTMLElement | null;
@@ -470,7 +472,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         <div className={`popover-menu${isParleyType ? ' parley-dropdown' : ''}${isAnchoredDropdown ? ' inline-dropdown' : ''}${isClosing ? ' closing' : ''}${hasCapturedDetails ? ' popover-captured-wide' : ''}`} ref={popoverRef} style={{
             position: 'fixed',
             left: popoverState.x,
-            top: popoverState.y,
+            top: popoverState.sourceRect ? undefined : popoverState.y,
             zIndex: 70000,
             '--accent': themeColor || 'var(--set-accent, var(--accent))'
         } as any}>
@@ -499,7 +501,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     themeColor={themeColor}
                 />
             )}
-            {(popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target' || popoverState.type === 'give-target-select' || popoverState.type === 'menu' || !popoverState.type) && (
+            {(popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target' || popoverState.type === 'give-target-select' || popoverState.type === 'account-character' || popoverState.type === 'account-stat-edit' || popoverState.type === 'menu' || !popoverState.type) && (
                 <StandardMenuPopover
                     popoverState={popoverState}
                     buttons={buttons}

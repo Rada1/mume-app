@@ -7,13 +7,12 @@ import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useSessionStore } from '../../stores/useSessionStore';
 import { useArchiveStore } from '../../stores/useArchiveStore';
-import { useHelpStore } from '../../stores/useHelpStore';
-import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
-import { useGearPanelStore } from '../../stores/useGearPanelStore';
+import { useMobileHeaderTabs } from '../../hooks/useMobileHeaderTabs';
 import { useUIStore } from '../../stores/useUIStore';
 import { canAccessShaper } from '../../shaper/access/shaperAccess';
 import { getTraitsForName } from '../../utils/inlineActionModel';
 import { getOnlinePlayerCount } from '../../utils/playerCountUtils';
+import { MobileHeaderTime } from './MobileHeaderTime';
 
 interface HeaderProps {
     isLandscape?: boolean;
@@ -61,17 +60,6 @@ const Header: React.FC<HeaderProps> = () => {
     const setArchiveView = useArchiveStore(state => state.setActiveView);
     const setArchivePanelMode = useArchiveStore(state => state.setPanelMode);
     const showDeveloperTools = useSettingsStore(state => state.showDeveloperTools ?? false);
-    const showChatWindow = useSettingsStore(state => state.showChatWindow);
-    const setShowChatWindow = useSettingsStore(state => state.setShowChatWindow);
-    const showPlayersPanel = useSettingsStore(state => state.showPlayersPanel);
-    const setShowPlayersPanel = useSettingsStore(state => state.setShowPlayersPanel);
-    const isHelpOpen = useHelpStore(state => state.isOpen);
-    const setIsHelpOpen = useHelpStore(state => state.setIsOpen);
-    const helpData = useHelpStore(state => state.helpData);
-    const isCommandPanelOpen = useCommandPanelStore(state => state.isOpen);
-    const setIsCommandPanelOpen = useCommandPanelStore(state => state.setIsOpen);
-    const isGearPanelOpen = useGearPanelStore(state => state.isOpen);
-    const setIsGearPanelOpen = useGearPanelStore(state => state.setIsOpen);
 
     const [isEnteringTarget, setIsEnteringTarget] = useState(false);
     const [manualTargetInput, setManualTargetInput] = useState('');
@@ -235,6 +223,8 @@ const Header: React.FC<HeaderProps> = () => {
     const [isMenuOpen, setIsMenuOpen] = [ui.isMenuOpen, (val: boolean) => setUI(prev => ({ ...prev, isMenuOpen: val })) as any];
     const [isSetMenuOpen, setIsSetMenuOpen] = [ui.isSetMenuOpen, (val: boolean) => setUI(prev => ({ ...prev, isSetMenuOpen: val })) as any];
     const [menuView, setMenuView] = [ui.menuView, (val: 'main' | 'availableSets') => setUI(prev => ({ ...prev, menuView: val })) as any];
+    const { isCommandPanelOpen, isGearPanelOpen, showPlayersPanel, showChatWindow,
+        isHelpOpen, helpData, toggleHeaderTab } = useMobileHeaderTabs(viewport.isMobile, isMenuOpen, setIsMenuOpen);
 
     const menuRef = useRef<HTMLDivElement>(null);
     const setMenuRef = useRef<HTMLDivElement>(null);
@@ -250,21 +240,14 @@ const Header: React.FC<HeaderProps> = () => {
                 event.preventDefault();
                 event.stopPropagation();
                 
-                setUI((prev: any) => {
-                    const nextOpen = !prev.isMenuOpen;
-                    return {
-                        ...prev,
-                        isMenuOpen: nextOpen,
-                        menuView: nextOpen ? 'main' : prev.menuView
-                    };
-                });
+                if (toggleHeaderTab('menu')) setMenuView('main');
                 triggerHaptic(10);
             }
         };
 
         window.addEventListener('keydown', handleKeyDown, { capture: true });
         return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
-    }, [setUI, triggerHaptic]);
+    }, [toggleHeaderTab, setMenuView, triggerHaptic]);
 
     const handleExitGame = () => {
         setIsMenuOpen(false);
@@ -346,8 +329,7 @@ const Header: React.FC<HeaderProps> = () => {
 
     return (
         <header className={`header ${viewport.isMobile ? 'mobile-header' : ''}`}>
-            {/* Flexible spacer */}
-            <div style={{ flex: 1 }} />
+            {viewport.isMobile && gameState === 'playing' ? <MobileHeaderTime /> : <div style={{ flex: 1 }} />}
 
             <div className="header-right-cluster">
             {/* Theater Mode Banner */}
@@ -497,7 +479,7 @@ const Header: React.FC<HeaderProps> = () => {
                         <button
                             className={`menu-toggle-btn${isCommandPanelOpen ? ' active' : ''}`}
                             onClick={() => {
-                                setIsCommandPanelOpen(!isCommandPanelOpen);
+                                toggleHeaderTab('commands');
                                 triggerHaptic?.(10);
                             }}
                             title="Toggle Commands Panel"
@@ -511,7 +493,7 @@ const Header: React.FC<HeaderProps> = () => {
                         <button
                             className={`menu-toggle-btn${isGearPanelOpen ? ' active' : ''}`}
                             onClick={() => {
-                                setIsGearPanelOpen(!isGearPanelOpen);
+                                toggleHeaderTab('gear');
                                 triggerHaptic?.(10);
                             }}
                             title="Toggle Equipment and Inventory"
@@ -525,7 +507,7 @@ const Header: React.FC<HeaderProps> = () => {
                         <button
                             className={`menu-toggle-btn${showPlayersPanel ? ' active' : ''}`}
                             onClick={() => {
-                                setShowPlayersPanel(!showPlayersPanel);
+                                toggleHeaderTab('players');
                                 triggerHaptic?.(10);
                             }}
                             title={`Toggle Players Panel${onlinePlayerCount > 0 ? ` (${onlinePlayerCount} online)` : ''}`}
@@ -552,7 +534,7 @@ const Header: React.FC<HeaderProps> = () => {
                         <button
                             className={`menu-toggle-btn${showChatWindow ? ' active' : ''}`}
                             onClick={() => {
-                                setShowChatWindow(!showChatWindow);
+                                toggleHeaderTab('chat');
                                 triggerHaptic?.(10);
                             }}
                             title="Toggle Chat Panel"
@@ -567,7 +549,7 @@ const Header: React.FC<HeaderProps> = () => {
                                 if (!isHelpOpen && !helpData) {
                                     executeCommand('help', false, false, false, true);
                                 }
-                                setIsHelpOpen(!isHelpOpen);
+                                toggleHeaderTab('help');
                                 triggerHaptic?.(10);
                             }}
                             title="Toggle Help Window"
@@ -626,12 +608,7 @@ const Header: React.FC<HeaderProps> = () => {
                     <button
                         className={`menu-toggle-btn ${isMenuOpen ? 'active' : ''}`}
                         onClick={() => {
-                            const nextOpen = !ui.isMenuOpen;
-                            setUI(prev => ({ 
-                                ...prev, 
-                                isMenuOpen: nextOpen,
-                                menuView: nextOpen ? 'main' : prev.menuView
-                            }));
+                            if (toggleHeaderTab('menu')) setMenuView('main');
                         }}
                         title="More Actions"
                         style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}

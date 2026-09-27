@@ -3,6 +3,7 @@ import { InteractionDeps } from '../useInteractionHandlers';
 import { useLogPointerDown } from './useLogPointerDown';
 import { useLogPointerUp } from './useLogPointerUp';
 import { audioManager } from '../../services/audio/AudioManager';
+import { useAccountTargetStore } from '../../stores/useAccountTargetStore';
 
 export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>, heldBtnFiredRef?: React.MutableRefObject<boolean>) => {
     const {
@@ -44,6 +45,11 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
     const handleGlobalUp = useCallback((e: PointerEvent) => {
         setHeldButton((prev: any) => (prev?.id?.startsWith('log-inline-')) ? null : prev);
         internalUp(e, activeTargetElRef.current, activePressedRectRef.current, isShopItemRef.current, cleanupDrag);
+        // Close the account target bar when releasing a long-press
+        if (longPressJustFiredRef?.current) {
+            useAccountTargetStore.getState().closeMenu();
+            longPressJustFiredRef.current = false;
+        }
     }, [internalUp, cleanupDrag, setHeldButton]);
 
     const handleLogPointerDown = useCallback((e: React.PointerEvent) => {

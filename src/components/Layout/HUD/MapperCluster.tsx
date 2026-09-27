@@ -19,10 +19,7 @@ import './MobileCommandDeck.css';
 
 type CreationOption = { id: string; label: string };
 const EMPTY_CREATION_OPTIONS: CreationOption[] = [];
-const MOBILE_GUTTER_HEIGHT_KEY = 'mume.mobileGutterHeightPx';
-const MIN_MOBILE_GUTTER_HEIGHT = 240;
-const MAX_MOBILE_GUTTER_RATIO = 0.58;
-
+const MOBILE_MAP_PANEL_HEIGHT_KEY = 'mume.mobileMapPanelHeightPx';
 const capitalize = (str: string): string => {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -62,9 +59,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         handleTabClick, toggleMap
     } = useUI() as UIContextType;
     const isExpanded = ui.mapExpanded;
-    const { isKeyboardOpen } = viewport;
-    const gutterResizeRef = useRef<{ pointerId: number } | null>(null);
-    const [isGutterResizing, setIsGutterResizing] = useState(false);
+    const mapPanelRef = useRef<HTMLDivElement>(null);
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const isDarkMode = useSettingsStore(s => s.theme) === 'dark';
     const { viewZ, currentRoomId, rooms, activeMapFilter, mapSearchQuery, setActiveMapFilter, setMapSearchQuery } = useMapper();
@@ -73,7 +68,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     const setLoginPassword = useSettingsStore(s => s.setLoginPassword);
     const hideMapHeaderFooter = useSettingsStore(s => s.hideMapHeaderFooter);
 
-    // Mobile DOCKED (Gutter) Mode
+    // Mobile portrait map panel; CSS places it in normal flow below the log.
     const isReplaying = (useGame() as GameContextType).sessionMode === 'replay';
 
     useEffect(() => {
@@ -82,69 +77,17 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     }, [gameState, setUI, ui.drawer, viewport.isLandscape, viewport.isMobile]);
 
     useEffect(() => {
+        if (!viewport.isMobile || viewport.isLandscape) return;
         const app = document.querySelector<HTMLElement>('.app-container');
         if (!app) return;
-        const isResizableGutterOpen = viewport.isMobile && !viewport.isLandscape && !viewport.isKeyboardOpen && gameState !== 'account' && (ui.mapExpanded || ui.drawer !== 'none');
-        if (!isResizableGutterOpen) {
-            app.style.removeProperty('--mobile-gutter-height');
+        if (!ui.mapExpanded) {
+            app.style.removeProperty('--mobile-map-panel-height');
             return;
         }
-
-        const applySavedHeight = () => {
-            const saved = Number(window.localStorage.getItem(MOBILE_GUTTER_HEIGHT_KEY));
-            if (!Number.isFinite(saved) || saved <= 0) return;
-            const maxHeight = Math.round(window.innerHeight * MAX_MOBILE_GUTTER_RATIO);
-            const nextHeight = Math.max(MIN_MOBILE_GUTTER_HEIGHT, Math.min(maxHeight, saved));
-            app.style.setProperty('--mobile-gutter-height', `${nextHeight}px`);
-        };
-
-        applySavedHeight();
-        window.addEventListener('resize', applySavedHeight);
-        return () => window.removeEventListener('resize', applySavedHeight);
-    }, [gameState, ui.drawer, ui.mapExpanded, viewport.isKeyboardOpen, viewport.isLandscape, viewport.isMobile]);
-
-    const setMobileGutterHeight = React.useCallback((clientY: number) => {
-        const app = document.querySelector<HTMLElement>('.app-container');
-        if (!app) return;
-        const reservedRaw = getComputedStyle(app).getPropertyValue('--mobile-bottom-reserved-space').trim();
-        const reserved = Number.parseFloat(reservedRaw) || 0;
-        const maxHeight = Math.round(window.innerHeight * MAX_MOBILE_GUTTER_RATIO);
-        const desiredHeight = window.innerHeight - clientY - reserved;
-        const nextHeight = Math.max(MIN_MOBILE_GUTTER_HEIGHT, Math.min(maxHeight, Math.round(desiredHeight)));
-        app.style.setProperty('--mobile-gutter-height', `${nextHeight}px`);
-        window.localStorage.setItem(MOBILE_GUTTER_HEIGHT_KEY, String(nextHeight));
-    }, []);
-
-    const handleGutterResizeStart = React.useCallback((event: React.PointerEvent<HTMLDivElement>) => {
-        if (!viewport.isMobile || viewport.isLandscape || isKeyboardOpen || gameState === 'account') return;
-        event.preventDefault();
-        event.stopPropagation();
-        gutterResizeRef.current = { pointerId: event.pointerId };
-        setIsGutterResizing(true);
-        event.currentTarget.setPointerCapture(event.pointerId);
-        setMobileGutterHeight(event.clientY);
-        triggerHaptic?.(10);
-    }, [gameState, isKeyboardOpen, setMobileGutterHeight, triggerHaptic, viewport.isLandscape, viewport.isMobile]);
-
-    const handleGutterResizeMove = React.useCallback((event: React.PointerEvent<HTMLDivElement>) => {
-        if (!gutterResizeRef.current || gutterResizeRef.current.pointerId !== event.pointerId) return;
-        event.preventDefault();
-        event.stopPropagation();
-        setMobileGutterHeight(event.clientY);
-    }, [setMobileGutterHeight]);
-
-    const handleGutterResizeEnd = React.useCallback((event: React.PointerEvent<HTMLDivElement>) => {
-        if (!gutterResizeRef.current || gutterResizeRef.current.pointerId !== event.pointerId) return;
-        event.preventDefault();
-        event.stopPropagation();
-        gutterResizeRef.current = null;
-        setIsGutterResizing(false);
-        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-            event.currentTarget.releasePointerCapture(event.pointerId);
-        }
-        triggerHaptic?.(6);
-    }, [triggerHaptic]);
-
+        const savedHeight = Number(window.localStorage.getItem(MOBILE_MAP_PANEL_HEIGHT_KEY));
+        if (!Number.isFinite(savedHeight) || savedHeight <= 0) return;
+        app.style.setProperty('--mobile-map-panel-height', `${savedHeight}px`);
+    }, [ui.mapExpanded, viewport.isLandscape, viewport.isMobile]);
 
     // --- Sticky options for smooth creation-screen transitions ---
     // Holds the last non-empty set of options so we never flash to an empty state
@@ -318,748 +261,38 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     }, [setAccountState, triggerHaptic]);
 
     // On mobile portrait, we show the gutter. On desktop/landscape, Mapper is in DrawerManager
-    if (!isMobile || isLandscape || (gameState === 'disconnected' && !isReplaying)) {
+    if (!isMobile || isLandscape || (gameState === 'disconnected' && !isReplaying) || (gameState === 'account' && !isReplaying)) {
         return null;
-    }
-
-    // Account screen: full-height gutter with account drawer, no map or tabs
-    if (gameState === 'account' && !isReplaying) {
-        const isLoginStage = accountState.stage === 'login';
-        const isMenuStage = accountState.stage === 'account-menu';
-        const isCreationStage = ['character-creation', 'stat-editing', 'account-confirmation'].includes(accountState.stage);
-
-        const isPasswordPrompt = isLoginStage && (
-            accountState.currentPrompt?.toLowerCase().includes('password') ||
-            accountState.currentPrompt?.toLowerCase().includes('verify')
-        );
-        const loginHandleSend = (e?: React.FormEvent) => {
-            const inputVal = useInputStore.getState().input;
-            if (isLoginStage && rememberLogin && inputVal.trim()) {
-                if (isPasswordPrompt) setLoginPassword(inputVal.trim());
-                else setLoginName(inputVal.trim());
-            }
-            handleSend(e);
-        };
-
-
-        return (
-            <div className="mobile-bottom-gutter account-gutter">
-                <div
-                    className="account-gutter-content"
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        flex: 1,
-                        justifyContent: 'center', // Consistently center for balance
-                        alignItems: 'center',
-                        width: '100%',
-                        padding: '0 8px',
-                        position: 'relative' // Allow absolute anchoring if needed
-                    }}
-                >
-                    {/* Character Select panel removed per user request */}
-
-                    <div className="account-gutter-inner">
-                        {(isMenuStage || isCreationStage) && <div className="account-centered-interactive-zone">
-    
-
-
-
-
-
-
-
-
-
-                        {isMenuStage && (
-                            <div className="char-select-panel">
-                                <div className="mobile-account-deck">
-                                    <div className="mobile-account-status">
-                                        <div>
-                                            <div className="account-col-label">ACCOUNT</div>
-                                            <div className="account-status-name"><UserCircle size={15} /> Signed in</div>
-                                            <div className="account-status-meta">
-                                                {accountState.characters.length ? `${accountState.characters.length} character${accountState.characters.length === 1 ? '' : 's'}` : 'Menu'}
-                                            </div>
-                                        </div>
-                                        <div className="account-status-actions">
-                                            {(selectedMenuCommand || accountState.selectedCharacter) && (
-                                                <button
-                                                    className="account-btn account-btn-sm"
-                                                    onClick={() => {
-                                                        triggerHaptic(10);
-                                                        setPlayNameInput('');
-                                                        setPasswordInput('');
-                                                        setAccountState(prev => ({
-                                                            ...prev,
-                                                            selectedMenuCommand: null,
-                                                            selectedCharacter: null,
-                                                            charSelectTab: null,
-                                                            charCapture: null
-                                                        }));
-                                                        executeCommand('menu');
-                                                    }}
-                                                >
-                                                    <ArrowLeft size={14} /> Menu
-                                                </button>
-                                            )}
-                                            <button className="account-btn account-btn-sm" onClick={() => { triggerHaptic(20); executeCommand('quit'); }} title="Quit">
-                                                <LogOut size={14} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div className="cmd-action-panel" style={{ display: 'flex', flexDirection: 'column', flex: 1, height: '100%' }}>
-                                        <div className="account-tab-rail">
-                                            {MENU_TABS.map(tab => {
-                                                const Icon = tab.icon;
-                                                const active = selectedMenuCommand === tab.cmd || (!selectedMenuCommand && tab.cmd === 'play');
-                                                return (
-                                                    <button
-                                                        key={tab.cmd}
-                                                        type="button"
-                                                        className={`account-tab${active ? ' is-active' : ''}`}
-                                                        onClick={() => selectMenuCommand(tab.cmd)}
-                                                    >
-                                                        <Icon size={12} strokeWidth={2.2} />
-                                                        <span>{tab.label}</span>
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-
-                                        <div className="account-tab-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, width: '100%' }}>
-                                            {(!selectedMenuCommand || selectedMenuCommand === 'play') ? (
-                                                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, width: '100%' }}>
-                                                    <div className="cmd-play-char-list account-char-list">
-                                                        {accountState.characters.length === 0 ? (
-                                                            <div className="char-data-loading">{accountState.isGathering ? 'Loading characters…' : 'No characters listed.'}</div>
-                                                        ) : (
-                                                            accountState.characters.map(entry => (
-                                                                <button
-                                                                    key={entry.name}
-                                                                    type="button"
-                                                                    className={`account-char-chip${playNameInput === entry.name ? ' is-active' : ''}`}
-                                                                    onClick={() => {
-                                                                        triggerHaptic(15);
-                                                                        setPlayNameInput(entry.name);
-                                                                        setAccountState(prev => ({
-                                                                            ...prev,
-                                                                            selectedCharacter: entry,
-                                                                            charSelectTab: null,
-                                                                            charInfoLines: [],
-                                                                            charPracticeLines: []
-                                                                        }));
-                                                                    }}
-                                                                >
-                                                                    <span className="account-char-name">{entry.name}</span>
-                                                                    {(entry.level || entry.race) && (
-                                                                        <span className="account-char-meta">{[entry.level, entry.race].filter(Boolean).join(' · ')}</span>
-                                                                    )}
-                                                                    {(entry.area || entry.rent) && (
-                                                                        <span className="account-char-detail">
-                                                                            {entry.area && <span className="account-char-loc"><MapPin size={9} strokeWidth={2.4} />{entry.area}</span>}
-                                                                            {entry.rent && <span className="account-char-rent"><Timer size={9} strokeWidth={2.4} />{entry.rent}</span>}
-                                                                        </span>
-                                                                    )}
-                                                                </button>
-                                                            ))
-                                                        )}
-                                                    </div>
-                                                    <div className="cmd-action-body">
-                                                        <input
-                                                            className="cmd-name-input"
-                                                            type="text"
-                                                            placeholder="Character name…"
-                                                            value={playNameInput}
-                                                            onChange={e => setPlayNameInput(e.target.value)}
-                                                            onKeyDown={e => { if (e.key === 'Enter' && playNameInput.trim()) { triggerHaptic(30); executeCommand('play ' + playNameInput.trim()); setPlayNameInput(''); } }}
-                                                            autoCapitalize="words"
-                                                            spellCheck={false}
-                                                        />
-                                                        <div className="cmd-play-action-row">
-                                                            <button
-                                                                className="char-secondary-btn"
-                                                                disabled={!selectedPlayName}
-                                                                onClick={() => requestCharacterData('info')}
-                                                                aria-label="Show character info"
-                                                                title="Info"
-                                                            >
-                                                                <Info size={16} />
-                                                                <span>Info</span>
-                                                            </button>
-                                                            <button
-                                                                className="char-play-btn"
-                                                                disabled={!selectedPlayName}
-                                                                onClick={() => { if (!selectedPlayName) return; triggerHaptic(30); executeCommand('play ' + selectedPlayName); setPlayNameInput(''); }}
-                                                            >
-                                                                Play {selectedPlayName ? capitalize(selectedPlayName) : '...'}
-                                                            </button>
-                                                            <button
-                                                                className="char-secondary-btn"
-                                                                disabled={!selectedPlayName}
-                                                                onClick={() => requestCharacterData('practice')}
-                                                                aria-label="Show character skills and spells"
-                                                                title="Skills and spells"
-                                                            >
-                                                                <BookOpen size={16} />
-                                                                <span>Skills</span>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ) : selectedMenuCommand === 'create' ? (
-                                                <div className="cmd-action-body">
-                                                    <button className="char-play-btn" onClick={() => { triggerHaptic(30); executeCommand('create'); }}>
-                                                        Create Character
-                                                    </button>
-                                                </div>
-                                            ) : selectedMenuCommand === 'password' ? (
-                                                <div className="cmd-action-body">
-                                                    <input
-                                                        className="cmd-name-input"
-                                                        type="password"
-                                                        placeholder="New password…"
-                                                        value={passwordInput}
-                                                        onChange={e => setPasswordInput(e.target.value)}
-                                                        onKeyDown={e => { if (e.key === 'Enter' && passwordInput.trim()) { triggerHaptic(30); executeCommand('password ' + passwordInput.trim()); setPasswordInput(''); } }}
-                                                        autoCapitalize="none"
-                                                        autoComplete="new-password"
-                                                        spellCheck={false}
-                                                    />
-                                                    <button
-                                                        className="char-play-btn"
-                                                        disabled={!passwordInput.trim()}
-                                                        onClick={() => { if (!passwordInput.trim()) return; triggerHaptic(30); executeCommand('password ' + passwordInput.trim()); setPasswordInput(''); }}
-                                                    >
-                                                        Change Password
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, width: '100%' }}>
-                                                    <div className="char-detail-content" style={{ flex: 1, overflowY: 'auto', padding: '8px' }}>
-                                                        {(() => {
-                                                            const lines = (accountState[`${selectedMenuCommand}Lines` as 'timeLines' | 'linkLines' | 'lagLines'] ?? []) as string[];
-                                                            return lines.length > 0 ? (
-                                                                <div className="char-data-lines">
-                                                                    {lines.map((line, i) => <AccountAnsiLine key={i} line={line} />)}
-                                                                </div>
-                                                            ) : (
-                                                                <div className="char-data-loading">Loading…</div>
-                                                            );
-                                                        })()}
-                                                    </div>
-                                                    <div className="char-detail-play" style={{ padding: '8px' }}>
-                                                        <button
-                                                            className="char-play-btn"
-                                                            onClick={() => {
-                                                                triggerHaptic(20);
-                                                                setAccountState(prev => ({
-                                                                    ...prev,
-                                                                    charCapture: { type: selectedMenuCommand as 'practice' | 'info' | 'link' | 'lag' | 'time' },
-                                                                    [`${selectedMenuCommand}Lines` as 'timeLines' | 'linkLines' | 'lagLines']: []
-                                                                }));
-                                                                executeCommand(selectedMenuCommand);
-                                                            }}
-                                                        >
-                                                            Refresh
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="mobile-account-detail-strip">
-                                    {accountState.selectedCharacter ? (
-                                    <div className="char-detail-panel">
-                                        <div className="char-detail-header">
-                                            <button
-                                                className="char-back-btn"
-                                                onClick={() => {
-                                                    triggerHaptic(10);
-                                                    setAccountState(prev => ({ ...prev, selectedCharacter: null }));
-                                                }}
-                                            >
-                                                <ArrowLeft size={18} strokeWidth={2.8} />
-                                            </button>
-                                            <span className="char-detail-name">{accountState.selectedCharacter.name}</span>
-                                        </div>
-
-                                        <div className="char-detail-tabs">
-                                            <button
-                                                className={`char-tab-btn${accountState.charSelectTab === 'info' ? ' active' : ''}`}
-                                                onClick={() => {
-                                                    triggerHaptic(10);
-                                                    const name = accountState.selectedCharacter!.name;
-                                                    setAccountState(prev => ({ ...prev, charSelectTab: 'info', charCapture: { type: 'info' }, charInfoLines: [] }));
-                                                    executeCommand('info ' + name, true);
-                                                }}
-                                            >
-                                                <Info size={16} />
-                                                <span>Info</span>
-                                            </button>
-                                            <button
-                                                className={`char-tab-btn${accountState.charSelectTab === 'practice' ? ' active' : ''}`}
-                                                onClick={() => {
-                                                    triggerHaptic(10);
-                                                    const name = accountState.selectedCharacter!.name;
-                                                    setAccountState(prev => ({ ...prev, charSelectTab: 'practice', charCapture: { type: 'practice' }, charPracticeLines: [] }));
-                                                    executeCommand('practice ' + name, true);
-                                                }}
-                                            >
-                                                <BookOpen size={16} />
-                                                <span>Skills</span>
-                                            </button>
-                                        </div>
-
-                                        <div className="char-detail-content">
-                                            {accountState.charSelectTab === 'info' ? (
-                                                <div className="char-data-lines">
-                                                    {(accountState.charInfoLines ?? []).length > 0
-                                                        ? (accountState.charInfoLines ?? []).map((line, i) => (
-                                                            <AccountAnsiLine key={i} line={line} />
-                                                        ))
-                                                        : accountState.charCapture?.type === 'info'
-                                                            ? <div className="char-data-loading">Loading…</div>
-                                                            : null
-                                                    }
-                                                </div>
-                                            ) : accountState.charSelectTab === 'practice' ? (
-                                                <div className="char-data-lines">
-                                                    {(accountState.charPracticeLines ?? []).length > 0
-                                                        ? (accountState.charPracticeLines ?? []).map((line, i) => (
-                                                            <AccountAnsiLine key={i} line={line} />
-                                                        ))
-                                                        : accountState.charCapture?.type === 'practice'
-                                                            ? <div className="char-data-loading">Loading…</div>
-                                                            : null
-                                                    }
-                                                </div>
-                                            ) : (
-                                                <div className="char-detail-hint">Select Info or Skills to view details</div>
-                                            )}
-                                        </div>
-
-                                        <div className="char-detail-play">
-                                            <button
-                                                className="char-play-btn"
-                                                onClick={() => {
-                                                    triggerHaptic(30);
-                                                    executeCommand('play ' + accountState.selectedCharacter!.name);
-                                                }}
-                                            >
-                                                Play {capitalize(accountState.selectedCharacter.name)}
-                                            </button>
-                                        </div>
-                                    </div>
-                                    ) : (
-                                        <div className="account-empty">Pick a character to see info or skills.</div>
-                                    )}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {isCreationStage && (
-                            <div className="creation-flow-container mobile-account-creation-deck" style={{ 
-                                display: 'flex', 
-                                flexDirection: 'column', 
-                                flex: 1, 
-                                width: '100%', 
-                                minHeight: 0, 
-                                overflow: 'hidden',
-                                justifyContent: 'flex-start'
-                            }}>
-                                <div className="mobile-creation-title" style={{ 
-                                    color: 'rgba(255,255,255,0.4)', 
-                                    fontSize: '11px', 
-                                    fontWeight: 900, 
-                                    textTransform: 'uppercase', 
-                                    letterSpacing: '1.5px', 
-                                    marginBottom: '2px', 
-                                    width: '100%', 
-                                    textAlign: 'center',
-                                    marginTop: '8px'
-                                }}>
-                                    {accountState.stage === 'account-confirmation' ? 'New Account' : (accountState.stage === 'stat-editing' ? 'Stat Editing' : 'Create Character')}
-                                </div>
-                                {(() => {
-                                    const isConfirmation = accountState.stage === 'account-confirmation';
-                                    const isStatStage = accountState.stage === 'stat-editing';
-
-                                    if (isConfirmation) {
-                                        return (
-                                            <div style={{ display: 'flex', width: '100%', gap: '8px', padding: '8px', justifyContent: 'center' }}>
-                                                {displayedOptions.map(opt => (
-                                                    <button
-                                                        key={opt.id}
-                                                        className="account-menu-btn creation-option-btn no-arrow"
-                                                        style={{ flex: 1, textAlign: 'center', padding: '12px', fontWeight: 'bold' }}
-                                                        onClick={() => {
-                                                            triggerHaptic(15);
-                                                            executeCommand(opt.id);
-                                                        }}
-                                                    >
-                                                        {opt.label}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        );
-                                    }
-
-                                    if (isStatStage && accountState.pointsLeft !== undefined) {
-                                        return (
-                                            <div className="creation-points-header" style={{ 
-                                                padding: '2px 12px', 
-                                                textAlign: 'center', 
-                                                borderBottom: '1px solid rgba(255,255,255,0.05)',
-                                                display: 'flex',
-                                                justifyContent: 'center',
-                                                width: '100%'
-                                            }}>
-                                                <div style={{
-                                                    color: '#00ff00',
-                                                    fontSize: '11px',
-                                                    fontWeight: 'bold',
-                                                    textTransform: 'uppercase',
-                                                    letterSpacing: '1px',
-                                                    background: 'rgba(0, 255, 0, 0.1)',
-                                                    padding: '2px 10px',
-                                                    borderRadius: '10px',
-                                                    border: '1px solid rgba(0, 255, 0, 0.2)'
-                                                }}>
-                                                    {accountState.pointsLeft} {accountState.pointsLeft === 1 ? 'Point' : 'Points'} Left
-                                                </div>
-                                            </div>
-                                        );
-                                    }
-                                    return null;
-                                })()}
-                                <div className="creation-options-list" style={{ 
-                                    display: 'flex', 
-                                    flexDirection: 'column',
-                                    flexWrap: 'nowrap',
-                                    gap: '0px', 
-                                    alignItems: 'center',
-                                    justifyContent: 'flex-start',
-                                    flex: '1 1 auto',
-                                    width: '100%',
-                                    padding: '10px 4px',
-                                    overflowY: 'auto',
-                                    overflowX: 'hidden',
-                                    WebkitOverflowScrolling: 'touch',
-                                    maxHeight: '100%',
-                                    scrollbarWidth: 'none',
-                                    opacity: isTransitioning ? 0.35 : 1,
-                                    transition: 'opacity 0.18s ease'
-                                }}>
-                                    {(() => {
-                                        if (accountState.stage === 'account-confirmation') return null;
-                                        const isStatStage = accountState.stage === 'stat-editing';
-                                        const statOptions = displayedOptions.filter(opt => ['str', 'int', 'wis', 'dex', 'con', 'wil', 'per'].includes(opt.id));
-                                        const actionOptions = displayedOptions.filter(opt => !['str', 'int', 'wis', 'dex', 'con', 'wil', 'per'].includes(opt.id));
-
-                                        if (isStatStage) {
-                                            return (
-                                                <div style={{ display: 'flex', width: '100%', gap: '8px', padding: '0 4px', alignItems: 'stretch' }}>
-                                                    <div className="mobile-creation-stat-list" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                                                        {statOptions.map(opt => {
-                                                            const currentValue = accountState.stats?.[opt.id];
-                                                            return (
-                                                                <div key={opt.id} className="stat-editor-row" style={{
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    justifyContent: 'space-between',
-                                                                    width: '100%',
-                                                                    background: 'rgba(255, 255, 255, 0.04)',
-                                                                    padding: '0 10px',
-                                                                    borderRadius: '6px',
-                                                                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                                                                    height: '24px',
-                                                                    boxSizing: 'border-box'
-                                                                }}>
-                                                                    <span style={{ color: 'var(--text-faded)', fontSize: '10px', fontWeight: 800, letterSpacing: '0.04em' }}>
-                                                                        {opt.id === 'str' ? 'Strength (str)' :
-                                                                         opt.id === 'int' ? 'Intelligence (int)' :
-                                                                         opt.id === 'wis' ? 'Wisdom (wis)' :
-                                                                         opt.id === 'dex' ? 'Dexterity (dex)' :
-                                                                         opt.id === 'con' ? 'Constitution (con)' :
-                                                                         opt.id === 'wil' ? 'Willpower (wil)' :
-                                                                         opt.id === 'per' ? 'Perception (per)' : opt.id}
-                                                                    </span>
-                                                                     <div className="mobile-creation-stat-controls" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                        <button
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                triggerHaptic(10);
-                                                                                executeCommand(`${opt.id} ${currentValue! - 1}`);
-                                                                            }}
-                                                                            style={{
-                                                                                background: 'rgba(255, 255, 255, 0.07)',
-                                                                                border: '1px solid rgba(255, 255, 255, 0.2)',
-                                                                                borderRadius: '4px',
-                                                                                width: '24px',
-                                                                                height: '24px',
-                                                                                color: 'rgba(255, 255, 255, 0.6)',
-                                                                                display: 'flex',
-                                                                                alignItems: 'center',
-                                                                                justifyContent: 'center',
-                                                                                fontSize: '16px',
-                                                                                fontWeight: 900,
-                                                                                cursor: 'pointer',
-                                                                                padding: 0
-                                                                            }}
-                                                                        >
-                                                                            −
-                                                                        </button>
-                                                                        <span style={{ color: 'var(--ansi-green, #55ff55)', fontSize: '13px', fontWeight: 'bold', minWidth: '18px', textAlign: 'center' }}>
-                                                                            {currentValue}
-                                                                        </span>
-                                                                        <button
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                triggerHaptic(10);
-                                                                                executeCommand(`${opt.id} ${currentValue! + 1}`);
-                                                                            }}
-                                                                            style={{
-                                                                                background: 'rgba(255, 255, 255, 0.07)',
-                                                                                border: '1px solid rgba(255, 255, 255, 0.2)',
-                                                                                borderRadius: '4px',
-                                                                                width: '24px',
-                                                                                height: '24px',
-                                                                                color: 'rgba(255, 255, 255, 0.6)',
-                                                                                display: 'flex',
-                                                                                alignItems: 'center',
-                                                                                justifyContent: 'center',
-                                                                                fontSize: '16px',
-                                                                                fontWeight: 900,
-                                                                                cursor: 'pointer',
-                                                                                padding: 0
-                                                                            }}
-                                                                        >
-                                                                            +
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                     <div className="mobile-creation-side-actions" style={{ width: '85px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                                        {actionOptions.map(opt => (
-                                                                                            <button
-                                                                                                key={opt.id}
-                                                                                                className="account-menu-btn creation-option-btn no-arrow"
-                                                                                                style={{
-                                                                                                    width: '100%',
-                                                                                                    textAlign: 'center',
-                                                                                                    display: 'flex',
-                                                                                                    alignItems: 'center',
-                                                                                                    justifyContent: 'center',
-                                                                                                    padding: '0 8px',
-                                                                                                    flex: 1,
-                                                                                                    minHeight: '40px',
-                                                                                                    fontSize: '11px',
-                                                                                                    fontWeight: 'bold'
-                                                                                                }}
-                                                                                                onClick={() => {
-                                                                                                    triggerHaptic(20);
-                                                                                                    executeCommand(opt.id);
-                                                                                                }}
-                                                                                            >
-                                                                                                {opt.label.split(' ')[0]}
-                                                                                            </button>
-                                                                                        ))}
-                                                    </div>
-                                                </div>
-                                            );
-                                        }
-
-                                        return displayedOptions.map(opt => (
-                                            <button
-                                                key={opt.id}
-                                                className="account-menu-btn creation-option-btn"
-                                                style={{
-                                                    width: '100%',
-                                                    textAlign: 'left',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    padding: '10px 16px',
-                                                    margin: '1px 0'
-                                                }}
-                                                onClick={() => {
-                                                    triggerHaptic(15);
-                                                    setAccountState?.(prev => ({
-                                                        ...prev,
-                                                        lastSelectedId: opt.id
-                                                    }));
-                                                    executeCommand(opt.id);
-                                                }}
-                                            >
-                                                <span className="creation-option-id" style={{ color: '#fff', marginRight: '8px', fontWeight: 'bold', minWidth: '16px' }}>
-                                                    {/^\d+$/.test(opt.id) ? (
-                                                        <>
-                                                            (<span style={{ color: '#4ade80' }}>{opt.id}</span>)
-                                                        </>
-                                                    ) : opt.id}
-                                                </span>
-                                                <span className="creation-option-label" style={{ flex: 1, fontWeight: 'bold' }}>{opt.label}</span>
-                                            </button>
-                                        ));
-                                    })()}
-                                </div>
-
-
-                            </div>
-                        )}
-                        </div>} {/* End account-centered-interactive-zone */}
-
-                        {!isMenuStage && (!isCreationStage || (!displayedOptions.length && !isTransitioning)) && (
-                            <div
-                                className={`mobile-gutter-input-wrapper account-bar-anchor${isLoginStage ? ' account-login-glow' : ''}`}
-                                style={{
-                                    position: 'relative',
-                                    zIndex: 1,
-                                    padding: '0',
-                                    flexShrink: 0,
-                                    width: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center'
-                                }}
-                            >
-                            <InputArea
-                                onSend={loginHandleSend}
-                                onSwipe={handleInputSwipe}
-                                isMobile={isMobile}
-                                isKeyboardOpen={isKeyboardOpen}
-                                commandPreview={null}
-                                spatButtons={spatButtons}
-                                setActiveSet={btn.setActiveSet}
-                                executeCommand={executeCommand}
-                                setSpatButtons={setSpatButtons}
-                                setPopoverState={setPopoverState}
-                                parley={parley}
-                                setParley={setParley}
-                                whoList={whoList}
-                                gameState={gameState}
-                                terrain={currentTerrain}
-                            />
-                            </div>
-                        )}
-
-                        {isCreationStage && accountState.stage !== 'account-confirmation' && (
-                            <div className="creation-nav-buttons" style={{ 
-                                display: 'flex', 
-                                gap: '8px', 
-                                justifyContent: 'center', 
-                                padding: '12px 12px 24px 12px',
-                                width: '100%',
-                                borderTop: '1px solid rgba(255,255,255,0.08)',
-                                background: 'rgba(0,0,0,0.3)',
-                                opacity: isTransitioning ? 0 : 1,
-                                pointerEvents: isTransitioning ? 'none' : undefined,
-                                transition: 'opacity 0.18s ease',
-                                flexShrink: 0,
-                                marginTop: 'auto',
-                                position: 'relative',
-                                bottom: 0
-                            }}>
-                                <button 
-                                    className="account-menu-btn no-arrow"
-                                    style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
-                                    onClick={() => { triggerHaptic(20); executeCommand('back'); }}
-                                >
-                                    <ChevronLeft size={14} />
-                                    Back
-                                </button>
-                                <button
-                                    className="account-menu-btn no-arrow"
-                                    style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
-                                    onClick={() => {
-                                        triggerHaptic(20);
-                                        executeCommand('');
-                                        executeCommand('');
-                                        executeCommand('menu');
-                                    }}
-                                >
-                                    <Menu size={14} />
-                                    Menu
-                                </button>
-                                <button
-                                    className="account-menu-btn no-arrow"
-                                    style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
-                                    onClick={() => { triggerHaptic(20); executeCommand('?'); }}
-                                >
-                                    <HelpCircle size={14} />
-                                    Help
-                                </button>
-                            </div>
-                        )}
-
-                    </div>
-                </div>
-            </div>
-        );
     }
 
     const isShown = ui.mapExpanded;
     
     return (
         <div
-            className={`mobile-bottom-gutter ${isShown ? 'map-expanded' : ''}${isGutterResizing ? ' is-resizing' : ''}`}
+            ref={mapPanelRef}
+            className={`mobile-map-panel ${isShown ? 'map-expanded' : ''}`}
             style={{
                 padding: '0',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'flex-end',
+                justifyContent: 'stretch',
                 gap: '0'
             }}
         >
-            {gameState !== 'account' && (
-                <div
-                    className="mobile-gutter-resize-handle"
-                    aria-label="Resize map drawer"
-                    role="separator"
-                    aria-orientation="horizontal"
-                    onPointerDown={handleGutterResizeStart}
-                    onPointerMove={handleGutterResizeMove}
-                    onPointerUp={handleGutterResizeEnd}
-                    onPointerCancel={handleGutterResizeEnd}
-                />
-            )}
-            {/* Mobile gutter is map-only; non-map drawers open elsewhere or as popovers. */}
+            {/* The map lives below the log in the app's normal flex flow. */}
             <div
-                className="mobile-gutter-slide-viewport"
+                className="mobile-mapper-touch-surface gutter-panel-card"
                 style={{
-                    position: 'relative',
-                    flex: 1,
+                    width: '100%',
+                    height: '100%',
+                    flex: '1 1 auto',
                     minHeight: 0,
-                    overflow: isShown ? 'visible' : 'hidden'
+                    position: 'relative',
+                    pointerEvents: isShown ? 'auto' : 'none',
+                    touchAction: 'none',
+                    overflow: 'hidden'
                 }}
             >
-                <div
-                    className="mobile-gutter-slide-track"
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        width: '100%',
-                        height: '100%',
-                        transform: 'none',
-                        transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-                    }}
-                >
-                    {/* Map slide */}
-                    <div
-                        className="mobile-mapper-touch-surface gutter-panel-card"
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            flexShrink: 0,
-                            position: 'relative',
-                            pointerEvents: isShown ? 'auto' : 'none',
-                            touchAction: 'none',
-                            overflow: 'hidden'
-                        }}
-                    >
                         {/* Header Group: Tactical Buttons */}
                         <div style={{
                             position: 'absolute',
@@ -1129,7 +362,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         />
 
                         {/* Docked Map Filter & Z Bar */}
-                        {isShown && (
+                        {isShown && !isMobile && (
                             <MapFilterBar
                                 activeMapFilter={activeMapFilter}
                                 mapSearchQuery={mapSearchQuery}
@@ -1168,8 +401,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                 )}
                             </div>
                         )}
-                    </div>
-                </div>
             </div>
         </div>
     );

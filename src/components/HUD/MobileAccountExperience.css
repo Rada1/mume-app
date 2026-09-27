@@ -1,0 +1,282 @@
+/**
+ * @file MobileAccountExperience.css
+ * @description Mobile account screens and large touch controls.
+ */
+
+/* --- Mobile Account Surface --- */
+.mobile-account-experience {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    overflow: hidden;
+    color: #d4cdb8;
+    background: rgba(20, 15, 11, 0.96);
+    font-family: var(--font-mono, ui-monospace, monospace);
+}
+
+.mobile-account-header {
+    flex: 0 0 auto;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.22);
+}
+
+.mobile-account-brand {
+    padding: 14px 18px 10px;
+    color: #e5c36d;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.mobile-account-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    padding: 0 10px 8px;
+}
+
+.mobile-account-tabs button {
+    min-width: 0;
+    min-height: 48px;
+    padding: 8px 4px;
+    border: 1px solid rgba(201, 168, 76, 0.18);
+    border-radius: 6px;
+    background: rgba(20, 15, 11, 0.55);
+    color: #a79b82;
+    font: inherit;
+    font-size: 0.76rem;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.mobile-account-tabs button.is-active {
+    border-color: rgba(229, 195, 109, 0.72);
+    background: rgba(201, 168, 76, 0.13);
+    color: #f0cc6b;
+}
+
+.mobile-account-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 14px 12px max(12px, env(safe-area-inset-bottom, 0px));
+}
+
+.mobile-account-password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mobile-account-input {
+    width: 100%;
+    min-height: 56px;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid rgba(201, 168, 76, 0.38);
+    border-radius: 6px;
+    outline: none;
+    background: rgba(10, 9, 8, 0.8);
+    color: #eee6d4;
+    font: inherit;
+    font-size: 1rem;
+}
+
+.mobile-account-input:focus {
+    border-color: #d8b64e;
+    box-shadow: 0 0 0 2px rgba(216, 182, 78, 0.12);
+}
+
+.mobile-account-remember {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 34px;
+    color: #aa9d84;
+    font-size: 0.8rem;
+}
+
+.mobile-account-remember input {
+    width: 18px;
+    height: 18px;
+    accent-color: #d8b64e;
+}
+
+/* --- Account Menu and Character List --- */
+.mobile-account-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.mobile-account-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-width: 0;
+    min-height: 56px;
+    padding: 12px;
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 6px;
+    background: rgba(27, 21, 16, 0.86);
+    color: #ddd3be;
+    font: inherit;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.mobile-account-action.is-primary {
+    border-color: rgba(229, 195, 109, 0.82);
+    background: rgba(201, 168, 76, 0.18);
+    color: #f0cc6b;
+}
+
+.mobile-account-action:active:not(:disabled) {
+    background: rgba(201, 168, 76, 0.25);
+}
+
+.mobile-account-action:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.mobile-account-characters {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+}
+
+.mobile-account-character-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    border: 1px solid rgba(201, 168, 76, 0.22);
+    border-radius: 6px;
+    background: rgba(12, 10, 8, 0.62);
+}
+
+.mobile-account-character-head,
+.mobile-account-character-row {
+    display: block;
+    width: max-content;
+    min-width: 100%;
+    box-sizing: border-box;
+    padding: 12px 13px;
+    border: 0;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.13);
+    color: #b7ad98;
+    font-family: inherit;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    text-align: left;
+    white-space: pre;
+}
+
+.mobile-account-character-head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #17120e;
+    color: #a99a79;
+    font-size: 0.72rem;
+}
+
+.mobile-account-character-row {
+    min-height: 48px;
+    background: transparent;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.mobile-account-character-row.is-selected {
+    background: rgba(201, 168, 76, 0.12);
+    color: #f0cc6b;
+    box-shadow: inset 3px 0 #d8b64e;
+}
+
+.mobile-account-character-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
+}
+
+.mobile-account-more-wrap {
+    position: relative;
+}
+
+.mobile-account-more-wrap > .mobile-account-action {
+    width: 100%;
+    height: 100%;
+}
+
+.mobile-account-more-menu {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 6px);
+    z-index: 20;
+    display: grid;
+    width: min(220px, 70vw);
+    gap: 5px;
+    padding: 7px;
+    border: 1px solid rgba(201, 168, 76, 0.42);
+    border-radius: 6px;
+    background: #17120e;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
+}
+
+.mobile-account-more-menu .mobile-account-action {
+    min-height: 48px;
+}
+
+.mobile-account-character-data,
+.mobile-account-data {
+    flex: 0 0 auto;
+    max-height: 32vh;
+    overflow: auto;
+    padding: 10px 12px;
+    border: 1px solid rgba(201, 168, 76, 0.18);
+    border-radius: 6px;
+    background: rgba(12, 10, 8, 0.58);
+    font-size: 0.85rem;
+    line-height: 1.45;
+}
+
+.mobile-account-data-line {
+    padding: 2px 0;
+    white-space: pre-wrap;
+}
+
+.mobile-account-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 12px;
+    color: #a99a79;
+    font-size: 0.82rem;
+}
+
+.mobile-account-refresh {
+    gap: 8px;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font: inherit;
+}
+
+@media (max-width: 380px) {
+    .mobile-account-tabs button { font-size: 0.68rem; }
+    .mobile-account-character-head,
+    .mobile-account-character-row { font-size: 0.74rem; }
+}

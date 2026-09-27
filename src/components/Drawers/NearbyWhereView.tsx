@@ -42,7 +42,17 @@ export const NearbyWhereView: React.FC<NearbyWhereViewProps> = ({
                                 lineHeight: 1.55
                             }}
                         >
-                            {line.text}
+                            {!line.isHeader && /^(.+?)\s+-\s+(.+)$/.test(line.text) ? (
+                                <>
+                                    <span className="inline-btn" data-id={line.id}
+                                        data-cmd="inline-player" data-category="inline-player"
+                                        data-context={line.text.match(/^(.+?)\s+-\s+(.+)$/)?.[1]}
+                                        data-action="menu" style={{ cursor: 'pointer' }}>
+                                        {line.text.match(/^(.+?)\s+-\s+(.+)$/)?.[1]}
+                                    </span>
+                                    {' - '}{line.text.match(/^(.+?)\s+-\s+(.+)$/)?.[2]}
+                                </>
+                            ) : line.text}
                         </div>
                     )
                 ))

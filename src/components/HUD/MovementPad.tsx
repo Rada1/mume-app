@@ -1,14 +1,14 @@
 /**
  * @file MovementPad.tsx
  * @description Compact directional control docked at the bottom of the desktop
- * map drawer. Movement + look/exits/scan live here (next to the map) rather than
+ * map drawer. Movement + look/exits/map live here (next to the map) rather than
  * in the CommandDeck, since they go hand-in-hand with the map view.
  */
 
 import React, { FC } from 'react';
 import {
     ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
-    ChevronsUp, ChevronsDown, Eye, DoorOpen, Radar
+    ChevronsUp, ChevronsDown, Eye, DoorOpen, Map
 } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import { useActiveRoomExits } from '../../stores/useActiveGameState';
@@ -44,7 +44,7 @@ const CELLS: PadCell[] = [
     { cmd: 'w', label: 'West', icon: ArrowLeft, className: 'pad-w', hotkey: 'Num 4' },
     { cmd: 'look', label: 'Look', icon: Eye, className: 'pad-look', hotkey: 'Num 5' },
     { cmd: 'e', label: 'East', icon: ArrowRight, className: 'pad-e', hotkey: 'Num 6' },
-    { cmd: 'scan', label: 'Scan', icon: Radar, className: 'pad-scan' },
+    { cmd: 'map', label: 'Map', icon: Map, className: 'pad-map' },
     { cmd: 's', label: 'South', icon: ArrowDown, className: 'pad-s', hotkey: 'Num 2' },
     { cmd: 'd', label: 'Down', icon: ChevronsDown, className: 'pad-d', hotkey: 'Num 3' }
 ];

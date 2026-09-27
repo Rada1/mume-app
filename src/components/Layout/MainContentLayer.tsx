@@ -10,7 +10,6 @@ import { MumeArchive } from '../Utility/MumeArchive';
 import { LogDockedInput } from '../HUD/LogDockedInput';
 import InputArea from '../Controls/InputArea';
 import { RightActionPanel } from '../HUD/RightActionPanel';
-import { AccountDrawer } from '../Drawers/AccountDrawer';
 import { useGame, useUI, useLog } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -30,6 +29,9 @@ import { TokenRenderer } from '../Messages/TokenRenderer';
 import { ShopPanel } from '../Shop/ShopPanel';
 import { TimerExpiryToast } from '../Timers/TimerExpiryToast';
 import { QuickButtonBar } from '../HUD/QuickButtonBar';
+import { AccountTargetBar } from '../HUD/AccountTargetBar';
+import { MobileAccountCommandGrid } from '../HUD/MobileAccountCommandGrid';
+import { MobileAccountExperience } from '../HUD/MobileAccountExperience';
 import { ReplayHUD } from './HUD/ReplayHUD';
 import type { MumeEditState } from '../../stores/useUIStore';
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
@@ -103,6 +105,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const isCharacterCardOpen = useCharacterCardStore(s => s.isOpen);
 
     const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
+    const useMobileAccountPanels = useSettingsStore(s => s.useMobileAccountPanels ?? true);
     const manualBgImage = useSettingsStore(s => s.bgImage);
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
     const isCommandPanelOpen = useCommandPanelStore(s => s.isOpen);
@@ -272,6 +275,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 const y = rect.top + rect.height / 2;
                 document.documentElement.style.setProperty('--wheel-center-x', `${x}px`);
                 document.documentElement.style.setProperty('--wheel-center-y', `${y}px`);
+                document.documentElement.style.setProperty('--target-menu-log-bottom', `${rect.bottom}px`);
             }
         };
 
@@ -302,14 +306,8 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             if (!logContainerRef.current) return;
             const rect = logContainerRef.current.getBoundingClientRect();
             const measured = Math.max(0, window.innerHeight - rect.bottom);
-            // On mobile account screens the account gutter is rendered outside the
-            // normal desktop action box, so keep the terrain strip above that sheet
-            // instead of letting the gutter lip cover the pixel art.
-            const accountGutter = document.querySelector<HTMLElement>('.mobile-bottom-gutter.account-gutter');
-            const accountGutterHeight = viewport.isMobile && !viewport.isLandscape && accountGutter
-                ? Math.ceil(accountGutter.getBoundingClientRect().height)
-                : 52;
-            const offset = gameState === 'account' ? Math.max(measured, accountGutterHeight) : measured;
+            // Account mode has no bottom gutter — just use the measured offset.
+            const offset = measured;
             document.documentElement.style.setProperty('--log-terrain-bottom-offset', `${offset}px`);
         };
 
@@ -320,11 +318,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 observer.observe(logContainerRef.current.parentElement);
             }
         }
-        const accountGutter = document.querySelector<HTMLElement>('.mobile-bottom-gutter.account-gutter');
-        if (accountGutter) {
-            observer.observe(accountGutter);
-        }
-
         const timeout = setTimeout(updateBottomOffset, 100);
         window.addEventListener('resize', updateBottomOffset);
         return () => {
@@ -364,6 +357,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     const { getWeatherIcon } = env;
     const { isMobile, isLandscape } = viewport;
+    const showMobileAccountExperience = isMobile && gameState === 'account' && useMobileAccountPanels;
     const isReplaying = sessionMode === 'replay';
     const shouldShowAccountInput = gameState === 'account' && !isReplaying;
 
@@ -490,6 +484,9 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         margin: viewport.isMobile ? 0 : '0 auto'
                     }}
                 >
+                    {showMobileAccountExperience ? (
+                        <MobileAccountExperience />
+                    ) : <>
                     <div
                         className={`message-log-container${isTacticalTargetingActive ? ' tactical-targeting-active' : ''}${isImmersionMode ? ` log-terrain-${getRoomTerrainVisualKey(roomCardTerrain)} log-lighting-${lighting} log-weather-${weather} log-zone-${zoneKey} log-lore-${zoneVisualKey}` : ''}`}
                         ref={logContainerRef}
@@ -535,8 +532,12 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         />
                     </div>
 
-                    {!viewport.isMobile && gameState !== 'account' && (
+                    <MobileAccountCommandGrid />
+                    </>}
+
+                    {gameState !== 'account' && (
                         <ActionBox
+                            mobile={viewport.isMobile}
                             handleSend={handleSend}
                             handleInputSwipe={handleInputSwipe}
                             commandPreview={commandPreview}
@@ -550,7 +551,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 {isCommandPanelOpen && !viewport.isMobile && (
                     <aside className="docked-panel command-docked-panel" style={computeDockedPanelStyle('commands', activeDockedPanels, false)} aria-label="Commands panel">
                         <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" minWidth={14} maxWidth={50} />
-                        {gameState === 'account' ? <AccountDrawer /> : <RightActionPanel />}
+                        {gameState === 'account' ? <MobileAccountExperience /> : <RightActionPanel />}
                     </aside>
                 )}
                 {showPlayersPanel && (
@@ -576,9 +577,11 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 )}
             </div>
 
+            <AccountTargetBar />
+
             {isMobile ? (
                 /* Mobile Layout: InputArea in control-card-wrapper */
-                (shouldShowAccountInput && isLandscape) && (
+                (shouldShowAccountInput && isLandscape && !showMobileAccountExperience) && (
                     <div className="control-card-wrapper">
                         {(shouldShowAccountInput && isLandscape) && (
                             <InputArea

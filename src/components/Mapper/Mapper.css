@@ -46,7 +46,7 @@
     inset: 0;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 2.8s ease-in-out, backdrop-filter 2.8s ease-in-out;
+    transition: opacity 5s ease-in-out, backdrop-filter 5s ease-in-out;
 }
 
 /* Internal mapper overlays are disabled on mobile devices */
@@ -111,7 +111,7 @@
     background: radial-gradient(circle at center, transparent 15%, rgba(0, 0, 15, 0.95) 100%);
     mix-blend-mode: multiply;
     opacity: 0;
-    transition: opacity 2.8s ease-in-out;
+    transition: opacity 5s ease-in-out;
 }
 
 .light-mode .mapper-dark-overlay {

@@ -105,8 +105,38 @@
     color: #c9a84c;
 }
 
+.deck-tab.is-pressed {
+    background: rgba(201, 168, 76, 0.16);
+    border-color: rgba(201, 168, 76, 0.42);
+    color: #c9a84c;
+}
+
 .deck-tab svg {
     flex-shrink: 0;
+}
+
+/* Category action wheels use the same fixed mobile dock and skin as tactical wheels. */
+.deck-category-swipe-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50000;
+    pointer-events: none;
+    --set-accent: var(--accent);
+    --set-accent-rgb: var(--accent-rgb);
+}
+
+.deck-category-swipe-overlay .swipe-wheel-container {
+    transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.deck-category-swipe-overlay.is-target-menu-visible .swipe-wheel-container {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.deck-category-swipe-overlay.is-target-menu-visible {
+    /* Keep the active wheel above the blurred target menu until pointer release. */
+    z-index: 80000;
 }
 
 /* --- Grid area --- */
@@ -508,4 +538,3 @@
     width: 90px;
     outline: none;
 }
-

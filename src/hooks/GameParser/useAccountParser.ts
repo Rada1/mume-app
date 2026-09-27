@@ -10,6 +10,7 @@ import { CharacterEntry } from '../../types';
 import { useUIStore } from '../../stores/useUIStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { escapeHtml } from '../../utils/securityUtils';
+import { appendCreationContextLine } from '../../utils/accountCreationContext';
 
 // --- Logic Section: Types ---
 
@@ -418,7 +419,8 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 ...prev, 
                 stage: 'character-creation', 
                 currentPrompt: undefined,
-                selectedMenuCommand: null
+                selectedMenuCommand: null,
+                creationPrompt: { title: '', description: '', options: [] }
             }));
             captureStage.current = 'none';
             setGameState('account');
@@ -428,6 +430,13 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         const isCreationRelatedStage = ['character-creation', 'stat-editing'].includes(accountStageRef.current);
         
         if (isCreationRelatedStage) {
+            setAccountState(prev => {
+                const currentPrompt = prev.creationPrompt ?? { title: '', description: '', options: [] };
+                const description = appendCreationContextLine(currentPrompt.description, trimmedLine);
+                if (description === currentPrompt.description) return prev;
+                return { ...prev, creationPrompt: { ...currentPrompt, description } };
+            });
+
             if (trimmedLine.includes('Do you want to use the default configuration') ||
                 trimmedLine.startsWith('Choose Your') ||
                 trimmedLine.includes('Compared to other') ||
@@ -444,13 +453,17 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                         ...prev,
                         stage: 'character-creation',
                         pointsLeft: undefined,
-                        creationPrompt: { title: trimmedLine, description: '', options: [] }
+                        creationPrompt: { title: trimmedLine, description: prev.creationPrompt?.description ?? '', options: [] }
                     }));
                 } else {
                     // Clear existing options when a NEW major question starts
                     setAccountState(prev => ({
                         ...prev,
-                        creationPrompt: { title: trimmedLine, description: '', options: [] }
+                        creationPrompt: {
+                            title: trimmedLine,
+                            description: prev.creationPrompt?.description ?? '',
+                            options: []
+                        }
                     }));
                 }
             }
@@ -487,12 +500,18 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             if (trimmedLine.includes('will you be') || trimmedLine.includes('Pick a number') || trimmedLine.includes('Select an option') || trimmedLine.includes('Compared to other') || (trimmedLine.includes('?') && trimmedLine.length < 100)) {
                 setAccountState(prev => {
                     if (prev.creationPrompt?.title === trimmedLine) return prev;
+                    const previousContext = prev.creationPrompt?.description?.trim();
+                    const previousTitle = prev.creationPrompt?.title?.trim();
+                    const contextWithPreviousTitle = previousTitle && previousTitle !== trimmedLine
+                        && !(previousContext ?? '').split('\n').includes(previousTitle)
+                        ? appendCreationContextLine(previousContext ?? '', previousTitle)
+                        : previousContext ?? '';
                     return {
                         ...prev,
                         creationPrompt: {
                             options: prev.creationPrompt?.options || [],
                             title: trimmedLine,
-                            description: prev.creationPrompt?.description || ''
+                            description: contextWithPreviousTitle
                         }
                     };
                 });
@@ -528,8 +547,10 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                             }
                         };
                     });
-                    // Preserve creation option lines in the log for context, even if they are also buttons.
-                    return false;
+                    // Render as a tappable inline button that sends the option ID
+                    const lineHtml = `<span class="inline-btn account-menu-cmd" data-context="${escapeHtml(id)}">${escapeHtml(trimmedLine)}</span>`;
+                    addMessage?.('account-menu-item', trimmedLine, false, undefined, false, { textOnly: trimmedLine, lower: trimmedLine.toLowerCase(), html: lineHtml });
+                    return true;
                 }
             }
         }
@@ -668,9 +689,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         const isIntroLine = lowerClean.includes('type new to create') || lowerClean.includes('? for help');
 
         if (isMenuStage && matchedKeyword) {
-            const mobileHidden = ['move', 'add', 'info', 'practice', 'quit', 'link', 'lag', 'help', 'menu'];
-            if (isMobileRef.current && mobileHidden.includes(matchedKeyword)) return true;
-            const lineHtml = `<span class="inline-btn account-menu-cmd" data-context="${matchedKeyword}">${escapeHtml(trimmedLine)}</span>`;
+                        const lineHtml = `<span class="inline-btn account-menu-cmd" data-context="${matchedKeyword}">${escapeHtml(trimmedLine)}</span>`;
             addMessage?.('account-menu-item', trimmedLine, false, undefined, false, { textOnly: trimmedLine, lower: lowerClean, html: lineHtml });
             return true;
         }

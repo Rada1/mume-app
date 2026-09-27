@@ -357,7 +357,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
         if (!isMobilePopover || !anchorRect || typeof window === 'undefined') return undefined;
         const width = Math.min(380, Math.max(300, window.innerWidth - 20));
         const left = Math.max(10, Math.min(window.innerWidth - width - 10, anchorRect.left + (anchorRect.width / 2) - (width / 2)));
-        const gutter = document.querySelector<HTMLElement>('.mobile-bottom-gutter:not(.account-gutter)');
+        const gutter = document.querySelector<HTMLElement>('.mobile-map-panel');
         const gutterRect = gutter?.getBoundingClientRect();
         const topLimit = gutterRect ? gutterRect.top + 14 : window.innerHeight * 0.48;
         const bottomLimit = gutterRect ? gutterRect.bottom - 14 : window.innerHeight - 12;

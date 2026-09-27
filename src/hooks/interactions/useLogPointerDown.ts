@@ -7,6 +7,7 @@ import { useCallback } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { sanitizeGameTarget } from '../../utils/gameUtils';
 import { getButtonCommand } from '../../utils/buttonUtils';
+import { useAccountTargetStore } from '../../stores/useAccountTargetStore';
 
 export const useLogPointerDown = (
     deps: InteractionDeps,
@@ -105,6 +106,19 @@ export const useLogPointerDown = (
         // --- 3. Interaction State Setup ---
         if (targetEl) targetEl.classList.add('pressed');
         if (logLongPressTimerRef.current) clearTimeout(logLongPressTimerRef.current);
+
+        // Account command hold -> open account target picker
+        if (viewport.isMobile && targetEl?.classList.contains('account-menu-cmd')) {
+            const cmd = (targetEl.getAttribute('data-context') || '').toLowerCase();
+            if (cmd === 'play' || cmd === 'info' || cmd === 'practice') {
+                logLongPressTimerRef.current = setTimeout(() => {
+                    logLongPressTimerRef.current = null;
+                    if (longPressJustFiredRef) longPressJustFiredRef.current = true;
+                    triggerHaptic(30);
+                    useAccountTargetStore.getState().openMenu(cmd as 'play' | 'info' | 'practice');
+                }, 300);
+            }
+        }
 
     }, [
         btn, joystick, target, executeCommand, triggerHaptic, setHeldButton, heldButton,

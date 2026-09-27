@@ -51,6 +51,7 @@ export interface CombatParserDeps {
 
 const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'recovered', 'shoot', 'shoots', 'blast', 'shatters', 'joins?', 'assists?', 'dodge', 'dodges', 'parry', 'parries', 'deflect', 'deflects', 'evade', 'evades', 'blocks?', 'avoids?', 'fails?', 'failed'].join('|');
 const COMBAT_REGEX = new RegExp(`\\b(${COMBAT_VERBS_STR})(?:es|s)?\\b`, 'i');
+const COMBAT_DAMAGE_SOUND_BY_VERB: Record<string, string> = { hit: 'hit2', stab: 'stab', backstab: 'stab', slash: 'slash', crush: 'crushpound', pound: 'crushpound', bash: 'bash', cleave: 'cleave', pierce: 'pierce', smite: 'smite', shoot: 'arrowhit', shoots: 'arrowhit' };
 
 export function useCombatParser(deps: CombatParserDeps) {
     const {
@@ -243,25 +244,28 @@ export function useCombatParser(deps: CombatParserDeps) {
             const isUserInvolved = match.side === 'player' || match.isPlayerTarget;
             const isMissOrAvoid = hasMissTag || hasAvoidDamageTag || isPlayerAvoidedAttempt || isPlayerFailedAttack || isOpponentFailedAttack || /\byou miss\b/i.test(lower) || /\bmisses you\b/i.test(lower) || /\byou (?:dodge|parry|deflect|evade|block|avoid)\b/i.test(lower) || (isPlayerShoot && /\b(?:miss|misses|missed|fails?)\b/i.test(lower));
             const isPlayerShootHit = isPlayerShoot && !isMissOrAvoid && (hasHitTag || !lower.includes(' shoot at '));
+            const combatDamageSound = match.verb ? COMBAT_DAMAGE_SOUND_BY_VERB[match.verb] : undefined;
 
             const playArrowHit = () => {
                 if (deps.playArrowHitSound) deps.playArrowHitSound();
                 else deps.playEffect?.('arrowhit');
             };
 
+            if (!isSnoop && combatDamageSound && (hasHitTag || hasDamageTag) && !isPlayerShootHit) deps.playEffect?.(combatDamageSound);
+
             if (hasHitTag) {
                 if (isSnoop) {
                     deps.playSpectateHitImpactSound?.(match.modifier);
                 } else if (isPlayerShootHit) {
                     playArrowHit();
-                } else {
+                } else if (!combatDamageSound) {
                     deps.playHitImpactSound?.(match.modifier);
                 }
             } else if (!isSnoop && isPlayerShootHit) {
                 playArrowHit();
             }
 
-            if (hasDamageTag) {
+            if (hasDamageTag && (isSnoop || !combatDamageSound)) {
                 if (isSnoop) deps.playSpectateOofSound?.();
                 else deps.playOofSound?.();
             }

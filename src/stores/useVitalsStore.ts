@@ -3,6 +3,7 @@ import { GmcpCharVitals, CombatHealthStatus, WeatherType, GmcpCharInfo } from '.
 import { gmcpBus } from '../events/gmcpBus';
 import { useModeStore } from './useModeStore';
 import { VitalsState, initialVitalsState, createVitalsActions } from './slices/vitalsSlice';
+import { setGlobalCommandTarget } from '../utils/commandTargetMemory';
 
 export type VitalsStore = VitalsState;
 
@@ -10,7 +11,10 @@ export const useVitalsStore = create<VitalsStore>((set, get) => ({
     ...initialVitalsState,
     ...createVitalsActions(set, get),
     // Extra actions that might not be in slice but used by main store
-    setTarget: (target: string | null) => set({ target } as any),
+    setTarget: (target: string | null) => {
+        setGlobalCommandTarget(target);
+        set({ target } as any);
+    },
     setActivePrompt: (activePrompt: any) => set({ activePrompt } as any),
     setStats: (statsUpdate: any) => {
         set((state: any) => {

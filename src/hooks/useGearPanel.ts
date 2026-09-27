@@ -8,7 +8,7 @@ import { getContainerCommand, toGearRow } from '../utils/gearPanelUtils';
 export function useGearPanel() {
     const { displayEqLines, displayInventoryLines } = useUI();
     const {
-        gameState, viewport, triggerHaptic, executeCommand, parser,
+        gameState, viewport, triggerHaptic, executeCommand, handleLogClick, parser,
         expandedContainers, setExpandedContainers, containerContents,
     } = useGame();
     const worn = useMemo(() => displayEqLines.map(toGearRow).filter(row => row !== null), [displayEqLines]);
@@ -55,6 +55,6 @@ export function useGearPanel() {
         executeCommand(command, true, true, false, true);
     };
 
-    return { viewport, worn, carried, displayEqLines, displayInventoryLines,
+    return { viewport, worn, carried, displayEqLines, displayInventoryLines, handleLogClick,
         expandedContainers, containerContents, refresh, toggleContainer, refreshContainer, executeCommand, triggerHaptic };
 }

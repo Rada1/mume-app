@@ -7,6 +7,7 @@ import { getEffectiveKeyword } from '../../utils/keywordUtils';
 import { getInlineCategoryAxes, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 import { useUIStore } from '../../stores/useUIStore';
 import { audioManager } from '../../services/audio/AudioManager';
+import { useAccountTargetStore } from '../../stores/useAccountTargetStore';
 
 const isLogBlankTapTarget = (target: EventTarget | null): boolean => {
     if (!(target instanceof HTMLElement)) return false;
@@ -146,6 +147,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             if (isLogBlankTapTarget(e.target)) {
                 clearObjectSelection();
                 setPopoverState(null);
+                useAccountTargetStore.getState().closeMenu();
                 lastLogClickRef.current = now;
                 return;
             }
@@ -164,34 +166,24 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         e.stopPropagation();
         e.preventDefault();
 
-        // Account mode: tapping an account menu command selects it in the gutter
-        if (targetEl.classList.contains('account-menu-cmd') && setAccountState) {
+        // Account mode: tapping an account menu command
+        if (targetEl.classList.contains('account-menu-cmd')) {
             const cmd = targetEl.getAttribute('data-context');
             if (cmd) {
-                if (cmd === 'time') {
-                    setAccountState(prev => ({ ...prev, selectedMenuCommand: 'time', charCapture: { type: 'time' }, timeLines: [] }));
-                    executeCommand(cmd);
-                } else if (cmd === 'link') {
-                    setAccountState(prev => ({ ...prev, selectedMenuCommand: 'link', charCapture: { type: 'link' }, linkLines: [] }));
-                    executeCommand(cmd);
-                } else if (cmd === 'lag') {
-                    setAccountState(prev => ({ ...prev, selectedMenuCommand: 'lag', charCapture: { type: 'lag' }, lagLines: [] }));
-                    executeCommand(cmd);
-                } else if (cmd === 'list') {
-                    setAccountState(prev => ({ ...prev, selectedMenuCommand: null, characters: [], selectedCharacter: null, charSelectTab: null }));
-                    executeCommand(cmd);
-                } else if (cmd === 'play') {
-                    setAccountState(prev => ({ ...prev, selectedMenuCommand: 'play', characters: [], selectedCharacter: null, charSelectTab: null, isGathering: true }));
-                    executeCommand('list', true);
-                } else {
-                    setAccountState(prev => ({ ...prev, selectedMenuCommand: cmd }));
+                const lower = cmd.toLowerCase();
+                // info/practice need a character target — open the picker on tap
+                if (lower === 'info' || lower === 'practice') {
+                    triggerHaptic(20);
+                    useAccountTargetStore.getState().openMenu(lower as 'info' | 'practice');
+                    return;
                 }
-                triggerHaptic(30);
+                triggerHaptic(20);
+                executeCommand(cmd);
                 return;
             }
         }
 
-        // Account mode: tapping a character name inline button selects that character in the gutter
+        // Account mode: tapping a character name opens the character action popover (Play, Info, Practice)
         if (targetEl.classList.contains('account-char-name') && setAccountState) {
             const name = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
             if (name) {
@@ -200,6 +192,19 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                     return char
                         ? { ...prev, selectedCharacter: char, charSelectTab: null, charInfoLines: [], charPracticeLines: [] }
                         : prev;
+                });
+                const rect = targetEl.getBoundingClientRect();
+                setPopoverState({
+                    type: 'account-character',
+                    x: rect.left + rect.width / 2,
+                    y: rect.bottom,
+                    sourceHeight: rect.height,
+                    sourceRect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
+                    setId: 'account-character',
+                    context: name,
+                    accountCharName: name,
+                    displayName: name,
+                    preferSide: 'top'
                 });
                 triggerHaptic(30);
                 return;

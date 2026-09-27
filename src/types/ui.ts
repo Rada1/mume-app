@@ -52,7 +52,7 @@ export interface PopoverState {
     y: number;
     sourceHeight?: number;
     sourceRect?: { left: number; top: number; width: number; height: number };
-    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'session-log' | 'help-card';
+    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'session-log' | 'help-card' | 'account-character' | 'account-stat-edit';
     setId: string; // The legacy command or set ID. Can still hold standard menu set IDs.
     kind?: EntityKind; 
     location?: EntityLocation; 
@@ -92,6 +92,7 @@ export interface PopoverState {
     hasInspectionCard?: boolean;
     openedByHover?: boolean;
     isRoomDescription?: boolean;
+    accountCharName?: string;
 }
 
 export interface ButtonSetSettings {

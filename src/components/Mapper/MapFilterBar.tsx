@@ -4,8 +4,9 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { useMapper } from '../../context/useMapper';
+import { useInputStore } from '../../stores/useInputStore';
 import {
     CATEGORIES,
     CategoryId,
@@ -99,19 +100,6 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
         return () => document.removeEventListener('pointerdown', handlePointerDown, true);
     }, [expandedCategory]);
 
-    const handleSelectCategory = (catId: CategoryId) => {
-        triggerHaptic?.(15);
-        if (activeMapFilter === catId) {
-            setActiveMapFilter(null);
-        } else {
-            setActiveMapFilter(catId);
-            setMapSearchQuery('');
-        }
-        setExpandedCategory(null);
-        setActiveButtonEl(null);
-        setDropupLeft(null);
-    };
-
     const handleToggleDropdown = (catId: CategoryId, chipEl: HTMLElement) => {
         triggerHaptic?.(15);
         if (expandedCategory === catId) {
@@ -127,6 +115,7 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
     const handleSubFlagTap = (flagId: string) => {
         triggerHaptic?.(15);
         setActiveMapFilter(flagId);
+        setMapSearchQuery('');
         setExpandedCategory(null);
         setActiveButtonEl(null);
         setDropupLeft(null);
@@ -139,6 +128,12 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
         setExpandedCategory(null);
         setActiveButtonEl(null);
         setDropupLeft(null);
+    };
+
+    const handleStartSearch = () => {
+        triggerHaptic?.(10);
+        useInputStore.getState().setInput('/find ');
+        document.getElementById('mud-input')?.focus();
     };
 
     const activeCatObj = expandedCategory ? CATEGORIES.find(c => c.id === expandedCategory) : null;
@@ -162,7 +157,7 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
                 />
             )}
 
-            {/* Top Row: Z-Readout, Divider, Find Prompt & Input, Active Pill, Clear, Collapse Toggle */}
+            {/* Top Row: Z-Readout, Search Button, Active Pill, Clear, Collapse Toggle */}
             <div className="map-filter-top-row">
                 {showZIndicator && (
                     <>
@@ -174,17 +169,23 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
                     </>
                 )}
 
-                <div className="map-filter-search-box">
+                <button
+                    type="button"
+                    className="map-filter-search-btn"
+                    onClick={handleStartSearch}
+                    title="Search the map in the command bar"
+                    aria-label="Search map with command bar"
+                >
                     <span className="map-filter-prompt" aria-hidden="true">&gt;</span>
-                    <span className="map-filter-prompt-label">find:</span>
-                    <input
-                        className="map-filter-search-input"
-                        value={mapSearchQuery}
-                        onChange={e => setMapSearchQuery(e.target.value)}
-                        placeholder="filter room name, note..."
-                        aria-label="Filter room name or note"
-                    />
-                </div>
+                    <Search size={11} aria-hidden="true" />
+                    <span className="map-filter-prompt-label">FIND</span>
+                </button>
+
+                {mapSearchQuery.trim() && (
+                    <span className="map-filter-search-value" title={`Map search: ${mapSearchQuery}`}>
+                        {mapSearchQuery}
+                    </span>
+                )}
 
                 {activeFilterLabel && (
                     <div className="map-filter-active-pill" title={`Active filter: ${activeFilterLabel}`}>
@@ -243,8 +244,10 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
                                 <button
                                     type="button"
                                     className="map-filter-chip-main"
-                                    title={`Filter by ${cat.label}`}
-                                    onClick={() => handleSelectCategory(cat.id)}
+                                    title={`Choose a ${cat.label} subcategory`}
+                                    aria-haspopup="listbox"
+                                    aria-expanded={isExpanded}
+                                    onClick={(e) => handleToggleDropdown(cat.id, e.currentTarget.parentElement!)}
                                 >
                                     <span className="map-filter-chip-symbol" aria-hidden="true">{cat.symbol}</span>
                                     <span className="map-filter-chip-label">{cat.label}</span>

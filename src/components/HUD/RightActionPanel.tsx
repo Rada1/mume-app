@@ -21,6 +21,7 @@ import { getRoomTargetSuggestions } from '../../utils/commandSuggestionUtils';
 import type { GmcpOccupant, PracticeData } from '../../types';
 import { MainTab, ActionItem, COMBAT_ACTIONS, UTILITY_ACTIONS, CLASS_KEYS } from './rightActionData';
 import { getSkillOrSpellSyntax, getSpellManaCost } from '../../utils/spellSyntaxUtils';
+import { getRememberedCommandTarget, isCompatibleGlobalTarget, rememberCommandTarget } from '../../utils/commandTargetMemory';
 import { MovementPad } from './MovementPad';
 import { RightPanelTargetBar } from './RightPanelTargetBar';
 import './RightActionPanel.css';
@@ -66,7 +67,10 @@ export const RightActionPanel: FC = () => {
     const choicesFor = (item: ActionItem) => getRoomTargetSuggestions(
         [...roomPlayers, ...roomNpcs], roomItems, item.targetKind || 'characters', characterName
     );
-    const actionTarget = (item: ActionItem) => targetOverrides[item.label] || target || choicesFor(item)[0]?.value || null;
+    const actionTarget = (item: ActionItem) => targetOverrides[item.label]
+        || getRememberedCommandTarget(item.cmd)
+        || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
+        || choicesFor(item)[0]?.value || null;
     const primeTargetCommand = (item: ActionItem) => {
         setInput(item.cmd);
         requestTargetPicker();
@@ -101,6 +105,7 @@ export const RightActionPanel: FC = () => {
             primeTargetCommand(item);
             return;
         }
+        if (chosenTarget) rememberCommandTarget(item.cmd, chosenTarget);
         flashPressed(item.label);
         triggerHaptic?.(15);
         executeCommand(chosenTarget ? `${item.cmd}${chosenTarget}`.trim() : item.cmd.trim());
@@ -114,7 +119,10 @@ export const RightActionPanel: FC = () => {
     };
     const skillTarget = (name: string) => {
         const kind = skillTargetKind(name);
-        return targetOverrides[name] || target || getRoomTargetSuggestions(
+        const command = isSpellClass ? `cast '${name.toLowerCase()}'` : name.toLowerCase();
+        return targetOverrides[name] || getRememberedCommandTarget(command)
+            || (isCompatibleGlobalTarget(command, target) ? target : null)
+            || getRoomTargetSuggestions(
             [...roomPlayers, ...roomNpcs], roomItems, kind, characterName
         )[0]?.value || null;
     };
@@ -133,6 +141,9 @@ export const RightActionPanel: FC = () => {
             requestTargetPicker();
             window.setTimeout(() => document.getElementById('mud-input')?.focus(), 50);
             return;
+        }
+        if (chosenTarget) {
+            rememberCommandTarget(isSpell ? `cast '${norm}'` : norm, chosenTarget);
         }
         flashPressed(name);
         triggerHaptic?.(15);
@@ -221,7 +232,10 @@ export const RightActionPanel: FC = () => {
                             <ActionCommandRow key={item.label} item={item} index={idx} target={actionTarget(item)}
                                 choices={choicesFor(item)} isPressed={pressedLabel === item.label}
                                 onFire={() => fireAction(item)}
-                                onChoose={value => setTargetOverrides(current => ({ ...current, [item.label]: value }))}
+                                onChoose={value => {
+                                    rememberCommandTarget(item.cmd, value);
+                                    setTargetOverrides(current => ({ ...current, [item.label]: value }));
+                                }}
                                 onTypeTarget={() => primeTargetCommand(item)} />
                         ))}
                     </div>
@@ -233,7 +247,10 @@ export const RightActionPanel: FC = () => {
                             <ActionCommandRow key={item.label} item={item} index={idx} target={actionTarget(item)}
                                 choices={item.needsTarget ? choicesFor(item) : []} isPressed={pressedLabel === item.label}
                                 onFire={() => fireAction(item)}
-                                onChoose={value => setTargetOverrides(current => ({ ...current, [item.label]: value }))}
+                                onChoose={value => {
+                                    rememberCommandTarget(item.cmd, value);
+                                    setTargetOverrides(current => ({ ...current, [item.label]: value }));
+                                }}
                                 onTypeTarget={() => primeTargetCommand(item)} />
                         ))}
                     </div>
@@ -250,7 +267,11 @@ export const RightActionPanel: FC = () => {
                         choicesFor={name => getRoomTargetSuggestions(
                             [...roomPlayers, ...roomNpcs], roomItems, skillTargetKind(name), characterName
                         )}
-                        onChooseTarget={(name, value) => setTargetOverrides(current => ({ ...current, [name]: value }))}
+                        onChooseTarget={(name, value) => {
+                            const command = isSpellClass ? `cast '${name.toLowerCase()}'` : name.toLowerCase();
+                            rememberCommandTarget(command, value);
+                            setTargetOverrides(current => ({ ...current, [name]: value }));
+                        }}
                         onTypeTarget={name => {
                             setInput(isSpellClass ? `cast '${name.toLowerCase()}' ` : `${name.toLowerCase()} `);
                             requestTargetPicker();

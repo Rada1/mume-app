@@ -5,6 +5,48 @@
 
 /* --- Shared pane geometry --- */
 @media (min-width: 1025px) {
+    /* Align the Map Find and Target dividers with minimized This Is You. */
+    .app-container .map-filter-bar,
+    .app-container .right-panel-target-bar {
+        box-sizing: border-box;
+        border-top: 2px solid rgba(255, 255, 255, 0.12) !important;
+    }
+
+    .app-container .map-filter-bar {
+        height: 33px;
+        min-height: 33px;
+    }
+
+    .app-container .right-panel-target-bar {
+        height: 41px;
+        min-height: 41px;
+    }
+
+    .app-container .map-filter-bar.collapsed {
+        justify-content: center;
+    }
+
+    .app-container .map-filter-bar:not(.collapsed) {
+        gap: 0;
+        padding-top: 2px;
+        padding-bottom: 1px;
+    }
+
+    .app-container .map-filter-bar:not(.collapsed) .map-filter-top-row {
+        height: 14px;
+        flex-shrink: 0;
+    }
+
+    .app-container .map-filter-bar:not(.collapsed) .map-filter-chips-row {
+        height: 12px;
+        padding: 0;
+        flex-shrink: 0;
+    }
+
+    .app-container .map-filter-bar:not(.collapsed) .map-filter-chip {
+        height: 12px;
+    }
+
     .app-container .content-layer {
         right: var(--terminal-panels-width, 0px) !important;
         padding-right: 0 !important;
@@ -23,7 +65,7 @@
         border: 0 !important;
         border-radius: 0 !important;
         box-shadow: none !important;
-        background: var(--bg-app) !important;
+        background: transparent !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
         animation: terminal-pane-enter 180ms ease-out both !important;
@@ -58,13 +100,13 @@
     }
 
     .app-container.immersion-mode .docked-panel {
-        background: rgba(0, 0, 0, 0.18) !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
     }
 
     .app-container.light-mode .docked-panel {
-        background: var(--bg-app) !important;
+        background: transparent !important;
     }
 
 }

@@ -13,8 +13,7 @@
     background: transparent;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    border: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border: 0 !important;
     box-shadow: none;
     font-family: var(--font-mono, monospace);
     user-select: none;
@@ -33,7 +32,7 @@
     font-size: 0.68rem;
     box-sizing: border-box;
     background: transparent;
-    border: none;
+    border: 0 !important;
 }
 
 .map-header-solar-group {
@@ -91,7 +90,7 @@
     justify-content: space-between;
     gap: 10px;
     font-size: 0.64rem;
-    border: none;
+    border: 0 !important;
     background: transparent;
     box-sizing: border-box;
 }
@@ -133,13 +132,13 @@
 /* Immersion mode neutral glass */
 .immersion-mode .map-room-info-header {
     background: transparent !important;
-    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+    border: 0 !important;
 }
 
 /* Light mode overrides */
 .light-mode .map-room-info-header {
     background: transparent;
-    border-bottom-color: rgba(0, 0, 0, 0.1);
+    border: 0 !important;
     color: #1a1612;
 }
 

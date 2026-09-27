@@ -53,7 +53,7 @@ const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
     if (button.id === 'tactical-warrior' && swipeCommands) {
         Object.entries(swipeCommands).forEach(([dir, command]) => {
             const normalized = command?.trim().toLowerCase();
-            if (normalized && normalized !== 'flee' && normalized !== 'assist') {
+            if (normalized && !['flee', 'disengage', 'assist'].includes(normalized)) {
                 delete swipeCommands[dir as keyof typeof swipeCommands];
                 delete swipeActionTypes?.[dir as keyof typeof swipeActionTypes];
             }

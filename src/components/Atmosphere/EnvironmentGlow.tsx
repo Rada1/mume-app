@@ -138,10 +138,10 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
             }
             ctx.clearRect(0, 0, w, h);
 
-            // At the 10 fps draw cadence this reaches the new room palette in
-            // roughly 1.5–2 seconds instead of dragging through old colors.
-            const colorLerp = 0.17;
-            const motionLerp = 0.03;
+            // At the 10 fps draw cadence this eases zone color and motion changes
+            // across roughly five seconds.
+            const colorLerp = 0.06;
+            const motionLerp = 0.06;
             const cur = currentColors.current;
             const tar = targetColorsRef.current;
 

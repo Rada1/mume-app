@@ -921,7 +921,7 @@
         left: max(10px, env(safe-area-inset-left, 0px));
         right: max(10px, env(safe-area-inset-right, 0px));
         top: calc(env(safe-area-inset-top, 0px) + 76px);
-        bottom: calc(var(--mobile-gutter-height, 110px) + var(--mobile-bottom-reserved-space, 0px) + 12px);
+        bottom: calc(var(--mobile-map-panel-height, 110px) + var(--mobile-bottom-reserved-space, 0px) + 12px);
         width: auto;
         height: auto;
         max-height: none;

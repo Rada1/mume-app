@@ -7,9 +7,11 @@
 import React, { FC, useRef, useCallback, useEffect, useState } from 'react';
 import { Target } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
+import { useMapper } from '../../context/useMapper';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { useCharacterPanelStore } from '../../stores/useCharacterPanelStore';
 import OpponentRechargeTimer from '../Combat/OpponentRechargeTimer';
 import { ActionTimerDisplay } from './ActionTimerDisplay';
 import { useCommandSuggestions } from '../../hooks/useCommandSuggestions';
@@ -43,6 +45,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const { target } = useActiveVitals();
     const { stats } = useVitals();
     const { displayInventoryLines, displayEqLines } = useUI();
+    const { setActiveMapFilter, setMapSearchQuery } = useMapper();
 
     const input = useInputStore(s => s.input);
     const setInput = useInputStore(s => s.setInput);
@@ -52,6 +55,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const setLoginName = useSettingsStore(s => s.setLoginName);
     const setLoginPassword = useSettingsStore(s => s.setLoginPassword);
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
+    const isCharacterPanelMinimized = useCharacterPanelStore(s => s.isMinimized);
     const inputRef = useRef<HTMLInputElement>(null);
     const targetInputRef = useRef<HTMLInputElement>(null);
     const cancelTargetEditRef = useRef(false);
@@ -72,6 +76,13 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         setIsEditingTarget(false);
         inputRef.current?.focus();
     }, [setTarget]);
+
+    const clearTarget = useCallback(() => {
+        triggerHaptic?.(10);
+        setIsEditingTarget(false);
+        setTarget(null);
+        inputRef.current?.blur();
+    }, [setTarget, triggerHaptic]);
 
     const currentMode = parley?.mode || (parley?.active ? 'parley' : 'command');
 
@@ -104,7 +115,8 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         wrapRef: commandInputWrapRef,
         inputRef,
         isMobile: Boolean(viewport?.isMobile),
-        placement: viewport?.isMobile ? 'top' : 'bottom',
+        placement: viewport?.isMobile || (gameState === 'playing' && isCharacterPanelMinimized) ? 'top' : 'bottom',
+        positionOverMap: gameState === 'playing' && isCharacterPanelMinimized && !viewport?.isMobile,
         inventoryLines: displayInventoryLines,
         wornLines: displayEqLines
     });
@@ -139,13 +151,47 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
 
     const handleSubmit = useCallback((e?: React.FormEvent) => {
         if (e) e.preventDefault();
+        const mapFindMatch = gameState === 'playing' && !isPasswordMode
+            ? /^\/find(?:\s+(.*))?$/i.exec(input.trim())
+            : null;
+
+        if (mapFindMatch) {
+            const query = (mapFindMatch[1] || '').trim();
+            if (!query) {
+                setInput('/find ');
+                inputRef.current?.focus();
+                return;
+            }
+
+            useInputStore.getState().addToHistory(input.trim());
+            setActiveMapFilter(null);
+            setMapSearchQuery(query);
+            setInput('');
+            inputRef.current?.focus();
+            return;
+        }
+
         if (isLoginStage && rememberLogin && input.trim()) {
             if (isPasswordPrompt) setLoginPassword(input.trim());
             else if (isNamePrompt) setLoginName(input.trim());
         }
         handleSend(e);
         inputRef.current?.focus();
-    }, [handleSend, input, isLoginStage, isPasswordPrompt, isNamePrompt, rememberLogin, setLoginName, setLoginPassword]);
+    }, [
+        gameState,
+        isPasswordMode,
+        input,
+        setInput,
+        setActiveMapFilter,
+        setMapSearchQuery,
+        isLoginStage,
+        rememberLogin,
+        isPasswordPrompt,
+        isNamePrompt,
+        setLoginPassword,
+        setLoginName,
+        handleSend
+    ]);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
         if (handleSuggestionKeyDown(e)) {
@@ -193,7 +239,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                             <input
                                 ref={targetInputRef}
                                 className="docked-target-edit"
-                                aria-label="Edit target"
+                                aria-label="Edit global target"
                                 value={targetDraft}
                                 onChange={event => setTargetDraft(event.target.value)}
                                 onKeyDown={event => {
@@ -220,26 +266,25 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                                 type="button"
                                 className="docked-target-name"
                                 onClick={() => {
+                                    if (viewport?.isMobile) {
+                                        clearTarget();
+                                        return;
+                                    }
                                     triggerHaptic?.(10);
                                     setTargetDraft(target || '');
                                     setIsEditingTarget(true);
                                 }}
-                                title={`Edit target: ${target}`}
-                                aria-label={`Edit target: ${target}`}
+                                title={viewport?.isMobile ? `Clear global target: ${target}` : `Edit global target: ${target}`}
+                                aria-label={viewport?.isMobile ? `Clear global target: ${target}` : `Edit global target: ${target}`}
                             >{target}</button>
                         )}
                         <button
                             type="button"
                             className="docked-target-x"
                             onMouseDown={event => event.preventDefault()}
-                            onClick={() => {
-                                triggerHaptic?.(10);
-                                setIsEditingTarget(false);
-                                setTarget(null);
-                                inputRef.current?.focus();
-                            }}
-                            title="Clear target"
-                            aria-label="Clear target"
+                            onClick={clearTarget}
+                            title="Clear global target"
+                            aria-label="Clear global target"
                         >✕</button>
                     </div>
                 )}
@@ -266,7 +311,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                         ref={inputRef}
                         id="mud-input"
                         type={isPasswordMode ? 'password' : 'text'}
-                        className={`docked-input-field input-field${commandTextParts ? ' command-highlight-source' : ''}`}
+                        className={`docked-input-field input-field account-input-trigger${commandTextParts ? ' command-highlight-source' : ''}`}
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}

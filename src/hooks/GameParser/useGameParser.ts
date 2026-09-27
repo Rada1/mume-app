@@ -815,10 +815,24 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (isSnoop && textOnly.trim().length === 0) return;
         if (!isSnoop && capture.shouldSuppressSilentBlank(textOnly)) return;
 
+        if (!isSnoop && /^you hear some .*\bnoise from the .+\.?$/i.test(textOnly.trim())) {
+            deps.playEffect('move', { pitch: 1.05, volume: 0.6, filterFrequency: 500 });
+        }
+
         // Practice confirmations arrive after the practice-list capture has closed,
         // so the live line stream is the reliable place to trigger this effect.
         if (!isSnoop && /You took \d+ out of \d+ sessions?.*knowledge is now \d+%/i.test(textOnly)) {
             deps.playEffect('practice');
+        }
+
+        if (!isSnoop && /^As you call upon Elbereth,\s+.+\s+shivers in pain\.?$/i.test(textOnly.trim())) {
+            deps.playEffect('dispelevil');
+        }
+        if (!isSnoop && /^As you call on ancient powers,\s+.+\s+twists in great pain\.?$/i.test(textOnly.trim())) {
+            deps.playEffect('harm');
+        }
+        if (!isSnoop && /^.+\s+seems to be blinded[!.]?$/i.test(textOnly.trim())) {
+            deps.playEffect('blind');
         }
 
         if (!isSnoop) {
@@ -839,7 +853,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // 1. System/Trigger Processing (skip sound triggers for room descriptions)
         processTriggers(lineToParse, isEffectivelyRoomDesc);
 
-        const isEndPrompt = textOnly.includes('>') || textOnly.includes(':');
+        const promptInfo = prompt.parsePrompt(textOnly, isSnoop);
+        const isEndPrompt = isPromptResolved || promptInfo.isMatch;
 
         let isVisible = router.determineVisibility(lower, isImportant, isRoom, isRoomDescription, isEndPrompt, deps.isNewbieMode, lineToParse, undefined, isSnoop);
         
@@ -878,7 +893,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             }
         }
 
-        const promptInfo = prompt.parsePrompt(textOnly, isSnoop);
         if (!isSnoop && capture.shouldSuppressCommandEcho(textOnly, promptInfo.attachedText)) {
             return;
         }
@@ -1182,6 +1196,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if ((!isSnoop || deps.isSpectateMode) && /^(?:you are hungry|you are thirsty)\.$/i.test(textOnly.trim())) {
             deps.playEffect?.('hungrythirsty');
         }
+        if ((!isSnoop || deps.isSpectateMode) && lower.trim() === 'you feel less thirsty.') {
+            deps.playEffect?.('createwater');
+        }
         if ((!isSnoop || deps.isSpectateMode) && (
             textOnly.includes('You finish gathering the wood into a pile and set it on fire.') ||
             textOnly.includes('You put some wood in the fire.')
@@ -1264,6 +1281,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             deps.playEffect?.('heal');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
+            lower.includes('a blue transparent wall slowly appears around you') ||
             lower.includes('blue transparent shield') ||
             lower.includes('magic armour is revitalised') ||
             lower.includes('magic armor is revitalised')
@@ -1288,8 +1306,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         )) {
             deps.playEffect?.('shield');
         }
+        if ((!isSnoop || deps.isSpectateMode) && lower.trim() === 'you feel stronger.') {
+            deps.playEffect?.('strength');
+        }
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.includes('you feel less protected') ||
+            lower.includes('your magical shield wears off') ||
+            lower.includes('the light of aman fades away from you') ||
             lower.includes('less protected')
         )) {
             deps.playEffect?.('affectdown');

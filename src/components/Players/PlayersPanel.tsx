@@ -46,7 +46,7 @@ const getInitialExpanded = (): ExpandedSections => {
 // --- Logic Section ---
 
 const PlayersPanel: React.FC<PlayersPanelProps> = ({ style }) => {
-    const { triggerHaptic, executeCommand, viewport } = useGame() as any;
+    const { triggerHaptic, executeCommand, handleLogClick, viewport } = useGame() as any;
     const { whoLines, whereLines, setWhoLines, setWhereLines } = useUI();
     const { groupMembers } = useVitals();
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
@@ -124,7 +124,7 @@ const PlayersPanel: React.FC<PlayersPanelProps> = ({ style }) => {
                 </button>
             </div>
 
-            <div className="players-accordion-container">
+            <div className="players-accordion-container" onClick={handleLogClick}>
                 {/* 1. Group Section */}
                 <section className={`players-accordion-section ${expanded.group ? 'is-expanded' : 'is-collapsed'}`}>
                     <div

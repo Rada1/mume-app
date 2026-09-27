@@ -208,5 +208,40 @@ describe('useCommandSuggestions', () => {
         expect(result.current.popupStyle.transform).toBe('translateY(-100%)');
         expect(result.current.popupStyle.top).toBeDefined();
     });
-});
 
+    it('places suggestions over the map beside a minimized command bar', () => {
+        const map = document.createElement('div');
+        map.className = 'map-drawer-desktop open';
+        map.getBoundingClientRect = () => ({
+            top: 0, bottom: 600, left: 80, right: 580, width: 500, height: 600,
+            x: 80, y: 0, toJSON: () => {}
+        });
+        document.body.appendChild(map);
+        const input = document.createElement('div');
+        input.getBoundingClientRect = () => ({
+            top: 540, bottom: 570, left: 600, right: 800, width: 200, height: 30,
+            x: 600, y: 540, toJSON: () => {}
+        });
+        const commandBar = document.createElement('div');
+        commandBar.className = 'message-log-docked-input';
+        commandBar.getBoundingClientRect = () => ({
+            top: 530, bottom: 585, left: 590, right: 900, width: 310, height: 55,
+            x: 590, y: 530, toJSON: () => {}
+        });
+        commandBar.appendChild(input);
+        const wrapRef = { current: input };
+
+        const { result, unmount } = renderHook(() => useCommandSuggestions({
+            input: 'look', setInput: () => {}, gameState: 'playing',
+            wrapRef, placement: 'top', positionOverMap: true
+        }));
+        act(() => result.current.setIsFocused(true));
+
+        expect(result.current.popupStyle.left).toBe(252);
+        expect(result.current.popupStyle.width).toBe(320);
+        expect(result.current.popupStyle.top).toBe(585);
+        expect(result.current.popupStyle.transform).toBe('translateY(-100%)');
+        unmount();
+        map.remove();
+    });
+});

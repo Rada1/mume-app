@@ -181,33 +181,40 @@
 .right-panel-class-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 3px;
-    padding-bottom: 2px;
-    border-bottom: 1px solid rgba(201, 168, 76, 0.12);
+    align-items: center;
+    gap: 4px 12px;
+    padding: 7px 16px 8px;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.18);
 }
 
 .right-panel-class-chip {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 3px;
-    padding: 2px 5px;
-    font-size: 0.58rem;
-    font-weight: 700;
+    padding: 3px 0;
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    font-weight: 400;
     text-transform: capitalize;
-    border-radius: 4px;
-    background: rgba(201, 168, 76, 0.06);
-    border: 1px solid rgba(201, 168, 76, 0.14);
-    color: #a89f8c;
+    border-radius: 0;
+    background: transparent;
+    border: 0;
+    color: #958b79;
     cursor: pointer;
     transition: all 0.12s ease;
 }
 
 .right-panel-class-chip.is-active {
-    background: rgba(201, 168, 76, 0.22);
-    border-color: #c9a84c;
-    color: #f0cb67;
+    background: transparent;
+    color: #ddbd69;
+    font-weight: 700;
+}
+
+.right-panel-class-chip:hover {
+    background: transparent;
+    color: #ddbd69;
 }
 
 .right-panel-class-chip.is-guild {
@@ -316,19 +323,20 @@
     align-items: center;
     padding: 8px 6px;
     background: rgba(18, 14, 10, 0.85);
-    border-top: 1px solid rgba(201, 168, 76, 0.16);
+    border-top: 0;
     flex-shrink: 0;
 }
 
 .right-panel-navigation .movement-pad {
     margin: 0 auto;
-    padding: 6px;
-    gap: 4px;
-    grid-template-columns: repeat(3, clamp(44px, 5.8vw, 54px));
-    grid-template-rows: repeat(3, clamp(38px, 5.2vw, 46px));
-    background: rgba(22, 17, 13, 0.6);
-    border: 1px solid rgba(201, 168, 76, 0.16);
-    border-radius: 8px;
+    padding: 0;
+    gap: 0;
+    width: min(100%, 204px);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(3, 58px);
+    background: transparent;
+    border: 0;
+    border-radius: 0;
 }
 
 /* Footer Target Status */

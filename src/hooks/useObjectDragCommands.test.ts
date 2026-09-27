@@ -2,7 +2,7 @@
 /** @file useObjectDragCommands.test.ts — MUME commands from gear drag destinations. */
 import { describe, expect, it } from 'vitest';
 import type { ObjectDragSource, ObjectDropTarget } from '../types';
-import { getObjectDragCommand, getObjectDropTarget, isValidObjectDragTarget } from './useObjectDragCommands';
+import { getObjectDragCommand, getObjectDropTarget, getValidObjectDropTarget, isValidObjectDragTarget } from './useObjectDragCommands';
 
 // --- Logic Section ---
 describe('gear drag commands', () => {
@@ -43,5 +43,6 @@ describe('gear drag commands', () => {
         container.append(item);
         expect(getObjectDropTarget(item)).toMatchObject(pouch);
         expect(getObjectDropTarget(section)).toEqual(inventoryTarget);
+        expect(getValidObjectDropTarget(worn, item)).toEqual(inventoryTarget);
     });
 });

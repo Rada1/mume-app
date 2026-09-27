@@ -82,7 +82,7 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
             inset: 0,
             pointerEvents: 'none',
             zIndex: 50000,
-            '--wheel-center-x': isMobile ? 'calc(100% - 126px)' : '50%',
+            '--wheel-center-x': '50%',
             '--wheel-center-y': '33%',
             '--ray-x': `${centerX}px`,
             '--ray-y': `${centerY}px`,
@@ -172,7 +172,7 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                 </div>
             )}
             <div className={`cancel-indicator ${isCancelling ? 'active' : ''}`} style={{
-                '--cancel-x': isMobile ? 'calc(100% - 40px)' : 'calc(var(--wheel-center-x, 50%) + 200px)',
+                '--cancel-x': isMobile ? '50%' : 'calc(var(--wheel-center-x, 50%) + 200px)',
                 '--cancel-y': isMobile ? '12%' : 'var(--wheel-center-y, 50%)'
             } as any}>Cancel</div>
             

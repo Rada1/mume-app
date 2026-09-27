@@ -36,4 +36,4 @@
 .gear-action-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
 .gear-action-buttons button { padding: 5px 9px; border: 1px solid rgba(201,168,76,.35); border-radius: 3px; background: rgba(201,168,76,.07); color: var(--accent); font: inherit; font-size: 11px; cursor: pointer; }
 .gear-action-buttons button:hover { background: rgba(201,168,76,.16); }
-@media (max-width: 768px) { .gear-panel { min-width: 0; max-width: none; } .gear-slot { flex-basis: 110px; } }
+@media (max-width: 768px) { .gear-panel { min-width: 0; max-width: none; } .gear-slot { flex-basis: 110px; } .gear-item-select { touch-action: none; } }

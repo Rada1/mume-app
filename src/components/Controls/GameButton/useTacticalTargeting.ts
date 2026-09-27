@@ -5,7 +5,17 @@
 
 // --- Logic Section ---
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { canCommandAcceptTarget, applyTargetToCommand } from '../../../utils/commandTargetUtils';
+import {
+    applyTargetToCommand,
+    canCommandAcceptTarget,
+    getCommandTargetMenuKind,
+    getDefaultCommandTarget
+} from '../../../utils/commandTargetUtils';
+import {
+    getRememberedCommandTarget,
+    isCompatibleGlobalTarget,
+    rememberCommandTarget,
+} from '../../../utils/commandTargetMemory';
 
 export interface UseTacticalTargetingOptions {
     activeTarget: string | null;
@@ -16,11 +26,14 @@ export interface UseTacticalTargetingOptions {
 
 export interface UseTacticalTargetingReturn {
     isTargetColumnOpen: boolean;
+    isTargetMenuHeld: boolean;
     pendingTarget: string | null;
     pendingTargetRef: React.RefObject<string | null>;
     startHoldTimer: (cmd: string) => void;
     cancelHoldTimer: () => void;
-    handleSelectTarget: (targetVal: string, currentCmd: string) => void;
+    releaseTargetMenu: () => void;
+    handleSelectTarget: (targetVal: string | null, currentCmd: string) => void;
+    getEffectiveTarget: (command: string) => string | null;
     resolveCommandWithTarget: (baseCmd: string) => string;
     resetTargeting: () => void;
     updateCommandPreviewWithTarget: (baseCmd: string) => void;
@@ -33,6 +46,7 @@ export const useTacticalTargeting = ({
     triggerHaptic
 }: UseTacticalTargetingOptions): UseTacticalTargetingReturn => {
     const [isTargetColumnOpen, setIsTargetColumnOpen] = useState(false);
+    const [isTargetMenuHeld, setIsTargetMenuHeld] = useState(false);
     const [pendingTarget, setPendingTarget] = useState<string | null>(null);
 
     const isTargetColumnOpenRef = useRef(false);
@@ -66,38 +80,60 @@ export const useTacticalTargeting = ({
         holdTimerRef.current = window.setTimeout(() => {
             const activeCmd = currentCmdRef.current;
             if (canCommandAcceptTarget(activeCmd)) {
+                const defaultTarget = getRememberedCommandTarget(activeCmd) || getDefaultCommandTarget(activeCmd);
+                if (defaultTarget) {
+                    pendingTargetRef.current = defaultTarget;
+                    setPendingTarget(defaultTarget);
+                }
                 setIsTargetColumnOpen(true);
+                setIsTargetMenuHeld(true);
                 triggerHaptic?.(20);
             }
         }, 220);
     }, [cancelHoldTimer, isMobile, triggerHaptic]);
 
-    const handleSelectTarget = useCallback((targetVal: string, currentCmd: string) => {
+    const releaseTargetMenu = useCallback(() => {
+        cancelHoldTimer();
+        setIsTargetMenuHeld(false);
+    }, [cancelHoldTimer]);
+
+    const handleSelectTarget = useCallback((targetVal: string | null, currentCmd: string) => {
+        if (pendingTargetRef.current === targetVal) return;
         pendingTargetRef.current = targetVal;
         setPendingTarget(targetVal);
-        triggerHaptic?.(15);
-        if (currentCmd) {
-            const previewWithTarget = applyTargetToCommand(currentCmd, targetVal);
-            setCommandPreview(previewWithTarget);
-        }
+        if (targetVal) rememberCommandTarget(currentCmd, targetVal);
+        if (targetVal) triggerHaptic?.(15);
+        if (currentCmd) setCommandPreview(applyTargetToCommand(currentCmd, targetVal));
     }, [setCommandPreview, triggerHaptic]);
+
+    const getEffectiveTarget = useCallback((command: string): string | null => {
+        if (getCommandTargetMenuKind(command) === 'self-only') return 'self';
+        if (pendingTargetRef.current) return pendingTargetRef.current;
+        if (isTargetColumnOpenRef.current) return null;
+        const rememberedTarget = getRememberedCommandTarget(command);
+        if (rememberedTarget) return rememberedTarget;
+        const kind = getCommandTargetMenuKind(command);
+        if (kind === 'gear' || kind === 'room-corpses' || kind === 'mounts' || kind === 'mage-spells' || kind === 'magic-keys' || kind === 'social') return null;
+        return isCompatibleGlobalTarget(command, activeTarget) ? activeTarget : null;
+    }, [activeTarget]);
 
     const updateCommandPreviewWithTarget = useCallback((baseCmd: string) => {
         currentCmdRef.current = baseCmd;
         if (!baseCmd) return;
-        const targetToUse = pendingTargetRef.current || activeTarget;
+        const targetToUse = getEffectiveTarget(baseCmd);
         const preview = applyTargetToCommand(baseCmd, targetToUse);
         setCommandPreview(preview);
-    }, [activeTarget, setCommandPreview]);
+    }, [getEffectiveTarget, setCommandPreview]);
 
     const resolveCommandWithTarget = useCallback((baseCmd: string): string => {
-        const targetToUse = pendingTargetRef.current || activeTarget;
+        const targetToUse = getEffectiveTarget(baseCmd);
         return applyTargetToCommand(baseCmd, targetToUse);
-    }, [activeTarget]);
+    }, [getEffectiveTarget]);
 
     const resetTargeting = useCallback(() => {
         cancelHoldTimer();
         setIsTargetColumnOpen(false);
+        setIsTargetMenuHeld(false);
         setPendingTarget(null);
         pendingTargetRef.current = null;
         currentCmdRef.current = '';
@@ -111,11 +147,14 @@ export const useTacticalTargeting = ({
 
     return {
         isTargetColumnOpen,
+        isTargetMenuHeld,
         pendingTarget,
         pendingTargetRef,
         startHoldTimer,
         cancelHoldTimer,
+        releaseTargetMenu,
         handleSelectTarget,
+        getEffectiveTarget,
         resolveCommandWithTarget,
         resetTargeting,
         updateCommandPreviewWithTarget

@@ -101,8 +101,10 @@ export const getButtonCommand = (
         }
     }
 
-    if (button.id === 'tactical-doors' && DOOR_ACTION_COMMANDS.has(cmd.trim().toLowerCase()) && !finalMods.length && !modifiers.length) {
-        cmd = `${cmd} ${target || 'exit'}`;
+    const doorAction = cmd.trim().split(/\s+/, 1)[0].toLowerCase();
+    if (button.id === 'tactical-doors' && DOOR_ACTION_COMMANDS.has(doorAction) && !consumedTarget) {
+        const hasCommandTarget = cmd.trim().split(/\s+/).length > 1;
+        if (!hasCommandTarget) cmd = `${cmd.trim()} ${target || 'exit'}`;
     }
 
     const finalCmd = decodeCommandEntities(

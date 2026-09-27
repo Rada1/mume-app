@@ -8,7 +8,7 @@ import { getZoneAmbientGlow } from '../../utils/zoneColors';
 
 const BACKGROUND_MAP_OPACITY = 0.18;
 const BACKGROUND_MAP_OPACITY_NO_IMMERSION = BACKGROUND_MAP_OPACITY * 0.35;
-const ROOM_ENVIRONMENT_BLEND_MS = 1800;
+const ROOM_ENVIRONMENT_BLEND_MS = 5000;
 
 interface EnvironmentEffectsProps {
     lighting: LightingType;
@@ -145,7 +145,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                             backgroundColor: getLightingTint(lighting),
                             mixBlendMode: 'multiply',
                             pointerEvents: 'none',
-                            transition: 'background-color 2.8s cubic-bezier(0.25, 0.1, 0.25, 1)',
+                            transition: 'background-color 5s cubic-bezier(0.25, 0.1, 0.25, 1)',
                         }} />
                     </div>
                 )}
@@ -164,7 +164,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                             backgroundColor: getLightingTint(lighting),
                             mixBlendMode: 'multiply',
                             pointerEvents: 'none',
-                            transition: 'background-color 2.8s cubic-bezier(0.25, 0.1, 0.25, 1)',
+                            transition: 'background-color 5s cubic-bezier(0.25, 0.1, 0.25, 1)',
                         }} />
                     </div>
                 )}

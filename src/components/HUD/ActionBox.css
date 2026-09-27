@@ -12,6 +12,58 @@
     z-index: var(--z-hud-interactive);
 }
 
+.action-box.is-mobile {
+    flex: 0 0 auto;
+    margin: 4px 0 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    overflow: visible;
+}
+
+.action-box.is-mobile .this-is-you-body-wrapper {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 45dvh;
+    overflow-y: auto;
+}
+
+.action-box.is-mobile .this-is-you-console {
+    position: relative;
+    padding: 4px 4px 3px;
+}
+
+.action-box.is-mobile .this-is-you-tier-identity {
+    box-sizing: border-box;
+    height: 26px;
+    margin-bottom: 0;
+    padding: 0 4px;
+}
+
+.action-box.is-mobile .this-is-you-console.is-minimized .this-is-you-tier-identity {
+    padding: 0 4px;
+}
+
+.action-box.is-mobile .this-is-you-console:not(.is-minimized) .this-is-you-body-wrapper {
+    padding: 10px 4px 8px;
+    background: rgba(18, 14, 10, 0.96);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.app-container.is-mobile .content-layer:has(.action-box.is-mobile .this-is-you-console:not(.is-minimized)) {
+    z-index: calc(var(--z-hud-interactive) + 1);
+}
+
+.app-container.is-mobile .desktop-center-column:has(.action-box.is-mobile .this-is-you-console:not(.is-minimized)) {
+    overflow: visible !important;
+}
+
 .action-box .input-area {
     margin-top: 0 !important;
     background: rgba(18, 14, 10, 0.95) !important;

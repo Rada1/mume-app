@@ -15,6 +15,43 @@
     padding: 0;
 }
 
+.mobile-command-deck-persistent .mobile-global-target-control .right-panel-target-bar {
+    min-height: 30px;
+    margin: 0 0 2px;
+    padding: 2px 8px;
+    border-color: rgba(201, 168, 76, 0.28);
+    background: rgba(14, 10, 7, 0.72);
+}
+
+.mobile-command-deck-persistent .mobile-global-target-control .target-bar-label {
+    font-size: 0.58rem;
+}
+
+.mobile-command-deck-persistent .mobile-global-target-control .target-bar-content {
+    flex: 1;
+    justify-content: flex-end;
+    min-width: 0;
+}
+
+.mobile-command-deck-persistent .mobile-global-target-control .target-bar-value {
+    min-width: 88px;
+    min-height: 28px;
+    padding: 3px 6px;
+    text-align: right;
+}
+
+.mobile-command-deck-persistent .mobile-global-target-control .target-bar-clear-btn {
+    min-width: 28px;
+    min-height: 28px;
+    font-size: 13px;
+}
+
+.mobile-command-deck-persistent .mobile-global-target-control .target-bar-form input {
+    width: min(58vw, 220px);
+    min-height: 28px;
+    font-size: max(16px, 0.85rem);
+}
+
 .mobile-command-deck-persistent .deck-target-hint {
     top: -4px;
     max-width: calc(100vw - 28px);
@@ -24,20 +61,49 @@
 
 .mobile-command-deck-persistent .deck-tab-rail {
     justify-content: center;
-    gap: 4px;
+    align-items: flex-start;
+    gap: 7px;
+}
+
+.mobile-command-deck-persistent .deck-category-control {
+    display: flex;
+    flex: 0 0 46px;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
 }
 
 .mobile-command-deck-persistent .deck-tab {
-    min-height: 24px;
-    padding: 3px 8px;
+    display: flex;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
     border-radius: 7px;
-    background: rgba(35, 28, 22, 0.78);
-    font-size: 0.56rem;
+    touch-action: none;
 }
 
 .mobile-command-deck-persistent .deck-tab svg {
-    width: 11px;
-    height: 11px;
+    width: 17px;
+    height: 17px;
+}
+
+.mobile-command-deck-persistent .deck-category-label {
+    color: #b0a080;
+    font-size: 0.49rem;
+    font-weight: 650;
+    line-height: 1;
+    text-align: center;
+    text-transform: lowercase;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.mobile-command-deck-persistent .deck-category-label.is-pressed {
+    color: #c9a84c;
 }
 
 .mobile-command-deck-persistent .deck-grid-wrap {
@@ -87,7 +153,14 @@
         gap: 4px;
     }
 
-    .mobile-command-deck-persistent .deck-tab span {
-        display: none;
+    .mobile-command-deck-persistent .deck-category-control {
+        flex-basis: 42px;
+    }
+
+    .mobile-command-deck-persistent .deck-tab {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
     }
 }

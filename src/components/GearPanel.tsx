@@ -25,6 +25,7 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
         executeCommand: gear.executeCommand,
         triggerHaptic: gear.triggerHaptic,
         mouseDragOnMove: true,
+        touchDragOnMove: true,
         onDrop: (source, target) => {
             const containerId = target.type === 'container' ? target.containerId : source.parentContainerId;
             if (containerId) gear.refreshContainer(containerId);
@@ -50,7 +51,12 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
                 data-object-drop-container={row.isContainer ? row.line.id : undefined}
                 data-object-drop-noun={row.isContainer ? row.noun : undefined}
                 data-object-drop-label={row.isContainer ? row.name : undefined}>
-                <button className="gear-item-select" type="button" onClick={() => choose(row, section, id, parentNoun)}
+                <button className={`gear-item-select${gear.viewport.isMobile ? ' inline-btn' : ''}`} type="button"
+                    onClick={event => gear.viewport.isMobile ? gear.handleLogClick(event) : choose(row, section, id, parentNoun)}
+                    data-id={row.line.entityId || row.line.stableId || row.line.id}
+                    data-cmd={nested ? 'inline-container-item' : row.line.cmd || category}
+                    data-context={row.noun} data-category={category} data-action="menu"
+                    data-parent-noun={parentNoun} data-menu-display="list"
                     onPointerDown={event => startObjectDrag(event, {
                         row: nested ? 'inventory' : section === 'worn' ? 'worn' : 'inventory',
                         noun: row.noun, label: row.name, itemId: row.line.id,

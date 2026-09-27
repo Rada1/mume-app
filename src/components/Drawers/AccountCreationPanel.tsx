@@ -24,6 +24,7 @@ interface AccountCreationPanelProps {
     accountState: AccountState;
     executeCommand: (command: string) => void;
     triggerHaptic: (duration?: number) => void;
+    compactMobileNavigation?: boolean;
 }
 
 const AccountHeader: React.FC<{ title: string }> = ({ title }) => (
@@ -36,13 +37,17 @@ const CreationOptionButton: React.FC<{
     option: CreationOption;
     onSelect: (id: string) => void;
 }> = ({ option, onSelect }) => (
-    <button className="account-menu-btn creation-option-btn" onClick={() => onSelect(option.id)}>
+    <button
+        className="account-menu-btn creation-option-btn"
+        aria-label={`${option.id}. ${option.label}`}
+        onClick={() => onSelect(option.id)}
+    >
         {/^\d+$/.test(option.id) && <span style={{ color: '#ffd700', marginRight: 8, fontWeight: 800 }}>({option.id})</span>}
         {option.label}
     </button>
 );
 
-export const AccountCreationPanel: React.FC<AccountCreationPanelProps> = ({ accountState, executeCommand, triggerHaptic }) => {
+export const AccountCreationPanel: React.FC<AccountCreationPanelProps> = ({ accountState, executeCommand, triggerHaptic, compactMobileNavigation = false }) => {
     const liveOptions = (accountState.creationPrompt?.options ?? [])
         .filter(opt => opt.id.toLowerCase() !== 'quit' && opt.label.toLowerCase() !== 'quit');
     const stickyOptionsRef = React.useRef<CreationOption[]>([]);
@@ -160,8 +165,10 @@ export const AccountCreationPanel: React.FC<AccountCreationPanelProps> = ({ acco
             {accountState.stage !== 'account-confirmation' && (
                 <div className="creation-nav-buttons" style={{ display: 'flex', gap: 8, padding: 12 }}>
                     <button className="account-menu-btn no-arrow" onClick={() => selectOption('back')}>Back</button>
-                    <button className="account-menu-btn no-arrow" onClick={goMainMenu}>Main Menu</button>
-                    <button className="account-menu-btn no-arrow" onClick={() => selectOption('?')}>?</button>
+                    {!compactMobileNavigation && <>
+                        <button className="account-menu-btn no-arrow" onClick={goMainMenu}>Menu</button>
+                        <button className="account-menu-btn no-arrow" onClick={() => selectOption('?')}>Help</button>
+                    </>}
                 </div>
             )}
         </div>

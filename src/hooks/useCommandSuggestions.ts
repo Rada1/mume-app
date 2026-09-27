@@ -24,6 +24,7 @@ export interface UseCommandSuggestionsOptions {
     abilities?: Record<string, number>; characterClass?: string;
     wrapRef?: RefObject<HTMLElement | null>; inputRef?: RefObject<HTMLInputElement | HTMLTextAreaElement | null>;
     isMobile?: boolean; targetPickerRequestId?: number; placement?: 'top' | 'bottom';
+    positionOverMap?: boolean;
     inventoryLines?: DrawerLine[]; wornLines?: DrawerLine[];
 }
 
@@ -51,6 +52,7 @@ export const useCommandSuggestions = ({
     isMobile = false,
     targetPickerRequestId: propTargetPickerRequestId,
     placement: propPlacement,
+    positionOverMap = false,
     inventoryLines = [],
     wornLines = []
 }: UseCommandSuggestionsOptions): UseCommandSuggestionsReturn => {
@@ -193,6 +195,29 @@ export const useCommandSuggestions = ({
             const desiredWidth = Math.min(320, viewportWidth - viewportPadding * 2);
             const left = Math.max(viewportPadding, Math.min(rect.left, viewportWidth - desiredWidth - viewportPadding));
 
+            if (positionOverMap && effectivePlacement === 'top') {
+                const mapRect = document.querySelector('.map-drawer-desktop.open')?.getBoundingClientRect();
+                if (mapRect) {
+                    const mapLeft = Math.max(viewportPadding, mapRect.left + viewportPadding);
+                    const mapRight = Math.min(mapRect.right - viewportPadding, rect.left - viewportPadding);
+                    const availableWidth = mapRight - mapLeft;
+                    if (availableWidth >= 140) {
+                        const width = Math.min(desiredWidth, availableWidth);
+                        const commandLineBottom = wrapRef.current?.closest('.message-log-docked-input')
+                            ?.getBoundingClientRect().bottom ?? rect.bottom;
+                        const spaceAbove = commandLineBottom - viewportPadding;
+                        setPopupStyle({
+                            left: Math.round(mapRight - width),
+                            top: Math.max(viewportPadding, commandLineBottom),
+                            width,
+                            maxHeight: Math.max(80, Math.min(260, spaceAbove)),
+                            transform: 'translateY(-100%)'
+                        });
+                        return;
+                    }
+                }
+            }
+
             if (effectivePlacement === 'bottom') {
                 const spaceBelow = viewportHeight - rect.bottom - viewportPadding;
                 setPopupStyle({
@@ -224,7 +249,7 @@ export const useCommandSuggestions = ({
             window.removeEventListener('scroll', updatePopupPosition, true);
             window.visualViewport?.removeEventListener('resize', updatePopupPosition);
         };
-    }, [effectivePlacement, showCompletionPopup, wrapRef]);
+    }, [effectivePlacement, positionOverMap, showCompletionPopup, wrapRef]);
 
     const handleSuggestionKeyDown = useCallback((e: KeyboardEvent): boolean => {
         const isNumpad = e.location === 3 || e.code.startsWith('Numpad');

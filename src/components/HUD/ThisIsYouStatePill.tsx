@@ -4,7 +4,8 @@
  */
 
 // --- Logic Section ---
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import './ThisIsYouStatePill.css';
 
 export interface StateOption {
@@ -18,6 +19,7 @@ export interface ThisIsYouStatePillProps {
     value: string;
     options: StateOption[];
     onSelect: (option: StateOption) => void;
+    onInteract?: () => void;
     accentColor?: 'gold' | 'blue' | 'red' | 'purple';
 }
 
@@ -26,16 +28,42 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
     value,
     options,
     onSelect,
+    onInteract,
     accentColor = 'gold'
 }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const popoverRef = useRef<HTMLDivElement>(null);
+
+    useLayoutEffect(() => {
+        if (!isOpen) return;
+        const updatePosition = () => {
+            const anchor = containerRef.current?.getBoundingClientRect();
+            const menu = popoverRef.current;
+            if (!anchor || !menu) return;
+            const margin = 8;
+            const left = Math.max(margin, Math.min(anchor.left, window.innerWidth - menu.offsetWidth - margin));
+            const above = anchor.top - menu.offsetHeight - 5;
+            const below = anchor.bottom + 5;
+            const top = above >= margin ? above : Math.min(below, window.innerHeight - menu.offsetHeight - margin);
+            setMenuPosition({ top: Math.max(margin, top), left });
+        };
+        updatePosition();
+        window.addEventListener('resize', updatePosition);
+        window.addEventListener('scroll', updatePosition, true);
+        return () => {
+            window.removeEventListener('resize', updatePosition);
+            window.removeEventListener('scroll', updatePosition, true);
+        };
+    }, [isOpen]);
 
     useEffect(() => {
         if (!isOpen) return;
 
         const handleClickOutside = (event: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)
+                && !popoverRef.current?.contains(event.target as Node)) {
                 setIsOpen(false);
             }
         };
@@ -60,7 +88,10 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
             <button
                 type="button"
                 className={`this-is-you-pill accent-${accentColor}${isOpen ? ' is-active' : ''}`}
-                onClick={() => setIsOpen(open => !open)}
+                onClick={() => {
+                    onInteract?.();
+                    setIsOpen(open => !open);
+                }}
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
                 title={`Change ${category} (current: ${value})`}
@@ -70,8 +101,9 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
                 <span className="this-is-you-pill-arrow" aria-hidden="true">▼</span>
             </button>
 
-            {isOpen && (
-                <div className="this-is-you-popover" role="listbox" aria-label={`Select ${category}`}>
+            {isOpen && createPortal(
+                <div ref={popoverRef} className="this-is-you-popover" role="listbox" aria-label={`Select ${category}`}
+                    style={menuPosition ? { top: menuPosition.top, left: menuPosition.left } : { visibility: 'hidden' }}>
                     <div className="this-is-you-popover-header">{category}</div>
                     {options.map(option => {
                         const isSelected = option.label.toLowerCase() === value.toLowerCase();
@@ -83,6 +115,7 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
                                 aria-selected={isSelected}
                                 className={`this-is-you-popover-item${isSelected ? ' is-selected' : ''}`}
                                 onClick={() => {
+                                    onInteract?.();
                                     onSelect(option);
                                     setIsOpen(false);
                                 }}
@@ -92,7 +125,7 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
                             </button>
                         );
                     })}
-                </div>
+                </div>, document.body
             )}
         </div>
     );

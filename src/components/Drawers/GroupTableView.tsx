@@ -103,7 +103,10 @@ export const GroupTableView: React.FC<{ members: GroupMember[] }> = ({ members }
                             textAlign: 'left'
                         }}
                     >
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</span>
+                        <span className="inline-btn" data-id={String(member.id || name)}
+                            data-cmd="inline-player" data-category="cat-ally"
+                            data-context={name} data-action="menu"
+                            style={{ overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer' }}>{name}</span>
                         <span style={{ color: '#44ff70', fontWeight: 800 }}>{getHits(tableMember)}</span>
                         <span style={{ color: '#44ff70', fontWeight: 800 }}>{getMana(tableMember)}</span>
                         <span style={{ color: '#44ff70', fontWeight: 800 }}>{getMoves(tableMember)}</span>

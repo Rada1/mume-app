@@ -56,7 +56,7 @@ export const PromptTargetSelector: React.FC = () => {
             type="button"
             className={`prompt-target-selector${target ? ' has-target' : ''}${isEditing ? ' is-editing' : ''}`}
             onClick={handleClick}
-            title={target ? 'Current target — click to clear' : 'Set a target'}
+            title={target ? 'Current global target — click to clear' : 'Set a global target'}
         >
             <Crosshair size={12} strokeWidth={2.25} aria-hidden="true" />
             {isEditing ? (
@@ -75,8 +75,8 @@ export const PromptTargetSelector: React.FC = () => {
                         }
                     }}
                     onBlur={() => window.setTimeout(() => setIsEditing(false), 100)}
-                    placeholder="Target"
-                    aria-label="Target name"
+                    placeholder="Global target"
+                    aria-label="Global target name"
                 />
             ) : (
                 <span>{target || 'Target'}</span>

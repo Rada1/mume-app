@@ -138,6 +138,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
     const comboFiredRef = useRef(false);
     const ignoredPointerUpsRef = useRef<Set<number>>(new Set());
     const mapLookActivatedRef = useRef(false);
+    const mapLongPressRoomIdRef = useRef<string | null>(null);
 
     // Stable ref for event listeners to avoid re-binding
     const depsRef = useRef(deps);
@@ -165,6 +166,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         contextMenuTriggeredRef.current = false;
         comboFiredRef.current = false;
         mapLookActivatedRef.current = false;
+        mapLongPressRoomIdRef.current = null;
         isDraggingInternalRef.current = false;
         dragTypeRef.current = null;
         depsRef.current.setIsDragging(false);
@@ -362,6 +364,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 dragTypeRef.current = 'room';
                 contextMenuTriggeredRef.current = false;
                 mapLookActivatedRef.current = false;
+                mapLongPressRoomIdRef.current = null;
                 // console.log(`[MapperInteractions] PointerDown: ${e.pointerType} x=${e.clientX} y=${e.clientY}`);
 
                 if (depsRef.current.isTracingMode && e.ctrlKey && depsRef.current.setCalibration) {
@@ -412,12 +415,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                             if (!roomId || mapLookActivatedRef.current) return;
 
                             mapLookActivatedRef.current = true;
-                            contextMenuTriggeredRef.current = true;
-                            depsRef.current.joystick?.stopRepeatTimer?.();
-                            depsRef.current.joystick?.handleJoystickCancel?.();
-                            depsRef.current.joystick?.setIsJoystickConsumed?.(false);
-                            depsRef.current.setInfoRoomId(roomId);
-                            depsRef.current.playClickSound?.();
+                            mapLongPressRoomIdRef.current = roomId;
                             depsRef.current.triggerHaptic(40);
                         }, 500);
                     }
@@ -590,12 +588,25 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             
             // Capture the fired state before resetting it
             const wasLongPress = contextMenuTriggeredRef.current;
+            const wasMapRoomHold = mapLookActivatedRef.current;
+            const mapRoomHoldId = mapLongPressRoomIdRef.current;
             contextMenuTriggeredRef.current = false;
             mapLookActivatedRef.current = false;
+            mapLongPressRoomIdRef.current = null;
             comboFiredRef.current = false;
             scrollLockRef.current = false;
             activePointersRef.current.delete(e.pointerId);
             try { cvs.releasePointerCapture(e.pointerId); } catch(err) {}
+
+            if (wasMapRoomHold && !hasDraggedRef.current && mapRoomHoldId) {
+                depsRef.current.setInfoRoomId(mapRoomHoldId);
+                joystick?.handleJoystickCancel?.();
+                setIsDragging(false);
+                dragTypeRef.current = null;
+                setMarqueeStart(null);
+                setMarqueeEnd(null);
+                return;
+            }
 
             if (fireMapLongPressAtPointer(e)) {
                 for (const pointerId of activePointersRef.current.keys()) {
@@ -990,6 +1001,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 clearMapLongPressHold();
                 contextMenuTriggeredRef.current = false;
                 mapLookActivatedRef.current = false;
+                mapLongPressRoomIdRef.current = null;
                 isDraggingInternalRef.current = false;
                 dragTypeRef.current = null;
                 setIsDragging(false);

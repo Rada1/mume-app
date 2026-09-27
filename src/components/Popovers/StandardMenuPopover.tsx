@@ -16,6 +16,8 @@ import { TraitToggleSection } from './StandardMenu/TraitToggleSection';
 import { PopoverActionButton } from './StandardMenu/PopoverActionButton';
 import { ParleySection } from './StandardMenu/ParleySection';
 import { CapturedDetailsCard } from './StandardMenu/CapturedDetailsCard';
+import { AccountCharacterCard } from './StandardMenu/AccountCharacterCard';
+import { AccountStatPopover } from './StandardMenu/AccountStatPopover';
 
 interface StandardMenuProps {
     popoverState: PopoverState;
@@ -113,7 +115,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         setFavorites, keywordOverrides, parley, setParley, whoList, executeCommand, inlineCategories, customTraits, setCustomTraits,
         handleTabClick, setGearTab, setPlayersTab, setCharTab,
         refreshLogHighlights, triggerHaptic, openKeywordEdit, roomNpcs,
-        entities, selectedObjectIds, clearObjectSelection, accountState, setAccountState, direction, characterInfo,
+        entities, selectedObjectIds, clearObjectSelection, accountCharacters, accountState, setAccountState, direction, characterInfo,
         themeColor
     } = props;
 
@@ -418,11 +420,12 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     };
 
     const isParleyType = popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target';
+    const isAccountType = popoverState.type === 'account-character' || popoverState.type === 'account-stat-edit';
     const CategoryIcon = !isSetManager ? resolveEntityCategoryIcon(categoryId, resolvedTraitIds) : null;
 
     return (
         <div ref={menuRootRef} className={`standard-menu-popover${isCompactInline ? ' inline-action-compact' : ''}${isInlineMenu && !isCompactInline ? ' terminal-inline-popover' : ''}`} style={{ '--accent': themeColor || 'var(--accent)', '--set-accent': themeColor || 'var(--accent)' } as any}>
-            {!isParleyType && !isCompactInline && (
+            {!isParleyType && !isAccountType && !isCompactInline && (
                 <div className="popover-header" onPointerDown={(e) => { e.stopPropagation(); }} style={{ cursor: !isSetManager && !isInlineMenu ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', marginBottom: '3px', paddingBottom: '3px', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'none' }} onClick={(event) => { if (event.target instanceof HTMLElement && event.target.closest('[data-keyword-editor="true"]')) return; if (!isInlineMenu && !isSetManager) { triggerHaptic?.(20); setPopoverState({ ...popoverState, setId: 'setmanager' }); } }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', flex: 1 }}>
                         {CategoryIcon && <CategoryIcon className="popover-category-icon" size={16} style={{ flexShrink: 0, opacity: 0.8 }} />}
@@ -491,6 +494,10 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                         </>
                     ) : (popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target') ? (
                         <ParleySection type={popoverState.type === 'select-parley-command' ? 'command' : 'target'} parley={parley} setParley={setParley} favorites={favorites} setFavorites={setFavorites} whoList={whoList} triggerHaptic={triggerHaptic} setPopoverState={setPopoverState} />
+                    ) : popoverState.type === 'account-character' ? (
+                        <AccountCharacterCard character={accountCharacters?.find(c => c.name === (popoverState.accountCharName || popoverState.context)) || { name: popoverState.accountCharName || popoverState.context || '', race: '', level: '', logon: '', area: '', rent: '' }} accountState={accountState} setAccountState={setAccountState} executeCommand={executeCommand} triggerHaptic={triggerHaptic} onClose={() => setPopoverState(null)} />
+                    ) : popoverState.type === 'account-stat-edit' && accountState ? (
+                        <AccountStatPopover accountState={accountState} executeCommand={executeCommand} triggerHaptic={triggerHaptic} onClose={() => setPopoverState(null)} />
                     ) : null}
                 </>
             )}

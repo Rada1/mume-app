@@ -27,6 +27,8 @@ export const ExperimentalSettings: React.FC<ExperimentalSettingsProps> = ({
     const setIsSpectateMode = useModeStore(s => s.setIsSpectating);
     const showDeveloperTools = useSettingsStore(s => s.showDeveloperTools ?? false);
     const setShowDeveloperTools = useSettingsStore(s => s.setShowDeveloperTools);
+    const useMobileAccountPanels = useSettingsStore(s => s.useMobileAccountPanels ?? true);
+    const setUseMobileAccountPanels = useSettingsStore(s => s.setUseMobileAccountPanels);
 
     // Discord Activity Settings
     const isDiscordEnabled = useSettingsStore(s => s.isDiscordEnabled ?? true);
@@ -68,6 +70,13 @@ export const ExperimentalSettings: React.FC<ExperimentalSettingsProps> = ({
                 description="Display the snooped player's prompt line in the message log during spectate mode."
                 value={showSpectatePromptInLog}
                 onToggle={() => setShowSpectatePromptInLog(!showSpectatePromptInLog)}
+            />
+
+            <ToggleRow
+                label="Mobile account panels"
+                description="Use focused login, character, and creation panels instead of the account log and shortcut grid. Turn off to restore the previous mobile account screen."
+                value={useMobileAccountPanels}
+                onToggle={() => setUseMobileAccountPanels(!useMobileAccountPanels)}
             />
 
             <ToggleRow

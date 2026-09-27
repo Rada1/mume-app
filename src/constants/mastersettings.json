@@ -311,6 +311,18 @@
       "id": "tactical-thief",
       "label": "Thief",
       "command": "hide",
+      "swipeCommands": {
+        "up": "reveal",
+        "down": "load",
+        "left": "scout",
+        "right": "flush"
+      },
+      "swipeActionTypes": {
+        "up": "command",
+        "down": "command",
+        "left": "command",
+        "right": "command"
+      },
       "setId": "Tactical",
       "actionType": "command",
       "display": "floating",
@@ -385,10 +397,12 @@
       "longCommand": "warriorskilllist",
       "swipeCommands": {
         "down": "flee",
+        "left": "disengage",
         "right": "assist"
       },
       "swipeActionTypes": {
         "down": "command",
+        "left": "command",
         "right": "command"
       },
       "longSwipeActionTypes": {

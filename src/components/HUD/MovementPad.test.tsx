@@ -49,7 +49,7 @@ describe('MovementPad Component', () => {
         const downBtn = screen.getByRole('button', { name: /Down/i });
         const lookBtn = screen.getByRole('button', { name: /Look/i });
         const exitsBtn = screen.getByRole('button', { name: /Exits/i });
-        const scanBtn = screen.getByRole('button', { name: /Scan/i });
+        const mapBtn = screen.getByRole('button', { name: /Map/i });
 
         // Valid movement directions
         expect(northBtn.classList.contains('is-valid-exit')).toBe(true);
@@ -70,7 +70,8 @@ describe('MovementPad Component', () => {
         // Actions are not movement directions and should never be dimmed
         expect(lookBtn.classList.contains('is-dimmed')).toBe(false);
         expect(exitsBtn.classList.contains('is-dimmed')).toBe(false);
-        expect(scanBtn.classList.contains('is-dimmed')).toBe(false);
+        expect(mapBtn.classList.contains('is-dimmed')).toBe(false);
+        expect(screen.queryByRole('button', { name: /Scan/i })).toBeNull();
     });
 
     it('dims closed door exits with is-closed-door indicator', () => {

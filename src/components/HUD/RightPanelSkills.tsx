@@ -31,10 +31,12 @@ type RightPanelSkillsProps = {
 // --- Render Section ---
 export const RightPanelSkills: React.FC<RightPanelSkillsProps> = props => (
     <>
-        <div className="right-panel-class-chips">
+        <div className="right-panel-class-chips" role="tablist" aria-label="Skill classes">
             {CLASS_KEYS.map(key => <button key={key} type="button"
+                role="tab"
+                aria-selected={props.selectedClass === key}
                 className={`right-panel-class-chip${props.selectedClass === key ? ' is-active' : ''}`}
-                onClick={() => props.onSelectClass(key)}>{key}</button>)}
+                onClick={() => props.onSelectClass(key)}>{props.selectedClass === key ? `[ ${key} ]` : key}</button>)}
         </div>
         {props.guildAvailable && <div className="right-panel-guild-note" role="status">
             <strong>● Guildmaster available</strong><span>{props.sessionsLeft} session{props.sessionsLeft === 1 ? '' : 's'} left</span>

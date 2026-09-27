@@ -12,6 +12,73 @@
     overflow: visible;
 }
 
+.movement-command-wheel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 230px;
+    height: 230px;
+    transform: translate(-50%, -50%);
+    z-index: 1101;
+    pointer-events: none;
+}
+
+.movement-command-wheel-item {
+    position: absolute;
+    display: flex;
+    min-width: 54px;
+    min-height: 54px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: 1px solid rgba(201, 168, 76, 0.28);
+    border-radius: 12px;
+    background: rgba(20, 16, 14, 0.84);
+    color: #e5c368;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.42);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.56rem;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    transition: transform 120ms ease, border-color 120ms ease, background 120ms ease, color 120ms ease;
+}
+
+.movement-command-wheel-item.north-west { top: 28px; left: 28px; }
+.movement-command-wheel-item.north { top: 0; left: 50%; transform: translateX(-50%); }
+.movement-command-wheel-item.north-east { top: 28px; right: 28px; }
+.movement-command-wheel-item.west { top: 50%; left: 0; transform: translateY(-50%); }
+.movement-command-wheel-item.center { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.movement-command-wheel-item.east { top: 50%; right: 0; transform: translateY(-50%); }
+.movement-command-wheel-item.south-west { bottom: 28px; left: 28px; }
+.movement-command-wheel-item.south { bottom: 0; left: 50%; transform: translateX(-50%); }
+.movement-command-wheel-item.south-east { right: 28px; bottom: 28px; }
+
+.movement-command-wheel-item.selected {
+    border-color: rgba(255, 255, 255, 0.9);
+    background: rgba(201, 168, 76, 0.92);
+    color: #17120c;
+    box-shadow: 0 0 18px rgba(201, 168, 76, 0.42);
+    transform: scale(1.1);
+}
+
+.movement-command-wheel-item.north.selected,
+.movement-command-wheel-item.south.selected {
+    transform: translateX(-50%) scale(1.1);
+}
+
+.movement-command-wheel-item.west.selected,
+.movement-command-wheel-item.east.selected {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.movement-command-wheel-item.center.selected {
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
 .swipe-ray {
     position: absolute;
     width: 3px;

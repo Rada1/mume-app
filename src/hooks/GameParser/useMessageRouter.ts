@@ -46,6 +46,12 @@ export const shouldDetectRoomItemsFromLine = (
         /\b(?:is|are|lies|lie|rests|rest|sits|sit|has been left|have been left)\s+here\b/i.test(line);
 };
 
+export const isVisibleDuringSuppressedCapture = (
+    isPromptBoundary: boolean,
+    isImportantMessage: boolean,
+    isRoomContent: boolean
+): boolean => isPromptBoundary || isImportantMessage || isRoomContent;
+
 export const classifyRoutedMessageType = (
     msgType: string,
     textOnly: string,
@@ -112,7 +118,8 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         // Drawer visibility alone must not suppress manual commands typed while a
         // drawer is open; only drawer-origin or otherwise silent captures are hidden.
         if (capture.hasSession()) {
-            if (fromDrawer) return false;
+            // Keep the real server prompt even when a drawer capture hides its body.
+            if (fromDrawer) return isVisibleDuringSuppressedCapture(isEndPrompt, false, false);
             else if (stage === 'practice' && isSilent) isDrawerHiding = true;
             else if (stage === 'container' && (fromDrawer || isSilent)) isDrawerHiding = true;
             else if (stage === 'score' || stage === 'help') isDrawerHiding = true;
@@ -123,7 +130,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
 
         // --- Final Visibility Calculation ---
         if (isDrawerHiding) {
-            return isImportantMessage || isRoomContent;
+            return isVisibleDuringSuppressedCapture(isEndPrompt, isImportantMessage, isRoomContent);
         }
 
         // Spacing: Always show truly empty lines to preserve game pacing

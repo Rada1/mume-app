@@ -1079,7 +1079,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
         }
     }, [isReadingHistory, displayMessages]);
 
-    // The live quarter is a readout. Wheel input anywhere in the split log
+    // The live eighth is a readout. Wheel input anywhere in the split log
     // should move history, while live output stays pinned to its newest line.
     React.useEffect(() => {
         const liveLog = liveLogRef.current;

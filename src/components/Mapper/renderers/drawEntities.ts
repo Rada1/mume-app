@@ -677,13 +677,17 @@ export const drawEntities = (
     const anchor = resolveActiveRoomAnchor(rCtx, playerPosRef);
     const trail = playerTrailRef.current;
 
-    // A single gold outline identifies the player's tile without changing its terrain.
+    // Match the green room title so the player's tile reads as the current location.
     if (anchor && Math.abs(anchor.z - currentZ) < 1.0) {
         const tileX = anchor.x * GRID_SIZE;
         const tileY = anchor.y * GRID_SIZE;
         ctx.save();
-        ctx.strokeStyle = 'rgba(255, 226, 134, 0.84)';
+        ctx.strokeStyle = 'rgba(119, 201, 97, 0.94)';
         ctx.lineWidth = 1.5 / rCtx.camera.zoom;
+        if (!rCtx.lowEffects) {
+            ctx.shadowColor = 'rgba(119, 201, 97, 0.45)';
+            ctx.shadowBlur = 8;
+        }
         ctx.strokeRect(tileX + 1.5 / rCtx.camera.zoom, tileY + 1.5 / rCtx.camera.zoom, GRID_SIZE - 3 / rCtx.camera.zoom, GRID_SIZE - 3 / rCtx.camera.zoom);
         ctx.restore();
     }
@@ -825,22 +829,11 @@ export const drawEntities = (
             }
 
             if (predictedPoints.length > 1) {
-                const movementColor = rCtx.playerColor || (rCtx.showTerrainTiles !== false ? '#ffd700' : '#4a341e');
+                const movementColor = getClientThemeColor('--mume-wiki-link-color', rCtx.isDarkMode ? '#c9a84c' : '#8b6b10');
                 ctx.save();
                 // MMapper's prespammed path is a solid, centered 0.1-room-unit
                 // line with a small point at its endpoint.
                 ctx.globalAlpha = rCtx.showTerrainTiles !== false ? 0.95 : 0.78;
-                // Add high-contrast outline under tiles so it stands out brightly over complex terrain
-                if (rCtx.showTerrainTiles !== false) {
-                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
-                    ctx.lineWidth = GRID_SIZE * 0.1 + 2 / rCtx.camera.zoom;
-                    ctx.lineCap = 'round';
-                    ctx.lineJoin = 'round';
-                    ctx.beginPath();
-                    ctx.moveTo(predictedPoints[0].x, predictedPoints[0].y);
-                    for (const point of predictedPoints.slice(1)) ctx.lineTo(point.x, point.y);
-                    ctx.stroke();
-                }
                 ctx.strokeStyle = movementColor;
                 ctx.lineWidth = GRID_SIZE * 0.1;
                 ctx.lineCap = 'round';
@@ -850,13 +843,6 @@ export const drawEntities = (
                 ctx.moveTo(predictedPoints[0].x, predictedPoints[0].y);
                 for (const point of predictedPoints.slice(1)) ctx.lineTo(point.x, point.y);
                 ctx.stroke();
-                if (rCtx.showTerrainTiles !== false) {
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-                    const endpoint = predictedPoints[predictedPoints.length - 1];
-                    ctx.beginPath();
-                    ctx.arc(endpoint.x, endpoint.y, 5, 0, Math.PI * 2);
-                    ctx.fill();
-                }
                 ctx.fillStyle = movementColor;
                 const endpoint = predictedPoints[predictedPoints.length - 1];
                 ctx.beginPath();
@@ -1467,10 +1453,7 @@ export const drawMarquee = (rCtx: RenderContext, marquee: { start: { x: number, 
     }
 };
 
-export const drawFilterHighlights = (
-    rCtx: RenderContext,
-    playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>
-) => {
+export const drawFilterHighlights = (rCtx: RenderContext) => {
     const { ctx, activeMapFilter, matchedRoomIds, closestRoomId, allRooms, preloaded, currentZ, now, filterPathIds, filterPathDistance } = rCtx;
     if (!matchedRoomIds || matchedRoomIds.size === 0) return;
     const effectiveFilter = activeMapFilter || 'resources';
@@ -1732,25 +1715,6 @@ export const drawFilterHighlights = (
             drawWave(progress1);
             drawWave(progress2);
 
-            // 3. Keep the direct connector visible in both terrain and classic map views.
-            const playerCoords = playerPosRef.current || resolveActiveRoomAnchor(rCtx, playerPosRef);
-            if (playerCoords && Math.abs(playerCoords.z - currentZ) < 0.5) {
-                const px = playerCoords.x * GRID_SIZE + GRID_SIZE / 2;
-                const py = playerCoords.y * GRID_SIZE + GRID_SIZE / 2;
-
-                ctx.save();
-                ctx.strokeStyle = colors.stroke;
-                ctx.lineWidth = Math.max(1.8, (1.5 * scaleFactor) / zoom);
-                ctx.setLineDash([Math.max(4, 3 / zoom), Math.max(4, 3 / zoom)]);
-                // Turn off connector shadow blur when zoomed out
-                ctx.shadowBlur = zoom < 0.15 ? 0 : Math.max(4, 3 / zoom);
-                ctx.shadowColor = colors.shadow;
-                ctx.beginPath();
-                ctx.moveTo(px, py);
-                ctx.lineTo(cx, cy);
-                ctx.stroke();
-                ctx.restore();
-            }
         }
     }
 };

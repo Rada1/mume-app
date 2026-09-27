@@ -5,18 +5,20 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import type { PointerEvent } from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { useDeckTargeting } from './useDeckTargeting';
 import { useRoomStore } from '../../stores/useRoomStore';
+import type { DrawerLine } from '../../types';
 
 describe('useDeckTargeting', () => {
     beforeEach(() => {
         vi.useFakeTimers();
         useRoomStore.setState({
             chars: {
-                'troll-1': { name: 'Cave Troll', targetName: 'troll', flags: 'aggressive', count: 1 } as any
+                1: { name: 'Cave Troll', keyword: 'troll', flags: ['aggressive'] }
             },
-            items: {}
+            items: []
         });
     });
 
@@ -148,7 +150,7 @@ describe('useDeckTargeting', () => {
             result.current.handleSelectTarget('troll');
         });
 
-        expect(setTarget).toHaveBeenCalledWith('troll');
+        expect(setTarget).not.toHaveBeenCalled();
         expect(executeCommand).toHaveBeenCalledWith('kill troll');
         expect(flashPressed).toHaveBeenCalledWith('Kill');
         expect(result.current.isTargetMenuOpen).toBe(false);
@@ -188,6 +190,24 @@ describe('useDeckTargeting', () => {
         expect(result.current.isTargetMenuOpen).toBe(false);
     });
 
+    it('closes the Assist target menu on release without selecting a target', () => {
+        const executeCommand = vi.fn();
+        const { result } = renderHook(() => useDeckTargeting({
+            target: 'orc', setTarget: vi.fn(), executeCommand,
+            flashPressed: vi.fn(), fire: vi.fn()
+        }));
+        const assistItem = { label: 'Assist', cmd: 'assist ', needsTarget: false, holdOpensMenuOnly: true };
+
+        act(() => {
+            result.current.handlePointerDown(assistItem, { buttons: 1, pointerType: 'touch' } as PointerEvent<HTMLButtonElement>);
+            vi.advanceTimersByTime(230);
+            result.current.handlePointerUp(assistItem, { buttons: 1, pointerType: 'touch' } as PointerEvent<HTMLButtonElement>);
+        });
+
+        expect(result.current.isTargetMenuOpen).toBe(false);
+        expect(executeCommand).not.toHaveBeenCalled();
+    });
+
     it('closes target menu on cancel', () => {
         const fire = vi.fn();
         const executeCommand = vi.fn();
@@ -215,5 +235,130 @@ describe('useDeckTargeting', () => {
         });
 
         expect(result.current.isTargetMenuOpen).toBe(false);
+    });
+
+    it('offers inventory targets for Personal commands without using the combat target', () => {
+        const executeCommand = vi.fn();
+        const setTarget = vi.fn();
+        const inventoryLines: DrawerLine[] = [
+            { id: 'flask-1', text: 'a dark flask', html: '', context: 'flask', isItem: true },
+        ];
+        const item = { label: 'Drink', cmd: 'drink ', needsTarget: true, targetKind: 'inventory' as const };
+        const { result } = renderHook(() => useDeckTargeting({
+            target: 'troll', setTarget, executeCommand, fire: vi.fn(), flashPressed: vi.fn(), inventoryLines,
+        }));
+
+        act(() => {
+            result.current.handlePointerDown(item, { buttons: 1, pointerType: 'touch' } as PointerEvent<HTMLButtonElement>);
+            vi.advanceTimersByTime(230);
+        });
+        expect(result.current.targetSuggestions?.[0].value).toBe('flask');
+        expect(result.current.targetSuggestions?.map(suggestion => suggestion.value)).toContain('water');
+        expect(executeCommand).not.toHaveBeenCalled();
+
+        act(() => result.current.handleSelectTarget('flask'));
+        expect(executeCommand).toHaveBeenCalledWith('drink flask');
+        expect(setTarget).not.toHaveBeenCalled();
+    });
+
+    it('offers water for Drink even without a water item in inventory', () => {
+        const executeCommand = vi.fn();
+        const item = { label: 'Drink', cmd: 'drink ', needsTarget: true, targetKind: 'inventory' as const };
+        const { result } = renderHook(() => useDeckTargeting({
+            target: null, setTarget: vi.fn(), executeCommand, fire: vi.fn(), flashPressed: vi.fn(),
+        }));
+        act(() => {
+            result.current.handlePointerDown(item, { buttons: 1, pointerType: 'touch' } as PointerEvent<HTMLButtonElement>);
+            vi.advanceTimersByTime(230);
+        });
+        expect(result.current.targetSuggestions?.map(suggestion => suggestion.value)).toEqual(['water']);
+        act(() => result.current.handleSelectTarget('water'));
+        expect(executeCommand).toHaveBeenCalledWith('drink water');
+    });
+
+    it('closes an unselected Personal menu on release without firing its tap command', () => {
+        const fire = vi.fn();
+        const item = { label: 'Drink', cmd: 'drink ', needsTarget: true, targetKind: 'inventory' as const };
+        const { result } = renderHook(() => useDeckTargeting({
+            target: null, setTarget: vi.fn(), executeCommand: vi.fn(), fire, flashPressed: vi.fn(),
+        }));
+        act(() => {
+            result.current.handlePointerDown(item, { buttons: 1, pointerType: 'touch' } as PointerEvent<HTMLButtonElement>);
+            vi.advanceTimersByTime(230);
+            result.current.handlePointerUp(item, { buttons: 1, pointerType: 'touch' } as PointerEvent<HTMLButtonElement>);
+            result.current.handleClick(item, { preventDefault: vi.fn(), stopPropagation: vi.fn() } as unknown as React.MouseEvent<HTMLButtonElement>);
+        });
+        expect(result.current.isTargetMenuOpen).toBe(false);
+        expect(fire).not.toHaveBeenCalled();
+    });
+
+    it('keeps a category target menu open after release when no target was selected', () => {
+        const executeCommand = vi.fn();
+        const item = { label: 'Kill', cmd: 'kill ', needsTarget: true };
+        const { result } = renderHook(() => useDeckTargeting({
+            target: null, setTarget: vi.fn(), executeCommand, fire: vi.fn(), flashPressed: vi.fn(),
+        }));
+
+        act(() => result.current.openTargetMenuFor(item, 17));
+        expect(result.current.isTargetMenuOpen).toBe(true);
+
+        act(() => result.current.releaseHeldTargetMenu(17));
+
+        expect(result.current.isTargetMenuOpen).toBe(true);
+        expect(executeCommand).not.toHaveBeenCalled();
+    });
+
+    it('fires a category command when its target is tapped after releasing the long swipe', () => {
+        const executeCommand = vi.fn();
+        const item = { label: 'Kill', cmd: 'kill ', needsTarget: true };
+        const { result } = renderHook(() => useDeckTargeting({
+            target: null, setTarget: vi.fn(), executeCommand, fire: vi.fn(), flashPressed: vi.fn(),
+        }));
+
+        act(() => result.current.openTargetMenuFor(item, 19));
+        act(() => result.current.releaseHeldTargetMenu(19));
+        act(() => result.current.handleSelectTarget('troll'));
+
+        expect(executeCommand).toHaveBeenCalledWith('kill troll');
+        expect(result.current.isTargetMenuOpen).toBe(false);
+    });
+
+    it('waits for the initiating finger to release before firing a selected category target', () => {
+        const executeCommand = vi.fn();
+        const item = { label: 'Kill', cmd: 'kill ', needsTarget: true };
+        const { result } = renderHook(() => useDeckTargeting({
+            target: null, setTarget: vi.fn(), executeCommand, fire: vi.fn(), flashPressed: vi.fn(),
+        }));
+
+        act(() => result.current.openTargetMenuFor(item, 23));
+        act(() => result.current.handleSelectTarget('troll'));
+        expect(executeCommand).not.toHaveBeenCalled();
+        expect(result.current.isTargetMenuOpen).toBe(true);
+
+        act(() => result.current.releaseHeldTargetMenu(23));
+
+        expect(executeCommand).toHaveBeenCalledWith('kill troll');
+        expect(result.current.isTargetMenuOpen).toBe(false);
+    });
+
+    it('chooses an inventory item and then a recipient for Give', () => {
+        const executeCommand = vi.fn();
+        const inventoryLines: DrawerLine[] = [
+            { id: 'gem-1', text: 'a red gem', html: '', context: 'gem', isItem: true },
+        ];
+        const item = { label: 'Give', cmd: 'give ', needsTarget: true, targetKind: 'inventory-recipient' as const };
+        const { result } = renderHook(() => useDeckTargeting({
+            target: null, setTarget: vi.fn(), executeCommand, fire: vi.fn(), flashPressed: vi.fn(), inventoryLines,
+        }));
+        act(() => {
+            result.current.handlePointerDown(item, { buttons: 1, pointerType: 'touch' } as PointerEvent<HTMLButtonElement>);
+            vi.advanceTimersByTime(230);
+        });
+        act(() => result.current.handleSelectTarget('gem'));
+        expect(result.current.targetMenuTitle).toBe('SELECT ARGUMENTS');
+        expect(executeCommand).not.toHaveBeenCalled();
+
+        act(() => result.current.handleSelectTarget('troll'));
+        expect(executeCommand).toHaveBeenCalledWith('give gem troll');
     });
 });

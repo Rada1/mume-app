@@ -49,7 +49,6 @@ interface LineClusterProps {
 }
 
 import { GameButton } from '../../Controls/GameButton/GameButton';
-import { ActionMenuButton } from '../../Controls/ActionMenuButton';
 
 const TACTICAL_CLASS_LABELS: Record<string, string> = {
     'tactical-ranger': 'ranger',
@@ -132,15 +131,6 @@ export const LineCluster: React.FC<LineClusterProps> = ({
                     {renderButton(charmieButton, 'default', 'line-btn tactical-charmie auxiliary-charmie')}
                 </div>
             )}
-            <div 
-                className="line-cluster-title clickable-toggle"
-                onClick={() => {
-                    setIsCheatSheetExpanded?.(!isCheatSheetExpanded);
-                }}
-                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', userSelect: 'none' }}
-            >
-                abilities {isCheatSheetExpanded ? '▴' : '▾'}
-            </div>
             <div className="line-cluster">
                 {sortedButtons.map((button, index) => (
                     <div
@@ -152,12 +142,6 @@ export const LineCluster: React.FC<LineClusterProps> = ({
                         <span className="line-cluster-caption">{getTacticalClassLabel(button)}</span>
                     </div>
                 ))}
-                <div
-                    className="line-cluster-step"
-                    style={{ '--cascade-delay': `${sortedButtons.length * 0.12}s` } as React.CSSProperties}
-                >
-                    <ActionMenuButton triggerHaptic={triggerHaptic} className="line-btn line-cluster-action-menu" />
-                </div>
             </div>
         </div>
     );

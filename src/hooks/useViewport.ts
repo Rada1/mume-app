@@ -41,7 +41,6 @@ export function useViewport(
     const isLockedToBottomRef = useRef(true);
 
     // Viewport measurement refs
-    const lastViewportHeightRef = useRef<number>(0);
     const lastWidthRef = useRef<number>(0);
     const baseHeightRef = useRef<number>(0);
 
@@ -201,10 +200,16 @@ export function useViewport(
             // Measure the inner scroll element — its clientWidth already excludes the scrollbar.
             const messageLog = document.querySelector('.message-log') as HTMLElement | null;
             const logContainer = document.querySelector('.message-log-container') as HTMLElement | null;
-            if (!messageLog || !logContainer) return;
+            const accountExperience = isMobile
+                ? document.querySelector('.mobile-account-experience') as HTMLElement | null
+                : null;
+            const isAccountSurface = !messageLog && Boolean(accountExperience);
+            const measurementElement = messageLog ?? accountExperience;
+            const measurementContainer = logContainer ?? accountExperience;
+            if (!measurementElement || !measurementContainer) return;
 
-            const width = messageLog.clientWidth; // excludes scrollbar
-            const height = logContainer.clientHeight;
+            const width = measurementElement.clientWidth; // excludes scrollbar when measuring the log
+            const height = measurementContainer.clientHeight;
             if (width === 0 || height === 0) return;
 
             // --- DOM-based character width measurement ---
@@ -218,10 +223,10 @@ export function useViewport(
 
             // baseline cols needed for game content
             const baseCols = 80;
-            const timestampWidth = isTimestampEnabled ? 12 : 0; 
+            const timestampWidth = messageLog && isTimestampEnabled ? 12 : 0;
             const targetCols = baseCols + timestampWidth;
 
-            const totalPadding = readHorizontalPadding(messageLog);
+            const totalPadding = readHorizontalPadding(measurementElement);
 
             // Sub-pixel buffer: use a small buffer to prevent rounding-induced wrapping across different browsers.
             // Mobile portrait targets "barely fits 80 cols" so we skip the buffer there.
@@ -253,6 +258,10 @@ export function useViewport(
             document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);
             setLogFontSizePx(safeSize);
 
+            // The mobile account screens replace the log entirely. Keep their terminal
+            // prompt text on the same responsive font scale without changing MUD rows.
+            if (isAccountSurface) return;
+
             // Derive final grid metrics for the game server
             const finalCharWidth = charWidthRatio * safeSize;
             const finalLineHeight = safeSize * 1.1;
@@ -274,19 +283,23 @@ export function useViewport(
         document.fonts.ready.then(updateLayout);
 
         // Re-measure if the container resizes (drawer opens/closes, orientation change, etc.)
+        const layoutRoot = document.querySelector('.desktop-center-column');
         const container = document.querySelector('.message-log-container');
         let ro: ResizeObserver | null = null;
-        if (container) {
+        if (layoutRoot || container) {
             ro = new ResizeObserver(updateLayout);
-            ro.observe(container);
+            ro.observe(layoutRoot ?? container!);
         }
+        const mutationObserver = layoutRoot ? new MutationObserver(updateLayout) : null;
+        mutationObserver?.observe(layoutRoot!, { childList: true });
 
         return () => {
             clearTimeout(timer);
             clearTimeout(timer2);
             ro?.disconnect();
+            mutationObserver?.disconnect();
         };
-    }, [isMobile, isLandscape, logFontSize, windowWidth, isKeyboardOpen, fontFamily, isTimestampEnabled, isNewbieMode]);
+    }, [isMobile, isLandscape, logFontSize, windowWidth, fontFamily, isTimestampEnabled, isNewbieMode]);
 
     const updateHeight = useCallback(() => {
         const viewport = window.visualViewport;
@@ -294,7 +307,6 @@ export function useViewport(
 
         const currentHeight = viewport.height;
         const currentWidth = viewport.width;
-        const offsetTop = viewport.offsetTop;
 
         // --- Robust Base Height Detection ---
         const widthChanged = Math.abs(currentWidth - lastWidthRef.current) > 50;
@@ -322,55 +334,11 @@ export function useViewport(
 
         const targetState = isKeyboardPhysicallyPresent;
 
-        const applyLock = (h: number, off: number, isLocked: boolean) => {
-            const container = document.querySelector('.app-container') as HTMLElement;
-            if (!container) return;
-
-            if (isLocked) {
-                container.classList.add('kb-open');
-                container.style.position = 'fixed';
-                container.style.top = '0';
-                container.style.left = '0';
-                container.style.width = '100vw';
-                container.style.height = `${h}px`;
-                container.style.transform = `translate3d(0, ${off}px, 0)`;
-                container.style.overflow = 'hidden';
-
-                if (Math.abs(window.scrollY) > 1) window.scrollTo(0, 0);
-                if (container.scrollTop > 0) container.scrollTop = 0;
-            } else {
-                if (container.classList.contains('kb-open')) {
-                    container.classList.remove('kb-open');
-                    container.style.position = '';
-                    container.style.top = '';
-                    container.style.left = '';
-                    container.style.width = '';
-                    container.style.height = '';
-                    container.style.transform = '';
-                    container.style.overflow = '';
-                }
-            }
-        };
-
-        requestAnimationFrame(() => {
-            applyLock(currentHeight, offsetTop, targetState);
-
-            if (targetState) {
-                setTimeout(() => {
-                    const v = window.visualViewport;
-                    const hDrop = baseHeightRef.current - (v?.height || 0);
-                    if (v && (hDrop > 60 || v.height < baseHeightRef.current * 0.85)) {
-                        applyLock(v.height, v.offsetTop, true);
-                    }
-                }, 150);
-            }
-
-            lastViewportHeightRef.current = currentHeight;
-
-            if (targetState !== isKeyboardOpen) {
-                setIsKeyboardOpen(targetState);
-            }
-        });
+        // The viewport meta tag asks mobile browsers to resize the layout for
+        // the keyboard. Let that native resize drive the app; changing the
+        // app's inline height here creates a second, competing layout pass.
+        document.querySelector<HTMLElement>('.app-container')?.classList.toggle('kb-open', targetState);
+        if (targetState !== isKeyboardOpen) setIsKeyboardOpen(targetState);
     }, [isMobile, isLandscape, isKeyboardOpen, logFontSize]);
 
     useEffect(() => {

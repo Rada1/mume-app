@@ -18,17 +18,21 @@ interface PendingDrag {
     source: ObjectDragSource;
     timer: ReturnType<typeof setTimeout>;
     active: boolean;
+    scrolling: boolean;
+    scrollElement: HTMLElement | null;
     lastX: number;
     lastY: number;
     frame: number | null;
     targetKey: string;
-    mouseDragOnMove: boolean;
+    dragOnMove: boolean;
+    touchDragOnMove: boolean;
 }
 
 interface UseObjectDragCommandsProps {
     executeCommand: ExecuteCommand;
     triggerHaptic?: (ms: number) => void;
     mouseDragOnMove?: boolean;
+    touchDragOnMove?: boolean;
     onDrop?: (source: ObjectDragSource, target: ObjectDropTarget) => void;
 }
 
@@ -91,6 +95,14 @@ export const isValidObjectDragTarget = (source: ObjectDragSource, target: Object
     return false;
 };
 
+export const getValidObjectDropTarget = (source: ObjectDragSource, element: Element | null): ObjectDropTarget | null => {
+    const target = getObjectDropTarget(element);
+    if (isValidObjectDragTarget(source, target)) return target;
+    const section = element?.closest('[data-object-drop-row]') ?? null;
+    const sectionTarget = getObjectDropTarget(section);
+    return isValidObjectDragTarget(source, sectionTarget) ? sectionTarget : null;
+};
+
 const buildDropCommand = (source: ObjectDragSource, target: ObjectDropTarget): string | null => {
     if (target.type === 'container') return source.row === 'inventory' && !source.parentContainerNoun
         && source.itemId !== target.containerId ? `put ${source.noun} ${target.noun}` : null;
@@ -109,7 +121,7 @@ const buildDropCommand = (source: ObjectDragSource, target: ObjectDropTarget): s
 
 export const getObjectDragCommand = buildDropCommand;
 
-export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDragOnMove = false, onDrop }: UseObjectDragCommandsProps) => {
+export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDragOnMove = false, touchDragOnMove = false, onDrop }: UseObjectDragCommandsProps) => {
     const pendingRef = useRef<PendingDrag | null>(null);
     const onDropRef = useRef(onDrop);
     onDropRef.current = onDrop;
@@ -136,8 +148,7 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
         document.documentElement.style.setProperty('--object-drag-x', `${pending.lastX}px`);
         document.documentElement.style.setProperty('--object-drag-y', `${pending.lastY}px`);
 
-        const target = getObjectDropTarget(document.elementFromPoint(pending.lastX, pending.lastY));
-        const validTarget = isValidObjectDragTarget(pending.source, target) ? target : null;
+        const validTarget = getValidObjectDropTarget(pending.source, document.elementFromPoint(pending.lastX, pending.lastY));
         const targetKey = getTargetKey(validTarget);
 
         if (targetKey !== pending.targetKey) {
@@ -153,12 +164,27 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
 
     const updateActiveDrag = useCallback((event: PointerEvent) => {
         const pending = pendingRef.current;
-        if (!pending) return;
+        if (!pending || event.pointerId !== pending.pointerId) return;
 
         const dx = event.clientX - pending.startX;
         const dy = event.clientY - pending.startY;
+        if (pending.scrolling) {
+            event.preventDefault();
+            if (pending.scrollElement) pending.scrollElement.scrollTop += pending.lastY - event.clientY;
+            pending.lastY = event.clientY;
+            return;
+        }
+        if (!pending.active && pending.touchDragOnMove && pending.scrollElement &&
+            Math.abs(dy) > MOVE_TOLERANCE_PX && Math.abs(dy) > Math.abs(dx) * 1.2) {
+            clearTimeout(pending.timer);
+            pending.scrolling = true;
+            event.preventDefault();
+            pending.scrollElement.scrollTop += pending.lastY - event.clientY;
+            pending.lastY = event.clientY;
+            return;
+        }
         if (!pending.active && Math.hypot(dx, dy) > MOVE_TOLERANCE_PX) {
-            if (!pending.mouseDragOnMove) {
+            if (!pending.dragOnMove) {
                 clearPending(false);
                 return;
             }
@@ -180,12 +206,17 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
 
     const finishDrag = useCallback((event: PointerEvent) => {
         const pending = pendingRef.current;
-        if (!pending) return;
+        if (!pending || event.pointerId !== pending.pointerId) return;
+
+        if (pending.scrolling) {
+            clearPending(true);
+            return;
+        }
 
         if (pending.active) {
             event.preventDefault();
-            const target = getObjectDropTarget(document.elementFromPoint(event.clientX, event.clientY));
-            if (isValidObjectDragTarget(pending.source, target)) {
+            const target = getValidObjectDropTarget(pending.source, document.elementFromPoint(event.clientX, event.clientY));
+            if (target) {
                 const command = buildDropCommand(pending.source, target);
                 if (command) {
                     triggerHaptic?.(35);
@@ -200,6 +231,10 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
         clearPending(false);
     }, [clearPending, executeCommand, triggerHaptic]);
 
+    const cancelDrag = useCallback((event: PointerEvent) => {
+        if (pendingRef.current?.pointerId === event.pointerId) clearPending(true);
+    }, [clearPending]);
+
     useEffect(() => {
         const handleClick = (event: MouseEvent) => {
             if (Date.now() > suppressClickUntilRef.current) return;
@@ -211,26 +246,29 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
         document.addEventListener('click', handleClick, true);
         document.addEventListener('pointermove', updateActiveDrag, { passive: false });
         document.addEventListener('pointerup', finishDrag, { passive: false });
-        document.addEventListener('pointercancel', finishDrag, { passive: false });
+        document.addEventListener('pointercancel', cancelDrag, { passive: false });
         return () => {
             document.removeEventListener('click', handleClick, true);
             document.removeEventListener('pointermove', updateActiveDrag);
             document.removeEventListener('pointerup', finishDrag);
-            document.removeEventListener('pointercancel', finishDrag);
+            document.removeEventListener('pointercancel', cancelDrag);
             clearPending(false);
         };
-    }, [clearPending, finishDrag, updateActiveDrag]);
+    }, [cancelDrag, clearPending, finishDrag, updateActiveDrag]);
 
     return useCallback((event: React.PointerEvent<HTMLElement>, source: ObjectDragSource) => {
         if (event.pointerType === 'mouse' && event.button !== 0) return;
         if (!source.noun.trim()) return;
+
+        if (pendingRef.current) clearPending(false);
+        if (event.pointerType === 'touch') event.currentTarget.setPointerCapture(event.pointerId);
 
         const pointerId = event.pointerId;
         const startX = event.clientX;
         const startY = event.clientY;
         const timer = setTimeout(() => {
             const pending = pendingRef.current;
-            if (!pending || pending.pointerId !== pointerId) return;
+            if (!pending || pending.pointerId !== pointerId || pending.scrolling) return;
             pending.active = true;
             document.body.classList.add('object-chip-dragging');
             document.documentElement.style.setProperty('--object-drag-x', `${startX}px`);
@@ -246,11 +284,16 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
             source,
             timer,
             active: false,
+            scrolling: false,
+            scrollElement: touchDragOnMove && event.pointerType === 'touch'
+                ? event.currentTarget.closest<HTMLElement>('.gear-panel-body') : null,
             lastX: startX,
             lastY: startY,
             frame: null,
             targetKey: '',
-            mouseDragOnMove: mouseDragOnMove && event.pointerType === 'mouse'
+            dragOnMove: (mouseDragOnMove && event.pointerType === 'mouse') ||
+                (touchDragOnMove && event.pointerType === 'touch'),
+            touchDragOnMove: touchDragOnMove && event.pointerType === 'touch'
         };
-    }, [mouseDragOnMove, setObjectDragState, triggerHaptic]);
+    }, [clearPending, mouseDragOnMove, setObjectDragState, touchDragOnMove, triggerHaptic]);
 };

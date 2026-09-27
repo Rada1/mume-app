@@ -46,6 +46,8 @@ import './components/HUD/MapTerminalDock.css';
 import { ShaperWorkspace } from './shaper/components/ShaperWorkspace';
 import { cleanupDevServiceWorkers } from './utils/devServiceWorkerCleanup';
 import { useZoneThemeSync } from './hooks/useZoneThemeSync';
+import { useImmersionDamagePulse } from './hooks/useImmersionDamagePulse';
+import './styles/immersionDamagePulse.css';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
@@ -102,6 +104,7 @@ const MudClient = () => {
     const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
     const displayMode = useDisplayMode();
     useZoneThemeSync();
+    useImmersionDamagePulse(containerRef, isImmersionMode && inCombat);
 
     const [btnGlow, setBtnGlow] = useState({ up: false, down: false });
     const [returnToManager, setReturnToManager] = useState(false);

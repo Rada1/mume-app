@@ -107,12 +107,12 @@
 
 /* Keep recent events visible while the main virtualized log is in scrollback. */
 .message-log-layout.reading-history > .message-log {
-    flex: 0 0 75%;
+    flex: 0 0 87.5%;
 }
 
 .message-log-live-pane {
     display: flex;
-    flex: 1 1 25%;
+    flex: 1 1 12.5%;
     min-height: 0;
     flex-direction: column;
     position: relative;
@@ -886,7 +886,7 @@
     -webkit-text-fill-color: currentColor !important;
 }
 
-/* Interactive inline buttons, entity highlights, combat terms, comm messages, room titles, and user input stay full brightness */
+/* Interactive inline buttons, entity highlights, combat terms, room titles, and user input stay full brightness */
 .message-content .inline-btn,
 .message-content .inline-btn span,
 .message-content .inline-btn *,
@@ -894,15 +894,6 @@
 .room-title-text *,
 .message.is-room-name .message-content .room-title-text,
 .message.is-room-name .message-content .room-title-text *,
-.comm-bubble,
-.comm-bubble *,
-.comm-text,
-.comm-text span,
-.comm-text *,
-.message.is-comm .message-content,
-.message.is-comm .message-content span,
-.message.is-narrate .message-content,
-.message.is-narrate .message-content span,
 .message-content .combat-verb,
 .combat-verb,
 .message-content b,
@@ -933,6 +924,19 @@
 .message-content .inline-btn.auto-obj {
     opacity: 1 !important;
     filter: opacity(1) brightness(1.05); /* Minimal boost to ensure they still pop slightly */
+}
+
+/* Communication lines use their server/ANSI colors as-is. The shared inline-action
+   emphasis above is useful in room text, but brightens comm prose and its entities. */
+.message-content.comm-content,
+.message-content.comm-content *,
+.message.is-narrate .message-content,
+.message.is-narrate .message-content *,
+.message-content.comm-content .inline-btn,
+.message-content.comm-content .inline-btn *,
+.message.is-narrate .message-content .inline-btn,
+.message.is-narrate .message-content .inline-btn * {
+    filter: none !important;
 }
 
 .keyword-highlight,
@@ -1921,11 +1925,9 @@
 @keyframes incoming-text-ripple {
     0%, 100% {
         filter: brightness(1);
-        text-shadow: none;
     }
     38% {
         filter: brightness(1.28);
-        text-shadow: 0 0 2px rgba(255, 244, 190, 0.2);
     }
 }
 
@@ -1958,7 +1960,7 @@
     animation-delay: var(--sheen-word-delay, calc(var(--word-idx, var(--btn-fallback-idx, 0)) * 20ms)) !important;
 }
 
-/* The incoming sheen only animates brightness and shadow; preserve the permanent
+/* The incoming sheen only animates brightness; preserve the permanent
    immersion wave instead of replacing its transform animation. */
 .immersion-mode .message.audio-sheen-active .log-text-word,
 .immersion-mode .message.audio-sheen-active .message-content .inline-btn,
@@ -2846,12 +2848,11 @@ span.inline-btn {
     color: #ffd700 !important; /* Gold header */
 }
 
-/* Keep the client title and the active login question immediately legible while
-   the rest of the terminal intro remains deliberately subdued. */
-.state-account .message.welcome-title .message-content,
-.state-account .message.welcome-title .message-content *,
-.state-account .message.login-name-prompt .message-content,
-.state-account .message.login-name-prompt .message-content * {
+/* In account mode, all terminal output and inline choices must be rendered at 100% opacity. */
+.state-account .message-content,
+.state-account .message-content *,
+.state-account .inline-btn,
+.state-account .log-text-word {
     opacity: 1 !important;
 }
 

@@ -75,7 +75,7 @@ const drawDoorVisualOutline = (
 ) => {
     const ddx = x2 - x1;
     const ddy = y2 - y1;
-    const pad = 2.5;
+    const pad = 4;
     const radius = 2.5;
 
     ctx.save();
@@ -1393,7 +1393,7 @@ export const drawFeatures = (
                         if (d === 'n') { x2 += s; } else if (d === 's') { y1 += s; x2 += s; y2 += s; } else if (d === 'e') { x1 += s; x2 += s; y2 += s; } else { y2 += s; }
 
                         if (!hasExit) {
-                            drawInkyLine(ctx, x1, y1, x2, y2, currentWallColor, 2.0, dpr, invZoom);
+                            drawInkyLine(ctx, x1, y1, x2, y2, currentWallColor, 2.8, dpr, invZoom);
                         } else if (hasDoor) {
                             const ddx = x2 - x1, ddy = y2 - y1;
                             // Clip to this room's tile so the door doesn't bleed into the neighbor
@@ -1403,7 +1403,7 @@ export const drawFeatures = (
                             // Brown post segments (no drop shadow)
                             ctx.save();
                             ctx.strokeStyle = currentWallColor;
-                            ctx.lineWidth = 2.2;
+                            ctx.lineWidth = 2.8;
                             ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
                             ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                             ctx.restore();
@@ -1415,16 +1415,20 @@ export const drawFeatures = (
                             ctx.shadowColor = currentDoorColor;
                             if (isClosed) {
                                 ctx.strokeStyle = currentDoorColor;
-                                ctx.lineWidth = 3.2;
+                                ctx.lineWidth = 5;
+                                const inset = 1.5;
+                                ctx.translate(d === 'e' ? -inset : d === 'w' ? inset : 0, d === 's' ? -inset : d === 'n' ? inset : 0);
                                 ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                             } else {
-                                const sqSize = 5.0;
+                                const sqSize = 6.0;
                                 if (ddx === 0) {
-                                    ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.25, sqSize, sqSize);
-                                    ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.75 - sqSize, sqSize, sqSize);
+                                    const insideX = d === 'e' ? x1 - sqSize : x1;
+                                    ctx.fillRect(insideX, y1 + ddy * 0.25, sqSize, sqSize);
+                                    ctx.fillRect(insideX, y1 + ddy * 0.75 - sqSize, sqSize, sqSize);
                                 } else {
-                                    ctx.fillRect(x1 + ddx * 0.25, y1 - sqSize/2, sqSize, sqSize);
-                                    ctx.fillRect(x1 + ddx * 0.75 - sqSize, y1 - sqSize/2, sqSize, sqSize);
+                                    const insideY = d === 's' ? y1 - sqSize : y1;
+                                    ctx.fillRect(x1 + ddx * 0.25, insideY, sqSize, sqSize);
+                                    ctx.fillRect(x1 + ddx * 0.75 - sqSize, insideY, sqSize, sqSize);
                                 }
                             }
                             ctx.restore();
@@ -1697,7 +1701,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 let x1 = wx, y1 = wy, x2 = wx, y2 = wy;
                 if (d === 'n') { x2 += s; } else if (d === 's') { y1 += s; x2 += s; y2 += s; } else if (d === 'e') { x1 += s; x2 += s; y2 += s; } else { y2 += s; }
                 if (!hasExit) {
-                    drawInkyLine(ctx, x1, y1, x2, y2, currentWallColor, 2.0, dpr, invZoom);
+                    drawInkyLine(ctx, x1, y1, x2, y2, currentWallColor, 2.8, dpr, invZoom);
                 } else if (hasDoor && camera.zoom >= 0.1) {
                     const ddx = x2 - x1, ddy = y2 - y1;
                     // Clip to this room's tile so the door doesn't bleed into the neighbor
@@ -1706,7 +1710,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                     if (isActiveRoom) drawDoorVisualOutline(ctx, x1, y1, x2, y2, isClosed);
                     // Brown post segments (no drop shadow)
                     ctx.save();
-                    ctx.strokeStyle = currentWallColor; ctx.lineWidth = 2.2;
+                    ctx.strokeStyle = currentWallColor; ctx.lineWidth = 2.8;
                     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
                     ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                     ctx.restore();
@@ -1715,16 +1719,20 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                     ctx.fillStyle = currentDoorColor;
                     ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
                     if (isClosed) {
-                        ctx.strokeStyle = currentDoorColor; ctx.lineWidth = 3.2;
+                        ctx.strokeStyle = currentDoorColor; ctx.lineWidth = 5;
+                        const inset = 1.5;
+                        ctx.translate(d === 'e' ? -inset : d === 'w' ? inset : 0, d === 's' ? -inset : d === 'n' ? inset : 0);
                         ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                     } else {
-                        const sqSize = 5.0;
+                        const sqSize = 6.0;
                         if (ddx === 0) {
-                            ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.25, sqSize, sqSize);
-                            ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.75 - sqSize, sqSize, sqSize);
+                            const insideX = d === 'e' ? x1 - sqSize : x1;
+                            ctx.fillRect(insideX, y1 + ddy * 0.25, sqSize, sqSize);
+                            ctx.fillRect(insideX, y1 + ddy * 0.75 - sqSize, sqSize, sqSize);
                         } else {
-                            ctx.fillRect(x1 + ddx * 0.25, y1 - sqSize/2, sqSize, sqSize);
-                            ctx.fillRect(x1 + ddx * 0.75 - sqSize, y1 - sqSize/2, sqSize, sqSize);
+                            const insideY = d === 's' ? y1 - sqSize : y1;
+                            ctx.fillRect(x1 + ddx * 0.25, insideY, sqSize, sqSize);
+                            ctx.fillRect(x1 + ddx * 0.75 - sqSize, insideY, sqSize, sqSize);
                         }
                     }
                     ctx.restore();

@@ -10,24 +10,27 @@
     z-index: calc(var(--z-log) + 10);
     display: flex;
     align-items: center;
-    gap: 8px;
-    min-width: 122px;
-    max-width: min(210px, calc(100% - 24px));
-    padding: 7px 10px 7px 7px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-right-color: rgba(255, 146, 43, 0.7);
-    border-radius: 999px 0 0 999px;
-    background: rgba(6, 8, 13, 0.86);
-    box-shadow: 0 0 16px rgba(255, 146, 43, 0.22), 0 10px 24px rgba(0, 0, 0, 0.42);
-    backdrop-filter: blur(10px) saturate(1.2);
-    -webkit-backdrop-filter: blur(10px) saturate(1.2);
+    gap: 11px;
+    width: 206px;
+    min-height: 55px;
+    max-width: calc(100% - 24px);
+    box-sizing: border-box;
+    padding: 6px 10px;
+    border: 0;
+    border-left: 2px solid rgba(235, 166, 54, 0.55);
+    border-top: 1px solid rgba(255, 255, 255, 0.13);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 0;
+    background: rgba(19, 18, 15, 0.17);
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     pointer-events: none;
     animation: timer-expiry-slide-in 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .timer-expiry-toast.is-started {
-    border-right-color: rgba(74, 222, 128, 0.72);
-    box-shadow: 0 0 16px rgba(74, 222, 128, 0.2), 0 10px 24px rgba(0, 0, 0, 0.42);
+    border-left-color: rgba(235, 166, 54, 0.55);
 }
 
 .timer-expiry-toast.is-exiting {
@@ -36,16 +39,16 @@
 
 .timer-expiry-ring {
     position: relative;
-    width: 34px;
-    height: 34px;
-    flex: 0 0 34px;
+    width: 31px;
+    height: 31px;
+    flex: 0 0 31px;
     display: grid;
     place-items: center;
 }
 
 .timer-expiry-ring svg {
-    width: 34px;
-    height: 34px;
+    width: 31px;
+    height: 31px;
     transform: rotate(-90deg);
     grid-area: 1 / 1;
     display: block;
@@ -54,32 +57,32 @@
 .timer-expiry-ring-bg,
 .timer-expiry-ring-fill {
     fill: none;
-    stroke-width: 4;
+    stroke-width: 3;
 }
 
 .timer-expiry-ring-bg {
-    stroke: rgba(255, 255, 255, 0.11);
+    stroke: rgba(234, 160, 49, 0.25);
 }
 
 .timer-expiry-ring-fill {
-    stroke: #ff922b;
+    stroke: #e9aa44;
     stroke-linecap: round;
     transition: stroke-dashoffset 1s linear;
-    filter: drop-shadow(0 0 4px rgba(255, 146, 43, 0.6));
+    filter: drop-shadow(0 0 4px rgba(235, 152, 37, 0.25));
 }
 
 .timer-expiry-toast.is-started .timer-expiry-ring-fill {
-    stroke: #4ade80;
-    filter: drop-shadow(0 0 4px rgba(74, 222, 128, 0.55));
+    stroke: #e9aa44;
+    filter: drop-shadow(0 0 4px rgba(235, 152, 37, 0.25));
 }
 
 .timer-expiry-toast.is-started .timer-expiry-seconds {
-    color: #4ade80;
+    color: #e9aa44;
 }
 
 .timer-expiry-copy {
     display: grid;
-    gap: 2px;
+    gap: 3px;
     min-width: 0;
 }
 
@@ -91,23 +94,33 @@
 }
 
 .timer-expiry-toast.is-started .timer-expiry-seconds {
-    text-shadow: 0 0 8px rgba(74, 222, 128, 0.35);
+    text-shadow: none;
 }
 
 .timer-expiry-name {
     overflow: hidden;
-    color: rgba(255, 255, 255, 0.82);
-    font-size: 10px;
-    font-weight: 800;
+    color: #dfd2b8;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     text-overflow: ellipsis;
     text-transform: uppercase;
 }
 
 .timer-expiry-seconds {
-    color: #ff922b;
+    color: #e9aa44;
     font-size: 13px;
-    font-weight: 900;
-    text-shadow: 0 0 8px rgba(255, 146, 43, 0.35);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-shadow: none;
+}
+
+.timer-expiry-toast::after {
+    content: '';
+    width: 1px;
+    height: 38px;
+    margin-left: auto;
+    background: linear-gradient(rgba(237, 166, 56, 0.55), transparent);
 }
 
 @keyframes timer-expiry-slide-in {

@@ -1,17 +1,23 @@
 // @vitest-environment jsdom
 import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { LogDockedInput } from './LogDockedInput';
+import { useInputStore } from '../../stores/useInputStore';
 
 const mockUseGame = vi.fn();
 const mockUseUI = vi.fn();
 const mockUseVitals = vi.fn();
+const mockUseMapper = vi.fn();
 
 vi.mock('../../context/GameContext', () => ({
     useGame: () => mockUseGame(),
     useUI: () => mockUseUI(),
     useVitals: () => mockUseVitals()
+}));
+
+vi.mock('../../context/useMapper', () => ({
+    useMapper: () => mockUseMapper()
 }));
 
 vi.mock('../../stores/useRoomStore', () => ({
@@ -54,11 +60,18 @@ describe('LogDockedInput', () => {
             abilities: {}
         });
         mockUseUI.mockReturnValue({
-            accountState: { stage: 'playing' }
+            accountState: { stage: 'playing' },
+            displayInventoryLines: [],
+            displayEqLines: []
         });
         mockUseVitals.mockReturnValue({
             stats: { conditions: {} }
         });
+        mockUseMapper.mockReturnValue({
+            setActiveMapFilter: vi.fn(),
+            setMapSearchQuery: vi.fn()
+        });
+        useInputStore.setState({ input: '', history: [], historyIndex: -1, tempInput: '' });
     });
 
     afterEach(() => {
@@ -67,12 +80,7 @@ describe('LogDockedInput', () => {
 
     it('renders docked command bar without ReferenceError', () => {
         render(
-            <LogDockedInput
-                commandInputWrapRef={{ current: document.createElement('div') }}
-                inputRef={{ current: document.createElement('input') }}
-                displayInventoryLines={[]}
-                displayEqLines={[]}
-            />
+            <LogDockedInput handleSend={vi.fn()} />
         );
 
         expect(document.getElementById('mud-input')).toBeTruthy();
@@ -98,15 +106,40 @@ describe('LogDockedInput', () => {
         });
 
         render(
-            <LogDockedInput
-                commandInputWrapRef={{ current: document.createElement('div') }}
-                inputRef={{ current: document.createElement('input') }}
-                displayInventoryLines={[]}
-                displayEqLines={[]}
-            />
+            <LogDockedInput handleSend={vi.fn()} />
         );
 
         const popup = screen.getByTestId('mock-suggestion-popup');
         expect(popup.getAttribute('data-placement')).toBe('top');
+    });
+
+    it('routes /find queries to map search instead of sending them to the game', () => {
+        const setActiveMapFilter = vi.fn();
+        const setMapSearchQuery = vi.fn();
+        const handleSend = vi.fn();
+        mockUseMapper.mockReturnValue({ setActiveMapFilter, setMapSearchQuery });
+        render(<LogDockedInput handleSend={handleSend} />);
+
+        const input = document.getElementById('mud-input') as HTMLInputElement;
+        fireEvent.change(input, { target: { value: '/find herb' } });
+        fireEvent.submit(input.closest('form') as HTMLFormElement);
+
+        expect(setActiveMapFilter).toHaveBeenCalledWith(null);
+        expect(setMapSearchQuery).toHaveBeenCalledWith('herb');
+        expect(handleSend).not.toHaveBeenCalled();
+        expect(useInputStore.getState().input).toBe('');
+        expect(useInputStore.getState().history).toEqual(['/find herb']);
+    });
+
+    it('keeps /find in the command bar when no search query was entered', () => {
+        const handleSend = vi.fn();
+        render(<LogDockedInput handleSend={handleSend} />);
+
+        const input = document.getElementById('mud-input') as HTMLInputElement;
+        fireEvent.change(input, { target: { value: '/find' } });
+        fireEvent.submit(input.closest('form') as HTMLFormElement);
+
+        expect(useInputStore.getState().input).toBe('/find ');
+        expect(handleSend).not.toHaveBeenCalled();
     });
 });

@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { classifyRoutedMessageType } from './useMessageRouter';
+import { classifyRoutedMessageType, isVisibleDuringSuppressedCapture } from './useMessageRouter';
 
 describe('useMessageRouter - classifyRoutedMessageType', () => {
     it('classifies messages with <weather> tags as weather', () => {
@@ -60,5 +60,12 @@ describe('useMessageRouter - classifyRoutedMessageType', () => {
             false
         );
         expect(type).toBe('game');
+    });
+});
+
+describe('capture visibility', () => {
+    it('keeps the server prompt visible while suppressing score response text', () => {
+        expect(isVisibleDuringSuppressedCapture(true, false, false)).toBe(true);
+        expect(isVisibleDuringSuppressedCapture(false, false, false)).toBe(false);
     });
 });

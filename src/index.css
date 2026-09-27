@@ -47,13 +47,11 @@
     --mobile-bottom-browser-buffer: 34px;
 }
 
-/* Mobile Bottom Gutter */
-.mobile-bottom-gutter {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: calc(var(--mobile-gutter-height) + var(--mobile-bottom-reserved-space));
+/* Mobile map panel: a normal flex sibling beneath the log. */
+.mobile-map-panel {
+    position: relative;
+    flex: 0 0 calc(var(--mobile-map-panel-height) + var(--mobile-bottom-reserved-space));
+    height: calc(var(--mobile-map-panel-height) + var(--mobile-bottom-reserved-space));
     background: transparent !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -61,7 +59,7 @@
     box-shadow: none !important;
     z-index: var(--z-hud-interactive);
     touch-action: none;
-    transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, box-shadow 0.8s ease;
+    transition: flex-basis 0.4s cubic-bezier(0.16, 1, 0.3, 1), height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, box-shadow 0.8s ease;
     overflow: visible;
     display: flex;
     flex-direction: column;
@@ -70,48 +68,7 @@
     border-radius: 0;
 }
 
-.mobile-gutter-resize-handle {
-    position: absolute;
-    top: -12px;
-    left: 0;
-    right: 0;
-    height: 24px;
-    z-index: calc(var(--z-hud-interactive) + 8);
-    cursor: ns-resize;
-    pointer-events: auto;
-    touch-action: none;
-}
-
-.mobile-gutter-resize-handle::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 9px;
-    width: 64px;
-    height: 3px;
-    transform: translateX(-50%);
-    border-radius: 999px;
-    background: rgba(232, 176, 32, 0.82);
-    box-shadow: 0 0 12px rgba(232, 176, 32, 0.35);
-    opacity: 0.72;
-}
-
-.mobile-bottom-gutter.is-resizing {
-    transition: none !important;
-}
-
-.mobile-bottom-gutter.is-resizing .mobile-gutter-resize-handle::before {
-    opacity: 1;
-    box-shadow: 0 0 16px rgba(232, 176, 32, 0.55);
-}
-
-.app-container.kb-open .mobile-gutter-resize-handle,
-.app-container.state-account .mobile-gutter-resize-handle,
-.app-container.is-landscape .mobile-gutter-resize-handle {
-    display: none;
-}
-
-.mobile-bottom-gutter::before {
+.mobile-map-panel::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -122,16 +79,14 @@
 }
 
 @media (max-width: 1024px) and (orientation: portrait) {
-    .app-container.is-mobile:not(.is-landscape) .content-layer {
-        padding-bottom: calc(var(--mobile-gutter-height) + var(--mobile-bottom-reserved-space)) !important;
+    /* Account mode has no map panel — log fills the available screen. */
+    .app-container.is-mobile.state-account:not(.is-landscape) .content-layer {
+        padding-bottom: 0 !important;
     }
 
-    .app-container.kb-open .content-layer {
-        padding-bottom: 58px !important;
-    }
 }
 
-.light-mode .mobile-bottom-gutter {
+.light-mode .mobile-map-panel {
     background: transparent !important;
     border-top: none !important;
     box-shadow: none !important;
@@ -161,7 +116,7 @@
     pointer-events: auto;
 }
 
-.mobile-bottom-gutter > * {
+.mobile-map-panel > * {
     pointer-events: auto;
 }
 
@@ -182,7 +137,7 @@
 /* Expanded height removal — now handled via central variable on the parent container */
 
 @media (max-width: 1024px) {
-    .mobile-bottom-gutter {
+    .mobile-map-panel {
         border-radius: 0;
         overflow: hidden;
         transition: none !important;
@@ -196,10 +151,17 @@
         display: none !important;
     }
 
-    /* Hide map gutter when keyboard is open in gameplay mode */
-    .kb-open .mobile-bottom-gutter:not(.account-gutter) {
+    /* The browser resizes the viewport for the keyboard. Remove the lower
+       panes from layout in one step so the log and command bar fill that space;
+       React keeps both panes mounted, preserving their state. */
+    .app-container.is-mobile.kb-open .mobile-map-panel {
         display: none !important;
     }
+
+    .app-container.is-mobile.kb-open .action-box {
+        display: none !important;
+    }
+
 }
 
 .hud-clusters-absolute-layer {
@@ -502,8 +464,8 @@
 .app-container {
     transition:
         background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-        --terrain-glow-color 1.8s cubic-bezier(0.25, 0.1, 0.25, 1),
-        --room-light-color 1.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+        --terrain-glow-color 5s cubic-bezier(0.25, 0.1, 0.25, 1),
+        --room-light-color 5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .background-layer,
@@ -1025,14 +987,14 @@
 .app-container {
     transition:
         background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-        --terrain-glow-color 1.8s cubic-bezier(0.25, 0.1, 0.25, 1),
-        --room-light-color 1.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+        --terrain-glow-color 5s cubic-bezier(0.25, 0.1, 0.25, 1),
+        --room-light-color 5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .background-layer,
 .environment-root,
 .stats-cluster,
-.mobile-bottom-gutter,
+.mobile-map-panel,
 .mapper-cluster,
 .mapper-container,
 .input-area,
@@ -1046,7 +1008,7 @@
 /* Base transition so grayscale fades in AND out smoothly over 1s */
 .app-container .background-layer,
 .app-container .environment-root,
-.app-container .mobile-bottom-gutter,
+.app-container .mobile-map-panel,
 .app-container .mapper-cluster,
 .app-container .mapper-container,
 .app-container .header,
@@ -1060,7 +1022,7 @@
 .app-container.in-combat .background-layer,
 .app-container.in-combat .environment-root,
 .app-container.in-combat .custom-buttons-layer,
-.app-container.in-combat .mobile-bottom-gutter,
+.app-container.in-combat .mobile-map-panel,
 .app-container.in-combat .mapper-cluster,
 .app-container.in-combat .mapper-container,
 .app-container.in-combat .header,

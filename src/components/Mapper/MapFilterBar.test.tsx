@@ -3,6 +3,7 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { MapFilterBar } from './MapFilterBar';
+import { useInputStore } from '../../stores/useInputStore';
 
 const mockMapperContext = {
     rooms: { '100': { id: '100', name: 'Test Room', z: 0.0 } },
@@ -24,10 +25,12 @@ describe('MapFilterBar (Option 1 Terminal Docked System)', () => {
         mockMapperContext.activeMapFilter = null;
         mockMapperContext.mapSearchQuery = '';
         mockMapperContext.viewZ = null;
+        useInputStore.getState().setInput('');
     });
 
     afterEach(() => {
         cleanup();
+        document.getElementById('mud-input')?.remove();
     });
 
     it('renders the Z-level readout and > find: prompt', () => {
@@ -43,27 +46,29 @@ describe('MapFilterBar (Option 1 Terminal Docked System)', () => {
         expect(screen.getByText('Z:')).toBeTruthy();
         expect(screen.getByText('0.0')).toBeTruthy();
         expect(screen.getByText('>')).toBeTruthy();
-        expect(screen.getByText('find:')).toBeTruthy();
-        expect(screen.getByPlaceholderText('filter room name, note...')).toBeTruthy();
+        expect(screen.getByRole('button', { name: 'Search map with command bar' })).toBeTruthy();
+        expect(screen.queryByPlaceholderText('filter room name, note...')).toBeNull();
     });
 
-    it('updates search query when typing into input', () => {
-        const setQuery = vi.fn();
+    it('prefills and focuses the shared command bar when Search is tapped', () => {
+        const commandInput = document.createElement('input');
+        commandInput.id = 'mud-input';
+        document.body.appendChild(commandInput);
         render(
             <MapFilterBar
                 activeMapFilter={null}
                 mapSearchQuery=""
                 setActiveMapFilter={mockMapperContext.setActiveMapFilter}
-                setMapSearchQuery={setQuery}
+                setMapSearchQuery={mockMapperContext.setMapSearchQuery}
             />
         );
 
-        const input = screen.getByPlaceholderText('filter room name, note...');
-        fireEvent.change(input, { target: { value: 'bree' } });
-        expect(setQuery).toHaveBeenCalledWith('bree');
+        fireEvent.click(screen.getByRole('button', { name: 'Search map with command bar' }));
+        expect(useInputStore.getState().input).toBe('/find ');
+        expect(document.activeElement).toBe(commandInput);
     });
 
-    it('renders category chips and activates category on click', () => {
+    it('opens a category submenu instead of applying a broad filter on tap', () => {
         const setFilter = vi.fn();
         render(
             <MapFilterBar
@@ -74,11 +79,12 @@ describe('MapFilterBar (Option 1 Terminal Docked System)', () => {
             />
         );
 
-        const shopsButton = screen.getByTitle('Filter by Shops');
+        const shopsButton = screen.getByTitle('Choose a Shops subcategory');
         expect(shopsButton).toBeTruthy();
 
         fireEvent.click(shopsButton);
-        expect(setFilter).toHaveBeenCalledWith('shops');
+        expect(screen.getByText('Weapon')).toBeTruthy();
+        expect(setFilter).not.toHaveBeenCalled();
     });
 
     it('renders clear button when active filter is present and clears on click', () => {
@@ -101,19 +107,19 @@ describe('MapFilterBar (Option 1 Terminal Docked System)', () => {
         expect(setQuery).toHaveBeenCalledWith('');
     });
 
-    it('opens subflags dropup when clicking category chevron and selects subflag', () => {
+    it('applies the selected subcategory and clears any text search', () => {
         const setFilter = vi.fn();
+        const setQuery = vi.fn();
         render(
             <MapFilterBar
                 activeMapFilter={null}
-                mapSearchQuery=""
+                mapSearchQuery="herb"
                 setActiveMapFilter={setFilter}
-                setMapSearchQuery={mockMapperContext.setMapSearchQuery}
+                setMapSearchQuery={setQuery}
             />
         );
 
-        const shopsChevron = screen.getByTitle('Toggle Shops sub-filters');
-        fireEvent.click(shopsChevron);
+        fireEvent.click(screen.getByTitle('Choose a Shops subcategory'));
 
         // Subflags dropup should appear
         expect(screen.getByText('Weapon')).toBeTruthy();
@@ -122,6 +128,7 @@ describe('MapFilterBar (Option 1 Terminal Docked System)', () => {
         // Clicking subflag
         fireEvent.click(screen.getByText('Weapon'));
         expect(setFilter).toHaveBeenCalledWith('WEAPON_SHOP');
+        expect(setQuery).toHaveBeenCalledWith('');
     });
 
     it('collapses and expands categories row when clicking toggle button', () => {

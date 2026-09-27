@@ -28,7 +28,7 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.65);
-    transition: background 1.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: background 5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .client-lighting-overlay {
@@ -36,7 +36,7 @@
     inset: 0;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 1.8s ease-in-out, backdrop-filter 1.8s ease-in-out;
+    transition: opacity 5s ease-in-out, backdrop-filter 5s ease-in-out;
 }
 
 .client-sun-overlay {
@@ -88,7 +88,7 @@
     background: radial-gradient(circle at center, transparent 15%, rgba(0, 0, 15, 0.85) 100%);
     mix-blend-mode: multiply;
     opacity: 0;
-    transition: opacity 1.8s ease-in-out;
+    transition: opacity 5s ease-in-out;
 }
 
 .lighting-state-sun .client-dark-overlay,
@@ -184,7 +184,7 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
     background: var(--bg-overlay);
     z-index: 4;
     /* Move BELOW lighting containers (z-index 5) to let them shine through */
-    transition: background 1.8s ease-in-out;
+    transition: background 5s ease-in-out;
     pointer-events: none;
 }
 
@@ -285,6 +285,7 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
     z-index: 100;
     /* Move ABOVE combat grayscale and other atmospheric filters */
     filter: saturate(1.3) contrast(1.02);
+    transition: opacity 5s ease-in-out, filter 5s ease-in-out;
     /* SUBTLE color saturation boost */
 }
 
@@ -733,7 +734,7 @@ body.ui-gesturing .environment-root.front > :not(.embers-container) {
     inset: 0;
     pointer-events: none;
     z-index: 5; /* Above overlay-layer (4), below storm-overlay (10) and lighting-container (100) */
-    transition: background-color 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 5s cubic-bezier(0.4, 0, 0.2, 1);
     mix-blend-mode: soft-light;
 }
 

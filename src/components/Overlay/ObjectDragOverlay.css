@@ -55,3 +55,14 @@
 .object-chip-dragging {
     cursor: grabbing;
 }
+
+@media (max-width: 768px) {
+    .object-drag-overlay {
+        left: clamp(135px, var(--object-drag-x, 50vw), calc(100vw - 135px));
+        transform: translate(-50%, calc(-100% - 12px));
+    }
+
+    .object-drag-overlay.is-valid {
+        transform: translate(-50%, calc(-100% - 12px)) scale(1.04);
+    }
+}

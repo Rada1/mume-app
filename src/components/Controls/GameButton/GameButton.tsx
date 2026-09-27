@@ -9,7 +9,7 @@ import { ButtonSwipeOverlay } from './ButtonSwipeOverlay';
 import { CircularVitals } from './CircularVitals';
 import { useTacticalTargeting } from './useTacticalTargeting';
 import { TacticalTargetBar } from './TacticalTargetBar';
-import { useRoomStore } from '../../../stores/useRoomStore';
+import { useGameButtonTargetSuggestions } from './useGameButtonTargetSuggestions';
 
 interface GameButtonProps {
     button: CustomButton;
@@ -80,7 +80,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const [wheelPos, setWheelPos] = React.useState({ x: 0, y: 0 });
     const [rayParams, setRayParams] = React.useState<{ angle: number, length: number, opacity: number, color?: string }>({ angle: 0, length: 0, opacity: 0, color: 'var(--accent)' });
     const buttonRef = useRef<HTMLDivElement>(null);
-    const { playClickSound, isSoundEnabled, initAudio } = useGame();
+    const { playClickSound, isSoundEnabled, initAudio, characterName } = useGame();
 
     const [renderParams, setRenderParams] = React.useState({
         w: button.style.w,
@@ -95,10 +95,6 @@ export const GameButton: React.FC<GameButtonProps> = ({
         triggerHaptic
     });
 
-    const roomChars = useRoomStore(s => s.chars);
-    const roomItems = useRoomStore(s => s.items);
-    const roomOccupants = React.useMemo(() => Object.values(roomChars), [roomChars]);
-
     const gestures = useButtonGestures({
         button, isEditMode, handleDragStart, wasDraggingRef, triggerHaptic, setHeldButton, heldButton,
         joystick, target, setCommandPreview, setActiveDir, activeDir, setIsCancelling, isCancelling,
@@ -107,6 +103,14 @@ export const GameButton: React.FC<GameButtonProps> = ({
         tacticalTargeting
     });
 
+    const targetCommand = tacticalTargeting.isTargetColumnOpen
+        ? gestures.currentCommandRef?.current || button.command
+        : button.command;
+    const targetMenu = useGameButtonTargetSuggestions(targetCommand || '', characterName || '');
+    const handleTargetHover = useCallback((targetValue: string | null) => {
+        tacticalTargeting.handleSelectTarget(targetValue, gestures.currentCommandRef?.current || button.command);
+    }, [button.command, gestures.currentCommandRef, tacticalTargeting]);
+
     if (button.display === 'inline') return null;
 
     const needsCircularVitals = (hpRatio !== undefined || manaRatio !== undefined || moveRatio !== undefined) && variant === 'default';
@@ -114,7 +118,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
     useEffect(() => {
         if (heldButton?.id === button.id && heldButton.dx !== undefined && heldButton.dy !== undefined) {
-            const effectiveTarget = tacticalTargeting.pendingTarget || target;
+            const effectiveTarget = tacticalTargeting.getEffectiveTarget(heldButton.baseCommand || button.command);
             const preview = getButtonCommand(button, heldButton.dx, heldButton.dy, undefined, undefined, heldButton.modifiers, joystick, effectiveTarget, joystick.isActive, heldButton.commandPrefixes);
             setCommandPreview(preview?.cmd || null);
         }
@@ -187,13 +191,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
     const isFloating = button.display === 'floating';
 
-    const getGlowColorInternal = () => {
-        if (button.trigger?.enabled && button.isVisible) {
-            return button.style.borderColor || button.style.backgroundColor || 'var(--accent)';
-        }
-        return 'transparent';
-    };
-
+    const getGlowColorInternal = () => (button.trigger?.enabled && button.isVisible) ? (button.style.borderColor || button.style.backgroundColor || 'var(--accent)') : 'transparent';
     const getRgb = (colorVal: string | undefined, defaultVal: string) => {
         if (!colorVal) return defaultVal;
         const hex = colorVal.replace('#', '');
@@ -242,28 +240,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     {moveRatio !== undefined && <div className="vitals-bar move" style={{ height: `${moveRatio * 100}%` }} />}
                 </div>
             )}
-            {needsCircularVitals && (
-                <CircularVitals
-                    hpRatio={hpRatio}
-                    manaRatio={manaRatio}
-                    moveRatio={moveRatio}
-                    w={renderParams.w}
-                    h={renderParams.h}
-                    borderRadius={renderParams.radius}
-                    isOuter={true}
-                />
-            )}
-            {!!(activeDir || isCancelling) && (
-                <ButtonSwipeOverlay
-                    button={button}
-                    activeDir={activeDir}
-                    isCancelling={isCancelling}
-                    buttonRect={buttonRef.current?.getBoundingClientRect()}
-                    rayParams={rayParams}
-                    onSwap={handleSwap}
-                    isMobile={isMobile}
-                />
-            )}
+            {needsCircularVitals && <CircularVitals hpRatio={hpRatio} manaRatio={manaRatio} moveRatio={moveRatio} w={renderParams.w} h={renderParams.h} borderRadius={renderParams.radius} isOuter={true} />}
+            {!!(activeDir || isCancelling) && <ButtonSwipeOverlay button={button} activeDir={activeDir} isCancelling={isCancelling} buttonRect={buttonRef.current?.getBoundingClientRect()} rayParams={rayParams} onSwap={handleSwap} isMobile={isMobile} />}
             <TacticalTargetBar
                 isOpen={tacticalTargeting.isTargetColumnOpen}
                 currentTarget={target}
@@ -271,9 +249,19 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 onSelectTarget={(val) => {
                     const currentCmd = gestures.currentCommandRef?.current || button.command;
                     tacticalTargeting.handleSelectTarget(val, currentCmd);
+                    if (!tacticalTargeting.isTargetMenuHeld) {
+                        executeCommand(tacticalTargeting.resolveCommandWithTarget(currentCmd), false, false);
+                        tacticalTargeting.resetTargeting();
+                    }
                 }}
-                roomOccupants={roomOccupants}
-                roomItems={roomItems}
+                roomOccupants={[]}
+                roomItems={[]}
+                characterName={characterName || ''}
+                suggestions={targetMenu.suggestions}
+                title={targetMenu.title}
+                commandLabel={targetCommand.trim() || button.label}
+                onHoverTarget={handleTargetHover}
+                onDismiss={tacticalTargeting.resetTargeting}
             />
             {iconNode
                 ? <span className="custom-btn-icon-node">{iconNode}</span>
