@@ -74,7 +74,10 @@ export function useSpellCompletionTracker(deps: SpellCompletionTrackerDeps) {
             const completion = isGenericCompletion || matchSpellCompletion(textOnly);
             if (completion) {
                 lastSpellCastTimeRef.current = 0;
-                deps.playEffect?.('magiccomplete');
+                const soundId = typeof completion === 'object'
+                    ? completion.pattern.soundId ?? 'magiccomplete'
+                    : 'magiccomplete';
+                deps.playEffect?.(soundId);
                 return true;
             }
         }

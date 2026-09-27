@@ -213,6 +213,7 @@ export const AUDIO_MANIFEST = {
         'weather': { path: '/assets/Sounds/SoundEffects/weather.mp3', defaultVolume: 0.8 },
         'where': { path: '/assets/Sounds/SoundEffects/where.mp3', defaultVolume: 0.8 },
         'magiccomplete': { path: '/assets/Sounds/SoundEffects/magiccomplete.mp3', defaultVolume: 0.8 },
+        'locatelife': { path: '/assets/Sounds/SoundEffects/locatelife.mp3', defaultVolume: 0.8 },
     } as Record<string, SoundConfig>,
     bpmMap: {
         'AncientBrokenRoad.mp3': 72,
