@@ -1415,12 +1415,12 @@ export const drawFeatures = (
                             ctx.shadowColor = currentDoorColor;
                             if (isClosed) {
                                 ctx.strokeStyle = currentDoorColor;
-                                ctx.lineWidth = 5;
+                                ctx.lineWidth = 3.5;
                                 const inset = 1.5;
                                 ctx.translate(d === 'e' ? -inset : d === 'w' ? inset : 0, d === 's' ? -inset : d === 'n' ? inset : 0);
                                 ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                             } else {
-                                const sqSize = 6.0;
+                                const sqSize = 5.0;
                                 if (ddx === 0) {
                                     const insideX = d === 'e' ? x1 - sqSize : x1;
                                     ctx.fillRect(insideX, y1 + ddy * 0.25, sqSize, sqSize);
@@ -1719,12 +1719,12 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                     ctx.fillStyle = currentDoorColor;
                     ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
                     if (isClosed) {
-                        ctx.strokeStyle = currentDoorColor; ctx.lineWidth = 5;
+                        ctx.strokeStyle = currentDoorColor; ctx.lineWidth = 3.5;
                         const inset = 1.5;
                         ctx.translate(d === 'e' ? -inset : d === 'w' ? inset : 0, d === 's' ? -inset : d === 'n' ? inset : 0);
                         ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                     } else {
-                        const sqSize = 6.0;
+                        const sqSize = 5.0;
                         if (ddx === 0) {
                             const insideX = d === 'e' ? x1 - sqSize : x1;
                             ctx.fillRect(insideX, y1 + ddy * 0.25, sqSize, sqSize);
