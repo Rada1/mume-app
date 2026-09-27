@@ -153,6 +153,7 @@ export const SPELL_COMPLETION_CATALOG: SpellCompletionEntry[] = [
         soundId: 'spell_create_water',
         messages: [
             { pattern: 'You feel less thirsty.', matchType: 'contains' },
+            { pattern: 'You feel bloated.', matchType: 'contains' },
             { pattern: 'You create water.', matchType: 'contains' }
         ]
     },

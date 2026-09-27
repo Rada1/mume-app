@@ -1196,7 +1196,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if ((!isSnoop || deps.isSpectateMode) && /^(?:you are hungry|you are thirsty)\.$/i.test(textOnly.trim())) {
             deps.playEffect?.('hungrythirsty');
         }
-        if ((!isSnoop || deps.isSpectateMode) && lower.trim() === 'you feel less thirsty.') {
+        if ((!isSnoop || deps.isSpectateMode) && (
+            lower.trim() === 'you feel less thirsty.' ||
+            lower.trim() === 'you feel bloated.'
+        )) {
             deps.playEffect?.('createwater');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
