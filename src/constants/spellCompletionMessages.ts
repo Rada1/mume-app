@@ -198,6 +198,7 @@ export const SPELL_COMPLETION_CATALOG: SpellCompletionEntry[] = [
         classType: 'magic user',
         soundId: 'spell_locate_life',
         messages: [
+            { pattern: /^.+\s-\s.+\s+(?:very near|near|far|very far)\s+key:\s*'[^']+'$/i, matchType: 'regex' },
             { pattern: "Your inner eye didn't manage to leave this place.", matchType: 'contains' },
             { pattern: "You feel very confused and can't concentrate any more.", matchType: 'contains' }
         ]
