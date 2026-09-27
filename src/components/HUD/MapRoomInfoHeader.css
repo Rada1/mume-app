@@ -73,8 +73,20 @@
 }
 
 .map-header-val.time {
-    color: #4ade80;
     font-weight: 700;
+    transition: color 300ms ease;
+}
+
+.map-header-val.time.daylight {
+    color: #facc15;
+}
+
+.map-header-val.time.night {
+    color: #60a5fa;
+}
+
+.map-header-val.time.night-transition {
+    color: #f87171;
 }
 
 .map-header-val.weather {
@@ -156,8 +168,16 @@
     color: #334155;
 }
 
-.light-mode .map-header-val.time {
-    color: #16a34a;
+.light-mode .map-header-val.time.daylight {
+    color: #a16207;
+}
+
+.light-mode .map-header-val.time.night {
+    color: #2563eb;
+}
+
+.light-mode .map-header-val.time.night-transition {
+    color: #dc2626;
 }
 
 /* Hide on mobile devices */

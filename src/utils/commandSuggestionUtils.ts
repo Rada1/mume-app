@@ -182,6 +182,14 @@ export const getInventoryAndWornTargetSuggestions = (
     ...getGearTargetSuggestions(wornLines, 'worn')
 ];
 
+export const getLanternTargetSuggestions = (
+    inventoryLines: DrawerLine[],
+    wornLines: DrawerLine[]
+): CommandTargetSuggestion[] => getInventoryAndWornTargetSuggestions(
+    inventoryLines.filter(line => line.isItem && /\blantern\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`)),
+    wornLines.filter(line => line.isItem && /\blantern\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`))
+);
+
 export const getContainerTargetSuggestions = (
     roomItems: Array<string | GmcpOccupant>,
     inventoryLines: DrawerLine[],

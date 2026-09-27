@@ -79,7 +79,7 @@ export const SPELL_COMPLETION_CATALOG: SpellCompletionEntry[] = [
         spellId: 'remove_poison',
         spellName: 'Remove Poison',
         classType: 'cleric',
-        soundId: 'spell_remove_poison',
+        soundId: 'removepoison',
         messages: [{ pattern: 'A strange feeling runs through your body.', matchType: 'contains' }]
     },
     {

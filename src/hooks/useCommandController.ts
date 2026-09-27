@@ -322,9 +322,7 @@ export function useCommandController(deps: CommandControllerDeps) {
             const shopkeeper = findRoomShopkeeper(d.roomNpcs, d.entities);
             if (shopkeeper) {
                 import('../stores/useUIStore').then(({ useUIStore }) => {
-                    const shopStore = useUIStore.getState();
-                    shopStore.setShopkeeperName(shopkeeper.name ?? null);
-                    shopStore.setIsShopOpen(true);
+                    useUIStore.getState().setShopkeeperName(shopkeeper.name ?? null);
                 });
             }
         } else if (cmd.toLowerCase() === 'help' || cmd.toLowerCase().startsWith('help ') || cmd.trim().startsWith('?')) {

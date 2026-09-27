@@ -11,6 +11,23 @@ export interface HSLColor {
     l: number;
 }
 
+export interface GlowColorSet {
+    color1: HSLColor;
+    color2: HSLColor;
+    lightingColor: HSLColor;
+}
+
+export interface CurrentGlowColors {
+    c1: HSLColor;
+    c2: HSLColor;
+    cL: HSLColor;
+}
+
+export interface GlowColorTransition {
+    from: GlowColorSet;
+    startedAt: number;
+}
+
 export interface TerrainConfig {
     color1: HSLColor;
     color2: HSLColor;
@@ -132,4 +149,37 @@ export const lerpHue = (start: number, end: number, amt: number): number => {
     while (diff < -180) diff += 360;
     while (diff > 180) diff -= 360;
     return (start + diff * amt + 360) % 360;
+};
+
+export const snapshotGlowColors = (colors: CurrentGlowColors): GlowColorSet => ({
+    color1: { ...colors.c1 },
+    color2: { ...colors.c2 },
+    lightingColor: { ...colors.cL }
+});
+
+export const beginGlowColorTransition = (colors: CurrentGlowColors, startedAt: number): GlowColorTransition => ({
+    from: snapshotGlowColors(colors),
+    startedAt
+});
+
+export const getGlowColorTransitionProgress = (elapsedMs: number, durationMs: number): number => {
+    const progress = Math.min(1, Math.max(0, elapsedMs / durationMs));
+    return progress * progress * (3 - 2 * progress);
+};
+
+export const interpolateGlowColors = (
+    from: GlowColorSet,
+    to: GlowColorSet,
+    progress: number
+): GlowColorSet => {
+    const interpolate = (start: HSLColor, end: HSLColor): HSLColor => ({
+        h: lerpHue(start.h, end.h, progress),
+        s: lerp(start.s, end.s, progress),
+        l: lerp(start.l, end.l, progress)
+    });
+    return {
+        color1: interpolate(from.color1, to.color1),
+        color2: interpolate(from.color2, to.color2),
+        lightingColor: interpolate(from.lightingColor, to.lightingColor)
+    };
 };

@@ -1,0 +1,59 @@
+/**
+ * @file MagicRipple.css
+ * @description Brief purple text bloom for magic-tagged messages in immersion mode.
+ */
+
+/* --- Immersion Magic Text Bloom --- */
+
+.immersion-mode .message.magic-ripple-active .message-content {
+    animation: immersion-magic-text-bloom 2s linear both;
+}
+
+.immersion-mode .message.red-weather-ripple-active .message-content,
+.immersion-mode .message.red-weather-ripple-active .message-content * {
+    animation: immersion-red-weather-text-bloom 2s linear both;
+}
+
+@keyframes immersion-magic-text-bloom {
+    0%, 100% {
+        filter: brightness(1) drop-shadow(0 0 0 rgba(192, 132, 252, 0));
+    }
+    10%, 34% {
+        filter: brightness(1.5)
+            drop-shadow(0 0 4px rgba(233, 213, 255, 0.82))
+            drop-shadow(0 0 13px rgba(192, 132, 252, 0.74))
+            drop-shadow(0 0 24px rgba(139, 92, 246, 0.56));
+    }
+    66% {
+        filter: brightness(1.18)
+            drop-shadow(0 0 3px rgba(216, 180, 254, 0.52))
+            drop-shadow(0 0 8px rgba(168, 85, 247, 0.36));
+    }
+}
+
+@keyframes immersion-red-weather-text-bloom {
+    0%, 100% {
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.45);
+    }
+    10%, 34% {
+        text-shadow:
+            0 0 4px rgba(254, 202, 202, 0.92),
+            0 0 13px rgba(239, 68, 68, 0.82),
+            0 0 24px rgba(185, 28, 28, 0.62);
+    }
+    66% {
+        text-shadow:
+            0 0 3px rgba(252, 165, 165, 0.62),
+            0 0 9px rgba(220, 38, 38, 0.42);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .immersion-mode .message.magic-ripple-active .message-content {
+        animation: none !important;
+    }
+    .immersion-mode .message.red-weather-ripple-active .message-content,
+    .immersion-mode .message.red-weather-ripple-active .message-content * {
+        animation: none !important;
+    }
+}

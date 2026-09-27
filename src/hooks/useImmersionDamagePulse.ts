@@ -26,7 +26,7 @@ export const useImmersionDamagePulse = (
             resetTimer = setTimeout(() => {
                 container.classList.remove('immersion-damage-pulse');
                 resetTimer = null;
-            }, 850);
+            }, 1400);
         });
 
         return () => {

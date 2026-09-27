@@ -14,9 +14,11 @@ import {
     LIGHTING_COLORS,
     LIGHT_WAVE_HEIGHT_MULTIPLIER,
     adjustForTheme,
+    beginGlowColorTransition,
     getZoneGlowPalette,
-    lerp,
-    lerpHue
+    getGlowColorTransitionProgress,
+    interpolateGlowColors,
+    lerp
 } from './environmentGlowUtils';
 import './EnvironmentGlow.css';
 
@@ -26,6 +28,8 @@ interface EnvironmentGlowProps {
     lighting?: string;
     input: string;
 }
+
+const ZONE_COLOR_TRANSITION_MS = 3500;
 
 export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
     terrain,
@@ -72,9 +76,13 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
         amplitude: targetColors.amplitude,
     });
 
+    const colorTransitionRef = useRef(beginGlowColorTransition(currentColors.current, performance.now()));
     const targetColorsRef = useRef(targetColors);
     const lightingRef = useRef(lighting);
-    useEffect(() => { targetColorsRef.current = targetColors; }, [targetColors]);
+    useEffect(() => {
+        colorTransitionRef.current = beginGlowColorTransition(currentColors.current, performance.now());
+        targetColorsRef.current = targetColors;
+    }, [targetColors]);
     useEffect(() => { lightingRef.current = lighting; }, [lighting]);
 
     const phaseRef = useRef(0);
@@ -138,24 +146,19 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
             }
             ctx.clearRect(0, 0, w, h);
 
-            // At the 10 fps draw cadence this eases zone color and motion changes
-            // across roughly five seconds.
-            const colorLerp = 0.06;
+            // Ease zone and lighting colors smoothly across five seconds.
+            const colorTransition = colorTransitionRef.current;
+            const colorLerp = getGlowColorTransitionProgress(
+                timestamp - colorTransition.startedAt,
+                ZONE_COLOR_TRANSITION_MS
+            );
             const motionLerp = 0.06;
             const cur = currentColors.current;
             const tar = targetColorsRef.current;
-
-            cur.c1.h = lerpHue(cur.c1.h, tar.color1.h, colorLerp);
-            cur.c1.s = lerp(cur.c1.s, tar.color1.s, colorLerp);
-            cur.c1.l = lerp(cur.c1.l, tar.color1.l, colorLerp);
-
-            cur.c2.h = lerpHue(cur.c2.h, tar.color2.h, colorLerp);
-            cur.c2.s = lerp(cur.c2.s, tar.color2.s, colorLerp);
-            cur.c2.l = lerp(cur.c2.l, tar.color2.l, colorLerp);
-
-            cur.cL.h = lerpHue(cur.cL.h, tar.lightingColor.h, colorLerp);
-            cur.cL.s = lerp(cur.cL.s, tar.lightingColor.s, colorLerp);
-            cur.cL.l = lerp(cur.cL.l, tar.lightingColor.l, colorLerp);
+            const colors = interpolateGlowColors(colorTransition.from, tar, colorLerp);
+            cur.c1 = colors.color1;
+            cur.c2 = colors.color2;
+            cur.cL = colors.lightingColor;
 
             cur.speed = lerp(cur.speed, tar.speed, motionLerp);
             cur.amplitude = lerp(cur.amplitude, tar.amplitude, motionLerp);

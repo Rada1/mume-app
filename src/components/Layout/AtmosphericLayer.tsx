@@ -47,6 +47,7 @@ export const AtmosphericLayer: React.FC = () => {
     const effectiveLighting = isAccountMode 
         ? (isCreationSequence ? 'dark' : 'moon') 
         : lighting;
+    const visualLighting = isImmersionMode ? 'none' : effectiveLighting;
 
     // Resolved background image: map texture by default. Terrain bitmap backgrounds stay unhooked.
     const resolvedBgImage = manualBgImage || MAP_BACKGROUND_IMAGE;
@@ -55,7 +56,7 @@ export const AtmosphericLayer: React.FC = () => {
 
     return (
         <EnvironmentEffects
-            lighting={effectiveLighting}
+            lighting={visualLighting}
             weather={weather}
             isFoggy={isFoggy}
             lightning={lightningEnabled}

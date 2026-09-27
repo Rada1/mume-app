@@ -8,7 +8,8 @@ import { getZoneAmbientGlow } from '../../utils/zoneColors';
 
 const BACKGROUND_MAP_OPACITY = 0.18;
 const BACKGROUND_MAP_OPACITY_NO_IMMERSION = BACKGROUND_MAP_OPACITY * 0.35;
-const ROOM_ENVIRONMENT_BLEND_MS = 5000;
+const BACKGROUND_BLEND_MS = 5000;
+const ZONE_COLOR_TRANSITION_MS = 3500;
 
 interface EnvironmentEffectsProps {
     lighting: LightingType;
@@ -105,7 +106,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
         if (auraState.triggerFade) {
             const timer = setTimeout(() => {
                 setAuraState(prev => ({ ...prev, prevGlow: null, triggerFade: false }));
-            }, ROOM_ENVIRONMENT_BLEND_MS);
+            }, ZONE_COLOR_TRANSITION_MS);
             return () => clearTimeout(timer);
         }
     }, [auraState.triggerFade]);
@@ -136,7 +137,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         style={{
                             backgroundImage: `url(${prevImage})`,
                             opacity: triggerFade ? 0 : backgroundMapOpacity,
-                            transition: `opacity ${ROOM_ENVIRONMENT_BLEND_MS}ms ease-in-out`,
+                            transition: `opacity ${BACKGROUND_BLEND_MS}ms ease-in-out`,
                         }}
                     >
                         <div style={{
@@ -155,7 +156,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         style={{
                             backgroundImage: `url(${currentImage})`,
                             opacity: prevImage ? (triggerFade ? backgroundMapOpacity : 0) : backgroundMapOpacity,
-                            transition: prevImage ? `opacity ${ROOM_ENVIRONMENT_BLEND_MS}ms ease-in-out` : 'none',
+                            transition: prevImage ? `opacity ${BACKGROUND_BLEND_MS}ms ease-in-out` : 'none',
                         }}
                     >
                         <div style={{
@@ -192,7 +193,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                                 style={{
                                     '--terrain-glow-color': auraState.prevGlow,
                                     opacity: auraState.triggerFade ? 0 : 1,
-                                    transition: `opacity ${ROOM_ENVIRONMENT_BLEND_MS}ms cubic-bezier(0.25, 0.1, 0.25, 1)`,
+                                    transition: `opacity ${ZONE_COLOR_TRANSITION_MS}ms cubic-bezier(0.25, 0.1, 0.25, 1)`,
                                 } as React.CSSProperties}
                             />
                         )}
@@ -202,7 +203,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                             style={{
                                 '--terrain-glow-color': auraState.currentGlow,
                                 opacity: auraState.prevGlow ? (auraState.triggerFade ? 1 : 0) : 1,
-                                transition: auraState.prevGlow ? `opacity ${ROOM_ENVIRONMENT_BLEND_MS}ms cubic-bezier(0.25, 0.1, 0.25, 1)` : 'none',
+                                transition: auraState.prevGlow ? `opacity ${ZONE_COLOR_TRANSITION_MS}ms cubic-bezier(0.25, 0.1, 0.25, 1)` : 'none',
                             } as React.CSSProperties}
                         />
                     </>
@@ -231,6 +232,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                     </>
                 )}
                 {isImmersionMode && <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} />}
+                {isImmersionMode && <div className="client-vignette-overlay" aria-hidden="true" />}
             </div>
         </div>
     );

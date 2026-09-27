@@ -15,13 +15,13 @@ import {
     getContainerTargetSuggestions,
     getGearTargetSuggestions,
     getInventoryAndWornTargetSuggestions,
+    getLanternTargetSuggestions,
     getRoomTargetSuggestions,
     getSelfTargetSuggestion,
     getWhoTargetSuggestions,
     getSocialTargetSuggestions,
     type CommandTargetSuggestion
 } from '../../utils/commandSuggestionUtils';
-import { isFluidContainer } from '../../utils/gameUtils';
 import { getTraitsForName } from '../../utils/inlineActionModel';
 import { useRoomStore } from '../../stores/useRoomStore';
 import type { DrawerLine, GmcpOccupant } from '../../types';
@@ -215,11 +215,7 @@ export const useDeckTargeting = ({
                 ).some(trait => trait.id === 'trait-weapon'));
                 return getGearTargetSuggestions(wornWeapons, 'worn');
             }
-            if (commandKind === 'fluid-containers') {
-                const inventoryContainers = inventoryLines.filter(line => isFluidContainer(`${line.text} ${line.rawText || ''}`));
-                const wornContainers = wornLines.filter(line => isFluidContainer(`${line.text} ${line.rawText || ''}`));
-                return getInventoryAndWornTargetSuggestions(inventoryContainers, wornContainers);
-            }
+            if (commandKind === 'lanterns') return getLanternTargetSuggestions(inventoryLines, wornLines);
             if (commandKind === 'weather-options') return [
                 { key: 'weather-clouds-less', label: 'Clouds less', value: 'clouds less', meta: 'weather' },
                 { key: 'weather-clouds-more', label: 'Clouds more', value: 'clouds more', meta: 'weather' },

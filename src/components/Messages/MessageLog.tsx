@@ -220,6 +220,11 @@ const MessageItem = React.memo(({
     const isLoginNamePrompt = /\bby what name do you wish to be known\?/i.test(msg.textRaw || msg.textOnly || '');
     const isStatAffectLine = /^\s*-\s+\S+/.test(msg.textOnly || msg.textRaw || '');
     const statusNotice = (msg.textOnly || msg.textRaw || '').trim().toLowerCase();
+    const weatherGlowText = statusNotice.replace(/\s+/g, ' ');
+    const isDarkWeatherGlow = [
+        'suddenly, a dark and sombre mist invades the sky. despair settles on you!',
+        'shrouds of dark clouds roll in above you, blotting out the skies.'
+    ].includes(weatherGlowText);
     const statusCondition = /^(?:you are|you begin to feel) (hungry|thirsty)\.$/.exec(statusNotice)?.[1];
     const isHungryNotice = statusNotice === 'you are hungry.';
     const isThirstyNotice = statusNotice === 'you are thirsty.';
@@ -239,8 +244,10 @@ const MessageItem = React.memo(({
     const [focusRevealMessageId, setFocusRevealMessageId] = React.useState<string | null>(null);
     const isFocusRevealActive = focusRevealMessageId === msg.id;
     const [magicRippleMessageId, setMagicRippleMessageId] = React.useState<string | null>(null);
+    const [redWeatherRippleMessageId, setRedWeatherRippleMessageId] = React.useState<string | null>(null);
     const [itemActionMessageId, setItemActionMessageId] = React.useState<string | null>(null);
     const isMagicRippleActive = magicRippleMessageId === msg.id;
+    const isRedWeatherRippleActive = redWeatherRippleMessageId === msg.id;
     const isItemActionActive = itemActionMessageId === msg.id;
     // local state to handle the cleanup of the hit sheen animation
     const [sheenActive, setSheenActive] = React.useState(!!(isImmersionMode && (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage)));
@@ -254,7 +261,7 @@ const MessageItem = React.memo(({
         }
     }, [isImmersionMode, msg.isHitImpact, msg.isDamageImpact, msg.isRipMessage]);
 
-    // The parser already tags spell completions and action confirmations. These
+    // The parser tags magic XML lines, spell completions, and action confirmations. These
     // short-lived classes are deliberately keyed by message ID so a virtualized
     // row cannot replay an old effect when it is recycled for another message.
     React.useEffect(() => {
@@ -262,9 +269,18 @@ const MessageItem = React.memo(({
         setMagicRippleMessageId(msg.id);
         const timer = window.setTimeout(() => {
             setMagicRippleMessageId(activeId => activeId === msg.id ? null : activeId);
-        }, 900);
+        }, 2000);
         return () => window.clearTimeout(timer);
     }, [isImmersionMode, msg.id, msg.isMagicRipple, msg.timestamp]);
+
+    React.useEffect(() => {
+        if (!isImmersionMode || !isDarkWeatherGlow || Date.now() - msg.timestamp > 3500) return;
+        setRedWeatherRippleMessageId(msg.id);
+        const timer = window.setTimeout(() => {
+            setRedWeatherRippleMessageId(activeId => activeId === msg.id ? null : activeId);
+        }, 2000);
+        return () => window.clearTimeout(timer);
+    }, [isImmersionMode, isDarkWeatherGlow, msg.id, msg.timestamp]);
 
     React.useEffect(() => {
         if (!isImmersionMode || !itemActionAnimation || Date.now() - msg.timestamp > 3500) return;
@@ -403,7 +419,7 @@ const MessageItem = React.memo(({
         <div
             ref={messageRootRef}
             data-subdued-action={msg.isSubduedAction || undefined}
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${isLoginNamePrompt ? ' login-name-prompt' : ''}${isStatAffectLine ? ' stat-affect-line' : ''}${regenSlowTooltip ? ' regen-slow-notice' : ''}${isImmersionMode && msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}${isFocusRevealActive ? ' focus-reveal-active' : ''}${isMagicRippleActive ? ' magic-ripple-active' : ''}${isItemActionActive && itemActionAnimation ? ` item-action-${itemActionAnimation}` : ''}${isImmersionMode && isRoomJiggleActive ? ' room-jiggle-active' : ''}`}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${isLoginNamePrompt ? ' login-name-prompt' : ''}${isStatAffectLine ? ' stat-affect-line' : ''}${regenSlowTooltip ? ' regen-slow-notice' : ''}${isImmersionMode && msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}${isFocusRevealActive ? ' focus-reveal-active' : ''}${isMagicRippleActive ? ' magic-ripple-active' : ''}${isRedWeatherRippleActive ? ' red-weather-ripple-active' : ''}${isItemActionActive && itemActionAnimation ? ` item-action-${itemActionAnimation}` : ''}${isImmersionMode && isRoomJiggleActive ? ' room-jiggle-active' : ''}`}
             data-regeneration-tooltip={regenSlowTooltip}
             title={regenSlowTooltip}
             style={{ 

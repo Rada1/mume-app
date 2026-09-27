@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 
 import './index.css';
 import './components/Messages/MessageLog.css';
+import './components/Messages/MagicRipple.css';
 import './components/Messages/ChatWindow.css';
 import './components/Messages/ChatTranscriptWindow.css';
 import './components/Players/PlayersPanel.css';
@@ -104,7 +105,7 @@ const MudClient = () => {
     const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
     const displayMode = useDisplayMode();
     useZoneThemeSync();
-    useImmersionDamagePulse(containerRef, isImmersionMode && inCombat);
+    useImmersionDamagePulse(containerRef, isImmersionMode);
 
     const [btnGlow, setBtnGlow] = useState({ up: false, down: false });
     const [returnToManager, setReturnToManager] = useState(false);

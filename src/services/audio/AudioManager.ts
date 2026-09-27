@@ -1,8 +1,13 @@
 import { AUDIO_MANIFEST, AmbientConfig } from '../../constants/audioManifest';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 
+const SHARED_AUDIO_BASE_VOLUME = 0.8;
+const SHARED_AUDIO_OUTPUT_GAIN = 3.0;
+const COMBAT_DRUM_ENABLED = true;
+
 export interface PlayOptions {
     pitch?: number;
+    /** Retained for callers; effect loudness is normalized to the shared base. */
     volume?: number;
     reverse?: boolean;
     filterFrequency?: number;
@@ -186,7 +191,7 @@ export class AudioManager {
         // Map linear slider values [0, 1] to exponential curve for natural volume perception
         const master = Math.pow(settings.masterVolume, 2);
         const subVolume = Math.pow(isMusic ? settings.musicVolume : settings.sfxVolume, 2);
-        return baseVolume * master * subVolume * (isMusic ? 1.2 : 3.0);
+        return baseVolume * master * subVolume * SHARED_AUDIO_OUTPUT_GAIN;
     }
 
     private normalizeTerrainKey(key: string): string {
@@ -292,7 +297,8 @@ export class AudioManager {
 
         const basePitch = options?.pitch ?? config.defaultPitch ?? 1.0;
         const jitterRange = options?.skipJitter ? 0 : 0.24;
-        const baseVol = options?.volume ?? config.defaultVolume ?? 1.0;
+        // Ignore per-effect defaults and call-site volume overrides for equal levels.
+        const baseVol = SHARED_AUDIO_BASE_VOLUME;
         for (let hit = 0; hit < (config.repeatCount ?? 1); hit++) {
             const source = ctx.createBufferSource();
             source.buffer = actualBuffer;
@@ -366,9 +372,9 @@ export class AudioManager {
             const manifestConfig = (AUDIO_MANIFEST.ambient as any).zones[key]
                 || (key ? (AUDIO_MANIFEST.ambient as any).zones[`the ${key}`] : undefined)
                 || (key && key.startsWith('the ') ? (AUDIO_MANIFEST.ambient as any).zones[key.replace(/^the\s+/, '')] : undefined);
-            const zoneVolumeMultiplier = (manifestConfig && typeof manifestConfig.volume === 'number')
+            const zoneBaseVolume = (manifestConfig && typeof manifestConfig.volume === 'number')
                 ? manifestConfig.volume
-                : 1.0;
+                : SHARED_AUDIO_BASE_VOLUME;
 
             if (dynamicUrls && dynamicUrls.length > 0) {
                  configUrls = dynamicUrls;
@@ -384,13 +390,7 @@ export class AudioManager {
                 }
             }
 
-            if (key === 'account') {
-                targetVolume = 1.2;
-            } else if (inCombat) {
-                targetVolume = 0.035 * zoneVolumeMultiplier;
-            } else {
-                targetVolume = 0.045 * zoneVolumeMultiplier;
-            }
+            targetVolume = zoneBaseVolume;
         }
 
         if (!urlToPlay) {
@@ -547,6 +547,10 @@ export class AudioManager {
 
     // Drum Layer
     public async updateDrumLayer(inCombat: boolean, activeZoneUrl: string | null) {
+        if (!COMBAT_DRUM_ENABLED) {
+            this.stopAmbient('drum');
+            return;
+        }
         if (!this._isSoundEnabled || !this.audioCtx) return;
 
         const zoneActive = this.activeAmbients.get('zone');
@@ -572,7 +576,7 @@ export class AudioManager {
 
             const dGain = ctx.createGain();
             dGain.gain.setValueAtTime(0, ctx.currentTime);
-            dGain.gain.linearRampToValueAtTime(this.getEffectiveVolume(0.03, true), ctx.currentTime + 1.5);
+            dGain.gain.linearRampToValueAtTime(this.getEffectiveVolume(SHARED_AUDIO_BASE_VOLUME, true), ctx.currentTime + 1.5);
 
             const dFilter = ctx.createBiquadFilter();
             dFilter.type = 'lowpass';
@@ -599,7 +603,7 @@ export class AudioManager {
                 key: 'drumLoop',
                 pauseOffset: 0,
                 startTime: ctx.currentTime,
-                baseVolume: 0.03,
+                baseVolume: SHARED_AUDIO_BASE_VOLUME,
                 isMusic: true
             });
         } else {

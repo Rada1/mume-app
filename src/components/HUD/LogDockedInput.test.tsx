@@ -78,7 +78,7 @@ describe('LogDockedInput', () => {
         cleanup();
     });
 
-    it('renders docked command bar without ReferenceError', () => {
+    it('places desktop play suggestions above and beside the command bar', () => {
         render(
             <LogDockedInput handleSend={vi.fn()} />
         );
@@ -86,7 +86,7 @@ describe('LogDockedInput', () => {
         expect(document.getElementById('mud-input')).toBeTruthy();
         expect(screen.getByRole('button', { name: /send/i })).toBeTruthy();
         const popup = screen.getByTestId('mock-suggestion-popup');
-        expect(popup.getAttribute('data-placement')).toBe('bottom');
+        expect(popup.getAttribute('data-placement')).toBe('top');
     });
 
     it('passes placement="top" when on mobile', () => {

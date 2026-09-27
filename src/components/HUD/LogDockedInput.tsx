@@ -11,7 +11,6 @@ import { useMapper } from '../../context/useMapper';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
-import { useCharacterPanelStore } from '../../stores/useCharacterPanelStore';
 import OpponentRechargeTimer from '../Combat/OpponentRechargeTimer';
 import { ActionTimerDisplay } from './ActionTimerDisplay';
 import { useCommandSuggestions } from '../../hooks/useCommandSuggestions';
@@ -55,7 +54,6 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const setLoginName = useSettingsStore(s => s.setLoginName);
     const setLoginPassword = useSettingsStore(s => s.setLoginPassword);
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
-    const isCharacterPanelMinimized = useCharacterPanelStore(s => s.isMinimized);
     const inputRef = useRef<HTMLInputElement>(null);
     const targetInputRef = useRef<HTMLInputElement>(null);
     const cancelTargetEditRef = useRef(false);
@@ -115,8 +113,8 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         wrapRef: commandInputWrapRef,
         inputRef,
         isMobile: Boolean(viewport?.isMobile),
-        placement: viewport?.isMobile || (gameState === 'playing' && isCharacterPanelMinimized) ? 'top' : 'bottom',
-        positionOverMap: gameState === 'playing' && isCharacterPanelMinimized && !viewport?.isMobile,
+        placement: (viewport?.isMobile || gameState === 'playing') ? 'top' : 'bottom',
+        positionOverMap: gameState === 'playing' && !viewport?.isMobile,
         inventoryLines: displayInventoryLines,
         wornLines: displayEqLines
     });

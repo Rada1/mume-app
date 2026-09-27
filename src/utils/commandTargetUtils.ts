@@ -44,10 +44,10 @@ export type CommandTargetMenuKind =
     | 'room-spell-with-extras'
     | 'gear'
     | 'worn-weapons'
-    | 'fluid-containers'
     | 'weather-options'
     | 'room-corpses'
     | 'mounts'
+    | 'lanterns'
     | 'mage-spells'
     | 'magic-keys'
     | 'bash'
@@ -82,7 +82,7 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
         if (spell === 'raise dead') return 'room-corpses';
         if (spell === 'enchant') return 'gear';
         if (spell === 'identify') return 'gear';
-        if (spell === 'create light') return 'fluid-containers';
+        if (spell === 'create light') return 'lanterns';
         if (spell === 'control weather') return 'weather-options';
         if (spell === 'store') return 'mage-spells';
         if (['portal', 'teleport', 'scry', 'watch room'].includes(spell)) return 'magic-keys';

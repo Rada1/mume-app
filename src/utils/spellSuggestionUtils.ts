@@ -44,8 +44,17 @@ export const getCastSpellSuggestions = (
     const fragment = getCastSpellFragment(input);
     if (fragment === null) return [];
     const known = allSpells.filter(spell => (abilities[spell.toLowerCase()] || 0) > 0);
-    const fallback = characterClass === 'mage' ? MAGE_SPELLS : characterClass === 'cleric' ? CLERIC_SPELLS : [];
-    const candidates = known.length > 0 ? known : fallback;
+    const normalizedClass = characterClass.trim().toLowerCase();
+    const fallback = normalizedClass === 'mage' ? MAGE_SPELLS : normalizedClass === 'cleric' ? CLERIC_SPELLS : [];
+    const classMatches = fragment
+        ? fallback.filter(spell => spell.toLowerCase().startsWith(fragment))
+        : [];
+    const candidates = known.length > 0 ? [...known] : [...fallback];
+    classMatches.forEach(spell => {
+        if (!candidates.some(candidate => candidate.toLowerCase() === spell.toLowerCase())) {
+            candidates.push(spell);
+        }
+    });
     const recentRanks = new Map(recentSpells.map((spell, index) => [spell.toLowerCase(), index]));
     return candidates
         .filter(spell => !fragment || spell.toLowerCase().startsWith(fragment))

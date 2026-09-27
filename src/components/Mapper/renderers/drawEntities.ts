@@ -683,12 +683,39 @@ export const drawEntities = (
         const tileY = anchor.y * GRID_SIZE;
         ctx.save();
         ctx.strokeStyle = 'rgba(119, 201, 97, 0.94)';
-        ctx.lineWidth = 1.5 / rCtx.camera.zoom;
+        ctx.lineWidth = 2.5 / rCtx.camera.zoom;
         if (!rCtx.lowEffects) {
             ctx.shadowColor = 'rgba(119, 201, 97, 0.45)';
             ctx.shadowBlur = 8;
         }
-        ctx.strokeRect(tileX + 1.5 / rCtx.camera.zoom, tileY + 1.5 / rCtx.camera.zoom, GRID_SIZE - 3 / rCtx.camera.zoom, GRID_SIZE - 3 / rCtx.camera.zoom);
+        const inset = 1.5 / rCtx.camera.zoom;
+        const sideLength = GRID_SIZE - inset * 2;
+        const gapStart = inset + sideLength * 0.25;
+        const gapEnd = inset + sideLength * 0.75;
+        const left = tileX + inset;
+        const right = tileX + GRID_SIZE - inset;
+        const top = tileY + inset;
+        const bottom = tileY + GRID_SIZE - inset;
+
+        // Leave the center half of each side open so room doors and walls remain visible.
+        ctx.beginPath();
+        ctx.moveTo(left, top);
+        ctx.lineTo(tileX + gapStart, top);
+        ctx.moveTo(tileX + gapEnd, top);
+        ctx.lineTo(right, top);
+        ctx.moveTo(left, bottom);
+        ctx.lineTo(tileX + gapStart, bottom);
+        ctx.moveTo(tileX + gapEnd, bottom);
+        ctx.lineTo(right, bottom);
+        ctx.moveTo(left, top);
+        ctx.lineTo(left, tileY + gapStart);
+        ctx.moveTo(left, tileY + gapEnd);
+        ctx.lineTo(left, bottom);
+        ctx.moveTo(right, top);
+        ctx.lineTo(right, tileY + gapStart);
+        ctx.moveTo(right, tileY + gapEnd);
+        ctx.lineTo(right, bottom);
+        ctx.stroke();
         ctx.restore();
     }
 

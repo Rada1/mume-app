@@ -43,6 +43,7 @@ import { canBootstrapExpectedCapture } from './captureBootstrap';
 import { consumeCommandCompletionSound } from '../../services/audio/commandCompletionSounds';
 import { changesCombatStatsFromSpell } from '../../utils/spellCombatStatUtils';
 import { parseShopVariant } from '../../utils/shopVariantParser';
+import { hasXmlTag } from '../../utils/xmlTagUtils';
 
 const decodeTextEntities = (text: string) => text
     .replace(/&gt;/gi, '>')
@@ -828,10 +829,22 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (!isSnoop && /^As you call upon Elbereth,\s+.+\s+shivers in pain\.?$/i.test(textOnly.trim())) {
             deps.playEffect('dispelevil');
         }
+        if (!isSnoop && /^A magic mushroom suddenly appears\.$/i.test(textOnly.trim())) {
+            deps.playEffect('createfood');
+        }
+        if (!isSnoop && hasXmlTag(lineToParse, 'magic') && /^.+ is recharged\.$/i.test(textOnly.trim())) {
+            deps.playEffect('createlight');
+        }
+        if (!isSnoop && /^The .+ is filled with a bright light\.$/i.test(textOnly.trim())) {
+            deps.playEffect('breakdoor');
+        }
+        if (!isSnoop && /^The .+ seems to blur for a while\.$/i.test(textOnly.trim())) {
+            deps.playEffect('blockdoor');
+        }
         if (!isSnoop && /^As you call on ancient powers,\s+.+\s+twists in great pain\.?$/i.test(textOnly.trim())) {
             deps.playEffect('harm');
         }
-        if (!isSnoop && /^.+\s+seems to be blinded[!.]?$/i.test(textOnly.trim())) {
+        if ((!isSnoop || deps.isSpectateMode) && /\bseems to be blinded[!.]?\s*$/i.test(textOnly.trim())) {
             deps.playEffect('blind');
         }
 
@@ -993,7 +1006,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                         shopVariantCaptureRef.current.push(variant);
                         shopVariantLineRef.current = null;
                     }
-                    return;
                 }
                 if (isCaptureBoundary || (textOnly.trim() === '' && shopVariantCaptureRef.current.length > 0)) {
                     shopStore.setShopVariants(variantProduct, shopVariantCaptureRef.current);
@@ -1017,7 +1029,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                             price: m[3].trim(),
                             vnum: m[4]
                         });
-                        return;
                     } else if (textOnly.trim() === '' && shopCaptureRef.current.items.length > 0) {
                         shopStore.setShopItems(shopCaptureRef.current.items);
                         shopCaptureRef.current = { active: false, items: [] };
@@ -1042,10 +1053,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                             deps.registerEntity(`roomchars:${matchingNpc.id}`, matchingNpc.name, 'room', 'shopkeeper');
                         }
                     }
-                    shopStore.setShopkeeperName(parsedShopkeeperName);
+                    if (parsedShopkeeperName) shopStore.setShopkeeperName(parsedShopkeeperName);
                     shopCaptureRef.current = { active: true, items: [] };
-                    shopStore.setIsShopOpen(true);
-                    return;
                 }
             }
 
@@ -1210,6 +1219,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.includes('alas, you cannot go that way') || 
+            lower.trim() === 'you cannot ride there.' ||
             lower.includes('arglebargle, glop-glyf') || 
             lower.startsWith("you don't have any") || 
             lower.includes('seems to be closed') ||
@@ -1316,6 +1326,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             deps.playEffect?.('strength');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
+            lower.trim() === 'your legs feel heavier.' ||
             lower.includes('you feel less protected') ||
             lower.includes('your magical shield wears off') ||
             lower.includes('the light of aman fades away from you') ||
@@ -1387,9 +1398,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             deps.playMagicExplosionSound();
         }
         */
-        let isMagicRipple = false;
+        let isMagicRipple = !isSnoop && hasXmlTag(lineToParse, 'magic');
         if (!isEffectivelyRoomDesc) {
-            isMagicRipple = !!spellCompletion.handleSpellLine(textOnly, lower, isSnoop);
+            isMagicRipple = !!spellCompletion.handleSpellLine(textOnly, lower, isSnoop) || isMagicRipple;
         }
 
         const finalType = router.routeMessage(msgType, textOnly, lower, lineToParse, textOnly, isEndPrompt, isSnoop) as MessageType;
@@ -1420,7 +1431,11 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         if (isVisible) {
             if (finalType === 'weather' && (!isSnoop || deps.isSpectateMode)) {
-                deps.playEffect?.('weather');
+                const isSauronDarkWeather = [
+                    'suddenly, a dark and sombre mist invades the sky. despair settles on you!',
+                    'shrouds of dark clouds roll in above you, blotting out the skies.'
+                ].includes(lower.trim().replace(/\s+/g, ' '));
+                deps.playEffect?.(isSauronDarkWeather ? 'saurondark' : 'weather');
             }
             const mid = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
             let lineToConvert = isAccountPhase ? lineToParse.trimEnd() : lineToParse;

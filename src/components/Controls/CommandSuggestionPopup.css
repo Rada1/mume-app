@@ -23,6 +23,12 @@
     scrollbar-color: rgba(201, 168, 76, 0.25) transparent;
 }
 
+.command-suggestion-popup.immersion-glass {
+    background: rgba(10, 14, 13, 0.48) !important;
+    backdrop-filter: blur(14px) saturate(1.15) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(1.15) !important;
+}
+
 .command-suggestion-popup.placement-bottom {
     transform: none !important;
 }

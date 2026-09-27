@@ -18,6 +18,7 @@ import {
     getRoomCorpseTargetSuggestions,
     getSelfTargetSuggestion,
     getInventoryAndWornTargetSuggestions,
+    getLanternTargetSuggestions,
     getLearnedMageSpellSuggestions,
     getMagicKeyTargetSuggestions,
     getMountTargetSuggestions,
@@ -28,7 +29,6 @@ import {
     getWhoTargetSuggestions,
     type CommandTargetSuggestion
 } from '../../../utils/commandSuggestionUtils';
-import { isFluidContainer } from '../../../utils/gameUtils';
 import { getTraitsForName } from '../../../utils/inlineActionModel';
 
 const TARGET_MENU_TITLES: Record<CommandTargetMenuKind, string> = {
@@ -40,7 +40,7 @@ const TARGET_MENU_TITLES: Record<CommandTargetMenuKind, string> = {
     'room-spell-with-extras': 'TARGETS',
     gear: 'ITEMS',
     'worn-weapons': 'WORN WEAPONS',
-    'fluid-containers': 'CONTAINERS',
+    lanterns: 'LANTERNS',
     'weather-options': 'WEATHER',
     'room-corpses': 'CORPSES',
     mounts: 'MOUNTS',
@@ -87,11 +87,7 @@ export const useGameButtonTargetSuggestions = (
             ).some(trait => trait.id === 'trait-weapon'));
             return getGearTargetSuggestions(wornWeapons, 'worn');
         }
-        if (kind === 'fluid-containers') {
-            const inventoryContainers = displayInventoryLines.filter(line => isFluidContainer(`${line.text} ${line.rawText || ''}`));
-            const wornContainers = displayEqLines.filter(line => isFluidContainer(`${line.text} ${line.rawText || ''}`));
-            return getInventoryAndWornTargetSuggestions(inventoryContainers, wornContainers);
-        }
+        if (kind === 'lanterns') return getLanternTargetSuggestions(displayInventoryLines, displayEqLines);
         if (kind === 'weather-options') return [
             { key: 'weather-clouds-less', label: 'Clouds less', value: 'clouds less', meta: 'weather' },
             { key: 'weather-clouds-more', label: 'Clouds more', value: 'clouds more', meta: 'weather' },

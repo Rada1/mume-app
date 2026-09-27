@@ -9,6 +9,7 @@ import ReactDOM from 'react-dom';
 import { MumeCommandEntry } from '../../utils/mumeCommandCatalog';
 import { SpellSuggestion } from '../../utils/spellSuggestionUtils';
 import { CommandTargetSuggestion, suggestionHotkeyForIndex } from '../../utils/commandSuggestionUtils';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import './CommandSuggestionPopup.css';
 
 export interface CommandSuggestionPopupProps {
@@ -42,11 +43,12 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
     onChooseTarget,
     onChooseCommand
 }) => {
+    const isImmersionMode = useSettingsStore(state => state.isImmersionMode);
     if (!show) return null;
 
     return ReactDOM.createPortal(
         <div
-            className={`command-suggestion-popup placement-${placement}`}
+            className={`command-suggestion-popup placement-${placement}${isImmersionMode ? ' immersion-glass' : ''}`}
             role="listbox"
             aria-label={showTargetPopup ? 'MUME target suggestions' : showSpellPopup ? 'MUME spell suggestions' : 'MUME command suggestions'}
             style={style}

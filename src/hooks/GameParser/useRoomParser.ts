@@ -39,17 +39,20 @@ export function useRoomParser(deps: RoomParserDeps) {
     const detectRoom = useCallback((textOnly: string, lower: string, _isPromptMatch: boolean, isSnoop: boolean = false): { isRoomName: boolean; isRoomDescription: boolean; isRoomWindow: boolean } => {
         // Match against spectate state IF it's a snoop line, or match against normal state if it's a regular line.
         const currentRoomRefValue = (isSnoop && spectateRoomName !== undefined) ? spectateRoomName : roomNameRef.current;
+        // Preserve the original line for display, but ignore protocol padding for matching.
+        const roomMatchText = textOnly.trim();
+        const roomMatchLower = roomMatchText.toLowerCase();
         let isRoomMatched = currentRoomRefValue && (
-            textOnly === currentRoomRefValue || lower === currentRoomRefValue.toLowerCase() ||
-            textOnly === currentRoomRefValue + '.' || lower === currentRoomRefValue.toLowerCase() + '.' ||
-            (textOnly.startsWith(currentRoomRefValue) || lower.startsWith(currentRoomRefValue.toLowerCase()))
+            roomMatchText === currentRoomRefValue || roomMatchLower === currentRoomRefValue.toLowerCase() ||
+            roomMatchText === currentRoomRefValue + '.' || roomMatchLower === currentRoomRefValue.toLowerCase() + '.' ||
+            (roomMatchText.startsWith(currentRoomRefValue) || roomMatchLower.startsWith(currentRoomRefValue.toLowerCase()))
         );
         // Rely exclusively on authoritative GMCP matching for room names to prevent false positives with NPCs/Items.
-        let isRoomName = !!(isRoomMatched && textOnly.length < (currentRoomRefValue?.length || 0) + 30 && !textOnly.includes(' - ') && !/carrying|using|following|contains|says|tells|help|change prompt|manual|commands/i.test(lower));
+        let isRoomName = !!(isRoomMatched && roomMatchText.length < (currentRoomRefValue?.length || 0) + 30 && !roomMatchText.includes(' - ') && !/carrying|using|following|contains|says|tells|help|change prompt|manual|commands/i.test(roomMatchLower));
 
         // Allow room name markers even during background captures to ensure descriptions are detected.
         if (isRoomName) {
-            const isSameRoom = currentRoomRefValue && (textOnly === currentRoomRefValue || lower === currentRoomRefValue.toLowerCase());
+            const isSameRoom = currentRoomRefValue && (roomMatchText === currentRoomRefValue || roomMatchLower === currentRoomRefValue.toLowerCase());
             if (!isSameRoom && !capture.hasSession() && !isSnoop) {
                 if (typeof window !== 'undefined') {
                     window.dispatchEvent(new CustomEvent('mume-mapper-move-confirmed', { detail: { isDark: false } }));

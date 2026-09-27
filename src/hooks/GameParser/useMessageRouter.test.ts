@@ -31,6 +31,7 @@ describe('useMessageRouter - classifyRoutedMessageType', () => {
             'A flash of lightning illuminates the sky.',
             'The sun rises in the east.',
             'The sun begins to set.',
+            'The sun dips below the western horizon, leaving the city in darkness. You feel hopeful as the Star of Eärendil shines on the horizon!',
             'The last light of the sun fades.',
             'The light of the sun returns.'
         ];

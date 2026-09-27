@@ -415,14 +415,16 @@ export function useMessageLog(
 
         // Only suppress the line if it exactly matches the authoritative GMCP room name.
         // We no longer use ANSI color heuristics — those caused too many false positives.
+        const roomMatchText = currentTextOnly.trim();
+        const roomMatchLower = roomMatchText.toLowerCase();
         const isActuallyRoomName = !isCombat && !isComm && type !== 'room-description' && type !== 'prompt' && (
             isRoomName === true ||
             type === 'room-name' ||
             (!providedIsSnoop && curRoom && !replyCommand && (
-                currentTextOnly === curRoom ||
-                currentTextLower === curRoom.toLowerCase() ||
-                currentTextOnly === curRoom + '.' ||
-                currentTextLower === curRoom.toLowerCase() + '.'
+                roomMatchText === curRoom ||
+                roomMatchLower === curRoom.toLowerCase() ||
+                roomMatchText === curRoom + '.' ||
+                roomMatchLower === curRoom.toLowerCase() + '.'
             ))
         );
         const arrival = pendingRoomArrivalRef.current;

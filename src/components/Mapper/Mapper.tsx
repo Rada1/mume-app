@@ -67,7 +67,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const {
         triggerHaptic, executeCommand, btn, joystick, playClickSound,
         setIsTrackpadModifierActive, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode,
-        selectedObjectIds, lighting, inCombat, viewport, gameState, roomZone,
+        selectedObjectIds, inCombat, viewport, roomZone,
         roomName, currentTerrain, weather
     } = useGame();
     const { isLandscape } = viewport;
@@ -262,7 +262,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         setExploredMarkers(prev => new Set([...prev, id]));
     }, [setMarkers, setExploredMarkers]);
 
-    const effectiveLighting = isImmersionMode ? (gameState === 'account' ? 'moon' : (lighting || 'none')) : 'none';
+    const effectiveLighting = 'none';
     const clearMapRoute = useCallback(() => {
         setActiveMapFilter(null);
         setMapSearchQuery('');

@@ -25,6 +25,10 @@ vi.mock('../../context/GameContext', () => ({
     })
 }));
 
+vi.mock('../../hooks/useMumeTime', () => ({
+    useMumeTime: () => ({ hour: 21, minute: 34, month: 'Halimath', day: 14 })
+}));
+
 describe('MapRoomInfoHeader and MapRoomInfoFooter', () => {
     beforeEach(() => {
         mockIsMobile = false;
@@ -63,6 +67,14 @@ describe('MapRoomInfoHeader and MapRoomInfoFooter', () => {
             expect(screen.queryByText('N, E, W')).toBeNull();
             expect(screen.queryByText('forest')).toBeNull();
             expect(screen.queryByText('artificial')).toBeNull();
+        });
+
+        it('keeps the clock blue after dusk instead of using the dusk transition color', () => {
+            render(<MapRoomInfoHeader />);
+
+            const time = screen.getByText('9:34 pm');
+            expect(time.className).toContain('night');
+            expect(time.className).not.toContain('night-transition');
         });
 
         it('returns null and does not render when hideMapHeaderFooter is true', () => {
