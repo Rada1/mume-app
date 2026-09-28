@@ -487,10 +487,6 @@
     filter: none;
 }
 
-.app-container.in-combat {
-    background-color: var(--bg-app) !important;
-}
-
 /* Ensure the message log container stays focused and bright */
 .app-container.in-combat .message-log-container {
     filter: none !important;
