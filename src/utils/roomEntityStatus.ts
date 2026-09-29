@@ -11,8 +11,8 @@ import { getInlineCategoryAxes } from './inlineCategoryAxes';
 const isCharacterToken = (token: Token): boolean => token.type === 'entity' &&
     getInlineCategoryAxes(token.metadata?.category).isCharacter;
 
-export const foldRoomEntityStatus = (messages: Message[]): Message[] => {
-    const folded: Message[] = [];
+export const foldRoomEntityStatus = <T extends Message>(messages: T[]): T[] => {
+    const folded: T[] = [];
 
     for (const message of messages) {
         const status = message.textOnly?.trim().match(/^\(?glowing\)?\.?$/i);

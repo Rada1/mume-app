@@ -74,7 +74,7 @@ interface RendererProps {
     imagesRef: MutableRefObject<Record<string, HTMLImageElement>>;
     characterName: string | null;
     playerPosRef: MutableRefObject<{ x: number, y: number, z: number } | null>;
-    playerTrailRef: MutableRefObject<{ x: number, y: number, z: number, alpha: number }[]>;
+    playerTrailRef: MutableRefObject<{ x: number, y: number, z: number, alpha: number, startTime?: number }[]>;
     stableRoomsRef: MutableRefObject<Record<string, any>>;
     stableRoomIdRef: MutableRefObject<string | null>;
     stableMarkersRef: MutableRefObject<Record<string, any>>;
@@ -126,6 +126,8 @@ interface RendererProps {
     regionLabels?: Record<string, RegionLabel>;
     selectedRegionLabelId?: string | null;
     joystickActive?: boolean;
+    moveAnimRef?: MutableRefObject<any>;
+    preMoveRef?: MutableRefObject<{ dir: string; time: number } | null>;
 }
 
 interface PendingBuild {
@@ -189,6 +191,7 @@ export const useMapperRenderer = ({
     rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
     cameraRef, isDarkMode, isMobile, imagesRef, characterName,
     playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
+    moveAnimRef, preMoveRef,
     preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, exploredRef, exploredMarkers,
     unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
     triggerRender, clientPredictionsRef, entitiesRef, serverIdIndexRef,
@@ -942,7 +945,9 @@ export const useMapperRenderer = ({
             isExplorationBaked,
             ring1Revealed: screenRings.ring1Revealed,
             ring2Peeked: screenRings.ring2Peeked,
-            joystickActive
+            joystickActive,
+            moveAnimRef,
+            preMoveRef
         };
 
         if ((showTerrainTiles || terrainWindow) && overlayFloorIndex && isExplorationOverlayActive) {

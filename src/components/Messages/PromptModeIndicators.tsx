@@ -11,7 +11,7 @@ import { CombatSliderPopout } from '../Combat/CombatSliderPopout';
 import { DispositionSliderPopout, DispositionSliderConfig } from '../HUD/DispositionSliderPopout';
 import { PromptAffectedIndicators } from './PromptAffectedIndicators';
 import { calculateEquipmentSpellStats } from '../../utils/equipmentSpellStatsUtils';
-import { audioManager } from '../../services/audio/audioManager';
+import { audioManager } from '../../services/audio/AudioManager';
 import PromptMovementGroup, { MovementIndicatorItem } from '../HUD/PromptMovementGroup';
 import PromptStanceGroup, { StanceItem } from '../HUD/PromptStanceGroup';
 import PromptCombatStatsGroup, { CombatStatItem } from '../HUD/PromptCombatStatsGroup';

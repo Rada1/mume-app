@@ -110,7 +110,7 @@ describe('formatCombatLineTokens', () => {
 
         // 'head' is dimmed along with other narrative text
         const headMatch = result.find(t => t.content.includes('head'));
-        expect(headMatch?.classes).toContain('combat-dimmed');
+        expect(headMatch && 'classes' in headMatch ? headMatch.classes : undefined).toContain('combat-dimmed');
     });
 
     it('dims hit strength adverbs and outcomes in hit lines while keeping strike verbs 100% opacity', () => {

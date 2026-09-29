@@ -88,6 +88,8 @@ export interface RenderContext {
     isExplorationBaked?: boolean;
     joystickActive?: boolean;
     useLegacyMapArt?: boolean;
+    moveAnimRef?: React.MutableRefObject<any>;
+    preMoveRef?: React.MutableRefObject<{ dir: string; time: number } | null>;
 }
 
 export const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);

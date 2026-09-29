@@ -22,7 +22,7 @@ interface MapCanvasProps {
     characterName: string | null;
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>;
     moveAnimRef?: React.MutableRefObject<MoveAnimState>;
-    playerTrailRef: React.MutableRefObject<{ x: number, y: number, z: number, alpha: number }[]>;
+    playerTrailRef: React.MutableRefObject<{ x: number, y: number, z: number, alpha: number, startTime?: number }[]>;
     renderVersion: number;
     isDragging: boolean;
     isDraggingRef?: React.RefObject<boolean>;

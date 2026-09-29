@@ -6,7 +6,7 @@
 import React, { FC, memo } from 'react';
 import { UtensilsCrossed, Droplets } from 'lucide-react';
 import { useActiveRoom } from '../../stores/useActiveGameState';
-import { useGame } from '../../context/GameContext';
+import { useGame, useVitals } from '../../context/GameContext';
 import { useMumeTime } from '../../hooks/useMumeTime';
 import { stripAnsiCodes } from '../../utils/ansi';
 import {
@@ -19,9 +19,10 @@ import './HeaderEnvironmentStrip.css';
 
 export const HeaderEnvironmentStrip: FC = () => {
     const activeRoom = useActiveRoom();
+    const { stats } = useVitals();
     const {
         lighting, currentTerrain, weather, isFoggy, gameTime,
-        stats, gameState
+        gameState
     } = useGame();
     const currentTime = useMumeTime(gameTime);
 
@@ -82,10 +83,14 @@ export const HeaderEnvironmentStrip: FC = () => {
                 {(stats?.conditions?.hungry || stats?.conditions?.thirsty) && (
                     <div className="header-env-conditions">
                         {stats?.conditions?.hungry && (
-                            <UtensilsCrossed size={10} className="header-env-hungry" title="Hungry" />
+                            <span title="Hungry" className="header-env-condition-wrap">
+                                <UtensilsCrossed size={10} className="header-env-hungry" />
+                            </span>
                         )}
                         {stats?.conditions?.thirsty && (
-                            <Droplets size={10} className="header-env-thirsty" title="Thirsty" />
+                            <span title="Thirsty" className="header-env-condition-wrap">
+                                <Droplets size={10} className="header-env-thirsty" />
+                            </span>
                         )}
                     </div>
                 )}

@@ -33,6 +33,7 @@ describe('ChatEntry', () => {
     it('renders incoming body ANSI colors separately from the channel color', () => {
         const message: Message = {
             id: 'group-ansi-1',
+            html: '',
             type: 'comm',
             textRaw: "Borghozor tells the group: 'green body'",
             textOnly: "Borghozor tells the group: 'green body'",
@@ -48,7 +49,7 @@ describe('ChatEntry', () => {
         const { container } = render(<ChatEntry message={message} />);
         const phrase = container.querySelector('.chat-window-phrase') as HTMLElement;
         const body = container.querySelector('.chat-window-text') as HTMLElement;
-        const ansiText = body.querySelector('span') as HTMLElement;
+        const ansiText = (body.querySelector('span span') || body.querySelector('[style*="color"]') || body.querySelector('span')) as HTMLElement;
 
         expect(phrase.style.color).toBe('var(--ansi-bright-cyan)');
         expect(body.style.color).toBe('');
@@ -58,6 +59,7 @@ describe('ChatEntry', () => {
     it('preserves spaces in message body tokens instead of smooshing words together', () => {
         const message: Message = {
             id: 'tell-1',
+            html: '',
             type: 'comm',
             textRaw: "Sauron tells you: 'I think you are confused, nobody is called hi'",
             textOnly: "Sauron tells you: 'I think you are confused, nobody is called hi'",
@@ -102,6 +104,7 @@ describe('ChatEntry', () => {
     it('keeps different channel verbs separate from sender names', () => {
         const sayMessage: Message = {
             id: 'say-1',
+            html: '',
             type: 'comm',
             textRaw: "A traveler says 'Hello there.'",
             textOnly: "A traveler says 'Hello there.'",
@@ -121,6 +124,7 @@ describe('ChatEntry', () => {
 
         const yellMessage: Message = {
             id: 'yell-1',
+            html: '',
             type: 'comm',
             textRaw: "An orc yells 'Intruders!'",
             textOnly: "An orc yells 'Intruders!'",

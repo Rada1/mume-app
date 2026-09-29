@@ -352,7 +352,12 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             setCommandPreview={setCommandPreview}
                             setHeldButton={setHeldButton}
                             heldButton={heldButton}
-                            joystick={joystick}
+                            joystick={{
+                                isActive: joystick.joystickActive,
+                                currentDir: joystick.currentDir,
+                                isTargetModifierActive: joystick.isTargetModifierActive,
+                                setIsJoystickConsumed: joystick.setIsJoystickConsumed
+                            }}
                             target={target}
                             setActiveSet={btn.setActiveSet}
                             setButtons={btn.setButtons}

@@ -9,7 +9,7 @@ export const useMapperPlayerTracking = (
     cameraRef: MutableRefObject<{ x: number, y: number, zoom: number }>,
     canvasRef: React.RefObject<HTMLCanvasElement>,
     playerPosRef: MutableRefObject<{ x: number, y: number, z: number } | null>,
-    playerTrailRef: MutableRefObject<{ x: number, y: number, z: number, alpha: number }[]>,
+    playerTrailRef: MutableRefObject<{ x: number, y: number, z: number, alpha: number, startTime?: number }[]>,
     lastRoomIdRef: MutableRefObject<string | null>,
     triggerRender: () => void,
     setViewZ: (z: number | null) => void,
@@ -40,7 +40,7 @@ export const useMapperPlayerTracking = (
                     y: playerPosRef.current.y,
                     z: playerPosRef.current.z,
                     alpha: 1.0,
-                    startTime: performance.now(),
+                    startTime: Date.now(),
                 });
                 if (playerTrailRef.current.length > 40) playerTrailRef.current.shift();
             }

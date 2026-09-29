@@ -7,6 +7,8 @@ import { describe, it, expect } from 'vitest';
 import { parsePlayerCountFromLines, getOnlinePlayerCount } from './playerCountUtils';
 import { DrawerLine } from '../types';
 
+const makeLine = (id: string, text: string, isHeader: boolean): DrawerLine => ({ id, text, html: text, isHeader });
+
 describe('playerCountUtils', () => {
     describe('parsePlayerCountFromLines', () => {
         it('returns 0 for empty or undefined lines', () => {
@@ -16,38 +18,38 @@ describe('playerCountUtils', () => {
 
         it('parses server summary with "X players on."', () => {
             const lines: DrawerLine[] = [
-                { id: '1', text: 'Players', isHeader: true },
-                { id: '2', text: '-------', isHeader: true },
-                { id: '3', text: '*[Mw] Ellessar (iMw)', isHeader: false },
-                { id: '4', text: 'Sirgrög the Man Soldier', isHeader: false },
-                { id: '5', text: '28 players on.', isHeader: false }
+                makeLine('1', 'Players', true),
+                makeLine('2', '-------', true),
+                makeLine('3', '*[Mw] Ellessar (iMw)', false),
+                makeLine('4', 'Sirgrög the Man Soldier', false),
+                makeLine('5', '28 players on.', false)
             ];
             expect(parsePlayerCountFromLines(lines)).toBe(28);
         });
 
         it('parses single player summary "1 player on."', () => {
             const lines: DrawerLine[] = [
-                { id: '1', text: 'Minions', isHeader: true },
-                { id: '2', text: 'Mozgus the Inhuman', isHeader: false },
-                { id: '3', text: '1 player on.', isHeader: false }
+                makeLine('1', 'Minions', true),
+                makeLine('2', 'Mozgus the Inhuman', false),
+                makeLine('3', '1 player on.', false)
             ];
             expect(parsePlayerCountFromLines(lines)).toBe(1);
         });
 
         it('parses "visible players in the world: X"', () => {
             const lines: DrawerLine[] = [
-                { id: '1', text: 'Visible players in the world: 17', isHeader: true }
+                makeLine('1', 'Visible players in the world: 17', true)
             ];
             expect(parsePlayerCountFromLines(lines)).toBe(17);
         });
 
         it('falls back to non-header player lines when no summary exists', () => {
             const lines: DrawerLine[] = [
-                { id: '1', text: 'Players in the world:', isHeader: true },
-                { id: '2', text: '---------------------', isHeader: true },
-                { id: '3', text: 'Ellessar', isHeader: false },
-                { id: '4', text: 'Legolas', isHeader: false },
-                { id: '5', text: 'Gimli', isHeader: false }
+                makeLine('1', 'Players in the world:', true),
+                makeLine('2', '---------------------', true),
+                makeLine('3', 'Ellessar', false),
+                makeLine('4', 'Legolas', false),
+                makeLine('5', 'Gimli', false)
             ];
             expect(parsePlayerCountFromLines(lines)).toBe(3);
         });
@@ -56,8 +58,8 @@ describe('playerCountUtils', () => {
     describe('getOnlinePlayerCount', () => {
         it('prefers parsed count from whoLines if available', () => {
             const whoLines: DrawerLine[] = [
-                { id: '1', text: 'Ellessar', isHeader: false },
-                { id: '2', text: '28 players on.', isHeader: false }
+                makeLine('1', 'Ellessar', false),
+                makeLine('2', '28 players on.', false)
             ];
             const whoList = ['Ellessar'];
             expect(getOnlinePlayerCount(whoList, whoLines)).toBe(28);

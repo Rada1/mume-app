@@ -24,7 +24,7 @@ interface AnimationProps {
     camera: React.MutableRefObject<{ x: number, y: number, zoom: number }>;
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>;
     moveAnimRef?: React.MutableRefObject<MoveAnimState>;
-    playerTrailRef: React.MutableRefObject<{ x: number, y: number, z: number, alpha: number }[]>;
+    playerTrailRef: React.MutableRefObject<{ x: number, y: number, z: number, alpha: number, startTime?: number }[]>;
     getDPR: () => number;
     marquee: any;
     autoCenter?: boolean;

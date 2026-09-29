@@ -37,6 +37,7 @@ export interface EntityToken extends BaseToken {
         occupantId?: string | number;
         targetIndex?: number;
         parent?: string;
+        isNpc?: boolean;
     };
 }
 

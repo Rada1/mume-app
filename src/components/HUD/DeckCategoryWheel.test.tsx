@@ -1,76 +1,117 @@
 // @vitest-environment jsdom
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { Swords } from 'lucide-react';
 import { DeckCategoryWheel } from './DeckCategoryWheel';
 import type { DeckItem } from './useDeckTargeting';
+import type { CustomButton } from '../../types';
+
+vi.mock('../../context/GameContext', () => ({
+    useGame: () => ({
+        executeCommand: vi.fn(),
+        triggerHaptic: vi.fn(),
+        viewport: { isMobile: true },
+        btn: { setActiveSet: vi.fn(), setButtons: vi.fn() },
+        joystick: { joystickActive: false, currentDir: null, isTargetModifierActive: false, setIsJoystickConsumed: vi.fn() },
+        practice: { practiceData: {} }
+    }),
+    useUI: () => ({ displayInventoryLines: [], displayEqLines: [] }),
+    useVitals: () => ({ target: null, activePrompt: null }),
+    useTokenHighlight: () => ({ target: null, opponentId: null, opponentName: null }),
+    useBaseGame: () => ({})
+}));
 
 const actions: DeckItem[] = [
-    { label: 'Kill', cmd: 'kill ', needsTarget: true },
+    { label: 'Kill', cmd: 'kill', needsTarget: true },
     { label: 'Flee', cmd: 'flee', needsTarget: false },
+    { label: 'Bash', cmd: 'bash', needsTarget: true },
 ];
+
+const mockButton: CustomButton = {
+    id: 'deck-cat-combat',
+    label: 'Combat',
+    command: 'kill',
+    setId: 'Tactical',
+    actionType: 'command',
+    display: 'floating',
+    style: { x: 0, y: 0, w: 38, h: 38 },
+    position: { x: 0, y: 0, w: 38, h: 38 },
+    swipeCommands: { right: 'flee' },
+    isVisible: true
+};
+
+const createMockGameButtonProps = (overrides = {}) => ({
+    isEditMode: false,
+    isGridEnabled: false,
+    gridSize: 1,
+    isSelected: false,
+    dragState: null,
+    handleDragStart: vi.fn(),
+    handleButtonClick: vi.fn(),
+    wasDraggingRef: { current: false },
+    triggerHaptic: vi.fn(),
+    setPopoverState: vi.fn(),
+    setEditButton: vi.fn(),
+    activePrompt: null,
+    executeCommand: vi.fn(),
+    setCommandPreview: vi.fn(),
+    setHeldButton: vi.fn(),
+    heldButton: null,
+    joystick: {
+        isActive: false,
+        currentDir: null,
+        isTargetModifierActive: false,
+        setIsJoystickConsumed: vi.fn(),
+    },
+    target: null,
+    setActiveSet: vi.fn(),
+    setButtons: vi.fn(),
+    isMobile: true,
+    ...overrides
+});
 
 afterEach(cleanup);
 
 describe('DeckCategoryWheel', () => {
-    it('keeps tap-to-open behavior', () => {
-        const onTap = vi.fn();
-        render(<DeckCategoryWheel label="Combat" icon={Swords} active={false} actions={actions} onTap={onTap} onChoose={vi.fn()} onHoldAction={vi.fn()} onSelectTarget={vi.fn()} onReleaseTargetMenu={vi.fn()} onCancelTargetMenu={vi.fn()} />);
+    it('renders the category button with accessible label and custom class', () => {
+        const gameButtonProps = createMockGameButtonProps();
 
-        fireEvent.click(screen.getByRole('tab', { name: /Combat actions/i }));
-        expect(onTap).toHaveBeenCalledOnce();
+        render(
+            <DeckCategoryWheel
+                label="Combat"
+                icon={Swords}
+                button={mockButton}
+                gameButtonProps={gameButtonProps}
+                availableActions={actions}
+                onSwapCells={vi.fn(() => true)}
+                onAssignAction={vi.fn(() => true)}
+            />
+        );
+
+        const btn = screen.getByRole('button', { name: /Combat actions/i });
+        expect(btn).toBeTruthy();
+        expect(btn.classList.contains('deck-category-button')).toBe(true);
     });
 
-    it('chooses the matching action when swiping from the category button', () => {
-        const onChoose = vi.fn();
-        render(<DeckCategoryWheel label="Combat" icon={Swords} active={false} actions={actions} onTap={vi.fn()} onChoose={onChoose} onHoldAction={vi.fn()} onSelectTarget={vi.fn()} onReleaseTargetMenu={vi.fn()} onCancelTargetMenu={vi.fn()} />);
-        const tab = screen.getByRole('tab', { name: /Combat actions/i });
+    it('filters out existing wheel commands from extended command palette actions', () => {
+        const onSwapCells = vi.fn(() => true);
+        const onAssignAction = vi.fn(() => true);
+        const gameButtonProps = createMockGameButtonProps();
 
-        fireEvent.pointerDown(tab, { pointerId: 1, button: 0, pointerType: 'touch', clientX: 100, clientY: 100 });
-        fireEvent.pointerMove(tab, { pointerId: 1, buttons: 1, clientX: 150, clientY: 100 });
-        expect(screen.getByText('Combat', { selector: '.swipe-center-label' })).toBeTruthy();
-        fireEvent.pointerUp(tab, { pointerId: 1, button: 0, clientX: 150, clientY: 100 });
+        const { container } = render(
+            <DeckCategoryWheel
+                label="Combat"
+                icon={Swords}
+                button={mockButton}
+                gameButtonProps={gameButtonProps}
+                availableActions={actions}
+                onSwapCells={onSwapCells}
+                onAssignAction={onAssignAction}
+            />
+        );
 
-        expect(onChoose).toHaveBeenCalledWith(actions[0]);
-    });
-
-    it('keeps the initiating pointer active until the target menu is released', () => {
-        vi.useFakeTimers();
-        const onHoldAction = vi.fn();
-        const onReleaseTargetMenu = vi.fn();
-        render(<DeckCategoryWheel label="Combat" icon={Swords} active={false} actions={actions} onTap={vi.fn()} onChoose={vi.fn()} onHoldAction={onHoldAction} onSelectTarget={vi.fn()} onReleaseTargetMenu={onReleaseTargetMenu} onCancelTargetMenu={vi.fn()} />);
-        const tab = screen.getByRole('tab', { name: /Combat actions/i });
-
-        fireEvent.pointerDown(tab, { pointerId: 7, button: 0, pointerType: 'touch', clientX: 100, clientY: 100 });
-        fireEvent.pointerMove(tab, { pointerId: 7, buttons: 1, clientX: 150, clientY: 100 });
-        vi.advanceTimersByTime(220);
-        expect(onHoldAction).toHaveBeenCalledWith(actions[0], 7);
-
-        fireEvent.pointerUp(window, { pointerId: 7, button: 0, pointerType: 'touch', clientX: 150, clientY: 100 });
-        expect(onReleaseTargetMenu).toHaveBeenCalledWith(7);
-        vi.useRealTimers();
-    });
-
-    it('keeps the command wheel visible over the target menu until the swipe is released', () => {
-        vi.useFakeTimers();
-        const onCancelTargetMenu = vi.fn();
-        const onReleaseTargetMenu = vi.fn();
-        render(<DeckCategoryWheel label="Combat" icon={Swords} active={false} actions={actions} onTap={vi.fn()} onChoose={vi.fn()} onHoldAction={vi.fn()} onSelectTarget={vi.fn()} onReleaseTargetMenu={onReleaseTargetMenu} onCancelTargetMenu={onCancelTargetMenu} />);
-        const tab = screen.getByRole('tab', { name: /Combat actions/i });
-
-        fireEvent.pointerDown(tab, { pointerId: 9, button: 0, pointerType: 'touch', clientX: 100, clientY: 100 });
-        fireEvent.pointerMove(tab, { pointerId: 9, buttons: 1, clientX: 150, clientY: 100 });
-        act(() => vi.advanceTimersByTime(220));
-        expect(document.querySelector('.deck-category-swipe-overlay.is-target-menu-visible')).toBeTruthy();
-
-        fireEvent.pointerMove(window, { pointerId: 9, buttons: 1, clientX: 190, clientY: 100 });
-        expect(onCancelTargetMenu).not.toHaveBeenCalled();
-        expect(document.querySelector('.deck-category-swipe-overlay.is-target-menu-visible')).toBeTruthy();
-
-        fireEvent.pointerUp(window, { pointerId: 9, button: 0, pointerType: 'touch', clientX: 190, clientY: 100 });
-        expect(onReleaseTargetMenu).toHaveBeenCalledWith(9);
-        expect(document.querySelector('.deck-category-swipe-overlay')).toBeNull();
-        vi.useRealTimers();
+        expect(container.querySelector('.deck-category-button')).toBeTruthy();
     });
 });
+

@@ -62,7 +62,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const cardRef = useRef<HTMLDivElement>(null);
     const imagesRef = useRef<Record<string, HTMLImageElement>>({});
     useMapAssets(imagesRef);
-    const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
+    const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number, startTime?: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
 
     const {

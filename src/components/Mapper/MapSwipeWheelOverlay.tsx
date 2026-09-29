@@ -18,7 +18,7 @@ interface Props {
 const COMMANDS: Array<{
     label: string;
     direction: string;
-    icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
+    icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
 }> = [
     { label: 'Up', direction: 'nw', icon: ChevronsUp },
     { label: 'North', direction: 'up', icon: ArrowUp },

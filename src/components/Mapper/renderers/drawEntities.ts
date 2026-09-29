@@ -668,7 +668,7 @@ const updateExitSwipeHintCoordinates = (
 
 export const drawEntities = (
     rCtx: RenderContext,
-    playerTrailRef: React.MutableRefObject<{ x: number, y: number, z: number, alpha: number }[]>,
+    playerTrailRef: React.MutableRefObject<{ x: number, y: number, z: number, alpha: number, startTime?: number }[]>,
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>,
     characterName: string | null
 ) => {

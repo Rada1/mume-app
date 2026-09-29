@@ -177,7 +177,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const classPaletteKey = classPaletteSetId ? getClassKeyFromSetId(classPaletteSetId) : null;
     const paletteCommands = useMemo<TacticalPaletteCommand[]>(() => {
         const source = commandPalette || (classPaletteSetId && classPaletteKey
-            ? getLearnedClassPalette(classPaletteKey, classPaletteSetId, practice.practiceData, abilities, button, availableButtons)
+            ? getLearnedClassPalette(classPaletteKey, classPaletteSetId, practice?.practiceData, abilities, button, availableButtons)
             : []);
         const seen = new Set<string>();
         return source.filter(item => {
@@ -186,7 +186,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
             seen.add(key);
             return true;
         });
-    }, [abilities, availableButtons, button, classPaletteKey, classPaletteSetId, commandPalette, practice.practiceData]);
+    }, [abilities, availableButtons, button, classPaletteKey, classPaletteSetId, commandPalette, practice?.practiceData]);
     const [inlineAssignment, setInlineAssignment] = React.useState<{
         direction: import('../../../types').SwipeDirection | 'center' | null;
         setId: string;

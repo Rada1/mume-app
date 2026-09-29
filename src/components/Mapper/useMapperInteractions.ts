@@ -153,7 +153,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
     const depsRef = useRef(deps);
     useEffect(() => { depsRef.current = deps; }, [deps]);
 
-    const mapSwipeRepeatTimerRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
+    const mapSwipeRepeatTimerRef = useRef<number | null>(null);
     const mapSwipeRepeatCommandRef = useRef<string | null>(null);
     const mapSwipeRepeatFiredRef = useRef(false);
 

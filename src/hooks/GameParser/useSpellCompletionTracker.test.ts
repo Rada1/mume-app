@@ -4,13 +4,13 @@
  * @description Tests for spell completion tracking and magiccomplete audio trigger.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useSpellCompletionTracker } from './useSpellCompletionTracker';
 
 describe('useSpellCompletionTracker', () => {
-    let playIncantationSound: ReturnType<typeof vi.fn>;
-    let playEffect: ReturnType<typeof vi.fn>;
+    let playIncantationSound: Mock<() => void>;
+    let playEffect: Mock<(name: string, options?: any) => void>;
 
     beforeEach(() => {
         vi.useFakeTimers();
