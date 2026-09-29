@@ -30,7 +30,7 @@ export const useAmbientController = (gameState: 'account' | 'playing' | 'disconn
     // Refs to avoid stale closures in the zone-ended listener
     const normalizedZoneRef = useRef<string | null>(null);
     const inCombatRef = useRef<boolean>(false);
-    const dynamicUrlsRef = useRef<string[] | undefined>(undefined);
+    const dynamicUrlRef = useRef<string | undefined>(undefined);
 
     const isAmbientActive = isSoundEnabled && isImmersionMode && !isShaperOpen;
 
@@ -73,11 +73,11 @@ export const useAmbientController = (gameState: 'account' | 'playing' | 'disconn
         if (gameState === 'account' && accountStage !== 'none') {
             normalizedZoneRef.current = 'account';
             inCombatRef.current = false;
-            dynamicUrlsRef.current = ['/assets/Sounds/Account/accountmusic.mp3'];
+            dynamicUrlRef.current = '/assets/Sounds/Account/accountmusic.mp3';
 
             audioManager.setAmbient('zone', { 
                 key: 'account', 
-                dynamicUrls: ['/assets/Sounds/Account/accountmusic.mp3'],
+                dynamicUrl: '/assets/Sounds/Account/accountmusic.mp3',
                 loop: true
             });
             return;
@@ -95,14 +95,14 @@ export const useAmbientController = (gameState: 'account' | 'playing' | 'disconn
         const mapping = (normalizedZone && Array.isArray(zoneMusic)) ? zoneMusic.find(m => 
             m.zone.toLowerCase().trim().replace(/^the\s+/i, '') === normalizedZone
         ) : null;
-        const dynamicUrls = mapping ? (Array.isArray(mapping.url) ? mapping.url : [mapping.url]) : undefined;
+        const dynamicUrl = mapping?.url;
 
         // Update refs for replay loop
         normalizedZoneRef.current = normalizedZone;
         inCombatRef.current = inCombat;
-        dynamicUrlsRef.current = dynamicUrls;
+        dynamicUrlRef.current = dynamicUrl;
 
-        audioManager.setAmbient('zone', { key: normalizedZone, inCombat, dynamicUrls });
+        audioManager.setAmbient('zone', { key: normalizedZone, inCombat, dynamicUrl });
     }, [roomZone, inCombat, isSoundEnabled, zoneMusic, mode, isSpectating, activeView, gameState, accountStage, isShaperOpen]);
 
     // Handle drum loop
@@ -123,7 +123,7 @@ export const useAmbientController = (gameState: 'account' | 'playing' | 'disconn
                 audioManager.setAmbient('zone', {
                     key: normalizedZoneRef.current,
                     inCombat: inCombatRef.current,
-                    dynamicUrls: dynamicUrlsRef.current
+                    dynamicUrl: dynamicUrlRef.current
                 });
             }
         };
@@ -135,7 +135,7 @@ export const useAmbientController = (gameState: 'account' | 'playing' | 'disconn
 export const useAudioEffects = () => {
     const isSoundEnabled = useSettingsStore(state => state.isSoundEnabled);
     const { triggerHaptic } = useHaptics();
-    type EffectOptions = { pitch?: number, volume?: number, filterFrequency?: number, skipJitter?: boolean };
+    type EffectOptions = { pitch?: number, volume?: number, volumeMultiplier?: number, filterFrequency?: number, skipJitter?: boolean };
 
     const playEffect = useCallback((name: string, options?: EffectOptions) => {
         if (isSoundEnabled && !useUIStore.getState().isShaperOpen) {
@@ -147,7 +147,7 @@ export const useAudioEffects = () => {
     const playOofSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('oof', options), [playEffect]);
     const playKillSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('kill', { ...options, volume: options?.volume || 1.1 }), [playEffect]);
     const playLevelSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('level', { ...options, volume: options?.volume || 1.3 }), [playEffect]);
-    const playCommMessageSound = useCallback((options?: { volume?: number }) => playEffect('commbubble', { ...options, volume: options?.volume || 0.9 }), [playEffect]);
+    const playCommMessageSound = useCallback((options?: { volume?: number }) => playEffect('commbubble', { ...options, volume: options?.volume || 0.9, skipJitter: true }), [playEffect]);
     const playBuySellSound = useCallback((options?: { volume?: number }) => playEffect('sellandbuy', { ...options, volume: options?.volume || 1.5 }), [playEffect]);
     const playBashSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('bash', { ...options, volume: options?.volume || 0.75, pitch: options?.pitch ?? (0.9 + Math.random() * 0.2) }), [playEffect]);
     const playSlashSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('slash', options), [playEffect]);

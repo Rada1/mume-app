@@ -5,7 +5,7 @@
 
 /* --- Immersion Magic Text Bloom --- */
 
-.immersion-mode .message.magic-ripple-active .message-content {
+.immersion-mode .message.magic-ripple-active .message-content .magic-text {
     animation: immersion-magic-text-bloom 2s linear both;
 }
 
@@ -49,7 +49,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .immersion-mode .message.magic-ripple-active .message-content {
+    .immersion-mode .message.magic-ripple-active .message-content .magic-text {
         animation: none !important;
     }
     .immersion-mode .message.red-weather-ripple-active .message-content,

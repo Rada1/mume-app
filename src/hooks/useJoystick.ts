@@ -246,10 +246,9 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
                 lastHapticDirRef.current = null;
             }
         } else {
-            if (dir !== lastHapticDirRef.current) {
-                if (dir !== null) triggerHaptic(5);
-                lastHapticDirRef.current = dir;
-            }
+            // Map swipes can be brief; avoid a haptic tick just for crossing
+            // into a direction. Held movement still has its repeat feedback.
+            if (dir !== lastHapticDirRef.current) lastHapticDirRef.current = dir;
             
             setCurrentDir(dir);
             lockedDirRef.current = dir;
@@ -264,7 +263,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             }
         }
         return dir;
-    }, [joystickActive, isJoystickConsumed, triggerHaptic, startRepeatTimer, availableExits]);
+    }, [joystickActive, isJoystickConsumed, startRepeatTimer, availableExits]);
 
     const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: ExecuteCommand, triggerHaptic: (duration?: number) => void, suppressDefault?: boolean) => {
         activePointersRef.current.delete(e.pointerId);
@@ -311,8 +310,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
         if (!wasConsumed) {
             if (isCenterTap) {
-                const cmd = target ? `look ${target}` : 'look';
-                executeCommand(cmd, false, false, false, false, { fromUi: true });
+                executeCommand('flee', false, false, false, false, { fromUi: true });
                 cleanupJoystickEnd();
                 if (playClickSound) playClickSound();
                 

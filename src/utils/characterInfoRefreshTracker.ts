@@ -58,6 +58,11 @@ const consumeField = () => {
     return field;
 };
 
+export const parseWarFameLine = (content: string): number | null => {
+    const match = content.trim().match(/^involved\s*\((-?\d+)\)$/i);
+    return match ? Number(match[1]) : null;
+};
+
 export const consumeCharacterInfoRefreshLine = (content: string, now = Date.now()): Partial<{
     citizenships: number;
     age: string;
@@ -85,9 +90,16 @@ export const consumeCharacterInfoRefreshLine = (content: string, now = Date.now(
         return { height: value };
     }
 
-    if (field === 'warFame' && /^unknown at war$/i.test(value)) {
-        consumeField();
-        return { warFame: 0 };
+    if (field === 'warFame') {
+        const warFame = parseWarFameLine(value);
+        if (warFame !== null) {
+            consumeField();
+            return { warFame };
+        }
+        if (/^unknown at war$/i.test(value)) {
+            consumeField();
+            return { warFame: 0 };
+        }
     }
 
     const numericValue = value.replace(/,/g, '');

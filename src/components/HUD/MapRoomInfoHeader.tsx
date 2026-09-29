@@ -10,7 +10,7 @@ import React, { FC } from 'react';
 import { useGame } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useMumeTime } from '../../hooks/useMumeTime';
-import { MUME_MONTHS, MUME_MONTH_DETAILS, SOLAR_HOURS } from '../../utils/mumeTimeUtils';
+import { MUME_MONTH_DETAILS, getMumeTimeOfDayClass } from '../../utils/mumeTimeUtils';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import './MapRoomInfoHeader.css';
 
@@ -29,12 +29,7 @@ export const MapRoomInfoHeader: FC = () => {
 
     const hour = currentTime.hour ?? 12;
     const minute = currentTime.minute ?? 0;
-    const currentMinutes = hour * 60 + minute;
-    const solarTimes = SOLAR_HOURS[MUME_MONTHS.indexOf(currentTime.month)] || { dawn: 7, dusk: 19 };
-    const duskMinutes = solarTimes.dusk * 60;
-    const isDaylight = currentMinutes >= solarTimes.dawn * 60 && currentMinutes < duskMinutes;
-    const isNearDusk = currentMinutes >= duskMinutes - 60 && currentMinutes < duskMinutes;
-    const timeOfDayClass = isNearDusk ? 'night-transition' : isDaylight ? 'daylight' : 'night';
+    const timeOfDayClass = getMumeTimeOfDayClass(currentTime.month, hour, minute);
     const ampm = hour >= 12 ? 'pm' : 'am';
     const displayHour = hour % 12 === 0 ? 12 : hour % 12;
     const displayMinute = minute < 10 ? `0${minute}` : `${minute}`;

@@ -89,10 +89,6 @@ export const ThisIsYouVitalsTier: FC<ThisIsYouVitalsTierProps> = ({
             {/* Combat capabilities */}
             <div className="this-is-you-combat-slot" role="group" aria-label="Combat">
                 <div className="this-is-you-capabilities-cell">
-                    <div className="this-is-you-cell-header">
-                        <span>Combat Ratings</span>
-                        <span className="sub">Gear &amp; Stance</span>
-                    </div>
                     <div className="this-is-you-capabilities-row">
                         <span title="Offensive Power (OB): strike accuracy and damage">Offense: <strong>{ob ?? '—'}</strong><StatDelta delta={deltas.ob} /></span>
                         <span title="Parry Deflection (PB): weapon blocking rating">Parry: <strong>{pb ?? '—'}</strong><StatDelta delta={deltas.pb} /></span>

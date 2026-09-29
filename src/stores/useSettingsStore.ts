@@ -488,7 +488,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 27,
+            version: 28,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -698,10 +698,31 @@ export const useSettingsStore = create<SettingsState>()(
                     }
                 }
 
+                if (Array.isArray(persistedState.zoneMusic)) {
+                    persistedState.zoneMusic = persistedState.zoneMusic
+                        .filter((mapping: ZoneMusicMapping) => {
+                            const zone = mapping.zone.trim().toLowerCase().replace(/^the\s+/, '');
+                            return zone !== 'bree land';
+                        })
+                        .map((mapping: ZoneMusicMapping) => ({
+                            ...mapping,
+                            url: Array.isArray(mapping.url) ? mapping.url[0] || '' : mapping.url
+                        }));
+                }
+
                 return persistedState;
             },
             merge: (persistedState: any, currentState) => {
                 const merged = { ...currentState, ...(persistedState || {}) } as SettingsState;
+                merged.zoneMusic = (merged.zoneMusic || [])
+                    .filter(mapping => {
+                        const zone = mapping.zone.trim().toLowerCase().replace(/^the\s+/, '');
+                        return zone !== 'bree land';
+                    })
+                    .map(mapping => ({
+                        ...mapping,
+                        url: Array.isArray(mapping.url) ? mapping.url[0] || '' : mapping.url
+                    }));
                 merged.inlineCategories = combineInlineActionConfigs(
                     merged.categoryOverrides || [],
                     merged.customTraits || []

@@ -161,6 +161,8 @@ export interface CustomButton {
     longActionType?: ActionType;
     longSwipeCommands?: Partial<Record<SwipeDirection, string>>;
     longSwipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
+    rebindCenterSetId?: string;
+    rebindSets?: Partial<Record<SwipeDirection, string>>;
 
     // Dynamic triggers
     trigger?: {

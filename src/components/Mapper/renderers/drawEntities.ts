@@ -1481,7 +1481,7 @@ export const drawMarquee = (rCtx: RenderContext, marquee: { start: { x: number, 
 };
 
 export const drawFilterHighlights = (rCtx: RenderContext) => {
-    const { ctx, activeMapFilter, matchedRoomIds, closestRoomId, allRooms, preloaded, currentZ, now, filterPathIds, filterPathDistance } = rCtx;
+    const { ctx, activeMapFilter, matchedRoomIds, closestRoomId, hoveredSearchRoomId, allRooms, preloaded, currentZ, now, filterPathIds, filterPathDistance } = rCtx;
     if (!matchedRoomIds || matchedRoomIds.size === 0) return;
     const effectiveFilter = activeMapFilter || 'resources';
     const zoom = rCtx.camera.zoom;
@@ -1539,6 +1539,15 @@ export const drawFilterHighlights = (rCtx: RenderContext) => {
             y: coords.y * GRID_SIZE + GRID_SIZE / 2
         };
     };
+
+    if (closestRoomId) {
+        const targetCenter = getRoomCenter(closestRoomId);
+        const parent = ctx.canvas.parentElement;
+        if (targetCenter && parent) {
+            parent.style.setProperty('--filter-target-cx', `${(targetCenter.x - rCtx.camera.x) * zoom}px`);
+            parent.style.setProperty('--filter-target-cy', `${(targetCenter.y - rCtx.camera.y) * zoom}px`);
+        }
+    }
 
     const visiblePadding = GRID_SIZE * 2;
     const visibleWorldWidth = rCtx.canvasWidth / (rCtx.dpr * rCtx.camera.zoom);
@@ -1677,8 +1686,9 @@ export const drawFilterHighlights = (rCtx: RenderContext) => {
 
     // 1. Draw small static beacons for all matched rooms on current floor
     // Beacons scale dynamically to stay prominent at very far zoom levels.
-    const beaconR = (4 * scaleFactor) / zoom;       // outer ring radius in world units
-    const beaconDotR = (2 * scaleFactor) / zoom;    // filled dot radius
+    const beaconScale = Math.min(scaleFactor, 2.2);
+    const beaconR = (8 * beaconScale) / zoom;       // outer ring radius in world units
+    const beaconDotR = (3.2 * beaconScale) / zoom; // filled dot radius
 
     matchedRoomIds.forEach(rid => {
         if (rid === closestRoomId) return; // closest room drawn separately below
@@ -1690,13 +1700,21 @@ export const drawFilterHighlights = (rCtx: RenderContext) => {
         if (!isVisiblePoint(cx, cy)) return;
 
         ctx.save();
-        ctx.globalAlpha = 0.38;
-        // Turn off static beacon shadows when zoomed out to prevent blowout clouds
-        ctx.shadowBlur = zoom < 0.15 ? 0 : (4 * scaleFactor) / zoom;
+        // A broad tinted halo keeps secondary matches visible without competing
+        // with the closest room's animated sonar waves.
+        ctx.globalAlpha = 0.22;
+        ctx.fillStyle = colors.shadow;
+        ctx.shadowBlur = zoom < 0.15 ? 3 / zoom : (10 * beaconScale) / zoom;
         ctx.shadowColor = colors.shadow;
-        // Outer ring
+        ctx.beginPath();
+        ctx.arc(cx, cy, beaconR * 1.55, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.globalAlpha = 0.95;
+        ctx.shadowBlur = zoom < 0.15 ? 2 / zoom : (6 * beaconScale) / zoom;
+        // Larger, brighter outer ring
         ctx.strokeStyle = colors.stroke;
-        ctx.lineWidth = (1.2 * scaleFactor) / zoom;
+        ctx.lineWidth = (2.2 * beaconScale) / zoom;
         ctx.beginPath();
         ctx.arc(cx, cy, beaconR, 0, Math.PI * 2);
         ctx.stroke();
@@ -1705,6 +1723,26 @@ export const drawFilterHighlights = (rCtx: RenderContext) => {
         ctx.beginPath();
         ctx.arc(cx, cy, beaconDotR, 0, Math.PI * 2);
         ctx.fill();
+        // Bright pin-point center makes the marker read clearly over terrain.
+        ctx.globalAlpha = 0.95;
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowBlur = 0;
+        ctx.beginPath();
+        ctx.arc(cx, cy, Math.max(1.2, beaconScale / zoom), 0, Math.PI * 2);
+        ctx.fill();
+
+        const normalizeId = (id: string) => id.replace(/^(m_|r_)/, '');
+        if (hoveredSearchRoomId && normalizeId(hoveredSearchRoomId) === normalizeId(rid)) {
+            const pulse = (Math.sin(now / 180) + 1) / 2;
+            ctx.globalAlpha = 0.58 + pulse * 0.3;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = (2.4 * beaconScale) / zoom;
+            ctx.shadowBlur = (10 + pulse * 8) * beaconScale / zoom;
+            ctx.shadowColor = colors.shadow;
+            ctx.beginPath();
+            ctx.arc(cx, cy, beaconR * (1.9 + pulse * 0.28), 0, Math.PI * 2);
+            ctx.stroke();
+        }
         ctx.restore();
     });
 

@@ -81,7 +81,7 @@
     align-items: center;
     gap: 5px;
     padding: 4px 12px;
-    border: 1px solid rgba(201, 168, 76, 0.14);
+    border: 0;
     border-radius: 20px;
     background: rgba(35, 28, 22, 0.82);
     color: #b0a080;
@@ -91,7 +91,7 @@
     letter-spacing: 0.3px;
     text-transform: capitalize;
     cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .deck-tab:hover {
@@ -109,6 +109,10 @@
     background: rgba(201, 168, 76, 0.16);
     border-color: rgba(201, 168, 76, 0.42);
     color: #c9a84c;
+}
+
+.deck-tab:active {
+    transform: scale(0.97);
 }
 
 .deck-tab svg {
@@ -129,14 +133,73 @@
     transition: opacity 160ms ease, transform 160ms ease;
 }
 
-.deck-category-swipe-overlay.is-target-menu-visible .swipe-wheel-container {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+.deck-category-swipe-overlay.is-target-menu-visible {
+    z-index: 50000;
 }
 
-.deck-category-swipe-overlay.is-target-menu-visible {
-    /* Keep the active wheel above the blurred target menu until pointer release. */
-    z-index: 80000;
+.deck-category-swap-button {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.deck-category-swap-picker {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: min(320px, calc(100vw - 32px));
+    max-height: min(70vh, 520px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(var(--accent-rgb), 0.45);
+    border-radius: 10px;
+    background: rgba(12, 16, 23, 0.96);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 18px rgba(var(--accent-rgb), 0.14);
+    color: #e8dfc9;
+    pointer-events: auto;
+    z-index: 50020;
+}
+
+.deck-category-swap-picker-title {
+    color: var(--accent, #c9a84c);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.deck-category-swap-picker-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.deck-category-swap-picker-list button,
+.deck-category-swap-picker-cancel {
+    min-height: 34px;
+    padding: 6px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.045);
+    color: inherit;
+    font: inherit;
+    font-size: 0.72rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.deck-category-swap-picker-list button:hover,
+.deck-category-swap-picker-cancel:hover {
+    border-color: rgba(var(--accent-rgb), 0.55);
+    background: rgba(var(--accent-rgb), 0.15);
+}
+
+.deck-category-swap-picker-cancel {
+    text-align: center;
 }
 
 /* --- Grid area --- */
@@ -282,12 +345,32 @@
 }
 
 .deck-slot.target-ready {
-    border-color: rgba(226, 74, 74, 0.5);
-    background: rgba(226, 74, 74, 0.12);
+    box-shadow: none;
 }
 
-.deck-slot.target-ready svg {
-    color: #f09595;
+.deck-slot.target-ready svg,
+.deck-slot.target-ready .skill-class-icon {
+    color: #86efac;
+    filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.78));
+}
+
+.deck-slot.target-ready .deck-slot-label {
+    color: #86efac;
+    text-shadow: 0 0 6px rgba(74, 222, 128, 0.9), 0 0 12px rgba(34, 197, 94, 0.65);
+}
+
+.deck-category-swipe-overlay .swipe-action-card.is-target-ready {
+    border-color: rgba(255, 255, 255, 0.08);
+    background-image: none;
+    box-shadow: none;
+    color: #86efac;
+}
+
+.deck-category-swipe-overlay .swipe-sq-label.active .swipe-action-card.is-target-ready {
+    border-color: rgba(255, 255, 255, 0.08);
+    background-image: none;
+    box-shadow: none;
+    color: #86efac;
 }
 
 /* Light mode */

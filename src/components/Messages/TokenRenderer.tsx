@@ -163,7 +163,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
 
     const renderTextWithTarget = (text: string, key: string | number) => {
         if (!targetMatcher || !text.toLowerCase().includes(targetMatcher.value)) {
-            return <span key={key}>{text}</span>;
+            return <React.Fragment key={key}>{text}</React.Fragment>;
         }
 
         const parts = [];
@@ -204,7 +204,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             parts.push(text.substring(lastIndex));
         }
 
-        return <span key={key}>{parts}</span>;
+        return <React.Fragment key={key}>{parts}</React.Fragment>;
     };
 
     const renderToken = (token: Token, idx: number | string, textOverride?: string) => {

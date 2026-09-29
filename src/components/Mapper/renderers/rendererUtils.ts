@@ -68,6 +68,7 @@ export interface RenderContext {
     mapSearchQuery?: string;
     matchedRoomIds?: Set<string>;
     closestRoomId?: string | null;
+    hoveredSearchRoomId?: string | null;
     filterPathIds?: string[];
     filterPathDistance?: number;
     combatPulsesRef?: React.MutableRefObject<CombatPulse[]>;
@@ -80,6 +81,7 @@ export interface RenderContext {
     weather?: string;
     isDragging?: boolean;
     lowEffects?: boolean;
+    suppressRoomFlags?: boolean;
     suppressExplorationAnimation?: boolean;
     showTerrainIcons?: boolean;
     showDoorLabels?: boolean;

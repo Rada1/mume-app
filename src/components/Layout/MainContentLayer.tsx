@@ -108,7 +108,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const useMobileAccountPanels = useSettingsStore(s => s.useMobileAccountPanels ?? true);
     const manualBgImage = useSettingsStore(s => s.bgImage);
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
-    const isCommandPanelOpen = useCommandPanelStore(s => s.isOpen);
+    const isCommandPanelOpen = useCommandPanelStore(s => viewport.isMobile ? s.isMobileOpen : s.isOpen);
     const setIsCommandPanelOpen = useCommandPanelStore(s => s.setIsOpen);
     const isShopOpen = useUIStore(s => s.isShopOpen);
     const showPlayersPanel = useSettingsStore(s => s.showPlayersPanel);
@@ -125,7 +125,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     );
 
     const activeDockedPanels = React.useMemo(() => {
-        if (gameState === 'account') return isCommandPanelOpen && !viewport.isMobile ? ['commands'] as readonly DockedPanelId[] : [] as readonly DockedPanelId[];
+        if (gameState === 'account') return isCommandPanelOpen ? ['commands'] as readonly DockedPanelId[] : [] as readonly DockedPanelId[];
         const list: DockedPanelId[] = [];
         if (isEditorOpen) list.push('editor');
         if (isArchiveOpen) list.push('archive');
@@ -134,7 +134,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         if (showPlayersPanel) list.push('players');
         if (isHelpOpen) list.push('help');
         if (showChatWindow) list.push('chat');
-        if (isCommandPanelOpen && !viewport.isMobile) list.push('commands');
+        if (isCommandPanelOpen) list.push('commands');
         return list;
     }, [gameState, showChatWindow, isShopOpen, isGearPanelOpen, showPlayersPanel, isHelpOpen, isArchiveOpen, isEditorOpen, isCommandPanelOpen, viewport.isMobile]);
     const hasDockedPanels = activeDockedPanels.length > 0;
@@ -271,17 +271,43 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         const updateCenter = () => {
             if (logContainerRef.current) {
                 const rect = logContainerRef.current.getBoundingClientRect();
+                const commandBar = logContainerRef.current.querySelector<HTMLElement>('.message-log-docked-input');
+                const commandBarRect = commandBar?.getBoundingClientRect();
+                const mapPanel = [
+                    document.querySelector<HTMLElement>('.mobile-map-panel'),
+                    document.querySelector<HTMLElement>('.map-drawer-desktop.open')
+                ].find(panel => {
+                    const panelRect = panel?.getBoundingClientRect();
+                    return Boolean(panelRect && panelRect.width > 0 && panelRect.height > 0);
+                });
+                const mapRect = mapPanel?.getBoundingClientRect();
                 const x = rect.left + rect.width / 2;
                 const y = rect.top + rect.height / 2;
                 document.documentElement.style.setProperty('--wheel-center-x', `${x}px`);
                 document.documentElement.style.setProperty('--wheel-center-y', `${y}px`);
                 document.documentElement.style.setProperty('--target-menu-log-bottom', `${rect.bottom}px`);
+                document.documentElement.style.setProperty('--message-log-left', `${rect.left}px`);
+                document.documentElement.style.setProperty('--message-log-top', `${rect.top}px`);
+                document.documentElement.style.setProperty('--message-log-width', `${rect.width}px`);
+                document.documentElement.style.setProperty('--message-log-height', `${rect.height}px`);
+                document.documentElement.style.setProperty(
+                    '--message-log-action-area-height',
+                    `${commandBarRect ? Math.max(0, commandBarRect.top - rect.top) : rect.height}px`
+                );
+                document.documentElement.style.setProperty('--tactical-map-left', `${mapRect?.left ?? 0}px`);
+                document.documentElement.style.setProperty('--tactical-map-top', `${mapRect?.top ?? 0}px`);
+                document.documentElement.style.setProperty('--tactical-map-width', `${mapRect?.width ?? window.innerWidth}px`);
+                document.documentElement.style.setProperty('--tactical-map-height', `${mapRect?.height ?? window.innerHeight}px`);
             }
         };
 
         const observer = new ResizeObserver(updateCenter);
         if (logContainerRef.current) {
             observer.observe(logContainerRef.current);
+            const commandBar = logContainerRef.current.querySelector<HTMLElement>('.message-log-docked-input');
+            if (commandBar) observer.observe(commandBar);
+            document.querySelectorAll<HTMLElement>('.mobile-map-panel, .map-drawer-desktop.open')
+                .forEach(mapPanel => observer.observe(mapPanel));
             if (logContainerRef.current.parentElement) {
                 observer.observe(logContainerRef.current.parentElement);
             }
@@ -289,10 +315,12 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
         const timeout = setTimeout(updateCenter, 100);
         window.addEventListener('resize', updateCenter);
+        window.addEventListener('scroll', updateCenter, true);
         return () => {
             clearTimeout(timeout);
             observer.disconnect();
             window.removeEventListener('resize', updateCenter);
+            window.removeEventListener('scroll', updateCenter, true);
         };
     }, []);
 
@@ -548,10 +576,10 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         />
                     )}
                 </div>
-                {isCommandPanelOpen && !viewport.isMobile && (
-                    <aside className="docked-panel command-docked-panel" style={computeDockedPanelStyle('commands', activeDockedPanels, false)} aria-label="Commands panel">
-                        <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" minWidth={14} maxWidth={50} />
-                        {gameState === 'account' ? <MobileAccountExperience /> : <RightActionPanel />}
+                {isCommandPanelOpen && (
+                    <aside className="docked-panel command-docked-panel" style={computeDockedPanelStyle('commands', activeDockedPanels, viewport.isMobile)} aria-label="Commands panel">
+                        {!viewport.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" minWidth={14} maxWidth={50} />}
+                        {gameState === 'account' ? <MobileAccountExperience /> : <RightActionPanel skillsOnly={viewport.isMobile} />}
                     </aside>
                 )}
                 {showPlayersPanel && (

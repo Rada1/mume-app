@@ -30,6 +30,31 @@ vi.mock('../../stores/useSettingsStore', () => ({
 }));
 
 describe('ChatEntry', () => {
+    it('renders incoming body ANSI colors separately from the channel color', () => {
+        const message: Message = {
+            id: 'group-ansi-1',
+            type: 'comm',
+            textRaw: "Borghozor tells the group: 'green body'",
+            textOnly: "Borghozor tells the group: 'green body'",
+            timestamp: 1727142480000,
+            isComm: true,
+            replyCommand: 'group',
+            commSender: 'Borghozor',
+            commAction: 'tells the group',
+            commText: "\x1b[32m'green body'\x1b[0m",
+            commColor: 'var(--ansi-bright-cyan)'
+        };
+
+        const { container } = render(<ChatEntry message={message} />);
+        const phrase = container.querySelector('.chat-window-phrase') as HTMLElement;
+        const body = container.querySelector('.chat-window-text') as HTMLElement;
+        const ansiText = body.querySelector('span') as HTMLElement;
+
+        expect(phrase.style.color).toBe('var(--ansi-bright-cyan)');
+        expect(body.style.color).toBe('');
+        expect(ansiText.style.color).toBe('var(--ansi-green)');
+    });
+
     it('preserves spaces in message body tokens instead of smooshing words together', () => {
         const message: Message = {
             id: 'tell-1',

@@ -396,12 +396,10 @@
       "longActionType": "assign",
       "longCommand": "warriorskilllist",
       "swipeCommands": {
-        "down": "flee",
         "left": "disengage",
         "right": "assist"
       },
       "swipeActionTypes": {
-        "down": "command",
         "left": "command",
         "right": "command"
       },
@@ -478,6 +476,67 @@
         "nw": "magespelllist",
         "se": "magespelllist",
         "sw": "magespelllist"
+      },
+      "trigger": {
+        "enabled": false,
+        "pattern": "",
+        "isRegex": false,
+        "autoHide": false,
+        "duration": 0,
+        "type": "show"
+      }
+    },
+    {
+      "id": "tactical-eye",
+      "label": "Eye",
+      "command": "look",
+      "setId": "Tactical",
+      "actionType": "command",
+      "display": "floating",
+      "hideIfUnknown": false,
+      "isVisible": true,
+      "style": {
+        "x": 570,
+        "y": 0,
+        "w": 90,
+        "h": 40,
+        "backgroundColor": "rgba(101, 75, 20, 0.8)",
+        "borderColor": "#eab308",
+        "borderRadius": 8,
+        "fontSize": 13,
+        "shape": "pill",
+        "iconScale": 1.2
+      },
+      "position": { "x": 570, "y": 0, "w": 90, "h": 40 },
+      "swipeCommands": {
+        "up": "scout",
+        "right": "examine",
+        "down": "reveal",
+        "left": "flush",
+        "ne": "watch",
+        "nw": "consider"
+      },
+      "longCommand": "look",
+      "longActionType": "assign",
+      "longSwipeCommands": {
+        "up": "look",
+        "down": "look",
+        "left": "look",
+        "right": "look",
+        "ne": "look",
+        "nw": "look",
+        "se": "look",
+        "sw": "look"
+      },
+      "longSwipeActionTypes": {
+        "up": "assign",
+        "down": "assign",
+        "left": "assign",
+        "right": "assign",
+        "ne": "assign",
+        "nw": "assign",
+        "se": "assign",
+        "sw": "assign"
       },
       "trigger": {
         "enabled": false,

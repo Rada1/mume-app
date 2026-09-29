@@ -28,6 +28,7 @@ export const CATEGORY_KIND_MAP: Readonly<Record<string, EntityKind>> = {
     'cat-neutral':          'neutral',
     'cat-ally-remote':      'ally',
     'cat-npc':              'npc',
+    'cat-mount':            'npc',
     'cat-room-object':      'object',
     'cat-inventory-object': 'object',
     'cat-worn-object':      'object',
@@ -119,6 +120,7 @@ export const getCategoryIdForKindLocation = (
     if (kind === 'neutral') return 'cat-neutral';
     if (kind === 'player' || kind === 'ally') return location === 'none' ? 'cat-ally-remote' : 'cat-ally';
     if (kind === 'npc') return 'cat-npc';
+    if (kind === 'mount') return 'cat-mount';
     if (kind === 'room') return 'cat-room';
     if (kind === 'exit') return 'cat-exit';
     if (kind === 'object') {

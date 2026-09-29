@@ -1,0 +1,99 @@
+.tactical-target-direction {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 2px 4px;
+    border-left: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.tactical-target-direction-below {
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    border-left: 0;
+}
+
+.tactical-target-direction-compass {
+    display: grid;
+    width: min(100%, 132px);
+    aspect-ratio: 1;
+    grid-template: repeat(3, minmax(0, 1fr)) / repeat(3, minmax(0, 1fr));
+    background-image:
+        linear-gradient(to right, transparent calc(33.333% - 0.5px), rgba(255, 255, 255, 0.07) calc(33.333% - 0.5px), rgba(255, 255, 255, 0.07) calc(33.333% + 0.5px), transparent calc(33.333% + 0.5px), transparent calc(66.666% - 0.5px), rgba(255, 255, 255, 0.07) calc(66.666% - 0.5px), rgba(255, 255, 255, 0.07) calc(66.666% + 0.5px), transparent calc(66.666% + 0.5px)),
+        linear-gradient(to bottom, transparent calc(33.333% - 0.5px), rgba(255, 255, 255, 0.07) calc(33.333% - 0.5px), rgba(255, 255, 255, 0.07) calc(33.333% + 0.5px), transparent calc(33.333% + 0.5px), transparent calc(66.666% - 0.5px), rgba(255, 255, 255, 0.07) calc(66.666% - 0.5px), rgba(255, 255, 255, 0.07) calc(66.666% + 0.5px), transparent calc(66.666% + 0.5px));
+}
+
+.tactical-target-direction-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: #e2e8f0;
+    font: 700 20px/1 var(--font-mono, monospace);
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tactical-target-direction-button:hover,
+.tactical-target-direction-button:active,
+.tactical-target-direction-button.is-selected {
+    border-color: rgba(74, 222, 128, 0.45);
+    background: transparent;
+    color: #4ade80;
+}
+
+.tactical-target-direction-button.is-axis-direction {
+    flex-direction: column;
+    gap: 0;
+}
+
+.tactical-target-direction-button.is-axis-direction small {
+    font-size: 7px;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.tactical-target-direction-side {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tactical-target-direction-side .tactical-target-direction-compass {
+    width: 100%;
+}
+
+.tactical-target-direction-side .tactical-target-direction-button {
+    font-size: 17px;
+}
+
+.tactical-target-direction-below .tactical-target-direction-compass {
+    width: min(100%, 132px);
+}
+
+.tactical-target-direction-wheel {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 12px;
+    border: 0;
+}
+
+.tactical-target-direction-wheel .tactical-target-direction-compass {
+    width: min(100%, 210px);
+}
+
+.tactical-target-direction-wheel .tactical-target-direction-button {
+    border-radius: 4px;
+    font-size: 24px;
+}
+
+.tactical-target-direction-wheel .tactical-target-direction-button.is-movement-direction {
+    background: transparent;
+}

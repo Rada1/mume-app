@@ -1,6 +1,6 @@
 import { RenderContext, drawLine, drawInkyLine } from './rendererUtils';
 import { getZoneVisuals } from '../zoneFilters';
-import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, WALL_COLOR, LONG_CONNECTION_COLOR, getClientThemeColor } from '../mapperUtils';
+import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, getRoomRidableState, WALL_COLOR, LONG_CONNECTION_COLOR, getClientThemeColor } from '../mapperUtils';
 import { isTrailExit } from '../trailUtils';
 
 // MMapper terrain and trail pixmaps are the single source of route visuals.
@@ -922,10 +922,17 @@ export const drawRoomFlagsOptimized = (
     }
 };
 
+export interface DrawFeaturesOptions {
+    skipRoadLayer?: boolean;
+    xStart?: number;
+    xEnd?: number;
+}
+
 export const drawFeatures = (
     rCtx: RenderContext,
     bX1: number, bY1: number, bX2: number, bY2: number,
-    floorIndex: Record<string, string[]>
+    floorIndex: Record<string, string[]>,
+    options: DrawFeaturesOptions = {}
 ) => {
     const { ctx, dpr, isDarkMode, invZoom, currentZ, explored, unveilMap, allRooms, preloaded, camera, baseMapExitsRef } = rCtx;
     const s = GRID_SIZE;
@@ -948,7 +955,7 @@ export const drawFeatures = (
     // Compute ring-1 fog-of-war visibility. Ring 2 is intentionally disabled.
     const ring1Revealed = rCtx.ring1Revealed || new Set<string>(); // adjacent to explored -> grayscale terrain, no flags
     const ring2Peeked = rCtx.ring2Peeked || new Set<string>();
-    if (!rCtx.ring1Revealed && !unveilMap) {
+    if (!options.skipRoadLayer && !rCtx.ring1Revealed && !unveilMap) {
         for (let bx = bX1; bx <= bX2; bx++) {
             for (let by = bY1; by <= bY2; by++) {
                 const bucket = floorIndex[`${bx},${by}`];
@@ -967,6 +974,7 @@ export const drawFeatures = (
         }
     }
 
+    if (!options.skipRoadLayer) {
     // --- Pass 1: Collect and render roads and trails first so they are below doors, walls, and flags ---
     for (let bx = bX1; bx <= bX2; bx++) {
         for (let by = bY1; by <= bY2; by++) {
@@ -1174,8 +1182,12 @@ export const drawFeatures = (
         ctx.restore();
     }
 
+    }
+
     // --- Pass 2: Draw everything else (walls, doors, flags, etc.) ---
-    for (let bx = bX1; bx <= bX2; bx++) {
+    const detailStartX = Math.max(bX1, options.xStart ?? bX1);
+    const detailEndX = Math.min(bX2, options.xEnd ?? bX2);
+    for (let bx = detailStartX; bx <= detailEndX; bx++) {
         for (let by = bY1; by <= bY2; by++) {
             const bucket = floorIndex[`${bx},${by}`];
             if (!bucket) continue;
@@ -1463,7 +1475,7 @@ export const drawFeatures = (
                     // Shading is handled in drawTerrains.ts
 
                     // Draw flags for explored rooms, or all rooms in reveal-all mode
-                    if (!rCtx.lowEffects && (isExplored || unveilMap) && (finalMobF.length > 0 || loadF.length > 0 || questF.length > 0)) {
+                    if (!rCtx.suppressRoomFlags && (isExplored || unveilMap) && (finalMobF.length > 0 || loadF.length > 0 || questF.length > 0)) {
                         ctx.save();
                         
                         let flagScale = 1.0;
@@ -1485,7 +1497,7 @@ export const drawFeatures = (
                     }
 
                     // Up/down arrows: show for explored, ring-1 revealed, and unveil-all mode
-                    if (!rCtx.lowEffects && ghostExits && (ghostExits.u || ghostExits.d) && (isExplored || isRevealed || unveilMap)) {
+                    if (ghostExits && (ghostExits.u || ghostExits.d) && (isExplored || isRevealed || unveilMap)) {
                         const iconColor = 'rgba(148, 163, 184, 0.8)';
                         const cOff = 12;
                         const arrowSize = 18;
@@ -1538,7 +1550,7 @@ export const drawFeatures = (
                     // NORIDE indicator — top-right corner
                     // rData[14] = "NOT_RIDABLE" | "RIDABLE"; localRoom.ridable mirrors this or may be boolean from GMCP
                     const ridableRaw = localRoom?.ridable !== undefined ? localRoom.ridable : rData[14];
-                    const isNoRide = ridableRaw === 'NOT_RIDABLE' || ridableRaw === false || ridableRaw === 'false';
+                    const isNoRide = getRoomRidableState(ridableRaw) === false;
                     if ((isExplored || unveilMap) && isNoRide) {
                         const iconSize = 14;
                         const icon = getNorideIcon(iconSize);
@@ -1763,7 +1775,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
             if (mobF.length > 0 || loadF.length > 0 || questF.length > 0) {
                 drawRoomFlagsOptimized(ctx, cX, cY, camera.zoom, mobF, loadF, questF, 1.0, 1.0, rCtx.imagesRef);
             }
-            if (room.ridable === 'NOT_RIDABLE' || room.ridable === false || room.ridable === 'false') {
+            if (getRoomRidableState(room.ridable) === false) {
                 const iconSize = 14;
                 const icon = getNorideIcon(iconSize);
                 ctx.save();

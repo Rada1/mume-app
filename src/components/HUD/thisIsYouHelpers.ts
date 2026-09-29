@@ -54,9 +54,11 @@ export const MOOD_OPTIONS: StateOption[] = [
 ];
 
 export const SPELL_SPEED_OPTIONS: StateOption[] = [
-    { label: 'Normal', value: 'normal', command: 'change spell normal' },
+    { label: 'Quick', value: 'quick', command: 'change spell quick' },
     { label: 'Fast', value: 'fast', command: 'change spell fast' },
-    { label: 'Quick', value: 'quick', command: 'change spell quick' }
+    { label: 'Normal', value: 'normal', command: 'change spell normal' },
+    { label: 'Careful', value: 'careful', command: 'change spell careful' },
+    { label: 'Thorough', value: 'thorough', command: 'change spell thorough' }
 ];
 
 export interface SelfDescribingBuff {

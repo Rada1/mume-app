@@ -81,6 +81,7 @@ interface MapCanvasProps {
     filterPathIds?: string[];
     filterPathDistance?: number;
     matchedRoomIds?: Set<string>;
+    hoveredSearchRoomId?: string | null;
 }
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
@@ -101,7 +102,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
         activeMapFilter, mapSearchQuery, mapTileOpacity, lighting, isImmersionMode,
         regionLabels, selectedRegionLabelId, joystickActive,
-        closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
+        closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds, hoveredSearchRoomId
     } = props;
 
     const zoneFilters = useSettingsStore(state => state.zoneFilters);
@@ -120,7 +121,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
         activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
         activeMapFilter, mapSearchQuery, combatPulsesRef, zoneFilters,
-        closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds,
+        closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds, hoveredSearchRoomId,
         mapTileVisuals,
         mapTileOpacity,
         lighting,
@@ -231,7 +232,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
                 height: '100%',
                 display: 'block',
                 touchAction: 'none',
-                cursor: props.isDragging ? 'grabbing' : 'crosshair'
+                cursor: props.isDragging ? 'grabbing' : hoveredSearchRoomId ? 'pointer' : 'crosshair'
             }}
             onMouseDown={props.onMouseDown}
             onMouseMove={props.onMouseMove}

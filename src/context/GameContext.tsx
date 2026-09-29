@@ -472,6 +472,21 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playOofSound();
     }, [playOofSound, mode.isSpectating, mode.activeView, recordOof, spectateBuffer.isLive]);
 
+    const playNearbyCombatSoundSpectate = useCallback((name: string, options?: { filterFrequency?: number, volumeMultiplier?: number }) => {
+        if (!mode.isSpectating || mode.activeView !== 'target' || !spectateBuffer.isLive) return;
+        playEffect(name, options);
+    }, [playEffect, mode.isSpectating, mode.activeView, spectateBuffer.isLive]);
+
+    const playIncantationSoundSpectate = useCallback(() => {
+        if (!mode.isSpectating || mode.activeView !== 'target' || !spectateBuffer.isLive) return;
+        playIncantationSound();
+    }, [playIncantationSound, mode.isSpectating, mode.activeView, spectateBuffer.isLive]);
+
+    const playSpellEffectSpectate = useCallback((name: string) => {
+        if (!mode.isSpectating || mode.activeView !== 'target' || !spectateBuffer.isLive) return;
+        playEffect(name);
+    }, [playEffect, mode.isSpectating, mode.activeView, spectateBuffer.isLive]);
+
     const playClickSoundSpectate = useCallback(() => {
         recordClick();
         if (!mode.isSpectating || mode.activeView !== 'target' || !spectateBuffer.isLive) return;
@@ -617,6 +632,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playOofSound,
         playSpectateHitImpactSound: playHitImpactSoundSpectate,
         playSpectateOofSound: playOofSoundSpectate,
+        playSpectateNearbyCombatSound: playNearbyCombatSoundSpectate,
+        playSpectateIncantationSound: playIncantationSoundSpectate,
+        playSpectateSpellEffect: playSpellEffectSpectate,
         playKillSound,
         playLevelSound,
         playClickSound: playClickSoundSpectate,
@@ -759,7 +777,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         quests: s.quests,
         practice: practice,
         help: help
-    }), [s, v, ui, viewport, settingsStore, mode, addMessage, addSystemMessage, clearLog, playHitImpactSound, playOofSound, playHitImpactSoundSpectate, playOofSoundSpectate, playClickSoundSpectate, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, playWearSound, playRemoveSound, playRideSound, playStopRidingSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
+    }), [s, v, ui, viewport, settingsStore, mode, addMessage, addSystemMessage, clearLog, playHitImpactSound, playOofSound, playHitImpactSoundSpectate, playOofSoundSpectate, playNearbyCombatSoundSpectate, playIncantationSoundSpectate, playSpellEffectSpectate, playClickSoundSpectate, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, playWearSound, playRemoveSound, playRideSound, playStopRidingSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
 
 
     const parser = useGameParser(deps, s.userSession);

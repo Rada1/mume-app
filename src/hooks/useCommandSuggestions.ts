@@ -13,10 +13,14 @@ import { DrawerLine, GameState } from '../types/game';
 import {
     CommandTargetSuggestion,
     CommandTextParts,
+    getAssistTargetSuggestions,
     getGearTargetSuggestions,
+    getRescueTargetSuggestions,
     getRoomTargetSuggestions,
+    makeCommandTargetSuggestion,
     replaceCommandArgumentToken
 } from '../utils/commandSuggestionUtils';
+import { BLANK_TARGET_VALUE } from '../utils/commandTargetUtils';
 
 export interface UseCommandSuggestionsOptions {
     input: string; setInput: (val: string) => void; gameState: GameState;
@@ -104,9 +108,17 @@ export const useCommandSuggestions = ({
         const gearKind = command === 'wear' ? 'inventory' : command === 'remove' ? 'worn' : null;
         const kind = /^(get|take|pick)$/.test(command) ? 'objects'
             : /^(assist|rescue|follow)$/.test(command) ? 'allies' : 'characters';
-        const suggestions = gearKind
+        const roomCharacters = Object.values(chars || {});
+        const roomSuggestions = gearKind
             ? getGearTargetSuggestions(gearKind === 'inventory' ? inventoryLines : wornLines, gearKind)
-            : getRoomTargetSuggestions(Object.values(chars || {}), roomItems, kind);
+            : getRoomTargetSuggestions(roomCharacters, roomItems, kind);
+        const suggestions = command === 'assist'
+            ? getAssistTargetSuggestions(roomCharacters)
+            : command === 'rescue'
+            ? getRescueTargetSuggestions(roomCharacters)
+            : command === 'look'
+            ? [makeCommandTargetSuggestion('Blank Target', BLANK_TARGET_VALUE, 'source'), ...roomSuggestions]
+            : roomSuggestions;
         return suggestions
             .filter(entry => {
                 if (!entry.value) return false;
@@ -150,7 +162,13 @@ export const useCommandSuggestions = ({
     }, [input, inputRef, setInput]);
 
     const chooseTargetSuggestion = useCallback((value: string) => {
-        setInput(replaceCommandArgumentToken(input, value));
+        if (value === BLANK_TARGET_VALUE) {
+            const leadingWhitespace = input.match(/^\s*/)?.[0] ?? '';
+            const commandToken = input.trimStart().match(/^(\S+)/)?.[1] ?? '';
+            setInput(commandToken ? `${leadingWhitespace}${commandToken} ` : input);
+        } else {
+            setInput(replaceCommandArgumentToken(input, value));
+        }
         setIsTargetPickerForced(false);
         requestAnimationFrame(() => inputRef?.current?.focus());
     }, [input, inputRef, setInput]);

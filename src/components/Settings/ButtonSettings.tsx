@@ -256,6 +256,14 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                     </div>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                            <input type="color" value={toColorInputHex(getCategoryColor('cat-mount', categoryOverrides, npcColor, theme))} onChange={(e) => setCategoryColor('cat-mount', 'npc', e.target.value, setCategoryOverrides, theme)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Mounts</div>
+                        </div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Ride and manage room mounts</div>
+                        <CategoryTraitCards categoryId="cat-mount" kind="npc" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
+                    </div>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
                             <input type="color" value={toColorInputHex(getCategoryColor('cat-room-object', categoryOverrides, objectColor.startsWith('rgba') ? '#fb923c' : objectColor, theme))} onChange={(e) => setCategoryColor('cat-room-object', 'object', e.target.value, setCategoryOverrides, theme)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Object (Room)</div>
                         </div>

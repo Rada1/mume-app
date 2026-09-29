@@ -67,7 +67,7 @@ const isGlobalTargetCompatible = (command: string, kind: GlobalTargetKind): bool
         'room', 'room-spell', 'room-spell-with-extras', 'self-room', 'bash', 'mounts'
     ].includes(menuKind);
     if (kind === 'exit') return [
-        'containers', 'bash', 'pick', 'room-spell-with-extras'
+        'containers', 'bash', 'pick', 'room-spell-with-extras', 'door-direction'
     ].includes(menuKind);
     if (kind === 'room-object') return menuKind === 'pick';
     if (kind === 'corpse') return [
@@ -91,6 +91,7 @@ export const setGlobalCommandTarget = (target: string | null): void => {
 };
 
 export const getRememberedCommandTarget = (command: string): string | null => {
+    if (getCommandTargetMenuKind(command) === 'door-direction') return 'exit';
     const key = getCommandTargetKey(command);
     if (!key) return null;
     const commandTarget = targetsByCommand.get(key);

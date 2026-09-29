@@ -38,7 +38,6 @@ const THIEF_SWIPE_COMMANDS: CustomButton['swipeCommands'] = {
 };
 
 const COMBAT_SWIPE_COMMANDS: CustomButton['swipeCommands'] = {
-    down: 'flee',
     left: 'disengage',
     right: 'assist'
 };
@@ -58,38 +57,38 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
         isVisible: true,
         trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
     },
-    withAssignLongActions({
+    {
         id: "tactical-ranger",
         label: "Ranger",
-        command: "rangerskilllist",
+        command: "bandage",
         setId: "tactical",
-        actionType: "menu",
+        actionType: "command",
         display: "floating",
         hideIfUnknown: true,
         style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: "rgba(21, 128, 61, 0.8)", borderColor: "#22c55e", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
         position: { x: 0, y: 0, w: 90, h: 40 },
         isVisible: true,
         trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
-    }),
-    withAssignLongActions({
+    },
+    {
         id: "tactical-cleric",
         label: "Cleric",
-        command: "clericspelllist",
+        command: "cast 'cure light'",
         setId: "tactical",
-        actionType: "menu",
+        actionType: "command",
         display: "floating",
         hideIfUnknown: true,
         isVisible: true,
         style: { x: 95, y: 0, w: 90, h: 40, backgroundColor: "rgba(217, 119, 6, 0.8)", borderColor: "#fbbf24", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
         position: { x: 95, y: 0, w: 90, h: 40 },
         trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
-    }),
-    withAssignLongActions({
+    },
+    {
         id: "tactical-thief",
         label: "Thief",
-        command: "thiefskilllist",
+        command: "hide",
         setId: "tactical",
-        actionType: "menu",
+        actionType: "command",
         display: "floating",
         hideIfUnknown: true,
         swipeCommands: THIEF_SWIPE_COMMANDS,
@@ -98,35 +97,35 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
         position: { x: 190, y: 0, w: 90, h: 40 },
         isVisible: true,
         trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
-    }),
-    withAssignLongActions({
+    },
+    {
         id: "tactical-warrior",
         label: "Warrior",
-        command: "warriorskilllist",
+        command: "",
         setId: "tactical",
-        actionType: "menu",
+        actionType: "command",
         display: "floating",
         hideIfUnknown: false,
         swipeCommands: COMBAT_SWIPE_COMMANDS,
-        swipeActionTypes: { down: 'command', left: 'command', right: 'command' },
+        swipeActionTypes: { left: 'command', right: 'command' },
         isVisible: true,
         style: { x: 285, y: 0, w: 90, h: 40, backgroundColor: "rgba(185, 28, 28, 0.8)", borderColor: "#ef4444", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
         position: { x: 285, y: 0, w: 90, h: 40 },
         trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
-    }),
-    withAssignLongActions({
+    },
+    {
         id: "tactical-mage",
         label: "Mage",
-        command: "magespelllist",
+        command: "cast 'magic missile'",
         setId: "tactical",
-        actionType: "menu",
+        actionType: "command",
         display: "floating",
         hideIfUnknown: true,
         isVisible: true,
         style: { x: 380, y: 0, w: 90, h: 40, backgroundColor: "rgba(30, 64, 175, 0.8)", borderColor: "#3b82f6", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
         position: { x: 380, y: 0, w: 90, h: 40 },
         trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
-    }),
+    },
     {
         id: "tactical-doors",
         label: "Doors",
@@ -140,5 +139,26 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
         position: { x: 475, y: 0, w: 90, h: 40 },
         swipeCommands: DOOR_SWIPE_COMMANDS,
         trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
-    }
+    },
+    withAssignLongActions({
+        id: "tactical-eye",
+        label: "Eye",
+        command: "look",
+        setId: "tactical",
+        actionType: "command",
+        display: "floating",
+        hideIfUnknown: false,
+        isVisible: true,
+        swipeCommands: {
+            up: "scout",
+            right: "examine",
+            down: "reveal",
+            left: "flush",
+            ne: "watch",
+            nw: "consider"
+        },
+        style: { x: 570, y: 0, w: 90, h: 40, backgroundColor: "rgba(101, 75, 20, 0.8)", borderColor: "#eab308", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
+        position: { x: 570, y: 0, w: 90, h: 40 },
+        trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
+    })
 ];

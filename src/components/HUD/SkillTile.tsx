@@ -13,6 +13,7 @@ export interface SkillTileItem {
     isPassive?: boolean;
     isKnown: boolean;
     pct: number | null;
+    hotkey?: number | null;
 }
 
 interface SkillTileProps {
@@ -30,7 +31,7 @@ interface SkillTileProps {
 export const SkillTile: FC<SkillTileProps> = ({ item, isSpellClass, isPressed, onClick, target, targetChoices, onChooseTarget, onTypeTarget, practice }) => {
     // --- Logic Section ---
     const [isOpen, setIsOpen] = useState(false);
-    const metaLabel = item.isPassive ? 'Passive' : item.isKnown ? (isSpellClass ? 'Spell' : 'Learned') : '--';
+    const metaLabel = item.isPassive ? 'Learned' : item.isKnown ? (isSpellClass ? 'Spell' : 'Learned') : '--';
     const hasTarget = Boolean(onChooseTarget && onTypeTarget && item.syntax.includes('<target>'));
     const syntax = hasTarget ? item.syntax.replace('<target>', '') : item.syntax;
     // --- Render Section ---
@@ -47,6 +48,7 @@ export const SkillTile: FC<SkillTileProps> = ({ item, isSpellClass, isPressed, o
             }}
             title={`${item.name} · ${item.syntax}`}
         >
+            <span className="action-btn-key" aria-hidden="true">{item.hotkey ?? ''}</span>
             <div className="skill-tile-main">
                 <span className="skill-tile-name">{item.name}</span>
                 <span className="skill-tile-syntax">{syntax}
@@ -58,7 +60,7 @@ export const SkillTile: FC<SkillTileProps> = ({ item, isSpellClass, isPressed, o
             </div>
             <div className="skill-tile-meta">
                 {item.mana !== null && <span className="skill-tile-mana">{item.mana}m</span>}
-                <span className={isSpellClass ? 'skill-tile-spell-meta' : undefined}>{metaLabel}</span>
+                <span className={!item.isPassive && isSpellClass ? 'skill-tile-spell-meta' : undefined}>{metaLabel}</span>
                 {item.pct !== null && <span className="skill-tile-pct">{item.pct}%</span>}
             </div>
             {practice && <button type="button" className="skill-tile-practice" disabled={!practice.enabled}

@@ -10,7 +10,7 @@ export interface AmbientConfig {
 }
 
 export interface ZoneConfig {
-    url: string | string[];
+    url: string;
     volume?: number;
 }
 
@@ -45,8 +45,6 @@ export const AUDIO_MANIFEST = {
         } as Record<string, AmbientConfig>,
         zones: {
             'bree': { url: '/assets/Sounds/ZoneSounds/BreeSound.mp3', volume: 0.8 },
-            'bree land': { url: '/assets/Sounds/ZoneSounds/BreeSound.mp3', volume: 0.8 },
-            'the bree land': { url: '/assets/Sounds/ZoneSounds/BreeSound.mp3', volume: 0.8 },
             'old east road': { url: '/assets/Sounds/ZoneSounds/oldeastroad.mp3', volume: 0.8 },
             'the old east road': { url: '/assets/Sounds/ZoneSounds/oldeastroad.mp3', volume: 0.8 },
             'shire': { url: '/assets/Sounds/ZoneSounds/Shire.mp3', volume: 0.8 },
@@ -55,13 +53,13 @@ export const AUDIO_MANIFEST = {
             'the blue mountains': { url: '/assets/Sounds/ZoneSounds/BlueMountains.mp3', volume: 0.8 },
             'old forest': { url: '/assets/Sounds/ZoneSounds/OldForest.mp3', volume: 0.8 },
             'the old forest': { url: '/assets/Sounds/ZoneSounds/OldForest.mp3', volume: 0.8 },
-            'rivendell': { url: ['/assets/Sounds/ZoneSounds/Rivendell1.mp3', '/assets/Sounds/ZoneSounds/Rivendell2.mp3', '/assets/Sounds/ZoneSounds/Rivendell3.mp3'], volume: 0.8 },
+            'rivendell': { url: '/assets/Sounds/ZoneSounds/Rivendell1.mp3', volume: 0.8 },
             'grey havens': { url: '/assets/Sounds/ZoneSounds/GrayHavens1.mp3', volume: 0.8 },
             'the grey havens': { url: '/assets/Sounds/ZoneSounds/GrayHavens1.mp3', volume: 0.8 },
-            'north anduin': { url: ['/assets/Sounds/ZoneSounds/northanduin.mp3', '/assets/Sounds/ZoneSounds/northanduin.mp3'], volume: 0.8 },
-            'the northern anduin vale': { url: ['/assets/Sounds/ZoneSounds/northanduin.mp3', '/assets/Sounds/ZoneSounds/northanduin.mp3'], volume: 0.8 },
-            'road to tharbad': { url: ['/assets/Sounds/ZoneSounds/roadtotharbad.mp3', '/assets/Sounds/ZoneSounds/roadtotharbad.mp3'], volume: 0.8 },
-            'the road to tharbad': { url: ['/assets/Sounds/ZoneSounds/roadtotharbad.mp3', '/assets/Sounds/ZoneSounds/roadtotharbad.mp3'], volume: 0.8 },
+            'north anduin': { url: '/assets/Sounds/ZoneSounds/northanduin.mp3', volume: 0.8 },
+            'the northern anduin vale': { url: '/assets/Sounds/ZoneSounds/northanduin.mp3', volume: 0.8 },
+            'road to tharbad': { url: '/assets/Sounds/ZoneSounds/roadtotharbad.mp3', volume: 0.8 },
+            'the road to tharbad': { url: '/assets/Sounds/ZoneSounds/roadtotharbad.mp3', volume: 0.8 },
             'road to fornost': { url: '/assets/Sounds/ZoneSounds/roadtofornost1.mp3', volume: 0.8 },
             'the road to fornost': { url: '/assets/Sounds/ZoneSounds/roadtofornost1.mp3', volume: 0.8 },
             'fornost': { url: '/assets/Sounds/ZoneSounds/Fornost.mp3', volume: 0.8 },
@@ -91,8 +89,8 @@ export const AUDIO_MANIFEST = {
             'the midgewaters': { url: '/assets/Sounds/ZoneSounds/MidgeWater.mp3', volume: 0.8 },
             'moria': { url: '/assets/Sounds/ZoneSounds/Moria.mp3', volume: 0.8 },
             'the moria': { url: '/assets/Sounds/ZoneSounds/Moria.mp3', volume: 0.8 },
-            'misty mountains': { url: ['/assets/Sounds/ZoneSounds/MistyMountains.mp3', '/assets/Sounds/ZoneSounds/MistyMountains2.mp3'], volume: 0.8 },
-            'the misty mountains': { url: ['/assets/Sounds/ZoneSounds/MistyMountains.mp3', '/assets/Sounds/ZoneSounds/MistyMountains2.mp3'], volume: 0.8 },
+            'misty mountains': { url: '/assets/Sounds/ZoneSounds/MistyMountains.mp3', volume: 0.8 },
+            'the misty mountains': { url: '/assets/Sounds/ZoneSounds/MistyMountains.mp3', volume: 0.8 },
             'ost in edhil': { url: '/assets/Sounds/ZoneSounds/Ost-in-edhil.mp3', volume: 0.8 },
             'road to grey havens': { url: '/assets/Sounds/ZoneSounds/RoadtoGreyHavens.mp3', volume: 0.8 },
             'the road to grey havens': { url: '/assets/Sounds/ZoneSounds/RoadtoGreyHavens.mp3', volume: 0.8 },
@@ -134,6 +132,7 @@ export const AUDIO_MANIFEST = {
         'blockdoor': { path: '/assets/Sounds/SoundEffects/blockdoor.mp3' },
         'breakdoor': { path: '/assets/Sounds/SoundEffects/breakdoor.mp3' },
         'blind': { path: '/assets/Sounds/SoundEffects/blind.mp3' },
+        'blackbreath': { path: '/assets/Sounds/SoundEffects/blackbreath.mp3', defaultVolume: 0.8 },
         'bless': { path: '/assets/Sounds/SoundEffects/bless.mp3', defaultVolume: 0.8 },
         'bob': { path: '/assets/Sounds/SoundEffects/bob.mp3', defaultVolume: 0.8 },
         'backfire': { path: '/assets/Sounds/SoundEffects/backfire.mp3', defaultVolume: 0.85 },
@@ -158,6 +157,7 @@ export const AUDIO_MANIFEST = {
         'actionmenu': { path: '/assets/Sounds/UI/actionmenu.mp3', defaultVolume: 0.1 },
         'commbubble': { path: '/assets/Sounds/SoundEffects/commbubble.mp3' },
         'crushpound': { path: '/assets/Sounds/SoundEffects/crushpound.mp3', defaultVolume: 0.5 },
+        'damage': { path: '/assets/Sounds/SoundEffects/damage.mp3', defaultVolume: 0.8 },
         'door1': { path: '/assets/Sounds/SoundEffects/door1.wav' },
         'hit-impact': { path: '/assets/Sounds/SoundEffects/hit-impact.mp3' },
         'hit2': { path: '/assets/Sounds/SoundEffects/hit2.mp3' },

@@ -1,6 +1,6 @@
 /**
  * @file RightPanelTabs.tsx
- * @description Terminal heading and category tabs for the desktop command panel.
+ * @description Terminal heading and category tabs for the command panel.
  */
 
 import React, { FC } from 'react';
@@ -12,6 +12,7 @@ interface RightPanelTabsProps {
     activeTab: MainTab;
     count: number;
     onSelect: (tab: MainTab) => void;
+    skillsOnly?: boolean;
 }
 
 const TABS: { id: MainTab; label: string }[] = [
@@ -20,7 +21,7 @@ const TABS: { id: MainTab; label: string }[] = [
     { id: 'utility', label: 'Util' },
 ];
 
-export const RightPanelTabs: FC<RightPanelTabsProps> = ({ activeTab, count, onSelect }) => {
+export const RightPanelTabs: FC<RightPanelTabsProps> = ({ activeTab, count, onSelect, skillsOnly = false }) => {
     const closePanel = useCommandPanelStore(state => state.setIsOpen);
     return (
     <>
@@ -33,7 +34,7 @@ export const RightPanelTabs: FC<RightPanelTabsProps> = ({ activeTab, count, onSe
             </button>
         </div>
         <div className="right-panel-tabs" role="tablist" aria-label="Command categories">
-            {TABS.map(tab => (
+            {TABS.filter(tab => !skillsOnly || tab.id === 'skills').map(tab => (
                 <button
                     key={tab.id}
                     type="button"

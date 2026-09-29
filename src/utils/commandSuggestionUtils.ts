@@ -7,11 +7,13 @@ import type { DrawerLine, GmcpOccupant, PracticeSkill, TeleportTarget } from '..
 import { getOccupantCommandKeyword } from './occupantKeywordUtils';
 import { extractMumeKeyword } from './keywordUtils';
 import { getWhoPlayerNames } from './chatWindowUtils';
-import { isItemContainer } from './gameUtils';
+import { isFluidContainer, isItemContainer, sanitizeGameTarget } from './gameUtils';
 import { MAGE_SPELLS } from './spellLists';
 import { getMagicKeyId, pruneExpiredMagicKeys } from './magicKeyUtils';
 import { getTraitsForName } from './inlineActionModel';
 import { getContainerCommand } from './gearPanelUtils';
+import { normalizeOccupantType } from '../services/classification/normalizeOccupantType';
+import { BLANK_TARGET_VALUE } from './commandTargetUtils';
 
 // --- Type Section ---
 
@@ -43,6 +45,36 @@ export const makeCommandTargetSuggestion = (
     meta
 });
 
+const normalizeTargetSuggestionValue = (value: string): string => {
+    const sanitized = sanitizeGameTarget(value) || value.trim();
+    return sanitized.toLowerCase().replace(/^\d+\./, '').replace(/^[*-]+|[*-]+$/g, '');
+};
+
+export const isTargetSuggestionMatch = (
+    suggestion: CommandTargetSuggestion,
+    target: string | null | undefined
+): boolean => {
+    if (!target?.trim()) return false;
+    if (suggestion.value.trim().toLowerCase() === target.trim().toLowerCase()) return true;
+    return normalizeTargetSuggestionValue(suggestion.value) === normalizeTargetSuggestionValue(target);
+};
+
+export const prioritizeTargetSuggestion = (
+    suggestions: CommandTargetSuggestion[],
+    preferredTarget: string | null | undefined
+): CommandTargetSuggestion[] => {
+    if (!preferredTarget?.trim() || suggestions.length < 2) return suggestions;
+
+    const exactValue = preferredTarget.trim().toLowerCase();
+    let matchIndex = suggestions.findIndex(suggestion => suggestion.value.trim().toLowerCase() === exactValue);
+    if (matchIndex < 0) {
+        matchIndex = suggestions.findIndex(suggestion => isTargetSuggestionMatch(suggestion, preferredTarget));
+    }
+    if (matchIndex <= 0) return suggestions;
+
+    return [suggestions[matchIndex], ...suggestions.slice(0, matchIndex), ...suggestions.slice(matchIndex + 1)];
+};
+
 export const getSelfTargetSuggestion = (): CommandTargetSuggestion =>
     makeCommandTargetSuggestion('Self', 'self', 'self');
 
@@ -50,9 +82,42 @@ export const getSelfAndRoomTargetSuggestions = (
     characters: Array<string | GmcpOccupant>,
     roomItems: Array<string | GmcpOccupant>,
     selfName: string
+): CommandTargetSuggestion[] => {
+    const isAlly = (source: string | GmcpOccupant): boolean => {
+        if (typeof source === 'string') return false;
+        const normalizedType = normalizeOccupantType(source)?.toLowerCase();
+        if (['enemy', 'neutral', 'you', 'self'].includes(normalizedType || '')) return false;
+        const tags = [source.category, ...(source.labels || []), ...(source.flags || [])]
+            .filter(Boolean)
+            .map(tag => String(tag).toLowerCase().replace(/^(?:cat|trait)-/, ''));
+        const isNpc = normalizedType === 'npc' || source.pc === false || source.pc === 0;
+        const hasAllyTag = tags.some(tag => ['ally', 'allies', 'friend', 'grouped'].includes(tag));
+        return normalizedType === 'ally' || source.pc === true || source.pc === 1
+            || (isNpc && hasAllyTag);
+    };
+    const isNpc = (source: string | GmcpOccupant): boolean => {
+        if (typeof source === 'string') return true;
+        const normalizedType = normalizeOccupantType(source)?.toLowerCase();
+        return !['enemy', 'neutral', 'you', 'self', 'ally'].includes(normalizedType || '')
+            && (normalizedType === 'npc' || source.pc === false || source.pc === 0);
+    };
+    const orderedCharacters = [
+        ...characters.filter(isAlly),
+        ...characters.filter(source => !isAlly(source) && isNpc(source))
+    ];
+
+    return [
+        getSelfTargetSuggestion(),
+        ...getRoomTargetSuggestions(orderedCharacters, roomItems, 'characters', selfName)
+    ];
+};
+
+export const getSelfAndRoomAlliesTargetSuggestions = (
+    characters: Array<string | GmcpOccupant>,
+    selfName: string
 ): CommandTargetSuggestion[] => [
     getSelfTargetSuggestion(),
-    ...getRoomTargetSuggestions(characters, roomItems, 'characters', selfName)
+    ...getRoomTargetSuggestions(characters, [], 'allies', selfName)
 ];
 
 export const appendNamedTargetSuggestions = (
@@ -85,7 +150,8 @@ export const getRoomCorpseTargetSuggestions = (
 );
 
 export const getMountTargetSuggestions = (
-    characters: GmcpOccupant[]
+    characters: GmcpOccupant[],
+    includeUnsaddleAll = false
 ): CommandTargetSuggestion[] => {
     const mounts = characters.filter(occupant => {
         const type = (occupant.type || '').toLowerCase();
@@ -104,6 +170,7 @@ export const getMountTargetSuggestions = (
 
     return [
         makeCommandTargetSuggestion('Mount', 'mount', 'mount'),
+        ...(includeUnsaddleAll ? [makeCommandTargetSuggestion('Mount All', 'mount all', 'mount')] : []),
         ...getRoomTargetSuggestions(mounts, [], 'characters')
     ];
 };
@@ -151,19 +218,94 @@ export const getRoomTargetSuggestions = (
     selfName = ''
 ): CommandTargetSuggestion[] => {
     const sources = kind === 'objects' ? objects : characters;
-    return sources.flatMap((source, index) => {
+    const getAllyPriority = (source: string | GmcpOccupant): number | null => {
+        if (typeof source === 'string') return null;
+        const normalizedType = normalizeOccupantType(source)?.toLowerCase();
+        if (normalizedType === 'enemy' || normalizedType === 'neutral' || normalizedType === 'you' || normalizedType === 'self') return null;
+
+        const tags = [source.category, ...(source.labels || []), ...(source.flags || [])]
+            .filter(Boolean)
+            .map(tag => String(tag).toLowerCase().replace(/^(?:cat|trait)-/, ''));
+        const hasAllyTag = tags.some(tag => ['ally', 'allies', 'friend', 'grouped'].includes(tag));
+        const isNpc = (source.type || '').toLowerCase() === 'npc' || source.pc === false || source.pc === 0;
+        if (isNpc && (hasAllyTag || normalizedType === 'ally')) return 0;
+        if (normalizedType === 'ally' || source.pc === true || source.pc === 1) return 1;
+        return null;
+    };
+    const orderedSources = kind === 'allies'
+        ? sources.map((source, index) => ({ source, index, priority: getAllyPriority(source) }))
+            .filter((entry): entry is { source: string | GmcpOccupant; index: number; priority: number } => entry.priority !== null)
+            .sort((a, b) => a.priority - b.priority)
+        : sources.map((source, index) => ({ source, index, priority: 0 }));
+    const suggestions = orderedSources.flatMap(({ source, index }) => {
         const occupant: GmcpOccupant = typeof source === 'string' ? { name: source } : source;
         const type = (occupant.type || '').toLowerCase();
-        if (kind === 'allies' && (type === 'enemy' || type === 'npc' || occupant.pc === false || occupant.pc === 0)) return [];
         const label = occupant.short || occupant.shortdesc || occupant.name || occupant.keyword || '';
         if (!label || (selfName && label.toLowerCase() === selfName.toLowerCase())) return [];
         const value = getOccupantCommandKeyword(occupant, label);
         if (!value) return [];
         return [{ key: `${occupant.id ?? index}-${value}`, label, value, meta: type || kind }];
     });
+
+    const totalByKeyword = new Map<string, number>();
+    suggestions.forEach(({ value }) => {
+        const keyword = value.toLowerCase();
+        totalByKeyword.set(keyword, (totalByKeyword.get(keyword) || 0) + 1);
+    });
+
+    const ordinalByKeyword = new Map<string, number>();
+    return suggestions.map(suggestion => {
+        const keyword = suggestion.value.toLowerCase();
+        const total = totalByKeyword.get(keyword) || 0;
+        if (total < 2) return suggestion;
+
+        const ordinal = (ordinalByKeyword.get(keyword) || 0) + 1;
+        ordinalByKeyword.set(keyword, ordinal);
+        const displayKeyword = suggestion.value.replace(/^[*-]+|[*-]+$/g, '');
+        return {
+            ...suggestion,
+            label: `${ordinal}.${displayKeyword}`,
+            value: `${ordinal}.${suggestion.value}`
+        };
+    });
 };
 
-export const getGearTargetSuggestions = (
+export const getAssistTargetSuggestions = (
+    characters: Array<string | GmcpOccupant>,
+    selfName = ''
+): CommandTargetSuggestion[] => [
+    makeCommandTargetSuggestion('Blank Target', BLANK_TARGET_VALUE, 'source'),
+    ...getRoomTargetSuggestions(characters, [], 'allies', selfName)
+];
+
+export const getRescueTargetSuggestions = (
+    characters: Array<string | GmcpOccupant>,
+    selfName = ''
+): CommandTargetSuggestion[] => [
+    makeCommandTargetSuggestion('1.ally', '1.ally', 'ally'),
+    ...getRoomTargetSuggestions(characters, [], 'allies', selfName)
+];
+
+const disambiguateGearSuggestions = (suggestions: CommandTargetSuggestion[]): CommandTargetSuggestion[] => {
+    const baseValue = (value: string) => value.trim().replace(/^\d+\./, '');
+    const counts = new Map<string, number>();
+    suggestions.forEach(suggestion => {
+        const key = baseValue(suggestion.value).toLowerCase();
+        counts.set(key, (counts.get(key) || 0) + 1);
+    });
+
+    const ordinals = new Map<string, number>();
+    return suggestions.map(suggestion => {
+        const value = baseValue(suggestion.value);
+        const key = value.toLowerCase();
+        if ((counts.get(key) || 0) < 2) return suggestion;
+        const ordinal = (ordinals.get(key) || 0) + 1;
+        ordinals.set(key, ordinal);
+        return { ...suggestion, label: `${ordinal}.${value}`, value: `${ordinal}.${value}` };
+    });
+};
+
+const getRawGearTargetSuggestions = (
     lines: DrawerLine[],
     kind: 'inventory' | 'worn'
 ): CommandTargetSuggestion[] => lines.flatMap((line, index) => {
@@ -174,13 +316,31 @@ export const getGearTargetSuggestions = (
     return [{ key: line.entityId || line.stableId || line.id || `${kind}-${index}`, label, value, meta: kind }];
 });
 
+export const getGearTargetSuggestions = (
+    lines: DrawerLine[],
+    kind: 'inventory' | 'worn'
+): CommandTargetSuggestion[] => disambiguateGearSuggestions(getRawGearTargetSuggestions(lines, kind));
+
 export const getInventoryAndWornTargetSuggestions = (
     inventoryLines: DrawerLine[],
     wornLines: DrawerLine[]
-): CommandTargetSuggestion[] => [
-    ...getGearTargetSuggestions(inventoryLines, 'inventory'),
-    ...getGearTargetSuggestions(wornLines, 'worn')
-];
+): CommandTargetSuggestion[] => disambiguateGearSuggestions([
+    ...getRawGearTargetSuggestions(inventoryLines, 'inventory'),
+    ...getRawGearTargetSuggestions(wornLines, 'worn')
+]);
+
+export const getDrinkTargetSuggestions = (
+    inventoryLines: DrawerLine[],
+    wornLines: DrawerLine[]
+): CommandTargetSuggestion[] => {
+    const fluidContainers = (lines: DrawerLine[]) => lines.filter(line =>
+        line.isItem && !line.isHeader && isFluidContainer(`${line.text} ${line.rawText || ''} ${line.context || ''}`)
+    );
+    return [
+        ...getInventoryAndWornTargetSuggestions(fluidContainers(inventoryLines), fluidContainers(wornLines)),
+        { key: 'drink-water', label: 'water', value: 'water', meta: 'source' }
+    ];
+};
 
 export const getLanternTargetSuggestions = (
     inventoryLines: DrawerLine[],
@@ -225,12 +385,12 @@ export const getContainerTargetSuggestions = (
         }];
     });
 
-    return [
+    return disambiguateGearSuggestions([
         { key: 'container-exit', label: 'Exit', value: 'exit', meta: 'exit' },
         ...roomTargets,
         ...gearTargets(inventoryLines, 'inventory'),
         ...gearTargets(wornLines, 'worn')
-    ];
+    ]);
 };
 
 export const getWhoTargetSuggestions = (

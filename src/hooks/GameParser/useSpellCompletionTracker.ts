@@ -12,6 +12,8 @@ import { matchSpellCompletion } from '../../constants/spellCompletionMessages';
 export interface SpellCompletionTrackerDeps {
     playIncantationSound?: () => void;
     playEffect?: (name: string, options?: any) => void;
+    playSpectateIncantationSound?: () => void;
+    playSpectateEffect?: (name: string) => void;
 }
 
 const CAST_WINDOW_MS = 5000;
@@ -35,7 +37,9 @@ export function useSpellCompletionTracker(deps: SpellCompletionTrackerDeps) {
     }, []);
 
     const handleSpellLine = useCallback((textOnly: string, lower: string, isSnoop: boolean): boolean => {
-        if (isSnoop) return false;
+        const playIncantationSound = isSnoop ? deps.playSpectateIncantationSound : deps.playIncantationSound;
+        const playEffect = isSnoop ? deps.playSpectateEffect : deps.playEffect;
+        if (isSnoop && (!playIncantationSound || !playEffect)) return false;
 
         // 1. Detect casting start
         const isCastStart = lower.includes('start to concentrate') ||
@@ -53,7 +57,7 @@ export function useSpellCompletionTracker(deps: SpellCompletionTrackerDeps) {
 
         if (isCastStart) {
             lastSpellCastTimeRef.current = Date.now();
-            deps.playIncantationSound?.();
+            playIncantationSound?.();
             return false;
         }
 
@@ -77,12 +81,12 @@ export function useSpellCompletionTracker(deps: SpellCompletionTrackerDeps) {
                 const soundId = typeof completion === 'object'
                     ? completion.pattern.soundId ?? 'magiccomplete'
                     : 'magiccomplete';
-                deps.playEffect?.(soundId);
+                playEffect?.(soundId);
                 return true;
             }
         }
         return false;
-    }, [deps.playIncantationSound, deps.playEffect]);
+    }, [deps.playIncantationSound, deps.playEffect, deps.playSpectateIncantationSound, deps.playSpectateEffect]);
 
     return {
         handleSpellLine,

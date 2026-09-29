@@ -1,8 +1,16 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Play, Pause, Zap } from 'lucide-react';
+/**
+ * @file LiveBufferHUD.tsx
+ * @description Draggable DVR controls for replaying and seeking spectate history.
+ */
+
+// --- Logic Section ---
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronDown, ChevronUp, Play, Pause, Zap } from 'lucide-react';
 import { useUI } from '../../../context/GameContext';
 import { useModeStore } from '../../../stores/useModeStore';
 import { useMessageStore } from '../../../stores/useMessageStore';
+
+const MINIMIZED_KEY = 'mume-spectate-dvr-minimized';
 
 const fmt = (ms: number) => {
     const s = Math.floor(ms / 1000);
@@ -25,10 +33,15 @@ export const LiveBufferHUD: React.FC = () => {
     const messages = useMessageStore(s => s.spectate);
     const isSpectating = useModeStore(s => s.isSpectating);
     const scrubberRef = useRef<HTMLDivElement>(null);
+    const [isMinimized, setIsMinimized] = useState(() => localStorage.getItem(MINIMIZED_KEY) === 'true');
 
     const [pos, setPos] = useState<{ right: number; top: number } | null>(null);
     const dragRef = useRef<{ startX: number; startY: number; startRight: number; startTop: number } | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        localStorage.setItem(MINIMIZED_KEY, String(isMinimized));
+    }, [isMinimized]);
 
     const handleDragPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         if ((e.target as HTMLElement).closest('button, input')) return;
@@ -115,8 +128,8 @@ export const LiveBufferHUD: React.FC = () => {
         fontFamily: "'JetBrains Mono', 'Roboto Mono', monospace",
         color: '#fff',
         boxShadow: spectateBuffer.isLive ? '0 4px 15px rgba(0,0,0,0.5)' : '0 0 20px rgba(74,144,226,0.2)',
-        minWidth: '240px',
-        maxWidth: '300px',
+        minWidth: isMinimized ? '145px' : '240px',
+        maxWidth: isMinimized ? '190px' : '300px',
         userSelect: 'none',
         pointerEvents: 'auto',
     };
@@ -136,6 +149,7 @@ export const LiveBufferHUD: React.FC = () => {
         gap: '3px',
     };
 
+    // --- Render Section ---
     return (
         <div
             ref={containerRef}
@@ -179,8 +193,21 @@ export const LiveBufferHUD: React.FC = () => {
                         </button>
                     </div>
                 )}
+                <button
+                    type="button"
+                    aria-label={isMinimized ? 'Expand DVR controls' : 'Minimize DVR controls'}
+                    title={isMinimized ? 'Expand DVR controls' : 'Minimize DVR controls'}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsMinimized(prev => !prev);
+                    }}
+                    style={{ ...btnBase, padding: '3px', justifyContent: 'center' }}
+                >
+                    {isMinimized ? <ChevronDown size={13} /> : <ChevronUp size={13} />}
+                </button>
             </div>
 
+            {!isMinimized && <>
             {/* Scrubber (shown whenever there's session history) */}
             {sessionDurationMs > 5000 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
@@ -248,6 +275,7 @@ export const LiveBufferHUD: React.FC = () => {
                     </button>
                 </div>
             )}
+            </>}
         </div>
     );
 };

@@ -1,0 +1,385 @@
+/* @file TacticalCommandPanel.css — Full-log command and target decision surface. */
+
+.unified-tactical-surface {
+    --decision-panel-tint: transparent;
+    --decision-panel-blur: blur(18px) saturate(1.05);
+    position: fixed;
+    z-index: 60001;
+    inset: 0;
+    display: block;
+    width: 100vw;
+    height: 100dvh;
+    max-height: none;
+    box-sizing: border-box;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* --- Target Selection Section --- */
+.unified-tactical-targets {
+    position: absolute;
+    top: var(--message-log-top, 0px);
+    left: var(--message-log-left, 0px);
+    display: flex;
+    flex-direction: column;
+    width: var(--message-log-width, 100vw);
+    height: var(--message-log-action-area-height, var(--message-log-height, 100dvh));
+    min-width: 0;
+    min-height: 0;
+    background: var(--decision-panel-tint);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    pointer-events: auto;
+    overflow: hidden;
+}
+
+.unified-tactical-panel-actions {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    flex: 0 0 44px;
+    width: 100%;
+    height: 44px;
+    box-sizing: border-box;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    justify-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    background: var(--decision-panel-tint);
+    backdrop-filter: var(--decision-panel-blur);
+    -webkit-backdrop-filter: var(--decision-panel-blur);
+    pointer-events: auto;
+}
+
+.unified-tactical-panel-action {
+    display: flex;
+    width: 42px;
+    height: 40px;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    color: rgba(238, 239, 242, 0.9);
+    font: 700 12px/1 var(--font-mono, monospace);
+    font-family: var(--font-mono, monospace);
+    letter-spacing: 0.08em;
+    touch-action: manipulation;
+    cursor: pointer;
+}
+
+.unified-tactical-panel-action.is-swap {
+    color: #e7d27f;
+}
+
+.unified-tactical-panel-action.is-close {
+    color: rgba(238, 239, 242, 0.72);
+}
+
+.unified-tactical-panel-action.is-active {
+    border-radius: 10px;
+    background: rgba(var(--set-accent-rgb, 224, 189, 63), 0.24);
+    color: #ffe285;
+    box-shadow: inset 0 0 0 1px rgba(var(--set-accent-rgb, 224, 189, 63), 0.72), 0 0 18px rgba(var(--set-accent-rgb, 224, 189, 63), 0.2);
+}
+
+.unified-tactical-wheel {
+    position: absolute;
+    top: var(--tactical-map-top, 0px);
+    left: var(--tactical-map-left, 0px);
+    display: flex;
+    width: var(--tactical-map-width, 100vw);
+    height: var(--tactical-map-height, 100dvh);
+    grid-row: auto;
+    align-items: center;
+    justify-content: center;
+    background: var(--decision-panel-tint);
+    backdrop-filter: var(--decision-panel-blur);
+    -webkit-backdrop-filter: var(--decision-panel-blur);
+    pointer-events: none;
+}
+
+.unified-tactical-surface > .unified-tactical-panel-wheel {
+    top: var(--tactical-map-top, 0px);
+    height: var(--tactical-map-height, 100dvh);
+    flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+}
+
+.unified-tactical-panel-scroll {
+    container-type: size;
+    --decision-wheel-size: min(100cqh, 100cqw);
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: none;
+}
+
+.unified-tactical-panel-scroll > .swipe-wheel-container {
+    flex: 0 0 auto;
+    height: var(--decision-wheel-size);
+    width: auto;
+    max-height: none;
+    aspect-ratio: 1 / 1;
+}
+
+.unified-tactical-command-palette {
+    flex: 0 0 auto;
+    width: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+    padding: 2px 10px max(10px, env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    overflow-y: visible;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+.unified-tactical-command-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: min(100%, var(--decision-wheel-size, 280px));
+    margin: 0 auto;
+}
+
+.unified-tactical-command-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    box-sizing: border-box;
+    padding: 4px;
+    border: 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.07);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.025);
+    color: rgba(232, 235, 240, 0.86);
+    font: 600 11px/1.15 var(--font-mono, monospace);
+    text-align: center;
+    touch-action: none;
+}
+
+.unified-tactical-command-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    line-height: 0;
+}
+
+.unified-tactical-command-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.unified-tactical-command-label {
+    display: -webkit-box;
+    max-width: 100%;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    text-overflow: ellipsis;
+}
+
+.unified-tactical-command-item.is-active {
+    background: color-mix(in srgb, var(--set-accent, var(--accent)) 30%, transparent);
+    color: #fff4c4;
+}
+
+.unified-tactical-command-item.is-swap-source {
+    background: rgba(59, 130, 246, 0.32);
+    box-shadow: inset 0 0 0 3px rgba(96, 165, 250, 0.98), 0 0 24px rgba(59, 130, 246, 0.65);
+    color: #eff6ff;
+}
+
+.unified-tactical-surface .tactical-target-bar.is-embedded {
+    position: relative;
+    inset: auto;
+    display: flex;
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    max-height: none;
+    transform: none;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    animation: none;
+    overflow: hidden;
+}
+
+.unified-tactical-surface .tactical-target-bar-header {
+    flex: 0 0 auto;
+    padding: 2px 3px 7px;
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+    background: transparent;
+    color: rgba(224, 211, 166, 0.84);
+}
+
+.unified-tactical-surface .tactical-target-bar-column-title {
+    flex: 0 0 auto;
+    color: rgba(220, 214, 198, 0.64);
+}
+
+.unified-tactical-surface .tactical-target-bar-body,
+.unified-tactical-surface .tactical-target-bar-columns,
+.unified-tactical-surface .tactical-target-bar-column,
+.unified-tactical-surface .tactical-target-bar-direction-stack {
+    min-height: 0;
+}
+
+.unified-tactical-surface .tactical-target-bar-body {
+    flex: 1 1 auto;
+    flex-direction: column;
+}
+
+.unified-tactical-surface .tactical-target-bar.has-directions-wheel .tactical-target-bar-body {
+    align-items: stretch;
+    justify-content: center;
+}
+
+.unified-tactical-surface .tactical-target-bar-columns {
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    overflow: hidden;
+}
+
+.unified-tactical-surface .tactical-target-bar-column {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.unified-tactical-surface .tactical-target-bar-column + .tactical-target-bar-column {
+    border-top: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.unified-tactical-surface .tactical-target-bar-list {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: none;
+    padding: 5px 3px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.unified-tactical-surface .tactical-target-bar-section,
+.unified-tactical-surface .tactical-target-bar-item {
+    flex: 0 0 auto;
+}
+
+.unified-tactical-surface .tactical-target-bar-item {
+    min-height: 40px;
+    border-color: transparent;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+    border-radius: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.unified-tactical-surface .tactical-target-bar-item:hover,
+.unified-tactical-surface .tactical-target-bar-item:active,
+.unified-tactical-surface .tactical-target-bar-item.is-selected {
+    transform: none;
+    border-color: rgba(74, 222, 128, 0.58);
+    background: transparent;
+    box-shadow: none;
+}
+
+.unified-tactical-surface .tactical-target-bar-item.is-selected .tactical-target-bar-name,
+.unified-tactical-surface .tactical-target-bar-item.is-locked .tactical-target-bar-name { color: #86efac; }
+
+.unified-tactical-surface .tactical-target-bar-item.is-confirmed {
+    border-color: rgba(74, 222, 128, 0.9);
+    background: transparent;
+    box-shadow: none;
+}
+
+.unified-tactical-surface .tactical-target-bar-item.is-confirmed::after {
+    content: '✓';
+    flex: 0 0 auto;
+    margin-left: 8px;
+    color: #86efac;
+    font: 700 16px/1 var(--font-mono, monospace);
+}
+
+.unified-tactical-surface .tactical-target-bar.has-directions-side .tactical-target-bar-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.unified-tactical-surface .tactical-target-direction-side {
+    flex: 0 0 auto;
+    align-items: center;
+    align-self: stretch;
+    min-width: 0;
+    padding: 2px 0 2px 8px;
+    border-top: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.unified-tactical-surface .tactical-target-direction-side .tactical-target-direction-compass {
+    grid-template: repeat(3, minmax(0, 1fr)) / repeat(3, minmax(0, 1fr));
+}
+
+.unified-tactical-surface .tactical-target-bar-direction-stack {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.unified-tactical-surface .tactical-target-direction-below {
+    flex: 0 0 auto;
+}
+
+.unified-tactical-surface .tactical-target-direction-below .tactical-target-direction-compass {
+    grid-template: repeat(3, minmax(0, 1fr)) / repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 560px) {
+    .unified-tactical-surface {
+        pointer-events: none;
+    }
+
+    .unified-tactical-targets { pointer-events: auto; }
+    .unified-tactical-wheel { pointer-events: none; }
+    .unified-tactical-surface .tactical-target-bar-item { min-height: 44px; }
+}
+
+@media (max-width: 360px) {
+    .unified-tactical-surface { pointer-events: none; }
+}

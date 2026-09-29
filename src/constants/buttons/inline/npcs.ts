@@ -13,10 +13,10 @@ export const NPC_BUTTONS = [
     // --- MOUNTS ---
     createButton({ id: 'btn-mount-ride', label: 'Ride', command: 'ride %n', setId: 'inline-mounts', color: '#78350f' }),
     createButton({ id: 'btn-mount-lead', label: 'Lead', command: 'lead %n', setId: 'inline-mounts', color: '#92400e' }),
-    createButton({ id: 'btn-mount-unsaddle-all', label: 'Unsaddle All', command: 'unsaddle %n all', setId: 'inline-mounts', color: '#451a03', width: 110 }),
+    createButton({ id: 'btn-mount-saddle', label: 'Saddle', command: 'saddle %n', setId: 'inline-mounts', color: '#78350f' }),
     createButton({ id: 'btn-mount-unsaddle', label: 'Unsaddle', command: 'unsaddle %n', setId: 'inline-mounts', color: '#451a03' }),
     createButton({ id: 'btn-mount-abandon', label: 'Abandon', command: 'abandon %n', setId: 'inline-mounts', color: '#ef4444' }),
-    createButton({ id: 'btn-mount-saddle', label: 'Saddle', command: 'saddle %n', setId: 'inline-mounts', color: '#78350f' }),
+    createButton({ id: 'btn-mount-dismount', label: 'Dismount', command: 'dismount %n', setId: 'inline-mounts', color: '#92400e' }),
 
     // --- GUILDMASTER ---
     createButton({ id: 'btn-guildmaster-practice', label: 'Practice Skills', command: 'practice', setId: 'inline-guildmaster', color: '#a855f7', width: 120 }),

@@ -1,8 +1,15 @@
+/**
+ * @file EnvironmentEffects.tsx
+ * @description Renders weather and atmospheric layers for the active view.
+ */
+
+// --- Logic Section ---
 import React from 'react';
 import { LightingType, WeatherType } from '../../types';
 import Rain from './Rain';
 import { Embers } from './Embers';
 import { useInputStore } from '../../stores/useInputStore';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import { EnvironmentGlow } from './EnvironmentGlow';
 import { getZoneAmbientGlow } from '../../utils/zoneColors';
 
@@ -51,6 +58,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     isSleeping = false
 }) => {
     const input = useInputStore(s => s.input);
+    const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
 
     const [prevPropBg, setPrevPropBg] = React.useState<string | null>(bgImage || null);
     const [prevImage, setPrevImage] = React.useState<string | null>(null);
@@ -211,7 +219,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
             </div>
 
             {/* --- EMBER LAYER: Full-client particles above the map/drawer surface --- */}
-            {isImmersionMode && (
+            {isImmersionMode && !isMobile && !isPerformanceMode && (
                 <div className="embers-client-layer">
                     <Embers count={44} zone={zone} />
                 </div>
@@ -226,7 +234,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                             style={{ opacity: (weather === 'cloud' || weather === 'rain' || weather === 'heavy-rain') ? 1 : 0 }}
                         />
                         {lightning && <div className="lightning-glow-drop" />}
-                        {(weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
+                        {!isPerformanceMode && (weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
                         {weather === 'snow' && <div className="weather-layer weather-snow" />}
 
                     </>

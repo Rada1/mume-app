@@ -1,0 +1,175 @@
+/* @file TacticalMapPerimeter.css — Places mobile command buttons in two map rows. */
+
+/* --- Shared Two-By-Seven Grid --- */
+.mobile-map-panel.map-expanded .mobile-map-command-overlay {
+    --tactical-frame-size: min(calc(100vw - 88px), 760px);
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: var(--tactical-frame-size);
+    height: auto;
+    transform: translateX(-50%);
+    z-index: 2800;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    aspect-ratio: 7 / 2;
+    gap: 0;
+    pointer-events: none;
+}
+
+/* Flatten the category and tactical wrappers so every button shares this grid. */
+.mobile-map-panel.map-expanded .mobile-command-deck-persistent,
+.mobile-map-panel.map-expanded .mobile-command-deck-persistent .command-deck,
+.mobile-map-panel.map-expanded .mobile-command-deck-persistent .deck-tab-rail,
+.mobile-map-panel.map-expanded .mobile-command-deck-persistent .deck-category-control,
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent,
+.mobile-map-panel.map-expanded .tactical-line-wrapper,
+.mobile-map-panel.map-expanded .line-cluster,
+.mobile-map-panel.map-expanded .line-cluster-step,
+.mobile-map-panel.map-expanded .line-cluster-aux {
+    display: contents !important;
+}
+
+.mobile-map-panel.map-expanded .deck-target-hint {
+    position: absolute;
+    top: -28px;
+    left: 0;
+    right: 0;
+    z-index: 2;
+}
+
+/* Categories fill the first row. */
+.mobile-map-panel.map-expanded [data-id="deck-category-combat"] { grid-area: 1 / 1; }
+.mobile-map-panel.map-expanded [data-id="deck-category-social"] { grid-area: 1 / 2; }
+.mobile-map-panel.map-expanded [data-id="deck-category-utility"] { grid-area: 1 / 3; }
+.mobile-map-panel.map-expanded [data-id="deck-category-room"] { grid-area: 1 / 4; }
+.mobile-map-panel.map-expanded [data-id="deck-category-personal"] { grid-area: 1 / 5; }
+.mobile-map-panel.map-expanded [data-id="deck-category-consume"] { grid-area: 1 / 6; }
+.mobile-map-panel.map-expanded [data-id="deck-category-mounts"] { grid-area: 1 / 7; }
+
+/* Tactical commands fill the second row. */
+.mobile-map-panel.map-expanded [data-id="tactical-ranger"] { grid-area: 2 / 1; }
+.mobile-map-panel.map-expanded [data-id="tactical-cleric"] { grid-area: 2 / 2; }
+.mobile-map-panel.map-expanded [data-id="tactical-thief"] { grid-area: 2 / 3; }
+.mobile-map-panel.map-expanded [data-id="tactical-warrior"] { grid-area: 2 / 4; }
+.mobile-map-panel.map-expanded [data-id="tactical-mage"] { grid-area: 2 / 5; }
+.mobile-map-panel.map-expanded [data-id="tactical-doors"] { grid-area: 2 / 6; }
+.mobile-map-panel.map-expanded [data-id="tactical-eye"] { grid-area: 2 / 7; }
+
+/* Charmie is class-specific and does not fit the 14-button grid. */
+.mobile-map-panel.map-expanded [data-id="tactical-charmie"] { display: none !important; }
+
+/* Equal square hit targets touch edge-to-edge on the rectangular perimeter. */
+.mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0;
+    border-radius: 0 !important;
+    box-sizing: border-box;
+    pointer-events: auto;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn-icon-node svg {
+    width: clamp(20px, 6vw, 28px);
+    height: clamp(20px, 6vw, 28px);
+}
+
+.mobile-map-panel.map-expanded .mobile-map-command-overlay .line-btn .button-label {
+    max-width: 90%;
+    font-size: clamp(0.55rem, 2.4vw, 0.72rem) !important;
+}
+
+/* The map swipe wheel owns the screen while it is open. */
+body:has(.mapper-container.map-swipe-wheel-open) .mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn {
+    pointer-events: none !important;
+}
+
+/* --- Bottom Hit and Flee Actions --- */
+.mobile-map-bottom-actions {
+    display: none;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions {
+    --tactical-frame-size: min(calc(100vw - 88px), 760px);
+    position: absolute;
+    bottom: 18%;
+    left: 50%;
+    width: var(--tactical-frame-size);
+    height: auto;
+    aspect-ratio: 7 / 1;
+    transform: translateX(-50%);
+    z-index: 2800;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    pointer-events: none;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions [data-id="map-action-hit"] {
+    grid-column: 1 / span 3;
+    grid-row: 1;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions [data-id="map-action-flee"] {
+    grid-column: 5 / span 3;
+    grid-row: 1;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+    color: rgba(255, 255, 255, 0.72) !important;
+    box-sizing: border-box;
+    pointer-events: auto;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .button-label {
+    max-width: 90%;
+    font-size: clamp(1.15rem, 4.8vw, 1.3rem) !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: #b0a080 !important;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn:hover .button-label {
+    color: #d4c9b0 !important;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.target-ready .button-label,
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.target-ready:hover .button-label {
+    color: #86efac !important;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn-icon-node svg {
+    width: clamp(16px, 4.5vw, 22px);
+    height: clamp(16px, 4.5vw, 22px);
+}
+
+body:has(.mapper-container.map-swipe-wheel-open) .mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn {
+    pointer-events: none !important;
+}
+
+/* Hide individual map buttons because expanded-map wrappers use display: contents. */
+body:has(.this-is-you-console.is-mobile:not(.is-minimized)) .mobile-map-panel .mobile-map-command-overlay .custom-btn,
+body:has(.this-is-you-console.is-mobile:not(.is-minimized)) .mobile-map-panel .mobile-map-bottom-actions .custom-btn {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}

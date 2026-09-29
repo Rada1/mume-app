@@ -1,7 +1,7 @@
 /* @file ShopPanel.css - Shop drawer layout, product stock, and command controls. */
 /* Shop inherits ChatWindow's docked panel shell and responsive geometry. */
 .shop-panel {
-    width: var(--desktop-shop-width, 30vw) !important;
+    width: var(--desktop-shop-width, 30vw);
     font-size: var(--dynamic-log-size, 16px);
 }
 .shop-heading-actions { display: flex; align-items: center; gap: 8px; }

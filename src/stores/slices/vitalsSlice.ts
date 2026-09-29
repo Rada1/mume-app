@@ -135,6 +135,7 @@ export const initialVitalsState = {
         age: '',
         height: '',
         citizenships: 0,
+        warPoints: 0,
         warFame: 0,
         affectedBy: []
     },

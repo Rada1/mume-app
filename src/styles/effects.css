@@ -9,6 +9,16 @@
   animation: none !important;
 }
 
+/* MessageLog has high-specificity immersion selectors (some marked !important).
+   Keep performance mode authoritative for the whole live and replay log. */
+#root .performance-mode .message-log,
+#root .performance-mode .message-log *,
+#root .performance-mode .message-log *::before,
+#root .performance-mode .message-log *::after {
+  animation: none !important;
+  animation-delay: 0s !important;
+}
+
 /* Completely hide atmospheric containers to save DOM rendering/paint overhead */
 .performance-mode .environment-root,
 .performance-mode .terrain-tint-layer,

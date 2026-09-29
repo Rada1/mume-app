@@ -85,7 +85,7 @@
     color: #60a5fa;
 }
 
-.map-header-val.time.night-transition {
+.map-header-val.time.dawn-transition {
     color: #f87171;
 }
 
@@ -176,7 +176,7 @@
     color: #2563eb;
 }
 
-.light-mode .map-header-val.time.night-transition {
+.light-mode .map-header-val.time.dawn-transition {
     color: #dc2626;
 }
 

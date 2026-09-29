@@ -9,7 +9,7 @@
 
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Target } from 'lucide-react';
-import { useGame } from '../../context/GameContext';
+import { useGame, useVitals } from '../../context/GameContext';
 import { useUI } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
@@ -19,42 +19,94 @@ import { useDeckTargeting, DeckItem } from './useDeckTargeting';
 import { TacticalTargetBar } from '../Controls/GameButton/TacticalTargetBar';
 import { RightPanelTargetBar } from './RightPanelTargetBar';
 import { DeckCategoryWheel } from './DeckCategoryWheel';
-import { DECK_ACTIONS, DECK_TABS, DECK_LABEL_ICONS, DEFAULT_DECK_ICON, type TabKey } from './commandDeckData';
-import type { DrawerLine } from '../../types';
+import type { GameButtonProps } from '../Controls/GameButton/GameButton';
+import { DECK_ACTIONS, DECK_TABS, DECK_LABEL_ICONS, DEFAULT_DECK_ICON, isDeckActionAvailable, type TabKey } from './commandDeckData';
+import { useRoomStore } from '../../stores/useRoomStore';
+import { getAutoRoomTarget, getViableRoomCharacterTargets } from '../../utils/commandAutoTarget';
+import type { CustomButton, DrawerLine, SwipeDirection } from '../../types';
 import type { CommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 import './CommandDeck.css';
 
-export const CommandDeck: FC = () => {
-    const { executeCommand, triggerHaptic, setTarget, characterName, viewport, parser, containerContents } = useGame() as {
+const DECK_WHEEL_STORAGE_KEY = 'mud-deck-wheel-actions';
+const WHEEL_DIRECTIONS = ['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'] as const;
+type DeckWheelAssignments = Partial<Record<TabKey, Array<string | null>>>;
+
+const getWheelActionKey = (item: DeckItem): string => `${item.label.trim()}::${item.cmd.trim()}`;
+
+const WHEEL_DIRECTION_MAP: SwipeDirection[] = ['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'];
+
+const makeDeckItem = (item: DeckItem): DeckItem => ({
+    ...item,
+    needsTarget: item.needsTarget ?? item.cmd.endsWith(' '),
+});
+
+const readDeckWheelAssignments = (): DeckWheelAssignments => {
+    try {
+        const stored = localStorage.getItem(DECK_WHEEL_STORAGE_KEY);
+        return stored ? JSON.parse(stored) as DeckWheelAssignments : {};
+    } catch {
+        return {};
+    }
+};
+
+interface CommandDeckProps {
+    tactical?: Pick<GameButtonProps, 'isEditMode' | 'dragState' | 'handleDragStart' | 'wasDraggingRef' | 'heldButton' | 'setHeldButton' | 'setCommandPreview'>;
+}
+
+export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
+    const game = useGame() as {
         executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
         triggerHaptic?: (ms: number) => void;
         setTarget: (target: string | null) => void;
         characterName?: string;
         viewport?: { isMobile: boolean };
+        btn: { setActiveSet: (setId: string) => void; setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>> };
+        handleButtonClick: (button: CustomButton, event: React.MouseEvent | React.PointerEvent) => void;
+        joystick: { joystickActive: boolean; currentDir: string | null; isTargetModifierActive: boolean; setIsJoystickConsumed: (value: boolean) => void };
         parser?: {
             setPendingFlags: (silent: boolean, fromDrawer: boolean, command?: string) => void;
             setLastRequestedContainerId?: (containerId: string | null) => void;
         };
         containerContents?: Record<string, DrawerLine[]>;
     };
+    const { executeCommand, triggerHaptic, setTarget, characterName, viewport, parser, containerContents } = game;
     const { target } = useActiveVitals() as { target: string | null };
-    const { displayInventoryLines, displayEqLines } = useUI();
+    const { characterInfo } = useVitals();
+    const race = characterInfo.race || '';
+    const subrace = characterInfo.subrace || '';
+    const roomChars = useRoomStore(state => state.chars);
+    const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
+    const { displayInventoryLines, displayEqLines, setPopoverState } = useUI();
     const setInput = useInputStore(s => s.setInput);
     const requestTargetPicker = useInputStore(s => s.requestTargetPicker);
+    const localHeldButton = useState<GameButtonProps['heldButton']>(null);
+    const localCommandPreview = useState<string | null>(null);
+    const localWasDragging = useRef(false);
+    const heldButton = tactical?.heldButton ?? localHeldButton[0];
+    const setHeldButton = tactical?.setHeldButton ?? localHeldButton[1];
+    const setCommandPreview = tactical?.setCommandPreview ?? localCommandPreview[1];
+    const wasDraggingRef = tactical?.wasDraggingRef ?? localWasDragging;
 
     const [activeTab, setActiveTab] = useState<TabKey | null>(() => {
         const saved = localStorage.getItem('mud-deck-tab');
-        const isKnownTab = (['combat', 'social', 'utility', 'room', 'personal', 'consume'] as string[]).includes(saved || '');
+        const isKnownTab = (['combat', 'social', 'utility', 'room', 'personal', 'consume', 'mounts'] as string[]).includes(saved || '');
         const isMobileOnlyTab = saved === 'personal' || saved === 'consume';
         return isKnownTab && (viewport?.isMobile || !isMobileOnlyTab) ? (saved as TabKey) : 'combat';
     });
+    const [deckWheelAssignments, setDeckWheelAssignments] = useState<DeckWheelAssignments>(readDeckWheelAssignments);
+
+    useEffect(() => {
+        localStorage.setItem(DECK_WHEEL_STORAGE_KEY, JSON.stringify(deckWheelAssignments));
+    }, [deckWheelAssignments]);
+
+    const deckWheelCatalog = useMemo(() => Object.values(DECK_ACTIONS).flatMap(category => category.map(makeDeckItem)), []);
 
     useEffect(() => {
         if (!viewport?.isMobile && (activeTab === 'personal' || activeTab === 'consume')) setActiveTab('utility');
     }, [activeTab, viewport?.isMobile]);
 
     const selectTab = (key: TabKey) => {
-        setActiveTab(current => viewport?.isMobile && current === key ? null : key);
+        setActiveTab(key);
         localStorage.setItem('mud-deck-tab', key);
         triggerHaptic?.(10);
     };
@@ -75,20 +127,20 @@ export const CommandDeck: FC = () => {
     }, []);
 
     const items = useMemo<DeckItem[]>(() => (
-        (activeTab ? DECK_ACTIONS[activeTab] : []).map(item => ({
+        (activeTab ? DECK_ACTIONS[activeTab].filter(item => isDeckActionAvailable(item, race, subrace)) : []).map(item => ({
             label: item.label,
             cmd: item.cmd,
             needsTarget: item.needsTarget ?? item.cmd.endsWith(' '),
             targetKind: item.targetKind,
             holdOpensMenuOnly: item.holdOpensMenuOnly,
         }))
-    ), [activeTab]);
+    ), [activeTab, race, subrace]);
 
     const itemsRef = useRef(items);
     useEffect(() => { itemsRef.current = items; }, [items]);
 
     useEffect(() => {
-        const onCommandExecuted = (event: Event) => {
+        const onCommandSent = (event: Event) => {
             const cmd = (event as CustomEvent<{ cmd?: string }>).detail?.cmd;
             if (!cmd) return;
             const matched = itemsRef.current.find(item => doesCommandMatchDeckItem(cmd, item));
@@ -97,14 +149,23 @@ export const CommandDeck: FC = () => {
             }
         };
 
-        window.addEventListener('mume:command-executed', onCommandExecuted);
+        window.addEventListener('mume-command-sent', onCommandSent);
         return () => {
-            window.removeEventListener('mume:command-executed', onCommandExecuted);
+            window.removeEventListener('mume-command-sent', onCommandSent);
             window.clearTimeout(pressTimerRef.current);
         };
     }, [flashPressed]);
 
     const fire = (item: DeckItem) => {
+        if (item.targetKind === 'mounts') {
+            const rememberedMount = getRememberedCommandTarget(item.cmd);
+            if (rememberedMount) {
+                flashPressed(item.label);
+                triggerHaptic?.(15);
+                executeCommand(`${item.cmd}${rememberedMount}`.trim());
+                return;
+            }
+        }
         if (item.targetKind) {
             flashPressed(item.label);
             triggerHaptic?.(10);
@@ -113,7 +174,8 @@ export const CommandDeck: FC = () => {
             return;
         }
         const effectiveTarget = getRememberedCommandTarget(item.cmd)
-            || (isCompatibleGlobalTarget(item.cmd, target) ? target : null);
+            || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
+            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '');
         if (item.needsTarget && !effectiveTarget) {
             // No target selected — make it obvious one is required rather than
             // silently priming the input (which read as "nothing happened").
@@ -214,6 +276,18 @@ export const CommandDeck: FC = () => {
         return DECK_LABEL_ICONS[item.label] || DEFAULT_DECK_ICON;
     };
 
+    const getWheelTargetReady = (item: DeckItem): boolean => {
+        if (!item.needsTarget || item.targetKind) return false;
+        const chipTarget = target || getAutoRoomTarget('hit', roomOccupants, characterName || '');
+        if (!chipTarget) return false;
+        const viableTargets = getViableRoomCharacterTargets(item.cmd, roomOccupants, characterName || '');
+        if (!viableTargets.some(value => value.toLowerCase() === chipTarget.toLowerCase())) return false;
+        const commandTarget = getRememberedCommandTarget(item.cmd)
+            || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
+            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '');
+        return commandTarget?.toLowerCase() === chipTarget.toLowerCase();
+    };
+
     return (
         <div className="command-deck" onClick={e => e.stopPropagation()}>
             {needsTargetHint && (
@@ -222,39 +296,137 @@ export const CommandDeck: FC = () => {
                     <span>Pick a target for <strong>{needsTargetHint}</strong> — tap a name in the room or log</span>
                 </div>
             )}
-            {viewport?.isMobile && (
-                <div className="mobile-global-target-control">
-                    <RightPanelTargetBar target={target} setTarget={setTarget} triggerHaptic={triggerHaptic} />
-                </div>
-            )}
             <div className="deck-tab-rail" role="tablist" aria-label="Action loadouts">
                 {DECK_TABS.filter(tab => viewport?.isMobile || (tab.key !== 'personal' && tab.key !== 'consume')).map(tab => {
                     const Icon = tab.icon;
-                    const categoryActions = DECK_ACTIONS[tab.key].map(item => ({
-                        ...item,
-                        needsTarget: item.needsTarget ?? item.cmd.endsWith(' '),
-                    }));
+                    const defaults = DECK_ACTIONS[tab.key].map(makeDeckItem);
+                    const categoryAvailableActions = defaults.filter(item => isDeckActionAvailable(item, race, subrace));
+                    const defaultCenterAction = categoryAvailableActions.slice(8)[0]
+                        || categoryAvailableActions[0];
+                    const savedKeys = deckWheelAssignments[tab.key];
+                    const categoryActions = savedKeys?.length
+                        ? Array.from({ length: 8 }, (_, index) => {
+                            if (index >= savedKeys.length) return defaults[index];
+                            const key = savedKeys[index];
+                            if (!key) return undefined;
+                            const item = categoryAvailableActions.find(action => getWheelActionKey(action) === key);
+                            if (!item) return defaults[index];
+                            return item;
+                        })
+                        : defaults.slice(0, 8);
+                    const savedCenterKey = savedKeys?.[8];
+                    const savedCenterAction = savedCenterKey
+                        ? categoryAvailableActions.find(item => getWheelActionKey(item) === savedCenterKey)
+                        : undefined;
+                    const centerAction = savedCenterAction
+                        ? savedCenterAction
+                        : defaultCenterAction;
+                    const wheelActions = categoryActions.map(item => item && isDeckActionAvailable(item, race, subrace)
+                        ? { ...item, targetReady: getWheelTargetReady(item) }
+                        : undefined);
+                    const targetKindByCommand = Object.fromEntries(
+                        [
+                            ...deckWheelCatalog.filter(item => item.targetKind),
+                            ...[...wheelActions, centerAction].filter((item): item is DeckItem => Boolean(item?.targetKind)),
+                        ].map(item => [item.cmd.trim().toLowerCase().split(/\s+/)[0], item.targetKind!])
+                    );
+                    const button: CustomButton = {
+                        id: `deck-category-${tab.key}`,
+                        setId: 'Tactical',
+                        label: tab.label,
+                        command: centerAction?.cmd || '',
+                        display: 'standard',
+                        isVisible: true,
+                        style: {
+                            w: 38, h: 38, borderWidth: 1, borderRadius: 7,
+                            backgroundColor: 'rgba(35, 28, 22, 0.82)',
+                            borderColor: 'rgba(201, 168, 76, 0.14)',
+                            color: '#b0a080',
+                        },
+                        position: { x: 0, y: 0, w: 38, h: 38 },
+                        swipeCommands: Object.fromEntries(WHEEL_DIRECTION_MAP.map((direction, index) => [direction, wheelActions[index]?.cmd || ''])) as Partial<Record<SwipeDirection, string>>,
+                    };
+                    const categoryGameButtonProps: Omit<GameButtonProps, 'button' | 'className' | 'useDefaultPositioning' | 'iconNode' | 'ariaLabel' | 'onSwapWheel'> = {
+                        isEditMode: tactical?.isEditMode ?? false,
+                        isGridEnabled: false,
+                        gridSize: 1,
+                        isSelected: false,
+                        dragState: tactical?.dragState ?? null,
+                        handleDragStart: tactical?.handleDragStart ?? (() => undefined),
+                        handleButtonClick: game.handleButtonClick,
+                        wasDraggingRef,
+                        triggerHaptic: triggerHaptic || (() => undefined),
+                        setPopoverState,
+                        setEditButton: () => undefined,
+                        activePrompt: null,
+                        executeCommand,
+                        setCommandPreview,
+                        setHeldButton,
+                        heldButton,
+                        joystick: {
+                            isActive: game.joystick.joystickActive,
+                            currentDir: game.joystick.currentDir,
+                            isTargetModifierActive: game.joystick.isTargetModifierActive,
+                            setIsJoystickConsumed: game.joystick.setIsJoystickConsumed,
+                        },
+                        target,
+                        setActiveSet: game.btn.setActiveSet,
+                        setButtons: game.btn.setButtons,
+                        isMobile: true,
+                        targetKindByCommand,
+                        containerContents,
+                        requestContainerContents,
+                    };
+                    const getCurrentWheelKeys = (savedKeys?: Array<string | null>) => Array.from({ length: 9 }, (_, index) => {
+                        if (savedKeys && index < savedKeys.length) return savedKeys[index];
+                        if (index < 8) return defaults[index] ? getWheelActionKey(defaults[index]) : null;
+                        return defaultCenterAction ? getWheelActionKey(defaultCenterAction) : null;
+                    });
+                    const swapCategoryCells = (sourceIndex: number, destinationIndex: number): boolean => {
+                        if (sourceIndex < 0 || sourceIndex > 8 || destinationIndex < 0 || destinationIndex > 8 || sourceIndex === destinationIndex) return false;
+                        const currentKeys = getCurrentWheelKeys(deckWheelAssignments[tab.key]);
+                        if (currentKeys[sourceIndex] === currentKeys[destinationIndex]) return false;
+                        setDeckWheelAssignments(previous => {
+                            const nextKeys = getCurrentWheelKeys(previous[tab.key]);
+                            [nextKeys[sourceIndex], nextKeys[destinationIndex]] = [nextKeys[destinationIndex], nextKeys[sourceIndex]];
+                            return { ...previous, [tab.key]: nextKeys };
+                        });
+                        return true;
+                    };
+                    const assignCategoryAction = (directionIndex: number, replacement: DeckItem): boolean => {
+                        if (directionIndex < 0 || directionIndex > 8) return false;
+                        const currentKeys = getCurrentWheelKeys(deckWheelAssignments[tab.key]);
+                        const replacementKey = getWheelActionKey(replacement);
+                        const sourceIndex = currentKeys.indexOf(replacementKey);
+                        if (currentKeys[directionIndex] === replacementKey && (sourceIndex < 0 || sourceIndex === directionIndex)) return false;
+                        setDeckWheelAssignments(previous => {
+                            const nextKeys = getCurrentWheelKeys(previous[tab.key]);
+                            const currentSourceIndex = nextKeys.indexOf(replacementKey);
+                            const destinationKey = nextKeys[directionIndex] || null;
+                            if (currentSourceIndex >= 0 && currentSourceIndex !== directionIndex) nextKeys[currentSourceIndex] = destinationKey;
+                            nextKeys[directionIndex] = replacementKey;
+                            return { ...previous, [tab.key]: nextKeys };
+                        });
+                        return true;
+                    };
                     return (
                         viewport?.isMobile
                             ? <DeckCategoryWheel
                                 key={tab.key}
                                 label={tab.label}
                                 icon={Icon}
-                                active={activeTab === tab.key}
-                                actions={categoryActions}
-                                onTap={() => selectTab(tab.key)}
-                                onChoose={fire}
-                                onHoldAction={deckTargeting.openTargetMenuFor}
-                                onSelectTarget={deckTargeting.handleSelectTarget}
-                                onReleaseTargetMenu={deckTargeting.releaseHeldTargetMenu}
-                                onCancelTargetMenu={deckTargeting.closeTargetMenu}
+                                button={button}
+                                gameButtonProps={categoryGameButtonProps}
+                                availableActions={categoryAvailableActions}
+                                onSwapCells={swapCategoryCells}
+                                onAssignAction={assignCategoryAction}
                             />
                             : <button
                                 key={tab.key}
                                 type="button"
                                 role="tab"
                                 aria-selected={activeTab === tab.key}
-                                className={`deck-tab${activeTab === tab.key ? ' is-active' : ''}`}
+                                className="deck-tab"
                                 onClick={() => selectTab(tab.key)}
                             >
                                 <Icon size={13} strokeWidth={2.2} />
@@ -272,8 +444,10 @@ export const CommandDeck: FC = () => {
                         const itemTarget = item.needsTarget && !item.targetKind
                             ? getRememberedCommandTarget(item.cmd)
                                 || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
+                                || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '')
                             : null;
-                        const targetReady = !!itemTarget;
+                        const viableTargets = getViableRoomCharacterTargets(item.cmd, roomOccupants, characterName || '');
+                        const targetReady = Boolean(itemTarget && viableTargets.some(value => value.toLowerCase() === itemTarget.toLowerCase()));
                         return (
                             <button
                                 key={item.label}
@@ -304,31 +478,37 @@ export const CommandDeck: FC = () => {
                     : getRememberedCommandTarget(deckTargeting.activeItem?.cmd || '')
                         || (isCompatibleGlobalTarget(deckTargeting.activeItem?.cmd || '', target) ? target : null)}
                 selectedTarget={deckTargeting.pendingTarget}
-                onSelectTarget={deckTargeting.handleSelectTarget}
+                onSelectTarget={(value, keepOpenAfterFire) => deckTargeting.handleSelectTarget(value, false, undefined, undefined, keepOpenAfterFire)}
                 columns={deckTargeting.isStagedTargetMenu ? [
                     {
-                        title: deckTargeting.activeItem?.targetKind === 'room-object-container' ? 'Item' : 'Object',
+                        title: deckTargeting.activeItem?.targetKind === 'social'
+                            ? 'Social'
+                            : deckTargeting.activeItem?.targetKind === 'room-object-container' ? 'Item' : 'Object',
                         suggestions: deckTargeting.firstArgumentSuggestions,
                         selectedTarget: deckTargeting.selectedFirstArgument,
                         selectedKey: deckTargeting.selectedFirstArgumentKey,
                         emptyText: deckTargeting.firstArgumentEmptyText,
                     },
                     {
-                        title: deckTargeting.activeItem?.targetKind === 'inventory-recipient' ? 'Recipient' : deckTargeting.activeItem?.targetKind === 'inventory-container' ? 'Container' : 'Get From',
+                        title: deckTargeting.activeItem?.targetKind === 'social'
+                            ? 'Room Target'
+                            : deckTargeting.activeItem?.targetKind === 'inventory-recipient' ? 'Recipient' : deckTargeting.activeItem?.targetKind === 'inventory-container' ? 'Container' : 'Get From',
                         suggestions: deckTargeting.secondArgumentSuggestions,
                         selectedTarget: deckTargeting.selectedSecondArgument,
                         selectedKey: deckTargeting.selectedSecondArgumentKey,
                     },
                 ] : undefined}
-                onSelectColumnTarget={(value, columnIndex, suggestion) => deckTargeting.handleSelectTarget(value, false, columnIndex, suggestion)}
+                onSelectColumnTarget={(value, columnIndex, suggestion, keepOpenAfterFire) => deckTargeting.handleSelectTarget(value, false, columnIndex, suggestion, keepOpenAfterFire)}
                 roomOccupants={deckTargeting.roomOccupants}
                 roomItems={deckTargeting.roomItems}
                 characterName={characterName}
                 suggestions={deckTargeting.targetSuggestions}
                 title={deckTargeting.targetMenuTitle}
                 commandLabel={deckTargeting.activeItem?.cmd.trim() || deckTargeting.activeItem?.label}
-                isInteractive={!deckTargeting.isTargetMenuHeld}
-                isBlurred={deckTargeting.isTargetMenuHeld}
+                isInteractive
+                isBlurred={false}
+                isSwipeTargeting={deckTargeting.isTargetMenuHeld}
+                showKeepOpenToggle={!deckTargeting.isTargetMenuHeld}
                 onDismiss={deckTargeting.closeTargetMenu}
             />
         </div>

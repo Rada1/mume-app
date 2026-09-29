@@ -1,0 +1,154 @@
+/* @file TacticalSwipeWheel.css — Three-by-three swipe command grid. */
+
+/* --- Swipe Wheel Section --- */
+.unified-tactical-wheel {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    grid-row: 2;
+    justify-content: center;
+    align-items: center;
+}
+
+.unified-tactical-wheel .swipe-wheel-container {
+    position: relative;
+    inset: auto;
+    display: grid;
+    flex: 0 0 auto;
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    aspect-ratio: 1 / 1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    transform: none;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    background-image:
+        linear-gradient(to right, transparent calc(33.333% - 0.5px), rgba(255, 255, 255, 0.07) calc(33.333% - 0.5px), rgba(255, 255, 255, 0.07) calc(33.333% + 0.5px), transparent calc(33.333% + 0.5px), transparent calc(66.666% - 0.5px), rgba(255, 255, 255, 0.07) calc(66.666% - 0.5px), rgba(255, 255, 255, 0.07) calc(66.666% + 0.5px), transparent calc(66.666% + 0.5px)),
+        linear-gradient(to bottom, transparent calc(33.333% - 0.5px), rgba(255, 255, 255, 0.07) calc(33.333% - 0.5px), rgba(255, 255, 255, 0.07) calc(33.333% + 0.5px), transparent calc(33.333% + 0.5px), transparent calc(66.666% - 0.5px), rgba(255, 255, 255, 0.07) calc(66.666% - 0.5px), rgba(255, 255, 255, 0.07) calc(66.666% + 0.5px), transparent calc(66.666% + 0.5px));
+    box-shadow: none;
+    animation: none;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+.unified-tactical-wheel .swipe-slice { display: none; }
+
+.unified-tactical-wheel .swipe-sq-label {
+    position: relative;
+    inset: auto;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    align-items: center;
+    justify-content: center;
+    transform: none;
+    overflow: hidden;
+    text-align: center;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+.unified-tactical-wheel .swipe-sq-label[data-dir] {
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    text-align: center;
+}
+
+.unified-tactical-wheel .swipe-sq-label[data-dir="nw"] { grid-area: 1 / 1; }
+.unified-tactical-wheel .swipe-sq-label[data-dir="up"] { grid-area: 1 / 2; }
+.unified-tactical-wheel .swipe-sq-label[data-dir="ne"] { grid-area: 1 / 3; }
+.unified-tactical-wheel .swipe-sq-label[data-dir="left"] { grid-area: 2 / 1; }
+.unified-tactical-wheel .swipe-sq-label[data-dir="right"] { grid-area: 2 / 3; }
+.unified-tactical-wheel .swipe-sq-label[data-dir="sw"] { grid-area: 3 / 1; }
+.unified-tactical-wheel .swipe-sq-label[data-dir="down"] { grid-area: 3 / 2; }
+.unified-tactical-wheel .swipe-sq-label[data-dir="se"] { grid-area: 3 / 3; }
+
+.unified-tactical-wheel .swipe-center {
+    position: relative;
+    top: auto;
+    left: auto;
+    grid-area: 2 / 2;
+    width: 100%;
+    height: 100%;
+    transform: none;
+    border: 0;
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.025);
+    box-shadow: none;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+.unified-tactical-wheel .swipe-center:hover,
+.unified-tactical-wheel .swipe-center.active,
+.unified-tactical-wheel .swipe-sq-label:hover .swipe-action-card,
+.unified-tactical-wheel .swipe-sq-label.active .swipe-action-card {
+    transform: none;
+    background: color-mix(in srgb, var(--set-accent, var(--accent)) 30%, transparent);
+    box-shadow:
+        inset 0 0 0 2px color-mix(in srgb, var(--set-accent, var(--accent)) 90%, white),
+        0 0 26px color-mix(in srgb, var(--set-accent, var(--accent)) 62%, transparent),
+        inset 0 0 22px color-mix(in srgb, var(--set-accent, var(--accent)) 28%, transparent);
+    color: #fff8dc;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--set-accent, var(--accent)) 85%, white);
+}
+
+.unified-tactical-wheel .swipe-sq-label.is-swap-source .swipe-action-card,
+.unified-tactical-wheel .swipe-center.is-swap-source {
+    background: rgba(59, 130, 246, 0.32);
+    box-shadow: inset 0 0 0 3px rgba(96, 165, 250, 0.98), 0 0 24px rgba(59, 130, 246, 0.65);
+    color: #eff6ff;
+}
+
+.unified-tactical-wheel .swipe-action-card {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    max-width: none;
+    min-height: 0;
+    gap: 3px;
+    padding: 4px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    box-shadow: none;
+}
+
+.unified-tactical-wheel .swipe-sq-label.active .swipe-action-card {
+    border: 0;
+    background: color-mix(in srgb, var(--set-accent, var(--accent)) 32%, rgba(8, 12, 17, 0.9));
+    box-shadow:
+        inset 0 0 0 2px color-mix(in srgb, var(--set-accent, var(--accent)) 92%, white),
+        0 0 24px color-mix(in srgb, var(--set-accent, var(--accent)) 65%, transparent),
+        inset 0 0 18px color-mix(in srgb, var(--set-accent, var(--accent)) 28%, transparent);
+    color: #fff8dc;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--set-accent, var(--accent)) 80%, white);
+}
+
+.unified-tactical-wheel .swipe-sq-label .swipe-action-card.is-target-ready {
+    border-color: rgba(255, 255, 255, 0.08);
+    background-image: none;
+    box-shadow: none;
+    color: #86efac;
+}
+
+.unified-tactical-wheel .swipe-sq-label:hover .swipe-action-card.is-target-ready,
+.unified-tactical-wheel .swipe-sq-label.active .swipe-action-card.is-target-ready {
+    border-color: rgba(255, 255, 255, 0.08);
+    background-image: none;
+    box-shadow: none;
+    color: #86efac;
+}
+
+.unified-tactical-wheel .swipe-direction-glyph { display: none; }
+.unified-tactical-wheel .swipe-action-text { font-size: 10px; }
+

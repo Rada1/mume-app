@@ -1,6 +1,6 @@
 import React from 'react';
 import { MapperRoom } from './mapperTypes';
-import { TERRAIN_MAP, DIRS, generateId, normalizeTerrain, stripAnsi } from './mapperUtils';
+import { TERRAIN_MAP, DIRS, generateId, getRoomPortableState, getRoomRidableState, normalizeTerrain, stripAnsi } from './mapperUtils';
 
 interface RoomInfoCardProps {
     roomId: string;
@@ -230,8 +230,9 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
             );
         }
 
-        if (room.portable !== undefined) {
-            const isPort = String(room.portable) === 'true';
+        const portableState = getRoomPortableState(room.portable);
+        if (portableState !== null) {
+            const isPort = portableState;
             const color = isPort ? '#a6e3a1' : '#f38ba8';
             const bg = isPort ? 'rgba(166, 227, 161, 0.1)' : 'rgba(243, 139, 168, 0.1)';
             flags.push(
@@ -241,8 +242,9 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
             );
         }
 
-        if (room.ridable !== undefined) {
-            const isRide = String(room.ridable) === 'true';
+        const ridableState = getRoomRidableState(room.ridable);
+        if (ridableState !== null) {
+            const isRide = ridableState;
             const color = isRide ? '#a6e3a1' : '#ee99a0';
             const bg = isRide ? 'rgba(166, 227, 161, 0.1)' : 'rgba(238, 153, 160, 0.1)';
             flags.push(
@@ -382,7 +384,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                             <span style={{ color: '#71717a', fontSize: '10px', fontWeight: '600' }}>Portability</span>
                             <select
-                                value={room.portable !== undefined ? String(room.portable) : 'undefined'}
+                                value={getRoomPortableState(room.portable) !== null ? String(getRoomPortableState(room.portable)) : 'undefined'}
                                 onChange={(e) => {
                                     const val = e.target.value;
                                     updateRoom({ portable: val === 'undefined' ? undefined : val });
@@ -399,7 +401,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                             <span style={{ color: '#71717a', fontSize: '10px', fontWeight: '600' }}>Riding</span>
                             <select
-                                value={room.ridable !== undefined ? String(room.ridable) : 'undefined'}
+                                value={getRoomRidableState(room.ridable) !== null ? String(getRoomRidableState(room.ridable)) : 'undefined'}
                                 onChange={(e) => {
                                     const val = e.target.value;
                                     updateRoom({ ridable: val === 'undefined' ? undefined : val });

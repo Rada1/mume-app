@@ -32,7 +32,7 @@ vi.mock('../../context/GameContext', () => ({
             height: 'six feet two inches',
             age: 500,
             gold: 1500,
-            citizenships: 6,
+            warPoints: 12,
             xp: 12000000,
             xpnl: 0,
             tp: 110000,
@@ -200,9 +200,9 @@ describe('ThisIsYouConsole Component', () => {
         const expandBtn = screen.getByRole('button', { name: /Expand character panel/i });
         expect(expandBtn).toBeDefined();
 
-        // Exactly the top row items are displayed (Cit, Height, Age, Gold, Progression)
-        expect(screen.getByText(/Cit:/i)).toBeDefined();
-        expect(screen.getByText('6')).toBeDefined();
+        // Exactly the top row items are displayed (War Fame, Height, Age, Gold, Progression)
+        expect(screen.getByText(/War Fame:/i)).toBeDefined();
+        expect(screen.getByText('12')).toBeDefined();
         expect(screen.getByText(/Height:/i)).toBeDefined();
         expect(screen.getByText('6\' 2"')).toBeDefined();
         expect(screen.getByText(/Age:/i)).toBeDefined();

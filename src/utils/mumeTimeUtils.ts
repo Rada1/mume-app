@@ -22,6 +22,19 @@ export const SOLAR_HOURS: Record<number, { dawn: number; dusk: number }> = {
     11: { dawn: 7, dusk: 19 }, // Foreyule
 };
 
+export type MumeTimeOfDayClass = 'daylight' | 'night' | 'dawn-transition';
+
+export const getMumeTimeOfDayClass = (month: string, hour: number, minute: number): MumeTimeOfDayClass => {
+    const solarTimes = SOLAR_HOURS[MUME_MONTHS.indexOf(month)] || { dawn: 7, dusk: 19 };
+    const currentMinutes = hour * 60 + minute;
+    const dawnMinutes = solarTimes.dawn * 60;
+    const duskMinutes = solarTimes.dusk * 60;
+
+    if (currentMinutes >= dawnMinutes - 60 && currentMinutes < dawnMinutes) return 'dawn-transition';
+    if (currentMinutes >= dawnMinutes && currentMinutes < duskMinutes) return 'daylight';
+    return 'night';
+};
+
 export const MUME_MONTHS = [
     'Afteryule', 'Solmath', 'Rethe', 'Astron', 'Thrimidge', 'Forelithe',
     'Afterlithe', 'Wedmath', 'Halimath', 'Winterfilth', 'Blotmath', 'Foreyule'

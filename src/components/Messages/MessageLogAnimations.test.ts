@@ -24,10 +24,10 @@ describe('MessageLog animations in Immersion Mode', () => {
         expect(logCharBlock![1]).not.toContain('animation:');
     });
 
-    it('keeps focus-reveal universal across modes in CSS and TSX', () => {
+    it('keeps focus-reveal out of immersion mode in TSX', () => {
         expect(cssContent).toContain('.message.focus-reveal-active .message-content');
-        expect(cssContent).not.toContain('.immersion-mode .message.focus-reveal-active');
-        expect(tsxContent).toContain('!msg.isFocusReveal || Date.now() - msg.timestamp > 4000 || playedFocusRevealIds.has(msg.id)');
+        expect(tsxContent).toContain('const isFocusRevealActive = !isImmersionMode && focusRevealMessageId === msg.id;');
+        expect(tsxContent).toContain('if (isImmersionMode || isPerformanceMode || !msg.isFocusReveal || Date.now() - msg.timestamp > 4000 || playedFocusRevealIds.has(msg.id)) return;');
         expect(tsxContent).toContain('${isFocusRevealActive ? \' focus-reveal-active\' : \'\'}');
     });
 

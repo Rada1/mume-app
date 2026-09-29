@@ -52,6 +52,7 @@ export const useMapAnimation = ({
     preMoveRef, walkTargetId, walkPath, isDraggingRef, activeMapFilter, mapSearchQuery, hasFilterRoute,
     entitiesRef, isMobile, isLandscape, filterFitRef
 }: AnimationProps) => {
+    const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode);
     const requestRef = useRef<number | null>(null);
     const tickRef = useRef<(() => boolean) | null>(null);
     const drawMapRef = useRef(drawMap);
@@ -97,7 +98,7 @@ export const useMapAnimation = ({
         
         const combatAnimationActive = !!entitiesRef.current.combatAnimationActive;
         const effectiveIsDragging = isDragging || isDraggingRef?.current;
-        const moveAnimActive = !!moveAnimRef?.current && moveAnimRef.current.phase !== 'idle';
+        const moveAnimActive = !isPerformanceMode && !!moveAnimRef?.current && moveAnimRef.current.phase !== 'idle';
         // Interactive (drag/joystick) and heavy overlays run at full 60fps. The optimistic
         // move glide runs at a lighter 30fps — a clean 60Hz divisor that stays smooth for a
         // ~200ms glide while roughly halving the per-move canvas-composite load on phones.
@@ -127,8 +128,16 @@ export const useMapAnimation = ({
         // Optimistic movement: glide the player marker toward the predicted room and
         // settle (or bounce off a wall) as the game confirms. Runs before camera
         // centering below so the camera follows the animated position in the same frame.
+        if (isPerformanceMode && playerTrailRef.current.length > 0) {
+            playerTrailRef.current = [];
+        }
         if (moveAnimRef?.current && playerPosRef.current) {
-            if (advanceMoveAnim(moveAnimRef.current, playerPosRef.current, frameScale)) {
+            if (isPerformanceMode) {
+                // Consume any already confirmed segments immediately. The animator's
+                // confirmation gate still parks at the latest confirmed room.
+                let remaining = moveAnimRef.current.queue.length + 2;
+                while (remaining-- > 0 && advanceMoveAnim(moveAnimRef.current, playerPosRef.current, frameScale, true)) { }
+            } else if (advanceMoveAnim(moveAnimRef.current, playerPosRef.current, frameScale)) {
                 needsNextFrame = true;
             }
         }
@@ -279,7 +288,10 @@ export const useMapAnimation = ({
 
                 const cdx = targetCamX - camera.current.x;
                 const cdy = targetCamY - camera.current.y;
-                if (Math.abs(cdx) > 0.05 || Math.abs(cdy) > 0.05) {
+                if (isPerformanceMode) {
+                    camera.current.x = targetCamX;
+                    camera.current.y = targetCamY;
+                } else if (Math.abs(cdx) > 0.05 || Math.abs(cdy) > 0.05) {
                     const camBase = isJoystickActiveRef.current ? 0.65 : 0.9;
                     const camLerp = 1 - Math.pow(camBase, frameScale);
                     camera.current.x += cdx * camLerp;
@@ -298,7 +310,7 @@ export const useMapAnimation = ({
 
         // Trail: remove entries that have faded out (> 450ms old)
         const TRAIL_DURATION = 450;
-        if (playerTrailRef.current.length > 0) {
+        if (!isPerformanceMode && playerTrailRef.current.length > 0) {
             const wallNow = Date.now();
             playerTrailRef.current = playerTrailRef.current.filter(
                 (t: any) => wallNow - (t.startTime ?? 0) < TRAIL_DURATION

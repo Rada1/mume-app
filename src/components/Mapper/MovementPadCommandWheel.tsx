@@ -7,7 +7,7 @@
 import React from 'react';
 import {
     ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
-    ChevronsUp, ChevronsDown, Eye, DoorOpen, Map
+    ChevronsUp, ChevronsDown, DoorOpen, Map, Footprints
 } from 'lucide-react';
 import type { Direction } from '../../types';
 
@@ -26,7 +26,7 @@ const COMMANDS: {
     { id: 'n', label: 'North', icon: ArrowUp, direction: 'n', position: 'north' },
     { id: 'map', label: 'Map', icon: Map, direction: 'ne', position: 'north-east' },
     { id: 'w', label: 'West', icon: ArrowLeft, direction: 'w', position: 'west' },
-    { id: 'look', label: 'Look', icon: Eye, direction: null, position: 'center' },
+    { id: 'flee', label: 'Flee', icon: Footprints, direction: null, position: 'center' },
     { id: 'e', label: 'East', icon: ArrowRight, direction: 'e', position: 'east' },
     { id: 'exits', label: 'Exits', icon: DoorOpen, direction: 'sw', position: 'south-west' },
     { id: 's', label: 'South', icon: ArrowDown, direction: 's', position: 'south' },

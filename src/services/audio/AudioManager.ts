@@ -4,6 +4,7 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 const SHARED_AUDIO_BASE_VOLUME = 0.8;
 const SHARED_AUDIO_OUTPUT_GAIN = 3.0;
 const COMBAT_DRUM_ENABLED = true;
+const MOVEMENT_EFFECT_KEYS = new Set(['move', 'watermove', 'event-move', 'ride', 'stopriding']);
 
 export interface PlayOptions {
     pitch?: number;
@@ -11,13 +12,14 @@ export interface PlayOptions {
     volume?: number;
     reverse?: boolean;
     filterFrequency?: number;
+    volumeMultiplier?: number;
     label?: string;
     skipJitter?: boolean;
 }
 
 export interface AmbientOptions {
     key: string | null;
-    dynamicUrls?: string[];
+    dynamicUrl?: string;
     inCombat?: boolean;
     isDay?: boolean;
     loop?: boolean;
@@ -51,6 +53,7 @@ export class AudioManager {
     private zoneEndedListeners: Set<(key: string) => void> = new Set();
     private pageAudioPaused: boolean = false;
     private lastScheduledTimes: Map<string, number> = new Map();
+    private activeMovementEffectSources = new Set<AudioBufferSourceNode>();
 
     // Atmosphere state
     private atmosphereState = {
@@ -239,6 +242,9 @@ export class AudioManager {
         let buffer = await this.loadBuffer(effectPath);
         if (!buffer) return;
 
+        const isMovementEffect = MOVEMENT_EFFECT_KEYS.has(key);
+        if (isMovementEffect && this.activeMovementEffectSources.size > 0) return;
+
         const ctx = this.audioCtx;
         const now = ctx.currentTime;
         let playTime = now;
@@ -297,8 +303,9 @@ export class AudioManager {
 
         const basePitch = options?.pitch ?? config.defaultPitch ?? 1.0;
         const jitterRange = options?.skipJitter ? 0 : 0.24;
-        // Ignore per-effect defaults and call-site volume overrides for equal levels.
-        const baseVol = SHARED_AUDIO_BASE_VOLUME;
+        // Keep effect loudness normalized while allowing targeted mix reductions.
+        const volumeMultiplier = Math.max(0, Math.min(1, options?.volumeMultiplier ?? 1));
+        const baseVol = SHARED_AUDIO_BASE_VOLUME * volumeMultiplier;
         for (let hit = 0; hit < (config.repeatCount ?? 1); hit++) {
             const source = ctx.createBufferSource();
             source.buffer = actualBuffer;
@@ -317,12 +324,21 @@ export class AudioManager {
                 source.connect(gainNode);
             }
             gainNode.connect(ctx.destination);
-            source.start(playTime + hit * (config.repeatInterval ?? 0));
+            if (isMovementEffect) {
+                this.activeMovementEffectSources.add(source);
+                source.onended = () => this.activeMovementEffectSources.delete(source);
+            }
+            try {
+                source.start(playTime + hit * (config.repeatInterval ?? 0));
+            } catch (error) {
+                if (isMovementEffect) this.activeMovementEffectSources.delete(source);
+                console.error(`[AudioManager] Failed to play effect ${key}:`, error);
+            }
         }
     }
 
     public async setAmbient(type: 'terrain' | 'weather' | 'zone', options: AmbientOptions) {
-        const { key, dynamicUrls, inCombat = false, isDay = true, loop } = options;
+        const { key, dynamicUrl, inCombat = false, isDay = true, loop } = options;
         if (!this._isSoundEnabled && key !== null) return;
         this.init();
         if (!this.audioCtx) return;
@@ -368,7 +384,6 @@ export class AudioManager {
             }
         } else if (type === 'zone') {
             isLoop = loop ?? false;
-            let configUrls: string | string[] | undefined = undefined;
             const manifestConfig = (AUDIO_MANIFEST.ambient as any).zones[key]
                 || (key ? (AUDIO_MANIFEST.ambient as any).zones[`the ${key}`] : undefined)
                 || (key && key.startsWith('the ') ? (AUDIO_MANIFEST.ambient as any).zones[key.replace(/^the\s+/, '')] : undefined);
@@ -376,19 +391,7 @@ export class AudioManager {
                 ? manifestConfig.volume
                 : SHARED_AUDIO_BASE_VOLUME;
 
-            if (dynamicUrls && dynamicUrls.length > 0) {
-                 configUrls = dynamicUrls;
-            } else {
-                 if (manifestConfig) configUrls = manifestConfig.url;
-            }
-
-            if (configUrls) {
-                if (Array.isArray(configUrls)) {
-                    urlToPlay = configUrls[Math.floor(Math.random() * configUrls.length)];
-                } else {
-                    urlToPlay = configUrls as string;
-                }
-            }
+            urlToPlay = dynamicUrl || manifestConfig?.url || null;
 
             targetVolume = zoneBaseVolume;
         }
@@ -487,7 +490,7 @@ export class AudioManager {
                     this.stopAmbient('drum');
 
                     if (this.silenceTimeout) clearTimeout(this.silenceTimeout);
-                    const silenceMinutes = 1 + Math.random() * 3;
+                    const silenceMinutes = 1 + Math.random();
                     this.silenceTimeout = setTimeout(() => {
                         this.zoneEndedListeners.forEach(l => l(key));
                     }, silenceMinutes * 60 * 1000);

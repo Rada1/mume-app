@@ -17,8 +17,8 @@ export interface MapperRoom {
     light?: string | number | null;
     sundeath?: number;
     align?: string;
-    portable?: string;
-    ridable?: string;
+    portable?: string | boolean | number | null;
+    ridable?: string | boolean | number | null;
     isPermanentSnow?: boolean;
     details?: string[];
     createdAt: number;

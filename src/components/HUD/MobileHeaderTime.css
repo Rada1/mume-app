@@ -18,9 +18,33 @@
 }
 
 .mobile-header-time-current {
-    color: #9bd2a5;
     font-size: 0.62rem;
     font-weight: 700;
+    transition: color 300ms ease;
+}
+
+.mobile-header-time-current.daylight {
+    color: #facc15;
+}
+
+.mobile-header-time-current.night {
+    color: #60a5fa;
+}
+
+.mobile-header-time-current.dawn-transition {
+    color: #f87171;
+}
+
+.light-mode .mobile-header-time-current.daylight {
+    color: #a16207;
+}
+
+.light-mode .mobile-header-time-current.night {
+    color: #2563eb;
+}
+
+.light-mode .mobile-header-time-current.dawn-transition {
+    color: #dc2626;
 }
 
 .mobile-header-time-solar {

@@ -44,13 +44,14 @@ export const PRACTICE_CLASS_SKILLS: Record<PracticeClassKey, string[]> = {
 export const PASSIVE_SKILLS = new Set([
     'cleaving weapons', 'concussion weapons', 'slashing weapons', 'stabbing weapons',
     'two-handed weapons', 'unarmed combat', 'parry', 'endurance', 'dodge', 'missile',
-    'piercing weapons', 'awareness', 'swim', 'wilderness', 'leadership'
+    'piercing weapons', 'awareness', 'climb', 'swim', 'wilderness', 'leadership',
+    'command', 'dark oath'
 ]);
 
 // Skills/spells that act on a target (offensive, heals, buffs cast on someone).
 export const TARGETED_SKILLS = new Set([
     // ranger / thief / warrior
-    'bandage', 'command', 'dark oath', 'ride', 'track',
+    'bandage', 'ride', 'track',
     'attack', 'backstab', 'envenom', 'steal',
     'bash', 'charge', 'kick', 'rescue',
     // mage

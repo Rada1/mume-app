@@ -12,6 +12,7 @@ import {
     appendNamedTargetSuggestions,
     getRoomObjectTargetsWithExit,
     getInventoryAndWornTargetSuggestions,
+    getDrinkTargetSuggestions,
     getRoomCorpseTargetSuggestions
 } from './commandSuggestionUtils';
 import { getMumeCommandMatch } from './mumeCommandCatalog';
@@ -126,6 +127,21 @@ describe('commandSuggestionUtils', () => {
             ]);
             expect(suggestions[0].value).toBe('exit');
         });
+    });
+
+    it('limits Drink targets to worn and carried liquid containers plus room water', () => {
+        const line = (id: string, text: string) => ({ id, text, html: text, isItem: true });
+        const suggestions = getDrinkTargetSuggestions(
+            [line('flask', 'a glass flask'), line('sword', 'a steel sword'), line('bowl', 'a wooden bowl')],
+            [line('waterskin', 'a worn waterskin'), line('cloak', 'a wool cloak')]
+        );
+
+        expect(suggestions.map(suggestion => suggestion.label)).toEqual([
+            'a glass flask', 'a wooden bowl', 'a worn waterskin', 'water'
+        ]);
+        expect(suggestions.map(suggestion => suggestion.meta)).toEqual([
+            'inventory', 'inventory', 'worn', 'source'
+        ]);
     });
 
     describe('tactical spell and skill target suggestions', () => {

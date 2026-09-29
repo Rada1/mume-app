@@ -635,9 +635,9 @@ export const drawTerrainIcon = (
         : imagesRef.current[`mmapper-terrain-${mapperTerrainSuffix[tName] || 'undefined'}`];
 
     if (mapperTerrain && mapperTerrain.complete && mapperTerrain.naturalWidth > 0) {
-        // Slightly overlap neighboring room textures so their source-image edge
-        // pixels cannot form visible seams at the room boundaries.
-        const bleed = Math.min(1, s_orig * 0.02);
+        // Overlap neighboring room textures enough to cover resampling seams,
+        // which are most visible between small indoor and underground tiles.
+        const bleed = Math.min(2, s_orig * 0.04);
         ctx.drawImage(mapperTerrain, x - bleed, y - bleed, s_orig + bleed * 2, s_orig + bleed * 2);
         if (trailSuffix && !isRoad) {
             const trailImg = imagesRef.current[`mmapper-trail-${trailSuffix}`];

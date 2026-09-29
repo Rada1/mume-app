@@ -4,20 +4,20 @@
  */
 
 import React from 'react';
-import { Trees, Sparkles, VenetianMask, Swords, Wand, DoorOpen, Users } from 'lucide-react';
+import { Trees, Sparkles, VenetianMask, Swords, Wand, DoorOpen, Eye } from 'lucide-react';
 import { useGame } from '../../../context/GameContext';
 import { useUIStore } from '../../../stores/useUIStore';
-import { CustomButton } from '../../../types';
 import './LineCluster.css';
 
-// Gold lucide icons per tactical button, matching the bottom-bar icon language.
+// Neutral lucide icons per tactical button, matching the category controls.
 const TACTICAL_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
     'tactical-ranger': Trees,
     'tactical-cleric': Sparkles,
     'tactical-thief': VenetianMask,
     'tactical-warrior': Swords,
     'tactical-mage': Wand,
-    'tactical-doors': DoorOpen
+    'tactical-doors': DoorOpen,
+    'tactical-eye': Eye
 };
 
 interface LineClusterProps {
@@ -50,19 +50,6 @@ interface LineClusterProps {
 
 import { GameButton } from '../../Controls/GameButton/GameButton';
 
-const TACTICAL_CLASS_LABELS: Record<string, string> = {
-    'tactical-ranger': 'ranger',
-    'tactical-cleric': 'cleric',
-    'tactical-thief': 'thief',
-    'tactical-warrior': 'warrior',
-    'tactical-mage': 'mage',
-    'tactical-doors': 'doors'
-};
-
-const getTacticalClassLabel = (button: CustomButton): string => (
-    TACTICAL_CLASS_LABELS[button.id] || button.label.toLowerCase()
-);
-
 export const LineCluster: React.FC<LineClusterProps> = ({
     isEditMode, handleDragStart, buttons, selectedButtonIds, dragState,
     handleButtonClick, wasDraggingRef, triggerHaptic, setPopoverState,
@@ -78,11 +65,9 @@ export const LineCluster: React.FC<LineClusterProps> = ({
     // Pull the 6 tactical buttons by their setId
     const tacticalButtons = buttons.filter(b => b.setId === 'Tactical');
 
-    // Sort them to ensure consistent layout if needed, but for now we'll just use the order they come in
-    // or we can sort by ID if we want a specific order (e.g. tactical-ranger, tactical-cleric, etc.)
     const charmieButton = tacticalButtons.find(button => button.id === 'tactical-charmie');
     const sortedButtons = tacticalButtons.filter(button => button.id !== 'tactical-charmie').sort((a, b) => {
-        const order = ['tactical-ranger', 'tactical-cleric', 'tactical-thief', 'tactical-warrior', 'tactical-mage', 'tactical-action', 'tactical-doors'];
+        const order = ['tactical-ranger', 'tactical-cleric', 'tactical-thief', 'tactical-warrior', 'tactical-mage', 'tactical-doors', 'tactical-eye'];
         return order.indexOf(a.id) - order.indexOf(b.id);
     });
 
@@ -139,7 +124,6 @@ export const LineCluster: React.FC<LineClusterProps> = ({
                         style={{ '--cascade-delay': `${index * 0.12}s` } as React.CSSProperties}
                     >
                         {renderButton(button, 'default', `line-btn ${button.id}`)}
-                        <span className="line-cluster-caption">{getTacticalClassLabel(button)}</span>
                     </div>
                 ))}
             </div>

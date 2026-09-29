@@ -6,9 +6,10 @@ import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useInputStore } from '../../../stores/useInputStore';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { GameContextType, UIContextType } from '../../../context/GameContext/types';
-import { ArrowLeft, BookOpen, Info, UtensilsCrossed, Droplets, Menu, ChevronLeft, HelpCircle, Play, Plus, KeyRound, Clock, Link2, Activity, MapPin, Timer, UserCircle, LogOut } from 'lucide-react';
+import { ArrowLeft, BookOpen, Info, Menu, ChevronLeft, HelpCircle, Play, Plus, KeyRound, Clock, Link2, Activity, MapPin, Timer, UserCircle, LogOut } from 'lucide-react';
 import { useMapper } from '../../../context/useMapper';
 import { MapFilterBar } from '../../Mapper/MapFilterBar';
+import { MapActionButtons } from './MapActionButtons';
 
 import InputArea from '../../Controls/InputArea';
 import OpponentRechargeTimer from '../../Combat/OpponentRechargeTimer';
@@ -16,10 +17,10 @@ import { ActionTimerDisplay } from '../../HUD/ActionTimerDisplay';
 import { UiPositions, SwipeDirection } from '../../../types';
 import { AccountAnsiLine } from '../../Drawers/AccountAnsiLine';
 import './MobileCommandDeck.css';
+import './TacticalMapPerimeter.css';
 
 type CreationOption = { id: string; label: string };
 const EMPTY_CREATION_OPTIONS: CreationOption[] = [];
-const MOBILE_MAP_PANEL_HEIGHT_KEY = 'mume.mobileMapPanelHeightPx';
 const capitalize = (str: string): string => {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -53,7 +54,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         spatButtons, setSpatButtons, parley, setParley, whoList,
         inlineCategories, gameState, currentTerrain, accountState, setAccountState,
     } = useGame() as GameContextType;
-    const { target, activePrompt, stats } = useVitals();
+    const { target, activePrompt } = useVitals();
     const {
         ui, setUI, setPopoverState,
         handleTabClick, toggleMap
@@ -61,7 +62,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     const isExpanded = ui.mapExpanded;
     const mapPanelRef = useRef<HTMLDivElement>(null);
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
-    const isDarkMode = useSettingsStore(s => s.theme) === 'dark';
     const { viewZ, currentRoomId, rooms, activeMapFilter, mapSearchQuery, setActiveMapFilter, setMapSearchQuery } = useMapper();
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
     const setLoginName = useSettingsStore(s => s.setLoginName);
@@ -80,13 +80,9 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         if (!viewport.isMobile || viewport.isLandscape) return;
         const app = document.querySelector<HTMLElement>('.app-container');
         if (!app) return;
-        if (!ui.mapExpanded) {
-            app.style.removeProperty('--mobile-map-panel-height');
-            return;
-        }
-        const savedHeight = Number(window.localStorage.getItem(MOBILE_MAP_PANEL_HEIGHT_KEY));
-        if (!Number.isFinite(savedHeight) || savedHeight <= 0) return;
-        app.style.setProperty('--mobile-map-panel-height', `${savedHeight}px`);
+        // Keep the expanded map at the CSS-defined one-third screen split.
+        // Older saved pixel heights would override that responsive layout.
+        app.style.removeProperty('--mobile-map-panel-height');
     }, [ui.mapExpanded, viewport.isLandscape, viewport.isMobile]);
 
     // --- Sticky options for smooth creation-screen transitions ---
@@ -293,31 +289,22 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     overflow: 'hidden'
                 }}
             >
-                        {/* Header Group: Tactical Buttons */}
-                        <div style={{
-                            position: 'absolute',
-                            top: '12px',
-                            left: '0',
-                            right: '0',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            zIndex: 2800,
-                            pointerEvents: 'none'
-                        }}>
+                        {/* Overlay controls keep the map center and edge swipe gutter clear. */}
+                        <div className="mobile-map-command-overlay">
                             <div className="mobile-command-deck-persistent">
-                                <CommandDeck />
+                                <CommandDeck tactical={{
+                                    isEditMode,
+                                    dragState,
+                                    handleDragStart: (event, id, type) => handleDragStart(event, id, type),
+                                    wasDraggingRef,
+                                    heldButton,
+                                    setHeldButton,
+                                    setCommandPreview,
+                                }} />
                             </div>
                             {/* Persistent Tactical Buttons */}
                             <div
                                 className="mobile-tactical-buttons-persistent"
-                                style={{
-                                    position: 'relative',
-                                    marginTop: '10px',
-                                    zIndex: 20,
-                                    overflow: 'visible',
-                                    pointerEvents: 'auto'
-                                }}
                             >
                                 <LineCluster
                                     isEditMode={isEditMode}
@@ -347,6 +334,31 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             </div>
                         </div>
 
+                        <MapActionButtons
+                            isGridEnabled={btn.isGridEnabled}
+                            gridSize={btn.gridSize}
+                            dragState={dragState}
+                            handleDragStart={handleDragStart}
+                            handleButtonClick={handleButtonClick}
+                            wasDraggingRef={wasDraggingRef}
+                            triggerHaptic={triggerHaptic}
+                            setPopoverState={setPopoverState}
+                            setEditButton={button => {
+                                btn.setEditingButtonId(button.id);
+                                if (!btn.selectedButtonIds.has(button.id)) btn.setSelectedIds(new Set([button.id]));
+                            }}
+                            activePrompt={activePrompt}
+                            executeCommand={executeCommand}
+                            setCommandPreview={setCommandPreview}
+                            setHeldButton={setHeldButton}
+                            heldButton={heldButton}
+                            joystick={joystick}
+                            target={target}
+                            setActiveSet={btn.setActiveSet}
+                            setButtons={btn.setButtons}
+                            isMobile={isMobile}
+                        />
+
                         <Mapper
                             ref={mapperRef}
                             isDesignMode={isEditMode}
@@ -373,34 +385,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             />
                         )}
 
-                        {/* Mobile portrait condition indicator. Time and lighting live in the header and footer. */}
-                        {isMobile && !isLandscape && isShown && (stats.conditions?.hungry || stats.conditions?.thirsty) && (
-                            <div className="mobile-portrait-env-indicator" style={{
-                                position: 'absolute',
-                                bottom: '36px',
-                                right: '12px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                padding: '2px 6px',
-                                background: isDarkMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.75)',
-                                backdropFilter: 'blur(4px)',
-                                borderRadius: '4px',
-                                border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(0, 0, 0, 0.12)',
-                                zIndex: 12,
-                                pointerEvents: 'none',
-                                color: 'var(--text-faded)',
-                                transform: 'scale(0.9)',
-                                transformOrigin: 'bottom right'
-                            }}>
-                                {stats.conditions?.hungry && (
-                                    <UtensilsCrossed size={12} style={{ color: '#fbbf24' }} />
-                                )}
-                                {stats.conditions?.thirsty && (
-                                    <Droplets size={12} style={{ color: '#60a5fa' }} />
-                                )}
-                            </div>
-                        )}
             </div>
         </div>
     );

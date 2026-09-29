@@ -1,0 +1,90 @@
+/* @file MapSwipeWheelOverlay.css — Full-area blurred backdrop for the map swipe grid. */
+
+.map-swipe-wheel-backdrop {
+    position: fixed;
+    z-index: 95000;
+    pointer-events: none;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    touch-action: none;
+}
+
+.map-swipe-wheel-grid.unified-tactical-wheel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.map-swipe-wheel-grid.unified-tactical-wheel .swipe-center:not(.active) {
+    background: transparent;
+}
+
+.map-swipe-wheel-grid.unified-tactical-wheel .swipe-sq-label.active .swipe-action-card,
+.map-swipe-wheel-grid.unified-tactical-wheel .swipe-center.active {
+    border: 1px solid #e8c65c;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    color: inherit;
+    text-shadow: none;
+}
+
+.map-swipe-wheel-grid .swipe-wheel-container {
+    width: auto;
+    height: 90%;
+    max-width: 90%;
+    max-height: 90%;
+    aspect-ratio: 1 / 1;
+    background-image: none;
+}
+
+/* --- Map Wheel Appearance Section --- */
+.map-swipe-wheel-icon {
+    flex: 0 0 auto;
+    color: transparent;
+}
+
+.map-swipe-wheel-grid .swipe-action-card,
+.map-swipe-wheel-grid .swipe-center,
+.map-swipe-wheel-grid .swipe-action-text,
+.map-swipe-wheel-grid .swipe-center-label {
+    color: #e5e7eb;
+    text-shadow: none;
+}
+
+.map-swipe-wheel-grid .swipe-action-text,
+.map-swipe-wheel-grid .swipe-center-label {
+    color: rgba(229, 231, 235, 0);
+    opacity: 1;
+}
+
+.map-swipe-wheel-grid .swipe-sq-label.active .map-swipe-wheel-icon,
+.map-swipe-wheel-grid .swipe-sq-label.active .swipe-action-text,
+.map-swipe-wheel-grid .swipe-center.active .map-swipe-wheel-icon,
+.map-swipe-wheel-grid .swipe-center.active .swipe-center-label {
+    color: #e5e7eb;
+}
+
+.map-swipe-wheel-grid.unified-tactical-wheel .swipe-center {
+    background: transparent;
+}
+
+.map-swipe-wheel-grid.unified-tactical-wheel .swipe-sq-label.active .swipe-action-card,
+.map-swipe-wheel-grid.unified-tactical-wheel .swipe-sq-label:hover .swipe-action-card,
+.map-swipe-wheel-grid.unified-tactical-wheel .swipe-center.active,
+.map-swipe-wheel-grid.unified-tactical-wheel .swipe-center:hover {
+    border: 0;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+    color: #f3f4f6;
+    text-shadow: none;
+}

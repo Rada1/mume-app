@@ -7,7 +7,7 @@ import { useCallback, useRef } from 'react';
 import { GameStats, CharacterInfo } from '../../types';
 import { useVitalsStore } from '../../stores/useVitalsStore';
 import { parseCitizenshipAgeWarFameInfo } from '../../utils/characterInfoUtils';
-import { consumeCharacterInfoRefreshLine } from '../../utils/characterInfoRefreshTracker';
+import { consumeCharacterInfoRefreshLine, parseWarFameLine } from '../../utils/characterInfoRefreshTracker';
 
 export interface StatParserDeps {
     setMood: (val: string) => void;
@@ -36,7 +36,19 @@ export function useStatParser(deps: StatParserDeps) {
             if (refreshedCharacterInfo.wimpy !== undefined) {
                 setStats(prev => ({ ...prev, wimpy: refreshedCharacterInfo.wimpy }));
             }
-            setCharacterInfo(prev => ({ ...prev, ...refreshedCharacterInfo }));
+            setCharacterInfo(prev => ({
+                ...prev,
+                ...refreshedCharacterInfo,
+                ...(refreshedCharacterInfo.warFame !== undefined && {
+                    warPoints: refreshedCharacterInfo.warFame
+                })
+            }));
+            return true;
+        }
+
+        const warFame = parseWarFameLine(content);
+        if (warFame !== null) {
+            setCharacterInfo(prev => ({ ...prev, warFame, warPoints: warFame }));
             return true;
         }
 
@@ -131,7 +143,8 @@ export function useStatParser(deps: StatParserDeps) {
         if (compactCharacterInfo) {
             setCharacterInfo(prev => ({
                 ...prev,
-                ...compactCharacterInfo
+                ...compactCharacterInfo,
+                warPoints: compactCharacterInfo.warFame
             }));
             return true;
         }

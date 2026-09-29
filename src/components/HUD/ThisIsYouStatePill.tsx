@@ -20,6 +20,8 @@ export interface ThisIsYouStatePillProps {
     options: StateOption[];
     onSelect: (option: StateOption) => void;
     onInteract?: () => void;
+    inlineOptions?: boolean;
+    disabled?: boolean;
     accentColor?: 'gold' | 'blue' | 'red' | 'purple';
 }
 
@@ -29,12 +31,24 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
     options,
     onSelect,
     onInteract,
+    inlineOptions = false,
+    disabled = false,
     accentColor = 'gold'
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const popoverRef = useRef<HTMLDivElement>(null);
+    const inlineSliderOptions = category === 'Position' ? [...options].reverse() : options;
+    const inlineCurrentIndex = Math.max(0, inlineSliderOptions.findIndex(option =>
+        option.value.toLowerCase() === value.toLowerCase()
+    ));
+    const selectInlineOption = (index: number) => {
+        const option = inlineSliderOptions[index];
+        if (!option || disabled) return;
+        onInteract?.();
+        onSelect(option);
+    };
 
     useLayoutEffect(() => {
         if (!isOpen) return;
@@ -85,6 +99,44 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
     // --- Render Section ---
     return (
         <div className="this-is-you-pill-wrapper" ref={containerRef}>
+            {inlineOptions ? (
+                <div className="this-is-you-state-column" role="group" aria-label={category}>
+                    <div className="this-is-you-state-column-title">{category}</div>
+                    <div className="this-is-you-inline-slider">
+                        <div className="this-is-you-inline-slider-codes" aria-hidden="true">
+                            {[...inlineSliderOptions.keys()].reverse().map(index => <span
+                                key={inlineSliderOptions[index].value}
+                                className={index === inlineCurrentIndex ? 'is-active' : ''}
+                            >{index + 1}</span>)}
+                        </div>
+                        <input
+                            className="this-is-you-inline-slider-range"
+                            type="range"
+                            min="0"
+                            max={inlineSliderOptions.length - 1}
+                            step="1"
+                            value={inlineCurrentIndex}
+                            disabled={disabled}
+                            onChange={event => selectInlineOption(Number(event.target.value))}
+                            aria-label={category}
+                        />
+                        <div className="this-is-you-inline-slider-options">
+                            {[...inlineSliderOptions.keys()].reverse().map(index => {
+                                const option = inlineSliderOptions[index];
+                                const isActive = index === inlineCurrentIndex;
+                                return <button
+                                    key={option.value}
+                                    type="button"
+                                    className={`disposition-option${isActive ? ' active' : ''}`}
+                                    aria-pressed={isActive}
+                                    disabled={disabled}
+                                    onClick={() => selectInlineOption(index)}
+                                >{option.label.toUpperCase()}</button>;
+                            })}
+                        </div>
+                    </div>
+                </div>
+            ) : <>
             <button
                 type="button"
                 className={`this-is-you-pill accent-${accentColor}${isOpen ? ' is-active' : ''}`}
@@ -127,6 +179,7 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
                     })}
                 </div>, document.body
             )}
+            </>}
         </div>
     );
 };

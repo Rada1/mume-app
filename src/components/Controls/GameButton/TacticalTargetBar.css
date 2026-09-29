@@ -5,13 +5,15 @@
 
 .tactical-target-bar {
     position: fixed;
-    top: calc(33vh + 125px);
+    top: 33vh;
     left: 50vw;
     right: auto;
-    transform: translate(-50%, 0);
+    transform: translate(-50%, -50%);
     width: clamp(120px, 34vw, 142px);
-    max-height: max(48px, min(340px, calc(var(--target-menu-log-bottom, 100dvh) - 33vh - 133px)));
-    background: rgba(12, 16, 23, 0.96);
+    max-height: max(48px, min(340px, calc(66dvh - 16px)));
+    background: rgba(12, 16, 23, 0.78);
+    backdrop-filter: blur(12px) saturate(1.15);
+    -webkit-backdrop-filter: blur(12px) saturate(1.15);
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 10px;
     box-shadow: 0 14px 40px rgba(0, 0, 0, 0.8), inset 0 0 16px rgba(0, 0, 0, 0.4);
@@ -36,14 +38,49 @@
     filter: blur(1px);
 }
 
+.tactical-target-bar.has-directions-side {
+    width: clamp(230px, 68vw, 350px);
+}
+
+.tactical-target-bar.has-directions-below {
+    width: clamp(180px, 56vw, 250px);
+}
+
+.tactical-target-bar.has-directions-wheel {
+    width: clamp(210px, 68vw, 320px);
+}
+
+.tactical-target-bar.is-swipe-targeting {
+    top: auto;
+    right: auto;
+    bottom: max(10px, env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    width: min(88vw, 320px);
+    max-height: min(32dvh, 300px);
+    transform: translateX(-50%);
+    animation: none;
+}
+
+@media (orientation: landscape) {
+    .tactical-target-bar.is-swipe-targeting {
+        top: 50%;
+        right: auto;
+        bottom: auto;
+        left: 10px;
+        width: min(27vw, 220px);
+        max-height: 82dvh;
+        transform: translateY(-50%);
+    }
+}
+
 @keyframes tacticalTargetBarSlideIn {
     from {
         opacity: 0;
-        transform: translate(-50%, 0) scale(0.96);
+        transform: translate(-50%, -50%) scale(0.96);
     }
     to {
         opacity: 1;
-        transform: translate(-50%, 0) scale(1);
+        transform: translate(-50%, -50%) scale(1);
     }
 }
 
@@ -72,6 +109,85 @@
     color: rgba(255, 255, 255, 0.4);
 }
 
+.tactical-target-bar-keep-open {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 0 2px 4px;
+    border: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    font: inherit;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.tactical-target-bar-keep-open:hover,
+.tactical-target-bar-keep-open.is-enabled {
+    color: #c9a84c;
+}
+
+.tactical-target-bar-keep-open-track {
+    display: inline-flex;
+    align-items: center;
+    width: 17px;
+    height: 10px;
+    padding: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.06);
+    box-sizing: border-box;
+    transition: background 120ms ease, border-color 120ms ease;
+}
+
+.tactical-target-bar-keep-open-track > span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    transition: transform 120ms ease, background 120ms ease;
+}
+
+.tactical-target-bar-keep-open.is-enabled .tactical-target-bar-keep-open-track {
+    border-color: rgba(201, 168, 76, 0.65);
+    background: rgba(201, 168, 76, 0.25);
+}
+
+.tactical-target-bar-keep-open.is-enabled .tactical-target-bar-keep-open-track > span {
+    background: #f1d575;
+    transform: translateX(7px);
+}
+
+.tactical-target-bar-fire-mode {
+    min-width: 88px;
+    min-height: 44px;
+    justify-content: flex-end;
+    gap: 7px;
+    padding: 4px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    touch-action: manipulation;
+}
+
+.tactical-target-bar-fire-mode .tactical-target-bar-keep-open-track {
+    width: 48px;
+    height: 28px;
+    padding: 2px;
+    border-radius: 16px;
+}
+
+.tactical-target-bar-fire-mode .tactical-target-bar-keep-open-track > span {
+    width: 22px;
+    height: 22px;
+}
+
+.tactical-target-bar-fire-mode.is-enabled .tactical-target-bar-keep-open-track > span {
+    transform: translateX(20px);
+}
+
 .tactical-target-bar-list {
     display: flex;
     flex: 1 1 auto;
@@ -91,6 +207,67 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
+}
+
+.tactical-target-bar-social-browser {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.tactical-target-bar-social-browser > .tactical-target-bar-list {
+    flex: 1 1 auto;
+}
+
+.tactical-target-bar-social-index {
+    display: flex;
+    flex: 0 0 23px;
+    flex-direction: column;
+    min-height: 0;
+    padding: 3px;
+    background: rgba(12, 16, 23, 0.68);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
+    touch-action: none;
+    user-select: none;
+}
+
+.tactical-target-bar-social-index button {
+    flex: 1 1 0;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 2px;
+    background: transparent;
+    color: rgba(226, 232, 240, 0.72);
+    font: 700 8px/1 var(--font-mono, 'JetBrains Mono', monospace);
+    cursor: pointer;
+}
+
+.tactical-target-bar-social-index button:disabled {
+    color: rgba(226, 232, 240, 0.2);
+    cursor: default;
+}
+
+.tactical-target-bar-social-index button.is-active {
+    background: rgba(34, 197, 94, 0.22);
+    color: #4ade80;
+}
+
+.tactical-target-bar-direction-stack {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.tactical-target-bar-direction-stack > .tactical-target-bar-list {
+    min-height: 48px;
 }
 
 .tactical-target-bar-command {
@@ -113,12 +290,41 @@
     width: min(74vw, 280px);
 }
 
-.tactical-target-bar.has-columns {
+.tactical-target-bar.has-columns,
+.tactical-target-bar.has-fixed-halves {
     width: min(72vw, 310px);
 }
 
-.tactical-target-bar.has-command.has-columns {
+.tactical-target-bar.has-command.has-columns,
+.tactical-target-bar.has-command.has-fixed-halves {
     width: min(94vw, 400px);
+}
+
+.tactical-target-bar.is-swipe-targeting.has-command {
+    width: min(88vw, 320px);
+}
+
+.tactical-target-bar.is-swipe-targeting.has-columns,
+.tactical-target-bar.is-swipe-targeting.has-fixed-halves {
+    width: min(88vw, 320px);
+}
+
+.tactical-target-bar.is-swipe-targeting.has-command.has-columns,
+.tactical-target-bar.is-swipe-targeting.has-command.has-fixed-halves {
+    width: min(92vw, 360px);
+}
+
+@media (orientation: landscape) {
+    .tactical-target-bar.is-swipe-targeting.has-command,
+    .tactical-target-bar.is-swipe-targeting.has-columns,
+    .tactical-target-bar.is-swipe-targeting.has-fixed-halves {
+        width: min(27vw, 220px);
+    }
+
+    .tactical-target-bar.is-swipe-targeting.has-command.has-columns,
+    .tactical-target-bar.is-swipe-targeting.has-command.has-fixed-halves {
+        width: min(30vw, 260px);
+    }
 }
 
 .tactical-target-bar-columns {
@@ -127,6 +333,11 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
+}
+
+.tactical-target-bar-columns.tactical-target-bar-single-column {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .tactical-target-bar-column {
@@ -140,6 +351,11 @@
     border-left: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+.tactical-target-bar-empty-column {
+    min-width: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
 .tactical-target-bar-column-title {
     margin: 0;
     padding: 5px 6px 3px;
@@ -148,90 +364,4 @@
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-}
-
-.tactical-target-bar-section {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.tactical-target-bar-section + .tactical-target-bar-section {
-    margin-top: 3px;
-    padding-top: 5px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.tactical-target-bar-section-header {
-    padding: 2px 3px 1px;
-    color: var(--term-green, #22c55e);
-    font-size: 8px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-}
-
-.tactical-target-bar-list::-webkit-scrollbar {
-    width: 3px;
-}
-.tactical-target-bar-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 2px;
-}
-
-.tactical-target-bar-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 6px;
-    padding: 6px 8px;
-    background: rgba(22, 27, 38, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.12s, border-color 0.12s, transform 0.08s;
-    touch-action: pan-y;
-}
-
-.tactical-target-bar-item:hover,
-.tactical-target-bar-item:active {
-    background: rgba(34, 197, 94, 0.15);
-    border-color: rgba(34, 197, 94, 0.45);
-    transform: scale(0.98);
-}
-
-.tactical-target-bar-item.is-selected {
-    background: rgba(34, 197, 94, 0.22);
-    border-color: #22c55e;
-    box-shadow: 0 0 10px rgba(34, 197, 94, 0.3), inset 0 0 8px rgba(34, 197, 94, 0.15);
-}
-
-.tactical-target-bar-item.is-locked:not(.is-selected) {
-    border-color: rgba(34, 197, 94, 0.55);
-    background: rgba(34, 197, 94, 0.1);
-}
-
-.tactical-target-bar-name {
-    font-size: 11px;
-    font-weight: 600;
-    color: #e2e8f0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex: 1 1 auto;
-    text-align: left;
-}
-
-.tactical-target-bar-item.is-selected .tactical-target-bar-name,
-.tactical-target-bar-item.is-locked .tactical-target-bar-name {
-    color: #4ade80;
-}
-
-.tactical-target-bar-empty {
-    padding: 10px;
-    width: 100%;
-    text-align: center;
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.4);
-    font-style: italic;
 }

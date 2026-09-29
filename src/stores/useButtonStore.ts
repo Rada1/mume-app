@@ -17,6 +17,10 @@ const CLASS_PICKER_SET_IDS = new Set([
     'thiefskilllist'
 ]);
 
+const TACTICAL_CLASS_BUTTON_IDS = new Set([
+    'tactical-ranger', 'tactical-cleric', 'tactical-thief', 'tactical-warrior', 'tactical-mage'
+]);
+
 const isClassPickerButton = (button: Pick<CustomButton, 'setId'>): boolean => (
     CLASS_PICKER_SET_IDS.has((button.setId || '').toLowerCase())
 );
@@ -29,7 +33,7 @@ const DOOR_SWIPE_COMMANDS: CustomButton['swipeCommands'] = {
     sw: 'knock'
 };
 
-const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
+const normalizeTacticalAssignActions = (button: CustomButton, applyLegacyPlacements = true): CustomButton => {
     if (!button.id.startsWith('tactical-')) return button;
 
     const normalizedSetId = 'Tactical';
@@ -50,28 +54,33 @@ const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
         ? undefined
         : (button.swipeActionTypes ? { ...button.swipeActionTypes } : button.swipeActionTypes);
 
-    if (button.id === 'tactical-warrior' && swipeCommands) {
+    if (applyLegacyPlacements && button.id === 'tactical-warrior') {
+        swipeCommands = { ...(swipeCommands || {}), left: 'disengage' };
+        swipeActionTypes = { ...(swipeActionTypes || {}), left: 'command' };
         Object.entries(swipeCommands).forEach(([dir, command]) => {
-            const normalized = command?.trim().toLowerCase();
-            if (normalized && !['flee', 'disengage', 'assist'].includes(normalized)) {
+            if (command && !['disengage', 'assist'].includes(command.trim().toLowerCase())) {
                 delete swipeCommands[dir as keyof typeof swipeCommands];
                 delete swipeActionTypes?.[dir as keyof typeof swipeActionTypes];
             }
         });
     }
 
-    if (button.id === 'tactical-thief' && swipeCommands) {
-        Object.entries(swipeCommands).forEach(([dir, command]) => {
-            const normalized = command?.trim().toLowerCase();
-            if (normalized === 'shoot' || normalized === 'recover') {
-                delete swipeCommands[dir as keyof typeof swipeCommands];
-                delete swipeActionTypes?.[dir as keyof typeof swipeActionTypes];
-            }
-        });
+    if (button.id === 'tactical-ranger') {
+        for (const [direction, command] of Object.entries(swipeCommands || {})) {
+            const verb = command.trim().toLowerCase().split(/\s+/)[0];
+            if (verb !== 'ride' && verb !== 'lead') continue;
+            const key = direction as keyof NonNullable<CustomButton['swipeCommands']>;
+            delete swipeCommands?.[key];
+            if (swipeActionTypes) delete swipeActionTypes[key];
+        }
     }
 
-    if (button.id === 'tactical-doors') {
+    if (applyLegacyPlacements && button.id === 'tactical-doors') {
         swipeCommands = { ...(swipeCommands || {}), ...DOOR_SWIPE_COMMANDS };
+    }
+
+    if (applyLegacyPlacements && button.id === 'tactical-eye') {
+        swipeCommands = { ...(swipeCommands || {}), nw: swipeCommands?.nw || 'consider' };
     }
 
     const longSwipeActionTypes = button.id === 'tactical-doors'
@@ -85,7 +94,7 @@ const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
             ) as CustomButton['longSwipeActionTypes']
             : button.longSwipeActionTypes);
 
-    return {
+    const normalizedButton: CustomButton = {
         ...button,
         setId: normalizedSetId,
         label: button.id === 'tactical-charmie' ? 'Ch' : button.id === 'tactical-doors' ? 'Doors' : button.label,
@@ -98,6 +107,13 @@ const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
         longActionType: button.id === 'tactical-doors' ? undefined : (button.longActionType === 'select-assign' ? 'assign' : button.longActionType),
         longSwipeActionTypes
     };
+    if (TACTICAL_CLASS_BUTTON_IDS.has(button.id)) {
+        delete normalizedButton.longCommand;
+        delete normalizedButton.longActionType;
+        delete normalizedButton.longSwipeCommands;
+        delete normalizedButton.longSwipeActionTypes;
+    }
+    return normalizedButton;
 };
 
 export const useButtonStore = create<ButtonState>((set) => ({
@@ -107,9 +123,10 @@ export const useButtonStore = create<ButtonState>((set) => ({
         const masterButtons = (MASTER_SETTINGS as any).buttons || [];
         const defaultButtons = [...masterButtons, ...DEFAULT_BUTTONS.filter(d => !masterButtons.some((m: any) => m.id === d.id))]
             .filter((button: CustomButton) => !isClassPickerButton(button))
-            .map(normalizeTacticalAssignActions);
+            .map((button: CustomButton) => normalizeTacticalAssignActions(button));
 
         const REMOVED_BUTTON_IDS = new Set([
+            'tactical-movement',
             'kb-reply', 'trig-hungry', 'trig-thirsty',
             // pre-rename armour/shield cleanup
             'cat-armour-wear', 'cat-armour-wield', 'cat-armour-mend',
@@ -134,6 +151,7 @@ export const useButtonStore = create<ButtonState>((set) => ({
             // cat-* → btn-* rename (npcs)
             'cat-innkeeper-offer', 'cat-innkeeper-rent',
             'cat-mount-group', 'cat-mount-ride', 'cat-mount-lead', 'cat-mount-unsaddle-all', 'cat-mount-unsaddle', 'cat-mount-abandon', 'cat-mount-saddle',
+            'btn-mount-unsaddle-all',
             'cat-guildmaster-practice', 'cat-shopkeeper-shop',
             'cat-shopitem-buy', 'cat-shopitem-show', 'cat-default-kill',
             // inlp-* / innpc-* / tgt-* → btn-* merge
@@ -174,7 +192,7 @@ export const useButtonStore = create<ButtonState>((set) => ({
                             ...b,
                             isVisible: (b.isVisible !== undefined) ? b.isVisible : (def?.isVisible ?? (b.trigger?.enabled ? false : true))
                         };
-                    }).map(normalizeTacticalAssignActions);
+                    }).map((button: CustomButton) => normalizeTacticalAssignActions(button, false));
                     const loadedIds = new Set(parsed.map((b: any) => b.id));
                     const missingDefaults = defaultButtons.filter((b: any) => !loadedIds.has(b.id));
                     return [...loadedButtons, ...missingDefaults];

@@ -191,7 +191,8 @@
 .right-action-panel .right-panel-skill-tile {
     position: relative;
     min-height: 39px;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 26px minmax(55px, 1fr) auto auto;
     align-items: center;
     gap: 8px;
     padding: 8px 7px;
@@ -249,7 +250,8 @@
 /* --- Guildmaster training in the Skills list --- */
 .right-action-panel .right-panel-guild-note { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; background: rgba(155, 210, 165, 0.06); border-bottom: 1px solid rgba(155, 210, 165, 0.22); color: #a99d88; font: 11px var(--font-mono, monospace); }
 .right-action-panel .right-panel-guild-note strong { color: #9bd2a5; font-weight: 600; }
-.right-action-panel .skill-tile-main { flex: 1 1 auto; }
+.right-action-panel .skill-tile-main { min-width: 0; padding: 0; }
+.right-action-panel .skill-tile-meta { margin: 0; justify-content: flex-end; }
 .right-action-panel .skill-tile-practice { flex: 0 0 auto; min-width: 56px; padding: 4px 6px; border: 1px solid rgba(221, 189, 105, 0.55); border-radius: 2px; background: rgba(221, 189, 105, 0.08); color: #ddbd69; font: 10px var(--font-mono, monospace); cursor: pointer; }
 .right-action-panel .skill-tile-practice:hover:not(:disabled) { background: rgba(221, 189, 105, 0.18); border-color: #ddbd69; }
 .right-action-panel .skill-tile-practice:disabled { border-color: rgba(160, 135, 84, 0.18); background: transparent; color: #958b79; cursor: default; }

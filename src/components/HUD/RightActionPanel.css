@@ -224,6 +224,7 @@
 
 /* Skill / Spell Tile */
 .right-panel-skill-tile {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -263,6 +264,15 @@
 .right-panel-skill-tile.is-passive:hover {
     transform: none;
     background: rgba(24, 19, 14, 0.82);
+}
+
+.right-panel-skill-tile.is-pressed {
+    border-color: #f0cb67;
+    box-shadow: 0 0 0 1px rgba(240, 203, 103, 0.45), 0 0 12px rgba(240, 203, 103, 0.28);
+}
+
+.right-panel-skill-tile.is-dim.is-pressed {
+    opacity: 0.85;
 }
 
 .skill-tile-main {

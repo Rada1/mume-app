@@ -75,5 +75,5 @@ export interface SoundTrigger {
 
 export interface ZoneMusicMapping {
     zone: string;
-    url: string | string[];
+    url: string;
 }

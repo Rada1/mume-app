@@ -57,7 +57,11 @@ const getOptionCode = (value: string, options: string[]): number => {
 };
 
 // --- Render Section ---
-export const PromptModeIndicators: React.FC = () => {
+interface PromptModeIndicatorsProps {
+    compact?: boolean;
+}
+
+export const PromptModeIndicators: React.FC<PromptModeIndicatorsProps> = ({ compact = false }) => {
     const {
         executeCommand, mood, setMood, spellSpeed, setSpellSpeed,
         alertness, setAlertness, setPlayerPosition, triggerHaptic,
@@ -108,7 +112,7 @@ export const PromptModeIndicators: React.FC = () => {
         audioManager.playEffect('slider');
     }, [executeCommand, setPlayerPosition, triggerHaptic, vitals.position]);
 
-    const handleMovementClick = useCallback((command: 'swim' | 'ride' | 'lead' | 'climb' | 'sneak', event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleMovementClick = useCallback((command: 'swim' | 'ride' | 'lead' | 'climb' | 'sneak' | 'hide' | 'equipment', event: React.MouseEvent<HTMLButtonElement>) => {
         if (isSpectateMode) return;
         event.stopPropagation();
         triggerHaptic(10);
@@ -146,8 +150,6 @@ export const PromptModeIndicators: React.FC = () => {
     }, [modeValues]);
 
     const movementIndicators: MovementIndicatorItem[] = useMemo(() => [
-        { id: 'swim', label: 'W', title: vitals.isSwimming ? 'Swimming — click to toggle' : 'Swim — click to toggle', active: vitals.isSwimming, command: 'swim' },
-        { id: 'ride', label: 'R', title: vitals.isRiding ? 'Riding — click to lead' : 'Ride — click to ride', active: vitals.isRiding, command: (vitals.isRiding ? 'lead' : 'ride') },
         {
             id: 'climb',
             label: vitals.climb?.toLowerCase().includes('safe') ? 'c' : 'C',
@@ -155,8 +157,11 @@ export const PromptModeIndicators: React.FC = () => {
             active: Boolean(vitals.climb),
             command: 'climb'
         },
-        { id: 'sneak', label: 'S', title: vitals.sneak ? 'Sneaking — click to toggle' : 'Sneak — click to toggle', active: Boolean(vitals.sneak), command: 'sneak' }
-    ], [vitals.climb, vitals.isRiding, vitals.isSwimming, vitals.sneak]);
+        { id: 'sneak', label: 'S', title: vitals.sneak ? 'Sneaking — click to toggle' : 'Sneak — click to toggle', active: Boolean(vitals.sneak), command: 'sneak' },
+        { id: 'swim', label: 'W', title: vitals.isSwimming ? 'Swimming — click to toggle' : 'Swim — click to toggle', active: vitals.isSwimming, command: 'swim' },
+        { id: 'ride', label: 'R', title: vitals.isRiding ? 'Riding — click to lead' : 'Ride — click to ride', active: vitals.isRiding, command: (vitals.isRiding ? 'lead' : 'ride') },
+        { id: 'hidden', label: 'H', title: vitals.isHidden ? 'Hidden — click to reveal' : 'Hide — click to toggle', active: vitals.isHidden, command: vitals.isHidden ? 'equipment' : 'hide' }
+    ], [vitals.climb, vitals.isHidden, vitals.isRiding, vitals.isSwimming, vitals.sneak]);
 
     const previousMovementStatesRef = useRef<Record<string, boolean> | null>(null);
     const [movementAnimations, setMovementAnimations] = useState<Record<string, { direction: 'up' | 'down'; key: number }>>({});
@@ -183,15 +188,6 @@ export const PromptModeIndicators: React.FC = () => {
 
     const stanceItems: StanceItem[] = useMemo(() => [
         {
-            id: 'position',
-            tag: `P${positionCode}`,
-            code: `P${positionCode}`,
-            text: formatShortName(position, POS_SHORT),
-            title: `Position: ${position}`,
-            isActive: activeSlider === 'position',
-            animKey: modeAnimationKeys.position
-        },
-        {
             id: 'alert',
             tag: `A${alertCode}`,
             code: `A${alertCode}`,
@@ -199,6 +195,24 @@ export const PromptModeIndicators: React.FC = () => {
             title: `Alertness: ${alertness || 'normal'}`,
             isActive: activeSlider === 'alert',
             animKey: modeAnimationKeys.alertness
+        },
+        {
+            id: 'mood',
+            tag: `M${moodCode}`,
+            code: `M${moodCode}`,
+            text: formatShortName(mood || 'normal', MOOD_SHORT),
+            title: `Mood: ${mood || 'normal'}`,
+            isActive: activeSlider === 'mood',
+            animKey: modeAnimationKeys.mood
+        },
+        {
+            id: 'position',
+            tag: `P${positionCode}`,
+            code: `P${positionCode}`,
+            text: formatShortName(position, POS_SHORT),
+            title: `Position: ${position}`,
+            isActive: activeSlider === 'position',
+            animKey: modeAnimationKeys.position
         },
         {
             id: 'speed',
@@ -209,15 +223,6 @@ export const PromptModeIndicators: React.FC = () => {
             isActive: activeSlider === 'speed',
             animKey: modeAnimationKeys.speed
         },
-        {
-            id: 'mood',
-            tag: `M${moodCode}`,
-            code: `M${moodCode}`,
-            text: formatShortName(mood || 'normal', MOOD_SHORT),
-            title: `Mood: ${mood || 'normal'}`,
-            isActive: activeSlider === 'mood',
-            animKey: modeAnimationKeys.mood
-        }
     ], [activeSlider, alertCode, alertness, modeAnimationKeys, mood, moodCode, position, positionCode, speedCode, spellSpeed]);
 
     const [combatStatAnimations, setCombatStatAnimations] = useState<Record<string, { direction: 'up' | 'down'; key: number }>>({});
@@ -258,28 +263,30 @@ export const PromptModeIndicators: React.FC = () => {
     ].filter(stat => stat.value !== undefined && (!stat.equipmentOnly || stat.value !== 0)), [equipmentSpellStats.spellAttack, equipmentSpellStats.spellSave, vitals.armour, vitals.db, vitals.ob, vitals.pb]);
 
     return (
-        <div className="prompt-controls-line">
-            <span className="prompt-line-header">Stance</span>
-            <span className="prompt-header-divider">│</span>
+        <div className={`prompt-controls-line${compact ? ' is-inline-prompt' : ''}`}>
+            {!compact && <span className="prompt-line-header">Stance</span>}
+            {!compact && <span className="prompt-header-divider">│</span>}
             <PromptMovementGroup
                 indicators={movementIndicators}
                 animations={movementAnimations}
                 onMovementClick={handleMovementClick}
+                compact={compact}
             />
-            <span className="prompt-group-divider">│</span>
+            {compact && movementIndicators.length > 0 && <span className="prompt-item-sep"> </span>}
+            {!compact && <span className="prompt-group-divider">│</span>}
             <PromptStanceGroup
                 items={stanceItems}
                 onItemClick={openSlider}
             />
-            <span className="prompt-group-divider">│</span>
-            <PromptCombatStatsGroup
+            {!compact && <span className="prompt-group-divider">│</span>}
+            {!compact && <PromptCombatStatsGroup
                 stats={combatStats}
                 animations={combatStatAnimations}
-            />
-            <PromptAffectedIndicators />
-            <span className="prompt-target-end">
+            />}
+            {!compact && <PromptAffectedIndicators />}
+            {!compact && <span className="prompt-target-end">
                 <PromptTargetSelector />
-            </span>
+            </span>}
 
             {activeSlider === 'position' && anchorRect && (
                 <CombatSliderPopout

@@ -85,6 +85,8 @@ interface MapperContextType {
     mapSearchQuery: string;
     setMapSearchQuery: React.Dispatch<React.SetStateAction<string>>;
     closestRoomId: string | null;
+    selectedSearchRoomId: string | null;
+    setSelectedSearchRoomId: React.Dispatch<React.SetStateAction<string | null>>;
     filterPathIds: string[];
     filterPathDistance: number;
     matchedRoomIds: Set<string>;
@@ -189,6 +191,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Filtering & Navigation State
     const [activeMapFilter, setActiveMapFilter] = useState<string | null>(null);
     const [mapSearchQuery, setMapSearchQuery] = useState<string>('');
+    const [selectedSearchRoomId, setSelectedSearchRoomId] = useState<string | null>(null);
     const [closestRoomId, setClosestRoomId] = useState<string | null>(null);
     const [filterPathIds, setFilterPathIds] = useState<string[]>([]);
     const [filterPathDistance, setFilterPathDistance] = useState<number>(0);
@@ -233,6 +236,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // graph search. Filter/query changes fire immediately.
     const bfsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const lastFilterKeyRef = useRef('');
+    const lastSelectedSearchRoomIdRef = useRef<string | null>(null);
     const filterPathIdsRef = useRef<string[]>([]);
     useEffect(() => { filterPathIdsRef.current = filterPathIds; }, [filterPathIds]);
 
@@ -245,6 +249,8 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (!filterActive) {
             if (bfsTimerRef.current) { clearTimeout(bfsTimerRef.current); bfsTimerRef.current = null; }
             lastFilterKeyRef.current = '';
+            lastSelectedSearchRoomIdRef.current = null;
+            setSelectedSearchRoomId(null);
             setMatchedRoomIds(EMPTY_SET);
             setClosestRoomId(null);
             setFilterPathIds(EMPTY_PATH);
@@ -256,9 +262,13 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const filterKey = `${effectiveFilter}|${effectiveQuery}`;
         const isFilterChange = filterKey !== lastFilterKeyRef.current;
         lastFilterKeyRef.current = filterKey;
+        const isSelectedRoomChange = selectedSearchRoomId !== lastSelectedSearchRoomIdRef.current;
+        lastSelectedSearchRoomIdRef.current = selectedSearchRoomId;
+        if (isFilterChange && selectedSearchRoomId) setSelectedSearchRoomId(null);
 
         const runBfs = () => {
             const nextMatchedRoomIds = new Set<string>();
+            const revealAll = !!(treatMapAsExplored || unveilMap);
             // Custom/local rooms
             Object.keys(rooms).forEach(rid => {
                 const rawId = rid.startsWith('m_') ? rid.substring(2) : rid;
@@ -266,8 +276,28 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     nextMatchedRoomIds.add(rid);
                 }
             });
-            // Preloaded/explored rooms
-            explored.forEach(vnum => {
+            // Include preloaded rooms the map currently reveals in its first ring.
+            // Map rendering reveals a room when one of its cardinal exits leads to
+            // an explored room, even before the player has visited that room.
+            const ring1Revealed = new Set<string>();
+            if (!revealAll) {
+                Object.entries(preloaded).forEach(([vnum, pData]) => {
+                    if (explored.has(vnum)) return;
+                    const exits = pData?.[4] as Record<string, { target?: string }> | undefined;
+                    if (!exits) return;
+                    const isRing1 = ['n', 's', 'e', 'w'].some(direction => {
+                        const targetId = exits[direction]?.target;
+                        return targetId !== undefined && explored.has(String(targetId).replace(/^m_/, ''));
+                    });
+                    if (isRing1) ring1Revealed.add(vnum);
+                });
+            }
+
+            // Preloaded rooms that are explored or currently revealed in ring one.
+            const visiblePreloadedVnums = revealAll
+                ? Object.keys(preloaded)
+                : new Set([...explored, ...ring1Revealed]);
+            visiblePreloadedVnums.forEach(vnum => {
                 const rid = `m_${vnum}`;
                 if (nextMatchedRoomIds.has(rid)) return;
                 const pData = preloaded[vnum];
@@ -277,18 +307,30 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 }
             });
 
-            const revealAll = !!(treatMapAsExplored || unveilMap);
+            const normalizeRoomId = (roomId: string) => roomId.replace(/^(m_|r_)/, '');
+            const selectedMatchedRoomId = !isFilterChange && selectedSearchRoomId
+                ? Array.from(nextMatchedRoomIds).find(roomId => normalizeRoomId(roomId) === normalizeRoomId(selectedSearchRoomId)) || null
+                : null;
+            const selectedSearchPath = selectedMatchedRoomId && currentRoomId
+                ? findClosestMatchingRoomPath(currentRoomId, rooms, preloaded, effectiveFilter, effectiveQuery, {
+                    treatMapAsExplored: revealAll,
+                    explored,
+                    targetRoomId: selectedMatchedRoomId
+                })
+                : null;
             const closestPath = currentRoomId
                 ? findClosestMatchingRoomPath(currentRoomId, rooms, preloaded, effectiveFilter, effectiveQuery, {
                     treatMapAsExplored: revealAll,
                     explored
                 })
                 : null;
+            const displayPath = selectedMatchedRoomId ? selectedSearchPath : closestPath;
+            const displayTargetId = selectedSearchPath?.targetId || selectedMatchedRoomId || closestPath?.targetId || null;
 
             setMatchedRoomIds(nextMatchedRoomIds);
-            setClosestRoomId(closestPath?.targetId || null);
-            setFilterPathIds(closestPath?.pathIds || EMPTY_PATH);
-            setFilterPathDistance(closestPath?.distance || 0);
+            setClosestRoomId(displayTargetId);
+            setFilterPathIds(displayPath?.pathIds || EMPTY_PATH);
+            setFilterPathDistance(displayPath?.distance || 0);
 
             triggerRender();
         };
@@ -299,7 +341,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const currentRawId = currentRoomId?.replace(/^m_/, '') || '';
         const currentIsOnPath = !!currentRawId && filterPathIdsRef.current.some(pathId => pathId.replace(/^m_/, '') === currentRawId);
 
-        if (isFilterChange || currentIsOnPath) {
+        if (isFilterChange || isSelectedRoomChange || currentIsOnPath) {
             // Filter/query changed — run immediately for responsive UI
             runBfs();
         } else {
@@ -313,7 +355,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         };
     // NOTE: renderVersion intentionally excluded — including it created a
     // feedback loop since this effect calls triggerRender() which increments it.
-    }, [currentRoomId, activeMapFilter, mapSearchQuery, rooms, explored, treatMapAsExplored, unveilMap, triggerRender, EMPTY_SET, EMPTY_PATH]);
+    }, [currentRoomId, activeMapFilter, mapSearchQuery, selectedSearchRoomId, rooms, explored, treatMapAsExplored, unveilMap, triggerRender, EMPTY_SET, EMPTY_PATH]);
 
     // Refs
     const pendingMovesRef = useRef<{ dir: string, time: number, resolved?: boolean }[]>([]);
@@ -795,7 +837,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         serverIdIndexRef,
         activeMapFilter, setActiveMapFilter, mapSearchQuery, setMapSearchQuery,
         regionLabels, regionLabelsRef, addRegionLabel, updateRegionLabel, deleteRegionLabel,
-        closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
+        closestRoomId, selectedSearchRoomId, setSelectedSearchRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     }), [
         rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId, newlyExploredRoomId,
         currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef,
@@ -809,7 +851,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         serverIdIndexRef,
         activeMapFilter, setActiveMapFilter, mapSearchQuery, setMapSearchQuery,
         regionLabels, regionLabelsRef, addRegionLabel, updateRegionLabel, deleteRegionLabel,
-        closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
+        closestRoomId, selectedSearchRoomId, setSelectedSearchRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     ]);
 
     // --- Proximity Reveal for Markers ---

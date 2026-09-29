@@ -60,6 +60,26 @@ export const TERRAIN_MAP: Record<string, string> = {
 
 export const generateId = () => Math.random().toString(36).substr(2, 9);
 
+export const normalizeRoomFlag = (
+    value: unknown,
+    enabledValues: readonly string[],
+    disabledValues: readonly string[]
+): boolean | null => {
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'number') return value === 1 ? true : value === 0 ? false : null;
+    if (typeof value !== 'string') return null;
+    const normalized = value.trim().toUpperCase().replace(/[\s-]+/g, '_');
+    if (['TRUE', 'YES', '1', ...enabledValues].includes(normalized)) return true;
+    if (['FALSE', 'NO', '0', ...disabledValues].includes(normalized)) return false;
+    return null;
+};
+
+export const getRoomPortableState = (value: unknown): boolean | null =>
+    normalizeRoomFlag(value, ['PORTABLE'], ['NOT_PORTABLE', 'NO_PORT']);
+
+export const getRoomRidableState = (value: unknown): boolean | null =>
+    normalizeRoomFlag(value, ['RIDABLE'], ['NOT_RIDABLE', 'NO_RIDE']);
+
 // Pure over a tiny set of distinct terrain inputs, but called many times per tile
 // during a cache rebuild (thousands of tiles × several calls each). Memoize so each
 // distinct input pays the string-scan cost once.
@@ -374,6 +394,7 @@ export const checkRoomFilter = (
 export interface FindMatchOptions {
     treatMapAsExplored?: boolean;
     explored?: Set<string>;
+    targetRoomId?: string | null;
 }
 
 /**
@@ -419,12 +440,14 @@ export const findClosestMatchingRoomPath = (
     };
 
     const normStart = normalizeId(startId);
+    const normTarget = normalizeId(options?.targetRoomId || null);
 
     // In normal mode, only step through rooms the player has explored or rooms they created.
     const isTraversable = (id: string): boolean => {
         if (treatAsExplored) return true;
         if (!explored) return true;
         const normId = normalizeId(id);
+        if (normTarget && normTarget === normId) return true;
         if (explored.has(normId)) return true;
         if (rooms[id] || rooms[`m_${normId}`] || rooms[normId]) return true;
         return false;
@@ -468,7 +491,11 @@ export const findClosestMatchingRoomPath = (
 
     const startLocal = rooms[startId] || rooms[`m_${normStart}`] || rooms[normStart];
     const startPre = preloadedCoords[normStart];
-    if (checkRoomFilter(startId, startLocal, startPre, filter, query)) {
+    if (normTarget && normTarget === normStart) {
+        return { targetId: startId, pathIds: [startId], distance: 0 };
+    }
+
+    if (!normTarget && checkRoomFilter(startId, startLocal, startPre, filter, query)) {
         return { targetId: startId, pathIds: [startId], distance: 0 };
     }
 
@@ -494,7 +521,7 @@ export const findClosestMatchingRoomPath = (
 
                 const nextLocal = rooms[targetId] || rooms[`m_${normNext}`] || rooms[normNext];
                 const nextPre = preloadedCoords[normNext];
-                if (checkRoomFilter(targetId, nextLocal, nextPre, filter, query)) {
+                if (normTarget ? normNext === normTarget : checkRoomFilter(targetId, nextLocal, nextPre, filter, query)) {
                     const standardTargetId = targetId.startsWith('m_') ? targetId : (preloadedCoords[normNext] ? `m_${normNext}` : targetId);
                     const nextPath = [...pathIds, standardTargetId];
                     return {

@@ -313,12 +313,13 @@ export const snapTo = (s: MoveAnimState, pos: Vec3, render: Vec3) => {
 export const advanceMoveAnim = (
     s: MoveAnimState,
     render: Vec3,
-    frameScale: number
+    frameScale: number,
+    instant = false
 ): boolean => {
     if (s.phase === 'gliding') {
         const seg = s.queue[0];
         if (!seg) { s.phase = 'idle'; return false; }
-        const t = clamp((Date.now() - s.glideStart) / s.glideDur, 0, 1);
+        const t = instant ? 1 : clamp((Date.now() - s.glideStart) / s.glideDur, 0, 1);
         const e = ease(t);
         render.x = seg.from.x + (seg.to.x - seg.from.x) * e;
         render.y = seg.from.y + (seg.to.y - seg.from.y) * e;
@@ -341,6 +342,11 @@ export const advanceMoveAnim = (
 
     if (s.phase === 'bumping') {
         if (!s.bumpOrigin || !s.bumpVec) { s.phase = 'idle'; return false; }
+        if (instant) {
+            render.x = s.bumpOrigin.x; render.y = s.bumpOrigin.y; render.z = s.bumpOrigin.z;
+            s.phase = 'idle';
+            return false;
+        }
         const t = clamp((Date.now() - s.glideStart) / s.glideDur, 0, 1);
         // Lean out toward the blocker and back: sin gives 0 → peak (mid) → 0.
         const k = Math.sin(Math.PI * t) * MOVE_ANIM.BUMP_DIST;
@@ -358,6 +364,13 @@ export const advanceMoveAnim = (
     if (s.phase === 'bouncing') {
         const anchor = s.lastConfirmed;
         if (!anchor) { s.phase = 'idle'; return false; }
+        if (instant) {
+            render.x = anchor.x; render.y = anchor.y; render.z = anchor.z;
+            s.phase = 'idle';
+            s.vx = 0;
+            s.vy = 0;
+            return false;
+        }
         const ax = (anchor.x - render.x) * MOVE_ANIM.BOUNCE_K;
         const ay = (anchor.y - render.y) * MOVE_ANIM.BOUNCE_K;
         const damp = Math.pow(MOVE_ANIM.BOUNCE_DAMP, frameScale);

@@ -103,6 +103,7 @@ export class Tokenizer {
             metadata: any;
             content: string;
             style: React.CSSProperties;
+            isMagic?: boolean;
             stack?: string[];
         } | null = null;
         
@@ -119,7 +120,7 @@ export class Tokenizer {
 
             if (match.index > lastIndex) {
                 const content = textToScan.substring(lastIndex, match.index);
-                this.handleText(content, tokens, this.currentStyle, activeEntity, context);
+                this.handleText(content, tokens, this.currentStyle, activeEntity, context, tagStack.includes('magic'));
             }
             lastIndex = scanner.lastIndex;
 
@@ -158,6 +159,7 @@ export class Tokenizer {
                                     metadata, 
                                     content: '', 
                                     style: { ...this.currentStyle },
+                                    isMagic: tagStack.includes('magic'),
                                     stack: [...tagStack]
                                 };
                             } else if (kind === 'player' && activeEntity.kind === 'npc') {
@@ -174,14 +176,14 @@ export class Tokenizer {
                     }
                 } else {
                     if (!this.isPresentationOnlyTag(fullMatch)) {
-                        this.handleText(fullMatch, tokens, this.currentStyle, activeEntity, context);
+                        this.handleText(fullMatch, tokens, this.currentStyle, activeEntity, context, tagStack.includes('magic'));
                     }
                 }
             }
         }
 
         if (lastIndex < textToScan.length) {
-            this.handleText(textToScan.substring(lastIndex), tokens, this.currentStyle, activeEntity, context);
+            this.handleText(textToScan.substring(lastIndex), tokens, this.currentStyle, activeEntity, context, tagStack.includes('magic'));
         }
         
         this.flushPendingEquipment(tokens, true);
@@ -216,7 +218,8 @@ export class Tokenizer {
         tokens: Token[], 
         style: React.CSSProperties, 
         activeEntity: any,
-        context?: TokenizerContext
+        context?: TokenizerContext,
+        isMagicText: boolean = false
     ) {
         let decoded = this.decodeEntities(content);
         const lower = decoded.toLowerCase();
@@ -235,6 +238,7 @@ export class Tokenizer {
             // separate equipment object.
             this.flushPendingEquipment(tokens, false);
             activeEntity.content += decoded;
+            activeEntity.isMagic = activeEntity.isMagic || isMagicText;
             return;
         }
 
@@ -244,14 +248,14 @@ export class Tokenizer {
         // often arrive in separate ANSI spans, so keep a small per-line state flag.
         if (this.currentLocation === 'worn' && this.isEquipmentSlotMarker(decoded)) {
             this.pendingEquipmentSlot = true;
-            this.pushText(decoded, tokens, style);
+            this.pushText(decoded, tokens, style, isMagicText);
             return;
         }
 
         if (this.currentLocation === 'worn' && this.pendingEquipmentSlot && decoded) {
             const leadingWhitespace = this.pendingEquipmentText ? '' : (decoded.match(/^\s+/)?.[0] || '');
             if (leadingWhitespace) {
-                this.pushText(leadingWhitespace, tokens, style);
+                this.pushText(leadingWhitespace, tokens, style, isMagicText);
                 decoded = decoded.slice(leadingWhitespace.length);
             }
             if (!decoded) return;
@@ -264,7 +268,7 @@ export class Tokenizer {
 
         const occupantTokens = this.tokenizeKnownOccupants(decoded, context, style);
         if (occupantTokens) {
-            tokens.push(...occupantTokens);
+            tokens.push(...(isMagicText ? this.markMagicTextTokens(occupantTokens) : occupantTokens));
             return;
         }
 
@@ -289,7 +293,7 @@ export class Tokenizer {
                     if (isLetter(prevChar) || isLetter(nextChar)) continue;
 
                     if (startIdx > lastIdx) {
-                        this.pushText(decoded.substring(lastIdx, startIdx), tokens, style);
+                        this.pushText(decoded.substring(lastIdx, startIdx), tokens, style, isMagicText);
                     }
                     
                     const metadata: any = {
@@ -297,7 +301,8 @@ export class Tokenizer {
                         category: 'cat-ally',
                         context: playerName,
                         location: 'none',
-                        action: 'menu'
+                        action: 'menu',
+                        extraClasses: isMagicText ? ['magic-text'] : undefined
                     };
 
                     if (context.playerColor) {
@@ -315,13 +320,13 @@ export class Tokenizer {
                 }
                 
                 if (lastIdx < decoded.length) {
-                    this.pushText(decoded.substring(lastIdx), tokens, style);
+                    this.pushText(decoded.substring(lastIdx), tokens, style, isMagicText);
                 }
                 return;
             }
         }
 
-        this.pushText(decoded, tokens, style);
+        this.pushText(decoded, tokens, style, isMagicText);
     }
 
     private isEquipmentSlotMarker(content: string): boolean {
@@ -518,18 +523,42 @@ export class Tokenizer {
         return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    private pushText(content: string, tokens: Token[], style: React.CSSProperties) {
+    private pushText(content: string, tokens: Token[], style: React.CSSProperties, isMagicText: boolean = false) {
         if (!content) return;
+        const classes = [
+            ...(isAnsiGreenColor(style.color) ? ['ansi-green-highlight'] : []),
+            ...(isMagicText ? ['magic-text'] : [])
+        ];
         if (Object.keys(style).length > 0) {
             tokens.push({
                 type: 'ansi',
                 content,
-                classes: isAnsiGreenColor(style.color) ? ['ansi-green-highlight'] : undefined,
+                classes: classes.length > 0 ? classes : undefined,
                 style: { ...style }
             } as AnsiToken);
         } else {
-            tokens.push({ type: 'text', content } as TextToken);
+            tokens.push({ type: 'text', content, classes: classes.length > 0 ? classes : undefined } as TextToken);
         }
+    }
+
+    private markMagicTextTokens(tokens: Token[]): Token[] {
+        return tokens.map(token => {
+            if (token.type === 'entity') {
+                const extraClasses = token.metadata?.extraClasses || [];
+                return {
+                    ...token,
+                    metadata: {
+                        ...token.metadata,
+                        extraClasses: extraClasses.includes('magic-text') ? extraClasses : [...extraClasses, 'magic-text']
+                    }
+                };
+            }
+            if (token.type === 'ansi' || token.type === 'text') {
+                const classes = token.classes || [];
+                return { ...token, classes: classes.includes('magic-text') ? classes : [...classes, 'magic-text'] };
+            }
+            return token;
+        });
     }
 
     private emitEntity(activeEntity: any, tokens: Token[], context: TokenizerContext) {
@@ -616,7 +645,10 @@ export class Tokenizer {
                 style: activeEntity.style,
                 glowColor,
                 occupantId: resolvedEntityId,
-                ...metadata
+                ...metadata,
+                ...(activeEntity.isMagic ? {
+                    extraClasses: [...new Set([...(metadata.extraClasses || []), 'magic-text'])]
+                } : {})
             }
         } as EntityToken);
 

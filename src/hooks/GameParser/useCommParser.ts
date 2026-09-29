@@ -62,6 +62,38 @@ export function useCommParser(deps: CommParserDeps) {
             return activeColor;
         };
 
+        const extractActiveForegroundAtRawIndex = (rawIdx: number): string | undefined => {
+            let activeForeground: number[] | undefined;
+            let isBold = false;
+            const ansiMatches = Array.from(line.matchAll(/\x1b\[([\d;]*)m/g));
+            for (const match of ansiMatches) {
+                if (match.index! >= rawIdx) break;
+                const codes = match[1] ? match[1].split(';').map(n => parseInt(n, 10)) : [0];
+                for (let i = 0; i < codes.length; i++) {
+                    const code = codes[i];
+                    if (code === 0) {
+                        activeForeground = undefined;
+                        isBold = false;
+                    } else if (code === 1) {
+                        isBold = true;
+                    } else if (code === 22) {
+                        isBold = false;
+                    } else if (code === 39) {
+                        activeForeground = undefined;
+                    } else if ((code >= 30 && code <= 37) || (code >= 90 && code <= 97)) {
+                        activeForeground = isBold && code >= 30 && code <= 37 ? [1, code] : [code];
+                    } else if (code === 38 && codes[i + 1] === 5 && codes[i + 2] !== undefined) {
+                        activeForeground = codes.slice(i, i + 3);
+                        i += 2;
+                    } else if (code === 38 && codes[i + 1] === 2 && codes[i + 4] !== undefined) {
+                        activeForeground = codes.slice(i, i + 5);
+                        i += 4;
+                    }
+                }
+            }
+            return activeForeground ? `\x1b[${activeForeground.join(';')}m` : undefined;
+        };
+
         const sanitizeExtractedText = (text: string): string => {
             // Strips literal garbage like line wraps, residual ANSI fragments, and carriage returns
             // specifically at the end of the line where MUME appends them.
@@ -136,11 +168,14 @@ export function useCommParser(deps: CommParserDeps) {
                 const rawActionStart = textIndexToRawIndex(innerRaw, actionStart);
                 const rawTextStart = textIndexToRawIndex(innerRaw, textStart);
                 const rawActionIndex = tagMatch.index + tagMatch[0].indexOf(actionMatch[2]);
+                const rawInnerIndex = tagMatch[0].indexOf(innerRaw);
+                const rawBodyIndex = tagMatch.index + rawInnerIndex + rawTextStart;
 
                 replyTarget = actionMatch[1].trim();
                 commSender = sanitizeExtractedText(innerRaw.substring(0, rawActionStart)).trim();
                 commAction = actionMatch[2];
-                commText = sanitizeExtractedText(innerRaw.substring(rawTextStart)).trim();
+                const bodyText = sanitizeExtractedText(innerRaw.substring(rawTextStart)).trim();
+                commText = `${extractActiveForegroundAtRawIndex(rawBodyIndex) || ''}${bodyText}`;
                 commColor = extractColorAtRawIndex(rawActionIndex >= tagMatch.index ? rawActionIndex : line.length) || extractColorAtRawIndex(line.length);
                 if (!commColor) {
                     commColor = FALLBACK_COMM_COLORS[tag];

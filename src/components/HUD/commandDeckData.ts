@@ -2,23 +2,52 @@
 
 import React from 'react';
 import {
-    Swords, MessageSquare, Wrench, Home, UserRound,
-    Sword, HeartPulse, Footprints, Target, ScrollText,
+    Box, MessageSquare, Hand,
+    Sword, HeartPulse, Footprints, Target, ScrollText, FlameKindling,
     Eye, Tent, BedDouble, PackagePlus, PackageMinus, PackageOpen,
     Utensils, CupSoda, Shirt, Handshake, Cigarette,
     MessageSquareQuote, Smile, Info
 } from 'lucide-react';
 import type { DeckItem } from './useDeckTargeting';
 
-export type TabKey = 'combat' | 'social' | 'utility' | 'room' | 'personal' | 'consume';
+export type TabKey = 'combat' | 'social' | 'utility' | 'room' | 'personal' | 'consume' | 'mounts';
 type DeckAction = Omit<DeckItem, 'needsTarget'> & { needsTarget?: boolean };
+
+export const isDeckActionAvailable = (item: Pick<DeckItem, 'requirement'>, race = '', subrace = ''): boolean => {
+    const allowedAncestries = item.requirement?.raceOrSubrace;
+    if (!allowedAncestries?.length) return true;
+    const ancestry = `${race} ${subrace}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    return allowedAncestries.some(value => ancestry.includes(value.toLowerCase()));
+};
+
+const HorseHeadIcon: React.FC<{ size?: number; strokeWidth?: number }> = ({ size = 17, strokeWidth = 2 }) =>
+    React.createElement('svg', {
+        width: size,
+        height: size,
+        viewBox: '0 0 24 24',
+        fill: 'none',
+        stroke: 'currentColor',
+        strokeWidth,
+        strokeLinecap: 'round',
+        strokeLinejoin: 'round',
+        'aria-hidden': true
+    },
+    React.createElement('path', {
+        d: 'M7.5 21c-1.3-3-1.8-6.2-1.1-9.4.9-4 3.3-6.8 6.2-8.1 1.1-.5 2.1-.7 3.1-.6-.3-1.1.1-2.1 1-3 .7.9 1.1 1.8 1.1 2.8 1 .4 1.8 1.1 2.4 2l-1.8 1.2c1.4 1.5 2.7 3.1 4 4.8 1.1 1.5.8 3.2-.5 4-1.1.6-2.1.2-2.7-.9-.8-1.4-2.1-2.2-4-2.6-1.3-.3-2.3-.8-3-1.7-.8 2.5-.3 5.1 1.5 7.4 1.2 1.6 2.1 3.2 2.7 5.1'
+    }),
+    React.createElement('path', {
+        d: 'M13.2 3.4c-1.3-1.1-2.7-.8-3.8 0-1 .8-2 1.5-3.4 1.5.2.9.9 1.5 1.8 1.7-1.8.5-3.1 1.7-4 3.3.8.4 1.8.5 2.7.3-1.2 1.3-1.7 2.8-1.8 4.3l1.8-.1c-.5 2.1.3 3.9.5 5.5.1 1.2-.3 2.2-1.1 3 1.4.2 2.7-.2 3.5-1.2'
+    }),
+    React.createElement('circle', { cx: 16.7, cy: 7.6, r: 0.55, fill: 'currentColor', stroke: 'none' }));
 
 // --- Data Section ---
 export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
     combat: [
-        { label: 'Kill', cmd: 'kill ' }, { label: 'Flee', cmd: 'flee' },
-        { label: 'Consider', cmd: 'consider ' },
-        { label: 'Assist', cmd: 'assist ', needsTarget: false, holdOpensMenuOnly: true },
+        { label: 'Use', cmd: 'use ', targetKind: 'inventory' },
+        { label: 'Draw', cmd: 'draw ', targetKind: 'worn-sheaths' },
+        { label: 'Sheath', cmd: 'sheath ', targetKind: 'worn-weapons' },
+        { label: 'Throw', cmd: 'throw ', targetKind: 'inventory' },
+        { label: 'Recite', cmd: 'recite ', targetKind: 'inventory' },
     ],
     social: [
         { label: 'Say', cmd: 'say ' }, { label: 'Narrate', cmd: 'narrate ' },
@@ -30,16 +59,16 @@ export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
         { label: 'Score', cmd: 'score' }, { label: 'Inventory', cmd: 'inventory' },
         { label: 'Equipment', cmd: 'equipment' }, { label: 'Time', cmd: 'time' },
         { label: 'Weather', cmd: 'weather' }, { label: 'Info', cmd: 'info' },
-        { label: 'Group', cmd: 'group' },
-        { label: 'Who', cmd: 'who' },
+        { label: 'Group', cmd: 'group' }, { label: 'Status', cmd: 'status' },
+        { label: 'Who', cmd: 'who' }, { label: 'Where', cmd: 'where' },
     ],
     room: [
-        { label: 'Watch', cmd: 'watch' }, { label: 'Camp', cmd: 'camp' },
-        { label: 'Camp Rent', cmd: 'camp rent' },
-        { label: 'Crush', cmd: 'crush' }, { label: 'Drain', cmd: 'drain' },
-        { label: 'Empty', cmd: 'empty' }, { label: 'Cook', cmd: 'cook' },
-        { label: 'Boil', cmd: 'boil' }, { label: 'Butcher', cmd: 'butcher' },
-        { label: 'Cut', cmd: 'cut' },
+        { label: 'Camp', cmd: 'camp' },
+        { label: 'Burn', cmd: 'burn' },
+        { label: 'Light', cmd: 'light ', targetKind: 'room-objects' },
+        { label: 'Snuff', cmd: 'snuff ', targetKind: 'room-objects' },
+        { label: 'Cover', cmd: 'cover ', targetKind: 'room-objects' },
+        { label: 'Uncover', cmd: 'uncover ', targetKind: 'room-objects' },
     ],
     personal: [
         { label: 'Get', cmd: 'get ', targetKind: 'room-object-container' },
@@ -47,28 +76,40 @@ export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
         { label: 'Drop', cmd: 'drop ', targetKind: 'inventory' },
         { label: 'Wear', cmd: 'wear ', targetKind: 'inventory' },
         { label: 'Remove', cmd: 'remove ', targetKind: 'worn' },
-        { label: 'Draw', cmd: 'draw ', targetKind: 'worn-sheaths' },
-        { label: 'Sheath', cmd: 'sheath ', targetKind: 'worn-weapons' },
-        { label: 'Use', cmd: 'use ', targetKind: 'inventory-and-worn' },
         { label: 'Give', cmd: 'give ', targetKind: 'inventory-recipient' },
+        { label: 'Empty', cmd: 'empty' },
+        { label: 'Use', cmd: 'use ' },
     ],
     consume: [
         { label: 'Eat', cmd: 'eat ', targetKind: 'inventory' },
         { label: 'Drink', cmd: 'drink ', targetKind: 'inventory' },
         { label: 'Smoke', cmd: 'smoke ', targetKind: 'inventory' },
         { label: 'Quaff', cmd: 'quaff ', targetKind: 'inventory' },
-        { label: 'Taste', cmd: 'taste ', targetKind: 'inventory' },
-        { label: 'Sip', cmd: 'sip ', targetKind: 'inventory' },
+        { label: 'Butcher', cmd: 'butcher' },
+        { label: 'Cook', cmd: 'cook' },
+        { label: 'Mix', cmd: 'mix' },
+        { label: 'Crush', cmd: 'crush' },
+        { label: 'Forage', cmd: 'forage', requirement: { raceOrSubrace: ['beorning', 'bear'] } },
+        { label: 'Drain', cmd: 'drain', requirement: { raceOrSubrace: ['orc', 'troll'] } },
+    ],
+    mounts: [
+        { label: 'Ride', cmd: 'ride ', needsTarget: true, targetKind: 'mounts' },
+        { label: 'Lead', cmd: 'lead ', needsTarget: true, targetKind: 'mounts' },
+        { label: 'Saddle', cmd: 'saddle ', needsTarget: true, targetKind: 'mounts' },
+        { label: 'Unsaddle', cmd: 'unsaddle ', needsTarget: true, targetKind: 'mounts' },
+        { label: 'Abandon', cmd: 'abandon ', needsTarget: true, targetKind: 'mounts' },
+        { label: 'Dismount', cmd: 'dismount ', needsTarget: true, targetKind: 'mounts' },
     ],
 };
 
 export const DECK_TABS: { key: TabKey; label: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number }> }[] = [
-    { key: 'combat', label: 'Combat', icon: Swords },
+    { key: 'combat', label: 'Special', icon: Box },
     { key: 'social', label: 'Social', icon: MessageSquare },
-    { key: 'utility', label: 'Utility', icon: Wrench },
-    { key: 'room', label: 'Room', icon: Home },
-    { key: 'personal', label: 'Personal', icon: UserRound },
-    { key: 'consume', label: 'Consume', icon: CupSoda },
+    { key: 'utility', label: 'Utility', icon: Info },
+    { key: 'room', label: 'Room', icon: FlameKindling },
+    { key: 'personal', label: 'Personal', icon: Hand },
+    { key: 'consume', label: 'Consume', icon: Utensils },
+    { key: 'mounts', label: 'Mounts', icon: HorseHeadIcon },
 ];
 
 export const DECK_LABEL_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {

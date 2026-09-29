@@ -5,7 +5,7 @@
  */
 
 import React, { useRef, useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
-import { Eye, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Eye, X } from 'lucide-react';
 import { useGame, useLog, useVitals, useUI } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useModeStore } from '../../stores/useModeStore';
@@ -23,6 +23,7 @@ import { GRID_SIZE } from './mapperUtils';
 import { useMapperTracing } from './hooks/useMapperTracing';
 import { TracingHUD } from './TracingHUD';
 import { useMapAssets } from './hooks/useMapAssets';
+import { MapSwipeWheelOverlay } from './MapSwipeWheelOverlay';
 import './Mapper.css';
 
 interface MapperProps {
@@ -74,7 +75,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
     const { setPopoverState, popoverState, ui } = useUI();
-    const { playerColor, npcColor, enemyColor, objectColor, targetColor, showBackgroundImage, showTerrainTiles } = useSettingsStore();
+    const { playerColor, npcColor, enemyColor, objectColor, targetColor, showBackgroundImage } = useSettingsStore();
     // The map is always rendered in dark mode regardless of the global app theme.
     const isDarkMode = true;
     const displayPlayerColor = playerColor;
@@ -86,6 +87,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const isMapLookHeld = heldButton?.id === 'map-long-press' && !heldButton.didFire;
     const [backgroundAlignMode, setBackgroundAlignMode] = useState(false);
     const [isCtrlAlignHeld, setIsCtrlAlignHeld] = useState(false);
+    const [mapSwipeWheel, setMapSwipeWheel] = useState<{ x: number; y: number } | null>(null);
 
     const entitiesRef = useRef({
         roomChars,
@@ -144,10 +146,11 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         renderVersion, triggerRender, activeMapFilter, setActiveMapFilter,
         mapSearchQuery, setMapSearchQuery,
         regionLabels, setExploredMarkers,
-        playerPosRef, moveAnimRef,
+        playerPosRef, moveAnimRef, selectedSearchRoomId, setSelectedSearchRoomId,
         closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     } = context;
     const [selectedRegionLabelId, setSelectedRegionLabelId] = useState<string | null>(null);
+    const [hoveredSearchRoomId, setHoveredSearchRoomId] = useState<string | null>(null);
 
     const currentRoomKey = currentRoomId || '';
     const roomIdVnum = currentRoomKey.replace(/^m_/, '');
@@ -226,6 +229,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         isMinimized: effectiveIsMinimized,
         setAutoCenter, setContextMenu,
         setInfoRoomId,
+        setMapSwipeWheel,
         triggerHaptic: triggerHaptic ?? (() => { }),
         canvasRef, cardRef, setIsDragging: setIsDraggingWithRef, handleAddRoom,
         triggerRender, viewZ, setViewZ,
@@ -245,6 +249,10 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         npcColor: displayNpcColor,
         activeMapFilter,
         mapSearchQuery,
+        matchedRoomIds,
+        closestRoomId,
+        setHoveredSearchResult: setHoveredSearchRoomId,
+        selectMapSearchResult: setSelectedSearchRoomId,
         isTracingMode,
         backgroundAlignMode,
         calibration,
@@ -266,12 +274,13 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const clearMapRoute = useCallback(() => {
         setActiveMapFilter(null);
         setMapSearchQuery('');
+        setSelectedSearchRoomId(null);
         setSelectedRegionLabelId(null);
         triggerRender();
-    }, [setActiveMapFilter, setMapSearchQuery, triggerRender]);
+    }, [setActiveMapFilter, setMapSearchQuery, setSelectedSearchRoomId, triggerRender]);
 
     return (
-        <div className={`mapper-container lighting-state-${effectiveLighting} ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''} ${(!showBackgroundImage || !isImmersionMode) ? 'no-bg-image' : ''}`} style={{ 
+        <div className={`mapper-container lighting-state-${effectiveLighting} ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''} ${mapSwipeWheel ? 'map-swipe-wheel-open' : ''} ${(!showBackgroundImage || !isImmersionMode) ? 'no-bg-image' : ''}`} style={{
             position: 'relative', 
             width: '100%', 
             height: '100%', 
@@ -348,6 +357,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 filterPathIds={filterPathIds}
                 filterPathDistance={filterPathDistance}
                 matchedRoomIds={matchedRoomIds}
+                hoveredSearchRoomId={hoveredSearchRoomId}
                 calibration={calibration}
                 vectors={vectors}
                 isTracingMode={isTracingMode}
@@ -361,7 +371,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
 
 
-            {!isWalking && filterPathIds && filterPathIds.length > 1 && closestRoomId && (
+            {!isWalking && closestRoomId && (
+                (filterPathIds.length > 1 || (selectedSearchRoomId && selectedSearchRoomId.replace(/^(m_|r_)/, '') === closestRoomId.replace(/^(m_|r_)/, ''))) && (
                 <div 
                     className="map-go-there-popup"
                     onPointerDown={(e) => e.stopPropagation()}
@@ -377,16 +388,18 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                         <X size={13} strokeWidth={2.5} />
                     </button>
                     <div className="map-go-there-info">
-                        Shortest Path: {filterPathDistance} {filterPathDistance === 1 ? 'room' : 'rooms'}
+                        {filterPathIds.length > 1
+                            ? <>Shortest Path: {filterPathDistance} {filterPathDistance === 1 ? 'room' : 'rooms'}</>
+                            : 'No known route'}
                     </div>
                     <button 
                         className="map-go-there-btn"
-                        onClick={() => startWalking(closestRoomId, filterPathIds)}
+                        onClick={() => startWalking(closestRoomId, filterPathIds.length > 1 ? filterPathIds : undefined)}
                     >
                         Go there
                     </button>
                 </div>
-            )}
+            ))}
 
             {!effectiveIsMinimized && !isMobile && (
                 <MapFilterBar
@@ -403,6 +416,18 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                     <Eye size={28} strokeWidth={2.25} />
                 </div>
             )}
+
+            {mapSwipeWheel && <MapSwipeWheelOverlay
+                pointerPosition={mapSwipeWheel}
+                bounds={(() => {
+                    const surface = canvasRef.current?.closest('.mobile-mapper-touch-surface')
+                        || canvasRef.current?.closest('.mapper-container');
+                    const rect = surface?.getBoundingClientRect();
+                    return rect
+                        ? { left: rect.left, top: rect.top, width: rect.width, height: rect.height }
+                        : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+                })()}
+            />}
 
             {isTracingMode && !effectiveIsMinimized && (
                 <button
@@ -426,58 +451,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 </button>
             )}
 
-            {(() => {
-                if (!currentRoomId) return null;
-                const currentRoom = rooms[currentRoomId] || rooms[`m_${currentRoomId}`];
-                const rawId = String(currentRoomId).replace(/^m_/, '');
-                const preloadedRoom = preloadedCoordsRef.current[rawId];
-                if (!currentRoom && !preloadedRoom) return null;
-
-                const preloadedExits = preloadedRoom?.[4] || {};
-                const localExits = currentRoom?.exits || {};
-                const exits = { ...preloadedExits, ...localExits };
-
-                const hasNorth = !!exits['n'] || !!exits['north'];
-                const hasSouth = !!exits['s'] || !!exits['south'];
-                const hasEast = !!exits['e'] || !!exits['east'];
-                const hasWest = !!exits['w'] || !!exits['west'];
-                const hasUp = !!exits['u'] || !!exits['up'];
-                const hasDown = !!exits['d'] || !!exits['down'];
-
-                return (
-                    <>
-                        {!showTerrainTiles && !joystick?.joystickActive && (
-                            <div className="map-swipe-hints-container">
-                                <div className={`map-swipe-hint n ${hasNorth ? 'active' : ''}`}>
-                                    <ChevronUp className="hint-chevron" size={16} strokeWidth={2.8} />
-                                </div>
-                                <div className={`map-swipe-hint s ${hasSouth ? 'active' : ''}`}>
-                                    <ChevronUp className="hint-chevron" size={16} strokeWidth={2.8} />
-                                </div>
-                                <div className={`map-swipe-hint e ${hasEast ? 'active' : ''}`}>
-                                    <ChevronUp className="hint-chevron" size={16} strokeWidth={2.8} />
-                                </div>
-                                <div className={`map-swipe-hint w ${hasWest ? 'active' : ''}`}>
-                                    <ChevronUp className="hint-chevron" size={16} strokeWidth={2.8} />
-                                </div>
-                                <div className={`map-swipe-hint up ${hasUp ? 'active' : ''}`}>
-                                    <svg className="hint-chevron nw-stair" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M19 19h-5v-5h-5v-5h-5" />
-                                        <path d="M4 12V4h8" />
-                                    </svg>
-                                </div>
-                                <div className={`map-swipe-hint down ${hasDown ? 'active' : ''}`}>
-                                    <svg className="hint-chevron se-stair" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M5 5h5v5h5v5h5" />
-                                        <path d="M20 12v8h-8" />
-                                    </svg>
-                                </div>
-                            </div>
-                        )}
-                        {isMobile && <DpadCluster heldButton={heldButton} setHeldButton={setHeldButton} />}
-                    </>
-                );
-            })()}
+            {isMobile && !mapSwipeWheel && <DpadCluster heldButton={heldButton} setHeldButton={setHeldButton} />}
 
             {localContextMenu && (
                 <MapperContextMenu

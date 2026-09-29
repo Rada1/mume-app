@@ -52,10 +52,7 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
             if (existingIdx >= 0) {
                 const next = [...prev];
                 const current = next[existingIdx];
-                const urls = Array.isArray(current.url) ? current.url : [current.url];
-                if (!urls.includes(newZoneUrl)) {
-                    next[existingIdx] = { ...current, url: [...urls, newZoneUrl] };
-                }
+                next[existingIdx] = { ...current, url: newZoneUrl };
                 return next;
             }
             return [...prev, { zone: newZoneName, url: newZoneUrl }];
@@ -272,9 +269,7 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                     {Object.entries(AUDIO_MANIFEST.ambient.zones).map(([zoneName, defaultMapping]) => {
                         const custom = zoneMusic.find(m => m.zone.toLowerCase() === zoneName.toLowerCase());
                         const isOverridden = !!custom;
-                        const urls = isOverridden 
-                            ? (Array.isArray(custom.url) ? custom.url : [custom.url])
-                            : (Array.isArray(defaultMapping.url) ? defaultMapping.url : [defaultMapping.url]);
+                        const url = isOverridden ? custom.url : defaultMapping.url;
 
                         return (
                             <div key={`default-zone-${zoneName}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-panel, rgba(255,255,255,0.03))', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
@@ -286,7 +281,7 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                                         </span>
                                     </div>
                                     <div style={{ color: 'var(--text-dim, #aaa)', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                        {urls.join(', ')}
+                                        {url}
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -316,7 +311,6 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
 
                     {/* Custom user zones that do not overlap with defaults */}
                     {zoneMusic.filter(m => !AUDIO_MANIFEST.ambient.zones[m.zone.toLowerCase()]).map((m, idx) => {
-                        const urls = Array.isArray(m.url) ? m.url : [m.url];
                         return (
                             <div key={`custom-zone-${m.zone}-${idx}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-panel, rgba(255,255,255,0.05))', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-color, rgba(255,255,255,0.1))' }}>
                                 <div style={{ overflow: 'hidden' }}>
@@ -325,7 +319,7 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                                         <span style={{ fontSize: '0.7rem', color: '#10b981', border: '1px solid #10b981', padding: '1px 4px', borderRadius: '3px' }}>Custom Mapping</span>
                                     </div>
                                     <div style={{ color: 'var(--text-dim, #aaa)', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                        {urls.join(', ')}
+                                        {m.url}
                                     </div>
                                 </div>
                                 <button

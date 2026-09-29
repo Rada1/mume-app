@@ -58,12 +58,15 @@ export interface UseGameParserDeps {
     playOofSound: (options?: { pitch?: number, volume?: number }) => void;
     playSpectateHitImpactSound?: (options?: { pitch?: number, volume?: number } | string) => void;
     playSpectateOofSound?: (options?: { pitch?: number, volume?: number }) => void;
+    playSpectateNearbyCombatSound?: (name: string, options?: { filterFrequency?: number, volumeMultiplier?: number }) => void;
     playCommMessageSound: (options?: { volume?: number }) => void;
     playBuySellSound: (options?: { volume?: number }) => void;
     playBashSound: (options?: { pitch?: number, volume?: number }) => void;
     playIncantationSound: (options?: any) => void;
     stopIncantationSound: (playExplosion?: boolean) => void;
     playMagicExplosionSound: (options?: { volume?: number }) => void;
+    playSpectateIncantationSound?: () => void;
+    playSpectateSpellEffect?: (name: string) => void;
     playEffect: (name: string, options?: any) => void;
     playArrowHitSound?: (options?: { pitch?: number, volume?: number }) => void;
     playDoorSound: (isOpen: boolean) => void;

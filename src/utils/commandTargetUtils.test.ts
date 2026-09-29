@@ -42,6 +42,7 @@ describe('commandTargetUtils', () => {
             expect(getCommandTargetMenuKind("cast 'burning hands'")).toBe('room-spell-with-extras');
             expect(getCommandTargetMenuKind("cast 'magic missile'")).toBe('room-spell');
             expect(getCommandTargetMenuKind("cast 'energy drain'")).toBe('room-spell');
+            expect(getCommandTargetMenuKind("cast 'black breath'")).toBe('room');
         });
 
         it('routes special commands to spellbook, key, and Bash target menus', () => {

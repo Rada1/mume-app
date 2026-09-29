@@ -9,8 +9,10 @@ type HeaderTab = 'commands' | 'gear' | 'players' | 'chat' | 'help' | 'menu';
 
 // --- Logic Section ---
 export function useMobileHeaderTabs(isMobile: boolean, menuOpen: boolean, setMenuOpen: (open: boolean) => void) {
-    const isCommandPanelOpen = useCommandPanelStore(state => state.isOpen);
+    const isCommandPanelOpen = useCommandPanelStore(state => isMobile ? state.isMobileOpen : state.isOpen);
     const setIsCommandPanelOpen = useCommandPanelStore(state => state.setIsOpen);
+    const setIsMobileCommandPanelOpen = useCommandPanelStore(state => state.setIsMobileOpen);
+    const setCommandPanelOpen = isMobile ? setIsMobileCommandPanelOpen : setIsCommandPanelOpen;
     const isGearPanelOpen = useGearPanelStore(state => state.isOpen);
     const setIsGearPanelOpen = useGearPanelStore(state => state.setIsOpen);
     const showPlayersPanel = useSettingsStore(state => state.showPlayersPanel);
@@ -29,7 +31,7 @@ export function useMobileHeaderTabs(isMobile: boolean, menuOpen: boolean, setMen
         };
         const opening = !current[tab];
         if (isMobile && opening) {
-            setIsCommandPanelOpen(false);
+            setIsMobileCommandPanelOpen(false);
             setIsGearPanelOpen(false);
             setShowPlayersPanel(false);
             setShowChatWindow(false);
@@ -37,7 +39,7 @@ export function useMobileHeaderTabs(isMobile: boolean, menuOpen: boolean, setMen
             setMenuOpen(false);
         }
         const setters = {
-            commands: setIsCommandPanelOpen, gear: setIsGearPanelOpen,
+            commands: setCommandPanelOpen, gear: setIsGearPanelOpen,
             players: setShowPlayersPanel, chat: setShowChatWindow,
             help: setIsHelpOpen, menu: setMenuOpen,
         };

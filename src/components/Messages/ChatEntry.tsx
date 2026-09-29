@@ -47,8 +47,13 @@ export const ChatEntry: React.FC<{ message: Message; triggerParley?: (event: Rea
                         </>
                     )}
                 </span>
-                <div className="chat-window-text" style={details.color ? { color: details.color } : undefined}>
-                    {details.isOutgoing ? details.text : <TokenRenderer tokens={message.commTextTokens} fallbackHtml={fallbackText} />}
+                <div
+                    className="chat-window-text"
+                    style={details.isOutgoing && details.color ? { color: details.color } : undefined}
+                >
+                    {details.isOutgoing
+                        ? details.text
+                        : <span dangerouslySetInnerHTML={{ __html: fallbackText }} />}
                 </div>
             </div>
         </article>

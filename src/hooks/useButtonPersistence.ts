@@ -11,9 +11,21 @@ const CLASS_PICKER_SET_IDS = new Set([
     'thiefskilllist'
 ]);
 
-const stripGeneratedClassPickerButtons = (buttons: CustomButton[]): CustomButton[] => (
-    buttons.filter(button => !CLASS_PICKER_SET_IDS.has((button.setId || '').toLowerCase()))
-);
+const TACTICAL_CLASS_BUTTON_IDS = new Set([
+    'tactical-ranger', 'tactical-cleric', 'tactical-thief', 'tactical-warrior', 'tactical-mage'
+]);
+
+const cleanDefaultButtons = (buttons: CustomButton[]): CustomButton[] => buttons
+    .filter(button => !CLASS_PICKER_SET_IDS.has((button.setId || '').toLowerCase()))
+    .map(button => {
+        if (!TACTICAL_CLASS_BUTTON_IDS.has(button.id)) return button;
+        const cleaned = { ...button };
+        delete cleaned.longCommand;
+        delete cleaned.longActionType;
+        delete cleaned.longSwipeCommands;
+        delete cleaned.longSwipeActionTypes;
+        return cleaned;
+    });
 
 export const useButtonPersistence = (
     rawButtons: CustomButton[],
@@ -43,7 +55,7 @@ export const useButtonPersistence = (
     }, [uiPositions]);
 
     const resetToDefaults = useCallback((addMessage?: (t: string, m: string) => void) => {
-        const defaultButtons = stripGeneratedClassPickerButtons((MASTER_SETTINGS as any).buttons || DEFAULT_BUTTONS);
+        const defaultButtons = cleanDefaultButtons((MASTER_SETTINGS as any).buttons || DEFAULT_BUTTONS);
         const defaultUiPositions = (MASTER_SETTINGS as any).uiPositions || DEFAULT_UI_POSITIONS;
 
         setRawButtons(defaultButtons);

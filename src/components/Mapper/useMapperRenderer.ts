@@ -112,6 +112,7 @@ interface RendererProps {
     // Filter results computed upstream (MapperContext) and passed in, so the expensive
     // match scan + BFS path no longer run inside the render loop.
     closestRoomId?: string | null;
+    hoveredSearchRoomId?: string | null;
     filterPathIds?: string[];
     filterPathDistance?: number;
     matchedRoomIds?: Set<string>;
@@ -151,6 +152,9 @@ interface PendingBuild {
     // terrain layer (all columns + tail layers) has finished.
     terrainNextBx: number;
     terrainDone: boolean;
+    featureNextBx: number;
+    featureMs: number;
+    featuresInitialized: boolean;
     // Tail-layer sub-phase timings, recorded once when the last column finishes.
     localMs: number; gridMs: number; zoneMs: number;
     ring1Revealed?: Set<string>;
@@ -191,7 +195,7 @@ export const useMapperRenderer = ({
     inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
     activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
     activeMapFilter, mapSearchQuery, combatPulsesRef,
-    closestRoomId = null, filterPathIds = [], filterPathDistance = 0, matchedRoomIds = new Set(),
+    closestRoomId = null, hoveredSearchRoomId = null, filterPathIds = [], filterPathDistance = 0, matchedRoomIds = new Set(),
     mapTileVisuals, mapTileOpacity, zoneFilters,
     lighting = 'none',
     isImmersionMode = false,
@@ -317,7 +321,9 @@ export const useMapperRenderer = ({
             if (camera.zoom > LABELS_ZOOM_IN) zoomLod.showDoorLabels = true;
         }
         const lowEffects = isPerformanceMode || (isMobile && isViewportInteracting);
-        const showTerrainIcons = !lowEffects && zoomLod.showTerrainIcons;
+        // Terrain tiles carry essential map information, so keep them visible in
+        // performance mode. Zoom LOD still hides them when the map is too far out.
+        const showTerrainIcons = zoomLod.showTerrainIcons;
         const showDoorLabels = !lowEffects && zoomLod.showDoorLabels;
         
         const allRooms = stableRoomsRef.current;
@@ -445,7 +451,9 @@ export const useMapperRenderer = ({
         // Once the interaction ends, thresholds drop back to standard levels,
         // triggering a crisp cache rebuild instantly.
         const zoomThreshold = isViewportInteracting ? 0.85 : 0.28;
-        const moveThreshold = isViewportInteracting ? baseW * 0.75 : baseW * 0.4;
+        // The cache has half a viewport of spare space on each side. Reuse a bit
+        // more of that buffer before rebuilding, without reaching its edge.
+        const moveThreshold = isViewportInteracting ? baseW * 0.75 : baseW * 0.44;
 
         const lastExplored = effectiveFirstExploredAtRef.current['_latest'] || 0;
         const explorationAge = lastExplored ? now - lastExplored : Number.POSITIVE_INFINITY;
@@ -531,7 +539,7 @@ export const useMapperRenderer = ({
             activeZonePreloaded,
             triggerRender, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName, opponentId,
             activeInlineEntityId, selectedObjectIds,
-            activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
+            activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, hoveredSearchRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
             mapTileVisuals, mapTileOpacity,
             zoneFilters,
             lighting,
@@ -539,6 +547,7 @@ export const useMapperRenderer = ({
             inCombat,
             isDragging,
             lowEffects,
+            suppressRoomFlags: isMobile && isViewportInteracting,
             suppressExplorationAnimation: isExplorationOverlayActive && !finalExplorationBakeDue,
             showTerrainIcons,
             showDoorLabels,
@@ -700,6 +709,61 @@ export const useMapperRenderer = ({
             return performance.now() - tFeatureStart;
         };
 
+        const runFeatureChunk = (pb: PendingBuild) => {
+            const featureCtx = cache.featureBackCtx!;
+            const floorIndex = spatialIndexRef.current[curZInt];
+            const featureRCtx = makeRCtx(featureCtx, pb.buildCamX, pb.buildCamY, pb.roomAtCoord, pb.visitedAtCoord, pb.ring1Revealed, pb.ring2Peeked);
+
+            if (!pb.featuresInitialized) {
+                featureCtx.setTransform(1, 0, 0, 1, 0, 0);
+                featureCtx.clearRect(0, 0, cacheW, cacheH);
+                pb.featuresInitialized = true;
+            }
+
+            const tFeatureStart = performance.now();
+            const deadline = tFeatureStart + 6;
+            if (pb.zoom > 0.05) {
+                featureCtx.save();
+                featureCtx.imageSmoothingEnabled = false;
+                featureCtx.scale(dpr * pb.zoom, dpr * pb.zoom);
+                featureCtx.translate(-pb.buildCamX, -pb.buildCamY);
+
+                if (floorIndex) {
+                    do {
+                        const column = pb.featureNextBx++;
+                        drawFeatures(featureRCtx, pb.bX1, pb.bY1, pb.bX2, pb.bY2, floorIndex, {
+                            skipRoadLayer: true,
+                            xStart: column,
+                            xEnd: column,
+                        });
+                    } while (pb.featureNextBx <= pb.bX2 && performance.now() < deadline);
+                } else {
+                    pb.featureNextBx = pb.bX2 + 1;
+                }
+
+                featureCtx.restore();
+            } else {
+                pb.featureNextBx = pb.bX2 + 1;
+            }
+            pb.featureMs += performance.now() - tFeatureStart;
+
+            if (pb.featureNextBx <= pb.bX2) return false;
+
+            const tFeatureTailStart = performance.now();
+            if (pb.zoom > 0.05) {
+                featureCtx.save();
+                featureCtx.imageSmoothingEnabled = false;
+                featureCtx.scale(dpr * pb.zoom, dpr * pb.zoom);
+                featureCtx.translate(-pb.buildCamX, -pb.buildCamY);
+                drawLocalFeatures(featureRCtx, pb.localVisible);
+                if (floorIndex && showDoorLabels) drawDoorLabels(featureRCtx, pb.bX1, pb.bY1, pb.bX2, pb.bY2, floorIndex);
+                if (floorIndex) drawZoneFocusOverlay(featureRCtx, pb.bX1, pb.bY1, pb.bX2, pb.bY2, floorIndex, pb.localVisible);
+                featureCtx.restore();
+            }
+            pb.featureMs += performance.now() - tFeatureTailStart;
+            return true;
+        };
+
         const swapBuffers = () => {
             const tc = cache.terrainCanvas, tcx = cache.terrainCtx;
             cache.terrainCanvas = cache.terrainBackCanvas!; cache.terrainCtx = cache.terrainBackCtx!;
@@ -745,9 +809,8 @@ export const useMapperRenderer = ({
                 runTerrainChunk(pb, TERRAIN_CHUNK_BUDGET_MS);
                 triggerRender?.();
             } else {
-                const featureMs = runFeaturePhase(cache.featureBackCtx!, pb.buildCamX, pb.buildCamY, pb.roomAtCoord, pb.visitedAtCoord, pb.localVisible, pb.zoom, pb.ring1Revealed, pb.ring2Peeked);
-                finalizeBuild(pb, featureMs);
-                triggerRender?.();
+                if (runFeatureChunk(pb)) finalizeBuild(pb, pb.featureMs);
+                else triggerRender?.();
             }
         } else if (needsRebuild) {
             const rebuildStart = performance.now();
@@ -763,6 +826,7 @@ export const useMapperRenderer = ({
                 bX1: t.geo.bX1, bY1: t.geo.bY1, bX2: t.geo.bX2, bY2: t.geo.bY2,
                 gX1: t.geo.gX1, gY1: t.geo.gY1, gX2: t.geo.gX2, gY2: t.geo.gY2,
                 terrainNextBx: t.geo.bX1, terrainDone: false,
+                featureNextBx: t.geo.bX1, featureMs: 0, featuresInitialized: false,
                 localMs: 0, gridMs: 0, zoneMs: 0,
                 ring1Revealed: t.ring1Revealed,
                 ring2Peeked: t.ring2Peeked,
@@ -865,7 +929,7 @@ export const useMapperRenderer = ({
             activeZone,
             groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, targetName, opponentName,
             opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
-            activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
+            activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, hoveredSearchRoomId, filterPathIds, filterPathDistance, combatPulsesRef,
             mapTileVisuals, mapTileOpacity, showTerrainTiles,
             zoneFilters,
             lighting,
@@ -932,7 +996,7 @@ export const useMapperRenderer = ({
 
 
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, entitiesRef, serverIdIndexRef, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, walkTargetId, walkPath, activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, filterPathIds, filterPathDistance, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, selectedRegionLabelId, showTerrainTiles]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, entitiesRef, serverIdIndexRef, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, walkTargetId, walkPath, activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, hoveredSearchRoomId, filterPathIds, filterPathDistance, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, selectedRegionLabelId, showTerrainTiles]);
 
     return { drawMap, filterFitRef };
 };

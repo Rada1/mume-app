@@ -13,6 +13,7 @@ import { TokenRenderer } from '../Messages/TokenRenderer';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
 import { resolveActionIcon } from '../../utils/actionIcons';
 import { getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
+import { getRoomPortableState, getRoomRidableState } from './mapperUtils';
 import './MapperRoomInfo.css';
 import './MapperRoomMeta.css';
 
@@ -67,8 +68,10 @@ const deriveMapFlags = (room: any, preloaded: any[] | undefined): string[] => {
         .map(flag => flag.label);
 
     if (room?.align) labels.push(`Align ${room.align}`);
-    if (room?.portable !== undefined) labels.push(String(room.portable) === 'true' ? 'Portable' : 'No Port');
-    if (room?.ridable !== undefined) labels.push(String(room.ridable) === 'true' ? 'Ridable' : 'No Ride');
+    const portable = getRoomPortableState(room?.portable ?? preloaded?.[13]);
+    const ridable = getRoomRidableState(room?.ridable ?? preloaded?.[14]);
+    if (portable !== null) labels.push(portable ? 'Portable' : 'No Port');
+    if (ridable !== null) labels.push(ridable ? 'Ridable' : 'No Ride');
 
     return Array.from(new Set([...labels, ...deriveNoteFlags(room?.notes || preloaded?.[15])]));
 };

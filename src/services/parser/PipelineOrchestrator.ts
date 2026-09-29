@@ -96,11 +96,15 @@ export class PipelineOrchestrator {
             } else if (token.type === 'ansi') {
                 const ansi = token as AnsiToken;
                 const escaped = this.escapeHtml(ansi.content);
-                if (!ansi.style || Object.keys(ansi.style).length === 0) return escaped;
-                const styleStr = Object.entries(ansi.style)
+                const classAttr = ansi.classes && ansi.classes.length > 0
+                    ? ` class="${ansi.classes.join(' ')}"`
+                    : '';
+                const styleStr = Object.entries(ansi.style || {})
                     .map(([k, v]) => `${k.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}:${v}`)
                     .join(';');
-                return `<span style="${styleStr}">${escaped}</span>`;
+                if (!classAttr && !styleStr) return escaped;
+                const styleAttr = styleStr ? ` style="${styleStr}"` : '';
+                return `<span${classAttr}${styleAttr}>${escaped}</span>`;
             } else if (token.type === 'entity') {
                 const entity = token as EntityToken;
                 const metadata = entity.metadata || {};
@@ -113,6 +117,7 @@ export class PipelineOrchestrator {
                     context: metadata.context || entity.content,
                     category: metadata.category,
                     action: metadata.action || 'menu',
+                    extraClasses: metadata.extraClasses,
                     glowColor: metadata.glowColor,
                     textColor: (metadata.style as any)?.color,
                     innerHtml: entity.content

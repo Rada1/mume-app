@@ -18,6 +18,7 @@ import {
 } from '../../utils/combatRechargeUtils';
 import { parseResourceGainLine } from '../../utils/resourceGainUtils';
 import { triggerKillPrompt } from '../../stores/useKillPromptStore';
+import { getNearbyCombatImpact } from './nearbyCombatAudio';
 
 export interface CombatParserDeps {
     inCombatRef: React.RefObject<boolean>;
@@ -43,6 +44,7 @@ export interface CombatParserDeps {
     playArrowHitSound?: (options?: { pitch?: number, volume?: number }) => void;
     playSpectateHitImpactSound?: (options?: { pitch?: number, volume?: number } | string) => void;
     playSpectateOofSound?: () => void;
+    playSpectateNearbyCombatSound?: (name: string, options?: { filterFrequency?: number, volumeMultiplier?: number }) => void;
     setInCombat?: (inCombat: boolean, force?: boolean) => void;
     characterName?: string | null;
     addMessage?: (type: any, text: string) => void;
@@ -79,11 +81,12 @@ export function useCombatParser(deps: CombatParserDeps) {
         );
         const isSpecificChargeOrShoot = /^you (?:charge|shoot)\b/i.test(cleanLower) || /\bcharges? (?:at|towards) you\b/i.test(cleanLower);
         const hasXmlTag = !!cleanLine && /<[a-zA-Z_]+[ >]/i.test(cleanLine);
-        if (hasXmlTag && !hasCombatTag && !isSpecificChargeOrShoot) return { isMatch: false };
-
-        const isMatch = hasCombatTag || isSpecificChargeOrShoot || isPlayerAttemptAvoidedLine(cleanLower) || isPlayerFailedAttackLine(cleanLower) || isOpponentFailedAttackLine(cleanLower) || (inCombatRef.current && (COMBAT_REGEX.test(cleanLower) || cleanLower.includes('dodge') || cleanLower.includes('parry') || cleanLower.includes('flee') || cleanLower.includes('fail')));
+        const nearbyCombat = !hasCombatTag ? getNearbyCombatImpact(cleanLower, [characterName, spectateCharacterName]) : undefined;
+        const nearbyCombatVerb = nearbyCombat?.verb;
+        if (hasXmlTag && !hasCombatTag && !isSpecificChargeOrShoot && !nearbyCombat) return { isMatch: false };
+        const isMatch = hasCombatTag || isSpecificChargeOrShoot || isPlayerAttemptAvoidedLine(cleanLower) || isPlayerFailedAttackLine(cleanLower) || isOpponentFailedAttackLine(cleanLower) || (!nearbyCombat && !/\bhit points?\b/i.test(cleanLower) && inCombatRef.current && (COMBAT_REGEX.test(cleanLower) || cleanLower.includes('dodge') || cleanLower.includes('parry') || cleanLower.includes('flee') || cleanLower.includes('fail')));
         
-        if (!isMatch) return { isMatch: false };
+        if (!isMatch) return { isMatch: false, isNearbyCombatImpact: !!nearbyCombat, isDirectCombatImpact: !!nearbyCombat?.isDirect, verb: nearbyCombatVerb };
 
         const impactVerbs = ['hit', 'pierce', 'slash', 'smite', 'crush', 'pound', 'stab', 'cleave', 'maul', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shoot', 'shock', 'blast', 'struck', 'burn', 'chill', 'acid', 'poison'];
         
@@ -139,7 +142,7 @@ export function useCombatParser(deps: CombatParserDeps) {
         const isMainActor = (side === 'player') || (side === 'groupmate' && !!spectateCharacterName && groupNameMatch.toLowerCase() === spectateCharacterName.toLowerCase());
 
         return { isMatch: true, side, isImpact, modifier, verb, isPlayerTarget, isMainActor };
-    }, [inCombatRef, groupMembers, spectateCharacterName, roomPlayers]);
+    }, [inCombatRef, groupMembers, spectateCharacterName, roomPlayers, characterName]);
 
     const handleCombatExit = useCallback((lower: string, isSnoop: boolean = false, originalText?: string) => {
         if (/\bis dead!\s*r\.?i\.?p/i.test(lower) && (!isSnoop || deps.isSpectateMode)) {
@@ -151,8 +154,17 @@ export function useCombatParser(deps: CombatParserDeps) {
             if (deadName) triggerKillPrompt(deadName);
         }
 
-        const isFlee = /^you flee\b/i.test(lower);
-        if (isFlee && (!isSnoop || deps.isSpectateMode)) playEffect?.('flee');
+        const normalizedLower = lower
+            .replace(/\x1b\[[0-9;]*m/g, '')
+            .replace(/^[\s>*]+/, '')
+            .trim();
+        const isFlee = /^you flee\b/i.test(normalizedLower);
+        if (isFlee && isSnoop && deps.isSpectateMode) {
+            if (deps.playSpectateNearbyCombatSound) deps.playSpectateNearbyCombatSound('flee');
+            else playEffect?.('flee');
+        } else if (isFlee && !isSnoop) {
+            playEffect?.('flee');
+        }
         const isDeath = /you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) || /\bis dead!\s*r\.?i\.?p/i.test(lower);
         const isCombatEnd = isDeath || isFlee || /\bflees\s/i.test(lower) || /you stop fighting/i.test(lower);
 
@@ -230,6 +242,9 @@ export function useCombatParser(deps: CombatParserDeps) {
 
         // 3. Detect Combat Match
         const match = checkCombatMatch(lower, isSnoop, cleanLine);
+        const nearbySound = match.isNearbyCombatImpact ? (COMBAT_DAMAGE_SOUND_BY_VERB[match.verb] || 'hit2') : undefined;
+        const nearbyOptions = { filterFrequency: 900, volumeMultiplier: match.isDirectCombatImpact ? 1 : 0.25 };
+        if (nearbySound) (isSnoop ? deps.isSpectateMode && deps.playSpectateNearbyCombatSound?.(nearbySound, nearbyOptions) : deps.playEffect?.(nearbySound, nearbyOptions));
         if (match.isMatch) {
             const hasHitTag = cleanLine.includes('<hit>');
             const hasDamageTag = cleanLine.includes('<damage>');
@@ -245,17 +260,31 @@ export function useCombatParser(deps: CombatParserDeps) {
             const isMissOrAvoid = hasMissTag || hasAvoidDamageTag || isPlayerAvoidedAttempt || isPlayerFailedAttack || isOpponentFailedAttack || /\byou miss\b/i.test(lower) || /\bmisses you\b/i.test(lower) || /\byou (?:dodge|parry|deflect|evade|block|avoid)\b/i.test(lower) || (isPlayerShoot && /\b(?:miss|misses|missed|fails?)\b/i.test(lower));
             const isPlayerShootHit = isPlayerShoot && !isMissOrAvoid && (hasHitTag || !lower.includes(' shoot at '));
             const combatDamageSound = match.verb ? COMBAT_DAMAGE_SOUND_BY_VERB[match.verb] : undefined;
+            const isDirectSpectateCombat = match.side === 'player' || match.isPlayerTarget || match.isMainActor;
+            const spectateImpactOptions = isDirectSpectateCombat
+                ? undefined
+                : { filterFrequency: 900, volumeMultiplier: 0.25 };
 
             const playArrowHit = () => {
                 if (deps.playArrowHitSound) deps.playArrowHitSound();
                 else deps.playEffect?.('arrowhit');
             };
 
-            if (!isSnoop && combatDamageSound && (hasHitTag || hasDamageTag) && !isPlayerShootHit) deps.playEffect?.(combatDamageSound);
+            if (combatDamageSound && (hasHitTag || hasDamageTag) && !isPlayerShootHit) {
+                if (isSnoop) {
+                    deps.playSpectateNearbyCombatSound?.(combatDamageSound, spectateImpactOptions);
+                } else {
+                    deps.playEffect?.(combatDamageSound);
+                }
+            }
 
             if (hasHitTag) {
                 if (isSnoop) {
-                    deps.playSpectateHitImpactSound?.(match.modifier);
+                    if (isPlayerShootHit) {
+                        deps.playSpectateNearbyCombatSound?.('arrowhit', spectateImpactOptions);
+                    } else if (!combatDamageSound) {
+                        deps.playSpectateHitImpactSound?.(match.modifier);
+                    }
                 } else if (isPlayerShootHit) {
                     playArrowHit();
                 } else if (!combatDamageSound) {
@@ -265,9 +294,12 @@ export function useCombatParser(deps: CombatParserDeps) {
                 playArrowHit();
             }
 
-            if (hasDamageTag && (isSnoop || !combatDamageSound)) {
-                if (isSnoop) deps.playSpectateOofSound?.();
-                else deps.playOofSound?.();
+            if (hasDamageTag && isSnoop) {
+                deps.playSpectateNearbyCombatSound?.('damage', spectateImpactOptions);
+                deps.playSpectateOofSound?.();
+            } else if (hasDamageTag) {
+                deps.playEffect?.('damage');
+                deps.playOofSound?.();
             }
 
             if ((!isSnoop || deps.isSpectateMode) && isUserInvolved && isMissOrAvoid) {

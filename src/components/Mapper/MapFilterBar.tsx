@@ -59,7 +59,7 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
         ? Number(effectiveViewZ).toFixed(1)
         : (currentRoom?.z !== undefined ? Number(currentRoom.z).toFixed(1) : '0.0');
 
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(true);
     const [expandedCategory, setExpandedCategory] = useState<CategoryId | null>(null);
     const [activeButtonEl, setActiveButtonEl] = useState<HTMLElement | null>(null);
     const [dropupLeft, setDropupLeft] = useState<number | null>(null);

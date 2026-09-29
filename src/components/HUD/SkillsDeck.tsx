@@ -153,7 +153,7 @@ export const SkillsDeck: FC = () => {
     useEffect(() => { itemsRef.current = items; }, [items]);
 
     useEffect(() => {
-        const onCommandExecuted = (event: Event) => {
+        const onCommandSent = (event: Event) => {
             const cmd = (event as CustomEvent<{ cmd?: string }>).detail?.cmd;
             if (!cmd) return;
             const matched = itemsRef.current.find(item => doesCommandMatchSkill(cmd, item));
@@ -162,9 +162,9 @@ export const SkillsDeck: FC = () => {
             }
         };
 
-        window.addEventListener('mume:command-executed', onCommandExecuted);
+        window.addEventListener('mume-command-sent', onCommandSent);
         return () => {
-            window.removeEventListener('mume:command-executed', onCommandExecuted);
+            window.removeEventListener('mume-command-sent', onCommandSent);
             window.clearTimeout(pressTimerRef.current);
         };
     }, [flashPressed]);

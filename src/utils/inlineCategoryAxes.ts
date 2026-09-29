@@ -47,6 +47,7 @@ const CATEGORY_AXES: Record<string, Omit<InlineCategoryAxes, 'categoryId'>> = {
     'cat-enemy': { family: 'character', location: 'room', isCharacter: true, isObject: false, isInlineAction: true, isTargetable: true },
     'cat-neutral': { family: 'character', location: 'room', isCharacter: true, isObject: false, isInlineAction: true, isTargetable: true },
     'cat-npc': { family: 'character', location: 'room', isCharacter: true, isObject: false, isInlineAction: true, isTargetable: true },
+    'cat-mount': { family: 'character', location: 'room', isCharacter: true, isObject: false, isInlineAction: true, isTargetable: true },
     'cat-room-object': { family: 'object', location: 'room', isCharacter: false, isObject: true, isInlineAction: true, isTargetable: true },
     'cat-inventory-object': { family: 'object', location: 'carried', isCharacter: false, isObject: true, isInlineAction: true, isTargetable: true },
     'cat-worn-object': { family: 'object', location: 'worn', isCharacter: false, isObject: true, isInlineAction: true, isTargetable: true },
