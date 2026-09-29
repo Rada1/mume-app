@@ -113,6 +113,14 @@ describe('LogDockedInput', () => {
         expect(popup.getAttribute('data-placement')).toBe('top');
     });
 
+    it('shows the global target control and opens its editor when tapped', () => {
+        render(<LogDockedInput handleSend={vi.fn()} />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Set global target' }));
+
+        expect(screen.getByRole('textbox', { name: 'Edit global target' })).toBeTruthy();
+    });
+
     it('routes /find queries to map search instead of sending them to the game', () => {
         const setActiveMapFilter = vi.fn();
         const setMapSearchQuery = vi.fn();

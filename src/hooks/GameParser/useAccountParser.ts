@@ -9,8 +9,9 @@ import { gmcpBus } from '../../events/gmcpBus';
 import { CharacterEntry } from '../../types';
 import { useUIStore } from '../../stores/useUIStore';
 import { useModeStore } from '../../stores/useModeStore';
-import { escapeHtml } from '../../utils/securityUtils';
-import { appendCreationContextLine } from '../../utils/accountCreationContext';
+import { escapeHtml, sanitizeMumeHtml } from '../../utils/securityUtils';
+import { ansiConvert } from '../../utils/ansi';
+import { appendCreationContextAnsiLine, appendCreationContextLine } from '../../utils/accountCreationContext';
 
 // --- Logic Section: Types ---
 
@@ -82,6 +83,49 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             // Surgically suppress empty lines ONLY during stat editing to prevent layout 'shifting'.
             // For all other account stages, preserve them to maintain intended terminal spacing.
             return accountStageRef.current === 'stat-editing';
+        }
+
+        // Capture the initial allegiance rows even when an earlier prompt was missed
+        // or a React render has temporarily synchronized a stale account stage.
+        const numberedCreationOption = trimmedLine.match(/^\s*\((\d{1,3})\)\s+(.+)$/);
+        if (gameStateRef.current === 'account' && numberedCreationOption
+            && accountStageRef.current !== 'stat-editing') {
+            const [, id, label] = numberedCreationOption;
+            accountStageRef.current = 'character-creation';
+            setAccountState(prev => {
+                const prompt = prev.creationPrompt ?? { title: '', description: '', options: [] };
+                if (prompt.options.some(option => option.id === id)) {
+                    return prev.stage === 'character-creation' ? prev : { ...prev, stage: 'character-creation' };
+                }
+                return {
+                    ...prev,
+                    stage: 'character-creation',
+                    currentPrompt: undefined,
+                    creationPrompt: { ...prompt, options: [...prompt.options, { id, label: label.trim() }] }
+                };
+            });
+            const lineHtml = sanitizeMumeHtml(
+                `<span class="inline-btn account-menu-cmd creation-choice-inline" data-context="${escapeHtml(id)}">${ansiConvert.toHtml(line)}</span>`
+            );
+            addMessage?.('account-menu-item', trimmedLine, false, undefined, false, { textOnly: trimmedLine, lower: trimmedLine.toLowerCase(), html: lineHtml });
+            return true;
+        }
+
+        // Keep the game's section heading separate from the rolling context and
+        // prompt title, since the final choice prompt replaces the title.
+        const isCreationSectionHeading = /^choose your\b/i.test(trimmedLine);
+        if (gameStateRef.current === 'account' && isCreationSectionHeading) {
+            accountStageRef.current = 'character-creation';
+            setAccountState(prev => ({
+                ...prev,
+                stage: 'character-creation',
+                currentPrompt: undefined,
+                creationPrompt: {
+                    ...(prev.creationPrompt ?? { title: '', description: '', options: [] }),
+                    sectionTitle: trimmedLine,
+                    sectionTitleAnsi: line
+                }
+            }));
         }
 
         // Sync silent listing ref with state
@@ -243,6 +287,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 executeCommandRef.current?.('change page off', false, true, true, false);
                 executeCommandRef.current?.('change width 80', false, true, true, false);
                 executeCommandRef.current?.('change editor external', false, true, true, false);
+                executeCommandRef.current?.('time', true, true, true, false);
                 executeCommandRef.current?.('info %O %D %k %A', false, true, true, false);
                 setTimeout(() => {
                     executeCommandRef.current?.('practice', true, true, true, false);
@@ -380,6 +425,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 creationPrompt: {
                     title: 'Stat Editing',
                     description: trimmedLine,
+                    descriptionAnsiLines: [line],
                     options: statOptions
                 }
             }));
@@ -408,25 +454,44 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         }
 
         // --- 0a. Detect Character Creation Start ---
+        const isCreationChoicePrompt = trimmedLine.includes('Pick a number, "back", "?"');
+        const continuesExistingCreationPrompt = isCreationChoicePrompt
+            || trimmedLine.includes('Which side will you fight for');
         if (trimmedLine.includes('You must now choose a name for your character') || 
             trimmedLine.includes('Enter a name for your character') ||
             trimmedLine.includes('What name do you wish to have') ||
             trimmedLine.includes('Choose Your Allegiance') ||
             trimmedLine.includes('Which side will you fight for') ||
-            trimmedLine.includes('Pick a number, "back", "?"')) {
+            isCreationChoicePrompt) {
             accountStageRef.current = 'character-creation';
             setAccountState(prev => ({ 
                 ...prev, 
                 stage: 'character-creation', 
                 currentPrompt: undefined,
                 selectedMenuCommand: null,
-                creationPrompt: { title: '', description: '', options: [] }
+                creationPrompt: continuesExistingCreationPrompt
+                    ? prev.creationPrompt ?? { title: '', description: '', options: [] }
+                    : { title: '', description: '', options: [] }
             }));
             captureStage.current = 'none';
             setGameState('account');
         }
 
         // --- 0b. Detect Character Creation Prompts ---
+        const isParenthesizedCreationOption = /^\s*\([\w\d]{1,3}\)\s+/.test(trimmedLine);
+        if (gameStateRef.current === 'account' && isParenthesizedCreationOption
+            && accountStageRef.current !== 'character-creation'
+            && accountStageRef.current !== 'stat-editing') {
+            // Treat the game's numbered creation choices as authoritative evidence that
+            // creation parsing is active, even if an earlier prompt line was missed.
+            accountStageRef.current = 'character-creation';
+            setAccountState(prev => ({
+                ...prev,
+                stage: 'character-creation',
+                currentPrompt: undefined,
+                creationPrompt: prev.creationPrompt ?? { title: '', description: '', options: [] }
+            }));
+        }
         const isCreationRelatedStage = ['character-creation', 'stat-editing'].includes(accountStageRef.current);
         
         if (isCreationRelatedStage) {
@@ -434,7 +499,13 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 const currentPrompt = prev.creationPrompt ?? { title: '', description: '', options: [] };
                 const description = appendCreationContextLine(currentPrompt.description, trimmedLine);
                 if (description === currentPrompt.description) return prev;
-                return { ...prev, creationPrompt: { ...currentPrompt, description } };
+                const descriptionAnsiLines = appendCreationContextAnsiLine(
+                    currentPrompt.description,
+                    description,
+                    currentPrompt.descriptionAnsiLines ?? [],
+                    line
+                );
+                return { ...prev, creationPrompt: { ...currentPrompt, description, descriptionAnsiLines } };
             });
 
             if (trimmedLine.includes('Do you want to use the default configuration') ||
@@ -453,15 +524,31 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                         ...prev,
                         stage: 'character-creation',
                         pointsLeft: undefined,
-                        creationPrompt: { title: trimmedLine, description: prev.creationPrompt?.description ?? '', options: [] }
+                        creationPrompt: {
+                            title: trimmedLine,
+                            titleAnsi: line,
+                            sectionTitle: /^choose your\b/i.test(trimmedLine)
+                                ? trimmedLine : prev.creationPrompt?.sectionTitle,
+                            sectionTitleAnsi: /^choose your\b/i.test(trimmedLine)
+                                ? line : prev.creationPrompt?.sectionTitleAnsi,
+                            description: '',
+                            descriptionAnsiLines: [],
+                            options: []
+                        }
                     }));
                 } else {
-                    // Clear existing options when a NEW major question starts
+                    // A new major question starts a fresh context so prior stages do not bleed forward.
                     setAccountState(prev => ({
                         ...prev,
                         creationPrompt: {
                             title: trimmedLine,
-                            description: prev.creationPrompt?.description ?? '',
+                            titleAnsi: line,
+                            sectionTitle: /^choose your\b/i.test(trimmedLine)
+                                ? trimmedLine : prev.creationPrompt?.sectionTitle,
+                            sectionTitleAnsi: /^choose your\b/i.test(trimmedLine)
+                                ? line : prev.creationPrompt?.sectionTitleAnsi,
+                            description: '',
+                            descriptionAnsiLines: [],
                             options: []
                         }
                     }));
@@ -502,26 +589,40 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                     if (prev.creationPrompt?.title === trimmedLine) return prev;
                     const previousContext = prev.creationPrompt?.description?.trim();
                     const previousTitle = prev.creationPrompt?.title?.trim();
-                    const contextWithPreviousTitle = previousTitle && previousTitle !== trimmedLine
-                        && !(previousContext ?? '').split('\n').includes(previousTitle)
-                        ? appendCreationContextLine(previousContext ?? '', previousTitle)
+                    const previousAnsiLines = prev.creationPrompt?.descriptionAnsiLines ?? [];
+                    const shouldKeepPreviousTitle = Boolean(previousTitle && previousTitle !== trimmedLine
+                        && !(previousContext ?? '').split('\n').includes(previousTitle));
+                    const contextWithPreviousTitle = shouldKeepPreviousTitle
+                        ? appendCreationContextLine(previousContext ?? '', previousTitle ?? '')
                         : previousContext ?? '';
+                    const contextAnsiLines = shouldKeepPreviousTitle
+                        ? appendCreationContextAnsiLine(
+                            previousContext ?? '',
+                            contextWithPreviousTitle,
+                            previousAnsiLines,
+                            prev.creationPrompt?.titleAnsi ?? previousTitle ?? ''
+                        )
+                        : previousAnsiLines;
                     return {
                         ...prev,
                         creationPrompt: {
                             options: prev.creationPrompt?.options || [],
                             title: trimmedLine,
-                            description: contextWithPreviousTitle
+                            titleAnsi: line,
+                            sectionTitle: prev.creationPrompt?.sectionTitle,
+                            sectionTitleAnsi: prev.creationPrompt?.sectionTitleAnsi,
+                            description: contextWithPreviousTitle,
+                            descriptionAnsiLines: contextAnsiLines
                         }
                     };
                 });
             }
 
-            // More flexible regex to capture options like (1) Description or (a) Option
+            // Capture numbered and lettered options like (1) Description, 1) Description, or (a) Option.
             // Also handle options that might not start the line but follow a prompt
             // Only match 1-3 character options (like (1), (a), (10), (str)) to avoid matching long flavor text like "(The man...)"
             // Also ensure it doesn't look like a full parenthesized sentence (starting with '(' and ending with ')')
-            const optionMatch = trimmedLine.match(/^\s*\(([\w\d]{1,3})\)\s+([^(\[]+)/) || 
+            const optionMatch = trimmedLine.match(/^\s*\(?([\w\d]{1,3})\)\s+([^(\[]+)/) ||
                                trimmedLine.match(/\(([\w\d]{1,3})\)\s+([^(\[]+)/);
             
             if (optionMatch && accountStageRef.current !== 'stat-editing') {
@@ -548,7 +649,9 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                         };
                     });
                     // Render as a tappable inline button that sends the option ID
-                    const lineHtml = `<span class="inline-btn account-menu-cmd" data-context="${escapeHtml(id)}">${escapeHtml(trimmedLine)}</span>`;
+                    const lineHtml = sanitizeMumeHtml(
+                        `<span class="inline-btn account-menu-cmd creation-choice-inline" data-context="${escapeHtml(id)}">${ansiConvert.toHtml(line)}</span>`
+                    );
                     addMessage?.('account-menu-item', trimmedLine, false, undefined, false, { textOnly: trimmedLine, lower: trimmedLine.toLowerCase(), html: lineHtml });
                     return true;
                 }
@@ -612,7 +715,9 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             setGameState('account');
 
             if (!shouldSuppress) {
-                const lineHtml = `<span class="inline-btn account-char-name" data-context="${name}">${escapeHtml(cleanLine)}</span>`;
+                const lineHtml = sanitizeMumeHtml(
+                    `<span class="inline-btn account-char-name" data-context="${escapeHtml(name)}">${ansiConvert.toHtml(line)}</span>`
+                );
                 addMessage?.('account-character-list', cleanLine, false, undefined, false, { textOnly: cleanLine, lower: cleanLine.toLowerCase(), html: lineHtml });
             }
             return true;
@@ -643,7 +748,9 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 setGameState('account');
 
                 if (!shouldSuppress) {
-                    const lineHtml = `<span class="inline-btn account-char-name" data-context="${name}">${escapeHtml(cleanLine)}</span>`;
+                    const lineHtml = sanitizeMumeHtml(
+                        `<span class="inline-btn account-char-name" data-context="${escapeHtml(name)}">${ansiConvert.toHtml(line)}</span>`
+                    );
                     addMessage?.('account-character-list', cleanLine, false, undefined, false, { textOnly: cleanLine, lower: cleanLine.toLowerCase(), html: lineHtml });
                 }
                 return true;

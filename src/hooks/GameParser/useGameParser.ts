@@ -356,6 +356,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         playOofSound: deps.playOofSound, 
         playSpectateHitImpactSound: deps.playSpectateHitImpactSound,
         playSpectateOofSound: deps.playSpectateOofSound,
+        playSpectateNearbyCombatSound: deps.playSpectateNearbyCombatSound,
         playKillSound: deps.playKillSound, 
         playLevelSound: deps.playLevelSound, 
         playEffect: deps.playEffect,
@@ -413,7 +414,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
     const spellCompletion = useSpellCompletionTracker({
         playIncantationSound: deps.playIncantationSound,
-        playEffect: deps.playEffect
+        playEffect: deps.playEffect,
+        playSpectateIncantationSound: deps.playSpectateIncantationSound,
+        playSpectateEffect: deps.playSpectateSpellEffect
     });
 
     const comm = useCommParser({
@@ -695,15 +698,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         const snoopedMagicText = isSnoop ? extractXmlTagText(lineToParse, 'magic') : null;
-        if (snoopedMagicText) {
-            addSnoopedPlainLine(
-                deps.addMessage,
-                deps.ansiConvert,
-                snoopedMagicText,
-                `<span style="color: var(--ansi-magenta)">${deps.ansiConvert.toHtml(snoopedMagicText)}</span>`
-            );
-            return;
-        }
+        const isSnoopedMagic = !!snoopedMagicText;
+        const playObservedSpellEffect = isSnoop ? deps.playSpectateSpellEffect : deps.playEffect;
 
         if (parseLogGmcp(lineToParse, isSnoop)) return;
 
@@ -826,26 +822,29 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             deps.playEffect('practice');
         }
 
-        if (!isSnoop && /^As you call upon Elbereth,\s+.+\s+shivers in pain\.?$/i.test(textOnly.trim())) {
-            deps.playEffect('dispelevil');
+        if ((!isSnoop || deps.isSpectateMode) && /^As you call upon Elbereth,\s+.+\s+shivers in pain\.?$/i.test(textOnly.trim())) {
+            playObservedSpellEffect?.('dispelevil');
         }
-        if (!isSnoop && /^A magic mushroom suddenly appears\.$/i.test(textOnly.trim())) {
-            deps.playEffect('createfood');
+        if ((!isSnoop || deps.isSpectateMode) && /^Your exhalation of a black wind withers (?:and weakens )?all in its path(?:\.{1,3}|…)?$/i.test(textOnly.trim())) {
+            playObservedSpellEffect?.('blackbreath');
         }
-        if (!isSnoop && hasXmlTag(lineToParse, 'magic') && /^.+ is recharged\.$/i.test(textOnly.trim())) {
-            deps.playEffect('createlight');
+        if ((!isSnoop || deps.isSpectateMode) && /^A magic mushroom suddenly appears\.$/i.test(textOnly.trim())) {
+            playObservedSpellEffect?.('createfood');
         }
-        if (!isSnoop && /^The .+ is filled with a bright light\.$/i.test(textOnly.trim())) {
-            deps.playEffect('breakdoor');
+        if ((!isSnoop || deps.isSpectateMode) && (isSnoopedMagic || hasXmlTag(lineToParse, 'magic')) && /^.+ is recharged\.$/i.test(textOnly.trim())) {
+            playObservedSpellEffect?.('createlight');
         }
-        if (!isSnoop && /^The .+ seems to blur for a while\.$/i.test(textOnly.trim())) {
-            deps.playEffect('blockdoor');
+        if ((!isSnoop || deps.isSpectateMode) && /^The .+ is filled with a bright light\.$/i.test(textOnly.trim())) {
+            playObservedSpellEffect?.('breakdoor');
         }
-        if (!isSnoop && /^As you call on ancient powers,\s+.+\s+twists in great pain\.?$/i.test(textOnly.trim())) {
-            deps.playEffect('harm');
+        if ((!isSnoop || deps.isSpectateMode) && /^The .+ seems to blur for a while\.$/i.test(textOnly.trim())) {
+            playObservedSpellEffect?.('blockdoor');
+        }
+        if ((!isSnoop || deps.isSpectateMode) && /^As you call on ancient powers,\s+.+\s+twists in great pain\.?$/i.test(textOnly.trim())) {
+            playObservedSpellEffect?.('harm');
         }
         if ((!isSnoop || deps.isSpectateMode) && /\bseems to be blinded[!.]?\s*$/i.test(textOnly.trim())) {
-            deps.playEffect('blind');
+            playObservedSpellEffect?.('blind');
         }
 
         if (!isSnoop) {
@@ -875,7 +874,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         let msgType: MessageType = 'game';
         const resourceGain = parseResourceGainLine(textOnly);
         
-        const combatType = isEffectivelyRoomDesc ? null : combat.parseCombatLine(textOnly, lineToParse, isSnoop);
+        const combatType = isEffectivelyRoomDesc || isEndPrompt ? null : combat.parseCombatLine(textOnly, lineToParse, isSnoop);
         if (combatType) msgType = combatType;
 
         if (roomType) msgType = roomType;
@@ -1203,13 +1202,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         atmosphere.parseAtmosphere(lower, isSnoop);
         if ((!isSnoop || deps.isSpectateMode) && /^(?:you are hungry|you are thirsty)\.$/i.test(textOnly.trim())) {
-            deps.playEffect?.('hungrythirsty');
+            playObservedSpellEffect?.('hungrythirsty');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.trim() === 'you feel less thirsty.' ||
             lower.trim() === 'you feel bloated.'
         )) {
-            deps.playEffect?.('createwater');
+            playObservedSpellEffect?.('createwater');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
             textOnly.includes('You finish gathering the wood into a pile and set it on fire.') ||
@@ -1220,6 +1219,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.includes('alas, you cannot go that way') || 
             lower.trim() === 'you cannot ride there.' ||
+            /your mount refuses to follow(?:er)? your orders/.test(lower) ||
             lower.includes('arglebargle, glop-glyf') || 
             lower.startsWith("you don't have any") || 
             lower.includes('seems to be closed') ||
@@ -1229,7 +1229,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             deps.playEffect?.('error');
         }
         if ((!isSnoop || deps.isSpectateMode) && (lower.includes('your spell backfired') || lower.includes('mispronounced the magical words') || lower.includes('spell backfired'))) {
-            deps.playEffect?.('backfire');
+            playObservedSpellEffect?.('backfire');
         }
         if ((!isSnoop || deps.isSpectateMode) && lower.includes('you carefully examine the ground around you, looking for tracks')) {
             deps.playEffect?.('tracking');
@@ -1260,41 +1260,41 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             deps.playEffect?.('bash');
         }
         if ((!isSnoop || deps.isSpectateMode) && (lower === 'you stored it.' || lower.includes('your mind is too full to store it') || lower.includes('stored it.'))) {
-            deps.playEffect?.('magiccomplete');
+            playObservedSpellEffect?.('magiccomplete');
         }
         if ((!isSnoop || deps.isSpectateMode) && /the lightning bolts?\s+hits?\b.*with full impact/i.test(lower)) {
-            deps.playEffect?.('lightningbolt');
+            playObservedSpellEffect?.('lightningbolt');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
             (lower.includes('energy in') && lower.includes('legs') && lower.includes('refresh')) ||
             lower.includes('energy begins to flow within')
         )) {
-            deps.playEffect?.('bob');
+            playObservedSpellEffect?.('bob');
         }
         if ((!isSnoop || deps.isSpectateMode) && lower.includes('the earth trembles beneath your feet')) {
-            deps.playEffect?.('earthquake');
+            playObservedSpellEffect?.('earthquake');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.includes('you begin to feel the light of aman shine upon you') ||
             lower.includes('you feel a renewed light shine upon you')
         )) {
-            deps.playEffect?.('bless');
+            playObservedSpellEffect?.('bless');
         }
         if ((!isSnoop || deps.isSpectateMode) && lower.includes('scratches and bruises disappear')) {
-            deps.playEffect?.('curelight');
+            playObservedSpellEffect?.('curelight');
         }
         if ((!isSnoop || deps.isSpectateMode) && lower.includes('scars fade away and a feeling of health comes over you')) {
-            deps.playEffect?.('cureserious');
+            playObservedSpellEffect?.('cureserious');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.includes('you start glowing') ||
             lower.includes('glows brightly') ||
             lower.includes('starts to glow')
         )) {
-            deps.playEffect?.('sanctuary');
+            playObservedSpellEffect?.('sanctuary');
         }
         if ((!isSnoop || deps.isSpectateMode) && lower.includes('a warm feeling fills your body')) {
-            deps.playEffect?.('heal');
+            playObservedSpellEffect?.('heal');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.includes('a blue transparent wall slowly appears around you') ||
@@ -1302,7 +1302,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             lower.includes('magic armour is revitalised') ||
             lower.includes('magic armor is revitalised')
         )) {
-            deps.playEffect?.('armour');
+            playObservedSpellEffect?.('armour');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.includes('has been kicked out of the group') ||
@@ -1320,10 +1320,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             lower.includes('protection is revitalised') ||
             lower.includes('protection is revitalized')
         )) {
-            deps.playEffect?.('shield');
+            playObservedSpellEffect?.('shield');
         }
         if ((!isSnoop || deps.isSpectateMode) && lower.trim() === 'you feel stronger.') {
-            deps.playEffect?.('strength');
+            playObservedSpellEffect?.('strength');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.trim() === 'your legs feel heavier.' ||
@@ -1332,20 +1332,20 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             lower.includes('the light of aman fades away from you') ||
             lower.includes('less protected')
         )) {
-            deps.playEffect?.('affectdown');
+            playObservedSpellEffect?.('affectdown');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.includes('surrounded by a misty shroud') ||
             lower.includes('misty shroud')
         )) {
-            deps.playEffect?.('shroud');
+            playObservedSpellEffect?.('shroud');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.includes('sensitive of magical auras') ||
             lower.includes('sensitive to magical auras') ||
             lower.includes('magical auras')
         )) {
-            deps.playEffect?.('detectmagic');
+            playObservedSpellEffect?.('detectmagic');
         }
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.includes('crackle of thunder') ||
@@ -1355,6 +1355,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.startsWith('you found ') || lower.includes('you found ') ||
+            lower.startsWith('you have found ') || lower.includes('you have found ') ||
             lower.startsWith('you dig up ') || lower.includes('you dig up ') ||
             lower.includes('you have finished mixing') ||
             lower.includes('you produced ')
@@ -1390,7 +1391,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             parseActionTimerLine(textOnly);
             if (changesCombatStatsFromSpell(textOnly)) refreshEquipmentCombatStats();
         }
-        if (time.parseTimeLine(lower)) msgType = 'info' as any;
+        if (time.parseTimeLine(textOnly)) msgType = 'info' as any;
 
         // --- Magic Sound Effects ---
         /*
@@ -1398,9 +1399,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             deps.playMagicExplosionSound();
         }
         */
-        let isMagicRipple = !isSnoop && hasXmlTag(lineToParse, 'magic');
+        const isMagicRipple = isSnoopedMagic || (!isSnoop && hasXmlTag(lineToParse, 'magic'));
         if (!isEffectivelyRoomDesc) {
-            isMagicRipple = !!spellCompletion.handleSpellLine(textOnly, lower, isSnoop) || isMagicRipple;
+            spellCompletion.handleSpellLine(textOnly, lower, isSnoop);
         }
 
         const finalType = router.routeMessage(msgType, textOnly, lower, lineToParse, textOnly, isEndPrompt, isSnoop) as MessageType;

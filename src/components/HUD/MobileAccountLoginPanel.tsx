@@ -22,6 +22,7 @@ export const MobileAccountLoginPanel: FC = () => {
     const setLoginName = useSettingsStore(state => state.setLoginName);
     const setLoginPassword = useSettingsStore(state => state.setLoginPassword);
     const lastFilledPromptRef = useRef('');
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const loginPrompt = (accountState.currentPrompt ?? '').toLowerCase();
     const isLoginPassword = isPasswordMode || loginPrompt.includes('password') || loginPrompt.includes('verify');
@@ -50,18 +51,23 @@ export const MobileAccountLoginPanel: FC = () => {
         useInputStore.getState().addToHistory(value);
         setInput('');
         const savedPasswordWillBeAvailable = isLoginName && Boolean(loginPassword.trim());
-        executeCommand(value, false, false, false, false, { shouldFocus: !savedPasswordWillBeAvailable });
+        executeCommand(value, false, false, false, false, {
+            shouldFocus: !isLoginPassword && !savedPasswordWillBeAvailable
+        });
+        if (isLoginPassword) inputRef.current?.blur();
     };
 
     return (
         <main className="mobile-account-experience is-login">
             <div className="mobile-account-login-card">
                 <h1>MUME IX</h1>
+                <p className="mobile-account-tagline">Even the smallest hobbit can change the course of the world.</p>
                 <div className="mobile-account-login-prompt">
                     {accountState.currentPrompt || 'By what name do you wish to be known?'}
                 </div>
-                <form onSubmit={submitLogin}>
+                <form onSubmit={submitLogin} autoComplete="off">
                     <input
+                        ref={inputRef}
                         id="mud-input"
                         name="mud-input"
                         className="mobile-account-input"
@@ -69,8 +75,10 @@ export const MobileAccountLoginPanel: FC = () => {
                         value={input}
                         onChange={event => setInput(event.target.value)}
                         placeholder={isLoginPassword ? 'Enter password' : 'Enter username'}
-                        autoComplete={isLoginPassword ? 'current-password' : 'username'}
+                        autoComplete="off"
                         autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck={false}
                     />
                     <label className="mobile-account-remember">
                         <input type="checkbox" checked={rememberLogin} onChange={event => setRememberLogin(event.target.checked)} />

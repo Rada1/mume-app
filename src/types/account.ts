@@ -27,7 +27,11 @@ export interface CreationOption {
 
 export interface CreationPrompt {
     title: string;
+    titleAnsi?: string;
+    sectionTitle?: string;
+    sectionTitleAnsi?: string;
     description: string;
+    descriptionAnsiLines?: string[];
     options: CreationOption[];
     footer?: string;
 }

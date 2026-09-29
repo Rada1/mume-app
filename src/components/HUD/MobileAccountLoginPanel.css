@@ -13,17 +13,28 @@
     width: min(100% - 24px, 480px);
     margin: auto;
     padding: 24px 18px;
-    border: 1px solid rgba(201, 168, 76, 0.25);
+    border: 1px solid var(--account-border-strong);
     border-radius: 9px;
-    background: rgba(16, 13, 10, 0.78);
+    background: var(--account-surface);
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.34);
 }
 
 .mobile-account-login-card h1 {
-    margin: 0 0 22px;
-    color: #e8c66f;
+    margin: 0 0 4px;
+    font-family: var(--font-serif) !important;
+    color: var(--account-gold-bright);
     font-size: clamp(2rem, 9vw, 3rem);
-    font-weight: 500;
-    letter-spacing: 0.14em;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-align: center;
+}
+
+.mobile-account-tagline {
+    margin: 0 0 22px;
+    color: var(--account-text-muted);
+    font-size: 0.875rem;
+    font-style: italic;
+    line-height: 1.4;
     text-align: center;
 }
 
@@ -32,7 +43,7 @@
     align-items: center;
     min-height: 2.8em;
     margin-bottom: 14px;
-    color: #c9c1b0;
+    color: var(--account-text);
     font-size: var(--dynamic-log-size, 9.5px);
     line-height: 1.4;
 }

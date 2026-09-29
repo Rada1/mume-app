@@ -15,6 +15,7 @@ import { GmcpOccupant, Message, Token } from '../../types';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import { TokenRenderer } from './TokenRenderer';
+import { hasInlinePromptModes, PromptInlineControls } from './PromptInlineControls';
 import { useVirtualizer, defaultRangeExtractor } from '@tanstack/react-virtual';
 import PracticeSkillCard from '../Practice/PracticeSkillCard';
 import PracticeHeaderCard from '../Practice/PracticeHeaderCard';
@@ -210,11 +211,12 @@ const MessageItem = React.memo(({
 }) => {
     const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
     const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
+    const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
     const theme = useSettingsStore(s => s.theme);
     const roomColorSetting = useSettingsStore(s => s.roomColor);
     const { gameState, inlineCategories } = useBaseGame();
     const content = msg.html;
-    const accountRippleHtml = isImmersionMode && gameState === 'account' && (!msg.tokens || msg.tokens.length === 0)
+    const accountRippleHtml = isImmersionMode && !isPerformanceMode && gameState === 'account' && (!msg.tokens || msg.tokens.length === 0)
         ? wrapHtmlWordsForRipple(sanitizeMumeHtml(content))
         : sanitizeMumeHtml(content);
     const isLoginNamePrompt = /\bby what name do you wish to be known\?/i.test(msg.textRaw || msg.textOnly || '');
@@ -236,13 +238,13 @@ const MessageItem = React.memo(({
     const entityCountPrompt = msg.type === 'game' ? parseEntityCountPrompt(msg.textOnly || msg.textRaw || '') : null;
     const [isRecent] = React.useState(() => Date.now() - msg.timestamp < 3500);
     const itemActionAnimation = getItemActionAnimation(msg.textOnly || msg.textRaw || '');
-    const isImpactRumble = isImmersionMode && isRecent && (msg.isHitImpact || msg.isDamageImpact);
+    const isImpactRumble = isImmersionMode && !isPerformanceMode && isRecent && (msg.isHitImpact || msg.isDamageImpact);
     const impactRowRef = React.useRef<HTMLDivElement>(null);
     const messageRootRef = React.useRef<HTMLDivElement>(null);
     // Virtualized rows are reused, so bind the animation to its message ID rather
     // than leaving a boolean active for whichever message occupies the row next.
     const [focusRevealMessageId, setFocusRevealMessageId] = React.useState<string | null>(null);
-    const isFocusRevealActive = focusRevealMessageId === msg.id;
+    const isFocusRevealActive = !isImmersionMode && focusRevealMessageId === msg.id;
     const [magicRippleMessageId, setMagicRippleMessageId] = React.useState<string | null>(null);
     const [redWeatherRippleMessageId, setRedWeatherRippleMessageId] = React.useState<string | null>(null);
     const [itemActionMessageId, setItemActionMessageId] = React.useState<string | null>(null);
@@ -250,46 +252,46 @@ const MessageItem = React.memo(({
     const isRedWeatherRippleActive = redWeatherRippleMessageId === msg.id;
     const isItemActionActive = itemActionMessageId === msg.id;
     // local state to handle the cleanup of the hit sheen animation
-    const [sheenActive, setSheenActive] = React.useState(!!(isImmersionMode && (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage)));
+    const [sheenActive, setSheenActive] = React.useState(!!(isImmersionMode && !isPerformanceMode && (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage)));
 
     React.useEffect(() => {
-        if (isImmersionMode && (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage)) {
+        if (isImmersionMode && !isPerformanceMode && (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage)) {
             const timer = setTimeout(() => {
                 setSheenActive(false);
             }, 2000);
             return () => clearTimeout(timer);
         }
-    }, [isImmersionMode, msg.isHitImpact, msg.isDamageImpact, msg.isRipMessage]);
+    }, [isImmersionMode, isPerformanceMode, msg.isHitImpact, msg.isDamageImpact, msg.isRipMessage]);
 
     // The parser tags magic XML lines, spell completions, and action confirmations. These
     // short-lived classes are deliberately keyed by message ID so a virtualized
     // row cannot replay an old effect when it is recycled for another message.
     React.useEffect(() => {
-        if (!isImmersionMode || !msg.isMagicRipple || Date.now() - msg.timestamp > 3500) return;
+        if (!isImmersionMode || isPerformanceMode || !msg.isMagicRipple || Date.now() - msg.timestamp > 3500) return;
         setMagicRippleMessageId(msg.id);
         const timer = window.setTimeout(() => {
             setMagicRippleMessageId(activeId => activeId === msg.id ? null : activeId);
         }, 2000);
         return () => window.clearTimeout(timer);
-    }, [isImmersionMode, msg.id, msg.isMagicRipple, msg.timestamp]);
+    }, [isImmersionMode, isPerformanceMode, msg.id, msg.isMagicRipple, msg.timestamp]);
 
     React.useEffect(() => {
-        if (!isImmersionMode || !isDarkWeatherGlow || Date.now() - msg.timestamp > 3500) return;
+        if (!isImmersionMode || isPerformanceMode || !isDarkWeatherGlow || Date.now() - msg.timestamp > 3500) return;
         setRedWeatherRippleMessageId(msg.id);
         const timer = window.setTimeout(() => {
             setRedWeatherRippleMessageId(activeId => activeId === msg.id ? null : activeId);
         }, 2000);
         return () => window.clearTimeout(timer);
-    }, [isImmersionMode, isDarkWeatherGlow, msg.id, msg.timestamp]);
+    }, [isImmersionMode, isPerformanceMode, isDarkWeatherGlow, msg.id, msg.timestamp]);
 
     React.useEffect(() => {
-        if (!isImmersionMode || !itemActionAnimation || Date.now() - msg.timestamp > 3500) return;
+        if (!isImmersionMode || isPerformanceMode || !itemActionAnimation || Date.now() - msg.timestamp > 3500) return;
         setItemActionMessageId(msg.id);
         const timer = window.setTimeout(() => {
             setItemActionMessageId(activeId => activeId === msg.id ? null : activeId);
         }, 520);
         return () => window.clearTimeout(timer);
-    }, [isImmersionMode, itemActionAnimation, msg.id, msg.timestamp]);
+    }, [isImmersionMode, isPerformanceMode, itemActionAnimation, msg.id, msg.timestamp]);
 
     React.useEffect(() => {
         if (!isImpactRumble || !impactRowRef.current) return;
@@ -305,7 +307,7 @@ const MessageItem = React.memo(({
     }, [isImpactRumble]);
 
     React.useLayoutEffect(() => {
-        if (!isImmersionMode || !msg.audioSheen || Date.now() - msg.timestamp > 1000 || !messageRootRef.current) return;
+        if (!isImmersionMode || isPerformanceMode || !msg.audioSheen || Date.now() - msg.timestamp > 1000 || !messageRootRef.current) return;
 
         // Server messages and visual rows are not always the same thing: a single incoming
         // line can wrap several times. Reset the sheen delay for every rendered row so each
@@ -320,12 +322,12 @@ const MessageItem = React.memo(({
             wordsPerVisualLine.set(visualLine, wordIndex + 1);
             word.style.setProperty('--sheen-word-delay', `${wordIndex * 20}ms`);
         });
-    }, [isImmersionMode, msg.audioSheen, msg.id, msg.timestamp]);
+    }, [isImmersionMode, isPerformanceMode, msg.audioSheen, msg.id, msg.timestamp]);
 
     React.useLayoutEffect(() => {
         // Rapid movement can batch several server lines before React paints. Keep
         // the reveal eligible through that short burst instead of dropping it.
-        if (!msg.isFocusReveal || Date.now() - msg.timestamp > 4000 || playedFocusRevealIds.has(msg.id)) return;
+        if (isImmersionMode || isPerformanceMode || !msg.isFocusReveal || Date.now() - msg.timestamp > 4000 || playedFocusRevealIds.has(msg.id)) return;
 
         playedFocusRevealIds.add(msg.id);
         setFocusRevealMessageId(msg.id);
@@ -333,7 +335,7 @@ const MessageItem = React.memo(({
             setFocusRevealMessageId(activeId => activeId === msg.id ? null : activeId);
         }, 1000);
         return () => window.clearTimeout(timer);
-    }, [msg.id, msg.isFocusReveal, msg.timestamp]);
+    }, [isImmersionMode, isPerformanceMode, msg.id, msg.isFocusReveal, msg.timestamp]);
 
     const triggerParley = useCallback((e: React.MouseEvent) => {
         if (!setParley || !triggerHaptic || !playClickSound) return;
@@ -366,7 +368,7 @@ const MessageItem = React.memo(({
     const [isRoomJiggleActive, setIsRoomJiggleActive] = React.useState(false);
 
     React.useLayoutEffect(() => {
-        if (!isImmersionMode || !msg.isRoomArrival || Date.now() - msg.timestamp > 4000 || playedRoomJiggleIds.has(msg.id)) return;
+        if (!isImmersionMode || isPerformanceMode || !msg.isRoomArrival || Date.now() - msg.timestamp > 4000 || playedRoomJiggleIds.has(msg.id)) return;
 
         if (playedRoomJiggleIds.size > 2000) {
             const iter = playedRoomJiggleIds.values();
@@ -381,7 +383,7 @@ const MessageItem = React.memo(({
             setIsRoomJiggleActive(false);
         }, 1600);
         return () => window.clearTimeout(timer);
-    }, [isImmersionMode, msg.id, msg.isRoomArrival, msg.timestamp]);
+    }, [isImmersionMode, isPerformanceMode, msg.id, msg.isRoomArrival, msg.timestamp]);
 
     const showTimestamp = isTimestampEnabled &&
         !msg.isRoomName &&
@@ -419,7 +421,7 @@ const MessageItem = React.memo(({
         <div
             ref={messageRootRef}
             data-subdued-action={msg.isSubduedAction || undefined}
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${isLoginNamePrompt ? ' login-name-prompt' : ''}${isStatAffectLine ? ' stat-affect-line' : ''}${regenSlowTooltip ? ' regen-slow-notice' : ''}${isImmersionMode && msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}${isFocusRevealActive ? ' focus-reveal-active' : ''}${isMagicRippleActive ? ' magic-ripple-active' : ''}${isRedWeatherRippleActive ? ' red-weather-ripple-active' : ''}${isItemActionActive && itemActionAnimation ? ` item-action-${itemActionAnimation}` : ''}${isImmersionMode && isRoomJiggleActive ? ' room-jiggle-active' : ''}`}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${isLoginNamePrompt ? ' login-name-prompt' : ''}${isStatAffectLine ? ' stat-affect-line' : ''}${regenSlowTooltip ? ' regen-slow-notice' : ''}${!isPerformanceMode && isImmersionMode && msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}${!isPerformanceMode && isFocusRevealActive ? ' focus-reveal-active' : ''}${!isPerformanceMode && isMagicRippleActive ? ' magic-ripple-active' : ''}${!isPerformanceMode && isRedWeatherRippleActive ? ' red-weather-ripple-active' : ''}${!isPerformanceMode && isItemActionActive && itemActionAnimation ? ` item-action-${itemActionAnimation}` : ''}${!isPerformanceMode && isImmersionMode && isRoomJiggleActive ? ' room-jiggle-active' : ''}`}
             data-regeneration-tooltip={regenSlowTooltip}
             title={regenSlowTooltip}
             style={{ 
@@ -485,7 +487,9 @@ const MessageItem = React.memo(({
             ) : msg.type === 'prompt' ? (
                 <div className="content-row">
                     <span className="message-content prompt-text">
-                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                        {hasInlinePromptModes(msg.textOnly || msg.textRaw || '')
+                            ? <PromptInlineControls text={msg.textOnly || msg.textRaw || ''} />
+                            : <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />}
                     </span>
                 </div>
             ) : entityCountPrompt ? (
@@ -523,7 +527,10 @@ const MessageItem = React.memo(({
                                 <span className="comm-action" style={{ color: msg.commColor }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
                             </>
                         )}
-                        <span className={`comm-text${msg.replyCommand === 'tell' ? ' tell-body' : ''}`} style={{ color: msg.commColor }}><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} splitFirstWord={true} /></span>
+                        <span
+                            className={`comm-text${msg.replyCommand === 'tell' ? ' tell-body' : ''}`}
+                            dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || '')) }}
+                        />
                     </div>
                     <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                 </div>
@@ -539,17 +546,17 @@ const MessageItem = React.memo(({
                                     splitFirstWord={true}
                                 />
                                 <ResourceGainBadge gain={msg.resourceGain} />
-                                {msg.isHitImpact && sheenActive && (
+                                {msg.isHitImpact && sheenActive && !isPerformanceMode && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
                                         <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
                                     </div>
                                 )}
-                                {msg.isDamageImpact && sheenActive && (
+                                {msg.isDamageImpact && sheenActive && !isPerformanceMode && (
                                     <div className="damage-sheen-overlay" aria-hidden="true">
                                         <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
                                     </div>
                                 )}
-                                {msg.isRipMessage && sheenActive && (
+                                {msg.isRipMessage && sheenActive && !isPerformanceMode && (
                                     <div className="rip-sheen-overlay" aria-hidden="true">
                                         <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
                                     </div>
@@ -605,7 +612,7 @@ const MessageItem = React.memo(({
                                     </span>
                                 )}
                                 <ResourceGainBadge gain={msg.resourceGain} />
-                                {msg.isHitImpact && sheenActive && (
+                                {msg.isHitImpact && sheenActive && !isPerformanceMode && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
                                         <TokenRenderer
                                             tokens={msg.tokens}
@@ -616,12 +623,12 @@ const MessageItem = React.memo(({
                                         />
                                     </div>
                                 )}
-                                {msg.isDamageImpact && sheenActive && (
+                                {msg.isDamageImpact && sheenActive && !isPerformanceMode && (
                                     <div className="damage-sheen-overlay" aria-hidden="true">
                                         <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={msg.isRoomName ? false : true} disableRoomInline={msg.isRoomName} isRoomContentsLine={msg.isRoomContentsLine} />
                                     </div>
                                 )}
-                                {msg.isRipMessage && sheenActive && (
+                                {msg.isRipMessage && sheenActive && !isPerformanceMode && (
                                     <div className="rip-sheen-overlay" aria-hidden="true">
                                     <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={msg.isRoomName ? false : true} disableRoomInline={msg.isRoomName} isRoomContentsLine={msg.isRoomContentsLine} />
                                     </div>
@@ -680,7 +687,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             document.head.appendChild(styleEl);
         }
         styleEl.textContent = selectedCharName
-            ? `.account-char-name[data-context="${CSS.escape(selectedCharName)}"] { border-left: 1.5px solid var(--accent, #b48230); border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; background: rgba(var(--accent-rgb, 180, 130, 60), 0.16) !important; color: #fff; padding-left: 6px; }`
+            ? `.account-char-name[data-context="${CSS.escape(selectedCharName)}"] { border-left: 1.5px solid var(--accent, #b48230); border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; background: rgba(var(--accent-rgb, 180, 130, 60), 0.16) !important; padding-left: 6px; }`
             : '';
         return () => { if (styleEl) styleEl.textContent = ''; };
     }, [selectedCharName]);

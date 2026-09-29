@@ -926,6 +926,102 @@
     filter: opacity(1) brightness(1.05); /* Minimal boost to ensure they still pop slightly */
 }
 
+.prompt-inline-controls,
+.prompt-controls-line.is-inline-prompt {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    vertical-align: baseline;
+}
+
+.message-content .prompt-inline-controls,
+.prompt-controls-line.is-inline-prompt,
+.prompt-controls-line.is-inline-prompt .prompt-movement-indicators,
+.prompt-controls-line.is-inline-prompt .prompt-mode-indicators,
+.prompt-controls-line.is-inline-prompt .prompt-mode-indicator,
+.prompt-controls-line.is-inline-prompt .prompt-mode-indicator .prompt-stat-label,
+.prompt-controls-line.is-inline-prompt .prompt-mode-indicator .prompt-stat-value {
+    opacity: 1 !important;
+}
+
+.prompt-controls-line.is-inline-prompt {
+    width: auto;
+    gap: 0;
+    line-height: inherit;
+}
+
+.prompt-controls-line.is-inline-prompt .prompt-movement-indicators,
+.prompt-controls-line.is-inline-prompt .prompt-mode-indicators {
+    gap: 0;
+    margin-left: 0;
+}
+
+.prompt-controls-line.is-inline-prompt .prompt-action-link {
+    display: inline;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    font: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    cursor: pointer;
+}
+
+.prompt-controls-line.is-inline-prompt .prompt-mode-indicator {
+    gap: 0;
+}
+
+.prompt-controls-line.is-inline-prompt .prompt-movement-indicator {
+    color: #b8b3a6 !important;
+    font-weight: 700;
+    opacity: 0.78;
+    text-shadow: none;
+    transition: color 120ms ease, opacity 120ms ease, text-shadow 120ms ease;
+}
+
+.prompt-controls-line.is-inline-prompt .prompt-movement-indicator.is-active {
+    color: #70f29a !important;
+    opacity: 1;
+    text-shadow: 0 0 6px rgba(72, 230, 126, 0.48);
+}
+
+.light-mode .prompt-controls-line.is-inline-prompt .prompt-movement-indicator {
+    color: #57534e !important;
+    opacity: 0.82;
+}
+
+.light-mode .prompt-controls-line.is-inline-prompt .prompt-movement-indicator.is-active {
+    color: #16803c !important;
+    opacity: 1;
+    text-shadow: 0 0 4px rgba(22, 128, 60, 0.25);
+}
+
+.prompt-controls-line.is-inline-prompt .prompt-mode-indicator {
+    color: #70f29a !important;
+    opacity: 1;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+}
+
+.prompt-controls-line.is-inline-prompt .prompt-mode-indicator .prompt-stat-label,
+.prompt-controls-line.is-inline-prompt .prompt-mode-indicator .prompt-stat-value {
+    color: inherit !important;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    opacity: 1;
+    text-transform: none;
+}
+
+.light-mode .prompt-controls-line.is-inline-prompt .prompt-mode-indicator {
+    color: #16803c !important;
+}
+
 /* Communication lines use their server/ANSI colors as-is. The shared inline-action
    emphasis above is useful in room text, but brightens comm prose and its entities. */
 .message-content.comm-content,
@@ -963,6 +1059,9 @@
     line-height: inherit !important;
     font-family: inherit;
     letter-spacing: inherit;
+    font-weight: inherit !important;
+    color: inherit !important;
+    text-shadow: none !important;
 }
 
 .message-content .inline-btn[class*="inline-item-tier-"] {
@@ -2845,7 +2944,7 @@ span.inline-btn {
     font-size: calc(var(--dynamic-log-size, 16px) * 1.3) !important;
     font-weight: bold !important;
     letter-spacing: 0.12em !important;
-    color: #ffd700 !important; /* Gold header */
+    color: #d2b75f !important; /* Match the mobile account brand gold */
 }
 
 /* In account mode, all terminal output and inline choices must be rendered at 100% opacity. */
@@ -3254,6 +3353,11 @@ span.inline-btn {
     text-shadow: none !important;
 }
 
+/* Account menu choices keep the exact foreground colors carried by MUME ANSI spans. */
+.message-content .inline-btn.account-menu-cmd {
+    color: inherit !important;
+}
+
 /* Room titles obey the room color settings, falling back to wiki gold. */
 .message-content .room-name-inline,
 .message-content .room-name-inline span,
@@ -3524,8 +3628,8 @@ span.inline-btn {
 
 
 /* ==========================================================================
-   When Immersion Mode is disabled, turn off decorative log text animations
-   (focus-reveal remains universal across modes).
+   When Immersion Mode is disabled, turn off decorative log text animations.
+   Focus-reveal is reserved for standard mode and is gated in MessageLog.tsx.
    ========================================================================== */
 .app-container:not(.immersion-mode) .message-log .log-text-word,
 .app-container:not(.immersion-mode) .message-log .log-char,

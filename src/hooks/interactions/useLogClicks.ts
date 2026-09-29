@@ -166,6 +166,11 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         e.stopPropagation();
         e.preventDefault();
 
+        if (targetEl.dataset.accountChoicePointerHandled === 'true') {
+            delete targetEl.dataset.accountChoicePointerHandled;
+            return;
+        }
+
         // Account mode: tapping an account menu command
         if (targetEl.classList.contains('account-menu-cmd')) {
             const cmd = targetEl.getAttribute('data-context');

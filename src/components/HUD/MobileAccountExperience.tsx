@@ -166,11 +166,23 @@ export const MobileAccountExperience: FC = () => {
     const characterInfoLines = accountState.charSelectTab === 'practice'
         ? accountState.charPracticeLines ?? []
         : accountState.charInfoLines ?? [];
-    const creationContext = accountState.creationPrompt?.description
-        .split('\n')
-        .filter(line => line.trim() !== accountState.creationPrompt?.title.trim())
+    const creationContextLines = (accountState.creationPrompt?.description ?? '').split('\n');
+    const creationContextAnsiLines = accountState.creationPrompt?.descriptionAnsiLines ?? creationContextLines;
+    const creationContext = creationContextLines
+        .filter((line, index) => line.trim() !== accountState.creationPrompt?.title.trim()
+            && line.trim() !== accountState.creationPrompt?.sectionTitle?.trim()
+            && Boolean(line.trim())
+            && Boolean(creationContextAnsiLines[index] ?? line))
         .join('\n')
         .trim();
+    const visibleCreationContextLines = creationContextLines
+        .map((line, index) => ({
+            line,
+            ansiLine: creationContextAnsiLines[index] ?? line
+        }))
+        .filter(({ line }) => Boolean(line.trim())
+            && line.trim() !== accountState.creationPrompt?.title.trim()
+            && line.trim() !== accountState.creationPrompt?.sectionTitle?.trim());
     const statLabels: Record<string, string> = {
         str: 'Strength', int: 'Intelligence', wis: 'Wisdom', dex: 'Dexterity',
         con: 'Constitution', wil: 'Willpower', per: 'Perception'
@@ -205,13 +217,24 @@ export const MobileAccountExperience: FC = () => {
             <section className="mobile-account-body">
                 {showCreation ? (
                     <div className={`mobile-account-create${accountState.stage === 'stat-editing' ? ' is-stat-editing' : ''}`}>
-                        {creationContextWithStats && (
+                        {(accountState.creationPrompt?.sectionTitle || creationContextWithStats) && (
                             <div className="mobile-account-create-context" aria-label="Creation context">
-                                {creationContextWithStats}
+                                {accountState.creationPrompt?.sectionTitle && (
+                                    <AccountAnsiLine
+                                        line={accountState.creationPrompt.sectionTitleAnsi ?? accountState.creationPrompt.sectionTitle}
+                                        className="mobile-account-context-line"
+                                    />
+                                )}
+                                {parsedStatContext && !hasStatValuesInContext
+                                    ? <>{visibleCreationContextLines.map(({ ansiLine }, index) => <AccountAnsiLine key={`${index}-${ansiLine}`} line={ansiLine} className="mobile-account-context-line" />)}<div className="mobile-account-context-line">{parsedStatContext}</div></>
+                                    : visibleCreationContextLines.map(({ ansiLine }, index) => <AccountAnsiLine key={`${index}-${ansiLine}`} line={ansiLine} className="mobile-account-context-line" />)}
                             </div>
                         )}
                         {accountState.stage !== 'stat-editing' && accountState.creationPrompt?.title && (
-                            <div className="mobile-account-create-prompt">{accountState.creationPrompt.title}</div>
+                            <AccountAnsiLine
+                                line={accountState.creationPrompt.titleAnsi ?? accountState.creationPrompt.title}
+                                className="mobile-account-create-prompt"
+                            />
                         )}
                         {accountState.stage === 'account-menu' && activeTab === 'create' ? (
                             <div className="mobile-account-empty">Waiting for creation prompt…</div>

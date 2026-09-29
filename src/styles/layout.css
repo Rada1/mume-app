@@ -62,10 +62,8 @@
 
 .app-container.is-map-expanded,
 .app-container.has-drawer-open {
-    --mobile-gutter-height: 42vh;
-    --mobile-gutter-height: 42dvh;
-    --mobile-map-panel-height: 42vh;
-    --mobile-map-panel-height: 42dvh;
+    --mobile-gutter-height: calc(40dvh - var(--mobile-bottom-reserved-space, 0px));
+    --mobile-map-panel-height: calc(40dvh - var(--mobile-bottom-reserved-space, 0px));
 }
 
 .app-container.state-account.is-mobile:not(.is-landscape) {
@@ -457,6 +455,24 @@
 .reset-zoom-fab,
 .spectate-queue-hud {
     pointer-events: auto !important;
+}
+
+.custom-btn.target-ready {
+    outline: none;
+    filter: none;
+}
+
+.custom-btn.target-ready .button-label,
+.custom-btn.target-ready .button-icon {
+    color: #86efac;
+    text-shadow: 0 0 6px rgba(74, 222, 128, 0.9), 0 0 12px rgba(34, 197, 94, 0.65);
+    filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.7));
+}
+
+.custom-btn.target-ready .custom-btn-icon-node,
+.custom-btn.target-ready .custom-btn-icon-node svg {
+    color: #86efac;
+    filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.78));
 }
 
 

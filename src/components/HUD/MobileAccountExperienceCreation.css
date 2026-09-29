@@ -35,6 +35,13 @@
     white-space: pre-wrap;
 }
 
+.mobile-account-create-context .mobile-account-context-line {
+    margin: 0;
+    font: inherit;
+    line-height: inherit;
+    white-space: pre-wrap;
+}
+
 .mobile-account-create .cmd-action-panel {
     display: flex;
     flex: 1 1 auto;

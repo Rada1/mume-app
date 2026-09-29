@@ -334,13 +334,29 @@ export function useCommandController(deps: CommandControllerDeps) {
 
         // --- Account Creation Option Clearing ---
         if (d.gameState === 'account' && !isSystem) {
-            const stage = d.accountStageRef?.current;
-            if (stage && ['character-creation', 'stat-editing'].includes(stage)) {
-                if (cmd.trim() !== '?') {
-                    d.setAccountState?.(prev => ({
-                        ...prev,
-                        creationPrompt: prev.creationPrompt ? { ...prev.creationPrompt, options: [] } : undefined
-                    }));
+            const accountCommand = cmd.trim().toLowerCase();
+            if (accountCommand === 'create') {
+                if (d.accountStageRef) d.accountStageRef.current = 'character-creation';
+                d.setAccountState?.(prev => ({
+                    ...prev,
+                    stage: 'character-creation',
+                    currentPrompt: undefined,
+                    creationPrompt: {
+                        title: '',
+                        sectionTitle: 'Choose Your Allegiance',
+                        description: '',
+                        options: []
+                    }
+                }));
+            } else {
+                const stage = d.accountStageRef?.current;
+                if (stage && ['character-creation', 'stat-editing'].includes(stage)) {
+                    if (cmd.trim() !== '?') {
+                        d.setAccountState?.(prev => ({
+                            ...prev,
+                            creationPrompt: prev.creationPrompt ? { ...prev.creationPrompt, options: [] } : undefined
+                        }));
+                    }
                 }
             }
         }

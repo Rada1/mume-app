@@ -5,6 +5,17 @@
 
 /* --- Mobile Account Surface --- */
 .mobile-account-experience {
+    --account-bg: #17120e;
+    --account-surface: #211a14;
+    --account-surface-raised: #282017;
+    --account-surface-deep: #100d0a;
+    --account-border: rgba(195, 165, 87, 0.2);
+    --account-border-strong: rgba(195, 165, 87, 0.62);
+    --account-gold: #c2a44f;
+    --account-gold-bright: #d2b75f;
+    --account-gold-wash: rgba(194, 164, 79, 0.13);
+    --account-text: #d0c4a8;
+    --account-text-muted: #a99b80;
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
@@ -12,19 +23,19 @@
     min-height: 0;
     width: 100%;
     overflow: hidden;
-    color: #d4cdb8;
-    background: rgba(20, 15, 11, 0.96);
+    color: var(--account-text);
+    background: var(--account-bg);
     font-family: var(--font-mono, ui-monospace, monospace);
 }
 
 .mobile-account-header {
     flex: 0 0 auto;
-    border-bottom: 1px solid rgba(201, 168, 76, 0.22);
+    border-bottom: 1px solid var(--account-border);
 }
 
 .mobile-account-brand {
     padding: 14px 18px 10px;
-    color: #e5c36d;
+    color: var(--account-gold-bright);
     font-size: 1.05rem;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -41,10 +52,10 @@
     min-width: 0;
     min-height: 48px;
     padding: 8px 4px;
-    border: 1px solid rgba(201, 168, 76, 0.18);
+    border: 1px solid var(--account-border);
     border-radius: 6px;
-    background: rgba(20, 15, 11, 0.55);
-    color: #a79b82;
+    background: var(--account-surface);
+    color: var(--account-text-muted);
     font: inherit;
     font-size: 0.76rem;
     cursor: pointer;
@@ -52,9 +63,9 @@
 }
 
 .mobile-account-tabs button.is-active {
-    border-color: rgba(229, 195, 109, 0.72);
-    background: rgba(201, 168, 76, 0.13);
-    color: #f0cc6b;
+    border-color: var(--account-border-strong);
+    background: var(--account-gold-wash);
+    color: var(--account-gold-bright);
 }
 
 .mobile-account-body {
@@ -79,18 +90,18 @@
     min-height: 56px;
     box-sizing: border-box;
     padding: 12px 14px;
-    border: 1px solid rgba(201, 168, 76, 0.38);
+    border: 1px solid var(--account-border-strong);
     border-radius: 6px;
     outline: none;
-    background: rgba(10, 9, 8, 0.8);
-    color: #eee6d4;
+    background: var(--account-surface-deep);
+    color: #e3d8c2;
     font: inherit;
     font-size: 1rem;
 }
 
 .mobile-account-input:focus {
-    border-color: #d8b64e;
-    box-shadow: 0 0 0 2px rgba(216, 182, 78, 0.12);
+    border-color: var(--account-gold-bright);
+    box-shadow: 0 0 0 2px var(--account-gold-wash);
 }
 
 .mobile-account-remember {
@@ -98,14 +109,14 @@
     align-items: center;
     gap: 9px;
     min-height: 34px;
-    color: #aa9d84;
+    color: var(--account-text-muted);
     font-size: 0.8rem;
 }
 
 .mobile-account-remember input {
     width: 18px;
     height: 18px;
-    accent-color: #d8b64e;
+    accent-color: var(--account-gold);
 }
 
 /* --- Account Menu and Character List --- */
@@ -123,10 +134,10 @@
     min-width: 0;
     min-height: 56px;
     padding: 12px;
-    border: 1px solid rgba(201, 168, 76, 0.3);
+    border: 1px solid var(--account-border-strong);
     border-radius: 6px;
-    background: rgba(27, 21, 16, 0.86);
-    color: #ddd3be;
+    background: var(--account-surface);
+    color: var(--account-text);
     font: inherit;
     font-size: 0.92rem;
     font-weight: 600;
@@ -135,13 +146,13 @@
 }
 
 .mobile-account-action.is-primary {
-    border-color: rgba(229, 195, 109, 0.82);
-    background: rgba(201, 168, 76, 0.18);
-    color: #f0cc6b;
+    border-color: var(--account-gold);
+    background: var(--account-gold);
+    color: #211a14;
 }
 
 .mobile-account-action:active:not(:disabled) {
-    background: rgba(201, 168, 76, 0.25);
+    background: var(--account-gold-bright);
 }
 
 .mobile-account-action:disabled {
@@ -161,9 +172,9 @@
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
-    border: 1px solid rgba(201, 168, 76, 0.22);
+    border: 1px solid var(--account-border);
     border-radius: 6px;
-    background: rgba(12, 10, 8, 0.62);
+    background: var(--account-surface);
 }
 
 .mobile-account-character-head,
@@ -174,8 +185,8 @@
     box-sizing: border-box;
     padding: 12px 13px;
     border: 0;
-    border-bottom: 1px solid rgba(201, 168, 76, 0.13);
-    color: #b7ad98;
+    border-bottom: 1px solid var(--account-border);
+    color: var(--account-text);
     font-family: inherit;
     font-size: 0.82rem;
     line-height: 1.35;
@@ -187,8 +198,8 @@
     position: sticky;
     top: 0;
     z-index: 1;
-    background: #17120e;
-    color: #a99a79;
+    background: var(--account-surface-raised);
+    color: var(--account-text-muted);
     font-size: 0.72rem;
 }
 
@@ -200,9 +211,9 @@
 }
 
 .mobile-account-character-row.is-selected {
-    background: rgba(201, 168, 76, 0.12);
-    color: #f0cc6b;
-    box-shadow: inset 3px 0 #d8b64e;
+    background: var(--account-gold-wash);
+    color: var(--account-gold-bright);
+    box-shadow: inset 3px 0 var(--account-gold);
 }
 
 .mobile-account-character-actions {
@@ -229,9 +240,9 @@
     width: min(220px, 70vw);
     gap: 5px;
     padding: 7px;
-    border: 1px solid rgba(201, 168, 76, 0.42);
+    border: 1px solid var(--account-border-strong);
     border-radius: 6px;
-    background: #17120e;
+    background: var(--account-surface-raised);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
 }
 
@@ -245,9 +256,9 @@
     max-height: 32vh;
     overflow: auto;
     padding: 10px 12px;
-    border: 1px solid rgba(201, 168, 76, 0.18);
+    border: 1px solid var(--account-border);
     border-radius: 6px;
-    background: rgba(12, 10, 8, 0.58);
+    background: var(--account-surface);
     font-size: 0.85rem;
     line-height: 1.45;
 }
@@ -263,7 +274,7 @@
     justify-content: center;
     min-height: 52px;
     padding: 12px;
-    color: #a99a79;
+    color: var(--account-text-muted);
     font-size: 0.82rem;
 }
 

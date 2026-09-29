@@ -34,6 +34,20 @@ export const useLogPointerDown = (
         const targetEl = (e.target instanceof HTMLElement) ? e.target.closest('.inline-btn') as HTMLElement : (e.target as any)?.parentElement?.closest('.inline-btn') as HTMLElement;
         const label = targetEl?.innerText.trim() || '';
 
+        if (!viewport.isMobile && e.button === 0 && targetEl?.classList.contains('creation-choice-inline')) {
+            const command = targetEl.getAttribute('data-context');
+            if (command) {
+                targetEl.dataset.accountChoicePointerHandled = 'true';
+                window.setTimeout(() => {
+                    delete targetEl.dataset.accountChoicePointerHandled;
+                }, 500);
+                e.preventDefault();
+                e.stopPropagation();
+                executeCommand(command);
+            }
+            return;
+        }
+
         const isLong = joystick.isTargetModifierActive;
         const rawContextStrDown = targetEl ? (targetEl.getAttribute('data-context') || targetEl.innerText.trim()) : '';
         const effectiveContextStrDown = rawContextStrDown && keywordOverrides[rawContextStrDown] ? keywordOverrides[rawContextStrDown] : rawContextStrDown;
