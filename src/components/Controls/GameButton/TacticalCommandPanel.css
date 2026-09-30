@@ -2,7 +2,7 @@
 
 .unified-tactical-surface {
     --decision-panel-tint: transparent;
-    --decision-panel-blur: blur(18px) saturate(1.05);
+    --decision-panel-blur: none;
     position: fixed;
     z-index: 60001;
     inset: 0;
@@ -43,15 +43,15 @@
     position: relative;
     z-index: 10;
     display: grid;
-    flex: 0 0 44px;
+    flex: 0 0 52px;
     width: 100%;
-    height: 44px;
+    height: 52px;
     box-sizing: border-box;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: center;
     justify-items: center;
-    gap: 6px;
-    padding: 0 12px;
+    gap: 4px;
+    padding: 0 8px;
     background: var(--decision-panel-tint);
     backdrop-filter: var(--decision-panel-blur);
     -webkit-backdrop-filter: var(--decision-panel-blur);
@@ -60,14 +60,14 @@
 
 .unified-tactical-panel-action {
     display: flex;
-    width: 42px;
-    height: 40px;
-    min-height: 40px;
+    width: min(120px, 100%);
+    height: 48px;
+    min-height: 48px;
     align-items: center;
     justify-content: center;
     padding: 0;
     border: 0;
-    border-radius: 10px;
+    border-radius: 0;
     appearance: none;
     -webkit-appearance: none;
     background: transparent;
@@ -88,7 +88,7 @@
 }
 
 .unified-tactical-panel-action.is-active {
-    border-radius: 10px;
+    border-radius: 0;
     background: rgba(var(--set-accent-rgb, 224, 189, 63), 0.24);
     color: #ffe285;
     box-shadow: inset 0 0 0 1px rgba(var(--set-accent-rgb, 224, 189, 63), 0.72), 0 0 18px rgba(var(--set-accent-rgb, 224, 189, 63), 0.2);
@@ -116,6 +116,8 @@
     flex-direction: column;
     gap: 0;
     overflow: hidden;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .unified-tactical-panel-scroll {
@@ -176,10 +178,15 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 0;
     background: rgba(255, 255, 255, 0.025);
-    color: rgba(232, 235, 240, 0.86);
-    font: 600 11px/1.15 var(--font-mono, monospace);
+    color: rgba(238, 239, 242, 0.92);
+    font: 700 clamp(14px, 4vw, 18px)/1.15 var(--font-mono, monospace);
     text-align: center;
     touch-action: none;
+}
+
+.unified-tactical-command-item.is-unlearned {
+    color: rgba(158, 151, 137, 0.52);
+    text-shadow: none;
 }
 
 .unified-tactical-command-icon {
@@ -210,6 +217,11 @@
     color: #fff4c4;
 }
 
+.unified-tactical-command-item.is-target-ready {
+    color: var(--target-glow-color, #f87171);
+    text-shadow: 0 0 6px var(--target-glow-color, #f87171), 0 0 12px color-mix(in srgb, var(--target-glow-color, #f87171) 65%, transparent);
+}
+
 .unified-tactical-command-item.is-swap-source {
     background: rgba(59, 130, 246, 0.32);
     box-shadow: inset 0 0 0 3px rgba(96, 165, 250, 0.98), 0 0 24px rgba(59, 130, 246, 0.65);
@@ -233,6 +245,19 @@
     box-shadow: none;
     animation: none;
     overflow: hidden;
+}
+
+/* Status content replaces the target list, so it should start at the same
+   top edge instead of inheriting the floating menu's inset spacing. */
+.unified-tactical-surface .tactical-target-bar-custom-content {
+    flex: 1 1 auto;
+    padding: 0;
+}
+
+.unified-tactical-surface .tactical-target-bar-custom-content > .this-is-you-console {
+    margin: 0;
+    padding-top: 0;
+    border-top: 0;
 }
 
 .unified-tactical-surface .tactical-target-bar-header {
@@ -271,6 +296,14 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: minmax(0, 1fr);
     overflow: hidden;
+}
+
+.unified-tactical-surface .tactical-target-bar.is-full-width-target-list .tactical-target-bar-columns.tactical-target-bar-single-column {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.unified-tactical-surface .tactical-target-bar.is-full-width-target-list .tactical-target-bar-empty-column {
+    display: none;
 }
 
 .unified-tactical-surface .tactical-target-bar-column {
@@ -312,10 +345,16 @@
 }
 
 .unified-tactical-surface .tactical-target-bar-item:hover,
-.unified-tactical-surface .tactical-target-bar-item:active,
-.unified-tactical-surface .tactical-target-bar-item.is-selected {
+.unified-tactical-surface .tactical-target-bar-item:active {
     transform: none;
     border-color: rgba(74, 222, 128, 0.58);
+    background: transparent;
+    box-shadow: none;
+}
+
+.unified-tactical-surface .tactical-target-bar-item.is-selected {
+    transform: none;
+    border-color: var(--color-target, #facc15);
     background: transparent;
     box-shadow: none;
 }
@@ -324,7 +363,7 @@
 .unified-tactical-surface .tactical-target-bar-item.is-locked .tactical-target-bar-name { color: #86efac; }
 
 .unified-tactical-surface .tactical-target-bar-item.is-confirmed {
-    border-color: rgba(74, 222, 128, 0.9);
+    border-color: var(--color-target, #facc15);
     background: transparent;
     box-shadow: none;
 }

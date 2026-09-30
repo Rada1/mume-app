@@ -69,7 +69,10 @@ interface SettingsState {
     theme: 'dark' | 'light';
     drawerZoom: number;
     isImmersionMode: boolean;
+    isClassicMode: boolean;
     isPerformanceMode: boolean;
+    keepScreenAwake: boolean;
+    screenWakeLockStatus: 'disabled' | 'active' | 'paused' | 'insecure-context' | 'unsupported' | 'unavailable';
     accentColor: string;
     bgImage: string | null;
     bgImageBottom: string | null;
@@ -91,7 +94,6 @@ interface SettingsState {
     showSpectatePromptInLog: boolean;
     useMobileAccountPanels: boolean;
     showChatWindow: boolean;
-    showPlayersPanel: boolean;
     showControls: boolean;
     showOrganicTerrain: boolean;
     hidePrompt: boolean;
@@ -112,6 +114,7 @@ interface SettingsState {
     masterVolume: number;
     sfxVolume: number;
     musicVolume: number;
+    drumVolume: number;
     allowMapPersistence: boolean;
     unveilMap: boolean;
     zoneFocusGrayscale: boolean;
@@ -122,6 +125,7 @@ interface SettingsState {
     useLegacyMapArt: boolean;
     hideMapHeaderFooter: boolean;
     mapDrawerOpacity: number;
+    mapBrightness: number;
     characterDrawerOpacity: number;
     bottomBarOpacity: number;
     mapTileVisuals: MapTileVisualAdjustments;
@@ -138,7 +142,10 @@ interface SettingsState {
     setTheme: (val: 'dark' | 'light') => void;
     setDrawerZoom: (val: number) => void;
     setIsImmersionMode: (val: boolean) => void;
+    setIsClassicMode: (val: boolean) => void;
     setIsPerformanceMode: (val: boolean) => void;
+    setKeepScreenAwake: (val: boolean) => void;
+    setScreenWakeLockStatus: (val: SettingsState['screenWakeLockStatus']) => void;
     setAccentColor: (val: string) => void;
     setBgImage: (val: string | null) => void;
     setBgImageBottom: (val: string | null) => void;
@@ -162,7 +169,6 @@ interface SettingsState {
     setShowSpectatePromptInLog: (val: boolean) => void;
     setUseMobileAccountPanels: (val: boolean) => void;
     setShowChatWindow: (val: boolean) => void;
-    setShowPlayersPanel: (val: boolean) => void;
     setShowControls: (val: boolean) => void;
     setShowOrganicTerrain: (val: boolean) => void;
     setHidePrompt: (val: boolean) => void;
@@ -182,6 +188,7 @@ interface SettingsState {
     setMasterVolume: (val: number) => void;
     setSfxVolume: (val: number) => void;
     setMusicVolume: (val: number) => void;
+    setDrumVolume: (val: number) => void;
     setAllowMapPersistence: (val: boolean) => void;
     setUnveilMap: (val: boolean) => void;
     setZoneFocusGrayscale: (val: boolean) => void;
@@ -192,6 +199,7 @@ interface SettingsState {
     setUseLegacyMapArt: (val: boolean) => void;
     setHideMapHeaderFooter: (val: boolean) => void;
     setMapDrawerOpacity: (val: number) => void;
+    setMapBrightness: (val: number) => void;
     setMapTileVisuals: (val: Partial<MapTileVisualAdjustments>) => void;
     setMapBackgroundVisuals: (val: Partial<MapBackgroundVisualAdjustments>) => void;
     resetMapVisuals: () => void;
@@ -278,7 +286,10 @@ export const useSettingsStore = create<SettingsState>()(
             theme: 'dark',
             drawerZoom: 1.0,
             isImmersionMode: false,
+            isClassicMode: false,
             isPerformanceMode: false,
+            keepScreenAwake: false,
+            screenWakeLockStatus: 'disabled',
             accentColor: '#d4aa00',
             bgImage: null,
             bgImageBottom: null,
@@ -301,7 +312,6 @@ export const useSettingsStore = create<SettingsState>()(
             showSpectatePromptInLog: true,
             useMobileAccountPanels: true,
             showChatWindow: false,
-            showPlayersPanel: false,
             showControls: true,
             showOrganicTerrain: true,
             hidePrompt: false,
@@ -323,6 +333,7 @@ export const useSettingsStore = create<SettingsState>()(
             masterVolume: 1.0,
             sfxVolume: 0.5,
             musicVolume: 0.5,
+            drumVolume: 0.65,
             customSoundEffects: {},
 
             allowMapPersistence: true,
@@ -335,6 +346,7 @@ export const useSettingsStore = create<SettingsState>()(
             useLegacyMapArt: true,
             hideMapHeaderFooter: false,
             mapDrawerOpacity: 1.0,
+            mapBrightness: 100,
             characterDrawerOpacity: 1.0,
             bottomBarOpacity: 1.0,
             mapTileVisuals: DEFAULT_MAP_TILE_VISUALS,
@@ -358,7 +370,10 @@ export const useSettingsStore = create<SettingsState>()(
             setTheme: (theme) => set({ theme }),
             setDrawerZoom: (drawerZoom) => set({ drawerZoom }),
             setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
+            setIsClassicMode: (isClassicMode) => set({ isClassicMode }),
             setIsPerformanceMode: (isPerformanceMode) => set({ isPerformanceMode }),
+            setKeepScreenAwake: (keepScreenAwake) => set({ keepScreenAwake }),
+            setScreenWakeLockStatus: (screenWakeLockStatus) => set({ screenWakeLockStatus }),
             setAccentColor: (accentColor) => set({ accentColor }),
             setBgImage: (bgImage) => set({ bgImage }),
             setBgImageBottom: (bgImageBottom) => set({ bgImageBottom }),
@@ -380,7 +395,6 @@ export const useSettingsStore = create<SettingsState>()(
             setShowSpectatePromptInLog: (showSpectatePromptInLog) => set({ showSpectatePromptInLog }),
             setUseMobileAccountPanels: (useMobileAccountPanels) => set({ useMobileAccountPanels }),
             setShowChatWindow: (showChatWindow) => set({ showChatWindow }),
-            setShowPlayersPanel: (showPlayersPanel) => set({ showPlayersPanel }),
             setShowControls: (showControls) => set({ showControls }),
             setShowOrganicTerrain: (showOrganicTerrain) => set({ showOrganicTerrain }),
             setHidePrompt: (hidePrompt) => set({ hidePrompt }),
@@ -434,6 +448,7 @@ export const useSettingsStore = create<SettingsState>()(
             setMasterVolume: (masterVolume) => set({ masterVolume }),
             setSfxVolume: (sfxVolume) => set({ sfxVolume }),
             setMusicVolume: (musicVolume) => set({ musicVolume }),
+            setDrumVolume: (drumVolume) => set({ drumVolume: Math.max(0, Math.min(0.65, drumVolume)) }),
             setAllowMapPersistence: (allowMapPersistence) => set({ allowMapPersistence }),
             setUnveilMap: (unveilMap) => set({ unveilMap }),
             setZoneFocusGrayscale: (zoneFocusGrayscale) => set({ zoneFocusGrayscale }),
@@ -444,6 +459,7 @@ export const useSettingsStore = create<SettingsState>()(
             setUseLegacyMapArt: (useLegacyMapArt) => set({ useLegacyMapArt }),
             setHideMapHeaderFooter: (hideMapHeaderFooter) => set({ hideMapHeaderFooter }),
             setMapDrawerOpacity: (mapDrawerOpacity) => set({ mapDrawerOpacity }),
+            setMapBrightness: (mapBrightness) => set({ mapBrightness: Math.max(50, Math.min(300, mapBrightness)) }),
             setCharacterDrawerOpacity: (characterDrawerOpacity) => set({ characterDrawerOpacity }),
             setBottomBarOpacity: (bottomBarOpacity) => set({ bottomBarOpacity }),
             setMapTileVisuals: (mapTileVisuals) => set((state) => ({
@@ -488,7 +504,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 28,
+            version: 32,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -698,6 +714,34 @@ export const useSettingsStore = create<SettingsState>()(
                     }
                 }
 
+                if (version < 29) {
+                    const previousAllyDefaultColors = new Set(['#6c71f9', 'rgb(108, 113, 249)']);
+                    const playerColor = String(persistedState.playerColor || '').toLowerCase();
+                    if (!playerColor || previousAllyDefaultColors.has(playerColor)) {
+                        persistedState.playerColor = COLOR_ALLY;
+                    }
+                    if (Array.isArray(persistedState.categoryOverrides)) {
+                        persistedState.categoryOverrides = persistedState.categoryOverrides.map((override: CategoryOverride) => {
+                            const id = toCategoryId(override.id) || override.id;
+                            const color = String(override.color || '').toLowerCase();
+                            if ((id === 'cat-ally' || id === 'cat-ally-remote') && previousAllyDefaultColors.has(color)) {
+                                return { ...override, color: COLOR_ALLY };
+                            }
+                            return override;
+                        });
+                    }
+                }
+
+                if (version < 30) {
+                    persistedState.drumVolume = typeof persistedState.musicVolume === 'number'
+                        ? persistedState.musicVolume
+                        : 0.5;
+                }
+
+                if (version < 31 && typeof persistedState.drumVolume === 'number') {
+                    persistedState.drumVolume = Math.max(0, Math.min(0.65, persistedState.drumVolume));
+                }
+
                 if (Array.isArray(persistedState.zoneMusic)) {
                     persistedState.zoneMusic = persistedState.zoneMusic
                         .filter((mapping: ZoneMusicMapping) => {
@@ -749,7 +793,6 @@ export const useSettingsStore = create<SettingsState>()(
                 merged.useLegacyMapArt = merged.useLegacyMapArt ?? true;
                 merged.hideMapHeaderFooter = merged.hideMapHeaderFooter ?? false;
                 merged.showChatWindow = merged.showChatWindow ?? false;
-                merged.showPlayersPanel = merged.showPlayersPanel ?? false;
                 let validFilters = merged.zoneFilters;
                 if (validFilters) {
                     const firstKey = Object.keys(validFilters)[0];
@@ -772,6 +815,7 @@ export const useSettingsStore = create<SettingsState>()(
                     inlineCategories: _inlineCategories,
                     teleportTargets: _teleportTargets,
                     currentCharacter: _currentCharacter,
+                    screenWakeLockStatus: _screenWakeLockStatus,
                     ...persisted
                 } = state;
                 return persisted;

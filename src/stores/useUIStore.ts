@@ -63,7 +63,6 @@ export interface UIState {
     
     // Tab States for Drawers
     gearTab: 'worn' | 'inv' | 'vicinity';
-    playersTab: 'online' | 'nearby' | 'group';
     charTab: 'info' | 'quests' | 'skills' | 'achievements';
 
     // Quick buttons (ephemeral, session-only)
@@ -93,7 +92,6 @@ export interface UIState {
 
     // Actions
     setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
-    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills' | 'achievements') => void;
     
     setDrawer: (drawer: DrawerType) => void;
@@ -192,11 +190,9 @@ export const useUIStore = create<UIState>((set) => ({
     setShopkeeperName: (name) => set({ shopkeeperName: name }),
 
     gearTab: 'worn',
-    playersTab: 'online',
     charTab: 'info',
 
     setGearTab: (tab) => set({ gearTab: tab }),
-    setPlayersTab: (tab) => set({ playersTab: tab }),
     setCharTab: (tab) => set({ charTab: tab }),
 
     setDrawer: (drawer) => set((state) => {

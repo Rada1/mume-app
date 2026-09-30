@@ -5,6 +5,7 @@ import { findBestTextRoomMatch } from '../textRoomMatcher';
 import { sanitizeTextDerivedDoorExits } from '../mapperExitSanitizer';
 import { findRoomByExitSignature } from '../mapperExitSignature';
 import { recordLearnedServerId } from '../learnedServerIds';
+import { mergeExitDoorState } from './exitDoorState';
 
 interface RoomInfoProps {
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
@@ -673,24 +674,38 @@ export const useRoomInfoHandler = ({
             for (const dir in data.exits) {
                 const gmcpExit = data.exits[dir];
                 if (gmcpExit === false) continue;
-                const gmcpDestId = typeof gmcpExit === 'number' ? gmcpExit : gmcpExit.id;
-                let exName = undefined, exFlags = undefined;
-                if (typeof gmcpExit === 'object') { exName = gmcpExit.name; exFlags = gmcpExit.flags; }
+                const existingExit = room.exits?.[dir];
+                const gmcpDestId = typeof gmcpExit === 'number' ? gmcpExit : gmcpExit.id ?? existingExit?.gmcpDestId;
+                const doorState = mergeExitDoorState(existingExit, gmcpExit);
 
                 let internalTarget = undefined;
                 if (gmcpDestId) {
                     if (preloadedCoordsRef.current[String(gmcpDestId)]) internalTarget = `m_${gmcpDestId}`;
                     else internalTarget = Object.keys(newRooms).find(key => String(newRooms[key].gmcpId) === String(gmcpDestId));
                 }
-                const exFlagsLow = (exFlags || []).map(f => f.toLowerCase());
-                const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
-                const isDoor = isClosed || (typeof gmcpExit === 'object' && (gmcpExit as any).door) || !!exName || exFlagsLow.some(f => /door|gate|portcullis|secret/i.test(f));
+                const fallbackExit = ghostData?.[4]?.[dir];
+                const mergedFlags = doorState.flags.length > 0
+                    ? doorState.flags
+                    : (existingExit?.flags ?? fallbackExit?.flags ?? []);
+                const nextExit = {
+                    ...existingExit,
+                    target: internalTarget || existingExit?.target || "",
+                    gmcpDestId,
+                    name: doorState.name,
+                    doorName: existingExit?.doorName ?? doorState.name,
+                    flags: mergedFlags,
+                    closed: doorState.closed,
+                    hasDoor: doorState.hasDoor,
+                };
+                updatedExits[dir] = nextExit;
 
-                const mergedFlags = exFlags && exFlags.length > 0 ? exFlags : (ghostData?.[4]?.[dir]?.flags || room.exits?.[dir]?.flags || []);
-                updatedExits[dir] = { target: internalTarget || "", gmcpDestId, name: exName, flags: mergedFlags, closed: isClosed, hasDoor: !!isDoor };
-
-                const existingExit = room.exits && room.exits[dir];
-                if (!existingExit || existingExit.gmcpDestId !== gmcpDestId || existingExit.closed !== isClosed) {
+                if (!existingExit
+                    || existingExit.gmcpDestId !== gmcpDestId
+                    || existingExit.closed !== nextExit.closed
+                    || existingExit.hasDoor !== nextExit.hasDoor
+                    || existingExit.name !== nextExit.name
+                    || existingExit.doorName !== nextExit.doorName
+                    || existingExit.flags?.join('|') !== nextExit.flags.join('|')) {
                     exitsChanged = true;
                 }
             }

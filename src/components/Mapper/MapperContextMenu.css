@@ -1,0 +1,69 @@
+/**
+ * @file MapperContextMenu.css
+ * @description Brown terminal styling for right-click map actions.
+ */
+.mapper-context-menu-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+}
+
+.mapper-context-menu {
+    --context-menu-accent: #dfbf6c;
+    position: absolute;
+    z-index: 1001;
+    display: flex;
+    min-width: 160px;
+    box-sizing: border-box;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    color: #d4cdb8;
+    background: rgba(33, 27, 22, 0.97);
+    border: 1px solid rgba(201, 168, 76, 0.28);
+    border-radius: 0;
+    box-shadow: 8px 12px 20px rgba(0, 0, 0, 0.38);
+    font-family: var(--font-mono, monospace);
+    scrollbar-color: rgba(201, 168, 76, 0.3) transparent;
+}
+
+.mapper-context-menu-action {
+    display: flex;
+    width: 100%;
+    min-height: 32px;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    color: var(--context-menu-accent);
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    font: 600 0.72rem/1.2 var(--font-mono, monospace);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 120ms ease, color 120ms ease;
+}
+
+.mapper-context-menu-action svg {
+    flex: 0 0 14px;
+}
+
+.mapper-context-menu-action:hover,
+.mapper-context-menu-action:focus-visible {
+    background: rgba(201, 168, 76, 0.12);
+    outline: none;
+}
+
+.mapper-context-menu-action--muted {
+    color: #a99c86;
+}
+
+.mapper-context-menu-action--walk {
+    color: #a6d28f;
+}
+
+.mapper-context-menu-action--danger {
+    color: #d98f86;
+}

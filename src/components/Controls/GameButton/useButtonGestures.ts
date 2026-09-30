@@ -42,7 +42,7 @@ export interface UseButtonGesturesProps {
     isMobile?: boolean;
     tacticalTargeting?: UseTacticalTargetingReturn;
     isStagedTargetMenuRef?: React.RefObject<boolean>;
-    onSelectStagedTargetRef?: React.RefObject<(targetValue: string, columnIndex: number) => void>;
+    onSelectStagedTargetRef?: React.RefObject<(targetValue: string, columnIndex: number) => boolean>;
     onCommitStagedTargetRef?: React.RefObject<() => boolean>;
     isWheelReplacementModeRef?: React.RefObject<boolean>;
     isRebindingGestureRef?: React.MutableRefObject<boolean>;
@@ -187,6 +187,7 @@ export const useButtonGestures = ({
             const rect = el.getBoundingClientRect();
             el._startX = e.clientX;
             el._startY = e.clientY;
+            el._heldTargetListScroll = null;
             el._startTime = Date.now();
             el._maxDist = 0;
             el._didFire = false;
@@ -227,7 +228,9 @@ export const useButtonGestures = ({
             const paletteCell = isPanelPinned
                 ? (e.target as HTMLElement).closest('[data-palette-command]') as HTMLElement | null
                 : null;
-            const paletteCommand = paletteCell?.dataset.paletteCommand?.trim();
+            const paletteCommand = paletteCell?.dataset.paletteLearned === 'false'
+                ? undefined
+                : paletteCell?.dataset.paletteCommand?.trim();
             panelHoverCellRef && (panelHoverCellRef.current = wheelDirection
                 ? { kind: 'wheel', direction: wheelDirection }
                 : paletteCommand && paletteCell
@@ -290,6 +293,14 @@ export const useButtonGestures = ({
         }
         const paletteCell = hit?.closest('[data-palette-command]') as HTMLElement | null | undefined;
         const wheelCell = hit?.closest('[data-wheel-direction]') as HTMLElement | null | undefined;
+        if (paletteCell?.dataset.paletteLearned === 'false') {
+            panelHoverCellRef && (panelHoverCellRef.current = null);
+            currentCommandRef.current = button.command;
+            lastActiveDirRef.current = null;
+            setActiveDir(null);
+            setCommandPreview(null);
+            return;
+        }
         if (paletteCell?.dataset.paletteCommand?.trim()) {
             panelHoverCellRef && (panelHoverCellRef.current = {
                 kind: 'palette',
@@ -357,11 +368,9 @@ export const useButtonGestures = ({
             return;
         }
 
-        if (heldButton?.id === button.id && heldButton.didFire) {
-            return;
-        }
-
         const pointerHit = document.elementFromPoint?.(e.clientX, e.clientY);
+        if (heldButton?.id === button.id && heldButton.didFire
+            && !pointerHit?.closest('.tactical-target-bar-list, .shop-target-menu .shop-panel-content')) return;
         if (tacticalTargeting?.isTargetColumnOpen) {
             selectPanelCellAtPoint(e.clientX, e.clientY, el);
         }
@@ -443,6 +452,17 @@ export const useButtonGestures = ({
         const paletteList = pointerHit?.closest('.unified-tactical-command-palette') as HTMLElement | null | undefined;
         const paletteCell = pointerHit?.closest('[data-palette-command]') as HTMLElement | null | undefined;
         if (tacticalTargeting?.isTargetColumnOpen && paletteList) {
+            if (paletteCell?.dataset.paletteLearned === 'false') {
+                if (el._panelPaletteDragTimer) window.clearTimeout(el._panelPaletteDragTimer);
+                el._panelPaletteDragTimer = null;
+                el._panelPaletteCandidate = null;
+                panelHoverCellRef && (panelHoverCellRef.current = null);
+                currentCommandRef.current = button.command;
+                lastActiveDirRef.current = null;
+                setActiveDir(null);
+                setCommandPreview(null);
+                return;
+            }
             const paletteCommand = paletteCell?.dataset.paletteCommand?.trim() || '';
             const gestureDistance = Math.hypot(e.clientX - el._startX, e.clientY - el._startY);
             if (!el._panelPaletteDragSource && gestureDistance > 12) {
@@ -478,11 +498,42 @@ export const useButtonGestures = ({
             el._panelPaletteCandidate = null;
         }
 
-        const targetList = pointerHit?.closest('.tactical-target-bar-list') as HTMLElement | null | undefined;
+        const targetList = pointerHit?.closest('.tactical-target-bar-list, .shop-target-menu .shop-panel-content') as HTMLElement | null | undefined;
         const isScrollingTargetList = Boolean(targetList && targetList.scrollHeight > targetList.clientHeight + 1);
         const isOverTargetChoice = Boolean(
-            pointerHit?.closest('.tactical-target-bar-item, [data-direction-value]')
+            pointerHit?.closest('.tactical-target-bar-item, .shop-target-menu [data-shop-target-value], [data-direction-value]')
         );
+        if (tacticalTargeting?.isTargetColumnOpen && targetList && isScrollingTargetList) {
+            const scrollState = el._heldTargetListScroll as {
+                list: HTMLElement;
+                y: number;
+                pendingDelta: number;
+                isScrolling: boolean;
+            } | null;
+            if (scrollState?.list === targetList) {
+                const deltaY = e.clientY - scrollState.y;
+                const pendingDelta = scrollState.pendingDelta - deltaY;
+                const isScrolling = scrollState.isScrolling || Math.abs(pendingDelta) > 8;
+                const pointerEvent = e.nativeEvent as PointerEvent & { __targetListScrollHandled?: boolean };
+                if (isScrolling && !pointerEvent.__targetListScrollHandled) {
+                    targetList.scrollTop += scrollState.isScrolling ? -deltaY : pendingDelta;
+                    if (e.cancelable) e.preventDefault();
+                }
+                targetList.dataset.scrolling = isScrolling ? 'true' : 'false';
+                el._heldTargetListScroll = {
+                    list: targetList,
+                    y: e.clientY,
+                    pendingDelta: isScrolling ? 0 : pendingDelta,
+                    isScrolling
+                };
+            } else {
+                el._heldTargetListScroll = { list: targetList, y: e.clientY, pendingDelta: 0, isScrolling: false };
+            }
+        } else {
+            const previousScroll = el._heldTargetListScroll as { list: HTMLElement } | null;
+            if (previousScroll) previousScroll.list.dataset.scrolling = 'false';
+            el._heldTargetListScroll = null;
+        }
         if (tacticalTargeting?.isTargetColumnOpen && (isOverTargetChoice || isScrollingTargetList)) {
             // Let target choices and scrollable lists consume this part of the
             // held gesture. The empty full-screen panel must remain swipe-through.
@@ -665,9 +716,6 @@ export const useButtonGestures = ({
         }
 
         if (nextActiveDir !== el._lastActiveDir) {
-            if (!isCancelZone) {
-                if (isSoundEnabled) playClickSound();
-            }
             el._lastActiveDir = nextActiveDir;
         }
 
@@ -709,6 +757,7 @@ export const useButtonGestures = ({
     const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         if (e.cancelable) e.preventDefault();
         const el = e.currentTarget as any;
+        el._heldTargetListScroll = null;
         try { el.releasePointerCapture(e.pointerId); } catch(err) {}
         
         if (isEditMode) return;
@@ -732,6 +781,21 @@ export const useButtonGestures = ({
         el._panelAutoScrollPoint = null;
         el._panelPaletteIsScrolling = false;
         el._panelPaletteCandidate = null;
+        if (tacticalTargeting?.isTargetColumnOpen
+            && releaseHit?.closest('[data-palette-learned="false"]')) {
+            el._panelPaletteDragSource = null;
+            panelHoverCellRef && (panelHoverCellRef.current = null);
+            if (swapSourceRef) swapSourceRef.current = null;
+            setHeldButton(null);
+            setCommandPreview(null);
+            lastPreviewRef.current = null;
+            setActiveDir(null);
+            lastActiveDirRef.current = null;
+            tacticalTargeting.releaseTargetMenu();
+            updateRay(0, 0, 0);
+            el._startX = null; el._startY = null; el._startTime = null; el._maxDist = 0;
+            return;
+        }
         if (tacticalTargeting?.isTargetColumnOpen && releasedPanelAction) {
             if (releasedPanelAction.classList.contains('is-close')) {
                 onCancelPanel?.();
@@ -793,11 +857,10 @@ export const useButtonGestures = ({
             return;
         }
 
-        const releasedPaletteCell = releaseHit?.closest('[data-palette-command]') as HTMLElement | null | undefined;
+        const releasedPaletteCell = releaseHit?.closest('[data-palette-command][data-palette-learned="true"]') as HTMLElement | null | undefined;
         const paletteCommand = releasedPaletteCell?.dataset.paletteCommand?.trim();
         if (tacticalTargeting?.isTargetColumnOpen && paletteCommand) {
             const actionType = (releasedPaletteCell?.dataset.paletteActionType || 'command') as import('../../../types').ActionType;
-            let keepDecisionPanelOpen = false;
             currentCommandRef.current = paletteCommand;
             const effectiveTarget = tacticalTargeting.getEffectiveTarget(paletteCommand);
             if (canCommandAcceptTarget(paletteCommand) && !effectiveTarget) {
@@ -817,19 +880,16 @@ export const useButtonGestures = ({
                     : paletteCommand;
                 onCommandExecuted?.(resolved);
                 executeCommand(resolved, false, false);
-                keepDecisionPanelOpen = true;
             }
-            if (keepDecisionPanelOpen) {
-                tacticalTargeting.clearSelection();
-                tacticalTargeting.releaseTargetMenu();
-            } else {
-                tacticalTargeting.resetTargeting();
-            }
+            tacticalTargeting.resetTargeting();
             setHeldButton(null);
             setCommandPreview(null);
             lastPreviewRef.current = null;
             setActiveDir(null);
             lastActiveDirRef.current = null;
+            setIsCancelling(false);
+            lastCancellingRef.current = false;
+            document.documentElement.style.removeProperty('--preview-glow-color');
             updateRay(0, 0, 0);
             el._startX = null; el._startY = null; el._startTime = null; el._maxDist = 0;
             return;
@@ -857,11 +917,12 @@ export const useButtonGestures = ({
         // Resolve the row at the finger position before deciding whether to
         // execute the held command or close an unselected menu.
         const targetList = tacticalTargeting?.isTargetColumnOpen
-            ? document.elementFromPoint?.(e.clientX, e.clientY)?.closest('.tactical-target-bar-list') as HTMLElement | null | undefined
+            ? document.elementFromPoint?.(e.clientX, e.clientY)?.closest('.tactical-target-bar-list, .shop-target-menu .shop-panel-content') as HTMLElement | null | undefined
             : null;
         const targetRow = targetList?.matches('[data-scrolling="true"]')
             ? null
-            : document.elementFromPoint?.(e.clientX, e.clientY)?.closest('.tactical-target-bar-item') as HTMLElement | null | undefined;
+            : document.elementFromPoint?.(e.clientX, e.clientY)?.closest('.tactical-target-bar-item, .shop-target-menu [data-shop-target-value]') as HTMLElement | null | undefined;
+        const selectedTargetValue = targetRow?.dataset.targetValue || targetRow?.dataset.shopTargetValue;
         const targetColumn = targetRow?.dataset.targetColumn;
         const targetDirection = document.elementFromPoint?.(e.clientX, e.clientY)?.closest('[data-direction-value]') as HTMLElement | null | undefined;
         if (targetList) targetList.dataset.scrolling = 'false';
@@ -869,17 +930,37 @@ export const useButtonGestures = ({
         const targetCommand = hasExplicitWheelSelection
             ? currentCommandRef.current
             : currentCommandRef.current || button.command;
-        const selectedReplacement = Boolean(targetRow?.dataset.targetValue && isWheelReplacementModeRef?.current);
-        if (targetRow?.dataset.targetValue && tacticalTargeting) {
-            if (targetColumn !== undefined) onSelectStagedTargetRef?.current(targetRow.dataset.targetValue, Number(targetColumn));
+        const selectedReplacement = Boolean(selectedTargetValue && isWheelReplacementModeRef?.current);
+        let keepStagedMenuOpen = false;
+        if (selectedTargetValue && tacticalTargeting) {
+            if (targetColumn !== undefined) keepStagedMenuOpen = onSelectStagedTargetRef?.current(selectedTargetValue, Number(targetColumn)) || false;
             else if (isWheelReplacementModeRef?.current) {
-                const replacementCommand = onSelectWheelReplacementRef?.current?.(targetRow.dataset.targetValue);
+                const replacementCommand = onSelectWheelReplacementRef?.current?.(selectedTargetValue);
                 if (replacementCommand) currentCommandRef.current = replacementCommand;
                 tacticalTargeting.clearSelection();
             }
-            else if (targetCommand.trim()) tacticalTargeting.handleSelectTarget(targetRow.dataset.targetValue, targetCommand);
+            else if (targetCommand.trim()) tacticalTargeting.handleSelectTarget(selectedTargetValue, targetCommand);
         } else if (targetDirection?.dataset.directionValue && tacticalTargeting) {
             if (targetCommand.trim()) tacticalTargeting.handleSelectDirection(targetDirection.dataset.directionValue, targetCommand);
+        }
+
+        if (keepStagedMenuOpen && tacticalTargeting) {
+            tacticalTargeting.clearSelection();
+            tacticalTargeting.releaseTargetMenu();
+            setHeldButton(null);
+            setCommandPreview(null);
+            lastPreviewRef.current = null;
+            document.documentElement.style.removeProperty('--preview-glow-color');
+            setActiveDir(null);
+            lastActiveDirRef.current = null;
+            setIsCancelling(false);
+            lastCancellingRef.current = false;
+            updateRay(0, 0, 0);
+            el._startX = null;
+            el._startY = null;
+            el._startTime = null;
+            el._maxDist = 0;
+            return;
         }
 
         // If the initiating finger itself selects a replacement, keep the panel
@@ -962,7 +1043,7 @@ export const useButtonGestures = ({
             const effectiveTarget = tacticalTargeting.getEffectiveTarget(targetCommand);
             const isLongSwipe = (el._maxDist || 0) > 15;
             const hasPickedDirection = Boolean(tacticalTargeting.pendingDirection || targetDirection?.dataset.directionValue);
-            const hasSelectedTarget = tacticalTargeting.hasSelectedTarget || Boolean(targetRow?.dataset.targetValue);
+            const hasSelectedTarget = tacticalTargeting.hasSelectedTarget || Boolean(selectedTargetValue);
             const isWheelCellRelease = Boolean(releaseHit?.closest('.unified-tactical-wheel .swipe-wheel-container'));
             const didExecuteTargetedCommand = !tacticalTargeting.fireOnTargetTap
                 && !isStagedTargetMenuRef?.current
@@ -972,6 +1053,7 @@ export const useButtonGestures = ({
             const didExecuteBlankTargetCommand = !tacticalTargeting.fireOnTargetTap
                 && !isStagedTargetMenuRef?.current
                 && tacticalTargeting.pendingTarget === '__blank_target__'
+                && targetCommand.trim().toLowerCase() !== 'status'
                 && Boolean(targetCommand.trim())
                 && !canCommandAcceptTarget(targetCommand);
             const releasedOnSwipeWheel = Boolean(document.elementFromPoint?.(e.clientX, e.clientY)
@@ -1087,6 +1169,18 @@ export const useButtonGestures = ({
         }
 
         if (previewCmd && previewCmd.cmd && previewCmd.cmd.trim() !== '') {
+            if (previewCmd.cmd.trim().toLowerCase() === 'status') {
+                tacticalTargeting?.openTargetMenu('status');
+                setHeldButton(null);
+                setCommandPreview(null);
+                lastPreviewRef.current = null;
+                setActiveDir(null);
+                lastActiveDirRef.current = null;
+                setIsCancelling(false);
+                lastCancellingRef.current = false;
+                document.documentElement.style.removeProperty('--preview-glow-color');
+                return;
+            }
             if (effectiveTarget && canCommandAcceptTarget(currentTargetCommand)) {
                 rememberCommandTarget(currentTargetCommand, effectiveTarget);
             }

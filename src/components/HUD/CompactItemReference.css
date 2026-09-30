@@ -54,15 +54,9 @@
 
 .compact-item-reference-empty { color: #796d5c; }
 
-/* Same subtle left-to-right tier wash used by equipment links in the log. The
-   item text itself stays in the reference panel's normal object colour. */
+/* Tier colors are applied to the item name itself. */
 .compact-item-reference-line[class*="inline-item-tier-"] {
-    border-radius: 2px;
-    padding: 0 2px;
-    background:
-        linear-gradient(90deg, color-mix(in srgb, var(--inline-item-tier-color) 26%, transparent), transparent 84%),
-        color-mix(in srgb, var(--inline-item-tier-color) 9%, transparent);
-    box-shadow: none;
+    color: var(--inline-item-tier-color) !important;
 }
 
 .inline-item-tier-artifact { --inline-item-tier-color: #f6c453; }
@@ -72,6 +66,10 @@
 .inline-item-tier-important { --inline-item-tier-color: #f0abfc; }
 .inline-item-tier-good { --inline-item-tier-color: #7dd3fc; }
 .inline-item-tier-usable { --inline-item-tier-color: #34d399; }
+
+.light-mode .compact-item-reference-line[class*="inline-item-tier-"] {
+    color: color-mix(in srgb, var(--inline-item-tier-color) 68%, #000) !important;
+}
 
 .light-mode .compact-item-reference {
     border-color: rgba(0, 0, 0, 0.1);

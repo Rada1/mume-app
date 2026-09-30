@@ -29,6 +29,15 @@ export const formatHeight = (height: string | undefined): string => {
 export const formatNumber = (value: number | null | undefined): string =>
     typeof value === 'number' && Number.isFinite(value) ? value.toLocaleString() : '—';
 
+export const getNextWimpyPreset = (current: number, maxHp: number): { value: number; percent: number } | null => {
+    if (!Number.isFinite(maxHp) || maxHp <= 0) return null;
+    const presets = [0, 25, 50, 75, 100].map(percent => ({
+        percent,
+        value: Math.round(maxHp * percent / 100)
+    }));
+    return presets.find(preset => preset.value > current) ?? presets[0];
+};
+
 export const POSITION_OPTIONS: StateOption[] = [
     { label: 'Standing', value: 'standing', command: 'stand' },
     { label: 'Sitting', value: 'sitting', command: 'sit' },

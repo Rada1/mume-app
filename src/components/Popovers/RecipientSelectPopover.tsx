@@ -1,11 +1,13 @@
 import React from 'react';
-import { PopoverState, GmcpOccupant } from '../../types';
+import { PopoverState, GmcpOccupant, GroupMember } from '../../types';
 import { sanitizeGameTarget } from '../../utils/gameUtils';
+import { getGiveRecipientNames } from '../../utils/groupTargetSuggestions';
 
 interface RecipientSelectProps {
     popoverState: PopoverState;
     roomPlayers: (string | GmcpOccupant)[];
     roomNpcs?: (string | GmcpOccupant)[];
+    groupMembers: GroupMember[];
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean) => void;
     setPopoverState: (val: PopoverState | null) => void;
     themeColor?: string;
@@ -13,14 +15,9 @@ interface RecipientSelectProps {
 
 
 export const RecipientSelectPopover: React.FC<RecipientSelectProps> = ({
-    popoverState, roomPlayers, roomNpcs, executeCommand, setPopoverState, themeColor
+    popoverState, roomPlayers, roomNpcs = [], groupMembers, executeCommand, setPopoverState, themeColor
 }) => {
-    const recipients = [...(roomPlayers || []), ...(roomNpcs || [])].map(r => {
-        if (typeof r === 'string') return r;
-        return r.name || r.shortdesc || r.short || r.keyword;
-    }).filter(Boolean) as string[];
-
-    const uniqueRecipients = [...new Set(recipients)];
+    const uniqueRecipients = getGiveRecipientNames(roomPlayers || [], roomNpcs, groupMembers);
 
     return (
         <>

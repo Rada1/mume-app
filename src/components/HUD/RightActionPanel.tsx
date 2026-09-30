@@ -34,9 +34,10 @@ import './RightActionTerminal.css';
 
 interface RightActionPanelProps {
     skillsOnly?: boolean;
+    embedded?: boolean;
 }
 
-export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false }) => {
+export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false, embedded = false }) => {
     // --- Logic Section ---
     const {
         executeCommand, triggerHaptic, abilities = {}, gameState, characterClass = '', practice,
@@ -70,7 +71,7 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
     const [targetOverrides, setTargetOverrides] = useState<Record<string, string>>({});
     const pressTimerRef = useRef<number | undefined>(undefined);
     const hintTimerRef = useRef<number | undefined>(undefined);
-    const hasSyncRef = useRef(false);
+    const lastPracticeRequestAtRef = useRef(0);
     const visibleTab = skillsOnly ? 'skills' : activeTab;
     useEffect(() => { setTargetOverrides({}); }, [target]);
     useEffect(() => { setTargetOverrides({}); }, [roomNum]);
@@ -94,18 +95,23 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
         requestTargetPicker();
         window.setTimeout(() => document.getElementById('mud-input')?.focus(), 50);
     };
+    const requestPracticeData = useCallback(() => {
+        if (embedded || gameState !== 'playing' || guildPractice.hasGuildmaster || practice?.practiceData) return;
+        if (Date.now() - lastPracticeRequestAtRef.current < 5000) return;
+        lastPracticeRequestAtRef.current = Date.now();
+        executeCommand('practice', true, true, false, true);
+    }, [embedded, executeCommand, gameState, guildPractice.hasGuildmaster, practice?.practiceData]);
+
     useEffect(() => {
-        if (gameState === 'playing' && !practice?.practiceData && !hasSyncRef.current) {
-            hasSyncRef.current = true;
-            executeCommand('practice', true, true, false, true);
-        }
-    }, [gameState, practice?.practiceData, executeCommand]);
+        if (skillsOnly && !embedded) requestPracticeData();
+    }, [embedded, requestPracticeData, skillsOnly]);
 
     const handleSelectTab = (tab: MainTab) => {
         if (!skillsOnly) {
             setActiveTab(tab);
             localStorage.setItem('mume-right-panel-tab', tab);
         }
+        if (tab === 'skills') requestPracticeData();
         triggerHaptic?.(10);
     };
 
@@ -284,7 +290,7 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
 
     // --- Render Section ---
     return (
-        <aside className="right-action-panel" aria-label="Action Deck">
+        <aside className={`right-action-panel${embedded ? ' is-embedded-practice-menu' : ''}`} aria-label="Action Deck">
             {gameState === 'account' && (
                 <div className="right-panel-locked-overlay">
                     <div className="right-panel-locked-icon-ring"><Swords size={22} /></div>

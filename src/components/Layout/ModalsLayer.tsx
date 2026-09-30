@@ -57,8 +57,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         displayEqLines,
         executeCommand,
         handleButtonClick,
-        teleportTargets,
-        setTeleportTargets,
         roomPlayers,
         roomNpcs,
         roomItems,
@@ -72,8 +70,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         autoConnect,
         setAutoConnect,
         status,
-        uiMode,
-        setUiMode,
         isImmersionMode,
         setIsImmersionMode,
         favorites,
@@ -82,16 +78,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         playerColor,
         npcColor,
         roomColor,
-        showSpectatePromptInLog,
-        setShowSpectatePromptInLog,
-        isTimestampEnabled,
-        setIsTimestampEnabled,
-        isTextRevealEnabled,
-        setIsTextRevealEnabled,
-        hidePrompt,
-        setHidePrompt,
-        showBlockHeaders,
-        setShowBlockHeaders,
         isPerformanceMode,
         setIsPerformanceMode,
         autoSaveSessions,
@@ -115,7 +101,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         currentTerrain,
     } = useGame() as any;
 
-    const { setTarget, characterInfo } = useVitals();
+    const { setTarget, characterInfo, groupMembers } = useVitals();
 
     const {
         isSettingsOpen,
@@ -131,7 +117,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setUI,
         handleTabClick,
         setGearTab,
-        setPlayersTab,
         setCharTab
     } = useUI();
 
@@ -198,26 +183,14 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setLoginPassword={setLoginPassword}
                     autoConnect={autoConnect}
                     setAutoConnect={setAutoConnect}
-                    uiMode={uiMode}
-                    setUiMode={setUiMode}
                     isImmersionMode={isImmersionMode}
                     setIsImmersionMode={setIsImmersionMode}
-                    isTimestampEnabled={isTimestampEnabled}
-                    setIsTimestampEnabled={setIsTimestampEnabled}
-                    isTextRevealEnabled={isTextRevealEnabled}
-                    setIsTextRevealEnabled={setIsTextRevealEnabled}
-                    hidePrompt={hidePrompt}
-                    setHidePrompt={setHidePrompt}
-                    showBlockHeaders={showBlockHeaders}
-                    setShowBlockHeaders={setShowBlockHeaders}
                     isPerformanceMode={isPerformanceMode}
                     setIsPerformanceMode={setIsPerformanceMode}
                     autoSaveSessions={autoSaveSessions}
                     setAutoSaveSessions={setAutoSaveSessions}
                     fontFamily={fontFamily}
                     setFontFamily={setFontFamily}
-                    showSpectatePromptInLog={showSpectatePromptInLog}
-                    setShowSpectatePromptInLog={setShowSpectatePromptInLog}
                     isEditMode={btn.isEditMode}
                     setIsEditMode={btn.setIsEditMode}
                     isGridEnabled={btn.isGridEnabled}
@@ -302,12 +275,11 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 executeCommand={executeCommand}
                 addMessage={addMessage}
                 setTarget={setTarget}
-                teleportTargets={teleportTargets}
-                setTeleportTargets={setTeleportTargets}
                 handleButtonClick={handleButtonClick}
                 triggerHaptic={triggerHaptic}
                 roomPlayers={roomPlayers}
                 roomNpcs={roomNpcs}
+                groupMembers={groupMembers}
                 roomItems={roomItems}
                 inventoryLines={displayInventoryLines}
                 eqLines={displayEqLines}
@@ -334,7 +306,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 characterInfo={characterInfo}
                 handleTabClick={handleTabClick}
                 setGearTab={setGearTab}
-                setPlayersTab={setPlayersTab}
                 setCharTab={setCharTab}
                 playerColor={playerColor}
                 npcColor={npcColor}

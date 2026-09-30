@@ -54,15 +54,17 @@ const normalizeTacticalAssignActions = (button: CustomButton, applyLegacyPlaceme
         ? undefined
         : (button.swipeActionTypes ? { ...button.swipeActionTypes } : button.swipeActionTypes);
 
-    if (applyLegacyPlacements && button.id === 'tactical-warrior') {
-        swipeCommands = { ...(swipeCommands || {}), left: 'disengage' };
-        swipeActionTypes = { ...(swipeActionTypes || {}), left: 'command' };
-        Object.entries(swipeCommands).forEach(([dir, command]) => {
-            if (command && !['disengage', 'assist'].includes(command.trim().toLowerCase())) {
-                delete swipeCommands[dir as keyof typeof swipeCommands];
-                delete swipeActionTypes?.[dir as keyof typeof swipeActionTypes];
-            }
-        });
+    if (button.id === 'tactical-warrior') {
+        if (swipeCommands?.left?.trim().toLowerCase() === 'disengage') {
+            delete swipeCommands.left;
+            if (swipeActionTypes) delete swipeActionTypes.left;
+        }
+        if (swipeCommands?.right?.trim().toLowerCase() === 'assist') {
+            delete swipeCommands.right;
+            if (swipeActionTypes) delete swipeActionTypes.right;
+        }
+        if (!Object.keys(swipeCommands || {}).length) swipeCommands = undefined;
+        if (!Object.keys(swipeActionTypes || {}).length) swipeActionTypes = undefined;
     }
 
     if (button.id === 'tactical-ranger') {
@@ -98,14 +100,20 @@ const normalizeTacticalAssignActions = (button: CustomButton, applyLegacyPlaceme
         ...button,
         setId: normalizedSetId,
         label: button.id === 'tactical-charmie' ? 'Ch' : button.id === 'tactical-doors' ? 'Doors' : button.label,
-        command: button.id === 'tactical-charmie' ? 'order followers' : button.id === 'tactical-doors' ? 'doors' : button.command,
+        command: button.id === 'tactical-charmie'
+            ? 'order followers'
+            : button.id === 'tactical-doors' || (button.id === 'tactical-warrior' && button.command.trim().toLowerCase() === 'hit')
+                ? ''
+                : button.command,
         actionType: button.id === 'tactical-charmie' ? 'modifier' : button.id === 'tactical-doors' ? 'command' : button.actionType,
         style: button.id === 'tactical-charmie' ? normalizedCharmieStyle : button.style,
         position: button.id === 'tactical-charmie' ? { ...button.position, w: 34, h: 34 } : button.position,
         swipeCommands,
         swipeActionTypes,
+        longCommand: button.id === 'tactical-doors' ? undefined : button.longCommand,
         longActionType: button.id === 'tactical-doors' ? undefined : (button.longActionType === 'select-assign' ? 'assign' : button.longActionType),
-        longSwipeActionTypes
+        longSwipeCommands: button.id === 'tactical-doors' ? undefined : button.longSwipeCommands,
+        longSwipeActionTypes: button.id === 'tactical-doors' ? undefined : longSwipeActionTypes
     };
     if (TACTICAL_CLASS_BUTTON_IDS.has(button.id)) {
         delete normalizedButton.longCommand;

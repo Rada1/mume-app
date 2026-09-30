@@ -1065,11 +1065,7 @@
 }
 
 .message-content .inline-btn[class*="inline-item-tier-"] {
-    border-radius: 3px;
-    padding: 0 3px;
-    background:
-        linear-gradient(90deg, color-mix(in srgb, var(--inline-item-tier-color) 26%, transparent), transparent 84%),
-        color-mix(in srgb, var(--inline-item-tier-color) 9%, transparent);
+    color: var(--inline-item-tier-color) !important;
     box-shadow: none;
 }
 
@@ -1101,15 +1097,20 @@
     --inline-item-tier-color: #34d399;
 }
 
+.light-mode .message-content .inline-btn[class*="inline-item-tier-"] {
+    color: color-mix(in srgb, var(--inline-item-tier-color) 68%, #000) !important;
+}
+
 .inline-item-condition {
     margin-left: 0.25em;
-    color: color-mix(in srgb, var(--item-state-color) 36%, rgba(122, 134, 154, 0.54));
-    opacity: 0.58;
+    color: var(--item-state-color);
+    opacity: 1;
     text-shadow: none;
+    -webkit-text-fill-color: currentColor !important;
 }
 
 .item-state-pristine {
-    --item-state-color: #8ce99a;
+    --item-state-color: #4ade80;
 }
 
 .item-state-stable {
@@ -1118,6 +1119,11 @@
 
 .item-state-worn {
     --item-state-color: #fb7185;
+}
+
+.light-mode .inline-item-condition,
+.light-mode .prompt-item-condition {
+    color: color-mix(in srgb, var(--item-state-color) 68%, #000);
 }
 
 /* Category-based color mappings */
@@ -3428,6 +3434,43 @@ span.inline-btn {
     filter: none !important;
 }
 
+.message-content .prompt-vital-value {
+    color: hsl(var(--prompt-vital-hue, 120) 84% 60%) !important;
+    -webkit-text-fill-color: currentColor !important;
+    opacity: 1 !important;
+    filter: none !important;
+}
+
+.message-content .prompt-vital-value[data-vital-percent] {
+    color: color-mix(in srgb, #fff calc(100% - var(--prompt-vital-percent)), var(--prompt-vital-full-color) var(--prompt-vital-percent)) !important;
+}
+
+.message-content .prompt-vital-value[data-vital-type="health"] {
+    --prompt-vital-full-color: #ff5555;
+}
+
+.message-content .prompt-vital-value[data-vital-type="mana"] {
+    --prompt-vital-full-color: #aa55ff;
+}
+
+.message-content .prompt-vital-value[data-vital-type="move"] {
+    --prompt-vital-full-color: #55ff55;
+}
+
+.light-mode .message-content .prompt-vital-value {
+    color: hsl(var(--prompt-vital-hue, 120) 78% 34%) !important;
+}
+
+.light-mode .message-content .prompt-vital-value[data-vital-percent] {
+    color: color-mix(in srgb, #fff calc(100% - var(--prompt-vital-percent)), var(--prompt-vital-full-color) var(--prompt-vital-percent)) !important;
+}
+
+.message.prompt .message-content,
+.message.prompt .message-content span {
+    opacity: 1 !important;
+    filter: none !important;
+}
+
 /* All weather messages must be rendered at 100% opacity. */
 .message.weather .message-content,
 .message.weather .message-content *,
@@ -3555,35 +3598,10 @@ span.inline-btn {
 .immersion-mode .custom-prompt-container .prompt-entity-inline:nth-child(4n + 3) { animation-delay: 1.8s; }
 .immersion-mode .custom-prompt-container .prompt-entity-inline:nth-child(4n + 4) { animation-delay: 2.5s; }
 
-/* Tiered equipment should feel quietly alive, not blink. A long, low-amplitude
-   brightness and halo cycle keeps artifacts through usable items noticeable. */
-@keyframes inline-item-tier-breathe {
-    0%, 100% {
-        filter: brightness(1) saturate(1);
-        box-shadow: 0 0 0 1px transparent, 0 0 2px transparent;
-    }
-    50% {
-        filter: brightness(1.12) saturate(1.08);
-        box-shadow:
-            0 0 0 1px color-mix(in srgb, var(--inline-item-tier-color) 26%, transparent),
-            0 0 8px color-mix(in srgb, var(--inline-item-tier-color) 34%, transparent);
-    }
-}
-
-.message-content .inline-btn[class*="inline-item-tier-"] {
-    animation: inline-item-tier-breathe 5.6s ease-in-out infinite;
-    animation-delay: calc(var(--word-idx, var(--btn-fallback-idx, 0)) * -0.19s);
-}
-
-/* Preserve the permanent vertical word wave in immersion mode while the tier
-   highlight breathes independently. */
+/* Preserve the permanent vertical word wave in immersion mode. */
 .immersion-mode .message-content .inline-btn[class*="inline-item-tier-"] {
-    animation:
-        continuous-text-undulate 2.8s ease-in-out infinite,
-        inline-item-tier-breathe 5.6s ease-in-out infinite;
-    animation-delay:
-        calc(var(--msg-line-delay, 0s) + var(--line-sub-delay, 0s) + var(--word-idx, var(--btn-fallback-idx, 0)) * 0.10s),
-        calc(var(--word-idx, var(--btn-fallback-idx, 0)) * -0.19s);
+    animation: continuous-text-undulate 2.8s ease-in-out infinite;
+    animation-delay: calc(var(--msg-line-delay, 0s) + var(--line-sub-delay, 0s) + var(--word-idx, var(--btn-fallback-idx, 0)) * 0.10s);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3638,6 +3656,27 @@ span.inline-btn {
 .app-container:not(.immersion-mode) .message-log .room-name-inline,
 .app-container:not(.immersion-mode) .message-log .room-title-text {
     animation: none !important;
+}
+
+/* Keep immersion's decorative text effects static on mobile for readability. */
+.app-container.is-mobile.immersion-mode .message-log .log-char,
+.app-container.is-mobile.immersion-mode .message-log .log-word,
+.app-container.is-mobile.immersion-mode .message-log .log-text-word,
+.app-container.is-mobile.immersion-mode .message-log .room-title-text,
+.app-container.is-mobile.immersion-mode .message-log .room-name-inline,
+.app-container.is-mobile.immersion-mode .message-log .message-content .inline-btn,
+.app-container.is-mobile.immersion-mode .message-log .comm-action,
+.app-container.is-mobile.immersion-mode .message-log .custom-prompt-container .prompt-entity-inline,
+.app-container.is-mobile.immersion-mode .message-log .message.room-jiggle-active .room-title-badge,
+.app-container.is-mobile.immersion-mode .message-log .message.room-jiggle-active .room-desc-line,
+.app-container.is-mobile.immersion-mode .message-log .message.room-jiggle-active .content-row {
+    animation: none !important;
+}
+
+.app-container.is-mobile.immersion-mode .message-log .hit-sheen-overlay,
+.app-container.is-mobile.immersion-mode .message-log .damage-sheen-overlay,
+.app-container.is-mobile.immersion-mode .message-log .rip-sheen-overlay {
+    display: none !important;
 }
 
 /* ==========================================================================

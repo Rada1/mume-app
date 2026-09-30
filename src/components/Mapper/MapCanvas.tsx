@@ -7,8 +7,11 @@ import { gmcpBus } from '../../events/gmcpBus';
 import type { CombatPulse } from './renderers/rendererUtils';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useVitalsStore } from '../../stores/useVitalsStore';
+import { FastMapCanvas } from './performance/FastMapCanvas';
+import type { MapData } from './performance/webcockpit/model';
+import type { GroupMember } from '../../types';
 
-interface MapCanvasProps {
+export interface MapCanvasProps {
     rooms: Record<string, any>;
     markers: Record<string, any>;
     currentRoomId: string | null;
@@ -32,6 +35,8 @@ interface MapCanvasProps {
     stableRoomIdRef: React.MutableRefObject<string | null>;
     stableMarkersRef: React.MutableRefObject<Record<string, any>>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, CompactMapExit>, string, string, string[], string[]]>>;
+    performanceMapRef?: React.MutableRefObject<MapData | null>;
+    performanceMapRevision?: number;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     exploredVnums: Set<string>;
     exploredRef: React.MutableRefObject<Set<string>>;
@@ -42,6 +47,7 @@ interface MapCanvasProps {
     onPointerDown?: (e: React.PointerEvent) => void;
     onPointerMove?: (e: React.PointerEvent) => void;
     onPointerUp?: (e: React.PointerEvent) => void;
+    onPlayerRoom?: (id: string) => void;
     triggerRender?: () => void;
     unveilMap?: boolean;
     treatMapAsExplored?: boolean;
@@ -53,6 +59,7 @@ interface MapCanvasProps {
     baseMapExitsRef: React.MutableRefObject<Record<string, any>>;
     clientPredictionsRef?: React.MutableRefObject<MapperPrediction[]>;
     entitiesRef: React.MutableRefObject<any>;
+    groupMembers?: GroupMember[];
     serverIdIndexRef?: React.MutableRefObject<Record<string, string>>;
     inlineCategories?: import('../../types').InlineCategoryConfig[];
     playerColor?: string;
@@ -84,7 +91,7 @@ interface MapCanvasProps {
     hoveredSearchRoomId?: string | null;
 }
 
-export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
+const LegacyMapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps & { rendererFallbackReason?: string }>((props, ref) => {
     const internalRef = useRef<HTMLCanvasElement>(null);
     const canvasRef = (ref as React.RefObject<HTMLCanvasElement>) || internalRef;
     const combatPulsesRef = useRef<CombatPulse[]>([]);
@@ -227,6 +234,8 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         <canvas
             ref={canvasRef}
             className="map-canvas"
+            data-map-renderer="canvas2d"
+            data-performance-fallback={props.rendererFallbackReason}
             style={{
                 width: '100%',
                 height: '100%',
@@ -242,6 +251,23 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
             onPointerUp={props.onPointerUp}
         />
     );
+}));
+
+LegacyMapCanvas.displayName = 'LegacyMapCanvas';
+
+export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
+    const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode || state.isClassicMode);
+    const [workerFailed, setWorkerFailed] = React.useState(false);
+    const [workerFailureReason, setWorkerFailureReason] = React.useState<string | undefined>();
+
+    if (!workerFailed) {
+        return <FastMapCanvas ref={ref} mapProps={props} transparentBackground={props.isImmersionMode === true && !isPerformanceMode} onFallback={reason => {
+            console.error('[Mapper] WebGL renderer fell back to Canvas2D:', reason);
+            setWorkerFailureReason(reason);
+            setWorkerFailed(true);
+        }} />;
+    }
+    return <LegacyMapCanvas {...props} ref={ref} rendererFallbackReason={workerFailureReason} />;
 }));
 
 MapCanvas.displayName = 'MapCanvas';

@@ -227,6 +227,11 @@
     color: #d4c9b0;
 }
 
+.tactical-line-wrapper .line-btn.tactical-defense-ready .custom-btn-icon-node svg {
+    color: var(--target-glow-color) !important;
+    stroke: var(--target-glow-color) !important;
+}
+
 .tactical-line-wrapper .line-btn:not(.triggered):not(:active):not(.is-swiping) .button-icon,
 .tactical-line-wrapper .line-btn:not(.triggered):not(:active):not(.is-swiping) .button-label {
     opacity: 1;
@@ -393,8 +398,8 @@ body:has(.this-is-you-console.is-mobile:not(.is-minimized)) .mobile-tactical-but
 .desktop-tactical-buttons-persistent .line-cluster .custom-btn,
 .desktop-tactical-buttons-persistent .line-cluster .line-cluster-action-menu {
     background: transparent !important;
-    backdrop-filter: blur(5px) !important;
-    -webkit-backdrop-filter: blur(5px) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 .mobile-tactical-buttons-persistent .line-cluster-title {

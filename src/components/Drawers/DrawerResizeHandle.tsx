@@ -34,7 +34,7 @@ export const DrawerResizeHandle: React.FC<Props> = ({
         setIsDragging(true);
 
         const drawer = (e.currentTarget as HTMLElement).closest(
-            '.map-drawer-desktop, .character-drawer-desktop, .log-card-drawer, .message-log-container, .chat-window-panel, .players-panel, .docked-panel, .help-panel, .mume-editor-panel, .mume-archive-panel, .right-drawer-stack, .left-drawer-stack, .right-action-panel'
+            '.map-drawer-desktop, .character-drawer-desktop, .log-card-drawer, .message-log-container, .chat-window-panel, .docked-panel, .help-panel, .mume-editor-panel, .mume-archive-panel, .right-drawer-stack, .left-drawer-stack, .right-action-panel'
         ) as HTMLElement | null;
         if (!drawer) return;
 

@@ -31,6 +31,9 @@ export interface ThisIsYouVitalsTierProps {
     db: number | null | undefined;
     armour: number | null | undefined;
     wimpy: number | null | undefined;
+    onWimpyChange: () => void;
+    canAdjustWimpy: boolean;
+    onRefresh: () => void;
     regen: { hp: number; mana: number; move: number };
     deltas: VitalsTierDeltas;
 }
@@ -48,11 +51,27 @@ export const ThisIsYouVitalsTier: FC<ThisIsYouVitalsTierProps> = ({
     db,
     armour,
     wimpy,
+    onWimpyChange,
+    canAdjustWimpy,
+    onRefresh,
     regen,
     deltas
 }) => {
     return (
-        <div className="this-is-you-tier-vitals">
+            <div
+                className="this-is-you-tier-vitals"
+                role="group"
+                aria-label="Vitals. Activate to refresh with score."
+                tabIndex={0}
+                onClick={onRefresh}
+                onKeyDown={event => {
+                    if (event.target !== event.currentTarget) return;
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        onRefresh();
+                    }
+                }}
+            >
             {/* Pure Numerical Vitals */}
             <div className="this-is-you-vitals-group" role="group" aria-label="Vitals">
                 <div className="this-is-you-telemetry-cell">
@@ -94,7 +113,21 @@ export const ThisIsYouVitalsTier: FC<ThisIsYouVitalsTierProps> = ({
                         <span title="Parry Deflection (PB): weapon blocking rating">Parry: <strong>{pb ?? '—'}</strong><StatDelta delta={deltas.pb} /></span>
                         <span title="Defensive Evasion (DB): makes you harder to hit">Dodge: <strong>{db ?? '—'}</strong><StatDelta delta={deltas.db} /></span>
                         <span title="Armor Absorption (ARM): physical damage reduction">Armor: <strong>{armour ?? '—'}</strong><StatDelta delta={deltas.armour} /></span>
-                        <span title="Wimpy Threshold (%y): automatically flee combat when health drops below this value">Wimpy: <strong>{wimpy !== undefined && wimpy !== null ? wimpy : '—'}</strong><StatDelta delta={deltas.wimpy} /></span>
+                        <button
+                            type="button"
+                            className="this-is-you-wimpy-button"
+                            title="Tap to cycle the wimpy threshold through 0%, 25%, 50%, 75%, and 100% of max HP"
+                            aria-label={`Wimpy threshold ${wimpy ?? 'unknown'} HP. Tap to change.`}
+                            disabled={!canAdjustWimpy}
+                            onClick={event => {
+                                event.stopPropagation();
+                                onWimpyChange();
+                            }}
+                        >
+                            <span>Wimpy:</span>
+                            <strong>{wimpy !== undefined && wimpy !== null ? wimpy : '—'}</strong>
+                            <StatDelta delta={deltas.wimpy} />
+                        </button>
                     </div>
                 </div>
             </div>

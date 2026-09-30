@@ -16,7 +16,7 @@ const CLASS_BUTTON_IDS: Record<string, string> = {
     thief: 'tactical-thief'
 };
 
-const SWIPE_DIRECTIONS: SwipeDirection[] = ['up', 'right', 'down', 'left', 'ne', 'se', 'sw', 'nw'];
+const SWIPE_DIRECTIONS: SwipeDirection[] = ['nw', 'up', 'ne', 'left', 'right', 'sw', 'down', 'se'];
 
 const COMMAND_OVERRIDES: Record<string, string> = {
     missile: 'shoot'
@@ -88,6 +88,7 @@ export const applyPracticeSwipeDefaults = (
 ): CustomButton => {
     const classKey = Object.entries(CLASS_BUTTON_IDS).find(([, id]) => id === button.id)?.[0];
     if (!classKey) return button;
+    if (classKey === 'warrior') return button;
 
     const knownAbilities = getKnownClassAbilities(classKey, abilities, practiceData);
     return applySwipeDefaults(button, classKey, knownAbilities);

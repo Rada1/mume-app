@@ -29,6 +29,7 @@ import { useGame } from '../../context/GameContext';
 import { useShaperEntityStore } from '../model/useShaperEntityStore';
 import './ShaperDatabasePanels.css';
 import './ShaperWorkspace.css';
+import './ShaperTerminalTheme.css';
 
 interface ShaperWorkspaceProps {
     onClose: () => void;
@@ -328,7 +329,6 @@ export const ShaperWorkspace: React.FC<ShaperWorkspaceProps> = ({
                         }}
                     >
                         <ShaperLeftPanel
-                            doc={activeDoc}
                             issueCount={workspace.issues.length}
                             openPanels={openPanels}
                             onTogglePanel={togglePanel}

@@ -69,11 +69,15 @@ export const recordActionTimerCommand = (command: string) => {
     }
 };
 
-export const parseActionTimerLine = (text: string) => {
+export const parseActionTimerLine = (text: string, onSearchStart?: () => void) => {
     const store = useActionTimerStore.getState();
     const pending = store.pendingAction;
     const active = store.activeTimer;
     console.log('[ActionTimer] parseActionTimerLine:', text, 'pending:', pending, 'active:', active);
+
+    if (/^you (?:start searching|begin to search)/i.test(text.trim())) {
+        onSearchStart?.();
+    }
 
     // MUME's tracking start is an unambiguous player response. It can arrive
     // after the pending command expires or another command replaces it.

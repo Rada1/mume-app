@@ -5,24 +5,32 @@ import { CustomButton, DrawerLine, PopoverState, ExecuteCommand, SwipeDirection 
 
 import { getButtonCommand } from '../../../utils/buttonUtils';
 import { useGame } from '../../../context/GameContext';
+import { useInputStore } from '../../../stores/useInputStore';
 import { useButtonGestures } from './useButtonGestures';
 import { ButtonLabel } from './ButtonLabel';
 import { CircularVitals } from './CircularVitals';
 import { useTacticalTargeting } from './useTacticalTargeting';
 import { TacticalCommandPanel } from './TacticalCommandPanel';
+import { ThisIsYouConsole } from '../../HUD/ThisIsYouConsole';
+import { ShopTargetMenu } from '../../Shop/ShopTargetMenu';
+import { RightActionPanel } from '../../HUD/RightActionPanel';
 import { useGameButtonTargetSuggestions } from './useGameButtonTargetSuggestions';
 import { useRoomStore } from '../../../stores/useRoomStore';
+import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { useAutomaticTargetStore } from '../../../stores/useAutomaticTargetStore';
-import { getAutoRoomTarget } from '../../../utils/commandAutoTarget';
+import { useWhoListRefresh } from '../../../hooks/useWhoListRefresh';
+import { getAutoRoomTarget, isAutoTargetChipDisabledZone } from '../../../utils/commandAutoTarget';
 import { getClassKeyFromSetId, getSkillPresentation } from '../../../utils/skillPresentation';
 import type { PracticeClassKey } from '../../../utils/practiceClassCatalog';
-import { getRoomTargetSuggestions, isTargetSuggestionMatch, prioritizeTargetSuggestion, type CommandTargetSuggestion } from '../../../utils/commandSuggestionUtils';
+import { getRoomTargetSuggestions, isTargetSuggestionMatch, MUME_SOCIAL_COMMANDS, prioritizeTargetSuggestion, type CommandTargetSuggestion } from '../../../utils/commandSuggestionUtils';
 import type { WheelReplacementMode } from './TacticalCommandPanel';
 import type { DeckTargetKind } from '../../HUD/useDeckTargeting';
 import { assignPinnedWheelCell, swapPinnedWheelCells } from './pinnedWheelAssignments';
 import type { TacticalPaletteCommand, TacticalSwapCell } from './TacticalCommandPalette';
-import { getLearnedClassPalette } from './tacticalCommandPaletteUtils';
-import { BLANK_TARGET_VALUE, canCommandAcceptTarget, isOffensiveSingleTargetCommand } from '../../../utils/commandTargetUtils';
+import { fillEmptyWheelCells, getClassPalette } from './tacticalCommandPaletteUtils';
+import { BLANK_TARGET_VALUE, LOOK_IN_TARGET_VALUE, canCommandAcceptTarget, getDefaultCommandTarget, isOffensiveSingleTargetCommand, usesChipPriorityOffensiveTarget } from '../../../utils/commandTargetUtils';
+import { getTargetClassificationColor } from '../../../utils/targetClassificationColor';
+import type { EntityColorMap } from '../../../utils/inlineActionModel';
 
 // --- Logic Section ---
 const CLASS_PICKER_SET_IDS: Record<PracticeClassKey, string> = {
@@ -42,7 +50,33 @@ const TACTICAL_CLASS_SET_IDS: Partial<Record<string, string>> = {
 const BLANK_TARGET_SUGGESTION: CommandTargetSuggestion = {
     key: 'blank-target', label: 'Blank Target', value: BLANK_TARGET_VALUE, meta: 'source'
 };
+type StagedArgumentSelection = { value: string; key: string } | null;
+const getDefaultStagedArguments = (
+    kind: string | null,
+    recentSocialCommand: string | undefined,
+    firstSuggestions: CommandTargetSuggestion[],
+    secondSuggestions: CommandTargetSuggestion[]
+) => {
+    const args: StagedArgumentSelection[] = [null, null];
+    if (kind === 'social') {
+        const recent = firstSuggestions.find(suggestion => suggestion.value === recentSocialCommand);
+        if (recent) args[0] = { value: recent.value, key: recent.key };
+        args[1] = { value: BLANK_TARGET_VALUE, key: 'social-no-target' };
+    }
+    if (kind === 'room-object-container') {
+        args[0] = { value: 'all', key: 'all-argument' };
+        args[1] = { value: '__room__', key: 'get-from-room' };
+    }
+    if (kind === 'inventory-container' || kind === 'inventory-recipient') {
+        const allArgument = firstSuggestions.find(suggestion => suggestion.value === 'all');
+        if (allArgument) args[0] = { value: allArgument.value, key: allArgument.key };
+        const secondArgument = secondSuggestions.find(suggestion => suggestion.meta !== 'all');
+        if (secondArgument) args[1] = { value: secondArgument.value, key: secondArgument.key };
+    }
+    return args;
+};
 const lastExecutedCommandByButton = new Map<string, string>();
+const lastSocialCommandByButton = new Map<string, string>();
 
 const getClassPickerSetId = (command: string, buttonSetId: string): string | null => {
     const classKey = getSkillPresentation(command, '', getClassKeyFromSetId(buttonSetId)).classKey;
@@ -144,7 +178,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const [wheelPos, setWheelPos] = React.useState({ x: 0, y: 0 });
     const [rayParams, setRayParams] = React.useState<{ angle: number, length: number, opacity: number, color?: string }>({ angle: 0, length: 0, opacity: 0, color: 'var(--accent)' });
     const buttonRef = useRef<HTMLDivElement>(null);
-    const { playClickSound, isSoundEnabled, initAudio, characterName, btn, practice, abilities = {}, setTarget } = useGame();
+    const { playClickSound, isSoundEnabled, initAudio, characterName, btn, practice, abilities = {}, setTarget, setParley } = useGame();
     const [lastExecutedButtonCommand, setLastExecutedButtonCommand] = useState(() => lastExecutedCommandByButton.get(button.id) || '');
     const repeatCenterEnabled = button.setId === 'Tactical'
         || button.id.startsWith('tactical-')
@@ -158,46 +192,112 @@ export const GameButton: React.FC<GameButtonProps> = ({
     }, [button.id, repeatCenterEnabled]);
     const runButtonCommand = useCallback<ExecuteCommand>((command, ...options) => {
         rememberButtonCommand(command);
+        const commandParts = command.trim().split(/\s+/).filter(Boolean);
+        const channel = commandParts[0]?.toLowerCase() || '';
+        if (MUME_SOCIAL_COMMANDS.includes(channel)) lastSocialCommandByButton.set(button.id, channel);
+        const commChannels = ['tell', 'whisper', 'ask', 'say', 'narrate', 'shout', 'yell', 'sing', 'emote'] as const;
+        const requiresTarget = ['tell', 'whisper', 'ask'].includes(channel);
+        if (commChannels.includes(channel as typeof commChannels[number]) && (requiresTarget || commandParts.length === 1)) {
+            useInputStore.getState().setInput('');
+            setParley(previous => ({
+                ...previous,
+                active: true,
+                mode: 'parley',
+                command: channel as typeof commChannels[number],
+                target: requiresTarget ? commandParts.slice(1).join(' ') || null : null,
+                message: ''
+            }));
+            document.getElementById('mud-input')?.focus();
+            return;
+        }
+        useInputStore.getState().setInput('');
         executeCommand(command, ...options);
-    }, [executeCommand, rememberButtonCommand]);
+    }, [executeCommand, rememberButtonCommand, setParley]);
     const automaticTarget = useAutomaticTargetStore(state => state.target);
     const setAutomaticTarget = useAutomaticTargetStore(state => state.setTarget);
+    const inlineCategories = useSettingsStore(state => state.inlineCategories);
+    const objectColor = useSettingsStore(state => state.objectColor);
+    const playerColor = useSettingsStore(state => state.playerColor);
+    const npcColor = useSettingsStore(state => state.npcColor);
+    const enemyColor = useSettingsStore(state => state.enemyColor);
+    const neutralColor = useSettingsStore(state => state.neutralColor);
+    const theme = useSettingsStore(state => state.theme);
     const roomChars = useRoomStore(state => state.chars);
     const roomItemsById = useRoomStore(state => state.items);
+    const whoList = useRoomStore(state => state.whoList);
+    const roomZone = useRoomStore(state => state.roomZone);
+    const autoTargetChipDisabled = isAutoTargetChipDisabledZone(roomZone);
     const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
     const roomItems = useMemo(() => Object.values(roomItemsById), [roomItemsById]);
     const roomEntityTargets = useMemo(() => new Set([
         ...getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName || ''),
         ...getRoomTargetSuggestions([], roomItems, 'objects')
     ].map(suggestion => suggestion.value.trim().toLowerCase())), [characterName, roomItems, roomOccupants]);
-    const targetChipTarget = target || automaticTarget || getAutoRoomTarget('hit', roomOccupants, characterName || '');
     const availableButtons = btn.buttons;
     const tacticalClassKey = button.id.match(/^tactical-(ranger|cleric|thief|warrior|mage)$/i)?.[1].toLowerCase();
     const classPaletteSetId = TACTICAL_CLASS_SET_IDS[tacticalClassKey || ''] || getClassPickerSetId(button.command, button.setId);
     const classPaletteKey = classPaletteSetId ? getClassKeyFromSetId(classPaletteSetId) : null;
+    const hasLearnedRescue = (abilities.rescue || 0) > 0
+        || Boolean(practice?.practiceData?.skills.some(skill =>
+            skill.name.trim().toLowerCase() === 'rescue' && skill.proficiency > 0
+        ));
+    const isLegacyMageMissileDefault = button.id === 'tactical-mage'
+        && /^cast\s+'magic missile'$/i.test(button.command.trim());
+    const paletteButton = useMemo(() => isLegacyMageMissileDefault
+        ? { ...button, command: '' }
+        : button, [button, isLegacyMageMissileDefault]);
     const paletteCommands = useMemo<TacticalPaletteCommand[]>(() => {
         const source = commandPalette || (classPaletteSetId && classPaletteKey
-            ? getLearnedClassPalette(classPaletteKey, classPaletteSetId, practice?.practiceData, abilities, button, availableButtons)
+            ? getClassPalette(classPaletteKey, classPaletteSetId, practice?.practiceData, abilities, paletteButton, availableButtons)
             : []);
+        const withWarriorProtect = button.id === 'tactical-warrior' && hasLearnedRescue
+            ? [...source, { key: 'tactical-warrior-protect', label: 'Protect', command: 'protect', actionType: 'command' as const, setId: 'warriorskilllist' }]
+            : source;
         const seen = new Set<string>();
-        return source.filter(item => {
+        const uniqueCommands = withWarriorProtect.filter(item => {
             const key = item.command.trim().toLowerCase();
             if (!key || seen.has(key)) return false;
             seen.add(key);
             return true;
         });
-    }, [abilities, availableButtons, button, classPaletteKey, classPaletteSetId, commandPalette, practice?.practiceData]);
+        return [
+            ...uniqueCommands.filter(item => item.isLearned !== false),
+            ...uniqueCommands.filter(item => item.isLearned === false)
+        ];
+    }, [abilities, availableButtons, button, classPaletteKey, classPaletteSetId, commandPalette, hasLearnedRescue, paletteButton, practice?.practiceData]);
+    const wheelButton = useMemo(() => {
+        const lastCenterCommand = repeatCenterEnabled ? lastExecutedButtonCommand.trim() : '';
+        if (lastCenterCommand) {
+            return fillEmptyWheelCells({ ...button, command: lastCenterCommand, actionType: 'command' }, paletteCommands);
+        }
+        if (button.id !== 'tactical-mage') return fillEmptyWheelCells(button, paletteCommands);
+        const missile = paletteCommands.find(item => /^cast\s+'magic missile'$/i.test(item.command.trim()));
+        const shouldChooseLearnedCenter = !button.command.trim()
+            || (isLegacyMageMissileDefault && missile?.isLearned === false);
+        const centerCommand = shouldChooseLearnedCenter
+            ? paletteCommands.find(item => item.isLearned !== false)?.command || ''
+            : button.command;
+        return fillEmptyWheelCells({ ...button, command: centerCommand }, paletteCommands);
+    }, [button, isLegacyMageMissileDefault, lastExecutedButtonCommand, paletteCommands, repeatCenterEnabled]);
+    const wheelPaletteCommands = useMemo(() => {
+        const assigned = new Set([
+            wheelButton.command,
+            ...Object.values(wheelButton.swipeCommands || {}),
+            ...Object.values(wheelButton.longSwipeCommands || {})
+        ].map(command => command.trim().toLowerCase()).filter(Boolean));
+        return paletteCommands.filter(item => !assigned.has(item.command.trim().toLowerCase()));
+    }, [paletteCommands, wheelButton]);
     const [inlineAssignment, setInlineAssignment] = React.useState<{
         direction: import('../../../types').SwipeDirection | 'center' | null;
         setId: string;
         sourceCommand: string;
     } | null>(null);
     const isRebindingGestureRef = useRef(false);
-    const [stagedArguments, setStagedArguments] = React.useState<Array<{ value: string; key: string } | null>>([null, null]);
-    const stagedArgumentsRef = useRef<Array<{ value: string; key: string } | null>>([null, null]);
+    const [stagedArguments, setStagedArguments] = React.useState<StagedArgumentSelection[]>([null, null]);
+    const stagedArgumentsRef = useRef<StagedArgumentSelection[]>([null, null]);
     const [loadingContainer, setLoadingContainer] = React.useState<{ id: string; previousContents: DrawerLine[] | undefined } | null>(null);
     const isStagedTargetMenuRef = useRef(false);
-    const onSelectStagedTargetRef = useRef<(value: string, columnIndex: number) => void>(() => undefined);
+    const onSelectStagedTargetRef = useRef<(value: string, columnIndex: number) => boolean>(() => false);
     const onCommitStagedTargetRef = useRef<() => boolean>(() => false);
     const isWheelReplacementModeRef = useRef(false);
     const onSelectWheelReplacementRef = useRef<((targetValue: string) => string | void) | null>(null);
@@ -210,12 +310,17 @@ export const GameButton: React.FC<GameButtonProps> = ({
     });
 
     const tacticalTargeting = useTacticalTargeting({
-        activeTarget: target || automaticTarget,
-        autoTargetForCommand: command => getAutoRoomTarget(command, roomOccupants, characterName || ''),
+        activeTarget: target || (!autoTargetChipDisabled ? automaticTarget : null),
+        autoTargetForCommand: command => getAutoRoomTarget(command, roomOccupants, characterName || '', roomZone),
         isMobile,
         openOnHoldWithoutTarget: openDecisionPanelOnHold ?? isMobile,
         setCommandPreview,
-        triggerHaptic
+        triggerHaptic,
+        onTargetMenuOpened: command => {
+            const verb = command.trim().split(/\s+/, 1)[0]?.toLowerCase();
+            if (verb === 'remove') runButtonCommand('equipment', true, true, false, true);
+            if (verb === 'wear' || verb === 'drop') runButtonCommand('inventory', true, true, false, true);
+        }
     });
     const toggleTargetLock = useCallback((targetValue: string) => {
         const normalize = (value: string | null) => value?.replace(/[*']/g, '').trim().toLowerCase() || '';
@@ -224,11 +329,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
         tacticalTargeting.clearSelection();
     }, [setAutomaticTarget, setTarget, target, tacticalTargeting.clearSelection]);
     const updateAutomaticTarget = useCallback((targetValue: string) => {
-        if (target) return;
+        if (target || autoTargetChipDisabled) return;
         const value = targetValue.trim();
         if (!value || !roomEntityTargets.has(value.toLowerCase())) return;
         setAutomaticTarget(value);
-    }, [roomEntityTargets, setAutomaticTarget, target]);
+    }, [autoTargetChipDisabled, roomEntityTargets, setAutomaticTarget, target]);
 
     useEffect(() => {
         if (!tacticalTargeting.isTargetColumnOpen) {
@@ -240,11 +345,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
     }, [tacticalTargeting.isTargetColumnOpen]);
 
     const handleTacticalButtonClick = (clickedButton: CustomButton, event: React.MouseEvent | React.PointerEvent) => {
-        if (onTap && !button.command.trim()) {
+        if (onTap && !wheelButton.command.trim()) {
             onTap();
             return;
         }
-        const isPrimaryTap = !clickedButton._skipJoystick && clickedButton.command === button.command;
+        const isPrimaryTap = !clickedButton._skipJoystick && clickedButton.command === wheelButton.command;
         if (repeatCenterEnabled && isPrimaryTap && clickedButton.command.trim()) {
             if (lastExecutedButtonCommand) {
                 handleButtonClick({ ...clickedButton, command: lastExecutedButtonCommand }, event);
@@ -286,15 +391,19 @@ export const GameButton: React.FC<GameButtonProps> = ({
         triggerHaptic(30);
     }, [button.id, onMovePinnedCells, setButtons, triggerHaptic]);
     const assignPinnedCommand = React.useCallback((command: string, actionType: import('../../../types').ActionType, destination: SwipeDirection | 'center', setId?: string) => {
+        const normalized = command.trim().toLowerCase();
+        const isUnlearned = paletteCommands.some(item => item.command.trim().toLowerCase() === normalized && item.isLearned === false)
+            || availableButtons.some(candidate => candidate.command.trim().toLowerCase() === normalized && candidate.isDimmed);
+        if (isUnlearned) return;
         if (onAssignPinnedCommand) onAssignPinnedCommand(command, actionType, destination, setId);
         else setButtons(previous => previous.map(existing => existing.id === button.id
             ? assignPinnedWheelCell(existing, destination, command, actionType, setId || classPaletteSetId || undefined)
             : existing));
         triggerHaptic(30);
-    }, [button.id, classPaletteSetId, onAssignPinnedCommand, setButtons, triggerHaptic]);
+    }, [availableButtons, button.id, classPaletteSetId, onAssignPinnedCommand, paletteCommands, setButtons, triggerHaptic]);
 
     const gestures = useButtonGestures({
-        button, isEditMode, handleDragStart, wasDraggingRef, triggerHaptic, setHeldButton, heldButton,
+        button: wheelButton, isEditMode, handleDragStart, wasDraggingRef, triggerHaptic, setHeldButton, heldButton,
         joystick, target, setCommandPreview, setActiveDir, activeDir, setIsCancelling, isCancelling,
         setPopoverState, executeCommand: runButtonCommand, setActiveSet, handleButtonClick: handleTacticalButtonClick, setButtons, setEditButton,
         onCommandExecuted: rememberButtonCommand,
@@ -317,8 +426,14 @@ export const GameButton: React.FC<GameButtonProps> = ({
     });
 
     const targetCommand = tacticalTargeting.isTargetColumnOpen
-        ? gestures.currentCommandRef?.current || button.command
-        : button.command;
+        ? gestures.currentCommandRef?.current || wheelButton.command
+        : wheelButton.command;
+    const targetChipTarget = target || (!autoTargetChipDisabled
+        ? (!autoTargetChipDisabled ? automaticTarget : null) || getAutoRoomTarget(targetCommand, roomOccupants, characterName || '', roomZone)
+        : null);
+    const wheelTargetChipTarget = target || (!autoTargetChipDisabled
+        ? (!autoTargetChipDisabled ? automaticTarget : null) || getAutoRoomTarget(wheelButton.command, roomOccupants, characterName || '', roomZone)
+        : null);
     const commandKey = (targetCommand || '').trim().toLowerCase().split(/\s+/)[0];
     const targetMenu = useGameButtonTargetSuggestions(
         targetCommand || '',
@@ -328,6 +443,19 @@ export const GameButton: React.FC<GameButtonProps> = ({
         stagedArguments[1]?.value || null,
         loadingContainer?.id || null
     );
+    const requestWhoList = useWhoListRefresh(whoList, runButtonCommand);
+    useEffect(() => {
+        const needsWhoList = targetMenu.kind === 'who' || targetMenu.kind === 'who-or-blank';
+        if (tacticalTargeting.isTargetColumnOpen && needsWhoList) requestWhoList();
+    }, [requestWhoList, targetMenu.kind, tacticalTargeting.isTargetColumnOpen]);
+    const stagedSuggestionsRef = useRef({
+        first: targetMenu.firstArgumentSuggestions,
+        second: targetMenu.secondArgumentSuggestions,
+    });
+    stagedSuggestionsRef.current = {
+        first: targetMenu.firstArgumentSuggestions,
+        second: targetMenu.secondArgumentSuggestions,
+    };
     useEffect(() => {
         if (loadingContainer && containerContents[loadingContainer.id] !== loadingContainer.previousContents) {
             setLoadingContainer(null);
@@ -337,25 +465,88 @@ export const GameButton: React.FC<GameButtonProps> = ({
     isStagedTargetMenuRef.current = Boolean(targetMenu.stagedTargetKind && !wheelReplacementMode);
     const canCompleteStagedCommandOnTap = (columnIndex: number): boolean => {
         const args = stagedArguments;
+        if (targetMenu.stagedTargetKind === 'look-container') {
+            return columnIndex === 0
+                ? args[0]?.value !== LOOK_IN_TARGET_VALUE || Boolean(args[1])
+                : args[0]?.value === LOOK_IN_TARGET_VALUE;
+        }
+        if (targetMenu.stagedTargetKind === 'examine-targets') return true;
         const otherArgument = args[columnIndex === 0 ? 1 : 0];
         if (!otherArgument) return false;
         return !(columnIndex === 1 && targetMenu.stagedTargetKind === 'room-object-container');
     };
     const directionPadMode: 'below' | 'side' | 'wheel' | null = targetMenu.kind === 'movement-wheel'
         ? 'wheel'
-        : /^look(?:\s|$)/i.test(targetCommand.trim())
-        ? 'side'
+        : targetMenu.kind !== 'look-containers' && /^(?:look|examine)(?:\s|$)/i.test(targetCommand.trim())
+        ? 'below'
         : targetMenu.kind === 'door-direction' || tacticalTargeting.pendingTarget?.toLowerCase() === 'exit' ? 'side' : null;
     const effectiveTarget = tacticalTargeting.getEffectiveTarget(targetCommand);
     const targetSuggestions = targetMenu.kind
         ? isOffensiveSingleTargetCommand(targetCommand)
-            ? prioritizeTargetSuggestion(targetMenu.suggestions || [], target || tacticalTargeting.pendingTarget || effectiveTarget)
+            ? prioritizeTargetSuggestion(
+                targetMenu.suggestions || [],
+                usesChipPriorityOffensiveTarget(targetCommand)
+                    ? targetChipTarget || tacticalTargeting.pendingTarget || effectiveTarget
+                    : target || tacticalTargeting.pendingTarget || effectiveTarget
+            )
             : targetMenu.suggestions
         : canCommandAcceptTarget(targetCommand) ? [] : [BLANK_TARGET_SUGGESTION];
+
+    useEffect(() => {
+        if (!tacticalTargeting.isTargetColumnOpen || targetMenu.stagedTargetKind || targetMenu.kind === 'movement-wheel') return;
+        if (targetMenu.showsShopPanel) return;
+        const suggestions = targetSuggestions || [];
+        const isAvailable = (value: string | null | undefined) => Boolean(value
+            && suggestions.some(suggestion => isTargetSuggestionMatch(suggestion, value)));
+        if (tacticalTargeting.hasManuallySelectedTarget && isAvailable(tacticalTargeting.pendingTarget)) return;
+
+        const requestedDefault = targetMenu.defaultTarget;
+        const firstPriorityTarget = suggestions.find(suggestion => suggestion.value !== BLANK_TARGET_VALUE);
+        const blankTarget = suggestions.find(suggestion => suggestion.value === BLANK_TARGET_VALUE);
+        const defaultTarget = isAvailable(requestedDefault)
+            ? requestedDefault
+            : firstPriorityTarget?.value || blankTarget?.value || null;
+        tacticalTargeting.handleSelectTarget(defaultTarget, targetCommand, false, false);
+    }, [
+        targetCommand,
+        targetMenu.kind,
+        targetMenu.stagedTargetKind,
+        targetMenu.showsShopPanel,
+        targetSuggestions,
+        tacticalTargeting.handleSelectTarget,
+        tacticalTargeting.hasManuallySelectedTarget,
+        tacticalTargeting.isTargetColumnOpen,
+        tacticalTargeting.pendingTarget
+    ]);
     const isTargetReady = Boolean(effectiveTarget && targetSuggestions?.some(suggestion => isTargetSuggestionMatch(suggestion, effectiveTarget)));
+    const normalizeTarget = (value: string | null | undefined) => value?.replace(/[*']/g, '').trim().toLowerCase() || '';
+    const isAutoTargetReady = Boolean(!autoTargetChipDisabled && isTargetReady && !target && wheelTargetChipTarget && effectiveTarget
+        && normalizeTarget(wheelTargetChipTarget) === normalizeTarget(effectiveTarget));
+    const centerDefaultTarget = target
+        || getDefaultCommandTarget(wheelButton.command)
+        || (!autoTargetChipDisabled ? automaticTarget : null)
+        || getAutoRoomTarget(wheelButton.command, roomOccupants, characterName || '', roomZone)
+        || tacticalTargeting.getEffectiveTarget(wheelButton.command, true);
+    const centerTargetMeta = targetMenu.suggestions?.find(suggestion => isTargetSuggestionMatch(suggestion, centerDefaultTarget || ''))?.meta;
+    const isCenterTargetAlly = Boolean(centerDefaultTarget && (
+        normalizeTarget(centerDefaultTarget) === 'self'
+        || normalizeTarget(centerDefaultTarget).endsWith('.ally')
+        || centerTargetMeta === 'self'
+        || centerTargetMeta === 'ally'
+        || centerTargetMeta === 'allies'
+    ));
+    const hasCenterTarget = Boolean(centerDefaultTarget && centerDefaultTarget !== BLANK_TARGET_VALUE);
+    const isCenterOffensive = Boolean(hasCenterTarget && isOffensiveSingleTargetCommand(wheelButton.command));
+    const entityColors: EntityColorMap = { object: objectColor, player: playerColor, npc: npcColor, enemy: enemyColor, neutral: neutralColor };
+    const centerTargetGlowColor = isCenterTargetAlly
+        ? getTargetClassificationColor('ally', inlineCategories, entityColors, theme) || '#61c290'
+        : isCenterOffensive ? '#f87171' : null;
     const stagedColumns = targetMenu.stagedTargetKind && !wheelReplacementMode ? [
         {
-            title: targetMenu.stagedTargetKind === 'social' ? 'Social' : targetMenu.stagedTargetKind === 'room-object-container' ? 'Item' : 'Object',
+            title: targetMenu.stagedTargetKind === 'social' ? 'Social'
+                : targetMenu.stagedTargetKind === 'room-object-container' ? 'Item'
+                : targetMenu.stagedTargetKind === 'look-container' ? 'Target'
+                : targetMenu.stagedTargetKind === 'examine-targets' ? 'Characters' : 'Object',
             suggestions: targetMenu.firstArgumentSuggestions,
             selectedTarget: stagedArguments[0]?.value || null,
             selectedKey: stagedArguments[0]?.key || null,
@@ -368,7 +559,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
         },
         {
             title: targetMenu.stagedTargetKind === 'social' ? 'Room Target' : targetMenu.stagedTargetKind === 'inventory-recipient' ? 'Recipient'
-                : targetMenu.stagedTargetKind === 'inventory-container' ? 'Container' : 'Get From',
+                : targetMenu.stagedTargetKind === 'inventory-container' || targetMenu.stagedTargetKind === 'look-container' ? 'Container'
+                : targetMenu.stagedTargetKind === 'examine-targets' ? 'Room Objects' : 'Get From',
             suggestions: targetMenu.secondArgumentSuggestions,
             selectedTarget: stagedArguments[1]?.value || null,
             selectedKey: stagedArguments[1]?.key || null,
@@ -377,20 +569,29 @@ export const GameButton: React.FC<GameButtonProps> = ({
         }
     ] : undefined;
     useEffect(() => {
-        const next: Array<{ value: string; key: string } | null> = [null, null];
-        if (targetMenu.stagedTargetKind === 'room-object-container') next[1] = { value: '__room__', key: 'get-from-room' };
+        const stagedSuggestions = stagedSuggestionsRef.current;
+        const next = getDefaultStagedArguments(
+            targetMenu.stagedTargetKind || null,
+            lastSocialCommandByButton.get(button.id),
+            stagedSuggestions.first,
+            stagedSuggestions.second
+        );
         stagedArgumentsRef.current = next;
         setStagedArguments(next);
         setLoadingContainer(null);
-    }, [button.id, targetCommand, targetMenu.stagedTargetKind]);
+    }, [button.id, targetCommand, targetMenu.stagedTargetKind, tacticalTargeting.isTargetColumnOpen]);
     useEffect(() => {
         if (!tacticalTargeting.isTargetColumnOpen) {
             setInlineAssignment(null);
         }
     }, [tacticalTargeting.isTargetColumnOpen]);
     const resetStagedArguments = () => {
-        const next: Array<{ value: string; key: string } | null> = [null, null];
-        if (targetMenu.stagedTargetKind === 'room-object-container') next[1] = { value: '__room__', key: 'get-from-room' };
+        const next = getDefaultStagedArguments(
+            targetMenu.stagedTargetKind || null,
+            lastSocialCommandByButton.get(button.id),
+            targetMenu.firstArgumentSuggestions,
+            targetMenu.secondArgumentSuggestions
+        );
         stagedArgumentsRef.current = next;
         setStagedArguments(next);
         setLoadingContainer(null);
@@ -400,8 +601,17 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const buildStagedCommand = (args: Array<{ value: string; key: string } | null>, includeSecond: boolean) => {
         const kind = targetMenu.stagedTargetKind;
         const first = args[0]?.value;
-        if (!kind || !first) return '';
+        if (!kind) return '';
+        if (kind === 'examine-targets') {
+            const target = args[0]?.value || args[1]?.value;
+            return target ? `examine ${target}` : '';
+        }
+        if (!first) return '';
         const second = includeSecond ? args[1]?.value : undefined;
+        if (kind === 'look-container') {
+            if (first === LOOK_IN_TARGET_VALUE) return second ? `look in ${second}` : '';
+            return first === BLANK_TARGET_VALUE ? 'look' : `look ${first}`;
+        }
         const secondPart = second === '__blank_target__' || second === '__social_no_target__' || second === '__room__'
             ? ''
             : second ? ` ${second}` : '';
@@ -412,19 +622,47 @@ export const GameButton: React.FC<GameButtonProps> = ({
     onSelectStagedTargetRef.current = (value, columnIndex) => {
         const suggestion = (columnIndex === 0 ? targetMenu.firstArgumentSuggestions : targetMenu.secondArgumentSuggestions)
             .find(candidate => candidate.value === value);
-        if (!suggestion || !targetMenu.stagedTargetKind) return;
+        if (!suggestion || !targetMenu.stagedTargetKind) return false;
+        const shouldRefreshLookContainers = targetMenu.stagedTargetKind === 'look-container'
+            && columnIndex === 0
+            && value === LOOK_IN_TARGET_VALUE
+            && stagedArgumentsRef.current[0]?.value !== LOOK_IN_TARGET_VALUE;
         const next = [...stagedArgumentsRef.current];
         if (columnIndex === 1 && targetMenu.stagedTargetKind === 'room-object-container') {
-            next[0] = null;
+            if (next[1]?.value !== value) {
+                next[0] = value === '__room__' ? { value: 'all', key: 'all-argument' } : null;
+            }
             setLoadingContainer(null);
             if (value !== '__room__' && suggestion.containerId && suggestion.containerCommand) {
                 setLoadingContainer({ id: suggestion.containerId, previousContents: containerContents[suggestion.containerId] });
                 requestContainerContents?.(suggestion);
             }
         }
+        if (targetMenu.stagedTargetKind === 'examine-targets') next[columnIndex === 0 ? 1 : 0] = null;
         next[columnIndex] = { value, key: suggestion.key };
         stagedArgumentsRef.current = next;
         setStagedArguments(next);
+        if (targetMenu.stagedTargetKind === 'look-container') {
+            if (shouldRefreshLookContainers) {
+                executeCommand('inventory', true, true, false, true);
+                executeCommand('equipment', true, true, false, true);
+            }
+            const isInSelection = next[0]?.value === LOOK_IN_TARGET_VALUE;
+            const hasCompleteLook = Boolean(next[0] && (!isInSelection || next[1]));
+            if (hasCompleteLook && tacticalTargeting.fireOnTargetTap) {
+                const command = buildStagedCommand(next, isInSelection);
+                if (command) runButtonCommand(command, false, false);
+                resetStagedArguments();
+                return false;
+            }
+            return isInSelection ? !next[1] : columnIndex === 1;
+        }
+        if (targetMenu.stagedTargetKind === 'examine-targets' && tacticalTargeting.fireOnTargetTap) {
+            const command = buildStagedCommand(next, true);
+            if (command) runButtonCommand(command, false, false);
+            resetStagedArguments();
+            return false;
+        }
         const hasBothArguments = Boolean(next[0] && next[1]);
         const isReady = hasBothArguments;
         if (isReady && tacticalTargeting.fireOnTargetTap) {
@@ -432,10 +670,33 @@ export const GameButton: React.FC<GameButtonProps> = ({
             if (command) runButtonCommand(command, false, false);
             resetStagedArguments();
         }
+        return false;
     };
     onCommitStagedTargetRef.current = () => {
         if (tacticalTargeting.fireOnTargetTap) return false;
         const args = stagedArgumentsRef.current;
+        if ((targetMenu.stagedTargetKind === 'look-container' || targetMenu.stagedTargetKind === 'examine-targets')
+            && tacticalTargeting.pendingDirection) {
+            const command = tacticalTargeting.resolveCommandWithTarget(targetCommand);
+            if (!command) return false;
+            runButtonCommand(command, false, false);
+            resetStagedArguments();
+            return true;
+        }
+        if (targetMenu.stagedTargetKind === 'look-container' && args[0]?.value !== LOOK_IN_TARGET_VALUE) {
+            const command = buildStagedCommand(args, false);
+            if (!command) return false;
+            runButtonCommand(command, false, false);
+            resetStagedArguments();
+            return true;
+        }
+        if (targetMenu.stagedTargetKind === 'examine-targets') {
+            const command = buildStagedCommand(args, true);
+            if (!command) return false;
+            runButtonCommand(command, false, false);
+            resetStagedArguments();
+            return true;
+        }
         const hasBothArguments = Boolean(args[0] && args[1]);
         if (!hasBothArguments) return false;
         const command = buildStagedCommand(args, hasBothArguments);
@@ -446,6 +707,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     };
     const inlineAssignmentButtons = inlineAssignment
         ? availableButtons.filter(candidate => candidate.setId.toLowerCase() === inlineAssignment.setId.toLowerCase()
+            && !candidate.isDimmed
             && candidate.command.trim().toLowerCase() !== inlineAssignment.sourceCommand.toLowerCase())
         : [];
     const assignmentMode: WheelReplacementMode | null = wheelReplacementMode || (inlineAssignment ? {
@@ -503,17 +765,22 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const needsDiamondVitals = (hpRatio !== undefined || manaRatio !== undefined || moveRatio !== undefined) && variant === 'diamond';
 
     useEffect(() => {
+        if (tacticalTargeting.isTargetColumnOpen || tacticalTargeting.isTargetMenuPending) return;
         if (heldButton?.id === button.id && heldButton.dx !== undefined && heldButton.dy !== undefined) {
-            const effectiveTarget = tacticalTargeting.getEffectiveTarget(heldButton.baseCommand || button.command);
-            const preview = getButtonCommand(button, heldButton.dx, heldButton.dy, undefined, undefined, heldButton.modifiers, joystick, effectiveTarget, joystick.isActive, heldButton.commandPrefixes);
+            const activeGestureCommand = gestures.currentCommandRef.current.trim().toLowerCase();
+            const baseCommand = wheelButton.command.trim().toLowerCase();
+            // Category wheel hover owns its preview after leaving the center action.
+            if (button.id.startsWith('deck-category-') && activeGestureCommand && activeGestureCommand !== baseCommand) return;
+            const effectiveTarget = tacticalTargeting.getEffectiveTarget(heldButton.baseCommand || wheelButton.command);
+            const preview = getButtonCommand(wheelButton, heldButton.dx, heldButton.dy, undefined, undefined, heldButton.modifiers, joystick, effectiveTarget, joystick.isActive, heldButton.commandPrefixes);
             setCommandPreview(preview?.cmd || null);
         }
-    }, [joystick.isActive, heldButton?.id, button.id, joystick.currentDir, joystick.isTargetModifierActive, target, tacticalTargeting.pendingTarget, setCommandPreview]);
+    }, [joystick.isActive, heldButton?.id, button.id, joystick.currentDir, joystick.isTargetModifierActive, target, tacticalTargeting.isTargetColumnOpen, tacticalTargeting.isTargetMenuPending, tacticalTargeting.pendingTarget, setCommandPreview, wheelButton, gestures.currentCommandRef]);
 
     const handleSwap = React.useCallback((displayedCell?: SwipeDirection | 'center' | null) => {
         const currentCommand = (gestures.currentCommandRef.current || '').trim().toLowerCase();
-        const centerCommand = (button.command || '').trim().toLowerCase();
-        const mappedDirection = Object.entries({ ...(button.longSwipeCommands || {}), ...(button.swipeCommands || {}) })
+        const centerCommand = (wheelButton.command || '').trim().toLowerCase();
+        const mappedDirection = Object.entries({ ...(wheelButton.longSwipeCommands || {}), ...(wheelButton.swipeCommands || {}) })
             .find(([, command]) => {
                 const mappedCommand = command?.trim().toLowerCase() || '';
                 return mappedCommand && (currentCommand === mappedCommand || currentCommand.startsWith(`${mappedCommand} `));
@@ -534,6 +801,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
         const beginPicker = (setId: string) => {
             const hasAlternatives = availableButtons.some(candidate =>
                 candidate.setId.toLowerCase() === setId.toLowerCase()
+                && !candidate.isDimmed
                 && candidate.command.trim().toLowerCase() !== currentCommand
             );
             if (!setId.trim() || !hasAlternatives) return false;
@@ -560,11 +828,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
         const isCenter = selectedCell === 'center';
         const cellCommand = isCenter
-            ? (button.longCommand || button.command)
-            : (button.longSwipeCommands?.[selectedCell] || button.swipeCommands?.[selectedCell] || currentCommand);
+            ? (wheelButton.longCommand || wheelButton.command)
+            : (wheelButton.longSwipeCommands?.[selectedCell] || wheelButton.swipeCommands?.[selectedCell] || currentCommand);
         const actionType = isCenter
             ? (button.longActionType || button.actionType || 'command')
-            : (button.longSwipeActionTypes?.[selectedCell] || button.swipeActionTypes?.[selectedCell] || 'command');
+            : (wheelButton.longSwipeActionTypes?.[selectedCell] || wheelButton.swipeActionTypes?.[selectedCell] || 'command');
         const explicitSetId = isCenter
             ? button.rebindCenterSetId || (['menu', 'assign'].includes(actionType) ? cellCommand : '')
             : button.rebindSets?.[selectedCell] || (['menu', 'assign'].includes(actionType) ? cellCommand : '');
@@ -579,7 +847,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
             return;
         }
         beginPicker(rebindSetId);
-    }, [activeDir, button, availableButtons, triggerHaptic, setHeldButton, tacticalTargeting,
+    }, [activeDir, button, wheelButton, availableButtons, triggerHaptic, setHeldButton, tacticalTargeting,
         setInlineAssignment, onSwapWheel, gestures.currentCommandRef, isWheelReplacementModeRef, isRebindingGestureRef]);
     handleSwapRef.current = handleSwap;
 
@@ -596,8 +864,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
         }
 
         const wheelCommand = (direction: SwipeDirection | 'center') => direction === 'center'
-            ? button.command
-            : button.swipeCommands?.[direction] || button.longSwipeCommands?.[direction] || '';
+            ? wheelButton.command
+            : wheelButton.swipeCommands?.[direction] || wheelButton.longSwipeCommands?.[direction] || '';
         let assignedCommand = '';
         if (selectedSource.kind === 'wheel' && hoveredCell.kind === 'wheel') {
             assignedCommand = wheelCommand(selectedSource.direction);
@@ -662,7 +930,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     return (
         <div
             ref={buttonRef}
-            className={`custom-btn ${isFloating ? 'floating' : ''} ${isEditMode ? 'edit-mode' : ''} ${isSelected ? 'selected' : ''} ${isTargetReady ? 'target-ready' : ''} ${button.trigger?.enabled && button.isVisible ? 'triggered' : ''} ${activeDir ? 'is-swiping' : ''} ${variant === 'diamond' ? 'is-diamond' : ''} ${className}`}
+            className={`custom-btn ${isFloating ? 'floating' : ''} ${isEditMode ? 'edit-mode' : ''} ${isSelected ? 'selected' : ''} ${isTargetReady ? 'target-ready' : ''} ${isAutoTargetReady ? 'auto-target-ready' : ''} ${isCenterTargetAlly ? 'tactical-defense-ready' : ''} ${isCenterOffensive ? 'tactical-offense-ready' : ''} ${button.trigger?.enabled && button.isVisible ? 'triggered' : ''} ${activeDir ? 'is-swiping' : ''} ${variant === 'diamond' ? 'is-diamond' : ''} ${className}`}
             data-id={button.id}
             data-variant={variant}
             role="button"
@@ -681,6 +949,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 borderRadius: variant === 'diamond' ? '0' : `${button.style.borderRadius || 8}px`,
                 '--set-accent': button.style.borderColor || 'var(--accent)',
                 '--set-accent-rgb': getRgb(button.style.borderColor, '255, 255, 255'),
+                '--target-glow-color': centerTargetGlowColor || undefined,
                 '--ray-angle': `${rayParams.angle}deg`,
                 '--ray-length': `${rayParams.length}px`,
                 '--ray-opacity': rayParams.opacity,
@@ -704,19 +973,34 @@ export const GameButton: React.FC<GameButtonProps> = ({
             )}
             {needsCircularVitals && <CircularVitals hpRatio={hpRatio} manaRatio={manaRatio} moveRatio={moveRatio} w={renderParams.w} h={renderParams.h} borderRadius={renderParams.radius} isOuter={true} />}
             <TacticalCommandPanel
-                button={button} buttonIconNode={iconNode} activeDir={activeDir} isCancelling={isCancelling}
+                button={wheelButton} activeDir={activeDir} isCancelling={isCancelling}
                 swapSource={swapSource} onSwapCells={handlePanelCellSwap}
                 isPinned={isPanelPinned} onClose={cancelDecisionPanel}
-                paletteCommands={paletteCommands}
+                paletteCommands={wheelPaletteCommands}
                 buttonRect={buttonRef.current?.getBoundingClientRect()} rayParams={rayParams}
                 isMobile={isMobile}
                 isTargetMenuOpen={tacticalTargeting.isTargetColumnOpen}
                 isTargetMenuHeld={tacticalTargeting.isTargetMenuHeld}
                 command={targetCommand} currentCommandRef={gestures.currentCommandRef}
-                activeTarget={target} targetChipTarget={targetChipTarget} selectedTarget={displayedSelectedTarget}
+                activeTarget={target} targetChipTarget={wheelTargetChipTarget} selectedTarget={displayedSelectedTarget}
                 selectedDirection={tacticalTargeting.pendingDirection}
                 directionPadMode={directionPadMode} suggestions={targetSuggestions}
-                title={targetMenu.kind ? targetMenu.title : 'NO TARGET REQUIRED'} characterName={characterName || ''}
+                title={targetMenu.showsStatusPanel || targetMenu.kind || targetMenu.title !== 'TARGETS' ? targetMenu.title : 'NO TARGET REQUIRED'} characterName={characterName || ''}
+                customContent={targetMenu.showsPracticePanel
+                    ? <RightActionPanel skillsOnly embedded />
+                    : targetMenu.showsStatusPanel ? <ThisIsYouConsole alwaysExpanded />
+                    : targetMenu.showsShopPanel ? <ShopTargetMenu
+                        executeCommand={runButtonCommand}
+                        selectedTarget={displayedSelectedTarget}
+                        onSelectTarget={value => {
+                            tacticalTargeting.handleSelectTarget(value, targetCommand);
+                            if (tacticalTargeting.fireOnTargetTap) {
+                                runButtonCommand(tacticalTargeting.resolveCommandWithTarget(targetCommand), false, false);
+                                tacticalTargeting.clearSelection();
+                            }
+                        }}
+                    /> : undefined}
+                customContentInteractive={Boolean(targetMenu.showsPracticePanel || targetMenu.showsStatusPanel || targetMenu.showsShopPanel)}
                 targeting={tacticalTargeting}
                 executeCommand={runButtonCommand}
                 isChoosingRebindSlot={Boolean(assignmentMode?.awaitingSlotSelection || inlineAssignment?.direction === null)}

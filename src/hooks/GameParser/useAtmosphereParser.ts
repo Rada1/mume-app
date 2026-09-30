@@ -4,6 +4,7 @@
  */
 
 import { useCallback } from 'react';
+import { detectDoorSoundAction } from './doorSoundAction';
 
 export interface AtmosphereParserDeps {
     setWeather: (w: string | null) => void;
@@ -65,14 +66,13 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
 
         // --- Environmental Sounds ---
         const isKnockAtEntrance = /\bknock(?:s|ed|ing)?\b.*\b(?:door|gate|hatch|portcullis|entrance)\b|\b(?:door|gate|hatch|portcullis|entrance)\b.*\bknock(?:s|ed|ing)?\b/.test(lower);
+        const doorAction = detectDoorSoundAction(lower);
         if (isKnockAtEntrance) {
             playEffect?.('knock');
+        } else if (doorAction !== null) {
+            playDoorSound?.(doorAction);
         } else if (lower.includes('clank of a door')) {
             playDoorSound?.(true); // Generic clank implies something opened/closed
-        } else if (lower.includes('opens a door')) {
-            playDoorSound?.(true);
-        } else if (lower.includes('closes a door')) {
-            playDoorSound?.(false);
         }
 
     }, [setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, playRideSound, playStopRidingSound, playEffect, setIsRiding, setPlayerPosition]);

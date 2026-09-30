@@ -1,11 +1,9 @@
 /**
  * @file ExperimentalSettings.tsx
- * @description Component managing experimental client settings, including Spectate mode and Discord Activity SDK integrations.
+ * @description Component managing experimental client settings and Discord Activity SDK integrations.
  */
 
 import React from 'react';
-import { ToggleRow } from './SettingHelpers';
-import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useGame } from '../../context/GameContext';
 import { AlertCircle, Info, Sparkles, UserPlus } from 'lucide-react';
@@ -13,23 +11,12 @@ import { AlertCircle, Info, Sparkles, UserPlus } from 'lucide-react';
 interface ExperimentalSettingsProps {
     autoSaveSessions: boolean;
     setAutoSaveSessions: (val: boolean) => void;
-    showSpectatePromptInLog: boolean;
-    setShowSpectatePromptInLog: (val: boolean) => void;
 }
 
 export const ExperimentalSettings: React.FC<ExperimentalSettingsProps> = ({
     autoSaveSessions,
     setAutoSaveSessions,
-    showSpectatePromptInLog,
-    setShowSpectatePromptInLog,
 }) => {
-    const isSpectateMode = useModeStore(s => s.isSpectating);
-    const setIsSpectateMode = useModeStore(s => s.setIsSpectating);
-    const showDeveloperTools = useSettingsStore(s => s.showDeveloperTools ?? false);
-    const setShowDeveloperTools = useSettingsStore(s => s.setShowDeveloperTools);
-    const useMobileAccountPanels = useSettingsStore(s => s.useMobileAccountPanels ?? true);
-    const setUseMobileAccountPanels = useSettingsStore(s => s.setUseMobileAccountPanels);
-
     // Discord Activity Settings
     const isDiscordEnabled = useSettingsStore(s => s.isDiscordEnabled ?? true);
     const setIsDiscordEnabled = useSettingsStore(s => s.setIsDiscordEnabled);
@@ -61,46 +48,6 @@ export const ExperimentalSettings: React.FC<ExperimentalSettingsProps> = ({
                     style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: autoSaveSessions ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
                 >
                     <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: autoSaveSessions ? '22px' : '2px', transition: 'all 0.3s' }} />
-                </button>
-            </div>
-
-            {/* Show Spectated Player's Prompt */}
-            <ToggleRow
-                label="Show Spectated Player's Prompt"
-                description="Display the snooped player's prompt line in the message log during spectate mode."
-                value={showSpectatePromptInLog}
-                onToggle={() => setShowSpectatePromptInLog(!showSpectatePromptInLog)}
-            />
-
-            <ToggleRow
-                label="Mobile account panels"
-                description="Use focused login, character, and creation panels instead of the account log and shortcut grid. Turn off to restore the previous mobile account screen."
-                value={useMobileAccountPanels}
-                onToggle={() => setUseMobileAccountPanels(!useMobileAccountPanels)}
-            />
-
-            <ToggleRow
-                label="Diagnostics and tools"
-                description="Expose diagnostics and tools."
-                value={showDeveloperTools}
-                onToggle={() => setShowDeveloperTools(!showDeveloperTools)}
-            />
-
-            {/* Spectate Mode */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                <div style={{ flex: '1 1 200px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Spectate Mode</label>
-                        <span style={{ fontSize: '0.65rem', background: 'var(--accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>EXP</span>
-                    </div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Mirror a grouped player's location and vitals as if you are them. Requires Group.</div>
-                </div>
-                <button
-                    className={`setting-toggle ${isSpectateMode ? 'active' : ''}`}
-                    onClick={(e) => { e.stopPropagation(); setIsSpectateMode(!isSpectateMode); }}
-                    style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isSpectateMode ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                >
-                    <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: isSpectateMode ? '22px' : '2px', transition: 'all 0.3s' }} />
                 </button>
             </div>
 

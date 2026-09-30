@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, Crosshair, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, Store, DraftingCompass, MessageSquare, Users, TerminalSquare, Backpack } from 'lucide-react';
+import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, Store, DraftingCompass, MessageSquare, TerminalSquare, Shield } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
 import { useModeStore } from '../../stores/useModeStore';
@@ -11,7 +11,6 @@ import { useMobileHeaderTabs } from '../../hooks/useMobileHeaderTabs';
 import { useUIStore } from '../../stores/useUIStore';
 import { canAccessShaper } from '../../shaper/access/shaperAccess';
 import { getTraitsForName } from '../../utils/inlineActionModel';
-import { getOnlinePlayerCount } from '../../utils/playerCountUtils';
 import { MobileHeaderTime } from './MobileHeaderTime';
 
 interface HeaderProps {
@@ -22,7 +21,6 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = () => {
     const {
         btn,
-        teleportTargets,
         viewport,
         status,
         telnet,
@@ -34,8 +32,7 @@ const Header: React.FC<HeaderProps> = () => {
         roomItems,
         executeCommand,
         addMessage,
-        entities,
-        whoList
+        entities
     } = useGame() as any;
 
     const { setActiveMapFilter, currentRoomId, rooms, preloadedCoordsRef } = useMapper();
@@ -47,7 +44,7 @@ const Header: React.FC<HeaderProps> = () => {
     const { target, setTarget, characterInfo } = useVitals() as any;
     const {
         ui, setUI, setIsSettingsOpen, setPopoverState,
-        setSettingsTab, replayer, whoLines
+        setSettingsTab, replayer
     } = useUI();
 
     const selectedTarget = useUIStore(state => state.selectedTarget);
@@ -60,6 +57,7 @@ const Header: React.FC<HeaderProps> = () => {
     const setArchiveView = useArchiveStore(state => state.setActiveView);
     const setArchivePanelMode = useArchiveStore(state => state.setPanelMode);
     const showDeveloperTools = useSettingsStore(state => state.showDeveloperTools ?? false);
+    const isClassicMode = useSettingsStore(state => state.isClassicMode);
 
     const [isEnteringTarget, setIsEnteringTarget] = useState(false);
     const [manualTargetInput, setManualTargetInput] = useState('');
@@ -69,19 +67,6 @@ const Header: React.FC<HeaderProps> = () => {
     const displayedSpectateName = isSpectating
         ? (activeView === 'target' ? (characterInfo.name || spectateTarget) : spectateTarget)
         : null;
-    const onlinePlayerCount = useMemo(() => {
-        return getOnlinePlayerCount(whoList, whoLines);
-    }, [whoList, whoLines]);
-
-    useEffect(() => {
-        if (gameState !== 'playing' || status !== 'connected') return;
-        executeCommand('who', true, true, false, true);
-        const interval = setInterval(() => {
-            executeCommand('who', true, true, false, true);
-        }, 60_000);
-        return () => clearInterval(interval);
-    }, [gameState, status, executeCommand]);
-
     const getTargetColor = () => {
         if (!target) return null;
         
@@ -210,20 +195,11 @@ const Header: React.FC<HeaderProps> = () => {
     }, [characterInfo]);
 
     const { activeSet, isEditMode, availableSets, setActiveSet } = btn;
-    const teleportTargetsCount = teleportTargets.length;
     const onClearTarget = () => { setTarget(null); clearObjectSelection(); };
-    const onTeleportClick = () => {
-        setPopoverState({
-            type: 'teleport-manage',
-            setId: 'teleport',
-            x: window.innerWidth / 2,
-            y: window.innerHeight / 2
-        });
-    };
     const [isMenuOpen, setIsMenuOpen] = [ui.isMenuOpen, (val: boolean) => setUI(prev => ({ ...prev, isMenuOpen: val })) as any];
     const [isSetMenuOpen, setIsSetMenuOpen] = [ui.isSetMenuOpen, (val: boolean) => setUI(prev => ({ ...prev, isSetMenuOpen: val })) as any];
     const [menuView, setMenuView] = [ui.menuView, (val: 'main' | 'availableSets') => setUI(prev => ({ ...prev, menuView: val })) as any];
-    const { isCommandPanelOpen, isGearPanelOpen, showPlayersPanel, showChatWindow,
+    const { isCommandPanelOpen, isGearPanelOpen, showChatWindow,
         isHelpOpen, helpData, toggleHeaderTab } = useMobileHeaderTabs(viewport.isMobile, isMenuOpen, setIsMenuOpen);
 
     const menuRef = useRef<HTMLDivElement>(null);
@@ -420,27 +396,6 @@ const Header: React.FC<HeaderProps> = () => {
                     </button>
                 )}
 
-                {!isAccountScreen && teleportTargetsCount > 0 && (
-                    <div
-                        className="status-indicator"
-                        style={{
-                            color: 'var(--accent)',
-                            gap: 4, padding: '4px 6px',
-                            cursor: 'pointer',
-                            opacity: 1,
-                            border: '1px solid var(--accent)',
-                            height: '28px',
-                            display: 'flex',
-                            alignItems: 'center'
-                        }}
-                        title="Stored Teleport Rooms"
-                        onClick={() => onTeleportClick && onTeleportClick()}
-                    >
-                        <Crosshair size={12} style={{ transform: 'rotate(45deg)' }} />
-                        <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{teleportTargetsCount}</span>
-                    </div>
-                )}
-
                 {!isAccountScreen && (
                     <>
                         {hasMailLoadFlag && (
@@ -501,34 +456,7 @@ const Header: React.FC<HeaderProps> = () => {
                             aria-pressed={isGearPanelOpen}
                             style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
                         >
-                            <Backpack size={17} />
-                        </button>
-
-                        <button
-                            className={`menu-toggle-btn${showPlayersPanel ? ' active' : ''}`}
-                            onClick={() => {
-                                toggleHeaderTab('players');
-                                triggerHaptic?.(10);
-                            }}
-                            title={`Toggle Players Panel${onlinePlayerCount > 0 ? ` (${onlinePlayerCount} online)` : ''}`}
-                            aria-label={`Toggle Players Panel${onlinePlayerCount > 0 ? `, ${onlinePlayerCount} players online` : ''}`}
-                            style={{ minWidth: '32px', height: '32px', width: 'auto', padding: onlinePlayerCount > 0 ? '0 6px' : 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
-                        >
-                            <Users size={17} />
-                            {onlinePlayerCount > 0 && (
-                                <span
-                                    className="player-count"
-                                    style={{
-                                        fontSize: '0.75rem',
-                                        fontWeight: 700,
-                                        lineHeight: 1,
-                                        letterSpacing: '-0.02em',
-                                        fontVariantNumeric: 'tabular-nums'
-                                    }}
-                                >
-                                    {onlinePlayerCount}
-                                </span>
-                            )}
+                            <Shield size={17} />
                         </button>
 
                         <button
@@ -610,15 +538,17 @@ const Header: React.FC<HeaderProps> = () => {
                         onClick={() => {
                             if (toggleHeaderTab('menu')) setMenuView('main');
                         }}
-                        title="More Actions"
+                        title={isClassicMode ? 'Main Menu' : 'More Actions'}
+                        aria-label={isClassicMode ? 'Main Menu' : 'More Actions'}
                         style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
                     >
+                        {isClassicMode && <span className="classic-main-menu-label">MENU</span>}
                         <MoreVertical size={20} />
                     </button>
 
                     {isMenuOpen && menuDropdownPos && createPortal(
                         <div
-                            className="header-dropdown-menu"
+                            className="header-dropdown-menu header-dropdown-menu--terminal"
                             style={{
                                 position: 'fixed',
                                 top: menuDropdownPos.top,
@@ -709,7 +639,7 @@ const Header: React.FC<HeaderProps> = () => {
                                     </div>
                                     {!isAccountScreen && (
                                         <>
-                                            <div style={{ height: '1px', background: 'rgba(255, 255, 255, 0.08)', margin: '4px 0' }} />
+                                            <div className="header-dropdown-divider" />
                                             <div
                                                 className="dropdown-item exit-game-item"
                                                 onClick={(e) => {

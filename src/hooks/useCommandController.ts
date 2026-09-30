@@ -162,9 +162,8 @@ export interface CommandControllerDeps {
     setPendingFlags: (isSilent: boolean, fromDrawer: boolean, command?: string) => void;
     popoverState: any;
     setPopoverState: (val: any) => void;
-    handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
+    handleTabClick: (drawer: 'character' | 'equipment') => void;
     setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
-    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     setIsSettingsOpen: (open: boolean) => void;
     setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help' | 'buttons' | 'map') => void;
@@ -177,7 +176,7 @@ export interface CommandControllerDeps {
     wasDraggingRef: React.RefObject<boolean>;
     ui: {
         mapExpanded: boolean;
-        drawer: 'none' | 'character' | 'equipment' | 'inventory' | 'players' | 'stats' | 'map';
+        drawer: 'none' | 'character' | 'equipment' | 'inventory' | 'stats' | 'map';
         setManagerOpen: boolean;
         isDrawerPeeking: boolean;
     };
@@ -470,14 +469,15 @@ export function useCommandController(deps: CommandControllerDeps) {
         if (currentMode === 'help' && cmd) {
             finalCmd = `help ${cmd}`;
         } else if (currentMode === 'parley' && cmd) {
-            const TARGETLESS = ['say', 'narrate', 'shout', 'yell', 'sing', 'emote'];
+            const TARGETLESS = ['say', 'narrate', 'shout', 'yell', 'sing', 'emote', 'group', 'pray'];
+            const command = deps.parley.command === 'group' ? 'gsay' : deps.parley.command;
             const isTargetless = TARGETLESS.includes(deps.parley.command);
             if (isTargetless) {
-                finalCmd = `${deps.parley.command} ${cmd}`;
+                finalCmd = `${command} ${cmd}`;
             } else if (deps.parley.target) {
-                finalCmd = `${deps.parley.command} ${deps.parley.target} ${cmd}`;
+                finalCmd = `${command} ${deps.parley.target} ${cmd}`;
             } else {
-                finalCmd = `${deps.parley.command} ${cmd}`;
+                finalCmd = `${command} ${cmd}`;
             }
         }
 

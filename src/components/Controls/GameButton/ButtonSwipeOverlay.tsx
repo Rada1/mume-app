@@ -7,14 +7,12 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowLeftRight, X } from 'lucide-react';
 import { CustomButton, SwipeDirection } from '../../../types';
-import { SkillClassIcon } from '../../HUD/SkillClassIcon';
 import { getClassKeyFromSetId, getSkillPresentation } from '../../../utils/skillPresentation';
 import { TacticalCommandPalette, type TacticalPaletteCommand, type TacticalSwapCell } from './TacticalCommandPalette';
 import './ButtonSwipeOverlay.css';
 
 interface ButtonSwipeOverlayProps {
     button: CustomButton;
-    buttonIconNode?: React.ReactNode;
     activeDir: SwipeDirection | 'center' | null;
     isCancelling: boolean;
     isPinned: boolean;
@@ -26,7 +24,7 @@ interface ButtonSwipeOverlayProps {
     rayParams: { angle: number, length: number, opacity: number, color?: string };
     isMobile?: boolean;
     isTargetMenuVisible?: boolean;
-    isCommandTargetReady?: (command: string) => boolean;
+    getCommandTargetGlowColor?: (command: string) => string | null;
     activeCommand?: string;
     targetMenu?: React.ReactNode;
     paletteCommands?: TacticalPaletteCommand[];
@@ -43,9 +41,6 @@ interface ButtonSwipeOverlayProps {
     hidePreviewWheel?: boolean;
 }
 
-const SWIPE_DIRECTION_GLYPHS: Record<string, string> = {
-    right: '→', se: '↘', down: '↓', sw: '↙', left: '←', nw: '↖', up: '↑', ne: '↗'
-};
 const REBIND_GRID_CELLS: Array<Array<SwipeDirection | 'center'>> = [
     ['nw', 'up', 'ne'],
     ['left', 'center', 'right'],
@@ -75,25 +70,24 @@ export const toSwipeCenterActionLabel = (button: CustomButton): string => {
     if (!command) return button.label || '';
 
     if (button.actionType === 'menu') {
-        if (normalized.endsWith('spelllist')) return 'spells';
-        if (normalized.endsWith('skilllist')) return 'skills';
-        if (normalized.endsWith(' list')) return normalized.replace(/\s+list$/, '');
-        return normalized.replace(/list$/, '') || command;
+        const menuLabel = normalized.endsWith('spelllist') ? 'spells'
+            : normalized.endsWith('skilllist') ? 'skills'
+            : normalized.endsWith(' list') ? normalized.replace(/\s+list$/, '')
+            : normalized.replace(/list$/, '') || command;
+        return getSkillPresentation(menuLabel, menuLabel, getClassKeyFromSetId(button.setId)).label;
     }
 
-    const quotedAbility = command.match(/^(?:cast|commune)\s+'([^']+)'/i);
-    if (quotedAbility) return quotedAbility[1];
-    return command;
+    return getSkillPresentation(command, command, getClassKeyFromSetId(button.setId)).label;
 };
 
-export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, buttonIconNode, activeDir, isCancelling, isPinned, swapSource = null, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, isTargetMenuVisible = false, isCommandTargetReady, activeCommand, targetMenu, paletteCommands = [], onClose, onSwapCells, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel }) => {
+export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling, isPinned, swapSource = null, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, isTargetMenuVisible = false, getCommandTargetGlowColor, activeCommand, targetMenu, paletteCommands = [], onClose, onSwapCells, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel }) => {
     if (!isTargetMenuVisible || !targetMenu) return null;
 
     const wheelAccent = button.style.borderColor || button.style.backgroundColor || 'var(--set-accent, var(--accent))';
     const wheelAccentRgb = colorToRgb(wheelAccent, 'var(--set-accent-rgb, var(--accent-rgb))');
     const buttonClassKey = getClassKeyFromSetId(button.command) || getClassKeyFromSetId(button.setId);
     const centerCommand = button.command;
-    const centerPresentation = getSkillPresentation(button.command || '', button.label || '', buttonClassKey);
+    const centerTargetGlowColor = getCommandTargetGlowColor?.(centerCommand) ?? null;
     const normalizedActiveCommand = activeCommand?.trim().toLowerCase() || '';
     const configuredDirection = Object.entries({ ...(button.longSwipeCommands || {}), ...(button.swipeCommands || {}) }).find(([, command]) => {
         const normalizedSwipeCommand = command?.trim().toLowerCase() || '';
@@ -129,27 +123,28 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
             {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map(d => {
                 const cmdVal = (button.swipeCommands?.[d as SwipeDirection] || button.longSwipeCommands?.[d as SwipeDirection] || '').trim();
                 const isActive = displayDirection === d;
-                const targetReady = isCommandTargetReady?.(cmdVal) ?? false;
+                const targetGlowColor = getCommandTargetGlowColor?.(cmdVal) ?? null;
                 const presentation = getSkillPresentation(cmdVal, cmdVal, buttonClassKey);
                 return (
                     <span key={`label-${d}`} className={`swipe-sq-label ${isActive ? 'active' : ''}${swapSource?.kind === 'wheel' && swapSource.direction === d ? ' is-swap-source' : ''}${cmdVal ? '' : ' is-empty'}`} data-dir={d} data-wheel-direction={d} data-wheel-command={cmdVal}>
-                        <span className={`swipe-action-card${targetReady ? ' is-target-ready' : ''}${cmdVal ? '' : ' is-empty'}`}>
+                        <span
+                            className={`swipe-action-card${targetGlowColor ? ' is-target-ready' : ''}${cmdVal ? '' : ' is-empty'}`}
+                            style={{ '--target-glow-color': targetGlowColor || undefined } as React.CSSProperties}
+                        >
                             {cmdVal && <>
-                                <span className="swipe-direction-glyph">{SWIPE_DIRECTION_GLYPHS[d]}</span>
-                                {presentation.classKey
-                                    ? <SkillClassIcon classKey={presentation.classKey} size={15} />
-                                    : buttonIconNode && <span className="swipe-button-icon" aria-hidden="true">{buttonIconNode}</span>}
                                 <span className="swipe-action-text">{presentation.label}</span>
                             </>}
                         </span>
                     </span>
                 );
             })}
-            <div className={`swipe-center ${displayDirection === 'center' ? 'active' : ''}${swapSource?.kind === 'wheel' && swapSource.direction === 'center' ? ' is-swap-source' : ''}`} data-wheel-direction="center" data-wheel-command={centerCommand}>
-                {centerPresentation.classKey
-                    ? <SkillClassIcon classKey={centerPresentation.classKey} size={18} />
-                    : buttonIconNode && <span className="swipe-button-icon" aria-hidden="true">{buttonIconNode}</span>}
-                <span className="swipe-center-label">{toSwipeCenterActionLabel(button)}</span>
+            <div
+                className={`swipe-center ${displayDirection === 'center' ? 'active' : ''}${centerTargetGlowColor ? ' is-target-ready' : ''}${swapSource?.kind === 'wheel' && swapSource.direction === 'center' ? ' is-swap-source' : ''}`}
+                style={{ '--target-glow-color': centerTargetGlowColor || undefined } as React.CSSProperties}
+                data-wheel-direction="center"
+                data-wheel-command={centerCommand}
+            >
+                {centerCommand.trim() && <span className="swipe-center-label">{toSwipeCenterActionLabel(button)}</span>}
             </div>
             {isChoosingRebindSlot && <div className="unified-tactical-rebind-grid" aria-label="Choose wheel slot to rebind">
                 {REBIND_GRID_CELLS.flat().map(direction => (
@@ -192,7 +187,7 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                         <TacticalCommandPalette
                             commands={paletteCommands}
                             activeCommand={activeCommand || ''}
-                            iconNode={buttonIconNode}
+                            getCommandTargetGlowColor={getCommandTargetGlowColor}
                             swapSourceCommand={swapSource?.kind === 'palette' ? swapSource.command : null}
                             onPointerDown={isPinned ? onPalettePointerDown : undefined}
                             onPointerMove={isPinned ? onPalettePointerMove : undefined}

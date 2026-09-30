@@ -5,6 +5,9 @@
 
 import { useCallback, useRef } from 'react';
 import { MOVE_FAILURE_REGEX } from '../useMessageLog';
+import { getTaggedRoomObjectNames } from './roomItemDetection';
+
+const WALL_BUMP_REGEX = /^(?:Alas, you cannot go that way\.|You can't go there\.|You cannot go that way\.|The .+ seems to be closed\.|It's closed\.|You can't see to go that way\.)/i;
 
 export interface RoomParserDeps {
     roomNameRef: React.RefObject<string | null>;
@@ -103,12 +106,13 @@ export function useRoomParser(deps: RoomParserDeps) {
         return { isRoomName, isRoomDescription, isRoomWindow: afterRoomNameRef.current };
     }, [roomNameRef, roomDescRef, capture, isSpectateMode, spectateRoomName, spectateRoomDesc]);
 
-    const parseRoomLine = useCallback((textOnly: string, _cleanLine: string, isSnoop: boolean = false): 'game' | 'room-name' | 'room-description' | null => {
+    const parseRoomLine = useCallback((textOnly: string, cleanLine: string, isSnoop: boolean = false, containsRoomObject = false): 'game' | 'room-name' | 'room-description' | null => {
         const lower = textOnly.toLowerCase();
-        const { isRoomName, isRoomDescription } = detectRoom(textOnly, lower, false, isSnoop);
+        const { isRoomName, isRoomDescription, isRoomWindow } = detectRoom(textOnly, lower, false, isSnoop);
+        const hasRoomObject = containsRoomObject || getTaggedRoomObjectNames(cleanLine).length > 0;
         
         if (isRoomName) return 'room-name';
-        if (isRoomDescription) return 'room-description';
+        if (isRoomDescription || (isRoomWindow && hasRoomObject)) return 'room-description';
         
         if (textOnly.includes('It is pitch black...') || textOnly.includes('You cannot see a thing!')) {
             return 'game';
@@ -117,6 +121,9 @@ export function useRoomParser(deps: RoomParserDeps) {
         if (!isSnoop && MOVE_FAILURE_REGEX.test(textOnly)) {
             if (typeof window !== 'undefined') {
                 window.dispatchEvent(new CustomEvent('mume-mapper-move-failed'));
+                if (WALL_BUMP_REGEX.test(textOnly.trim())) {
+                    window.dispatchEvent(new Event('mume-mapper-wall-bump'));
+                }
             }
             return 'game';
         }

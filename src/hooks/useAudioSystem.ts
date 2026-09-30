@@ -1,3 +1,8 @@
+/**
+ * @file useAudioSystem.ts
+ * @description Coordinates ambient and health-based audio from active game state.
+ */
+
 import { useEffect, useCallback, useRef } from 'react';
 import { audioManager } from '../services/audio/AudioManager';
 import { useSettingsStore } from '../stores/useSettingsStore';
@@ -6,8 +11,46 @@ import { useHaptics } from './interactions/useHaptics';
 import { useModeStore } from '../stores/useModeStore';
 import { useUIStore } from '../stores/useUIStore';
 
+// --- Health Audio Mix ---
+const HEALTH_STATUS_RANGES: Record<string, { min: number; max: number; fallback: number }> = {
+    healthy: { min: 100, max: 100, fallback: 100 },
+    fine: { min: 71, max: 99, fallback: 85 },
+    hurt: { min: 51, max: 70, fallback: 60 },
+    wounded: { min: 31, max: 50, fallback: 40 },
+    bad: { min: 16, max: 30, fallback: 30 },
+    awful: { min: 6, max: 15, fallback: 15 },
+    dying: { min: 1, max: 5, fallback: 5 },
+    stunned: { min: 0, max: 0, fallback: 0 }
+};
+
+const getAudioHealthPercent = (
+    hp: number,
+    maxHp: number,
+    gmcpHp: number,
+    gmcpMaxHp: number,
+    hpStatus: string | null
+): number => {
+    const currentHp = gmcpMaxHp > 0 ? gmcpHp : hp;
+    const currentMaxHp = gmcpMaxHp > 0 ? gmcpMaxHp : maxHp;
+    const numericPercent = currentMaxHp > 0
+        ? Math.max(0, Math.min(100, currentHp / currentMaxHp * 100))
+        : undefined;
+    const statusRange = hpStatus
+        ? HEALTH_STATUS_RANGES[hpStatus.trim().toLowerCase()]
+        : undefined;
+
+    if (statusRange) {
+        return numericPercent === undefined
+            ? statusRange.fallback
+            : Math.max(statusRange.min, Math.min(statusRange.max, numericPercent));
+    }
+    return numericPercent ?? 100;
+};
+
 export const useAmbientController = (gameState: 'account' | 'playing' | 'disconnected', accountStage: string = 'none') => {
     const isSoundEnabled = useSettingsStore(state => state.isSoundEnabled);
+    const isClassicMode = useSettingsStore(state => state.isClassicMode);
+    const areSoundsEnabled = isSoundEnabled && !isClassicMode;
     const isImmersionMode = useSettingsStore(state => state.isImmersionMode);
     const zoneMusic = useSettingsStore(state => state.zoneMusic);
     const mode = useModeStore(state => state.mode);
@@ -25,14 +68,21 @@ export const useAmbientController = (gameState: 'account' | 'playing' | 'disconn
     const weather = activeVitals.weather;
     const lighting = activeVitals.lighting;
 
-    const inCombat = activeVitals.position === 'fighting';
+    const inCombat = activeVitals.position === 'fighting' || activeVitals.inCombat;
+    const healthPercent = getAudioHealthPercent(
+        activeVitals.hp,
+        activeVitals.maxHp,
+        activeVitals.gmcpVitals.hp,
+        activeVitals.gmcpVitals.maxHp,
+        activeVitals.hpStatus
+    );
 
     // Refs to avoid stale closures in the zone-ended listener
     const normalizedZoneRef = useRef<string | null>(null);
     const inCombatRef = useRef<boolean>(false);
     const dynamicUrlRef = useRef<string | undefined>(undefined);
 
-    const isAmbientActive = isSoundEnabled && isImmersionMode && !isShaperOpen;
+    const isAmbientActive = areSoundsEnabled && isImmersionMode && !isShaperOpen;
 
     useEffect(() => {
         if (gameState === 'playing') {
@@ -41,13 +91,18 @@ export const useAmbientController = (gameState: 'account' | 'playing' | 'disconn
     }, [gameState]);
 
     useEffect(() => {
-        if (!isSoundEnabled || isShaperOpen) {
+        const healthAudioActive = gameState === 'playing' && areSoundsEnabled && !isShaperOpen;
+        audioManager.updateHealthAudioMix(healthAudioActive, healthPercent);
+    }, [gameState, healthPercent, areSoundsEnabled, mode, isSpectating, activeView, isShaperOpen]);
+
+    useEffect(() => {
+        if (!areSoundsEnabled || isShaperOpen) {
             audioManager.setAmbient('terrain', { key: null });
             return;
         }
         const isDay = lighting === 'sun';
         audioManager.setAmbient('terrain', { key: terrain, isDay });
-    }, [terrain, lighting, isSoundEnabled, mode, isSpectating, activeView, isShaperOpen]);
+    }, [terrain, lighting, areSoundsEnabled, mode, isSpectating, activeView, isShaperOpen]);
 
     useEffect(() => {
         if (!isAmbientActive) {
@@ -62,7 +117,7 @@ export const useAmbientController = (gameState: 'account' | 'playing' | 'disconn
     }, [weather, isAmbientActive, mode, isSpectating, activeView]);
 
     useEffect(() => {
-        if (!isSoundEnabled || isShaperOpen) {
+        if (!areSoundsEnabled || isShaperOpen) {
             audioManager.setAmbient('zone', { key: null });
             return;
         }
@@ -103,22 +158,13 @@ export const useAmbientController = (gameState: 'account' | 'playing' | 'disconn
         dynamicUrlRef.current = dynamicUrl;
 
         audioManager.setAmbient('zone', { key: normalizedZone, inCombat, dynamicUrl });
-    }, [roomZone, inCombat, isSoundEnabled, zoneMusic, mode, isSpectating, activeView, gameState, accountStage, isShaperOpen]);
-
-    // Handle drum loop
-    useEffect(() => {
-        if (!isSoundEnabled || isShaperOpen) {
-            audioManager.updateDrumLayer(false, null);
-            return;
-        }
-        audioManager.updateDrumLayer(inCombat, roomZone);
-    }, [inCombat, roomZone, isSoundEnabled, mode, isSpectating, activeView, isShaperOpen]);
+    }, [roomZone, inCombat, areSoundsEnabled, zoneMusic, mode, isSpectating, activeView, gameState, accountStage, isShaperOpen]);
 
     // Simple listener for zone ended to trigger re-evaluation if needed
     useEffect(() => {
         const handleZoneEnded = (key: string) => {
             console.log(`[useAmbientController] Zone audio ended: ${key}`);
-            if (isSoundEnabled && normalizedZoneRef.current === key && !useUIStore.getState().isShaperOpen) {
+            if (areSoundsEnabled && normalizedZoneRef.current === key && !useUIStore.getState().isShaperOpen) {
                 console.log(`[useAmbientController] Re-triggering zone music for key: ${key}`);
                 audioManager.setAmbient('zone', {
                     key: normalizedZoneRef.current,
@@ -129,19 +175,21 @@ export const useAmbientController = (gameState: 'account' | 'playing' | 'disconn
         };
         audioManager.addZoneEndedListener(handleZoneEnded);
         return () => audioManager.removeZoneEndedListener(handleZoneEnded);
-    }, [isSoundEnabled]);
+    }, [areSoundsEnabled]);
 };
 
 export const useAudioEffects = () => {
     const isSoundEnabled = useSettingsStore(state => state.isSoundEnabled);
+    const isClassicMode = useSettingsStore(state => state.isClassicMode);
+    const areSoundsEnabled = isSoundEnabled && !isClassicMode;
     const { triggerHaptic } = useHaptics();
     type EffectOptions = { pitch?: number, volume?: number, volumeMultiplier?: number, filterFrequency?: number, skipJitter?: boolean };
 
     const playEffect = useCallback((name: string, options?: EffectOptions) => {
-        if (isSoundEnabled && !useUIStore.getState().isShaperOpen) {
+        if (areSoundsEnabled && !useUIStore.getState().isShaperOpen) {
             audioManager.playEffect(name, options);
         }
-    }, [isSoundEnabled]);
+    }, [areSoundsEnabled]);
 
     const playHitImpactSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('hit2', options), [playEffect]);
     const playOofSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('oof', options), [playEffect]);
@@ -194,19 +242,21 @@ export const useAudioEffects = () => {
     const playMagicExplosionSound = useCallback((options?: { volume?: number }) => {
         // playEffect('magicexplosion', { ...options, volume: options?.volume || 1.5 })
     }, [playEffect]);
-    const playIncantationSound = useCallback(() => audioManager.playIncantation(), []);
+    const playIncantationSound = useCallback(() => {
+        if (areSoundsEnabled && !useUIStore.getState().isShaperOpen) audioManager.playIncantation();
+    }, [areSoundsEnabled]);
     const stopIncantationSound = useCallback((playExplosion: boolean = false) => audioManager.stopIncantation(playExplosion), []);
 
     const playSound = useCallback((buffer: AudioBuffer, options?: { volume?: number }) => {
-        audioManager.playSound(buffer, options);
-    }, []);
+        if (areSoundsEnabled && !useUIStore.getState().isShaperOpen) audioManager.playSound(buffer, options);
+    }, [areSoundsEnabled]);
 
     const playRandomSound = useCallback((buffers: AudioBuffer[], options?: { volume?: number }) => {
-        if (buffers && buffers.length > 0) {
+        if (areSoundsEnabled && !useUIStore.getState().isShaperOpen && buffers && buffers.length > 0) {
             const randomIndex = Math.floor(Math.random() * buffers.length);
             audioManager.playSound(buffers[randomIndex], options);
         }
-    }, []);
+    }, [areSoundsEnabled]);
 
     return {
         playEffect,

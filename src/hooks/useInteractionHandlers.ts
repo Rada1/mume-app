@@ -31,7 +31,6 @@ export interface InteractionDeps {
     setIsMapExpanded: (val: boolean) => void;
     handleTabClick: (drawer: any) => void;
     setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
-    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     setSettingsTab: (val: any) => void;
     setInventoryLines: (val: any) => void;
@@ -40,7 +39,7 @@ export interface InteractionDeps {
     captureStage: React.MutableRefObject<CaptureStage>;
     ui: {
         mapExpanded: boolean;
-        drawer: 'none' | 'character' | 'equipment' | 'inventory' | 'players' | 'stats' | 'map';
+        drawer: 'none' | 'character' | 'equipment' | 'inventory' | 'stats' | 'map';
         setManagerOpen: boolean;
         isDrawerPeeking: boolean;
     };

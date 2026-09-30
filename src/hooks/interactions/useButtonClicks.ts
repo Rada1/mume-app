@@ -47,7 +47,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         }
 
         const targetEl = (e.currentTarget as HTMLElement);
-        if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'select-container', 'teleport-manage'].includes(button.actionType || '') && !isExamine && !isConsider) {
+        if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'select-container'].includes(button.actionType || '') && !isExamine && !isConsider) {
             setPopoverState(null);
         }
         if ((isExamine || isConsider) && popoverState) {
@@ -214,8 +214,6 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                 const inputEl = document.querySelector('input') as HTMLInputElement;
                 if (inputEl) inputEl.blur();
             }
-        } else if (button.actionType === 'teleport-manage') {
-            setPopoverState({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150, type: 'teleport-manage', setId: 'teleport' });
         } else if (button.actionType === 'preload' || finalCmd.startsWith('input:')) {
             const isInputPrefix = finalCmd.startsWith('input:');
             const prefill = isInputPrefix ? finalCmd.slice(6) : (cmd + (cmd.endsWith(' ') ? '' : ' '));
@@ -294,6 +292,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
 
             // EXPLICITLY pass shouldFocus: false to avoid unintentional keyboard pop on mobile
             const isSilentCapture = isExamine || isConsider;
+            setInput('');
             setCommandPreview(finalCmd);
             executeCommand(
                 finalCmd,

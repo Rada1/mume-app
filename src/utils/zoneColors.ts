@@ -6,61 +6,57 @@
 // --- Constants Section ---
 
 export const KNOWN_ZONE_COLORS: Record<string, string> = {
-    // Elven realms: leaf, jade, and sea-green variations.
-    'valinor': '#b7a65a',
+    // Good zones use Rivendell green.
+    'bree': '#318c66',
+    'fornost': '#318c66',
+    'lorien': '#318c66',
     'rivendell': '#318c66',
-    'lorien': '#69a74b',
-    'lorien surroundings': '#538e58',
-    'the lorien surroundings': '#538e58',
-    'grey havens': '#3a9b83',
-    'ost-in-edhil': '#278969',
-    'eregion': '#328d65',
-    'lhun valley': '#458f85',
-    'southern mirkwood': '#3a7958',
+    'valinor': '#318c66',
+    'blue mountains': '#318c66',
+    'grey havens': '#318c66',
+    'shire': '#318c66',
 
-    // Realms of Men and their old roads: blue, steel, and indigo.
-    'bree': '#467db3',
-    'rohan': '#447eab',
-    'dunland': '#526ba4',
-    'tharbad': '#3e759d',
-    'fornost': '#496fa8',
-    'tower hills': '#4b88b4',
-    'weathertop': '#566da0',
-    'ancient broken road': '#657695',
-    'old east road': '#556f9c',
-    'old forest road': '#57708d',
-    'road to tharbad': '#527ca1',
-    'road to fornost': '#5875a4',
-    'road to grey havens': '#488697',
+    // Semi-good zones use Bree blue.
+    'fangorn': '#467db3',
+    'rohan': '#467db3',
+    'ettenmoors': '#467db3',
+    'gladden fields': '#467db3',
+    'lhun valley': '#467db3',
+    'lorien surroundings': '#467db3',
+    'the lorien surroundings': '#467db3',
+    'midgewaters': '#467db3',
+    'old forest': '#467db3',
+    'road to fornost': '#467db3',
+    'road to grey havens': '#467db3',
+    'road to tharbad': '#467db3',
+    'tower hills': '#467db3',
 
-    // Dwarven stone and forges: crimson through ember red.
-    'moria': '#aa454c',
-    'blue mountains': '#ae5055',
-    'redhorn pass': '#b74b52',
+    // Neutral zones use the tested mauve.
+    'dunland': '#968894',
+    'eregion': '#968894',
+    'isengard': '#968894',
+    'ost-in-edhil': '#968894',
+    'tharbad': '#968894',
+    'weathertop': '#968894',
+    'ancient broken road': '#968894',
+    'barrow-downs': '#968894',
+    'central anduin vale': '#968894',
+    'northern anduin vale': '#968894',
+    'old east road': '#968894',
 
-    // Orc, troll, and shadow-held lands: amethyst and bruised violet.
-    'troll warrens': '#8246ad',
-    'trollshaws': '#76509d',
-    'ettenmoors': '#8850a9',
-    'goblin-town': '#7950ae',
-    'dol guldur': '#7947b5',
-    'isengard': '#73529f',
-    'emyn-nu-fuin': '#684894',
-    'mordor': '#76418f',
-    'angmar': '#684c9b',
+    // Semi-evil zones use the previous Troll Warrens purple.
+    'emyn-nu-fuin': '#8246ad',
+    'southern mirkwood': '#8246ad',
+    'misty mountains': '#8246ad',
+    'old forest road': '#8246ad',
+    'redhorn pass': '#8246ad',
+    'trollshaws': '#8246ad',
 
-    // Independent lands keep related but distinct natural colors.
-    'shire': '#71a653',
-    'fangorn': '#367c55',
-    'old forest': '#39715e',
-    'misty mountains': '#62899c',
-    'midgewaters': '#658e7c',
-    'gladden fields': '#619680',
-    'northern anduin vale': '#558e93',
-    'central anduin vale': '#528f97',
-    'swanfleet': '#628e9c',
-    'barrow-downs': '#6a8791',
-    'mirkwood': '#3a7958'
+    // Evil zones use Moria red.
+    'dol guldur': '#a51c24',
+    'goblin-town': '#a51c24',
+    'moria': '#a51c24',
+    'troll warrens': '#a51c24',
 };
 
 export const DEFAULT_ZONE_COLOR = '#475569';

@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { CompactMapExit, MapperRoom, MapperMarker } from '../mapperTypes';
 import { generateId, GRID_SIZE, DIRS } from '../mapperUtils';
+import type { MapData } from '../performance/webcockpit/model';
 
 interface UseMapActionsProps {
     rooms: Record<string, MapperRoom>;
@@ -13,6 +14,8 @@ interface UseMapActionsProps {
     setCurrentRoomId: React.Dispatch<React.SetStateAction<string | null>>;
     currentRoomIdRef: React.MutableRefObject<string | null>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
+    performanceMapRef: React.MutableRefObject<MapData | null>;
+    setPerformanceMapRevision: React.Dispatch<React.SetStateAction<number>>;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     nameIndexRef: React.MutableRefObject<Record<string, string[]>>;
     serverIdIndexRef: React.MutableRefObject<Record<string, string>>;
@@ -29,6 +32,8 @@ export const useMapActions = ({
     setExploredVnums, setExploredMarkers,
     setCurrentRoomId, currentRoomIdRef,
     preloadedCoordsRef,
+    performanceMapRef,
+    setPerformanceMapRevision,
     spatialIndexRef,
     nameIndexRef,
     serverIdIndexRef,
@@ -116,7 +121,7 @@ export const useMapActions = ({
         addMessage?.('system', `[Mapper] Synced current room location to ghost map.`);
     }, [addMessage, currentRoomIdRef, setRooms, preloadedCoordsRef]);
 
-    const loadImportedMapData = useCallback((data: Record<string, any>) => {
+    const loadImportedMapData = useCallback((data: Record<string, any>, canonicalMap: MapData | null = null) => {
         // 1. Clear existing dynamic map and exploration state
         setRooms({});
         setMarkers({});
@@ -196,6 +201,8 @@ export const useMapActions = ({
 
         // 5. Store the new base map template
         preloadedCoordsRef.current = baseMap;
+        performanceMapRef.current = canonicalMap;
+        setPerformanceMapRevision(revision => revision + 1);
 
         // 6. Rebuild all indexes for rendering and GMCP mapping
         const index: Record<number, Record<string, string[]>> = {};
@@ -244,6 +251,8 @@ export const useMapActions = ({
     }, [
         addMessage,
         preloadedCoordsRef,
+        performanceMapRef,
+        setPerformanceMapRevision,
         spatialIndexRef,
         nameIndexRef,
         serverIdIndexRef,

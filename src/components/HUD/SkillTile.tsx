@@ -3,7 +3,7 @@
  * @description Skill and spell tile button for the RightActionPanel deck.
  */
 
-import React, { FC, useState } from 'react';
+import React, { FC, useRef, useState } from 'react';
 import type { CommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 
 export interface SkillTileItem {
@@ -31,7 +31,9 @@ interface SkillTileProps {
 export const SkillTile: FC<SkillTileProps> = ({ item, isSpellClass, isPressed, onClick, target, targetChoices, onChooseTarget, onTypeTarget, practice }) => {
     // --- Logic Section ---
     const [isOpen, setIsOpen] = useState(false);
-    const metaLabel = item.isPassive ? 'Learned' : item.isKnown ? (isSpellClass ? 'Spell' : 'Learned') : '--';
+    const practiceTouchRef = useRef<{ pointerId: number; x: number; y: number; moved: boolean } | null>(null);
+    const skipPracticeClickRef = useRef<number | null>(null);
+    const metaLabel = item.isPassive ? 'Learned' : item.isKnown ? (isSpellClass ? null : 'Learned') : '--';
     const hasTarget = Boolean(onChooseTarget && onTypeTarget && item.syntax.includes('<target>'));
     const syntax = hasTarget ? item.syntax.replace('<target>', '') : item.syntax;
     // --- Render Section ---
@@ -59,13 +61,46 @@ export const SkillTile: FC<SkillTileProps> = ({ item, isSpellClass, isPressed, o
                 </span>
             </div>
             <div className="skill-tile-meta">
-                {item.mana !== null && <span className="skill-tile-mana">{item.mana}m</span>}
-                <span className={!item.isPassive && isSpellClass ? 'skill-tile-spell-meta' : undefined}>{metaLabel}</span>
+                {item.mana !== null && <span className="skill-tile-mana">{item.mana} Mana</span>}
+                {metaLabel && <span>{metaLabel}</span>}
                 {item.pct !== null && <span className="skill-tile-pct">{item.pct}%</span>}
             </div>
             {practice && <button type="button" className="skill-tile-practice" disabled={!practice.enabled}
                 aria-label={`${practice.label} ${item.name}`}
-                onClick={event => { event.stopPropagation(); practice.onClick(); }}>
+                onPointerDown={event => {
+                    event.stopPropagation();
+                    if (event.pointerType === 'touch' && practice.enabled) {
+                        practiceTouchRef.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
+                    }
+                }}
+                onPointerMove={event => {
+                    const press = practiceTouchRef.current;
+                    if (press?.pointerId === event.pointerId && Math.hypot(event.clientX - press.x, event.clientY - press.y) > 8) {
+                        press.moved = true;
+                    }
+                }}
+                onPointerUp={event => {
+                    event.stopPropagation();
+                    const press = practiceTouchRef.current;
+                    practiceTouchRef.current = null;
+                    if (event.pointerType === 'touch' && press?.pointerId === event.pointerId && !press.moved && practice.enabled) {
+                        skipPracticeClickRef.current = Date.now() + 700;
+                        practice.onClick();
+                    }
+                }}
+                onPointerCancel={event => {
+                    event.stopPropagation();
+                    if (practiceTouchRef.current?.pointerId === event.pointerId) practiceTouchRef.current = null;
+                }}
+                onClick={event => {
+                    event.stopPropagation();
+                    if (skipPracticeClickRef.current !== null && Date.now() <= skipPracticeClickRef.current) {
+                        skipPracticeClickRef.current = null;
+                        return;
+                    }
+                    skipPracticeClickRef.current = null;
+                    practice.onClick();
+                }}>
                 {practice.label}
             </button>}
             {isOpen && hasTarget && <div className="action-target-menu" role="group" aria-label={`${item.name} targets`}

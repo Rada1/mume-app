@@ -7,7 +7,6 @@ import './components/Messages/MessageLog.css';
 import './components/Messages/MagicRipple.css';
 import './components/Messages/ChatWindow.css';
 import './components/Messages/ChatTranscriptWindow.css';
-import './components/Players/PlayersPanel.css';
 import './components/Controls/Stats.css';
 import './components/Controls/CustomButtons.css';
 import './components/Controls/SwipeWheel.css';
@@ -18,6 +17,7 @@ import './components/css/Popovers.css';
 import './components/css/HelpGuides.css';
 import './components/css/PremiumSwitch.css';
 import './styles/effects.css';
+import './styles/itemTierTargetText.css';
 
 import { MainContentLayer } from './components/Layout/MainContentLayer';
 import { HUDClustersLayer } from './components/Layout/HUDClustersLayer';
@@ -48,7 +48,10 @@ import { ShaperWorkspace } from './shaper/components/ShaperWorkspace';
 import { cleanupDevServiceWorkers } from './utils/devServiceWorkerCleanup';
 import { useZoneThemeSync } from './hooks/useZoneThemeSync';
 import { useImmersionDamagePulse } from './hooks/useImmersionDamagePulse';
+import { useScreenWakeLock } from './hooks/useScreenWakeLock';
 import './styles/immersionDamagePulse.css';
+import './styles/classicMode.css';
+import './styles/classicModeLayout.css';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
@@ -99,13 +102,34 @@ const MudClient = () => {
     } = useGame();
 
     const { setTarget, heldButton, heldButtonRef, setHeldButton } = useVitals();
-    const { setIsSetManagerOpen, popoverState, setUI, ui, setManagerSelectedSet } = useUI();
+    const { setIsSetManagerOpen, popoverState, setUI, ui, setManagerSelectedSet, setIsSettingsOpen, setSettingsTab, setPopoverState } = useUI();
     const { addMessage } = useLog();
 
     const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
     const displayMode = useDisplayMode();
+    const isClassicMode = useSettingsStore(s => s.isClassicMode);
+    const keepScreenAwake = useSettingsStore(s => s.keepScreenAwake);
+    useScreenWakeLock(keepScreenAwake);
     useZoneThemeSync();
     useImmersionDamagePulse(containerRef, isImmersionMode);
+
+    useEffect(() => {
+        const handleSettingsShortcut = (event: KeyboardEvent) => {
+            if (!(event.ctrlKey || event.metaKey) || (event.key !== ',' && event.code !== 'Comma')) return;
+            event.preventDefault();
+            setSettingsTab('general');
+            setIsSettingsOpen(true);
+        };
+        window.addEventListener('keydown', handleSettingsShortcut, { capture: true });
+        return () => window.removeEventListener('keydown', handleSettingsShortcut, { capture: true });
+    }, [setIsSettingsOpen, setSettingsTab]);
+
+    useEffect(() => {
+        if (!isClassicMode) return;
+        setUI(previous => ({ ...previous, mapExpanded: true, drawer: 'none', isDrawerPeeking: false, isMenuOpen: false }));
+        setPopoverState(null);
+        setIsSettingsOpen(false);
+    }, [isClassicMode, setIsSettingsOpen, setPopoverState, setUI]);
 
     const [btnGlow, setBtnGlow] = useState({ up: false, down: false });
     const [returnToManager, setReturnToManager] = useState(false);
@@ -245,7 +269,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container state-${gameState} stage-${accountState?.stage || 'none'} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isPerformanceMode ? 'performance-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
+            className={`app-container state-${gameState} stage-${accountState?.stage || 'none'} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isPerformanceMode || isClassicMode ? 'performance-mode' : ''} ${isClassicMode ? 'classic-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
             style={{
                 ...(isImmersionMode ? { '--terrain-glow-color': getZoneAmbientGlow(gameState === 'account' ? null : roomZone) } : {})
             } as React.CSSProperties}
@@ -315,7 +339,7 @@ const MudClient = () => {
             onClick={handleBackgroundClick}
         >
             <div className="app-viewport-shell" style={{ flex: 1, position: 'relative' }}>
-                <AtmosphericLayer />
+                {!isClassicMode && <AtmosphericLayer />}
                 <div className="app-header-glass-strip" aria-hidden="true" />
 
                 <ErrorBoundary name="Main Content">

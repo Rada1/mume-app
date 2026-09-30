@@ -57,3 +57,10 @@
         animation: none !important;
     }
 }
+
+/* Text blooms are disabled for the mobile immersion log. */
+.app-container.is-mobile.immersion-mode .message-log .message.magic-ripple-active .message-content .magic-text,
+.app-container.is-mobile.immersion-mode .message-log .message.red-weather-ripple-active .message-content,
+.app-container.is-mobile.immersion-mode .message-log .message.red-weather-ripple-active .message-content * {
+    animation: none !important;
+}

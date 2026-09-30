@@ -61,6 +61,41 @@
     animation: none;
 }
 
+.tactical-target-bar.has-custom-content {
+    width: min(94vw, 760px);
+    max-height: min(82dvh, 760px);
+}
+
+.tactical-target-bar-custom-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    padding: 6px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    touch-action: pan-y;
+}
+
+.tactical-target-bar-custom-content .right-panel-content {
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+}
+
+.tactical-target-bar-custom-content .right-panel-class-chips,
+.tactical-target-bar-custom-content button {
+    touch-action: manipulation;
+}
+
+.tactical-target-bar-custom-content .this-is-you-console {
+    min-width: 0;
+}
+
+.tactical-target-bar.is-swipe-targeting.has-custom-content {
+    width: min(94vw, 760px);
+    max-height: min(76dvh, 700px);
+}
+
 @media (orientation: landscape) {
     .tactical-target-bar.is-swipe-targeting {
         top: 50%;
@@ -70,6 +105,15 @@
         width: min(27vw, 220px);
         max-height: 82dvh;
         transform: translateY(-50%);
+    }
+
+    .tactical-target-bar.is-swipe-targeting.has-custom-content {
+        top: 50%;
+        left: 50%;
+        bottom: auto;
+        width: min(72vw, 760px);
+        max-height: 86dvh;
+        transform: translate(-50%, -50%);
     }
 }
 
@@ -207,6 +251,10 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
+}
+
+.tactical-target-bar-custom-content {
+    width: 100%;
 }
 
 .tactical-target-bar-social-browser {

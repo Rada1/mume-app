@@ -3,7 +3,7 @@
  * @description Class skills with guildmaster training actions in the command panel.
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import type { CommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 import type { PracticeClassKey } from '../../utils/practiceClassCatalog';
 import { TARGETED_SKILLS } from '../../utils/practiceClassCatalog';
@@ -29,14 +29,49 @@ type RightPanelSkillsProps = {
 };
 
 // --- Render Section ---
-export const RightPanelSkills: React.FC<RightPanelSkillsProps> = props => (
-    <>
+export const RightPanelSkills: React.FC<RightPanelSkillsProps> = props => {
+    const touchPressRef = useRef<{ pointerId: number; key: PracticeClassKey; x: number; y: number; moved: boolean } | null>(null);
+    const skipClickRef = useRef<{ key: PracticeClassKey; expiresAt: number } | null>(null);
+    const selectClass = (key: PracticeClassKey) => {
+        props.onSelectClass(key);
+    };
+
+    return <>
         <div className="right-panel-class-chips" role="tablist" aria-label="Skill classes">
             {CLASS_KEYS.map(key => <button key={key} type="button"
                 role="tab"
                 aria-selected={props.selectedClass === key}
                 className={`right-panel-class-chip${props.selectedClass === key ? ' is-active' : ''}`}
-                onClick={() => props.onSelectClass(key)}>{props.selectedClass === key ? `[ ${key} ]` : key}</button>)}
+                onPointerDown={event => {
+                    if (event.pointerType === 'touch') {
+                        touchPressRef.current = { pointerId: event.pointerId, key, x: event.clientX, y: event.clientY, moved: false };
+                    }
+                }}
+                onPointerMove={event => {
+                    const press = touchPressRef.current;
+                    if (press?.pointerId === event.pointerId && Math.hypot(event.clientX - press.x, event.clientY - press.y) > 8) {
+                        press.moved = true;
+                    }
+                }}
+                onPointerUp={event => {
+                    const press = touchPressRef.current;
+                    touchPressRef.current = null;
+                    if (event.pointerType === 'touch' && press?.pointerId === event.pointerId && !press.moved) {
+                        skipClickRef.current = { key, expiresAt: Date.now() + 700 };
+                        selectClass(key);
+                    }
+                }}
+                onPointerCancel={event => {
+                    if (touchPressRef.current?.pointerId === event.pointerId) touchPressRef.current = null;
+                }}
+                onClick={() => {
+                    if (skipClickRef.current?.key === key && Date.now() <= skipClickRef.current.expiresAt) {
+                        skipClickRef.current = null;
+                        return;
+                    }
+                    skipClickRef.current = null;
+                    selectClass(key);
+                }}>{props.selectedClass === key ? `[ ${key} ]` : key}</button>)}
         </div>
         {props.guildAvailable && <div className="right-panel-guild-note" role="status">
             <strong>● Guildmaster available</strong><span>{props.sessionsLeft} session{props.sessionsLeft === 1 ? '' : 's'} left</span>
@@ -56,5 +91,5 @@ export const RightPanelSkills: React.FC<RightPanelSkillsProps> = props => (
                         onClick: () => props.onPractice(item.name) } : undefined} />;
             })}
         </div>
-    </>
-);
+    </>;
+};

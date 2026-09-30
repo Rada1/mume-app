@@ -11,7 +11,7 @@ const MIN_FONT_SIZE_PX = 6;
 const MAX_FONT_SIZE_PX = 48;
 const MIN_FONT_MULTIPLIER = 0.5;
 const MAX_FONT_MULTIPLIER = 2.5;
-const FONT_SIZE_STEP_PX = 0.5;
+const FONT_SIZE_STEP_PX = 1;
 
 interface FontSizeSettingProps {
     logFontSize: number;

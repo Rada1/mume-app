@@ -52,7 +52,8 @@ export const useMapAnimation = ({
     preMoveRef, walkTargetId, walkPath, isDraggingRef, activeMapFilter, mapSearchQuery, hasFilterRoute,
     entitiesRef, isMobile, isLandscape, filterFitRef
 }: AnimationProps) => {
-    const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode);
+    const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode || state.isClassicMode);
+    const wakeAnimationDuration = isPerformanceMode ? 0 : WAKE_ANIMATION_MS;
     const requestRef = useRef<number | null>(null);
     const tickRef = useRef<(() => boolean) | null>(null);
     const drawMapRef = useRef(drawMap);
@@ -195,7 +196,13 @@ export const useMapAnimation = ({
         // One-shot zoom-to-fit: runs until converged or user drags, then stops.
         // After convergence the user can freely pan/zoom without the camera fighting back.
         if (filterFit && !fitConvergedRef.current) {
-            if (effectiveIsDragging) {
+            if (isPerformanceMode) {
+                camera.current.zoom = filterFit.zoom;
+                camera.current.x = filterFit.camX;
+                camera.current.y = filterFit.camY;
+                (camera.current as any).targetZoom = filterFit.zoom;
+                fitConvergedRef.current = true;
+            } else if (effectiveIsDragging) {
                 // User grabbed the map before convergence: abandon fit immediately
                 fitConvergedRef.current = true;
                 (camera.current as any).targetZoom = camera.current.zoom;
@@ -225,7 +232,17 @@ export const useMapAnimation = ({
                 delete cam.zoomTransition;
             }
 
-            if (cam.zoomTransition) {
+            if (cam.zoomTransition && isPerformanceMode) {
+                const oldZoom = cam.zoom;
+                const newZoom = cam.zoomTransition.endZoom;
+                const mx = cam.zoomAnchorX || 0;
+                const my = cam.zoomAnchorY || 0;
+                cam.x += (mx / oldZoom) - (mx / newZoom);
+                cam.y += (my / oldZoom) - (my / newZoom);
+                cam.zoom = newZoom;
+                cam.targetZoom = newZoom;
+                delete cam.zoomTransition;
+            } else if (cam.zoomTransition) {
                 const elapsed = Date.now() - cam.zoomTransition.startTime;
                 const progress = Math.min(1, elapsed / cam.zoomTransition.duration);
                 
@@ -248,7 +265,7 @@ export const useMapAnimation = ({
                 needsNextFrame = true;
             } else if (cam.targetZoom !== undefined && Math.abs(cam.targetZoom - cam.zoom) > 0.001) {
                 const oldZoom = cam.zoom;
-                const zoomLerp = 1 - Math.pow(0.82, frameScale);
+                const zoomLerp = isPerformanceMode ? 1 : 1 - Math.pow(0.82, frameScale);
                 cam.zoom += (cam.targetZoom - cam.zoom) * zoomLerp;
                 const newZoom = cam.zoom;
                 
@@ -257,7 +274,7 @@ export const useMapAnimation = ({
                 cam.x += (mx / oldZoom) - (mx / newZoom);
                 cam.y += (my / oldZoom) - (my / newZoom);
                 
-                needsNextFrame = true;
+                if (!isPerformanceMode) needsNextFrame = true;
             } else if (cam.targetZoom !== undefined && cam.zoom !== cam.targetZoom) {
                 const oldZoom = cam.zoom;
                 cam.zoom = cam.targetZoom;
@@ -333,12 +350,12 @@ export const useMapAnimation = ({
 
         if ((tickRef as any)._lastWakeKey !== wakeKey) {
             (tickRef as any)._lastWakeKey = wakeKey;
-            wakeUntilRef.current = Math.max(wakeUntilRef.current, wallTime + WAKE_ANIMATION_MS);
+            wakeUntilRef.current = Math.max(wakeUntilRef.current, wallTime + wakeAnimationDuration);
         }
 
         if ((tickRef as any)._lastRenderVersion !== renderVersion) {
             (tickRef as any)._lastRenderVersion = renderVersion;
-            wakeUntilRef.current = Math.max(wakeUntilRef.current, wallTime + WAKE_ANIMATION_MS);
+            wakeUntilRef.current = Math.max(wakeUntilRef.current, wallTime + wakeAnimationDuration);
         }
 
         if (wakeUntilRef.current > wallTime) {
@@ -349,7 +366,7 @@ export const useMapAnimation = ({
 
         // The dashed Find route and destination pulse use `now` while drawing.
         // Keep producing frames until the route is cleared, even after camera fit ends.
-        if (hasFilterRoute) needsNextFrame = true;
+        if (hasFilterRoute && !isPerformanceMode) needsNextFrame = true;
 
         const drawStart = performance.now();
         drawMapRef.current(ctx, dpr, w, h, marquee, effectiveIsDragging);

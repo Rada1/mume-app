@@ -5,13 +5,11 @@
 
 // --- Logic Section ---
 import React from 'react';
-import { Crosshair, Download, RefreshCw, Trash2, Upload } from 'lucide-react';
+import { Download, Trash2, Upload } from 'lucide-react';
 import { useGame, useLog, useUI } from '../../context/GameContext';
 import { useMapper } from '../../context/useMapper';
 import { useMapperExportImport } from '../Mapper/hooks/useMapperExportImport';
 import { useSettingsStore } from '../../stores/useSettingsStore';
-import MapVisualSettings from './MapVisualSettings';
-import MapRegionLabelsSettings from './MapRegionLabelsSettings';
 
 const rowStyle: React.CSSProperties = {
     display: 'flex',
@@ -52,20 +50,14 @@ const MapSettings: React.FC = () => {
     const { ui, setUI } = useUI();
     const mapper = useMapper();
     const {
-        showBackgroundImage,
-        setShowBackgroundImage,
-        showTerrainTiles,
-        setShowTerrainTiles,
         showDebugEchoes,
         setShowDebugEchoes,
-        useLegacyMapArt,
-        setUseLegacyMapArt,
-        hideMapHeaderFooter,
-        setHideMapHeaderFooter,
+        mapBrightness,
+        setMapBrightness,
     } = useSettingsStore();
     const {
         rooms, setRooms, markers, setMarkers, allowPersistence, setAllowPersistence,
-        unveilMap, setUnveilMap, handleResetAndSync, handleClearMap, setExploredMarkers
+        unveilMap, setUnveilMap, handleClearMap, setExploredMarkers
     } = mapper;
 
     const { handleExportMap, handleImportMap, handleImportMMapper } = useMapperExportImport(
@@ -88,6 +80,27 @@ const MapSettings: React.FC = () => {
                     <div>
                         <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Map Visibility</label>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Control exploration display and local map persistence.</div>
+                    </div>
+                </div>
+
+                <div style={rowStyle}>
+                    <div>
+                        <label className="setting-label" htmlFor="map-brightness" style={{ margin: 0 }}>Map Brightness</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Adjust the overall map brightness.</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '180px' }}>
+                        <input
+                            id="map-brightness"
+                            aria-label="Map brightness"
+                            type="range"
+                            min={50}
+                            max={300}
+                            step={1}
+                            value={mapBrightness}
+                            onChange={event => setMapBrightness(Number(event.target.value))}
+                            style={{ width: '100%', accentColor: 'var(--accent)' }}
+                        />
+                        <span style={{ minWidth: '42px', textAlign: 'right', color: 'var(--text-primary)', fontSize: '0.75rem' }}>{mapBrightness}%</span>
                     </div>
                 </div>
 
@@ -120,60 +133,6 @@ const MapSettings: React.FC = () => {
 
                 <div style={rowStyle}>
                     <div>
-                        <label className="setting-label" style={{ margin: 0 }}>Show Background Image</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Show the Middle-earth map image behind the mapper.</div>
-                    </div>
-                    <button className={`setting-toggle ${showBackgroundImage ? 'active' : ''}`} onClick={() => setShowBackgroundImage(!showBackgroundImage)} style={toggleStyle(showBackgroundImage)}>
-                        <div style={knobStyle(showBackgroundImage)} />
-                    </button>
-                </div>
-
-                <div style={rowStyle}>
-                    <div>
-                        <label className="setting-label" style={{ margin: 0 }}>Show Terrain Tiles</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>On: full map without a player marker or highlight. Off: local 3×3 view with your marker.</div>
-                    </div>
-                    <button
-                        type="button"
-                        className={`setting-toggle ${showTerrainTiles ? 'active' : ''}`}
-                        aria-label="Show Terrain Tiles"
-                        aria-pressed={showTerrainTiles}
-                        onClick={() => setShowTerrainTiles(!showTerrainTiles)}
-                        style={toggleStyle(showTerrainTiles)}
-                    >
-                        <div style={knobStyle(showTerrainTiles)} />
-                    </button>
-                </div>
-
-                <div style={rowStyle}>
-                    <div>
-                        <label className="setting-label" style={{ margin: 0 }}>Use Legacy Map Art</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Toggle between the classic sketch-style map art and the new modern minimalist art style.</div>
-                    </div>
-                    <button className={`setting-toggle ${useLegacyMapArt ? 'active' : ''}`} onClick={() => setUseLegacyMapArt(!useLegacyMapArt)} style={toggleStyle(useLegacyMapArt)}>
-                        <div style={knobStyle(useLegacyMapArt)} />
-                    </button>
-                </div>
-
-                <div style={rowStyle}>
-                    <div>
-                        <label className="setting-label" style={{ margin: 0 }}>Hide Map Header &amp; Footer</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Hide the room telemetry header and exits/details footer overlaying the map.</div>
-                    </div>
-                    <button
-                        type="button"
-                        className={`setting-toggle ${hideMapHeaderFooter ? 'active' : ''}`}
-                        aria-label="Hide Map Header & Footer"
-                        aria-pressed={hideMapHeaderFooter}
-                        onClick={() => setHideMapHeaderFooter(!hideMapHeaderFooter)}
-                        style={toggleStyle(hideMapHeaderFooter)}
-                    >
-                        <div style={knobStyle(hideMapHeaderFooter)} />
-                    </button>
-                </div>
-
-                <div style={rowStyle}>
-                    <div>
                         <label className="setting-label" style={{ margin: 0 }}>Session Saving</label>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Persist mapper edits locally between sessions.</div>
                     </div>
@@ -183,17 +142,9 @@ const MapSettings: React.FC = () => {
                 </div>
             </div>
 
-            <MapVisualSettings />
-
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', marginBottom: '12px', display: 'block' }}>Map Actions</label>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => window.dispatchEvent(new Event('mume-mapper-center-on-player'))}>
-                        <Crosshair size={16} /> Center
-                    </button>
-                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={handleResetAndSync}>
-                        <RefreshCw size={16} /> Sync
-                    </button>
                     <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={handleExportMap}>
                         <Download size={16} /> Export
                     </button>
@@ -210,8 +161,6 @@ const MapSettings: React.FC = () => {
                     </button>
                 </div>
             </div>
-
-            <MapRegionLabelsSettings />
 
             <div style={rowStyle}>
                 <div>

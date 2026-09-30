@@ -2,8 +2,7 @@
 
 import React from 'react';
 import type { ActionType, SwipeDirection } from '../../../types';
-import { SkillClassIcon } from '../../HUD/SkillClassIcon';
-import { getClassKeyFromSetId, getSkillPresentation } from '../../../utils/skillPresentation';
+import { getSkillPresentation } from '../../../utils/skillPresentation';
 
 // --- Types ---
 export interface TacticalPaletteCommand {
@@ -12,6 +11,7 @@ export interface TacticalPaletteCommand {
     command: string;
     actionType?: ActionType;
     setId?: string;
+    isLearned?: boolean;
 }
 
 export type TacticalSwapCell =
@@ -21,7 +21,7 @@ export type TacticalSwapCell =
 interface Props {
     commands: TacticalPaletteCommand[];
     activeCommand: string;
-    iconNode?: React.ReactNode;
+    getCommandTargetGlowColor?: (command: string) => string | null;
     onPointerDown?: React.PointerEventHandler<HTMLElement>;
     onPointerMove?: React.PointerEventHandler<HTMLElement>;
     onPointerUp?: React.PointerEventHandler<HTMLElement>;
@@ -30,7 +30,7 @@ interface Props {
 }
 
 // --- UI Section ---
-export const TacticalCommandPalette: React.FC<Props> = ({ commands, activeCommand, iconNode, swapSourceCommand, ...pointerHandlers }) => {
+export const TacticalCommandPalette: React.FC<Props> = ({ commands, activeCommand, swapSourceCommand, getCommandTargetGlowColor, ...pointerHandlers }) => {
     if (!commands.length) return null;
     return <div
         className="unified-tactical-command-palette"
@@ -39,18 +39,20 @@ export const TacticalCommandPalette: React.FC<Props> = ({ commands, activeComman
     >
         <div className="unified-tactical-command-grid">
             {commands.map(item => {
-                const presentation = getSkillPresentation(item.command, item.label, getClassKeyFromSetId(item.setId));
+                const presentation = getSkillPresentation(item.command, item.label);
+                const isLearned = item.isLearned !== false;
+                const targetGlowColor = isLearned ? getCommandTargetGlowColor?.(item.command) ?? null : null;
                 return <div
                     key={item.key}
-                    className={`unified-tactical-command-item${activeCommand.trim().toLowerCase() === item.command.trim().toLowerCase() ? ' is-active' : ''}${swapSourceCommand?.trim().toLowerCase() === item.command.trim().toLowerCase() ? ' is-swap-source' : ''}`}
+                    className={`unified-tactical-command-item${activeCommand.trim().toLowerCase() === item.command.trim().toLowerCase() ? ' is-active' : ''}${swapSourceCommand?.trim().toLowerCase() === item.command.trim().toLowerCase() ? ' is-swap-source' : ''}${!isLearned ? ' is-unlearned' : ''}${targetGlowColor ? ' is-target-ready' : ''}`}
+                    style={{ '--target-glow-color': targetGlowColor || undefined } as React.CSSProperties}
                     data-palette-command={item.command}
                     data-palette-action-type={item.actionType || 'command'}
                     data-palette-set-id={item.setId || ''}
+                    data-palette-learned={isLearned}
+                    aria-disabled={!isLearned}
                     aria-label={item.label}
                 >
-                    {presentation.classKey
-                        ? <SkillClassIcon classKey={presentation.classKey} size={18} />
-                        : iconNode && <span className="unified-tactical-command-icon" aria-hidden="true">{iconNode}</span>}
                     <span className="unified-tactical-command-label">{presentation.label}</span>
                 </div>;
             })}

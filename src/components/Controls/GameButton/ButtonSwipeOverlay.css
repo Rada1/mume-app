@@ -30,30 +30,30 @@
     border-color: rgba(255, 255, 255, 0.08);
     background-image: none;
     box-shadow: none;
-    color: #86efac;
+    color: var(--target-glow-color, #f87171);
 }
 
 .swipe-sq-label.active .swipe-action-card.is-target-ready {
     border-color: rgba(255, 255, 255, 0.08);
     background-image: none;
     box-shadow: none;
-    color: #86efac;
+    color: var(--target-glow-color, #f87171);
 }
 
 .swipe-sq-label .swipe-action-card.is-target-ready .swipe-action-text {
-    color: #86efac;
-    text-shadow: 0 0 6px rgba(74, 222, 128, 0.9), 0 0 12px rgba(34, 197, 94, 0.65);
+    color: var(--target-glow-color, #f87171);
+    text-shadow: 0 0 6px var(--target-glow-color, rgba(248, 113, 113, 0.9)), 0 0 12px color-mix(in srgb, var(--target-glow-color, #ef4444) 65%, transparent);
 }
 
 .swipe-sq-label .swipe-action-card.is-target-ready .swipe-button-icon,
 .swipe-sq-label .swipe-action-card.is-target-ready .skill-class-icon {
-    color: #86efac;
-    filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.78));
+    color: var(--target-glow-color, #f87171);
+    filter: drop-shadow(0 0 5px var(--target-glow-color, rgba(239, 68, 68, 0.78)));
 }
 
 .swipe-sq-label .swipe-action-card.is-target-ready .swipe-button-icon svg {
-    color: #86efac;
-    filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.78));
+    color: var(--target-glow-color, #f87171);
+    filter: drop-shadow(0 0 5px var(--target-glow-color, rgba(239, 68, 68, 0.78)));
 }
 
 .swipe-action-text {

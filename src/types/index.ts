@@ -11,6 +11,7 @@ export * from './mechanics';
 export * from './account';
 export * from './session';
 export * from './timers';
+export * from './whereScan';
 
 // Note: EntityLocation is now uniquely defined in entities.ts to resolve 
 // export collisions with ui.ts which was carrying a legacy definition.

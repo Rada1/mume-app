@@ -136,7 +136,6 @@
     .character-drawer-desktop .character-card-achievements,
     .character-drawer-desktop .character-card-equipment,
     .character-drawer-desktop .character-card-timers,
-    .character-drawer-desktop .character-card-magic-keys,
     .character-drawer-desktop .character-card-skills {
         background: rgba(8, 11, 18, 0.24);
         border: 1px solid rgba(255, 255, 255, 0.08);
@@ -730,8 +729,7 @@
 .character-card-quests,
 .character-card-achievements,
 .character-card-equipment,
-.character-card-timers,
-.character-card-magic-keys {
+.character-card-timers {
     margin-top: 2px;
     padding-top: 7px;
     border-top: 1px solid rgba(255, 255, 255, 0.07);
@@ -786,8 +784,7 @@
     border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
-.character-card-timers .timer-drawer-tab,
-.character-card-magic-keys .magic-keys-tab {
+.character-card-timers .timer-drawer-tab {
     padding: 0;
 }
 

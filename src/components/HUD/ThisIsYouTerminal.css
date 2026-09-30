@@ -272,7 +272,8 @@
     color: #9a9182;
     font-size: 0.67rem;
 }
-.this-is-you-capabilities-row > span {
+.this-is-you-capabilities-row > span,
+.this-is-you-capabilities-row > .this-is-you-wimpy-button {
     display: grid;
     grid-template-columns: 58px max-content auto;
     align-items: baseline;
@@ -347,6 +348,13 @@
     border-radius: 0;
     font-size: 0.62rem;
 }
+.this-is-you-buff-time {
+    color: rgba(154, 145, 130, 0.42);
+    font-size: 0.48rem;
+    font-weight: 400;
+    line-height: 1;
+    white-space: nowrap;
+}
 .this-is-you-no-buffs { color: #9a9182; font-weight: 400; }
 
 @media (max-width: 780px) {
@@ -396,7 +404,8 @@
     .this-is-you-cell-val { grid-column: 2; grid-row: 1; }
     .this-is-you-cell-header .regen { display: none; }
     .this-is-you-capabilities-row { grid-auto-flow: row; grid-template-columns: 1fr; grid-template-rows: none; gap: 0; }
-    .this-is-you-capabilities-row > span { grid-template-columns: max-content max-content; align-items: center; min-height: 21px; gap: 3px; font-size: 0.58rem; }
+    .this-is-you-capabilities-row > span,
+    .this-is-you-capabilities-row > .this-is-you-wimpy-button { grid-template-columns: max-content max-content auto; align-items: center; min-height: 21px; gap: 3px; font-size: 0.58rem; }
     .this-is-you-capabilities-row strong { margin-left: 0; }
     .this-is-you-console .this-is-you-pill { grid-template-columns: max-content max-content; gap: 3px; font-size: 0.55rem; }
     .this-is-you-pill-category { font-size: 0.55rem; }

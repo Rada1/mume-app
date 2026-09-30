@@ -8,10 +8,11 @@ import React from 'react';
 import { LightingType, WeatherType } from '../../types';
 import Rain from './Rain';
 import { Embers } from './Embers';
-import { useInputStore } from '../../stores/useInputStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { useInputStore } from '../../stores/useInputStore';
 import { EnvironmentGlow } from './EnvironmentGlow';
 import { getZoneAmbientGlow } from '../../utils/zoneColors';
+import { useDeathBackgroundFade } from '../../hooks/useDeathBackgroundFade';
 
 const BACKGROUND_MAP_OPACITY = 0.18;
 const BACKGROUND_MAP_OPACITY_NO_IMMERSION = BACKGROUND_MAP_OPACITY * 0.35;
@@ -59,6 +60,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
 }) => {
     const input = useInputStore(s => s.input);
     const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
+    const deathFadePhase = useDeathBackgroundFade();
 
     const [prevPropBg, setPrevPropBg] = React.useState<string | null>(bgImage || null);
     const [prevImage, setPrevImage] = React.useState<string | null>(null);
@@ -139,7 +141,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
         <div style={{ '--lightning-x': `${lightningX}%` } as React.CSSProperties}>
             {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
             <div className={`environment-root back lighting-state-${lighting || 'none'} terrain-${(terrain || 'default').toLowerCase().replace(/\s+/g, '-')} ${isSleeping ? 'is-sleeping' : ''} ${isWater ? 'water-motion-active' : ''} ${isForest ? 'forest-motion-active' : ''}`}>
-                {isImmersionMode && prevImage && (
+                {isImmersionMode && !isMobile && prevImage && (
                     <div
                         className="background-layer"
                         style={{
@@ -158,7 +160,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         }} />
                     </div>
                 )}
-                {isImmersionMode && currentImage && (
+                {isImmersionMode && !isMobile && currentImage && (
                     <div
                         className="background-layer"
                         style={{
@@ -216,6 +218,10 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         />
                     </>
                 )}
+                <div
+                    className={`client-death-background ${deathFadePhase === 'flash' ? 'is-flashing' : deathFadePhase === 'black' ? 'is-black' : deathFadePhase === 'fading' ? 'is-fading' : ''}`}
+                    aria-hidden="true"
+                />
             </div>
 
             {/* --- EMBER LAYER: Full-client particles above the map/drawer surface --- */}
@@ -240,7 +246,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                     </>
                 )}
                 {isImmersionMode && <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} />}
-                {isImmersionMode && <div className="client-vignette-overlay" aria-hidden="true" />}
+                {isImmersionMode && !isMobile && <div className="client-vignette-overlay" aria-hidden="true" />}
             </div>
         </div>
     );

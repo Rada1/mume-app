@@ -14,7 +14,7 @@ import ButtonSettings from '../Settings/ButtonSettings';
 import MapSettings from '../Settings/MapSettings';
 import HelpGuides from '../Settings/HelpGuides';
 import ReplaySettings from '../Settings/ReplaySettings';
-import { SoundTrigger, UiMode } from '../../types';
+import { SoundTrigger } from '../../types';
 
 // --- Interface ---
 
@@ -39,24 +39,12 @@ interface SettingsModalProps {
     setLoginPassword: (val: string) => void;
     autoConnect: boolean;
     setAutoConnect: (val: boolean) => void;
-    uiMode: UiMode;
-    setUiMode: (val: UiMode) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
-    isTimestampEnabled: boolean;
-    setIsTimestampEnabled: (val: boolean) => void;
     fontFamily: string;
     setFontFamily: (val: string) => void;
     autoSaveSessions?: boolean;
     setAutoSaveSessions?: (val: boolean) => void;
-    showSpectatePromptInLog?: boolean;
-    setShowSpectatePromptInLog?: (val: boolean) => void;
-    isTextRevealEnabled: boolean;
-    setIsTextRevealEnabled: (val: boolean) => void;
-    hidePrompt: boolean;
-    setHidePrompt: (val: boolean) => void;
-    showBlockHeaders: boolean;
-    setShowBlockHeaders: (val: boolean) => void;
     isPerformanceMode: boolean;
     setIsPerformanceMode: (val: boolean) => void;
 
@@ -76,13 +64,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     exportSettings, importSettings, isLoading,
     newSoundPattern, setNewSoundPattern, newSoundRegex, setNewSoundRegex, handleSoundUpload, soundTriggers, setSoundTriggers,
     resetButtons, connect, loginName, setLoginName, loginPassword, setLoginPassword,
-    autoConnect, setAutoConnect, uiMode, setUiMode,
+    autoConnect, setAutoConnect,
     isImmersionMode, setIsImmersionMode,
-    isTimestampEnabled, setIsTimestampEnabled, fontFamily, setFontFamily,
-    autoSaveSessions, setAutoSaveSessions, showSpectatePromptInLog, setShowSpectatePromptInLog,
-    isTextRevealEnabled, setIsTextRevealEnabled,
-    hidePrompt, setHidePrompt,
-    showBlockHeaders, setShowBlockHeaders,
+    fontFamily, setFontFamily,
+    autoSaveSessions, setAutoSaveSessions,
     isPerformanceMode, setIsPerformanceMode,
     isEditMode, setIsEditMode, isGridEnabled, setIsGridEnabled, createButton,
     setIsSetManagerOpen,
@@ -100,7 +85,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
     return (
         <div
-            className={`modal-overlay ${settingsTab === 'map' ? 'no-darken' : ''}`}
+            className="modal-overlay no-darken"
             onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     setIsSettingsOpen(false);
@@ -157,10 +142,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setTheme={setTheme}
                                 isImmersionMode={isImmersionMode}
                                 setIsImmersionMode={setIsImmersionMode}
-                                uiMode={uiMode}
-                                setUiMode={setUiMode}
-                                isTimestampEnabled={isTimestampEnabled}
-                                setIsTimestampEnabled={setIsTimestampEnabled}
                                 fontFamily={fontFamily}
                                 setFontFamily={setFontFamily}
                                 logFontSize={viewport.logFontSize}
@@ -168,14 +149,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setLogFontSize={viewport.setLogFontSize}
                                 autoSaveSessions={autoSaveSessions ?? false}
                                 setAutoSaveSessions={setAutoSaveSessions ?? (() => {})}
-                                showSpectatePromptInLog={showSpectatePromptInLog ?? false}
-                                setShowSpectatePromptInLog={setShowSpectatePromptInLog ?? (() => {})}
-                                isTextRevealEnabled={isTextRevealEnabled}
-                                setIsTextRevealEnabled={setIsTextRevealEnabled}
-                                hidePrompt={hidePrompt}
-                                setHidePrompt={setHidePrompt}
-                                showBlockHeaders={showBlockHeaders}
-                                setShowBlockHeaders={setShowBlockHeaders}
                                 isPerformanceMode={isPerformanceMode}
                                 setIsPerformanceMode={setIsPerformanceMode}
                             />

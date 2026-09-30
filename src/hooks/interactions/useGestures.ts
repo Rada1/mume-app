@@ -9,11 +9,7 @@ export const useGestures = (deps: InteractionDeps) => {
     const handleInputSwipe = (dir: string) => {
         triggerHaptic(20);
         if (dir === 'up') setIsMapExpanded(true);
-        else if (dir === 'se') {
-            executeCommand('who', true, true, true, true);
-            setTimeout(() => executeCommand('where', true, true, true, true), 150);
-            handleTabClick('players');
-        } else if (dir === 'ne') {
+        else if (dir === 'ne') {
             // Stats is now part of character info
             handleTabClick('character');
             setCharTab('info');

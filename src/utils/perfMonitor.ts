@@ -27,7 +27,17 @@ export interface RebuildBreakdown {
 const MAX_SAMPLES = 120;
 
 class PerfMonitor {
-    enabled = false;
+    private active = false;
+    private longTaskObserver: PerformanceObserver | null = null;
+    private longTasks: { at: number; ms: number }[] = [];
+
+    get enabled(): boolean { return this.active; }
+    set enabled(value: boolean) {
+        if (this.active === value) return;
+        this.active = value;
+        if (value) this.startLongTaskObserver();
+        else this.stopLongTaskObserver();
+    }
 
     private drawTimes: number[] = [];     // ms spent inside drawMap per frame
     private frameIntervals: number[] = []; // ms between actual rendered frames
@@ -37,6 +47,25 @@ class PerfMonitor {
     private rebuildReasons: { at: number; reason: string }[] = []; // why each rebuild fired
     private parserWorkerTimes: number[] = [];
     private parserSyncTimes: number[] = [];
+
+    private startLongTaskObserver(): void {
+        if (typeof PerformanceObserver === 'undefined' || this.longTaskObserver) return;
+        try {
+            this.longTaskObserver = new PerformanceObserver(entries => {
+                const now = performance.now();
+                for (const entry of entries.getEntries()) this.longTasks.push({ at: now, ms: entry.duration });
+            });
+            this.longTaskObserver.observe({ entryTypes: ['longtask'] });
+        } catch {
+            this.longTaskObserver = null;
+        }
+    }
+
+    private stopLongTaskObserver(): void {
+        this.longTaskObserver?.disconnect();
+        this.longTaskObserver = null;
+        this.longTasks = [];
+    }
 
     lastFullSave: SaveStat | null = null;
     lastPosSave: SaveStat | null = null;
@@ -128,6 +157,7 @@ class PerfMonitor {
         this.frameStamps = this.frameStamps.filter(t => now - t < 1000);
         this.rebuildStamps = this.rebuildStamps.filter(t => now - t < 1000);
         this.rebuildReasons = this.rebuildReasons.filter(r => now - r.at < 1000);
+        this.longTasks = this.longTasks.filter(task => now - task.at < 10000);
 
         const reasonCounts: Record<string, number> = {};
         for (const r of this.rebuildReasons) reasonCounts[r.reason] = (reasonCounts[r.reason] || 0) + 1;
@@ -160,6 +190,8 @@ class PerfMonitor {
             parserSyncMaxMs: max(this.parserSyncTimes),
             intervalAvgMs: avg(this.frameIntervals),
             intervalMaxMs: max(this.frameIntervals),       // longest gap = worst jank
+            longTasks10s: this.longTasks.length,
+            longTaskMaxMs: max(this.longTasks.map(task => task.ms)),
             lastFullSave: this.lastFullSave,
             lastPosSave: this.lastPosSave,
             peakFullSaveMs: this.peakFullSaveMs,

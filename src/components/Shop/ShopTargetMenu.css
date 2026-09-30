@@ -1,0 +1,205 @@
+/* @file ShopTargetMenu.css — Compact shop catalog for the tactical target area. */
+
+.shop-target-menu {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+}
+
+.shop-panel.shop-target-menu {
+    background: transparent;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: none;
+    color: inherit;
+}
+
+.shop-target-menu-header {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--shop-rule, rgba(192, 158, 94, 0.2));
+    color: var(--shop-gold, #dfbd6b);
+    font: 700 0.78rem/1.2 var(--font-mono, monospace);
+}
+
+.shop-target-menu-header span {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--shop-muted, #a99a82);
+    font-size: 0.82em;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.shop-target-menu-header small {
+    margin-left: auto;
+    color: var(--shop-muted, #a99a82);
+    font-size: 0.72em;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.shop-target-menu .shop-search-bar {
+    flex: 0 0 auto;
+    margin: 6px 8px;
+    padding: 5px 8px;
+    border: 0;
+    border-bottom: 1px solid var(--shop-rule, rgba(192, 158, 94, 0.2));
+    background: transparent;
+}
+
+.shop-target-categories,
+.shop-target-filters {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    border-bottom: 1px solid var(--shop-rule, rgba(192, 158, 94, 0.2));
+    scrollbar-width: none;
+    touch-action: pan-x;
+}
+
+/* Keep browse controls tappable while the Buy command remains held. */
+.tactical-target-bar.is-held .shop-target-categories,
+.tactical-target-bar.is-held .shop-target-filters,
+.tactical-target-bar.is-held .shop-target-categories button,
+.tactical-target-bar.is-held .shop-target-filters button {
+    pointer-events: auto;
+}
+
+.shop-target-categories::-webkit-scrollbar,
+.shop-target-filters::-webkit-scrollbar {
+    display: none;
+}
+
+.shop-target-categories button,
+.shop-target-filters button {
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 6px 10px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--shop-muted, #a99a82);
+    font: 500 0.72rem/1.2 var(--font-mono, monospace);
+    white-space: nowrap;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.shop-target-filters {
+    background: rgba(0, 0, 0, 0.12);
+}
+
+.shop-target-filters button {
+    min-height: 32px;
+    font-size: 0.68rem;
+}
+
+.shop-target-categories button.active,
+.shop-target-filters button.active {
+    border-bottom-color: var(--shop-gold, #dfbd6b);
+    color: var(--shop-gold, #dfbd6b);
+}
+
+.shop-target-categories button:focus-visible,
+.shop-target-filters button:focus-visible {
+    outline: 1px solid var(--shop-gold, #dfbd6b);
+    outline-offset: -2px;
+}
+
+.shop-target-menu .shop-panel-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+}
+
+.shop-target-menu .shop-item-row {
+    min-height: 38px;
+    gap: 7px;
+    padding: 5px 10px;
+    border: 0;
+    touch-action: pan-y;
+}
+
+.shop-target-menu .shop-item-list {
+    gap: 0;
+}
+
+.shop-target-menu .shop-product-group {
+    border-bottom: 1px solid var(--shop-rule, rgba(192, 158, 94, 0.2));
+}
+
+.shop-target-menu .shop-item-row.targeting,
+.shop-target-menu .shop-item-row.targeting:hover,
+.shop-target-menu .shop-item-row.selected,
+.shop-target-menu .shop-item-row.compare-selected {
+    border: 0;
+    border-left: 0;
+    border-radius: 0;
+    outline: 0;
+    box-shadow: none;
+    background: transparent;
+}
+
+.shop-target-menu .shop-item-row.selected .shop-item-name,
+.shop-target-menu .shop-item-row.targeting:hover .shop-item-name {
+    color: var(--shop-gold, #dfbd6b);
+}
+
+.shop-target-menu .shop-item-row.targeting .shop-item-name {
+    border-radius: 0;
+    outline: 0;
+    outline-offset: 0;
+    box-shadow: none;
+    background: transparent;
+}
+
+.shop-target-menu .shop-item-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.shop-target-menu .shop-stock-inline {
+    flex: 0 0 auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--shop-muted, #a99a82);
+    font: 500 0.68em/1.2 var(--font-mono, monospace);
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.shop-target-menu .shop-stock-inline:hover,
+.shop-target-menu .shop-stock-inline[aria-expanded="true"] {
+    color: var(--shop-gold, #dfbd6b);
+}
+
+.shop-target-menu .shop-variant-row {
+    grid-template-columns: 35px minmax(0, 1fr) auto auto;
+    padding: 5px 10px 5px 22px;
+}
+
+.shop-target-menu .shop-variant-inspect {
+    grid-column: auto;
+    padding: 2px 5px;
+    white-space: nowrap;
+}

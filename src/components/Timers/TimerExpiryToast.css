@@ -30,54 +30,39 @@
 }
 
 .timer-expiry-toast.is-started {
-    border-left-color: rgba(235, 166, 54, 0.55);
+    width: auto;
+    min-height: 0;
+    gap: 0;
+    padding: 5px 8px;
+    border: 0;
+    border-radius: 2px;
+    background: rgba(19, 18, 15, 0.42);
+}
+
+.timer-expiry-toast.is-started::after {
+    display: none;
+}
+
+.timer-expiry-copy.is-started {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.timer-expiry-toast.is-started .timer-expiry-name,
+.timer-expiry-toast.is-started .timer-expiry-seconds {
+    color: #b7aa91;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+.timer-expiry-toast.is-started .timer-expiry-name {
+    text-transform: none;
 }
 
 .timer-expiry-toast.is-exiting {
     animation: timer-expiry-slide-out 220ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
-}
-
-.timer-expiry-ring {
-    position: relative;
-    width: 31px;
-    height: 31px;
-    flex: 0 0 31px;
-    display: grid;
-    place-items: center;
-}
-
-.timer-expiry-ring svg {
-    width: 31px;
-    height: 31px;
-    transform: rotate(-90deg);
-    grid-area: 1 / 1;
-    display: block;
-}
-
-.timer-expiry-ring-bg,
-.timer-expiry-ring-fill {
-    fill: none;
-    stroke-width: 3;
-}
-
-.timer-expiry-ring-bg {
-    stroke: rgba(234, 160, 49, 0.25);
-}
-
-.timer-expiry-ring-fill {
-    stroke: #e9aa44;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 1s linear;
-    filter: drop-shadow(0 0 4px rgba(235, 152, 37, 0.25));
-}
-
-.timer-expiry-toast.is-started .timer-expiry-ring-fill {
-    stroke: #e9aa44;
-    filter: drop-shadow(0 0 4px rgba(235, 152, 37, 0.25));
-}
-
-.timer-expiry-toast.is-started .timer-expiry-seconds {
-    color: #e9aa44;
 }
 
 .timer-expiry-copy {

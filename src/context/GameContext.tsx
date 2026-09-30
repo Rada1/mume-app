@@ -205,6 +205,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // 5. Networking
     const telnetRef = useRef<any>(null);
+    const executeCommandRef = useRef<any>(null);
     const sendGMCPProxy = useCallback((pkg: string, data: any = null) => {
         if (telnetRef.current) {
             telnetRef.current.sendGMCP(pkg, data);
@@ -212,6 +213,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, []);
     const sendCommandProxy = useCallback((cmd: string) => {
         telnetRef.current?.sendCommand(cmd);
+    }, []);
+    const sendSilentCommandProxy = useCallback((cmd: string) => {
+        executeCommandRef.current?.(cmd, true, true, false, true);
     }, []);
 
     const handleSaveMumeEdit = useCallback((text: string) => {
@@ -260,7 +264,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playerPositionRef: s.userSession.game.playerPositionRef, setIsRiding: s.userSession.game.setIsRiding, isRidingRef: s.userSession.game.isRidingRef, isSpectateMode: s.isSpectateMode, inlineCategories: s.inlineCategories,
         registerEntity: s.registry.registerEntity,
         sendGMCP: sendGMCPProxy,
-        sendCommand: sendCommandProxy,
+        sendSilentCommand: sendSilentCommandProxy,
         pendingGmcpCommRef,
         gameTime: s.gameTime,
         setGameTime: s.setGameTime
@@ -798,22 +802,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isPasswordMode: s.isPasswordMode
     });
 
-    const executeCommandRef = useRef<any>(null);
-    const loginInventoryRefreshSentRef = useRef(false);
-
     const uiValue: UIContextType = useMemo(() => {
         const requestDrawerRefresh = (drawer: DrawerType) => {
             if (drawer === 'equipment') {
                 const gearCommand = ui.gearTab === 'worn' ? 'eq' : ui.gearTab === 'inv' ? 'inv' : 'look';
                 executeCommandRef.current?.(gearCommand, true, true, false, true);
-            } else if (drawer === 'players') {
-                if (ui.playersTab === 'online') {
-                    s.setWhoLines([]);
-                    executeCommandRef.current?.('who', true, true, false, true);
-                } else if (ui.playersTab === 'nearby' && s.whereLines.length === 0) {
-                    s.setWhereLines([]);
-                    executeCommandRef.current?.('where', true, true, false, true);
-                }
             } else if (drawer === 'character') {
                 if (ui.charTab === 'quests') executeCommandRef.current?.('quest', true, true, false, true);
                 else if (ui.charTab === 'skills') executeCommandRef.current?.('practice', true, true, false, true);
@@ -854,11 +847,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setShowMapperToolbar: settingsStore.setShowMapperToolbar,
         gearTab: ui.gearTab,
         setGearTab: ui.setGearTab,
-        playersTab: ui.playersTab,
-        setPlayersTab: ui.setPlayersTab,
         charTab: ui.charTab,
         setCharTab: ui.setCharTab,
-        handleTabClick: (drawer: 'none' | 'account' | 'character' | 'players' | 'equipment' | 'status') => {
+        handleTabClick: (drawer: 'none' | 'account' | 'character' | 'equipment' | 'status') => {
             if (viewport.isMobile) {
                 if (drawer === 'account') {
                     ui.setDrawer('account');
@@ -937,7 +928,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setPopoverState: s.setPopoverState,
         handleTabClick: uiValue.handleTabClick,
         setGearTab: uiValue.setGearTab,
-        setPlayersTab: uiValue.setPlayersTab,
         setCharTab: uiValue.setCharTab,
         setIsSettingsOpen: ui.setIsSettingsOpen, setSettingsTab: ui.setSettingsTab,
         setIsMapExpanded: s.setIsMapExpanded, setUI: s.setUI as any, viewport, triggerHaptic,
@@ -972,25 +962,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         executeCommandRef.current = controller.executeCommand;
         parserExecuteCommandRef.current = controller.executeCommand;
     }, [controller.executeCommand]);
-
-    useEffect(() => {
-        if (s.gameState !== 'playing' || s.status !== 'connected') {
-            loginInventoryRefreshSentRef.current = false;
-            return;
-        }
-        if (loginInventoryRefreshSentRef.current) return;
-
-        loginInventoryRefreshSentRef.current = true;
-        const timers = [
-            setTimeout(() => controller.executeCommand('inv', true, true, false, true), 700),
-            setTimeout(() => controller.executeCommand('eq', true, true, false, true), 1200),
-            setTimeout(() => controller.executeCommand('who', true, true, false, true), 1700),
-        ];
-
-        return () => {
-            timers.forEach(timer => clearTimeout(timer));
-        };
-    }, [controller.executeCommand, s.gameState, s.status]);
 
     const logValue: LogContextType = useMemo(() => ({
         ...activeLog,

@@ -143,8 +143,7 @@
 
 /* --- Headings read like terminal prompts --- */
 .app-container .chat-window-header,
-.app-container .help-panel-header,
-.app-container .players-panel-header {
+.app-container .help-panel-header {
     background: transparent !important;
     color: var(--accent) !important;
     text-transform: lowercase !important;
@@ -154,7 +153,6 @@
 }
 
 .app-container .chat-window-header::before,
-.app-container .players-panel-header::before,
 .app-container .help-panel-title-group::before {
     content: '>' !important;
     width: auto !important;
@@ -246,34 +244,6 @@
     box-shadow: none;
 }
 .app-container .chat-window-input-area { background: transparent; }
-.app-container .players-accordion-section {
-    border-bottom: 1px solid rgba(201, 168, 76, 0.14) !important;
-}
-.app-container .players-section-header {
-    background: transparent !important;
-    border-bottom: 1px solid rgba(201, 168, 76, 0.1) !important;
-    padding: 8px 10px !important;
-}
-.app-container .players-section-header:hover {
-    background: rgba(201, 168, 76, 0.06) !important;
-}
-.app-container .players-section-header-left {
-    color: var(--text-bright, #fff) !important;
-}
-.app-container .players-section-count {
-    color: var(--accent) !important;
-}
-.app-container .players-section-chevron {
-    color: var(--text-dim) !important;
-}
-.app-container .players-section-refresh-btn {
-    color: var(--text-dim) !important;
-}
-.app-container .players-section-refresh-btn:hover {
-    color: var(--accent) !important;
-    background: rgba(201, 168, 76, 0.12) !important;
-}
-
 @container (max-width: 215px) {
     .right-panel-action-btn .action-btn-syntax { display: none; }
     .right-action-panel .right-panel-action-btn {

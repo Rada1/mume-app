@@ -1,0 +1,7 @@
+Source code for this MUME Client build
+
+Project source repository: https://github.com/Rada1/MUME-App
+
+For release builds, this file must identify the exact matching release tag or
+commit and link the corresponding source archive. Release instructions are in
+the repository's docs/performance-map.md.

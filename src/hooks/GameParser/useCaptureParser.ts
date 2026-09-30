@@ -7,7 +7,7 @@ import { useCallback, useRef } from 'react';
 import { CaptureType, CaptureSession } from '../../types/capture';
 import { DrawerLine } from '../../types';
 import { Tokenizer } from '../../services/parser/Tokenizer';
-import { buildPlayerLineTokens } from './playerLineTokens';
+import { buildPlayerLineTokens, extractPlayerName } from './playerLineTokens';
 import { parseAffectedByLines } from '../../utils/affectUtils';
 import { useArchiveStore } from '../../stores/useArchiveStore';
 import { getArchiveListExpectedCount, mergeArchiveEntries, parseArchiveList, parseArchiveRead } from '../../utils/archiveAdapters';
@@ -15,13 +15,14 @@ import { useShaperEntityStore } from '../../shaper/model/useShaperEntityStore';
 import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { reconcileSelfEffectTimers } from '../../services/timers/reconcileEffectTimers';
+import { reconcileObjectSnapshot } from '../../objects/objectTargetModel';
 
 export interface CaptureParserDeps {
     captureSession: CaptureSession | null;
     setCaptureSession: (val: CaptureSession | null) => void;
     // Drawer setters
-    setInventoryLines: (lines: DrawerLine[]) => void;
-    setEqLines: (lines: DrawerLine[]) => void;
+    setInventoryLines: (lines: DrawerLine[] | ((previous: DrawerLine[]) => DrawerLine[])) => void;
+    setEqLines: (lines: DrawerLine[] | ((previous: DrawerLine[]) => DrawerLine[])) => void;
     setStatsLines: (lines: DrawerLine[]) => void;
     setPracticeLines: (lines: DrawerLine[]) => void;
     setWhoLines: (lines: DrawerLine[]) => void;
@@ -296,10 +297,10 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         try {
             switch (session.type) {
                 case 'inventory':
-                    setInventoryLines(lines);
+                    setInventoryLines(previous => reconcileObjectSnapshot(previous, lines));
                     break;
                 case 'equipment':
-                    setEqLines(lines);
+                    setEqLines(previous => reconcileObjectSnapshot(previous, lines));
                     break;
                 case 'stats':
                     {
@@ -315,9 +316,9 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     setWhoLines(lines);
                     setWhoList(
                         lines
-                            .filter(l => !l.isHeader && l.text.trim().length > 0)
-                            .map(l => l.text.trim().split(/\s+/)[0])
-                            .filter(name => /^[A-Z][a-zA-ZÀ-ÿ'-]{1,19}$/.test(name))
+                            .filter(l => !l.isHeader)
+                            .map(l => extractPlayerName(l.text))
+                            .filter((name): name is string => name !== null)
                     );
                     break;
                 case 'score':
@@ -395,7 +396,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     if (containerId && setContainerContents) {
                         setContainerContents(prev => ({
                             ...prev,
-                            [containerId]: lines
+                            [containerId]: reconcileObjectSnapshot(prev[containerId] || [], lines)
                         }));
                     }
                     break;

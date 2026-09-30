@@ -3,7 +3,12 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 
 const SHARED_AUDIO_BASE_VOLUME = 0.8;
 const SHARED_AUDIO_OUTPUT_GAIN = 3.0;
-const COMBAT_DRUM_ENABLED = true;
+const LOW_HEALTH_DRUM_ENABLED = true;
+const LOW_HEALTH_DRUM_MAX_VOLUME = 0.65;
+const HEALTH_MIX_RAMP_SECONDS = 0.28;
+const HEALTH_MUSIC_AT_WOUNDED = 0.28;
+const HEALTH_MUSIC_AT_BAD = 0.2;
+const HEALTH_MUSIC_AT_AWFUL = 0.1;
 const MOVEMENT_EFFECT_KEYS = new Set(['move', 'watermove', 'event-move', 'ride', 'stopriding']);
 
 export interface PlayOptions {
@@ -28,6 +33,7 @@ export interface AmbientOptions {
 type AmbientType = 'terrain' | 'weather' | 'zone' | 'drum' | 'incantation' | 'heartbeat' | 'breath';
 
 interface ActiveAmbient {
+    type: AmbientType;
     source: AudioBufferSourceNode;
     gain: GainNode;
     filter?: BiquadFilterNode;
@@ -37,6 +43,7 @@ interface ActiveAmbient {
     startTime: number;
     baseVolume: number;
     isMusic: boolean;
+    isDrum?: boolean;
 }
 
 export class AudioManager {
@@ -48,6 +55,10 @@ export class AudioManager {
 
     private activeAmbients: Map<AmbientType, ActiveAmbient> = new Map();
     private ambientRequestTokens: Map<AmbientType, number> = new Map();
+    private drumStartRequestId = 0;
+    private healthDrumProgress = 0;
+    private healthPercent = 100;
+    private isHealthMixActive = false;
     private _isSoundEnabled: boolean = true;
     private silenceTimeout: NodeJS.Timeout | null = null;
     private zoneEndedListeners: Set<(key: string) => void> = new Set();
@@ -70,7 +81,7 @@ export class AudioManager {
     private constructor() {
         // Subscribe to settings store for sound enabled and volumes
         useSettingsStore.subscribe((state) => {
-            this.isSoundEnabled = state.isSoundEnabled;
+            this.isSoundEnabled = state.isSoundEnabled && !state.isClassicMode;
             this.atmosphereState.masterVolume = state.masterVolume;
             this.atmosphereState.musicVolume = state.musicVolume;
             this.updateActiveVolumes();
@@ -78,7 +89,7 @@ export class AudioManager {
 
         // Initialize volumes
         const initialSettings = useSettingsStore.getState();
-        this._isSoundEnabled = initialSettings.isSoundEnabled;
+        this._isSoundEnabled = initialSettings.isSoundEnabled && !initialSettings.isClassicMode;
         this.atmosphereState.masterVolume = initialSettings.masterVolume;
         this.atmosphereState.musicVolume = initialSettings.musicVolume;
         this.bindPageAudioLifecycle();
@@ -189,12 +200,46 @@ export class AudioManager {
         return loadPromise;
     }
 
-    private getEffectiveVolume(baseVolume: number, isMusic: boolean = false): number {
+    private getEffectiveVolume(
+        baseVolume: number,
+        isMusic: boolean = false,
+        isDrum: boolean = false,
+        volumeOverride?: number
+    ): number {
         const settings = useSettingsStore.getState();
         // Map linear slider values [0, 1] to exponential curve for natural volume perception
         const master = Math.pow(settings.masterVolume, 2);
-        const subVolume = Math.pow(isMusic ? settings.musicVolume : settings.sfxVolume, 2);
+        const channelVolume = volumeOverride ?? (isDrum ? settings.drumVolume : isMusic ? settings.musicVolume : settings.sfxVolume);
+        const subVolume = Math.pow(channelVolume, 2);
         return baseVolume * master * subVolume * SHARED_AUDIO_OUTPUT_GAIN;
+    }
+
+    private getHealthDrumVolume(): number {
+        const drumVolumeLimit = Math.max(0, Math.min(LOW_HEALTH_DRUM_MAX_VOLUME, useSettingsStore.getState().drumVolume));
+        return drumVolumeLimit * this.healthDrumProgress;
+    }
+
+    private getHealthMusicVolumeMultiplier(): number {
+        if (!this.isHealthMixActive) return 1;
+        if (this.healthPercent >= 40) {
+            const fadeProgress = Math.max(0, Math.min(1, (100 - this.healthPercent) / 60));
+            return 1 - fadeProgress * (1 - HEALTH_MUSIC_AT_WOUNDED);
+        }
+        if (this.healthPercent >= 30) {
+            const fadeProgress = Math.max(0, Math.min(1, (40 - this.healthPercent) / 10));
+            return HEALTH_MUSIC_AT_WOUNDED - fadeProgress * (HEALTH_MUSIC_AT_WOUNDED - HEALTH_MUSIC_AT_BAD);
+        }
+        if (this.healthPercent >= 15) {
+            const fadeProgress = Math.max(0, Math.min(1, (30 - this.healthPercent) / 15));
+            return HEALTH_MUSIC_AT_BAD - fadeProgress * (HEALTH_MUSIC_AT_BAD - HEALTH_MUSIC_AT_AWFUL);
+        }
+        return HEALTH_MUSIC_AT_AWFUL * Math.max(0, Math.min(1, this.healthPercent / 15));
+    }
+
+    private getActiveAmbientVolume(active: ActiveAmbient): number {
+        const drumVolume = active.isDrum ? this.getHealthDrumVolume() : undefined;
+        const volume = this.getEffectiveVolume(active.baseVolume, active.isMusic, active.isDrum, drumVolume);
+        return active.type === 'zone' ? volume * this.getHealthMusicVolumeMultiplier() : volume;
     }
 
     private normalizeTerrainKey(key: string): string {
@@ -208,16 +253,16 @@ export class AudioManager {
         return normalized;
     }
 
-    private updateActiveVolumes() {
+    private updateActiveVolumes(rampSeconds: number = 0.08) {
         if (!this.audioCtx) return;
         const now = this.audioCtx.currentTime;
         this.activeAmbients.forEach(active => {
             const gain = active.gain.gain;
-            const target = this.getEffectiveVolume(active.baseVolume, active.isMusic);
+            const target = this.getActiveAmbientVolume(active);
             try {
                 gain.cancelScheduledValues(now);
                 gain.setValueAtTime(gain.value, now);
-                gain.linearRampToValueAtTime(target, now + 0.08);
+                gain.linearRampToValueAtTime(target, now + rampSeconds);
             } catch (err) {
                 gain.value = target;
             }
@@ -348,7 +393,6 @@ export class AudioManager {
 
         if (key === null) {
             this.stopAmbient(type);
-            if (type === 'zone') this.stopAmbient('drum');
             return;
         }
 
@@ -398,7 +442,6 @@ export class AudioManager {
 
         if (!urlToPlay) {
             this.stopAmbient(type);
-            if (type === 'zone') this.stopAmbient('drum');
             return;
         }
 
@@ -416,7 +459,8 @@ export class AudioManager {
                  const g = active.gain.gain;
                  g.cancelScheduledValues(this.audioCtx.currentTime);
                  g.setValueAtTime(g.value, this.audioCtx.currentTime);
-                 g.linearRampToValueAtTime(this.getEffectiveVolume(targetVolume, true), this.audioCtx.currentTime + 1.5);
+                 const updatedActive = { ...active, baseVolume: targetVolume };
+                 g.linearRampToValueAtTime(this.getActiveAmbientVolume(updatedActive), this.audioCtx.currentTime + HEALTH_MIX_RAMP_SECONDS);
             }
             return;
         }
@@ -438,7 +482,6 @@ export class AudioManager {
 
         this.fadeOutAndStop(active.source, active.gain, active.filter, 0.15);
         this.activeAmbients.delete('zone');
-        this.stopAmbient('drum');
     }
 
     private crossFadeAmbient(type: 'terrain' | 'weather' | 'zone' | 'drum' | 'incantation', urlToPlay: string, key: string, buffer: AudioBuffer, targetVolume: number, isLoop: boolean, filterFreq?: number) {
@@ -476,7 +519,9 @@ export class AudioManager {
 
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(this.getEffectiveVolume(targetVolume, isMusic), ctx.currentTime + fadeTime);
+        const targetGain = this.getEffectiveVolume(targetVolume, isMusic)
+            * (type === 'zone' ? this.getHealthMusicVolumeMultiplier() : 1);
+        gain.gain.linearRampToValueAtTime(targetGain, ctx.currentTime + fadeTime);
 
         lastNode.connect(gain);
         gain.connect(ctx.destination);
@@ -487,7 +532,6 @@ export class AudioManager {
             source.onended = () => {
                 if (this.activeAmbients.get('zone')?.source === source) {
                     this.activeAmbients.delete('zone');
-                    this.stopAmbient('drum');
 
                     if (this.silenceTimeout) clearTimeout(this.silenceTimeout);
                     const silenceMinutes = 1 + Math.random();
@@ -501,6 +545,7 @@ export class AudioManager {
         source.start(0, startOffset % buffer.duration);
 
         this.activeAmbients.set(type, {
+            type,
             source,
             gain,
             filter,
@@ -513,10 +558,10 @@ export class AudioManager {
         });
     }
 
-    private stopAmbient(type: 'terrain' | 'weather' | 'zone' | 'drum' | 'incantation') {
+    private stopAmbient(type: 'terrain' | 'weather' | 'zone' | 'drum' | 'incantation', fadeDuration?: number) {
         const active = this.activeAmbients.get(type);
         if (active) {
-            this.fadeOutAndStop(active.source, active.gain, active.filter, 2.0);
+            this.fadeOutAndStop(active.source, active.gain, active.filter, fadeDuration ?? (type === 'drum' ? HEALTH_MIX_RAMP_SECONDS : 2.0));
             this.activeAmbients.delete(type);
         }
     }
@@ -549,69 +594,79 @@ export class AudioManager {
     }
 
     // Drum Layer
-    public async updateDrumLayer(inCombat: boolean, activeZoneUrl: string | null) {
-        if (!COMBAT_DRUM_ENABLED) {
+    public async updateHealthAudioMix(isActive: boolean, healthPercent: number = 100) {
+        this.healthPercent = Math.max(0, Math.min(100, healthPercent));
+        this.isHealthMixActive = isActive;
+        this.healthDrumProgress = isActive
+            ? Math.max(0, Math.min(1, (70 - this.healthPercent) / 40))
+            : 0;
+        if (!isActive) this.drumStartRequestId += 1;
+
+        if (isActive && this._isSoundEnabled && !this.audioCtx) this.init();
+        if (this.audioCtx) this.updateActiveVolumes(HEALTH_MIX_RAMP_SECONDS);
+
+        if (!LOW_HEALTH_DRUM_ENABLED) {
             this.stopAmbient('drum');
             return;
         }
-        if (!this._isSoundEnabled || !this.audioCtx) return;
-
-        const zoneActive = this.activeAmbients.get('zone');
-        const effectiveUrl = (activeZoneUrl && activeZoneUrl.includes('/')) ? activeZoneUrl : zoneActive?.url;
-
-        if (inCombat) {
-            const activeDrum = this.activeAmbients.get('drum');
-            if (activeDrum) return; // Already playing
-
-            const drumUrl = AUDIO_MANIFEST.ambient.special.drumLoop.url as string;
-            const buffer = await this.loadBuffer(drumUrl);
-            if (!buffer) return;
-
-            const musicFilename = effectiveUrl?.split('/').pop() || '';
-            const musicBpm = AUDIO_MANIFEST.bpmMap[musicFilename] || 100;
-            const drumBpm = AUDIO_MANIFEST.bpmMap['drumbeat.mp3'] || 100;
-
-            const ctx = this.audioCtx;
-            const dSource = ctx.createBufferSource();
-            dSource.buffer = buffer;
-            dSource.loop = true;
-            dSource.playbackRate.value = musicBpm / drumBpm;
-
-            const dGain = ctx.createGain();
-            dGain.gain.setValueAtTime(0, ctx.currentTime);
-            dGain.gain.linearRampToValueAtTime(this.getEffectiveVolume(SHARED_AUDIO_BASE_VOLUME, true), ctx.currentTime + 1.5);
-
-            const dFilter = ctx.createBiquadFilter();
-            dFilter.type = 'lowpass';
-            dFilter.frequency.setValueAtTime(2000, ctx.currentTime);
-
-            dSource.connect(dFilter);
-            dFilter.connect(dGain);
-            dGain.connect(ctx.destination);
-
-            let startOffset = 0;
-            const zoneActive = this.activeAmbients.get('zone');
-            if (zoneActive && zoneActive.source) {
-                const elapsed = ctx.currentTime - zoneActive.startTime;
-                const totalOffset = zoneActive.pauseOffset + elapsed;
-                startOffset = totalOffset % buffer.duration;
-            }
-
-            dSource.start(0, startOffset);
-            this.activeAmbients.set('drum', {
-                source: dSource,
-                gain: dGain,
-                filter: dFilter,
-                url: drumUrl,
-                key: 'drumLoop',
-                pauseOffset: 0,
-                startTime: ctx.currentTime,
-                baseVolume: SHARED_AUDIO_BASE_VOLUME,
-                isMusic: true
-            });
-        } else {
+        if (!isActive || !this._isSoundEnabled || !this.audioCtx || this.getHealthDrumVolume() <= 0) {
             this.stopAmbient('drum');
+            return;
         }
+
+        const activeDrum = this.activeAmbients.get('drum');
+        if (activeDrum) return; // Already playing
+
+        const requestId = ++this.drumStartRequestId;
+        const drumUrl = AUDIO_MANIFEST.ambient.special.drumLoop.url as string;
+        const buffer = await this.loadBuffer(drumUrl);
+        if (!buffer || requestId !== this.drumStartRequestId || !this.isHealthMixActive || !this._isSoundEnabled) return;
+
+        const ctx = this.audioCtx;
+        if (!ctx) return;
+        const dSource = ctx.createBufferSource();
+        dSource.buffer = buffer;
+        dSource.loop = true;
+        dSource.playbackRate.value = 1;
+
+        const drumBaseVolume = SHARED_AUDIO_BASE_VOLUME;
+        const dGain = ctx.createGain();
+        dGain.gain.setValueAtTime(0, ctx.currentTime);
+        dGain.gain.linearRampToValueAtTime(
+            this.getEffectiveVolume(drumBaseVolume, true, true, this.getHealthDrumVolume()),
+            ctx.currentTime + HEALTH_MIX_RAMP_SECONDS
+        );
+
+        const dFilter = ctx.createBiquadFilter();
+        dFilter.type = 'lowpass';
+        dFilter.frequency.setValueAtTime(2000, ctx.currentTime);
+
+        dSource.connect(dFilter);
+        dFilter.connect(dGain);
+        dGain.connect(ctx.destination);
+
+        let startOffset = 0;
+        const zoneActive = this.activeAmbients.get('zone');
+        if (zoneActive && zoneActive.source) {
+            const elapsed = ctx.currentTime - zoneActive.startTime;
+            const totalOffset = zoneActive.pauseOffset + elapsed;
+            startOffset = totalOffset % buffer.duration;
+        }
+
+        dSource.start(0, startOffset);
+        this.activeAmbients.set('drum', {
+            type: 'drum',
+            source: dSource,
+            gain: dGain,
+            filter: dFilter,
+            url: drumUrl,
+            key: 'drumLoop',
+            pauseOffset: 0,
+            startTime: ctx.currentTime,
+            baseVolume: drumBaseVolume,
+            isMusic: true,
+            isDrum: true
+        });
     }
 
     public async playIncantation() {

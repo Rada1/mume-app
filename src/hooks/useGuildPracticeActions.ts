@@ -64,5 +64,5 @@ export const useGuildPracticeActions = (
         return { skill, enabled: !maxed && !noSessions, reason: maxed ? 'Maxed here' : noSessions ? 'No sessions' : 'Practice' };
     }, [skills, practiceData?.sessionsLeft]);
 
-    return { available, sessionsLeft: practiceData?.sessionsLeft ?? 0, trainingFor };
+    return { hasGuildmaster, available, sessionsLeft: practiceData?.sessionsLeft ?? 0, trainingFor };
 };

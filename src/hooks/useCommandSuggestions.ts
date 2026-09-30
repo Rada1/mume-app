@@ -9,22 +9,25 @@ import { getMumeCommandMatch, replaceMumeCommandToken, MumeCommandEntry, MumeCom
 import { getCastSpellFragment, getCastSpellSuggestions, replaceCastSpellArgument, SpellSuggestion } from '../utils/spellSuggestionUtils';
 import { useRoomStore } from '../stores/useRoomStore';
 import { useInputStore } from '../stores/useInputStore';
+import { useSettingsStore } from '../stores/useSettingsStore';
 import { DrawerLine, GameState } from '../types/game';
 import {
     CommandTargetSuggestion,
     CommandTextParts,
     getAssistTargetSuggestions,
     getGearTargetSuggestions,
+    getMagicKeyTargetSuggestions,
     getRescueTargetSuggestions,
     getRoomTargetSuggestions,
     makeCommandTargetSuggestion,
     replaceCommandArgumentToken
 } from '../utils/commandSuggestionUtils';
 import { BLANK_TARGET_VALUE } from '../utils/commandTargetUtils';
+import { getMagicKeyId, parseKeyedSpellCommand } from '../utils/magicKeyUtils';
 
 export interface UseCommandSuggestionsOptions {
     input: string; setInput: (val: string) => void; gameState: GameState;
-    isPasswordMode?: boolean; currentMode?: string;
+    isPasswordMode?: boolean; currentMode?: string; disabled?: boolean;
     abilities?: Record<string, number>; characterClass?: string;
     wrapRef?: RefObject<HTMLElement | null>; inputRef?: RefObject<HTMLInputElement | HTMLTextAreaElement | null>;
     isMobile?: boolean; targetPickerRequestId?: number; placement?: 'top' | 'bottom';
@@ -40,7 +43,9 @@ export interface UseCommandSuggestionsReturn {
     popupStyle: CSSProperties; placement: 'top' | 'bottom';
     isFocused: boolean; setIsFocused: (val: boolean) => void; setIsTargetPickerForced: (val: boolean) => void;
     chooseCommandSuggestion: (entry: MumeCommandEntry) => void; chooseTargetSuggestion: (val: string) => void;
-    chooseSpellSuggestion: (val: string) => void; handleSuggestionKeyDown: (e: KeyboardEvent) => boolean;
+    chooseSpellSuggestion: (val: string) => void; toggleMagicKeyFavorite: (key: string) => void;
+    clearMagicKey: (key: string) => void;
+    handleSuggestionKeyDown: (e: KeyboardEvent) => boolean;
 }
 
 export const useCommandSuggestions = ({
@@ -49,6 +54,7 @@ export const useCommandSuggestions = ({
     gameState,
     isPasswordMode = false,
     currentMode = 'command',
+    disabled = false,
     abilities = {},
     characterClass = '',
     wrapRef,
@@ -67,10 +73,12 @@ export const useCommandSuggestions = ({
 
     const chars = useRoomStore(s => s.chars);
     const roomItems = useRoomStore(s => s.items);
+    const teleportTargets = useSettingsStore(s => s.teleportTargets);
+    const setTeleportTargets = useSettingsStore(s => s.setTeleportTargets);
     const storeTargetPickerRequestId = useInputStore(s => s.targetPickerRequestId);
     const targetPickerRequestId = propTargetPickerRequestId ?? storeTargetPickerRequestId;
 
-    const shouldSuggest = gameState === 'playing' && currentMode === 'command' && !isPasswordMode;
+    const shouldSuggest = !disabled && gameState === 'playing' && currentMode === 'command' && !isPasswordMode;
 
     const mumeCommandMatch = useMemo(
         () => shouldSuggest ? getMumeCommandMatch(input) : getMumeCommandMatch(''),
@@ -95,6 +103,7 @@ export const useCommandSuggestions = ({
     }, [input, mumeCommandMatch.entry, mumeCommandMatch.isValid, shouldSuggest]);
 
     const hasCommandArgumentSpace = !!commandTextParts?.isValid && /^\s/.test(commandTextParts.suffix);
+    const keyedSpellInput = useMemo(() => parseKeyedSpellCommand(input), [input]);
 
     const targetFragment = useMemo(() => {
         if (!hasCommandArgumentSpace || !commandTextParts) return '';
@@ -102,6 +111,13 @@ export const useCommandSuggestions = ({
     }, [commandTextParts, hasCommandArgumentSpace]);
 
     const targetSuggestions = useMemo<CommandTargetSuggestion[]>(() => {
+        if (keyedSpellInput) {
+            const fragment = keyedSpellInput.target.toLowerCase();
+            return getMagicKeyTargetSuggestions(teleportTargets)
+                .filter(entry => !fragment || [entry.value, entry.label, entry.customLabel]
+                    .some(value => value?.toLowerCase().startsWith(fragment)))
+                .slice(0, 10);
+        }
         if (!hasCommandArgumentSpace) return [];
 
         const command = mumeCommandMatch.entry?.full || commandTextParts?.token.toLowerCase() || '';
@@ -132,7 +148,7 @@ export const useCommandSuggestions = ({
                     labelLower.split(/\s+/).some(w => w.startsWith(targetFragment));
             })
             .slice(0, 8);
-    }, [chars, roomItems, inventoryLines, wornLines, commandTextParts?.token, mumeCommandMatch.entry, hasCommandArgumentSpace, targetFragment]);
+    }, [chars, roomItems, inventoryLines, wornLines, commandTextParts?.token, mumeCommandMatch.entry, hasCommandArgumentSpace, targetFragment, keyedSpellInput, teleportTargets]);
 
     const selectedTargetSuggestion = targetSuggestions[0] ?? null;
 
@@ -162,7 +178,10 @@ export const useCommandSuggestions = ({
     }, [input, inputRef, setInput]);
 
     const chooseTargetSuggestion = useCallback((value: string) => {
-        if (value === BLANK_TARGET_VALUE) {
+        const keyedSpell = parseKeyedSpellCommand(input);
+        if (keyedSpell) {
+            setInput(`${keyedSpell.prefix} ${value}`);
+        } else if (value === BLANK_TARGET_VALUE) {
             const leadingWhitespace = input.match(/^\s*/)?.[0] ?? '';
             const commandToken = input.trimStart().match(/^(\S+)/)?.[1] ?? '';
             setInput(commandToken ? `${leadingWhitespace}${commandToken} ` : input);
@@ -173,6 +192,16 @@ export const useCommandSuggestions = ({
         requestAnimationFrame(() => inputRef?.current?.focus());
     }, [input, inputRef, setInput]);
 
+    const toggleMagicKeyFavorite = useCallback((key: string) => {
+        setTeleportTargets(current => current.map(target => getMagicKeyId(target) === key
+            ? { ...target, isFavorite: !target.isFavorite }
+            : target));
+    }, [setTeleportTargets]);
+
+    const clearMagicKey = useCallback((key: string) => {
+        setTeleportTargets(current => current.filter(target => getMagicKeyId(target) !== key));
+    }, [setTeleportTargets]);
+
     const showCommandPopup = shouldSuggest &&
         !hasCommandArgumentSpace &&
         isFocused &&
@@ -180,9 +209,7 @@ export const useCommandSuggestions = ({
         input.trim().length > 0;
 
     const showTargetPopup = shouldSuggest &&
-        hasCommandArgumentSpace &&
-        !isSpellCastInput &&
-        (isFocused || isTargetPickerForced) &&
+        (keyedSpellInput ? isFocused : hasCommandArgumentSpace && !isSpellCastInput && (isFocused || isTargetPickerForced)) &&
         targetSuggestions.length > 0;
 
     const showSpellPopup = shouldSuggest &&
@@ -210,7 +237,18 @@ export const useCommandSuggestions = ({
             const viewportPadding = 8;
             const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
             const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
-            const desiredWidth = Math.min(320, viewportWidth - viewportPadding * 2);
+            const magicKeyEntries = showTargetPopup
+                ? targetSuggestions.filter(entry => entry.meta === 'magic-key')
+                : [];
+            const magicKeyWidth = magicKeyEntries.reduce((widest, entry) => {
+                const nameWidth = (entry.customLabel || entry.label).length * 7;
+                const detailsWidth = `key ${entry.value} · 24h 00m`.length * 6.3;
+                return Math.max(widest, Math.ceil(nameWidth + detailsWidth + 125));
+            }, 360);
+            const desiredWidth = Math.min(
+                viewportWidth - viewportPadding * 2,
+                magicKeyEntries.length > 0 ? Math.min(640, magicKeyWidth) : 320
+            );
             const left = Math.max(viewportPadding, Math.min(rect.left, viewportWidth - desiredWidth - viewportPadding));
 
             if (positionOverMap && effectivePlacement === 'top') {
@@ -267,9 +305,10 @@ export const useCommandSuggestions = ({
             window.removeEventListener('scroll', updatePopupPosition, true);
             window.visualViewport?.removeEventListener('resize', updatePopupPosition);
         };
-    }, [effectivePlacement, positionOverMap, showCompletionPopup, wrapRef]);
+    }, [effectivePlacement, positionOverMap, showCompletionPopup, showTargetPopup, targetSuggestions, wrapRef]);
 
     const handleSuggestionKeyDown = useCallback((e: KeyboardEvent): boolean => {
+        if (disabled) return false;
         const isNumpad = e.location === 3 || e.code.startsWith('Numpad');
 
         if (showCompletionPopup && !isNumpad && /^[0-9]$/.test(e.key)) {
@@ -313,7 +352,7 @@ export const useCommandSuggestions = ({
         }
 
         return false;
-    }, [chooseCommandSuggestion, chooseSpellSuggestion, chooseTargetSuggestion, isMobile, mumeCommandMatch.entry, selectedTargetSuggestion, showCommandPopup, showCompletionPopup, showSpellPopup, showTargetPopup, spellSuggestions, targetSuggestions, visibleCommandSuggestions]);
+    }, [chooseCommandSuggestion, chooseSpellSuggestion, chooseTargetSuggestion, disabled, isMobile, mumeCommandMatch.entry, selectedTargetSuggestion, showCommandPopup, showCompletionPopup, showSpellPopup, showTargetPopup, spellSuggestions, targetSuggestions, visibleCommandSuggestions]);
 
     return {
         commandTextParts,
@@ -330,6 +369,7 @@ export const useCommandSuggestions = ({
         placement: effectivePlacement,
         isFocused, setIsFocused, setIsTargetPickerForced,
         chooseCommandSuggestion, chooseTargetSuggestion, chooseSpellSuggestion,
+        toggleMagicKeyFavorite, clearMagicKey,
         handleSuggestionKeyDown
     };
 };

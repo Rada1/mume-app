@@ -25,36 +25,52 @@ const getFallbackHtml = (text: string): string => (
 
 // --- Component Section ---
 
-export const ChatEntry: React.FC<{ message: Message; triggerParley?: (event: React.MouseEvent) => void }> = ({ message }) => {
+export const ChatEntry: React.FC<{ message: Message; triggerParley?: (event: React.SyntheticEvent<HTMLElement>) => void }> = ({ message, triggerParley }) => {
     const details = getChatMessageDetails(message);
     if (!details) return null;
     const fallbackText = getFallbackHtml(details.text);
     const phrase = getChatTranscriptPhrase(details);
 
     return (
-        <article className={`chat-window-entry${details.isOutgoing ? ' chat-window-entry-outgoing' : ''}`}>
-            <time className="chat-window-time" dateTime={new Date(message.timestamp).toISOString()}>
+        <article
+            className={`chat-window-entry${details.isOutgoing ? ' chat-window-entry-outgoing' : ''}${triggerParley ? ' chat-window-entry-replyable' : ''}`}
+            onClick={triggerParley}
+            onKeyDown={event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    triggerParley?.(event);
+                }
+            }}
+            role={triggerParley ? 'button' : undefined}
+            tabIndex={triggerParley ? 0 : undefined}
+            aria-label={triggerParley ? `Reply to ${details.isOutgoing ? details.target || details.sender : details.sender} on ${details.channel}` : undefined}
+        >
+            <time className="message-timestamp chat-window-time" dateTime={new Date(message.timestamp).toISOString()}>
                 {formatChatTime(message.timestamp)}
             </time>
-            <div className="chat-window-line">
-                <span className="chat-window-phrase" style={details.color ? { color: details.color } : undefined}>
-                    {details.isOutgoing ? phrase : (
-                        <>
-                            <span className="chat-window-sender">
-                                <TokenRenderer tokens={message.commSenderTokens} fallbackHtml={getFallbackHtml(details.sender)} preferSettingsEntityColor />
-                            </span>
-                            <span className="chat-window-action">{phrase.slice(details.sender.length)}</span>
-                        </>
-                    )}
-                </span>
-                <div
-                    className="chat-window-text"
-                    style={details.isOutgoing && details.color ? { color: details.color } : undefined}
-                >
-                    {details.isOutgoing
-                        ? details.text
-                        : <span dangerouslySetInnerHTML={{ __html: fallbackText }} />}
-                </div>
+            <div className={`message-content comm-content${message.type === 'comm-continue' ? ' continuation' : ''}`}>
+                {message.type !== 'comm-continue' && (
+                    <>
+                        <span className="comm-sender">
+                            {details.isOutgoing
+                                ? details.sender
+                                : <TokenRenderer tokens={message.commSenderTokens} fallbackHtml={getFallbackHtml(details.sender)} preferSettingsEntityColor />}
+                        </span>
+                        <span
+                            className="comm-action"
+                            style={details.color ? { color: details.color } : undefined}
+                            dangerouslySetInnerHTML={{
+                                __html: getFallbackHtml(message.commAction
+                                    ? ` ${message.commAction}: `
+                                    : phrase.slice(details.sender.length))
+                            }}
+                        />
+                    </>
+                )}
+                <span
+                    className={`comm-text${message.replyCommand === 'tell' ? ' tell-body' : ''}`}
+                    dangerouslySetInnerHTML={{ __html: fallbackText }}
+                />
             </div>
         </article>
     );

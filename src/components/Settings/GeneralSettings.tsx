@@ -23,10 +23,6 @@ interface GeneralSettingsProps {
     setTheme: (val: 'light' | 'dark') => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
-    uiMode: import('../../types').UiMode;
-    setUiMode: (val: import('../../types').UiMode) => void;
-    isTimestampEnabled: boolean;
-    setIsTimestampEnabled: (val: boolean) => void;
     fontFamily: string;
     setFontFamily: (val: string) => void;
     logFontSize: number;
@@ -34,14 +30,6 @@ interface GeneralSettingsProps {
     setLogFontSize: (v: number | ((prev: number) => number)) => void;
     autoSaveSessions: boolean;
     setAutoSaveSessions: (val: boolean) => void;
-    showSpectatePromptInLog: boolean;
-    setShowSpectatePromptInLog: (val: boolean) => void;
-    isTextRevealEnabled: boolean;
-    setIsTextRevealEnabled: (val: boolean) => void;
-    hidePrompt: boolean;
-    setHidePrompt: (val: boolean) => void;
-    showBlockHeaders: boolean;
-    setShowBlockHeaders: (val: boolean) => void;
     isPerformanceMode: boolean;
     setIsPerformanceMode: (val: boolean) => void;
 }
@@ -63,8 +51,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = (props) => {
             />
 
             <AppearanceSettings
-                uiMode={props.uiMode}
-                setUiMode={props.setUiMode}
                 theme={props.theme}
                 setTheme={props.setTheme}
                 fontFamily={props.fontFamily}
@@ -72,14 +58,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = (props) => {
                 logFontSize={props.logFontSize}
                 logFontSizePx={props.logFontSizePx}
                 setLogFontSize={props.setLogFontSize}
-                isTimestampEnabled={props.isTimestampEnabled}
-                setIsTimestampEnabled={props.setIsTimestampEnabled}
-                hidePrompt={props.hidePrompt}
-                setHidePrompt={props.setHidePrompt}
-                showBlockHeaders={props.showBlockHeaders}
-                setShowBlockHeaders={props.setShowBlockHeaders}
-                isTextRevealEnabled={props.isTextRevealEnabled}
-                setIsTextRevealEnabled={props.setIsTextRevealEnabled}
                 isImmersionMode={props.isImmersionMode}
                 setIsImmersionMode={props.setIsImmersionMode}
                 isPerformanceMode={props.isPerformanceMode}
@@ -89,8 +67,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = (props) => {
             <ExperimentalSettings
                 autoSaveSessions={props.autoSaveSessions}
                 setAutoSaveSessions={props.setAutoSaveSessions}
-                showSpectatePromptInLog={props.showSpectatePromptInLog}
-                setShowSpectatePromptInLog={props.setShowSpectatePromptInLog}
             />
         </>
     );

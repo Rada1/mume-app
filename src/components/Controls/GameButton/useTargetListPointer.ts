@@ -10,7 +10,7 @@ import type { PointerEvent as ReactPointerEvent } from 'react';
 interface TargetListDrag {
     pointerId: number;
     y: number;
-    scrollDistance: number;
+    pendingScrollDelta: number;
     isScrolling: boolean;
     x: number;
     list: HTMLDivElement;
@@ -28,16 +28,18 @@ export const useTargetListPointer = (isOpen: boolean, onHoverTarget?: (value: st
     const lastPointerUpSelectionRef = useRef(new Map<string, number>());
     const dragRef = useRef(new Map<number, TargetListDrag>());
     const settleTimerRef = useRef(new Map<number, number>());
+    const onHoverTargetRef = useRef(onHoverTarget);
+    onHoverTargetRef.current = onHoverTarget;
 
     const onPointerDownCapture = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
         const target = event.target instanceof Element ? event.target : null;
-        const list = target?.closest('.tactical-target-bar-list');
+        const list = target?.closest('.tactical-target-bar-list, .shop-target-menu .shop-panel-content, .right-panel-content, .tactical-target-bar-custom-content');
         if (list instanceof HTMLDivElement && (event.pointerType !== 'mouse' || event.button === 0)) {
             dragRef.current.set(event.pointerId, {
                 pointerId: event.pointerId,
                 y: event.clientY,
                 x: event.clientX,
-                scrollDistance: 0,
+                pendingScrollDelta: 0,
                 isScrolling: false,
                 list
             });
@@ -48,17 +50,27 @@ export const useTargetListPointer = (isOpen: boolean, onHoverTarget?: (value: st
         event.stopPropagation();
         const touch = touchesRef.current.get(event.pointerId);
         if (touch && Math.hypot(event.clientX - touch.x, event.clientY - touch.y) > 8) touch.moved = true;
+        if (event.pointerType === 'touch' && !event.isPrimary
+            && (event.currentTarget.classList.contains('is-remove-target-menu')
+                || (event.currentTarget.classList.contains('has-custom-content')
+                    && event.currentTarget.classList.contains('is-swipe-targeting')))) return;
         const drag = dragRef.current.get(event.pointerId);
         if (!drag) return;
 
         const deltaY = event.clientY - drag.y;
-        const scrollDistance = drag.scrollDistance + Math.abs(deltaY);
-        const isScrolling = drag.isScrolling || scrollDistance > 8;
-        dragRef.current.set(event.pointerId, { ...drag, y: event.clientY, x: event.clientX, scrollDistance, isScrolling });
+        const pendingScrollDelta = drag.pendingScrollDelta - deltaY;
+        const isScrolling = drag.isScrolling || Math.abs(pendingScrollDelta) > 8;
+        dragRef.current.set(event.pointerId, {
+            ...drag,
+            y: event.clientY,
+            x: event.clientX,
+            pendingScrollDelta: isScrolling ? 0 : pendingScrollDelta,
+            isScrolling
+        });
         if (!isScrolling) return;
 
         event.preventDefault();
-        drag.list.scrollTop -= deltaY;
+        drag.list.scrollTop += drag.isScrolling ? -deltaY : pendingScrollDelta;
         drag.list.dataset.scrolling = 'true';
         if (touch) touch.moved = true;
     }, []);
@@ -92,12 +104,23 @@ export const useTargetListPointer = (isOpen: boolean, onHoverTarget?: (value: st
         // Route the captured initiating finger over a list to its own scroll tracker.
         const handleHeldPointerMove = (event: PointerEvent) => {
             const eventTarget = event.target instanceof Element ? event.target : null;
-            if (!eventTarget?.closest('.custom-btn')) return;
+            const previous = dragRef.current.get(event.pointerId);
+            const isSecondaryRemoveTouch = event.pointerType === 'touch'
+                && !event.isPrimary
+                && Boolean(previous?.list.closest('.tactical-target-bar.is-remove-target-menu'));
+            const isSecondaryCustomPanelTouch = event.pointerType === 'touch'
+                && !event.isPrimary
+                && Boolean(previous?.list.closest('.tactical-target-bar.has-custom-content.is-swipe-targeting'));
+            if (!eventTarget?.closest('.custom-btn') && !isSecondaryRemoveTouch && !isSecondaryCustomPanelTouch) return;
             if (event.pointerType !== 'touch' && event.buttons === 0) return;
 
             const hit = document.elementFromPoint?.(event.clientX, event.clientY) as HTMLElement | null | undefined;
-            const list = hit?.closest('.tactical-target-bar-list') as HTMLDivElement | null;
-            const previous = dragRef.current.get(event.pointerId);
+            const listCandidate = hit?.closest('.tactical-target-bar-list, .shop-target-menu .shop-panel-content, .right-panel-content, .tactical-target-bar-custom-content') as HTMLDivElement | null;
+            const list = isSecondaryRemoveTouch
+                ? listCandidate?.closest('.tactical-target-bar.is-remove-target-menu') ? listCandidate : null
+                : isSecondaryCustomPanelTouch
+                    ? listCandidate?.closest('.tactical-target-bar.has-custom-content.is-swipe-targeting') ? listCandidate : null
+                : listCandidate;
             if (!list) {
                 dragRef.current.delete(event.pointerId);
                 if (previous) updateListScrollState(previous.list);
@@ -105,26 +128,44 @@ export const useTargetListPointer = (isOpen: boolean, onHoverTarget?: (value: st
                 return;
             }
 
+            (event as PointerEvent & { __targetListScrollHandled?: boolean }).__targetListScrollHandled = true;
             if (!previous) {
-                dragRef.current.set(event.pointerId, { pointerId: event.pointerId, y: event.clientY, x: event.clientX, scrollDistance: 0, isScrolling: false, list });
-                const item = hit?.closest('.tactical-target-bar-item') as HTMLElement | null;
-                onHoverTarget?.(item?.dataset.targetValue ?? null);
+                dragRef.current.set(event.pointerId, {
+                    pointerId: event.pointerId,
+                    y: event.clientY,
+                    x: event.clientX,
+                    pendingScrollDelta: 0,
+                    isScrolling: false,
+                    list
+                });
+                const item = hit?.closest('.tactical-target-bar-item, .shop-target-menu [data-shop-target-value]') as HTMLElement | null;
+                onHoverTargetRef.current?.(item?.dataset.targetValue ?? item?.dataset.shopTargetValue ?? null);
                 return;
             }
 
             const deltaY = event.clientY - previous.y;
-            const scrollDistance = previous.scrollDistance + Math.abs(deltaY);
-            const isScrolling = previous.isScrolling || scrollDistance > 24;
-            dragRef.current.set(event.pointerId, { pointerId: event.pointerId, y: event.clientY, x: event.clientX, scrollDistance, isScrolling, list });
+            const touch = touchesRef.current.get(event.pointerId);
+            if (touch && Math.hypot(event.clientX - touch.x, event.clientY - touch.y) > 8) touch.moved = true;
+            const pendingScrollDelta = previous.pendingScrollDelta - deltaY;
+            const isScrolling = previous.isScrolling || Math.abs(pendingScrollDelta) > 8;
+            dragRef.current.set(event.pointerId, {
+                pointerId: event.pointerId,
+                y: event.clientY,
+                x: event.clientX,
+                pendingScrollDelta: isScrolling ? 0 : pendingScrollDelta,
+                isScrolling,
+                list
+            });
             if (!isScrolling) {
-                const item = hit?.closest('.tactical-target-bar-item') as HTMLElement | null;
-                onHoverTarget?.(item?.dataset.targetValue ?? null);
+                const item = hit?.closest('.tactical-target-bar-item, .shop-target-menu [data-shop-target-value]') as HTMLElement | null;
+                onHoverTargetRef.current?.(item?.dataset.targetValue ?? item?.dataset.shopTargetValue ?? null);
                 return;
             }
 
             list.dataset.scrolling = 'true';
-            list.scrollTop -= deltaY;
-            onHoverTarget?.(null);
+            list.scrollTop += previous.isScrolling ? -deltaY : pendingScrollDelta;
+            if (event.cancelable) event.preventDefault();
+            onHoverTargetRef.current?.(null);
             clearSettleTimer(event.pointerId);
             settleTimerRef.current.set(event.pointerId, window.setTimeout(() => {
                 const current = dragRef.current.get(event.pointerId);
@@ -132,11 +173,11 @@ export const useTargetListPointer = (isOpen: boolean, onHoverTarget?: (value: st
                     settleTimerRef.current.delete(event.pointerId);
                     return;
                 }
-                dragRef.current.set(event.pointerId, { ...current, scrollDistance: 0, isScrolling: false });
+                dragRef.current.set(event.pointerId, { ...current, pendingScrollDelta: 0, isScrolling: false });
                 updateListScrollState(current.list);
                 const settledHit = document.elementFromPoint?.(current.x, current.y) as HTMLElement | null | undefined;
-                const settledItem = settledHit?.closest('.tactical-target-bar-item') as HTMLElement | null;
-                onHoverTarget?.(settledItem?.dataset.targetValue ?? null);
+                const settledItem = settledHit?.closest('.tactical-target-bar-item, .shop-target-menu [data-shop-target-value]') as HTMLElement | null;
+                onHoverTargetRef.current?.(settledItem?.dataset.targetValue ?? settledItem?.dataset.shopTargetValue ?? null);
                 settleTimerRef.current.delete(event.pointerId);
             }, 180));
         };
@@ -159,7 +200,7 @@ export const useTargetListPointer = (isOpen: boolean, onHoverTarget?: (value: st
             clearSettleTimer();
             dragRef.current.clear();
         };
-    }, [isOpen, onHoverTarget]);
+    }, [isOpen]);
 
     return { touchesRef, lastPointerUpSelectionRef, onPointerDownCapture, onPointerMove };
 };

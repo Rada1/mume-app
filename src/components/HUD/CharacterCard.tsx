@@ -7,7 +7,7 @@
 
 import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Sword, Shield as ShieldIcon, Heart, Zap, Footprints, Sparkles, Coins, Star, GraduationCap, Compass, KeyRound, Swords, ScrollText, Trophy, Info, Pencil } from 'lucide-react';
+import { X, Sword, Shield as ShieldIcon, Heart, Zap, Footprints, Sparkles, Coins, Star, GraduationCap, Compass, Swords, ScrollText, Trophy, Info, Pencil } from 'lucide-react';
 import { useCharacterCardStore } from '../../stores/useCharacterCardStore';
 import { useActiveVitals, useActiveCharacter, useActiveCombat } from '../../stores/useActiveGameState';
 import { useArchiveStore } from '../../stores/useArchiveStore';
@@ -15,7 +15,6 @@ import { useGame, useUI } from '../../context/GameContext';
 import { PromptCharacterPortrait } from './PromptCharacterPortrait';
 import { PromptInventoryChips } from './PromptInventoryChips';
 import { CharacterCardTimerStrip } from './CharacterCardTimerStrip';
-import { MagicKeysTab } from '../Timers/MagicKeysTab';
 import { CharacterCardLineSection } from './CharacterCardLineSection';
 import { ArmourIcon, ConditionPill, InfoRow, Section, StatBar } from './CharacterCardPrimitives';
 import { DrawerLine, CombatHealthStatus } from '../../types';
@@ -213,7 +212,6 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
     const { gameState, triggerHaptic, practice, executeCommand, mood, mumeEditState, handleSaveMumeEdit, handleCancelMumeEdit, viewport } = useGame();
     const { infoLines, questLines, achievementLines, practiceLines } = useUI();
     const setPendingEditorContext = useArchiveStore(s => s.setPendingEditorContext);
-    const lastRefreshRef = useRef(0);
     const avatarRefreshRef = useRef(0);
     const cardRef = useRef<HTMLElement | null>(null);
     // "change description"/"change whois" open a real MUME editor session, and
@@ -221,18 +219,6 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
     // included, since firing it before the prior session closes also gets
     // "You are already editing that text.") so each waits for the last to close.
     const avatarFetchQueueRef = useRef<Array<'description' | 'whois' | 'title'>>([]);
-
-    // Refresh drawer-backed character data whenever the card opens, throttled.
-    useEffect(() => {
-        if (!isOpen && !forceOpen) return;
-        if (gameState === 'account') return;
-        const now = Date.now();
-        if (now - lastRefreshRef.current < 5000) return;
-        lastRefreshRef.current = now;
-        executeCommand('quest', true, true, false, true);
-        executeCommand('practice', true, true, false, true);
-        executeCommand('achievement', true, true, false, true);
-    }, [isOpen, forceOpen, gameState, executeCommand]);
 
     const runNextAvatarFetch = () => {
         const next = avatarFetchQueueRef.current.shift();
@@ -797,9 +783,6 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ embedded = false, 
                             />
                         </Section>
 
-                        <Section title="Magic Keys" icon={<KeyRound size={10} strokeWidth={2.5} />} className="character-card-magic-keys">
-                            <MagicKeysTab />
-                        </Section>
                     </div>
                 </div>
         </aside>

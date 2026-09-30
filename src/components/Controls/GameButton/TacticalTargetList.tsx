@@ -2,6 +2,12 @@
 
 import React from 'react';
 import type { CommandTargetSuggestion } from '../../../utils/commandSuggestionUtils';
+import { useGame } from '../../../context/GameContext';
+import type { EntityColorMap } from '../../../utils/inlineActionModel';
+import { getTargetClassificationColor } from '../../../utils/targetClassificationColor';
+import { getTargetItemTierClassName } from '../../../utils/itemTier';
+import { formatMagicKeyRemaining, getMagicKeyId, renameMagicKeyTarget } from '../../../utils/magicKeyUtils';
+import { useSettingsStore } from '../../../stores/useSettingsStore';
 import type { TargetListTouch } from './useTargetListPointer';
 import './TacticalTargetList.css';
 
@@ -12,10 +18,10 @@ const getClickPointerId = (event: React.MouseEvent<HTMLDivElement>): number | un
 };
 
 const TARGET_SECTION_LABELS: Record<string, string> = {
-    ally: 'Allies', allies: 'Allies', enemy: 'Enemies', enemies: 'Enemies',
+    self: 'Allies', ally: 'Allies', allies: 'Allies', 'group-member': 'Group', enemy: 'Enemies', enemies: 'Enemies',
     npc: 'NPCs', npcs: 'NPCs', pc: 'Players', player: 'Players', players: 'Players', who: 'Players',
     characters: 'Characters', object: 'Room Objects', objects: 'Room Objects', room: 'Room Objects',
-    exit: 'Exits', inventory: 'Inventory', worn: 'Worn', self: 'Self', source: 'Sources',
+    exit: 'Exits', inventory: 'Inventory', worn: 'Worn', source: 'Sources',
     spell: 'Spells', 'magic-key': 'Keys', social: 'Commands', mount: 'Mounts'
 };
 
@@ -32,6 +38,7 @@ interface Props {
     columnIndex?: number;
     emptyText?: string;
     selectedKey?: string | null;
+    showWornLocation?: boolean;
     isSwipeTargeting: boolean;
     keepOpenAfterFire: boolean;
     showSendIndicator?: boolean;
@@ -46,14 +53,43 @@ interface Props {
 // --- UI Section ---
 export const TacticalTargetList: React.FC<Props> = ({
     items, currentTarget, selectedValue, confirmedValue, columnIndex, emptyText, selectedKey,
-    isSwipeTargeting, keepOpenAfterFire, showSendIndicator = false, touchesRef, lastPointerUpSelectionRef,
+    showWornLocation = false, isSwipeTargeting, keepOpenAfterFire, showSendIndicator = false, touchesRef, lastPointerUpSelectionRef,
     onSelectTarget, onSelectColumnTarget, onHoverTarget, onToggleTargetLock
 }) => {
+    const { triggerHaptic } = useGame();
+    const [now, setNow] = React.useState(Date.now());
+    const hasExpiringTargets = items.some(item => item.expiresAt !== undefined);
+    const visibleItems = items.filter(item => item.expiresAt === undefined || item.expiresAt > now);
+    React.useEffect(() => {
+        if (!hasExpiringTargets) return;
+        const timer = window.setInterval(() => setNow(Date.now()), 30_000);
+        return () => window.clearInterval(timer);
+    }, [hasExpiringTargets]);
+    const inlineCategories = useSettingsStore(state => state.inlineCategories);
+    const objectColor = useSettingsStore(state => state.objectColor);
+    const playerColor = useSettingsStore(state => state.playerColor);
+    const npcColor = useSettingsStore(state => state.npcColor);
+    const enemyColor = useSettingsStore(state => state.enemyColor);
+    const neutralColor = useSettingsStore(state => state.neutralColor);
+    const theme = useSettingsStore(state => state.theme);
+    const teleportTargets = useSettingsStore(state => state.teleportTargets);
+    const setTeleportTargets = useSettingsStore(state => state.setTeleportTargets);
+    const entityColors: EntityColorMap = {
+        object: objectColor,
+        player: playerColor,
+        npc: npcColor,
+        enemy: enemyColor,
+        neutral: neutralColor
+    };
     const lockPointerDownsRef = React.useRef(new Map<number, string>());
-    if (items.length === 0) return <div className="tactical-target-bar-empty">{emptyText || 'Choose from the other list'}</div>;
+    if (visibleItems.length === 0) return <div className="tactical-target-bar-empty">{emptyText || 'No active saved keys'}</div>;
+
+    const getClassificationColor = (meta: string, objectLocation?: CommandTargetSuggestion['objectLocation']): string | undefined => {
+        return getTargetClassificationColor(meta, inlineCategories, entityColors, theme, objectLocation) || undefined;
+    };
 
     const grouped = new Map<string, CommandTargetSuggestion[]>();
-    items.forEach(candidate => {
+    visibleItems.forEach(candidate => {
         const section = getTargetSection(candidate.meta || 'targets');
         grouped.set(section, [...(grouped.get(section) || []), candidate]);
     });
@@ -61,8 +97,13 @@ export const TacticalTargetList: React.FC<Props> = ({
 
     return <>{sections.map(([section, sectionCandidates]) => (
         <div className="tactical-target-bar-section" key={section}>
-            {sections.length > 1 && <div className="tactical-target-bar-section-header">{section}</div>}
+            {sections.length > 1 && <div
+                className="tactical-target-bar-section-header"
+                style={{ color: getClassificationColor(sectionCandidates[0]?.meta || '', sectionCandidates[0]?.objectLocation) }}
+            >{section}</div>}
             {sectionCandidates.map(candidate => {
+                const classificationColor = getClassificationColor(candidate.meta, candidate.objectLocation);
+                const itemTierClassName = getTargetItemTierClassName(candidate.label);
                 const cleanLock = currentTarget ? currentTarget.replace(/[*']/g, '').trim().toLowerCase() : '';
                 const cleanSelected = selectedValue ? selectedValue.replace(/[*']/g, '').trim().toLowerCase() : '';
                 const cleanConfirmed = confirmedValue ? confirmedValue.replace(/[*']/g, '').trim().toLowerCase() : '';
@@ -83,6 +124,10 @@ export const TacticalTargetList: React.FC<Props> = ({
                 const select = () => columnIndex !== undefined
                     ? onSelectColumnTarget?.(candidate.value, columnIndex, candidate, keepOpenAfterFire)
                     : onSelectTarget(candidate.value, keepOpenAfterFire);
+                const clearMagicKey = () => {
+                    triggerHaptic(8);
+                    setTeleportTargets(current => current.filter(target => getMagicKeyId(target) !== candidate.value));
+                };
 
                 const canLockTarget = Boolean(onToggleTargetLock)
                     && candidate.meta !== 'social'
@@ -94,7 +139,9 @@ export const TacticalTargetList: React.FC<Props> = ({
                     tabIndex={0}
                     data-target-value={candidate.value}
                     data-target-column={columnIndex}
+                    data-target-meta={candidate.meta}
                     className={`tactical-target-bar-item ${isSelected ? 'is-selected' : ''} ${isLocked ? 'is-locked' : ''} ${isConfirmed ? 'is-confirmed' : ''}`}
+                    style={{ '--target-classification-color': classificationColor || undefined } as React.CSSProperties}
                     onPointerEnter={() => onHoverTarget?.(candidate.value)}
                     onPointerLeave={() => onHoverTarget?.(null)}
                     onPointerDown={event => {
@@ -131,7 +178,26 @@ export const TacticalTargetList: React.FC<Props> = ({
                             select();
                         }
                     }}
-                ><span className="tactical-target-bar-name" title={candidate.label}>{candidate.label}</span>{canLockTarget && <button
+                >{showWornLocation && candidate.meta === 'worn' && candidate.wornLocation && <span className="tactical-target-bar-worn-location">{candidate.wornLocation}</span>}<span
+                    className="tactical-target-bar-name"
+                    title={candidate.label}
+                    style={{ color: classificationColor }}
+                ><span className={`tactical-target-bar-name-text ${itemTierClassName}`.trim()}>{candidate.label}</span>{candidate.details?.length ? <span
+                    className="tactical-target-bar-details"
+                    aria-label={`${candidate.label} group details`}
+                >{candidate.details.map(detail => <span className="tactical-target-bar-detail" key={`${detail.label}-${detail.value}`}>
+                    <span className="tactical-target-bar-detail-label">{detail.label}</span>
+                    <strong className="tactical-target-bar-detail-value">{detail.value}</strong>
+                </span>)}</span> : candidate.customLabel && <span
+                    className="tactical-target-bar-custom-label"
+                    title={`Label: ${candidate.customLabel}`}
+                >{candidate.customLabel}</span>}</span>{candidate.meta === 'magic-key' && <span
+                    className="tactical-target-bar-key-id"
+                    title={`Magic key ${candidate.value}`}
+                >{candidate.value}</span>}{candidate.expiresAt !== undefined && <span
+                    className="tactical-target-bar-expiry"
+                    title={`Active for ${formatMagicKeyRemaining(candidate.expiresAt, now)}`}
+                >{formatMagicKeyRemaining(candidate.expiresAt, now)}</span>}{canLockTarget && <button
                     type="button"
                     role="checkbox"
                     aria-checked={isTargetLocked}
@@ -157,7 +223,44 @@ export const TacticalTargetList: React.FC<Props> = ({
                         if (event.detail === 0) onToggleTargetLock?.(candidate.value);
                     }}
                     onKeyDown={event => event.stopPropagation()}
-                ><span aria-hidden="true">{isTargetLocked ? '✓' : ''}</span></button>}{showSendIndicator && <span className="tactical-target-bar-send" aria-label="Sends command">➤</span>}</div>;
+                ><span aria-hidden="true">{isTargetLocked ? '✓' : ''}</span></button>}{candidate.meta === 'magic-key' && <>
+                    <button
+                        type="button"
+                        className="tactical-target-bar-key-action"
+                        aria-label={`${candidate.customLabel ? 'Edit' : 'Add'} label for ${candidate.label}`}
+                        title={candidate.customLabel ? 'Edit label' : 'Add a short label'}
+                        onPointerDown={event => {
+                            event.stopPropagation();
+                            const value = window.prompt('Add a short label for this portkey (28 characters max):', candidate.customLabel || '');
+                            if (value !== null) setTeleportTargets(current => renameMagicKeyTarget(current, candidate.value, value));
+                        }}
+                        onPointerUp={event => event.stopPropagation()}
+                        onClick={event => {
+                            event.stopPropagation();
+                            if (event.detail === 0) {
+                                const value = window.prompt('Add a short label for this portkey (28 characters max):', candidate.customLabel || '');
+                                if (value !== null) setTeleportTargets(current => renameMagicKeyTarget(current, candidate.value, value));
+                            }
+                        }}
+                        onKeyDown={event => event.stopPropagation()}
+                    >Label</button>
+                    <button
+                        type="button"
+                        className="tactical-target-bar-key-action is-clear"
+                        aria-label={`Clear portkey ${candidate.label}`}
+                        title="Clear saved portkey"
+                        onPointerDown={event => {
+                            event.stopPropagation();
+                            clearMagicKey();
+                        }}
+                        onPointerUp={event => event.stopPropagation()}
+                        onClick={event => {
+                            event.stopPropagation();
+                            if (event.detail === 0) clearMagicKey();
+                        }}
+                        onKeyDown={event => event.stopPropagation()}
+                    >×</button>
+                </>}{showSendIndicator && <span className="tactical-target-bar-send" aria-label="Sends command">➤</span>}</div>;
             })}
         </div>
     ))}</>;

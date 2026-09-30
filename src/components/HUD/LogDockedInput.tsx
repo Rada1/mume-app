@@ -13,12 +13,16 @@ import { useInputStore } from '../../stores/useInputStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { useAutomaticTargetStore } from '../../stores/useAutomaticTargetStore';
-import { getAutoRoomTarget } from '../../utils/commandAutoTarget';
+import { getAutoRoomTarget, isAutoTargetChipDisabledZone } from '../../utils/commandAutoTarget';
 import { getRoomTargetSuggestions } from '../../utils/commandSuggestionUtils';
+import { CHAT_PARLEY_CHANNELS, getChatChannelSuggestions, getChatChannelColor, getChatTargetSuggestions } from '../../utils/chatWindowUtils';
+import { getTargetClassificationColor } from '../../utils/targetClassificationColor';
+import type { EntityColorMap } from '../../utils/inlineActionModel';
 import OpponentRechargeTimer from '../Combat/OpponentRechargeTimer';
 import { ActionTimerDisplay } from './ActionTimerDisplay';
 import { useCommandSuggestions } from '../../hooks/useCommandSuggestions';
 import { useRotatingCommandSuggestion } from '../../hooks/useRotatingCommandSuggestion';
+import { useWhoListRefresh } from '../../hooks/useWhoListRefresh';
 import { CommandSuggestionPopup } from '../Controls/CommandSuggestionPopup';
 import { TargetChipPicker } from './TargetChipPicker';
 import './LogDockedInput.css';
@@ -63,41 +67,59 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         executeCommand,
         setTarget,
         triggerHaptic,
-        characterName
+        characterName,
+        whoList
     } = useGame();
     const { target } = useActiveVitals();
     const automaticTarget = useAutomaticTargetStore(state => state.target);
     const setAutomaticTarget = useAutomaticTargetStore(state => state.setTarget);
     const roomChars = useRoomStore(state => state.chars);
     const roomItems = useRoomStore(state => state.items);
+    const roomZone = useRoomStore(state => state.roomZone);
+    const autoTargetChipDisabled = isAutoTargetChipDisabledZone(roomZone);
     const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
     const roomTargetSuggestions = useMemo(() => [
         ...getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName || ''),
         ...getRoomTargetSuggestions([], Object.values(roomItems), 'objects'),
     ], [characterName, roomItems, roomOccupants]);
-    const displayedTarget = target || automaticTarget || getAutoRoomTarget('hit', roomOccupants, characterName || '');
+    const displayedTarget = target || (!autoTargetChipDisabled
+        ? automaticTarget || getAutoRoomTarget('hit', roomOccupants, characterName || '', roomZone)
+        : null);
     useEffect(() => {
         if (target || gameState !== 'playing') setAutomaticTarget(null);
     }, [gameState, setAutomaticTarget, target]);
     const { stats } = useVitals();
     const { displayInventoryLines, displayEqLines } = useUI();
+    const requestWhoList = useWhoListRefresh(whoList, executeCommand);
     const { setActiveMapFilter, setMapSearchQuery } = useMapper();
 
     const input = useInputStore(s => s.input);
     const setInput = useInputStore(s => s.setInput);
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
+    const isClassicMode = useSettingsStore(s => s.isClassicMode);
+    const inlineCategories = useSettingsStore(s => s.inlineCategories);
+    const playerColor = useSettingsStore(s => s.playerColor);
+    const npcColor = useSettingsStore(s => s.npcColor);
+    const enemyColor = useSettingsStore(s => s.enemyColor);
+    const neutralColor = useSettingsStore(s => s.neutralColor);
+    const theme = useSettingsStore(s => s.theme);
     const loginName = useSettingsStore(s => s.loginName);
     const loginPassword = useSettingsStore(s => s.loginPassword);
     const setLoginName = useSettingsStore(s => s.setLoginName);
     const setLoginPassword = useSettingsStore(s => s.setLoginPassword);
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
     const inputRef = useRef<HTMLInputElement>(null);
+    const parleyCommandRef = useRef<HTMLButtonElement>(null);
+    const parleyTargetRef = useRef<HTMLButtonElement>(null);
     const targetInputRef = useRef<HTMLInputElement>(null);
     const targetBadgeRef = useRef<HTMLDivElement>(null);
     const cancelTargetEditRef = useRef(false);
     const [isEditingTarget, setIsEditingTarget] = useState(false);
     const [targetDraft, setTargetDraft] = useState('');
     const [isTargetPickerOpen, setIsTargetPickerOpen] = useState(false);
+    const [openParleyPicker, setOpenParleyPicker] = useState<'channel' | 'target' | null>(null);
+    const parleyChannelSuggestions = useMemo(() => getChatChannelSuggestions(), []);
+    const parleyTargetSuggestions = useMemo(() => getChatTargetSuggestions(whoList), [whoList]);
     const commandInputWrapRef = useRef<HTMLDivElement>(null);
     const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -167,6 +189,8 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         chooseCommandSuggestion,
         chooseTargetSuggestion,
         chooseSpellSuggestion,
+        toggleMagicKeyFavorite,
+        clearMagicKey,
         handleSuggestionKeyDown
     } = useCommandSuggestions({
         input,
@@ -174,6 +198,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         gameState,
         isPasswordMode,
         currentMode,
+        disabled: isClassicMode,
         abilities,
         characterClass,
         wrapRef: commandInputWrapRef,
@@ -204,13 +229,50 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         const savedValue = isPasswordPrompt ? loginPassword : loginName;
         if (savedValue) setInput(savedValue);
     }, [isLoginStage, isPasswordPrompt, isNamePrompt, rememberLogin, loginName, loginPassword, setInput]);
-    const showRotatingSuggestion = gameState === 'playing' && currentMode === 'command' && !input && !commandPreview;
+    const showRotatingSuggestion = !isClassicMode && gameState === 'playing' && currentMode === 'command' && !input && !commandPreview;
     const rotatingCommand = useRotatingCommandSuggestion(showRotatingSuggestion);
 
     const isParleyActive = Boolean(parley?.active && parley?.command);
+    const parleyChannelColor = getChatChannelColor(parley.command);
+    const parleyTargetColor = getTargetClassificationColor(
+        'who',
+        inlineCategories,
+        { player: playerColor, ally: playerColor, npc: npcColor, enemy: enemyColor, neutral: neutralColor } as EntityColorMap,
+        theme
+    ) || '#61c290';
+
+    const handleParleyCommandClick = useCallback(() => {
+        triggerHaptic?.(20);
+        setOpenParleyPicker(current => current === 'channel' ? null : 'channel');
+    }, [triggerHaptic]);
+
+    const handleParleyTargetClick = useCallback(() => {
+        triggerHaptic?.(20);
+        const isOpening = openParleyPicker !== 'target';
+        if (isOpening) requestWhoList();
+        setOpenParleyPicker(isOpening ? 'target' : null);
+    }, [openParleyPicker, requestWhoList, triggerHaptic]);
+
+    const chooseParleyChannel = useCallback((value: string) => {
+        const command = CHAT_PARLEY_CHANNELS.find(channel => channel === value);
+        if (!command) return;
+        setParley(current => ({ ...current, command }));
+        setOpenParleyPicker(null);
+    }, [setParley]);
+
+    const chooseParleyTarget = useCallback((value: string) => {
+        setParley(current => ({ ...current, target: value || null }));
+        setOpenParleyPicker(null);
+    }, [setParley]);
 
     const handleParleyClear = useCallback(() => {
-        setParley(prev => ({ ...prev, active: false, command: 'none', target: null }));
+        setParley(prev => ({ ...prev, active: false, mode: 'command', command: 'none', target: null, message: '' }));
+    }, [setParley]);
+
+    const handleParleyTargetClear = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setParley(prev => ({ ...prev, target: null }));
     }, [setParley]);
 
     const handleSubmit = useCallback((e?: React.FormEvent) => {
@@ -287,13 +349,13 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         ? 'Enter password...'
         : (gameState === 'account'
             ? (showsStandaloneAccountInput ? 'Enter username...' : 'Enter account command...')
-            : (showRotatingSuggestion ? `Try: ${rotatingCommand}...` : 'Enter command...'));
+            : (isClassicMode ? 'Enter command...' : (showRotatingSuggestion ? `Try: ${rotatingCommand}...` : 'Enter command...')));
     const inlineTargetParts = gameState === 'playing' && commandPreview && !input && displayedTarget && !isEditingTarget
         ? splitCommandTarget(commandPreview, displayedTarget)
         : null;
     const isTargetInline = Boolean(inlineTargetParts);
     const showLeadingTargetBadge = !isTargetInline && (!commandPreview || Boolean(input) || isEditingTarget);
-    const targetBadge = gameState === 'playing' && (
+    const targetBadge = gameState === 'playing' && !isParleyActive && (
         <div
             ref={targetBadgeRef}
             className={`docked-target-badge${displayedTarget ? ' has-target' : ''}${!target && displayedTarget ? ' is-auto-target' : ''}${isTargetInline ? ' docked-command-target-chip' : ''}`}
@@ -367,11 +429,74 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
             <span className="docked-prompt-symbol">&gt;</span>
 
             {isParleyActive && (
-                <div className="docked-parley-chip" onClick={handleParleyClear} title="Click to exit parley mode">
-                    <span className="parley-cmd">{parley.command}</span>
-                    {parley.target && <span className="parley-tgt">{parley.target}</span>}
-                    <span className="parley-x">&times;</span>
-                </div>
+                <>
+                    <div
+                        className="docked-parley-chip"
+                        role="group"
+                        aria-label="Communication channel"
+                        style={{ borderColor: parleyChannelColor }}
+                    >
+                        <button
+                            type="button"
+                            ref={parleyCommandRef}
+                            className="parley-action"
+                            onPointerDown={event => {
+                                event.preventDefault();
+                                handleParleyCommandClick();
+                            }}
+                            onClick={event => {
+                                if (event.detail === 0) handleParleyCommandClick();
+                            }}
+                            title="Choose another communication command"
+                            aria-label={`Choose another communication command; current command ${parley.command}`}
+                        >
+                            <span className="parley-cmd" style={{ color: parleyChannelColor }}>{parley.command}</span>
+                        </button>
+                        <button
+                            type="button"
+                            className="parley-x"
+                            onMouseDown={event => event.preventDefault()}
+                            onClick={event => { event.preventDefault(); event.stopPropagation(); handleParleyClear(); }}
+                            title="Clear communication command"
+                            aria-label="Clear communication command"
+                        >&times;</button>
+                    </div>
+                    {['tell', 'whisper', 'ask'].includes(parley.command) && (
+                        <div
+                            className="docked-parley-chip docked-parley-target-chip"
+                            role="group"
+                            aria-label="Communication target"
+                            style={{ borderColor: parleyTargetColor }}
+                        >
+                            <button
+                                type="button"
+                                ref={parleyTargetRef}
+                                className="parley-action parley-target-action"
+                                onPointerDown={event => {
+                                    event.preventDefault();
+                                    handleParleyTargetClick();
+                                }}
+                                onClick={event => {
+                                    if (event.detail === 0) handleParleyTargetClick();
+                                }}
+                                title="Choose a communication target"
+                                aria-label={parley.target ? `Change target ${parley.target}` : 'Choose a communication target'}
+                            >
+                                <span className="parley-tgt" style={{ color: parleyTargetColor }}>{parley.target || 'Select target'}</span>
+                            </button>
+                            {parley.target && (
+                                <button
+                                    type="button"
+                                    className="parley-x"
+                                    onMouseDown={event => event.preventDefault()}
+                                    onClick={handleParleyTargetClear}
+                                    title="Clear communication target"
+                                    aria-label="Clear communication target"
+                                >&times;</button>
+                            )}
+                        </div>
+                    )}
+                </>
             )}
 
             <form className="docked-input-form" onSubmit={handleSubmit}>
@@ -452,6 +577,25 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                 onManualEntry={openManualTargetEntry}
                 onDismiss={() => setIsTargetPickerOpen(false)}
             />
+            <TargetChipPicker
+                isOpen={openParleyPicker === 'channel'}
+                anchorRef={parleyCommandRef}
+                suggestions={parleyChannelSuggestions}
+                currentTarget={parley.command}
+                title="Communication channel"
+                showMeta={false}
+                onChoose={chooseParleyChannel}
+                onDismiss={() => setOpenParleyPicker(null)}
+            />
+            <TargetChipPicker
+                isOpen={openParleyPicker === 'target'}
+                anchorRef={parleyTargetRef}
+                suggestions={parleyTargetSuggestions}
+                currentTarget={parley.target}
+                title="Communication target"
+                onChoose={chooseParleyTarget}
+                onDismiss={() => setOpenParleyPicker(null)}
+            />
 
             <CommandSuggestionPopup
                 show={showCompletionPopup}
@@ -466,6 +610,8 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                 selectedCommandFull={mumeCommandMatch.entry?.full}
                 onChooseSpell={chooseSpellSuggestion}
                 onChooseTarget={chooseTargetSuggestion}
+                onToggleMagicKeyFavorite={toggleMagicKeyFavorite}
+                onClearMagicKey={clearMagicKey}
                 onChooseCommand={chooseCommandSuggestion}
             />
 
@@ -474,19 +620,6 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                     <OpponentRechargeTimer lane="player" compact />
                     <ActionTimerDisplay compact />
                 </div>
-            )}
-
-            {gameState === 'playing' && (
-                <button
-                    type="button"
-                    className="docked-repeat-btn"
-                    onClick={() => executeCommand('!', false, false, true)}
-                    onPointerDown={event => event.stopPropagation()}
-                    title="Repeat last command (!)"
-                    aria-label="Repeat last command"
-                >
-                    <Repeat size={16} />
-                </button>
             )}
 
             {gameState === 'playing' && stats.conditions?.waiting && (
@@ -502,6 +635,19 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                     aria-label="Cancel current action"
                 >
                     CANCEL
+                </button>
+            )}
+
+            {gameState === 'playing' && (
+                <button
+                    type="button"
+                    className="docked-repeat-btn"
+                    onClick={() => executeCommand('!', false, false, true)}
+                    onPointerDown={event => event.stopPropagation()}
+                    title="Repeat last command (!)"
+                    aria-label="Repeat last command"
+                >
+                    <Repeat size={16} />
                 </button>
             )}
 

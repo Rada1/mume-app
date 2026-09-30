@@ -91,7 +91,7 @@
     box-sizing: border-box;
     padding: 12px 14px;
     border: 1px solid var(--account-border-strong);
-    border-radius: 6px;
+    border-radius: 0 !important;
     outline: none;
     background: var(--account-surface-deep);
     color: #e3d8c2;
@@ -284,6 +284,11 @@
     border: 0;
     background: transparent;
     font: inherit;
+}
+
+.mobile-account-experience button,
+.mobile-account-experience [role="button"] {
+    border-radius: 0 !important;
 }
 
 @media (max-width: 380px) {

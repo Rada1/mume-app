@@ -9,8 +9,6 @@ import { EffectTimer } from '../../types';
 import './TimerExpiryToast.css';
 
 const WARNING_WINDOW_MS = 60_000;
-const RADIUS = 15;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 const START_VISIBLE_MS = 3_000;
 const EXIT_MS = 220;
 
@@ -34,9 +32,9 @@ const getUrgentTimer = (timers: EffectTimer[], now: number) => (
 const formatDuration = (ms?: number) => {
     if (!ms) return 'active';
     const total = Math.max(0, Math.ceil(ms / 1000));
-    const minutes = Math.floor(total / 60);
+    const minutes = Math.ceil(total / 60);
     const seconds = total % 60;
-    if (minutes > 0) return `${minutes}m ${seconds.toString().padStart(2, '0')}s`;
+    if (minutes > 0) return `${minutes}m`;
     return `${seconds}s`;
 };
 
@@ -44,7 +42,6 @@ const getTimerBody = (mode: TimerToastMode, timer: EffectTimer, now: number) => 
     if (mode === 'started') {
         return {
             detail: formatDuration(timer.durationMs),
-            progress: 1,
             label: `${timer.name} timer started`
         };
     }
@@ -52,7 +49,6 @@ const getTimerBody = (mode: TimerToastMode, timer: EffectTimer, now: number) => 
     const remainingSeconds = Math.ceil(remainingMs / 1000);
     return {
         detail: `${remainingSeconds}s`,
-        progress: Math.max(0, Math.min(1, remainingMs / WARNING_WINDOW_MS)),
         label: `${timer.name} timer ending in ${remainingSeconds} seconds`
     };
 };
@@ -105,8 +101,6 @@ export const TimerExpiryToast: React.FC = () => {
     if (!mode || !activeTimer) return null;
 
     const body = getTimerBody(mode, activeTimer, now);
-    const progress = mode === 'started' && startedToast?.exiting ? 0 : body.progress;
-    const dashOffset = CIRCUMFERENCE * (1 - progress);
 
     return (
         <div
@@ -115,25 +109,17 @@ export const TimerExpiryToast: React.FC = () => {
             aria-live="polite"
             aria-label={body.label}
         >
-            <div className="timer-expiry-ring" aria-hidden="true">
-                <svg viewBox="0 0 36 36">
-                    <circle className="timer-expiry-ring-bg" cx="18" cy="18" r={RADIUS} />
-                    <circle
-                        className="timer-expiry-ring-fill"
-                        cx="18"
-                        cy="18"
-                        r={RADIUS}
-                        strokeDasharray={CIRCUMFERENCE}
-                        strokeDashoffset={dashOffset}
-                    />
-                </svg>
-            </div>
-            <div className="timer-expiry-copy">
-                <span className="timer-expiry-name">{activeTimer.name}</span>
-                <span className="timer-expiry-seconds">
-                    {mode === 'started' ? `start ${body.detail}` : body.detail}
-                </span>
-            </div>
+            {mode === 'started' ? (
+                <div className="timer-expiry-copy is-started">
+                    <span className="timer-expiry-name">{activeTimer.name.toLowerCase()}</span>
+                    <span className="timer-expiry-seconds">{body.detail}</span>
+                </div>
+            ) : (
+                <div className="timer-expiry-copy">
+                    <span className="timer-expiry-name">{activeTimer.name}</span>
+                    <span className="timer-expiry-seconds">{body.detail}</span>
+                </div>
+            )}
         </div>
     );
 };

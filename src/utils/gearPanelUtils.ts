@@ -5,6 +5,7 @@ import { extractMumeKeyword, isItemContainer } from './gameUtils';
 export interface GearRow {
     line: DrawerLine;
     slot: string;
+    slotLabel: string;
     article: string;
     name: string;
     condition: string;
@@ -13,6 +14,17 @@ export interface GearRow {
 }
 
 // --- Logic Section ---
+export function getWornSlotLabel(prefix?: string): string | undefined {
+    const raw = prefix?.replace(/[<>]/g, '').trim().replace(/\s+/g, ' ');
+    if (!raw) return undefined;
+    const normalized = raw.toLowerCase();
+    if (normalized === 'wielded' || normalized === 'wield') return 'Wield';
+
+    let label = raw.replace(/^worn\s+/i, '');
+    if (/^(?:used\s+)?as\s+/i.test(label)) label = label.replace(/^(?:used\s+)?as\s+/i, '');
+    return label ? label[0]!.toUpperCase() + label.slice(1) : undefined;
+}
+
 export function toGearRow(line: DrawerLine): GearRow | null {
     if (!line.isItem || line.isHeader) return null;
     const raw = line.text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -26,6 +38,7 @@ export function toGearRow(line: DrawerLine): GearRow | null {
     return {
         line,
         slot: line.prefix?.trim() ?? '',
+        slotLabel: getWornSlotLabel(line.prefix) ?? '',
         article,
         name,
         condition,

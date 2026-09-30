@@ -21,6 +21,7 @@ import type { MumeEditState } from '../../stores/useUIStore';
 import { normalizeCombatantName } from '../../utils/combatUtils';
 import { getMumeTimeFromEpoch, MUME_MONTHS } from '../../utils/mumeTimeUtils';
 import { isRidingFromGmcpRide } from '../../utils/gmcpRideUtils';
+import { gmcpBus } from '../../events/gmcpBus';
 
 interface GmcpHandlersProps {
     mapperRef: React.RefObject<MapperRef>;
@@ -75,7 +76,7 @@ interface GmcpHandlersProps {
     isSpectateMode?: boolean;
     inlineCategories: import('../../types').InlineCategoryConfig[];
     sendGMCP?: (pkg: string, data?: any) => void;
-    sendCommand?: (cmd: string) => void;
+    sendSilentCommand?: (cmd: string) => void;
     playAchievementSound?: () => void;
     playEventMoveSound?: () => void;
     playEffect?: (name: string, options?: { pitch?: number; volume?: number; skipJitter?: boolean }) => void;
@@ -144,6 +145,14 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         findStatus,
         playerPositionRef: playerPositionRef as any
     });
+
+    const onCharStatusVars = useCallback((data: unknown) => {
+        const payload = typeof data === 'object' && data !== null && !Array.isArray(data)
+            ? data as { name?: string; [key: string]: unknown }
+            : {};
+        gmcpBus.emit('Char.StatusVars', payload);
+        onCharInfo(data);
+    }, [onCharInfo]);
 
     const { onRoomChars, onAddChar, onUpdateChar, onRemoveChar } = useGmcpOccupants({
         ...props,
@@ -215,6 +224,7 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         if (pkgLower === 'event.achieved') {
             props.playAchievementSound?.();
         } else if (pkgLower === 'event.move' || pkgLower === 'event.moved') {
+            if (pkgLower === 'event.moved') gmcpBus.emit('Event.Moved', data);
             props.playEventMoveSound?.();
         } else if (pkgLower === 'event.darkness' || pkgLower === 'event.moon') {
             addEnvironmentEventMessage(pkgLower, data);
@@ -271,7 +281,7 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         onRemoveChar,
         onCharNameChange,
         onCharInfo,
-        onCharStatusVars: onCharInfo,
+        onCharStatusVars,
         onCharStatus: onCharInfo,
         onBufferChange: (name: string | null) => props.setBufferName(name),
         onCharVitals,

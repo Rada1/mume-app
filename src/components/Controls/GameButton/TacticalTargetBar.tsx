@@ -4,7 +4,7 @@
  */
 
 // --- Logic Section ---
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { GmcpOccupant } from '../../../types';
 import { getRoomTargetSuggestions, CommandTargetSuggestion } from '../../../utils/commandSuggestionUtils';
@@ -49,6 +49,10 @@ export interface TacticalTargetBarProps {
     selectedDirection?: string | null;
     onSelectDirection?: (direction: string, keepOpenAfterFire?: boolean) => void;
     embedded?: boolean;
+    fullWidthTargetList?: boolean;
+    showWornLocation?: boolean;
+    customContent?: ReactNode;
+    customContentInteractive?: boolean;
 }
 
 export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
@@ -77,7 +81,11 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
     directionPadMode = null,
     selectedDirection = null,
     onSelectDirection,
-    embedded = false
+    embedded = false,
+    fullWidthTargetList = false,
+    showWornLocation = false,
+    customContent,
+    customContentInteractive = false
 }) => {
     const [keepOpenAfterFire, setKeepOpenAfterFire] = useState(false);
     const [socialLetter, setSocialLetter] = useState<string | null>(null);
@@ -96,8 +104,25 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
     }, [isOpen]);
 
     const isSocialMenu = title === 'SOCIAL COMMANDS';
+    const socialColumn = columns?.find(column => column.title.toLowerCase() === 'social'
+        || column.suggestions.some(item => item.meta === 'social'));
+    const rememberedSocialTarget = socialColumn?.selectedTarget || selectedTarget;
     const socialLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
     const availableSocialLetters = new Set(candidates.map(item => item.label.charAt(0).toUpperCase()));
+    useLayoutEffect(() => {
+        if (!isOpen || (!isSocialMenu && !socialColumn) || !rememberedSocialTarget) return;
+        const list = socialListRef.current;
+        const selectedRow = Array.from(list?.querySelectorAll<HTMLElement>('[data-target-value]') || [])
+            .find(row => row.dataset.targetValue === rememberedSocialTarget);
+        if (!list || !selectedRow) return;
+        const listBounds = list.getBoundingClientRect();
+        const rowBounds = selectedRow.getBoundingClientRect();
+        if (rowBounds.top < listBounds.top) {
+            list.scrollTop += rowBounds.top - listBounds.top;
+        } else if (rowBounds.bottom > listBounds.bottom) {
+            list.scrollTop += rowBounds.bottom - listBounds.bottom;
+        }
+    }, [isOpen, isSocialMenu, rememberedSocialTarget, socialColumn]);
     const jumpToSocialLetter = (letter: string, items = candidates, behavior: ScrollBehavior = 'smooth') => {
         const list = socialListRef.current;
         if (!list) return;
@@ -153,7 +178,8 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
     const barMarkup = (
         <div
             ref={barRef}
-            className={`tactical-target-bar${embedded ? ' is-embedded' : ''}${columns?.length ? ' has-columns' : ''}${!columns?.length && !directionPadMode ? ' has-fixed-halves' : ''}${directionPadMode ? ` has-directions-${directionPadMode}` : ''}${commandLabel ? ' has-command' : ''}${isInteractive ? '' : ' is-held'}${isBlurred ? ' is-blurred' : ''}${isSwipeTargeting ? ' is-swipe-targeting' : ''}`}
+            className={`tactical-target-bar${embedded ? ' is-embedded' : ''}${fullWidthTargetList ? ' is-full-width-target-list' : ''}${showWornLocation ? ' is-remove-target-menu' : ''}${customContent ? ' has-custom-content' : ''}${customContentInteractive ? ' has-interactive-custom-content' : ''}${columns?.length ? ' has-columns' : ''}${!columns?.length && !directionPadMode ? ' has-fixed-halves' : ''}${directionPadMode ? ` has-directions-${directionPadMode}` : ''}${commandLabel ? ' has-command' : ''}${isInteractive ? '' : ' is-held'}${isBlurred ? ' is-blurred' : ''}${isSwipeTargeting ? ' is-swipe-targeting' : ''}`}
+            style={customContentInteractive ? { pointerEvents: 'auto' } : undefined}
             onPointerDownCapture={onPointerDownCapture}
             onPointerDown={(e) => e.stopPropagation()}
             onPointerUp={(e) => e.stopPropagation()}
@@ -164,10 +190,10 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
             }}
             onClick={(e) => e.stopPropagation()}
         >
-            <div className="tactical-target-bar-header">
+            {!customContent && <div className="tactical-target-bar-header">
                 <span className="tactical-target-bar-title">
                     <span>▸ {title}</span>
-                    {directionPadMode !== 'wheel' && <span className="tactical-target-bar-count">({columns?.length ? columns.reduce((count, column) => count + column.suggestions.length, 0) : candidates.length})</span>}
+                    {directionPadMode !== 'wheel' && !customContent && <span className="tactical-target-bar-count">({columns?.length ? columns.reduce((count, column) => count + column.suggestions.length, 0) : candidates.length})</span>}
                 </span>
                 {showKeepOpenToggle && isInteractive && <button
                     type="button"
@@ -197,8 +223,9 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
                         if (event.detail === 0) onFireModeChange(!fireOnTargetTap);
                     }}
                 ><span className="tactical-target-bar-keep-open-track"><span /></span><span>{fireOnTargetTap ? 'Tap' : 'Release'}</span></button>}
-            </div>
+            </div>}
             <div className={`tactical-target-bar-body${directionPadMode === 'below' ? ' has-directions-below' : ''}${directionPadMode === 'wheel' ? ' has-directions-wheel' : ''}`}>
+                {customContent ? <div className="tactical-target-bar-custom-content">{customContent}</div> : <>
                 {commandLabel && <div className="tactical-target-bar-command" aria-label={`Command: ${commandLabel}`}>
                     <span>{commandLabel}</span>
                 </div>}
@@ -229,7 +256,7 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
                             onSelectDirection={direction => onSelectDirection?.(direction, keepOpenAfterFire)}
                         />
                     </div>
-                ) : directionPadMode === 'below' ? (
+                ) : directionPadMode === 'below' && !columns?.length ? (
                     <div className="tactical-target-bar-direction-stack">
                         <div className="tactical-target-bar-list">
                             {candidates.length === 0
@@ -272,6 +299,16 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
                                     onToggleTargetLock={onToggleTargetLock}
                                 />
                             </div>;
+                            const content = directionPadMode === 'below' && index === 0
+                                ? <div className="tactical-target-bar-direction-stack">
+                                    {list}
+                                    <TacticalDirectionPad
+                                        layout="below"
+                                        selectedDirection={selectedDirection}
+                                        onSelectDirection={direction => onSelectDirection?.(direction, keepOpenAfterFire)}
+                                    />
+                                </div>
+                                : list;
                             return <section className="tactical-target-bar-column" key={`${column.title}-${index}`}>
                                 <h3 className="tactical-target-bar-column-title">{column.title}</h3>
                                 {isSocialColumn ? <div className="tactical-target-bar-social-browser">
@@ -298,7 +335,7 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
                                         >{letter}</button>)}
                                     </div>
                                     {list}
-                                </div> : list}
+                                </div> : content}
                             </section>;
                         })}
                     </div>
@@ -357,6 +394,7 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
                                     ? <div className="tactical-target-bar-empty">{title === 'WHO LIST' ? 'No players in WHO list' : title === 'SOCIAL COMMANDS' ? 'No social commands' : 'No viable targets'}</div>
                                     : <TacticalTargetList
                                         items={candidates} currentTarget={currentTarget} selectedValue={selectedTarget}
+                                        showWornLocation={showWornLocation}
                                         confirmedValue={selectionFeedbackValue}
                                         isSwipeTargeting={isSwipeTargeting} keepOpenAfterFire={keepOpenAfterFire}
                                         showSendIndicator={fireOnTargetTap}
@@ -369,6 +407,7 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
                         <div className="tactical-target-bar-empty-column" aria-hidden="true" />
                     </div>
                 )}
+                </>}
             </div>
         </div>
     );

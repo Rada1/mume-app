@@ -11,6 +11,7 @@ import { getMapOccupantTargets } from '../occupantTargets';
 import { isOpponentOccupant } from '../mapperOpponentUtils';
 import { isObjectSelected, targetTextMatchesEntity } from '../../../utils/selectionUtils';
 import { drawPlayerZoomBeacon, drawGroupMemberZoomBeacon } from './playerBeacon';
+import { buildLegacyGroupRoomNameIndex, resolveLegacyGroupMemberPosition } from './legacyGroupLocations';
 import type { GmcpOccupant, GroupMember } from '../../../types';
 
 type RoomAnchor = { x: number, y: number, z: number };
@@ -989,34 +990,14 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
     // --- Resolve & Group positions for petal layout ---
     const roomOccupancy = new Map<string, any[]>();
     const resolvedMembers: any[] = [];
+    const groupRoomNameIndex = buildLegacyGroupRoomNameIndex(preloaded);
 
     groupMembers.forEach(member => {
-        if (!member.mapid) return;
         const memberName = getGroupMemberDisplayName(member);
         const memberKey = String(member.id ?? memberName ?? member.mapid);
-        const serverVnum = String(member.mapid);
-
-        let rx: number | undefined, ry: number | undefined, rz: number | undefined;
-
-        // Step 1: serverIdIndexRef lookup
-        let localVnum: string | undefined;
-        if (serverIdIndexRef?.current) localVnum = serverIdIndexRef.current[serverVnum];
-
-        // Step 2 & 3: preloaded base map
-        if (localVnum && preloaded[localVnum]) {
-            const p = preloaded[localVnum]; rx = p[0]; ry = p[1]; rz = p[2] || 0;
-        } else if (preloaded[serverVnum]) {
-            const p = preloaded[serverVnum]; rx = p[0]; ry = p[1]; rz = p[2] || 0;
-        }
-
-        // Step 4 & 5: local rooms
-        if (rx === undefined) {
-            const localRoom = allRooms[`m_${localVnum ?? serverVnum}`] || allRooms[localVnum ?? ''] || allRooms[serverVnum] || Object.values(allRooms).find(r => String(r.gmcpId) === serverVnum);
-            if (localRoom) { rx = localRoom.x; ry = localRoom.y; rz = localRoom.z || 0; }
-        }
-
-        if (rx === undefined || ry === undefined) return;
-        if (rz === undefined) rz = 0;
+        const position = resolveLegacyGroupMemberPosition(member, preloaded, allRooms, serverIdIndexRef?.current ?? {}, groupRoomNameIndex);
+        if (!position) return;
+        const { x: rx, y: ry, z: rz } = position;
         
         const pos = { rx, ry, rz };
         resolvedMembers.push({ member, memberKey, ...pos });

@@ -65,20 +65,35 @@ export const parseMagicKeyLine = (text: string, roomName?: string | null, roomZo
 export const pruneExpiredMagicKeys = (targets: TeleportTarget[], now = Date.now()) =>
     targets.filter(target => !target.expiresAt || target.expiresAt > now);
 
+export const formatMagicKeyRemaining = (expiresAt?: number, now = Date.now()) => {
+    if (!expiresAt) return 'time unknown';
+    const total = Math.max(0, Math.ceil((expiresAt - now) / 1000));
+    const days = Math.floor(total / 86400);
+    const hours = Math.floor((total % 86400) / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    if (days > 0) return `${days}d ${hours}h`;
+    if (hours > 0) return `${hours}h ${minutes.toString().padStart(2, '0')}m`;
+    return `${minutes}m`;
+};
+
 export const upsertMagicKeyTarget = (targets: TeleportTarget[], nextTarget: TeleportTarget) => {
     const activeTargets = pruneExpiredMagicKeys(targets);
     const existing = activeTargets.find(target => target.id === nextTarget.id);
     const merged = existing
-        ? { ...nextTarget, customName: existing.customName, gatheredZone: nextTarget.gatheredZone || existing.gatheredZone, name: existing.customName || nextTarget.name, label: existing.customName || nextTarget.label }
+        ? {
+            ...nextTarget,
+            customName: existing.customName,
+            isFavorite: existing.isFavorite,
+            gatheredZone: nextTarget.gatheredZone || existing.gatheredZone
+        }
         : nextTarget;
     return [merged, ...activeTargets.filter(target => target.id !== nextTarget.id)];
 };
 
 export const renameMagicKeyTarget = (targets: TeleportTarget[], id: string, customName: string) =>
     targets.map(target => {
-        if (target.id !== id) return target;
-        const name = customName.trim() || target.sourceLine || target.name;
-        return { ...target, customName: customName.trim() || undefined, name, label: name };
+        if (getMagicKeyId(target) !== id) return target;
+        return { ...target, customName: customName.trim().slice(0, 28) || undefined };
     });
 
 export const findMagicKeyTarget = (targets: TeleportTarget[], query: string, now = Date.now()) => {
@@ -96,7 +111,7 @@ export const buildKeyedSpellCommand = (prefix: string, target: TeleportTarget) =
 
 export const parseKeyedSpellCommand = (cmd: string) => {
     const trimmed = cmd.trim();
-    const castMatch = trimmed.match(/^cast\s+['"]?(teleport|portal|scry|watch room)['"]?\s*(.*)$/i);
+    const castMatch = trimmed.match(/^(?:cast|c)\s+['"]?(teleport|portal|scry|watch room)['"]?\s*(.*)$/i);
     if (castMatch) {
         const spell = castMatch[1].toLowerCase();
         return { prefix: `cast '${spell}'`, spell, target: castMatch[2].trim() };

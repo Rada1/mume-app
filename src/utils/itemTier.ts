@@ -164,3 +164,9 @@ export const classifyItemTier = (text: string): ItemTierResult => {
 
     return result;
 };
+
+/** Reuse the log's named item tiers when rendering object target labels. */
+export const getTargetItemTierClassName = (text: string): string => {
+    const tier = classifyItemTier(text).tier;
+    return tier ? 'target-item-tier target-item-tier-' + tier : '';
+};

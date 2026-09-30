@@ -64,7 +64,6 @@ const SwipeConfig: React.FC<SwipeConfigProps> = ({
                 <option value="assign">Assign</option>
                 <option value="select-assign">S&A</option>
                 <option value="select-recipient">Recip</option>
-                <option value="teleport-manage">Tele</option>
             </select>
         </div>
     );

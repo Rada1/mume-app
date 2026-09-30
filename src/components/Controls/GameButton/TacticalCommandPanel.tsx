@@ -1,9 +1,13 @@
 /** @file TacticalCommandPanel.tsx — Combines swipe mappings, target choices, and direction input. */
 
-import React, { useCallback } from 'react';
+import React, { ReactNode, useCallback, useMemo } from 'react';
 import type { CustomButton, ExecuteCommand, SwipeDirection } from '../../../types';
-import type { CommandTargetSuggestion } from '../../../utils/commandSuggestionUtils';
-import { BLANK_TARGET_VALUE, canCommandAcceptTarget } from '../../../utils/commandTargetUtils';
+import { getRoomTargetSuggestions, getSelfTargetSuggestion, isTargetSuggestionMatch, type CommandTargetSuggestion } from '../../../utils/commandSuggestionUtils';
+import { BLANK_TARGET_VALUE, canCommandAcceptTarget, getDefaultCommandTarget, isOffensiveSingleTargetCommand, LOOK_IN_TARGET_VALUE } from '../../../utils/commandTargetUtils';
+import type { EntityColorMap } from '../../../utils/inlineActionModel';
+import { getTargetClassificationColor } from '../../../utils/targetClassificationColor';
+import { useSettingsStore } from '../../../stores/useSettingsStore';
+import { useRoomStore } from '../../../stores/useRoomStore';
 import { ButtonSwipeOverlay } from './ButtonSwipeOverlay';
 import { TacticalTargetBar, type TacticalTargetColumn } from './TacticalTargetBar';
 import type { UseTacticalTargetingReturn } from './useTacticalTargeting';
@@ -12,6 +16,19 @@ import './TacticalSwipeWheel.css';
 import './TacticalCommandPanel.css';
 
 // --- Logic Section ---
+const SELF_BUFF_GLOW_SPELLS = new Set(['armour', 'armor', 'shield', 'breath of briskness']);
+
+const getSelfBuffGlowSpell = (command: string): string | null => {
+    const spell = command.trim().match(/^(?:(?:cast|c|commune)\s+)?['"]?([^'"]+?)['"]?(?:\s+.*)?$/i)?.[1];
+    const normalized = spell?.trim().toLowerCase();
+    return normalized && SELF_BUFF_GLOW_SPELLS.has(normalized) ? normalized : null;
+};
+
+const usesFullWidthTargetMenu = (command: string): boolean => {
+    const normalized = command.trim().replace(/^(?:cast|c|commune)\s+(['"])(.*?)\1.*$/i, '$2').toLowerCase();
+    return /^(?:scry|teleport|portal|remove|wear|group)(?:\s|$)/.test(normalized) || /^watch\s+room(?:\s|$)/.test(normalized);
+};
+
 export interface WheelReplacementMode {
     title: string;
     suggestions: CommandTargetSuggestion[];
@@ -25,7 +42,6 @@ export interface WheelReplacementMode {
 
 interface Props {
     button: CustomButton;
-    buttonIconNode?: React.ReactNode;
     activeDir: SwipeDirection | 'center' | null;
     isCancelling: boolean;
     isPinned: boolean;
@@ -67,37 +83,75 @@ interface Props {
     onSelectColumnTarget?: (targetValue: string, columnIndex: number, suggestion: CommandTargetSuggestion, keepOpenAfterFire?: boolean) => void;
     onToggleTargetLock?: (targetValue: string) => void;
     onTargetSelected?: (targetValue: string) => void;
+    customContent?: ReactNode;
+    customContentInteractive?: boolean;
 }
 
 export const TacticalCommandPanel: React.FC<Props> = ({
-    button, buttonIconNode, activeDir, isCancelling, isPinned, swapSource, onSwapCells, onClose, buttonRect, rayParams, isMobile,
+    button, activeDir, isCancelling, isPinned, swapSource, onSwapCells, onClose, buttonRect, rayParams, isMobile,
     isTargetMenuOpen, isTargetMenuHeld, command, currentCommandRef, activeTarget, targetChipTarget,
     selectedTarget, selectedDirection, directionPadMode, suggestions, title,
     characterName, targeting, executeCommand, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, paletteCommands, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel, hidePreviewWheel,
-    wheelReplacementMode, columns, onSelectColumnTarget, onToggleTargetLock, onTargetSelected
+    wheelReplacementMode, columns, onSelectColumnTarget, onToggleTargetLock, onTargetSelected, customContent, customContentInteractive
 }) => {
+    const inlineCategories = useSettingsStore(state => state.inlineCategories);
+    const objectColor = useSettingsStore(state => state.objectColor);
+    const playerColor = useSettingsStore(state => state.playerColor);
+    const npcColor = useSettingsStore(state => state.npcColor);
+    const enemyColor = useSettingsStore(state => state.enemyColor);
+    const neutralColor = useSettingsStore(state => state.neutralColor);
+    const theme = useSettingsStore(state => state.theme);
+    const entityColors: EntityColorMap = { object: objectColor, player: playerColor, npc: npcColor, enemy: enemyColor, neutral: neutralColor };
+    const roomChars = useRoomStore(state => state.chars);
+    const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
+    const classificationSuggestions = useMemo(() => [
+        getSelfTargetSuggestion(),
+        ...getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName)
+    ], [characterName, roomOccupants]);
     const handleTargetHover = useCallback((targetValue: string | null) => {
+        const currentCommand = currentCommandRef.current || button.command;
+        if (currentCommand.trim().toLowerCase() === 'look' && targetValue === LOOK_IN_TARGET_VALUE) return;
         if (targetValue && !wheelReplacementMode && !columns?.length) {
             onTargetSelected?.(targetValue);
-            targeting.handleSelectTarget(targetValue, currentCommandRef.current || button.command, false);
+            targeting.handleSelectTarget(targetValue, currentCommand, false);
         }
     }, [button.command, currentCommandRef, onTargetSelected, targeting, wheelReplacementMode, columns]);
-    const isCommandTargetReady = useCallback((swipeCommand: string) => {
-        if (!swipeCommand.trim() || !canCommandAcceptTarget(swipeCommand)) return false;
-        const selected = targeting.pendingTarget || targeting.getEffectiveTarget(swipeCommand);
-        if (!selected || !targetChipTarget || selected === BLANK_TARGET_VALUE) return false;
+    const getCommandTargetGlowColor = useCallback((swipeCommand: string) => {
+        // These buffs have no command argument, but conceptually target the
+        // caster. Keep their ally-colored glow visible across the wheel.
+        if (getSelfBuffGlowSpell(swipeCommand)) {
+            return getTargetClassificationColor('ally', inlineCategories, entityColors, theme) || '#61c290';
+        }
+        if (!swipeCommand.trim() || !canCommandAcceptTarget(swipeCommand)) return null;
+        // Keep wheel target glows tied to each command's own default target.
+        // The hovered command's pending selection is transient and must not
+        // suppress the chip glow on other commands in the wheel.
+        const selected = targeting.getEffectiveTarget(swipeCommand, true) || getDefaultCommandTarget(swipeCommand);
+        if (!selected || selected === BLANK_TARGET_VALUE) return null;
         const normalize = (value: string) => value.replace(/[*']/g, '').trim().toLowerCase();
         const selectedValue = normalize(selected);
-        const chipValue = normalize(targetChipTarget);
-        if (selectedValue === chipValue) return true;
+        const selectedSuggestion = [...classificationSuggestions, ...(suggestions || [])]
+            .find(suggestion => isTargetSuggestionMatch(suggestion, selected));
+        const selectedMeta = selectedSuggestion?.meta || (selectedValue === 'self' || selectedValue.endsWith('.ally') ? 'ally' : '');
 
+        if (isOffensiveSingleTargetCommand(swipeCommand)) return '#f87171';
+        if (selectedMeta === 'self' || selectedMeta === 'ally' || selectedMeta === 'allies') {
+            return getTargetClassificationColor(selectedMeta, inlineCategories, entityColors, theme) || '#61c290';
+        }
+
+        if (!targetChipTarget) return null;
+        const chipValue = normalize(targetChipTarget);
         const selectedOrdinal = selectedValue.match(/^(\d+)\.(.+)$/);
         const chipOrdinal = chipValue.match(/^(\d+)\.(.+)$/);
-        if (selectedOrdinal && chipOrdinal) return false;
-        if (selectedOrdinal) return selectedOrdinal[1] === '1' && selectedOrdinal[2] === chipValue;
-        if (chipOrdinal) return chipOrdinal[1] === '1' && chipOrdinal[2] === selectedValue;
-        return false;
-    }, [targetChipTarget, targeting.getEffectiveTarget, targeting.pendingTarget]);
+        const targetsChip = selectedValue === chipValue
+            || (selectedOrdinal && selectedOrdinal[1] === '1' && selectedOrdinal[2] === chipValue)
+            || (chipOrdinal && chipOrdinal[1] === '1' && chipOrdinal[2] === selectedValue);
+        if (!targetsChip) return null;
+
+        const lockedTargetValue = activeTarget ? normalize(activeTarget) : '';
+        if (!lockedTargetValue || lockedTargetValue !== chipValue) return '#f87171';
+        return getTargetClassificationColor(selectedMeta, inlineCategories, entityColors, theme) || '#f87171';
+    }, [activeTarget, classificationSuggestions, entityColors, inlineCategories, suggestions, targetChipTarget, targeting.getEffectiveTarget, theme]);
 
     const handleSelectTarget = (value: string, _keepOpenAfterFire = false) => {
         if (wheelReplacementMode) {
@@ -112,6 +166,11 @@ export const TacticalCommandPanel: React.FC<Props> = ({
             return;
         }
         const currentCommand = currentCommandRef.current || button.command;
+        if (/^look$/i.test(currentCommand.trim()) && value === LOOK_IN_TARGET_VALUE) {
+            currentCommandRef.current = 'look in';
+            targeting.openTargetMenu('look in');
+            return;
+        }
         if (value.toLowerCase() !== 'exit') onTargetSelected?.(value);
         targeting.handleSelectTarget(value, currentCommand);
         if (targeting.fireOnTargetTap && value.toLowerCase() !== 'exit') {
@@ -130,6 +189,9 @@ export const TacticalCommandPanel: React.FC<Props> = ({
     const targetMenu = <TacticalTargetBar
         isOpen={isTargetMenuOpen}
         embedded
+        fullWidthTargetList={usesFullWidthTargetMenu(currentCommandRef.current || command || button.command)}
+        showWornLocation={/^remove\b/i.test(currentCommandRef.current || command || button.command)}
+        customContentInteractive={customContentInteractive && !wheelReplacementMode}
         currentTarget={activeTarget}
         selectedTarget={wheelReplacementMode?.selectedValue ?? selectedTarget}
         selectionFeedbackValue={wheelReplacementMode?.selectedValue ?? null}
@@ -142,11 +204,12 @@ export const TacticalCommandPanel: React.FC<Props> = ({
         characterName={characterName}
         suggestions={wheelReplacementMode?.suggestions || suggestions}
         title={wheelReplacementMode?.title || title}
+        customContent={wheelReplacementMode ? undefined : customContent}
         columns={wheelReplacementMode ? undefined : columns}
         onSelectColumnTarget={onSelectColumnTarget}
         onToggleTargetLock={wheelReplacementMode ? undefined : onToggleTargetLock}
         fireOnTargetTap={targeting.fireOnTargetTap}
-        onFireModeChange={wheelReplacementMode ? undefined : targeting.setFireOnTargetTap}
+        onFireModeChange={wheelReplacementMode || customContent ? undefined : targeting.setFireOnTargetTap}
         isInteractive={!isChoosingRebindSlot}
         isSwipeTargeting={isTargetMenuHeld}
         onHoverTarget={wheelReplacementMode ? undefined : handleTargetHover}
@@ -158,7 +221,6 @@ export const TacticalCommandPanel: React.FC<Props> = ({
 
     return <ButtonSwipeOverlay
         button={button}
-        buttonIconNode={buttonIconNode}
         activeDir={activeDir}
         activeCommand={command}
         isCancelling={isCancelling}
@@ -170,7 +232,7 @@ export const TacticalCommandPanel: React.FC<Props> = ({
         rayParams={rayParams}
         isMobile={isMobile}
         isTargetMenuVisible={isTargetMenuOpen}
-        isCommandTargetReady={isCommandTargetReady}
+        getCommandTargetGlowColor={getCommandTargetGlowColor}
         targetMenu={targetMenu}
         paletteCommands={paletteCommands}
         onPinnedPointerDown={onPinnedPointerDown}

@@ -76,7 +76,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
 
     const executeButton = useCallback((button: CustomButton, e: PointerEvent | React.PointerEvent) => {
         onExecute(button, e as PointerEvent);
-        const isMenu = ['nav', 'menu', 'select-assign', 'select-recipient', 'select-container', 'assign', 'teleport-manage'].includes(button.actionType || '') || button.label === 'Look In';
+        const isMenu = ['nav', 'menu', 'select-assign', 'select-recipient', 'select-container', 'assign'].includes(button.actionType || '') || button.label === 'Look In';
         if (!isMenu) onClose();
     }, [onExecute, onClose]);
 

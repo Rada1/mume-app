@@ -1,6 +1,6 @@
 /**
  * @file audioManifest.ts
- * @description Audio configuration manifest mapping zones, terrains, weather, and sound effects to assets and BPMs.
+ * @description Audio configuration manifest mapping zones, terrains, weather, and sound effects to assets.
  */
 
 // --- Types Section ---
@@ -121,7 +121,7 @@ export const AUDIO_MANIFEST = {
             'account': { url: '/assets/Sounds/ZoneSounds/Lorien1.mp3', volume: 0.8 }
         } as Record<string, ZoneConfig>,
         special: {
-            drumLoop: { url: '/assets/Sounds/SoundEffects/drumbeat.mp3' }
+            drumLoop: { url: '/assets/Sounds/SoundEffects/drumbeat.wav' }
         } as Record<string, ZoneConfig>
     },
     effects: {
@@ -140,6 +140,7 @@ export const AUDIO_MANIFEST = {
         'click': { path: '/assets/Sounds/SoundEffects/click.mp3' },
         'campfire': { path: '/assets/Sounds/SoundEffects/campfire.mp3', defaultVolume: 0.85 },
         'commsend': { path: '/assets/Sounds/UI/commsend.mp3', defaultVolume: 0.65 },
+        'colourspray': { path: '/assets/Sounds/SoundEffects/colourspray.mp3', defaultVolume: 0.8 },
         'curelight': { path: '/assets/Sounds/SoundEffects/curelight.mp3', defaultVolume: 0.8 },
         'createlight': { path: '/assets/Sounds/SoundEffects/createlight.mp3' },
         'createfood': { path: '/assets/Sounds/SoundEffects/createfood.mp3' },
@@ -158,7 +159,8 @@ export const AUDIO_MANIFEST = {
         'commbubble': { path: '/assets/Sounds/SoundEffects/commbubble.mp3' },
         'crushpound': { path: '/assets/Sounds/SoundEffects/crushpound.mp3', defaultVolume: 0.5 },
         'damage': { path: '/assets/Sounds/SoundEffects/damage.mp3', defaultVolume: 0.8 },
-        'door1': { path: '/assets/Sounds/SoundEffects/door1.wav' },
+        'death': { path: '/assets/Sounds/SoundEffects/death.mp3', defaultVolume: 0.8 },
+        'door1': { path: '/assets/Sounds/SoundEffects/door1.mp3' },
         'hit-impact': { path: '/assets/Sounds/SoundEffects/hit-impact.mp3' },
         'hit2': { path: '/assets/Sounds/SoundEffects/hit2.mp3' },
         'hint': { path: '/assets/Sounds/SoundEffects/hint.mp3', defaultVolume: 0.8 },
@@ -221,55 +223,6 @@ export const AUDIO_MANIFEST = {
         'magiccomplete': { path: '/assets/Sounds/SoundEffects/magiccomplete.mp3', defaultVolume: 0.8 },
         'locatelife': { path: '/assets/Sounds/SoundEffects/locatelife.mp3', defaultVolume: 0.8 },
         'removepoison': { path: '/assets/Sounds/SoundEffects/removepoison.mp3', defaultVolume: 0.8 },
+        'search': { path: '/assets/Sounds/SoundEffects/search.mp3', defaultVolume: 0.8 },
     } as Record<string, SoundConfig>,
-    bpmMap: {
-        'AncientBrokenRoad.mp3': 72,
-        'BlueMountains.mp3': 64,
-        'BreeSound.mp3': 96,
-        'CentralAnduin.mp3': 60,
-        'Central Anduin2.mp3': 60,
-        'Dolguldur.mp3': 64,
-        'Dunland.mp3': 112,
-        'Emyn.mp3': 104,
-        'Eregion.mp3': 76,
-        'Ettenmoors.mp3': 72,
-        'FangornForest.mp3': 88,
-        'Fornost.mp3': 72,
-        'GladdenFields.mp3': 64,
-        'GoblinTown.mp3': 100,
-        'GrayHavens1.mp3': 76,
-        'Isengard.mp3': 96,
-        'LhunValley.mp3': 96,
-        'Lorien1.mp3': 112,
-        'loriensurroundings.mp3': 112,
-        'MidgeWater.mp3': 88,
-        'MistyMountains.mp3': 96,
-        'MistyMountains2.mp3': 60,
-        'Moria.mp3': 92,
-        'NorthAnduin.mp3': 64,
-        'northanduin.mp3': 64,
-        'OldForest.mp3': 88,
-        'oldeastroad.mp3': 64,
-        'Ost-in-edhil.mp3': 112,
-        'Redhorn.mp3': 80,
-        'Rivendell1.mp3': 60,
-        'Rivendell2.mp3': 92,
-        'Rivendell3.mp3': 112,
-        'RoadToGreyHavens.mp3': 92,
-        'RoadToTharbad.mp3': 88,
-        'roadtofornost1.mp3': 96,
-        'roadtotharbad.mp3': 64,
-        'Rohan.mp3': 80,
-        'Shire.mp3': 64,
-        'SouthernMirkwood.mp3': 64,
-        'Tharbad.mp3': 88,
-        'TheOldForestRoad.mp3': 64,
-        'TowerHills.mp3': 80,
-        'TrollShaws.mp3': 64,
-        'Valinor.mp3': 76,
-        'warrens.mp3': 94,
-        'Weathertop.mp3': 112,
-        'barrowdowns2.mp3': 60,
-        'drumbeat.mp3': 112,
-    } as Record<string, number>
 };

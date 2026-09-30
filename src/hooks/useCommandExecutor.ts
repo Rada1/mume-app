@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef, useEffect } from 'react';
 import { Direction, TeleportTarget, MessageType, DrawerLine, GameAction, CaptureStage } from '../types';
 import { extractNoun } from '../utils/gameUtils';
 import { MapperRef } from '../components/Mapper/mapperTypes';
+import { parseDoorCommand } from '../components/Mapper/doorCommand';
 import { getExitTargetId, getGateState } from '../components/Mapper/mapperUtils';
 import { useSettingsStore } from '../stores/useSettingsStore';
 
@@ -50,9 +51,8 @@ export interface ExecutorDeps {
     target: string | null;
     setPopoverState: (val: any) => void;
     status: 'connected' | 'disconnected' | 'connecting';
-    handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
+    handleTabClick: (drawer: 'character' | 'equipment') => void;
     setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
-    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     setIsSettingsOpen: (open: boolean) => void;
     setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help') => void;
@@ -75,7 +75,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         telnet, addMessage, initAudio, navIntervalRef, mapperRef, teleportTargets,
         captureStage,
         setInventoryLines, setStatsLines, setScoreLines, setEqLines, setTarget, target,
-        setPopoverState, status, handleTabClick, setGearTab, setPlayersTab, setCharTab,
+        setPopoverState, status, handleTabClick, setGearTab, setCharTab,
         setIsSettingsOpen, setSettingsTab,
         actions, setActions, activePrompt, recordEntry
     } = deps;
@@ -130,13 +130,28 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         const normalizedFinalCmd = finalCmd.trim().toLowerCase();
         const shouldRefreshPractice = !silent && !isSystem && normalizedFinalCmd.startsWith('practice ');
 
-        // --- Send bytes ASAP for snappy tap-to-server feel ---
-        // All client-side bookkeeping (echo, mapper prediction, timers, nav cleanup)
-        // happens after the send is in flight.
+        // --- Apply local door feedback, then send bytes ASAP ---
+        // Door state is optimistic so it renders immediately and is not lost if
+        // the server omits an open-state exit update. Other bookkeeping follows.
         if (status === 'connected') {
-            telnet.sendCommand(finalCmd);
             if (typeof window !== 'undefined') {
+                const mapper = mapperRef.current;
+                const roomId = mapper?.stableRoomIdRef.current ?? null;
+                const currentRoom = roomId
+                    ? mapper?.stableRoomsRef.current[roomId]
+                        ?? mapper?.stableRoomsRef.current[`m_${roomId.replace(/^m_/, '')}`]
+                        ?? mapper?.stableRoomsRef.current[roomId.replace(/^m_/, '')]
+                    : undefined;
+                const doorUpdate = parseDoorCommand(finalCmd, currentRoom?.exits);
+                if (doorUpdate) {
+                    window.dispatchEvent(new CustomEvent('mume-door-command-sent', {
+                        detail: { ...doorUpdate, roomId },
+                    }));
+                }
+                telnet.sendCommand(finalCmd);
                 window.dispatchEvent(new CustomEvent('mume-command-sent', { detail: { cmd: finalCmd, silent, isSystem } }));
+            } else {
+                telnet.sendCommand(finalCmd);
             }
         } else if (!silent) {
             addMessage('error', 'Not connected.');

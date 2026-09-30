@@ -6,7 +6,7 @@ import { WebSocketServer } from 'ws';
  * and GMCP data to facilitate local client testing while mume.org is down.
  */
 
-const PORT = 8081;
+const PORT = Number(process.env.MUME_SIM_PORT) || 8081;
 const wss = new WebSocketServer({ port: PORT });
 
 console.log(`\x1b[32m[MUME Sim]\x1b[0m Server running on \x1b[36mws://localhost:${PORT}\x1b[0m`);
@@ -25,6 +25,24 @@ wss.on('connection', (ws) => {
     console.log('[Sim] Client connected');
     let stage = 'NAME';
     let characterName = '';
+    let currentMapRoom = 38;
+    const mapRooms = {
+        38: { serverId: 16076004, name: 'Gabil Tumundum', terrain: 'CAVERN', exits: { n: { target: '8855258', hasDoor: false } } },
+        39: { serverId: 8855258, name: "Trader's Way", terrain: 'CITY', exits: { s: { target: '16076004', hasDoor: false } } },
+    };
+    const sendMapRoom = (roomId) => {
+        currentMapRoom = roomId;
+        const room = mapRooms[roomId] || mapRooms[1];
+        ws.send(createGmcpBuffer('Room.Info', {
+            num: room.serverId,
+            name: room.name,
+            desc: 'A deterministic room in the local mapper test fixture.',
+            terrain: room.terrain,
+            exits: room.exits,
+        }));
+        ws.send(`<room><name>${room.name}</name></room>\n`);
+        ws.send(`\x1b[1;32m${room.name}\x1b[0m\nYou are in a local mapper test room.\n\n> `);
+    };
 
     // Simulate the initial Telnet handshake / Banner
     const banner = [
@@ -53,23 +71,36 @@ wss.on('connection', (ws) => {
             ws.send('\x1b[32mAccount Password: \x1b[0m');
         } else if (stage === 'PASSWORD') {
             stage = 'PLAYING';
-            ws.send('\n\x1b[36mWelcome back to Middle-earth!\x1b[0m\n');
+            ws.send('\n\x1b[36mWelcome to the land of Middle-earth!\x1b[0m\n');
             ws.send(`Now entering the game as ${characterName}...\n\n`);
             
             // Send initial Room & Vitals via GMCP
             ws.send(createGmcpBuffer('Char.Name', { name: characterName }));
             ws.send(createGmcpBuffer('Char.Vitals', { hp: 450, maxhp: 450, mana: 120, maxmana: 120, move: 100, maxmove: 100, race: 'Beorning' }));
             ws.send(createGmcpBuffer('Room.Info', { 
-                name: 'The Simulator Void', 
+                num: mapRooms[38].serverId,
+                name: mapRooms[38].name,
                 desc: 'You are standing in a digital construct designed for testing.', 
-                zone: 'Testing Grounds',
+                terrain: mapRooms[38].terrain,
+                exits: mapRooms[38].exits,
+                zone: '',
                 map: 'https://mume.org/download/mapper/arda-base.xml' 
             }));
+            ws.send(`<room><name>${mapRooms[38].name}</name></room>\n`);
             
             ws.send('\x1b[1;32mThe Simulator Void\x1b[0m\nIt is cold and quiet here.\x1b[33m\nExits: North South East West\x1b[0m\n\n> ');
         } else {
             // Automated Testing Commands
-            if (input.toLowerCase() === 'who' || input.toLowerCase() === 'allies') {
+            if (/^(?:change (?:xml on|page off|width 80|editor external)|time|info(?:\s|$)|practice)$/i.test(input)) return;
+            const directionTargets = {
+                38: { north: 39 },
+                39: { south: 38 },
+            };
+            const direction = input.toLowerCase().replace(/^n$/, 'north').replace(/^s$/, 'south');
+            const nextRoom = directionTargets[currentMapRoom]?.[direction];
+            if (nextRoom) {
+                sendMapRoom(nextRoom);
+            } else if (input.toLowerCase() === 'who' || input.toLowerCase() === 'allies') {
                 ws.send('\x1b[32mPlayers\x1b[0m\n');
                 ws.send('\x1b[32m-------\x1b[0m\n');
                 ws.send('*[Mw] Ellessar (iMw)\n');

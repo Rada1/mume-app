@@ -1,4 +1,5 @@
 import React from 'react';
+import './RoomInfoCard.css';
 import { MapperRoom } from './mapperTypes';
 import { TERRAIN_MAP, DIRS, generateId, getRoomPortableState, getRoomRidableState, normalizeTerrain, stripAnsi } from './mapperUtils';
 
@@ -264,6 +265,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
     return (
         <div
             ref={cardRef}
+            className="mapper-room-info-panel"
             style={{
                 position: 'absolute', 
                 top: '80px', bottom: '48px', left: '48px', right: '48px',
@@ -278,7 +280,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 overflowY: 'auto', pointerEvents: 'auto', color: isDarkMode ? '#e4e4e7' : '#1d1d1f', touchAction: 'pan-y'
             }}
         >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+            <div className="room-info-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                 <h3 style={{ margin: 0, color: '#ffcc00', fontSize: '18px', fontWeight: 'bold' }}>Room Info</h3>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     {mode === 'play' && onWalkStart && (
@@ -304,12 +306,12 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#a1a1aa' }}>
+            <div className="room-info-card-ids" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#a1a1aa' }}>
                 <span>Client ID: <span style={{ color: '#e4e4e7', fontWeight: '500' }}>{roomId}</span></span>
                 <span>GMCP ID: <span style={{ color: '#60a5fa' }}>{room.gmcpId || 'N/A'}</span></span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div className="room-info-card-name" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <input
                     type="text"
                     value={stripAnsi(room.name)}
@@ -320,7 +322,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 />
             </div>
 
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div className="room-info-card-meta" style={{ display: 'flex', gap: '10px' }}>
                 <div style={{ backgroundColor: isDarkMode ? '#1c1c1f' : '#ffffff', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6', padding: '8px 12px', borderRadius: '8px', flex: 1, fontSize: '12px', display: 'flex', alignItems: 'center' }}>
                     <span style={{ color: isDarkMode ? '#71717a' : '#8e8e93', marginRight: '4px' }}>Zone: </span>
                     <input
@@ -350,23 +352,8 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', backgroundColor: isDarkMode ? '#1c1c1f' : '#ffffff', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6', padding: '8px 12px', borderRadius: '8px', fontSize: '12px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none', width: '100%' }}>
-                    <input
-                        type="checkbox"
-                        checked={!!room.isPermanentSnow}
-                        onChange={(e) => updateRoom({ isPermanentSnow: e.target.checked })}
-                        disabled={mode !== 'edit'}
-                        style={{ cursor: mode === 'edit' ? 'pointer' : 'default', width: '16px', height: '16px' }}
-                    />
-                    <span style={{ fontWeight: 'bold', color: room.isPermanentSnow ? '#60a5fa' : (isDarkMode ? '#a1a1aa' : '#71717a') }}>
-                        Permanent Snow Cover
-                    </span>
-                </label>
-            </div>
-
             {mode === 'edit' && (
-                <div style={{
+                <div className="room-info-card-editor" style={{
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '10px',
@@ -503,13 +490,13 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
             )}
 
             {room.desc && (
-                <div style={{ fontSize: '13px', color: isDarkMode ? '#d1d5db' : '#3a3a3c', backgroundColor: isDarkMode ? '#141417' : '#ffffff', padding: '14px', borderRadius: '8px', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6', lineHeight: '1.6' }}>
+                <div className="room-info-card-description" style={{ fontSize: '13px', color: isDarkMode ? '#d1d5db' : '#3a3a3c', backgroundColor: isDarkMode ? '#141417' : '#ffffff', padding: '14px', borderRadius: '8px', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6', lineHeight: '1.6' }}>
                     {room.desc}
                 </div>
             )}
 
             {staticContents && (
-                <div style={{
+                <div className="room-info-card-static" style={{
                     fontSize: '12px',
                     color: isDarkMode ? '#dff6ff' : '#164e63',
                     backgroundColor: isDarkMode ? 'rgba(116, 199, 236, 0.08)' : 'rgba(8, 145, 178, 0.08)',
@@ -528,7 +515,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
             )}
 
             {(room.mobFlags?.length || room.loadFlags?.length || room.roomQuestFlags?.length || room.align || room.portable !== undefined || room.ridable !== undefined || room.notes) ? (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                <div className="room-info-card-flags" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                     {room.mobFlags?.map(f => {
                         const isAgg = f.includes('AGGRESSIVE');
                         const isShop = f.includes('SHOP');
@@ -596,7 +583,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
             ) : null}
 
             {room.notes && (
-                <div style={{
+                <div className="room-info-card-notes" style={{
                     fontSize: '12px',
                     color: isDarkMode ? '#e4e4e7' : '#27272a',
                     backgroundColor: isDarkMode ? 'rgba(249, 226, 175, 0.05)' : 'rgba(217, 119, 6, 0.05)',
@@ -614,21 +601,21 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 </div>
             )}
 
-            <div style={{ height: '1px', backgroundColor: '#27272a', margin: '4px 0' }} />
+            <div className="room-info-card-divider" style={{ height: '1px', backgroundColor: '#27272a', margin: '4px 0' }} />
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
+            <div className="room-info-card-exits" style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '11px', color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '800' }}>Exits & Diagnostics</span>
                     {mode === 'edit' && <span style={{ fontSize: '9px', color: '#52525b' }}>Shift+Click to delete</span>}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                <div className="room-info-card-exit-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
                     {['n', 'u', 's', 'w', 'd', 'e'].map(d => {
                         const exit = room.exits[d];
                         const isActive = !!exit;
                         if (!isActive && mode !== 'edit') return null;
 
                         return (
-                            <div key={d} style={{ display: 'flex', flexDirection: 'column', gap: '4px', backgroundColor: isDarkMode ? '#1c1c1f' : '#ffffff', padding: '8px', borderRadius: '8px', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6' }}>
+                            <div key={d} className="room-info-card-exit" style={{ display: 'flex', flexDirection: 'column', gap: '4px', backgroundColor: isDarkMode ? '#1c1c1f' : '#ffffff', padding: '8px', borderRadius: '8px', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span style={{ fontSize: '12px', fontWeight: 'bold', color: isActive ? '#60a5fa' : (isDarkMode ? '#3f3f46' : '#8e8e93') }}>{d.toUpperCase()}</span>
                                     {isActive && (

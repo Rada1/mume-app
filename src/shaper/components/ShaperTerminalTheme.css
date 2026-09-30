@@ -1,0 +1,210 @@
+/**
+ * @file ShaperTerminalTheme.css
+ * @description Shared terminal palette and compact square surfaces for Shaper UI.
+ */
+
+/* --- Workspace palette --- */
+.shaper-workspace {
+    --shaper-font: var(--font-mono, ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace);
+    --shaper-bg: #17130f;
+    --shaper-panel: #1e1914;
+    --shaper-panel-raised: #261f17;
+    --shaper-inset: #120f0c;
+    --shaper-border: rgba(201, 168, 76, 0.2);
+    --shaper-border-strong: rgba(201, 168, 76, 0.38);
+    --shaper-text: #d4cdb8;
+    --shaper-muted: #a99c86;
+    --shaper-accent: #dfbf6c;
+    --shaper-positive: #91c78d;
+    --shaper-danger: #df8174;
+    background: var(--shaper-bg) !important;
+    color: var(--shaper-text) !important;
+    font-family: var(--shaper-font) !important;
+}
+
+/* --- Main surfaces --- */
+.shaper-workspace :is(
+    .shaper-topbar,
+    .shaper-left-panel,
+    .shaper-inspector,
+    .shaper-center,
+    .shaper-workspace-pane,
+    .shaper-bottom-panel,
+    .shaper-db-panel,
+    .shaper-zone-info-panel,
+    .shaper-gamelog-panel,
+    .shaper-lib-panel,
+    .shaper-com-panel,
+    .shaper-project-create,
+    .shaper-project-list
+) {
+    background-color: var(--shaper-panel) !important;
+    border-color: var(--shaper-border) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.shaper-workspace :is(.shaper-topbar, .shaper-pane-header, .shaper-gamelog-header, .shaper-bottom-panel-header) {
+    background-color: var(--shaper-bg) !important;
+    border-color: var(--shaper-border) !important;
+}
+
+.shaper-workspace :is(.shaper-main, .shaper-center, .shaper-project-dashboard) {
+    background-color: var(--shaper-bg) !important;
+}
+
+/* --- Cards, menus and nested panels --- */
+.shaper-workspace :is(
+    .shaper-validation-card,
+    .shaper-room-issues,
+    .shaper-db-card,
+    .shaper-entity-row,
+    .shaper-com-node,
+    .shaper-lib-install,
+    .shaper-command-selector,
+    .shaper-command-selector li,
+    .shaper-context-menu,
+    .shaper-hovercard,
+    .shaper-zone-info-view-body,
+    .shaper-zone-info-import-list,
+    .shaper-zone-info-item,
+    .shaper-project-open,
+    .shaper-annotation,
+    .shaper-context-help-popover,
+    .shaper-entity-info-popover,
+    .shaper-layer-toolbar
+) {
+    background-color: var(--shaper-panel-raised) !important;
+    border-color: var(--shaper-border) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.shaper-workspace :is(.shaper-db-card:hover, .shaper-project-open:hover, .shaper-zone-info-item:hover, .shaper-context-menu button:hover) {
+    background-color: rgba(223, 191, 108, 0.08) !important;
+    border-color: var(--shaper-border-strong) !important;
+}
+
+.shaper-workspace :is(.shaper-db-card.expanded, .shaper-project-open.active, .shaper-zone-info-item.active) {
+    background-color: rgba(223, 191, 108, 0.12) !important;
+    border-color: var(--shaper-border-strong) !important;
+}
+
+/* --- Terminal controls --- */
+.shaper-workspace :is(button, input, select, textarea, [role="button"]) {
+    border-radius: 0 !important;
+    font-family: var(--shaper-font) !important;
+}
+
+.shaper-workspace :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) {
+    background-color: var(--shaper-inset) !important;
+    border-color: var(--shaper-border) !important;
+    color: var(--shaper-text) !important;
+}
+
+.shaper-workspace :is(input, select, textarea):focus-visible,
+.shaper-workspace button:focus-visible {
+    outline: 1px solid var(--shaper-accent) !important;
+    outline-offset: 1px;
+}
+
+.shaper-workspace input[type="checkbox"],
+.shaper-workspace input[type="radio"] {
+    accent-color: var(--shaper-accent);
+}
+
+.shaper-workspace :is(.shaper-field input, .shaper-field select, .shaper-field textarea, .shaper-zone-info-field input, .shaper-zone-info-body-textarea, .shaper-connection-menu textarea) {
+    background-color: var(--shaper-inset) !important;
+    border-color: var(--shaper-border) !important;
+    color: var(--shaper-text) !important;
+}
+
+/* --- Accent hierarchy --- */
+.shaper-workspace :is(
+    .shaper-kicker,
+    .shaper-topbar h1,
+    .shaper-topbar-title,
+    .shaper-pane-header h3,
+    .shaper-panel-heading h2,
+    .shaper-db-header h2,
+    .shaper-zone-info-header h2,
+    .shaper-zone-info-view-header h3,
+    .shaper-bottom-panel-title,
+    .shaper-lib-installed h4,
+    .shaper-lib-catalog-head h4,
+    .shaper-hovercard-name,
+    .shaper-menu-heading strong,
+    .shaper-com-heading,
+    .shaper-project-create h2,
+    .shaper-project-list h2
+) {
+    color: var(--shaper-accent) !important;
+}
+
+.shaper-workspace :is(.shaper-topbar-zone-info, .shaper-panel-heading span, .shaper-field span, .shaper-room-issues span, .shaper-validation-card span, .shaper-db-header p, .shaper-db-card-details span, .shaper-project-list span, .shaper-project-list small, .shaper-bottom-panel-header-subtitle) {
+    color: var(--shaper-muted) !important;
+}
+
+.shaper-workspace :is(.shaper-nav-section button.active, .shaper-layer-toolbar button.active, .shaper-lib-targets button.active) {
+    color: var(--shaper-accent) !important;
+    background-color: rgba(223, 191, 108, 0.12) !important;
+    border-color: var(--shaper-border-strong) !important;
+}
+
+/* --- Crisp map editor selection --- */
+.shaper-workspace :is(.shaper-canvas-viewport, .shaper-room-tile, .shaper-extra-room) {
+    border-radius: 0 !important;
+}
+
+.shaper-workspace .shaper-canvas-viewport {
+    background-color: var(--shaper-bg) !important;
+    border-color: var(--shaper-border) !important;
+}
+
+.shaper-workspace .shaper-room-tile.selected {
+    border-color: var(--shaper-accent) !important;
+    box-shadow: 0 0 0 1px var(--shaper-accent) !important;
+}
+
+.shaper-workspace :is(.shaper-room-badge, .shaper-hovercard-chip, .shaper-badge, .shaper-inspector-chip, .shaper-lib-badge, .shaper-com-type-pill, .shaper-com-vnum-pill, .shaper-com-number-pill, .shaper-com-relation-chip) {
+    border-radius: 0 !important;
+}
+
+/* --- Shared access dialog --- */
+.shaper-access-backdrop {
+    --shaper-font: var(--font-mono, ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace);
+    font-family: var(--shaper-font) !important;
+}
+
+.shaper-access-card {
+    background: #1e1914 !important;
+    border: 1px solid rgba(201, 168, 76, 0.3) !important;
+    border-radius: 0 !important;
+    color: #d4cdb8 !important;
+    box-shadow: 8px 12px 20px rgba(0, 0, 0, 0.38) !important;
+}
+
+.shaper-access-card h2,
+.shaper-access-card .shaper-kicker {
+    color: #dfbf6c !important;
+}
+
+.shaper-access-card input {
+    background: #120f0c !important;
+    border: 1px solid rgba(201, 168, 76, 0.2) !important;
+    border-radius: 0 !important;
+    color: #d4cdb8 !important;
+}
+
+.shaper-access-actions button {
+    border-color: rgba(201, 168, 76, 0.25) !important;
+    border-radius: 0 !important;
+    background: rgba(223, 191, 108, 0.08) !important;
+    color: #d4cdb8 !important;
+}
+
+.shaper-access-actions button[type="submit"] {
+    border-color: rgba(201, 168, 76, 0.45) !important;
+    background: rgba(223, 191, 108, 0.15) !important;
+    color: #dfbf6c !important;
+}

@@ -109,6 +109,7 @@ export interface GmcpRoomInfo {
     sundeath?: boolean;
     exits?: Record<string, GmcpExitInfo | number | false>;
     details?: string[];
+    spectating?: boolean;
     isSnooped?: boolean;
 }
 
@@ -119,6 +120,8 @@ export interface GmcpUpdateExits {
 
 export interface GmcpOccupant {
     id?: string | number;
+    /** Stable client-side identity for an object occurrence across room/inventory moves. */
+    objectId?: string;
     name?: string;
     short?: string;
     shortdesc?: string;

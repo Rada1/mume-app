@@ -15,6 +15,8 @@ type ShopItemGroupProps = {
     selectedNum: number | null;
     compareNum: number | null;
     targeting: boolean;
+    selectOnRelease?: boolean;
+    compact?: boolean;
     onSelect: (item: ShopItem) => void;
     onToggle: (num: number) => void;
     onInspect: (num: number) => void;
@@ -22,7 +24,7 @@ type ShopItemGroupProps = {
 
 // --- Render Section ---
 export const ShopItemGroup: React.FC<ShopItemGroupProps> = ({
-    item, variants, expanded, loading, selectedNum, compareNum, targeting,
+    item, variants, expanded, loading, selectedNum, compareNum, targeting, selectOnRelease = false, compact = false,
     onSelect, onToggle, onInspect
 }) => {
     const count = getShopProductCount(item.name);
@@ -32,13 +34,28 @@ export const ShopItemGroup: React.FC<ShopItemGroupProps> = ({
     return (
         <div className={`shop-product-group${expanded ? ' expanded' : ''}`}>
             <div className={`shop-item-row${selectedNum === item.num ? ' selected' : ''}${targeting ? ' targeting' : ''}${compareNum === item.num ? ' compare-selected' : ''}`}
-                onPointerDown={() => onSelect(item)}>
+                data-shop-target-value={selectOnRelease ? item.num : undefined}
+                onPointerDown={event => {
+                    if (selectOnRelease) event.stopPropagation();
+                    else onSelect(item);
+                }}
+                onPointerUp={event => {
+                    if (!selectOnRelease) return;
+                    event.stopPropagation();
+                    onSelect(item);
+                }}>
                 <span className="shop-item-num">{item.num}.</span>
-                <span className="shop-item-name">{variantName}{count && <small className="shop-stock-count">{count} in stock</small>}</span>
+                <span className="shop-item-name">{variantName}{count && !compact && <small className="shop-stock-count">{count} in stock</small>}</span>
+                {count && compact && <button type="button" className="shop-stock-inline" aria-expanded={expanded}
+                    onPointerDown={event => event.stopPropagation()}
+                    onPointerUp={event => event.stopPropagation()}
+                    onClick={event => { event.stopPropagation(); onToggle(item.num); }}>
+                    {expanded ? '▾' : '▸'} {count} in stock
+                </button>}
                 {item.vnum && <span className="shop-item-vnum">&lt;{item.vnum}&gt;</span>}
                 <span className="shop-item-price">{item.price}</span>
             </div>
-            {count && <div className="shop-product-expand-bar">
+            {count && !compact && <div className="shop-product-expand-bar">
                 <button type="button" className="shop-product-expand" aria-expanded={expanded}
                     onPointerDown={event => event.stopPropagation()} onClick={() => onToggle(item.num)}>
                     {expanded ? '▾ Hide stock' : `▸ Show ${stock} in stock`}
@@ -50,7 +67,16 @@ export const ShopItemGroup: React.FC<ShopItemGroupProps> = ({
                     : variants?.length ? variants.map((variant, index) => {
                         const variantItem: ShopItem = { num: variant.num, name: `${variantName} (${variant.condition})`, price: variant.price };
                         return <div key={`${variant.num}-${index}`} className={`shop-variant-row${selectedNum === variant.num ? ' selected' : ''}`}
-                            onPointerDown={() => onSelect(variantItem)}>
+                            data-shop-target-value={selectOnRelease ? variant.num : undefined}
+                            onPointerDown={event => {
+                                if (selectOnRelease) event.stopPropagation();
+                                else onSelect(variantItem);
+                            }}
+                            onPointerUp={event => {
+                                if (!selectOnRelease) return;
+                                event.stopPropagation();
+                                onSelect(variantItem);
+                            }}>
                             <span className="shop-item-num">{variant.num}.</span>
                             <span className="shop-variant-condition">{variant.condition}</span>
                             <span className="shop-item-price">{variant.price}</span>

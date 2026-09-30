@@ -121,6 +121,17 @@ export const SPELL_COMPLETION_CATALOG: SpellCompletionEntry[] = [
         messages: [{ pattern: /^The lightning bolt hits (.+) with full impact\.$/, matchType: 'regex' }]
     },
     {
+        spellId: 'colour_spray',
+        spellName: 'Colour Spray',
+        classType: 'magic user',
+        soundId: 'colourspray',
+        messages: [{
+            pattern: /^You spray\b.*many-coloured rays of bright light\.?$/i,
+            matchType: 'regex',
+            soundId: 'colourspray'
+        }]
+    },
+    {
         spellId: 'charm',
         spellName: 'Charm',
         classType: 'magic user',

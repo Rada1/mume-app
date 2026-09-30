@@ -1,0 +1,72 @@
+/* @file classicModeLayout.css — Map and terminal sizing for Classic Mode. */
+
+/* --- Logic Section --- */
+/* The map stays monochrome and fills the space beside the terminal on desktop. */
+.classic-mode .left-drawer-stack,
+.classic-mode .map-drawer-desktop,
+.classic-mode .map-drawer-desktop .drawer-content,
+.classic-mode .map-canvas-full-viewport,
+.classic-mode .mobile-map-panel,
+.classic-mode .mobile-mapper-touch-surface,
+.classic-mode .mapper-container {
+    background: #000 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    opacity: 1 !important;
+}
+
+@media (min-width: 1025px) {
+    .classic-mode .app-viewport-shell {
+        padding: 0 0 0 var(--desktop-map-width, 22vw) !important;
+        overflow: hidden !important;
+    }
+
+    .classic-mode .left-drawer-stack {
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: var(--desktop-map-width, 22vw) !important;
+        padding: 0 !important;
+    }
+
+    .classic-mode .map-drawer-desktop {
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        min-height: 0 !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    .classic-mode .app-viewport-shell {
+        padding: 0 !important;
+    }
+
+    .classic-mode .mobile-map-panel {
+        flex: 0 0 calc(min(38dvh, 420px) + var(--mobile-bottom-reserved-space)) !important;
+        height: calc(min(38dvh, 420px) + var(--mobile-bottom-reserved-space)) !important;
+        overflow: hidden !important;
+    }
+}
+
+@media (max-width: 1024px) and (orientation: landscape) {
+    .classic-mode .app-viewport-shell {
+        padding-left: 38vw !important;
+    }
+
+    .classic-mode .left-drawer-stack {
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 38vw !important;
+        padding: 0 !important;
+    }
+
+    .classic-mode .map-drawer-desktop {
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+    }
+}

@@ -258,10 +258,7 @@
 }
 
 .prompt-inventory-chip[class*="item-tier-"] {
-    background:
-        linear-gradient(90deg, color-mix(in srgb, var(--item-tier-color, transparent) 16%, transparent), transparent 30%),
-        rgba(255, 255, 255, 0.045);
-    box-shadow: inset 2px 0 0 var(--item-tier-color, transparent);
+    color: var(--item-tier-color) !important;
 }
 
 .item-tier-artifact {
@@ -292,8 +289,12 @@
     --item-tier-color: #34d399;
 }
 
+.light-mode .prompt-inventory-chip[class*="item-tier-"] {
+    color: color-mix(in srgb, var(--item-tier-color) 68%, #000) !important;
+}
+
 .item-state-pristine {
-    --item-state-color: #8ce99a;
+    --item-state-color: #4ade80;
 }
 
 .item-state-stable {
@@ -306,8 +307,8 @@
 
 .prompt-item-condition {
     margin-left: 0.25em;
-    color: color-mix(in srgb, var(--item-state-color) 36%, rgba(122, 134, 154, 0.54));
-    opacity: 0.58;
+    color: var(--item-state-color);
+    opacity: 1;
     text-shadow: none;
 }
 
@@ -380,12 +381,6 @@
 .light-mode .prompt-inventory-chip {
     background: rgba(0, 0, 0, 0.04);
     border-color: rgba(0, 0, 0, 0.08);
-}
-
-.light-mode .prompt-inventory-chip[class*="item-tier-"] {
-    background:
-        linear-gradient(90deg, color-mix(in srgb, var(--item-tier-color, transparent) 20%, transparent), transparent 34%),
-        rgba(255, 255, 255, 0.68);
 }
 
 .prompt-container-content-row {
@@ -653,10 +648,4 @@
     height: 14px !important;
 }
 
-.character-card .prompt-inventory-chip[class*="item-tier-"],
-.character-card .prompt-inventory-chip-shell[class*="item-tier-"] {
-    background:
-        linear-gradient(90deg, color-mix(in srgb, var(--item-tier-color, transparent) 14%, transparent), transparent 32%),
-        rgba(255, 255, 255, 0.035) !important;
-    box-shadow: inset 2px 0 0 var(--item-tier-color, transparent) !important;
-}
+\n

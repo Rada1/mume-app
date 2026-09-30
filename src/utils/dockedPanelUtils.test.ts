@@ -3,13 +3,13 @@ import { computeDockedRight, computeDockedTop, getMobilePanelHeight, computeDock
 
 describe('computeDockedRight', () => {
     it('places the rightmost open panel flush with the edge', () => {
-        const active: DockedPanelId[] = ['chat', 'players', 'help'];
+        const active: DockedPanelId[] = ['chat', 'help'];
         expect(computeDockedRight('chat', active)).toBe('0px');
     });
 
     it('returns offset calculated from preceding panel for the second open panel', () => {
-        const active: DockedPanelId[] = ['chat', 'players'];
-        expect(computeDockedRight('players', active)).toBe(`calc(${getDockedWidth('chat')})`);
+        const active: DockedPanelId[] = ['chat', 'help'];
+        expect(computeDockedRight('help', active)).toBe(`calc(${getDockedWidth('chat')})`);
     });
 
     it('places a lone help pane flush with the edge', () => {
@@ -17,9 +17,9 @@ describe('computeDockedRight', () => {
         expect(computeDockedRight('help', active)).toBe('0px');
     });
 
-    it('slides help over when chat and players are both open', () => {
-        const active: DockedPanelId[] = ['chat', 'players', 'help'];
-        expect(computeDockedRight('help', active)).toBe(`calc(${getDockedWidth('chat')} + ${getDockedWidth('players')})`);
+    it('slides help over chat when both are open', () => {
+        const active: DockedPanelId[] = ['chat', 'help'];
+        expect(computeDockedRight('help', active)).toBe(`calc(${getDockedWidth('chat')})`);
     });
 
     it('slides archive and editor to the left of help', () => {
@@ -43,9 +43,9 @@ describe('mobile docking and stacking', () => {
     });
 
     it('positions panels from top below header on mobile', () => {
-        const active: DockedPanelId[] = ['chat', 'players'];
+        const active: DockedPanelId[] = ['chat', 'help'];
         expect(computeDockedTop('chat', active)).toBe('calc(env(safe-area-inset-top, 0px) + 50px)');
-        expect(computeDockedTop('players', active)).toBe('calc(env(safe-area-inset-top, 0px) + 50px)');
+        expect(computeDockedTop('help', active)).toBe('calc(env(safe-area-inset-top, 0px) + 50px)');
     });
 
     it('generates mobile-specific docked style with full width and top-to-bottom positioning', () => {
@@ -59,7 +59,7 @@ describe('mobile docking and stacking', () => {
     });
 
     it('generates desktop-specific docked style with right-docked offset', () => {
-        const active: DockedPanelId[] = ['chat', 'players'];
+        const active: DockedPanelId[] = ['chat', 'help'];
         const style = computeDockedPanelStyle('chat', active, false);
         expect(style.right).toBe('0px');
         expect(style.left).toBeUndefined();

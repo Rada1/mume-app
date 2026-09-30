@@ -34,9 +34,10 @@ export const useMapHitTest = ({
         const cvs = canvasRef.current;
         if (!cvs) return { x: 0, y: 0 };
         const rect = cvs.getBoundingClientRect();
+        const performanceYOffset = cvs.dataset.mapRenderer === 'performance-worker' ? GRID_SIZE : 0;
         return {
             x: ((sx - rect.left) / cameraRef.current.zoom) + cameraRef.current.x,
-            y: ((sy - rect.top) / cameraRef.current.zoom) + cameraRef.current.y
+            y: ((sy - rect.top) / cameraRef.current.zoom) + cameraRef.current.y + performanceYOffset
         };
     }, [canvasRef, cameraRef]);
 
@@ -105,9 +106,8 @@ export const useMapHitTest = ({
 
     const getExitAt = useCallback((wx: number, wy: number) => {
         const roomId = getRoomAt(wx, wy);
-        if (!roomId) return null;
 
-        let room = roomsRef.current[roomId] || (roomId.startsWith('m_') ? null : roomsRef.current[`m_${roomId}`]);
+        let room = roomId ? roomsRef.current[roomId] || (roomId.startsWith('m_') ? null : roomsRef.current[`m_${roomId}`]) : null;
         const s = GRID_SIZE;
         const margin = 12; // Hitbox margin
 
@@ -118,7 +118,7 @@ export const useMapHitTest = ({
         // If we are touching an area that might be an exit for our CURRENT room,
         // we should try that room first. This prevents clicking "the other side" 
         // when both are visible and overlapping.
-        let testRoomId = roomId;
+        let testRoomId = roomId || '';
 
         if (currentRoomIdRef.current) {
             const curId = currentRoomIdRef.current;
@@ -152,6 +152,8 @@ export const useMapHitTest = ({
                 }
             }
         }
+
+        if (!testRoomId) return null;
 
         if (!room) {
             room = roomsRef.current[testRoomId] || (testRoomId.startsWith('m_') ? null : roomsRef.current[`m_${testRoomId}`]);

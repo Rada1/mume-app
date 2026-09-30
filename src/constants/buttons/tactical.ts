@@ -33,13 +33,7 @@ const DOOR_SWIPE_COMMANDS: CustomButton['swipeCommands'] = {
 const THIEF_SWIPE_COMMANDS: CustomButton['swipeCommands'] = {
     up: 'reveal',
     down: 'load',
-    left: 'scout',
     right: 'flush'
-};
-
-const COMBAT_SWIPE_COMMANDS: CustomButton['swipeCommands'] = {
-    left: 'disengage',
-    right: 'assist'
 };
 
 export const TACTICAL_BUTTONS: CustomButton[] = [
@@ -92,7 +86,7 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
         display: "floating",
         hideIfUnknown: true,
         swipeCommands: THIEF_SWIPE_COMMANDS,
-        swipeActionTypes: { up: 'command', down: 'command', left: 'command', right: 'command' },
+        swipeActionTypes: { up: 'command', down: 'command', right: 'command' },
         style: { x: 190, y: 0, w: 90, h: 40, backgroundColor: "rgba(71, 85, 105, 0.8)", borderColor: "#94a3b8", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
         position: { x: 190, y: 0, w: 90, h: 40 },
         isVisible: true,
@@ -105,9 +99,7 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
         setId: "tactical",
         actionType: "command",
         display: "floating",
-        hideIfUnknown: false,
-        swipeCommands: COMBAT_SWIPE_COMMANDS,
-        swipeActionTypes: { left: 'command', right: 'command' },
+        hideIfUnknown: true,
         isVisible: true,
         style: { x: 285, y: 0, w: 90, h: 40, backgroundColor: "rgba(185, 28, 28, 0.8)", borderColor: "#ef4444", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
         position: { x: 285, y: 0, w: 90, h: 40 },
@@ -116,11 +108,11 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
     {
         id: "tactical-mage",
         label: "Mage",
-        command: "cast 'magic missile'",
+        command: "",
         setId: "tactical",
         actionType: "command",
         display: "floating",
-        hideIfUnknown: true,
+        hideIfUnknown: false,
         isVisible: true,
         style: { x: 380, y: 0, w: 90, h: 40, backgroundColor: "rgba(30, 64, 175, 0.8)", borderColor: "#3b82f6", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
         position: { x: 380, y: 0, w: 90, h: 40 },
@@ -129,7 +121,7 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
     {
         id: "tactical-doors",
         label: "Doors",
-        command: "doors",
+        command: "",
         setId: "tactical",
         actionType: "command",
         display: "floating",

@@ -13,6 +13,11 @@ import {
 } from 'lucide-react';
 import { GmcpOccupant, MumeTime } from '../../types';
 import { stripAnsiCodes } from '../../utils/ansi';
+import {
+    PROMPT_HEALTH_STATUS_PERCENT,
+    PROMPT_MANA_STATUS_PERCENT,
+    PROMPT_MOVE_STATUS_PERCENT
+} from '../../utils/promptVitalText';
 
 export interface PromptEntityButton {
     label: string;
@@ -26,10 +31,7 @@ export interface PromptEnvItem {
     icon?: React.ReactNode;
 }
 
-export const HEALTH_MAP: Record<string, number> = {
-    healthy: 100, fine: 83, hurt: 66, wounded: 50,
-    bad: 33, awful: 16, dying: 0, stunned: 25, none: 0
-};
+export const HEALTH_MAP = PROMPT_HEALTH_STATUS_PERCENT;
 
 // MUME reports these descriptive bands during combat rather than exact values.
 export const HEALTH_COMBAT_RANGES: Record<string, string> = {
@@ -37,20 +39,14 @@ export const HEALTH_COMBAT_RANGES: Record<string, string> = {
     bad: '16–30%', awful: '6–15%', dying: '1–5%', stunned: '0%', none: '0%'
 };
 
-export const MANA_MAP: Record<string, number> = {
-    full: 100, burning: 83, hot: 66, warm: 50,
-    cold: 33, icy: 16, frozen: 0
-};
+export const MANA_MAP = PROMPT_MANA_STATUS_PERCENT;
 
 export const MANA_COMBAT_RANGES: Record<string, string> = {
     full: '100%', burning: '71–99%', hot: '51–70%', warm: '31–50%',
     cold: '16–30%', icy: '6–15%', frozen: '0–5%'
 };
 
-export const MOVE_MAP: Record<string, number> = {
-    unwearied: 100, steadfast: 85, rested: 71, tired: 57,
-    slow: 42, weak: 28, fainting: 14, exhausted: 0
-};
+export const MOVE_MAP = PROMPT_MOVE_STATUS_PERCENT;
 
 export const getLightingLabel = (lighting?: string): string => {
     switch (lighting) {

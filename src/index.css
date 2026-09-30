@@ -669,7 +669,7 @@
     justify-content: center;
     background: rgba(232, 176, 32, 0.16);
     border: 1px solid rgba(232, 176, 32, 0.5);
-    border-radius: 7px;
+    border-radius: 0;
     padding: 0 24px;
     height: 38px;
     color: #e8b020;

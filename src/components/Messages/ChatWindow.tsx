@@ -126,7 +126,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ style }) => {
         viewport?: any;
     };
 
-    const handleParley = React.useCallback((msg: Message, e: React.MouseEvent) => {
+    const handleParley = React.useCallback((msg: Message, e: React.SyntheticEvent<HTMLElement>) => {
         if (!setParley || !triggerHaptic) return;
         e.stopPropagation();
         const details = getChatMessageDetails(msg);

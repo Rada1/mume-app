@@ -130,6 +130,47 @@
     font-weight: 700 !important;
 }
 
+.command-suggestion-portkey-row {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    width: 100%;
+}
+
+.command-suggestion-portkey-row > .command-suggestion-option {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.command-suggestion-portkey-favorite,
+.command-suggestion-portkey-clear {
+    display: inline-flex;
+    flex: 0 0 24px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    border: 1px solid rgba(201, 168, 76, 0.22) !important;
+    border-radius: 2px !important;
+    background: transparent !important;
+    color: #a99a7a !important;
+    cursor: pointer;
+}
+
+.command-suggestion-portkey-favorite:hover,
+.command-suggestion-portkey-favorite:focus-visible,
+.command-suggestion-portkey-favorite.is-favorite {
+    color: #f0cb67 !important;
+    border-color: rgba(201, 168, 76, 0.55) !important;
+    outline: none;
+}
+
+.command-suggestion-portkey-clear:hover,
+.command-suggestion-portkey-clear:focus-visible {
+    color: #fb7185 !important;
+    border-color: rgba(251, 113, 133, 0.6) !important;
+    outline: none;
+}
+
 @media (max-width: 768px) {
     .command-suggestion-option {
         min-height: 48px;
@@ -176,6 +217,23 @@
 .light-mode .command-suggestion-option.is-selected {
     background: rgba(180, 130, 40, 0.15) !important;
     box-shadow: inset 2px 0 0 #8a6515 !important;
+}
+
+.light-mode .command-suggestion-portkey-favorite,
+.light-mode .command-suggestion-portkey-clear {
+    border-color: rgba(180, 130, 40, 0.25) !important;
+    color: #6b5b43 !important;
+}
+
+.light-mode .command-suggestion-portkey-favorite:hover,
+.light-mode .command-suggestion-portkey-favorite:focus-visible,
+.light-mode .command-suggestion-portkey-favorite.is-favorite {
+    color: #8a6515 !important;
+}
+
+.light-mode .command-suggestion-portkey-clear:hover,
+.light-mode .command-suggestion-portkey-clear:focus-visible {
+    color: #be123c !important;
 }
 
 .light-mode .command-suggestion-name {

@@ -219,12 +219,19 @@ export const getGateState = (rA: any, wE: any, d: string, allRooms: Record<strin
     const n = tV ? (allRooms[nId] || allRooms[tV] || (preloaded[tV] ? { exits: preloaded[tV][4] } : null)) : null;
     const exB = n?.exits?.[oD], hasDF = (f?: any[]) => f?.some(x => /^(door|gate|portcullis|secret)$/i.test(String(x)));
 
-    // Neighbor check: if the neighbor is discovered but has no exit back, we shouldn't draw a door.
+    const mappedExit = getPreloadedExit(wE, d);
+    const exitHasDoor = !!(
+        exA.hasDoor || hasDF(exA.flags)
+        || mappedExit?.hasDoor || hasDF(mappedExit?.flags)
+    );
+
+    // A discovered neighbor with no reverse exit should suppress inferred doors,
+    // but it must not hide a door explicitly recorded on this exit.
     const neighborIsLive = n && (allRooms[nId] || allRooms[tV]);
-    if (neighborIsLive && !exB) return { hasExit: true, hasDoor: false, isClosed: false };
+    if (neighborIsLive && !exB && !exitHasDoor) return { hasExit: true, hasDoor: false, isClosed: false };
 
     const neighborPointsBack = exB && getExitTargetId(exB).replace(/^m_/, '') === String(rA?.id || "").replace(/^m_/, '');
-    const hasD = !!(exA.hasDoor || hasDF(exA.flags) || (neighborPointsBack && (exB.hasDoor || hasDF(exB.flags))));
+    const hasD = !!(exitHasDoor || (neighborPointsBack && (exB.hasDoor || hasDF(exB.flags))));
 
     if (!hasD) return { hasExit: true, hasDoor: false, isClosed: false };
 

@@ -16,6 +16,7 @@ import {
     getContainerTargetSuggestions,
     getDrinkTargetSuggestions,
     getGearTargetSuggestions,
+    getFillTargetSuggestions,
     getInventoryAndWornTargetSuggestions,
     getLanternTargetSuggestions,
     getMountTargetSuggestions,
@@ -27,34 +28,54 @@ import {
     getSocialTargetSuggestions,
     type CommandTargetSuggestion
 } from '../../utils/commandSuggestionUtils';
-import { getTraitsForName } from '../../utils/inlineActionModel';
+import { getGroupSelectionSuggestions } from '../../utils/groupTargetSuggestions';
+import { useVitals } from '../../context/GameContext';
+import { hasObjectTrait } from '../../objects/objectTargetModel';
 import { useRoomStore } from '../../stores/useRoomStore';
+import { useUIStore } from '../../stores/useUIStore';
+import { useWhoListRefresh } from '../../hooks/useWhoListRefresh';
 import type { DrawerLine, GmcpOccupant } from '../../types';
 
 export type DeckTargetKind =
     | 'room-objects'
     | 'inventory'
+    | 'inventory-weapons'
     | 'inventory-and-worn'
     | 'worn'
     | 'worn-sheaths'
     | 'worn-weapons'
+    | 'lanterns'
     | 'inventory-recipient'
     | 'inventory-container'
+    | 'pour'
     | 'room-object-container'
     | 'mounts'
     | 'who'
-    | 'social';
+    | 'social'
+    | 'group'
+    | 'shop'
+    | 'status-panel';
 
 const ROOM_TARGET_VALUE = '__room__';
 const SOCIAL_NO_TARGET_VALUE = '__blank_target__';
 const ALL_ARGUMENT_SUGGESTION: CommandTargetSuggestion = { key: 'all-argument', label: 'All', value: 'all', meta: 'all' };
-const STAGED_TARGET_KINDS = new Set(['inventory-recipient', 'inventory-container', 'room-object-container', 'social']);
+const STAGED_TARGET_KINDS = new Set(['inventory-recipient', 'inventory-container', 'pour', 'room-object-container', 'social']);
+const getDefaultSecondArgument = (kind?: string): string | null => (
+    kind === 'room-object-container' ? ROOM_TARGET_VALUE
+        : kind === 'social' ? SOCIAL_NO_TARGET_VALUE
+            : null
+);
+const getDefaultSecondArgumentKey = (kind?: string): string | null => (
+    kind === 'room-object-container' ? 'get-from-room'
+        : kind === 'social' ? 'social-no-target'
+            : null
+);
 
-const getInitialTarget = (item: DeckItem, target: string | null, roomOccupants: GmcpOccupant[], characterName: string): string | null => {
-    if (item.targetKind && STAGED_TARGET_KINDS.has(item.targetKind)) return null;
+const getInitialTarget = (item: DeckItem, target: string | null, roomOccupants: GmcpOccupant[], characterName: string, roomZone?: string | null): string | null => {
+    if (item.targetKind && (STAGED_TARGET_KINDS.has(item.targetKind) || item.targetKind === 'shop')) return null;
     return getRememberedCommandTarget(item.cmd)
         || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
-        || getAutoRoomTarget(item.cmd, roomOccupants, characterName)
+        || getAutoRoomTarget(item.cmd, roomOccupants, characterName, roomZone)
         || getDefaultCommandTarget(item.cmd);
 };
 
@@ -72,7 +93,7 @@ export interface UseDeckTargetingProps {
     target: string | null;
     /** @deprecated Global target changes are handled outside command menus. */
     setTarget?: (target: string | null) => void;
-    executeCommand: (cmd: string) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
     triggerHaptic?: (ms: number) => void;
     flashPressed: (label: string) => void;
     fire: (item: DeckItem) => void;
@@ -81,6 +102,7 @@ export interface UseDeckTargetingProps {
     containerContents?: Record<string, DrawerLine[]>;
     requestContainerContents?: (source: CommandTargetSuggestion) => void;
     characterName?: string;
+    roomZone?: string | null;
 }
 
 export interface UseDeckTargetingReturn {
@@ -121,7 +143,8 @@ export const useDeckTargeting = ({
     wornLines = [],
     containerContents = {},
     requestContainerContents,
-    characterName = ''
+    characterName = '',
+    roomZone
 }: UseDeckTargetingProps): UseDeckTargetingReturn => {
     const [isTargetMenuOpen, setIsTargetMenuOpen] = useState(false);
     const [isTargetMenuHeld, setIsTargetMenuHeld] = useState(false);
@@ -145,19 +168,30 @@ export const useDeckTargeting = ({
     pendingTargetRef.current = pendingTarget;
     const firstArgumentRef = useRef<string | null>(null);
     const secondArgumentRef = useRef<string | null>(null);
+    const lastSocialCommandRef = useRef<string | null>(null);
+
+    const refreshGearTargets = useCallback((item: DeckItem) => {
+        const verb = item.cmd.trim().split(/\s+/, 1)[0]?.toLowerCase();
+        if (verb === 'remove') executeCommand('equipment', true, true, false, true);
+        if (verb === 'wear' || verb === 'wield') executeCommand('inventory', true, true, false, true);
+    }, [executeCommand]);
 
     const roomChars = useRoomStore(s => s.chars);
     const roomItemsObj = useRoomStore(s => s.items);
     const whoList = useRoomStore(s => s.whoList);
+    const shopItems = useUIStore(s => s.shopItems);
+    const { groupMembers } = useVitals();
     const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
     const roomItems = useMemo(() => Object.values(roomItemsObj), [roomItemsObj]);
 
     const activeVerb = activeItem?.cmd.trim().toLowerCase().split(/\s+/)[0];
     const isWhoTarget = activeVerb === 'tell' || activeVerb === 'whisper' || activeVerb === 'ask' || activeItem?.targetKind === 'who';
+    const requestWhoList = useWhoListRefresh(whoList, executeCommand);
     const isSocialTarget = activeVerb === 'social' || activeItem?.targetKind === 'social';
     const isStagedTargetMenu = activeItem?.targetKind === 'social'
         || activeItem?.targetKind === 'inventory-recipient'
         || activeItem?.targetKind === 'inventory-container'
+        || activeItem?.targetKind === 'pour'
         || activeItem?.targetKind === 'room-object-container';
 
     const secondArgumentSuggestions = useMemo(() => {
@@ -169,6 +203,10 @@ export const useDeckTargeting = ({
         }
         if (activeItem?.targetKind === 'inventory-recipient') {
             return getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName);
+        }
+        if (activeItem?.targetKind === 'pour') {
+            return getDrinkTargetSuggestions(inventoryLines, wornLines)
+                .filter(suggestion => suggestion.value.trim().toLowerCase() !== 'water');
         }
         if (activeItem?.targetKind === 'inventory-container' || activeItem?.targetKind === 'room-object-container') {
             const containers = getContainerTargetSuggestions(roomItems, inventoryLines, wornLines)
@@ -192,6 +230,7 @@ export const useDeckTargeting = ({
             ALL_ARGUMENT_SUGGESTION,
             ...getInventoryAndWornTargetSuggestions(inventoryLines, wornLines)
         ];
+        if (activeItem?.targetKind === 'pour') return getDrinkTargetSuggestions(inventoryLines, wornLines);
         if (activeItem?.targetKind === 'inventory-container') return [ALL_ARGUMENT_SUGGESTION, ...getGearTargetSuggestions(inventoryLines, 'inventory')];
         if (activeItem?.targetKind === 'room-object-container') {
             if (!selectedSecondArgument || selectedSecondArgument === ROOM_TARGET_VALUE) {
@@ -202,7 +241,11 @@ export const useDeckTargeting = ({
             if (source?.containerId && loadingContainer?.id === source.containerId
                 && containerContents[source.containerId] === loadingContainer.previousContents) return [];
             const contents = source?.containerId ? containerContents[source.containerId] ?? [] : [];
-            return [ALL_ARGUMENT_SUGGESTION, ...getGearTargetSuggestions(contents, 'inventory').map(suggestion => ({ ...suggestion, meta: 'container' }))];
+            return [ALL_ARGUMENT_SUGGESTION, ...getGearTargetSuggestions(contents, 'inventory').map(suggestion => ({
+                ...suggestion,
+                meta: 'container',
+                objectLocation: 'container' as const
+            }))];
         }
         return [];
     }, [activeItem?.targetKind, inventoryLines, wornLines, roomItems, selectedSecondArgument, selectedSecondArgumentKey, secondArgumentSuggestions, containerContents, loadingContainer]);
@@ -226,12 +269,25 @@ export const useDeckTargeting = ({
         }
     }, [containerContents, loadingContainer]);
 
+    useEffect(() => {
+        if (isTargetMenuOpen && isWhoTarget) requestWhoList();
+    }, [isTargetMenuOpen, isWhoTarget, requestWhoList]);
+
     const targetSuggestions = useMemo(() => {
         if (!activeItem) return undefined;
         if (isWhoTarget) return getWhoTargetSuggestions(whoList, characterName);
         if (isSocialTarget) return getSocialTargetSuggestions();
         if (activeItem.targetKind === 'mounts') {
             return getMountTargetSuggestions(roomOccupants, activeVerb === 'unsaddle');
+        }
+        if (activeItem.targetKind === 'lanterns') return /^fill\b/i.test(activeItem.cmd.trim())
+            ? getFillTargetSuggestions(inventoryLines, wornLines)
+            : getLanternTargetSuggestions(inventoryLines, wornLines);
+        if (activeItem.targetKind === 'group') {
+            return getGroupSelectionSuggestions(groupMembers, roomOccupants, roomItems, characterName);
+        }
+        if (activeItem.targetKind === 'shop') {
+            return shopItems.map(item => ({ key: `shop-item-${item.num}`, label: item.name, value: String(item.num), meta: 'shop-item' }));
         }
         if (!activeItem.targetKind) {
             const commandKind = getCommandTargetMenuKind(activeItem.cmd);
@@ -244,12 +300,12 @@ export const useDeckTargeting = ({
             ];
             if (commandKind === 'gear') return getInventoryAndWornTargetSuggestions(inventoryLines, wornLines);
             if (commandKind === 'worn-weapons') {
-                const wornWeapons = wornLines.filter(line => getTraitsForName(
-                    `${line.text} ${line.rawText || ''} ${line.context || ''}`
-                ).some(trait => trait.id === 'trait-weapon'));
+                const wornWeapons = wornLines.filter(line => hasObjectTrait(line, 'trait-weapon'));
                 return getGearTargetSuggestions(wornWeapons, 'worn');
             }
-            if (commandKind === 'lanterns') return getLanternTargetSuggestions(inventoryLines, wornLines);
+            if (commandKind === 'lanterns') return /^fill\b/i.test(activeItem.cmd.trim())
+                ? getFillTargetSuggestions(inventoryLines, wornLines)
+                : getLanternTargetSuggestions(inventoryLines, wornLines);
             if (commandKind === 'weather-options') return [
                 { key: 'weather-clouds-less', label: 'Clouds less', value: 'clouds less', meta: 'weather' },
                 { key: 'weather-clouds-more', label: 'Clouds more', value: 'clouds more', meta: 'weather' },
@@ -273,6 +329,7 @@ export const useDeckTargeting = ({
             if (activeItem.targetKind === 'inventory-recipient') {
                 return getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName);
             }
+            if (activeItem.targetKind === 'pour') return secondArgumentSuggestions;
             const containers = getContainerTargetSuggestions(roomItems, inventoryLines, wornLines)
                 .filter(suggestion => suggestion.meta !== 'exit');
             if (activeItem.targetKind === 'room-object-container') {
@@ -284,16 +341,16 @@ export const useDeckTargeting = ({
         if (activeItem.targetKind === 'room-object-container') return [ALL_ARGUMENT_SUGGESTION, ...getRoomTargetSuggestions([], roomItems, 'objects')];
         if (activeItem.targetKind === 'worn') return getGearTargetSuggestions(wornLines, 'worn');
         if (activeItem.targetKind === 'worn-sheaths') {
-            const sheaths = wornLines.filter(line => getTraitsForName(
-                `${line.text} ${line.rawText || ''} ${line.context || ''}`
-            ).some(trait => trait.id === 'trait-sheath'));
+            const sheaths = wornLines.filter(line => hasObjectTrait(line, 'trait-sheath'));
             return getGearTargetSuggestions(sheaths, 'worn');
         }
         if (activeItem.targetKind === 'worn-weapons') {
-            const weapons = wornLines.filter(line => getTraitsForName(
-                `${line.text} ${line.rawText || ''} ${line.context || ''}`
-            ).some(trait => trait.id === 'trait-weapon'));
+            const weapons = wornLines.filter(line => hasObjectTrait(line, 'trait-weapon'));
             return getGearTargetSuggestions(weapons, 'worn');
+        }
+        if (activeItem.targetKind === 'inventory-weapons') {
+            const weapons = inventoryLines.filter(line => hasObjectTrait(line, 'trait-weapon'));
+            return getGearTargetSuggestions(weapons, 'inventory');
         }
         if (activeItem.targetKind === 'inventory-and-worn') return getInventoryAndWornTargetSuggestions(inventoryLines, wornLines);
         if (activeItem.targetKind === 'inventory-container') return [ALL_ARGUMENT_SUGGESTION, ...getGearTargetSuggestions(inventoryLines, 'inventory')];
@@ -301,8 +358,9 @@ export const useDeckTargeting = ({
         if (activeItem.cmd.trim().toLowerCase() === 'drink') return getDrinkTargetSuggestions(inventoryLines, wornLines);
         const inventoryTargets = getGearTargetSuggestions(inventoryLines, 'inventory');
         return inventoryTargets;
-    }, [activeItem, activeVerb, isWhoTarget, isSocialTarget, isSecondArgumentStage, roomOccupants, roomItems, characterName, wornLines, inventoryLines, whoList]);
-    const targetMenuTitle = isStagedTargetMenu ? 'SELECT ARGUMENTS' : isWhoTarget ? 'WHO LIST' : isSocialTarget ? 'SOCIAL COMMANDS'
+    }, [activeItem, activeVerb, isWhoTarget, isSocialTarget, isSecondArgumentStage, roomOccupants, roomItems, characterName, wornLines, inventoryLines, whoList, groupMembers, shopItems]);
+    const targetMenuTitle = isSecondArgumentStage && activeItem?.targetKind === 'pour' ? 'POUR INTO'
+        : isStagedTargetMenu ? 'SELECT ARGUMENTS' : isWhoTarget ? 'WHO LIST' : isSocialTarget ? 'SOCIAL COMMANDS'
         : isSecondArgumentStage && activeItem?.targetKind === 'inventory-recipient' ? 'RECIPIENTS'
         : isSecondArgumentStage && activeItem?.targetKind === 'inventory-container' ? 'PUT INTO'
         : isSecondArgumentStage && activeItem?.targetKind === 'room-object-container' ? 'GET FROM'
@@ -310,8 +368,13 @@ export const useDeckTargeting = ({
         : activeItem?.targetKind === 'worn' ? 'WORN ITEMS'
         : activeItem?.targetKind === 'worn-sheaths' ? 'WORN SHEATHS'
         : activeItem?.targetKind === 'worn-weapons' ? 'WORN WEAPONS'
+        : activeItem?.targetKind === 'inventory-weapons' ? 'INVENTORY WEAPONS'
+        : activeItem?.targetKind === 'lanterns' ? 'LANTERNS'
         : activeItem?.targetKind === 'inventory-and-worn' ? 'INVENTORY AND WORN'
         : activeItem?.targetKind === 'mounts' ? 'MOUNTS'
+        : activeItem?.targetKind === 'group' ? 'GROUP'
+        : activeItem?.targetKind === 'shop' ? 'SHOP'
+        : activeItem?.targetKind === 'status-panel' ? 'THIS IS YOU'
         : activeItem?.targetKind === 'inventory-recipient' || activeItem?.targetKind === 'inventory-container' ? 'INVENTORY ITEMS'
         : activeItem?.targetKind ? 'INVENTORY' : 'TARGETS';
 
@@ -352,23 +415,26 @@ export const useDeckTargeting = ({
         setActiveItem(item);
         setPendingTarget(null);
         setIsSecondArgumentStage(false);
-        setSelectedFirstArgument(null);
-        setSelectedFirstArgumentKey(null);
+        const recentSocialCommand = item.targetKind === 'social'
+            ? getSocialTargetSuggestions().find(suggestion => suggestion.value === lastSocialCommandRef.current)
+            : undefined;
+        setSelectedFirstArgument(recentSocialCommand?.value ?? null);
+        setSelectedFirstArgumentKey(recentSocialCommand?.key ?? null);
         setLoadingContainer(null);
-        firstArgumentRef.current = null;
-        const defaultSecondArgument = item.targetKind === 'room-object-container' ? ROOM_TARGET_VALUE : null;
+        firstArgumentRef.current = recentSocialCommand?.value ?? null;
+        const defaultSecondArgument = getDefaultSecondArgument(item.targetKind);
         setSelectedSecondArgument(defaultSecondArgument);
-        setSelectedSecondArgumentKey(item.targetKind === 'room-object-container' ? 'get-from-room' : null);
+        setSelectedSecondArgumentKey(getDefaultSecondArgumentKey(item.targetKind));
         secondArgumentRef.current = defaultSecondArgument;
-        const initialSecondArgument = item.targetKind === 'room-object-container' ? ROOM_TARGET_VALUE : null;
+        const initialSecondArgument = defaultSecondArgument;
         const initialTarget = item.targetKind === 'room-object-container'
             ? initialSecondArgument
-            : getInitialTarget(item, target, roomOccupants, characterName);
+            : getInitialTarget(item, target, roomOccupants, characterName, roomZone);
         setPendingTarget(initialTarget);
         pendingTargetRef.current = initialTarget;
         setIsTargetMenuOpen(true);
         triggerHaptic?.(20);
-    }, [characterName, clearHoldTimer, roomOccupants, target, triggerHaptic]);
+    }, [characterName, clearHoldTimer, roomOccupants, roomZone, target, triggerHaptic]);
 
     const executeStagedCommand = useCallback((item: DeckItem, firstArgument: string, secondArgument: string, keepOpenAfterFire = false) => {
         const targetPart = (item.targetKind === 'room-object-container' && secondArgument === ROOM_TARGET_VALUE)
@@ -380,18 +446,23 @@ export const useDeckTargeting = ({
         const command = item.targetKind === 'social'
             ? `${firstArgument}${targetPart}`.trim()
             : `${item.cmd}${firstArgument}${targetPart}`.trim();
+        if (item.targetKind === 'social') lastSocialCommandRef.current = firstArgument;
         executeCommand(command);
         if (keepOpenAfterFire) {
-            const defaultSecondArgument = item.targetKind === 'room-object-container' ? ROOM_TARGET_VALUE : null;
-            firstArgumentRef.current = null;
+            const defaultFirstArgument = item.targetKind === 'social' ? firstArgument : null;
+            const defaultSuggestion = defaultFirstArgument
+                ? getSocialTargetSuggestions().find(suggestion => suggestion.value === defaultFirstArgument)
+                : undefined;
+            const defaultSecondArgument = getDefaultSecondArgument(item.targetKind);
+            firstArgumentRef.current = defaultFirstArgument;
             secondArgumentRef.current = defaultSecondArgument;
             pendingTargetRef.current = defaultSecondArgument;
             setPendingTarget(defaultSecondArgument);
             setIsSecondArgumentStage(false);
-            setSelectedFirstArgument(null);
-            setSelectedFirstArgumentKey(null);
+            setSelectedFirstArgument(defaultFirstArgument);
+            setSelectedFirstArgumentKey(defaultSuggestion?.key ?? null);
             setSelectedSecondArgument(defaultSecondArgument);
-            setSelectedSecondArgumentKey(item.targetKind === 'room-object-container' ? 'get-from-room' : null);
+            setSelectedSecondArgumentKey(getDefaultSecondArgumentKey(item.targetKind));
             setLoadingContainer(null);
         } else {
             closeTargetMenu();
@@ -413,24 +484,28 @@ export const useDeckTargeting = ({
             didHoldRef.current = true;
             suppressNextClickRef.current = true;
             setActiveItem(item);
-            setSelectedFirstArgument(null);
-            setSelectedFirstArgumentKey(null);
+            const recentSocialCommand = item.targetKind === 'social'
+                ? getSocialTargetSuggestions().find(suggestion => suggestion.value === lastSocialCommandRef.current)
+                : undefined;
+            setSelectedFirstArgument(recentSocialCommand?.value ?? null);
+            setSelectedFirstArgumentKey(recentSocialCommand?.key ?? null);
             setLoadingContainer(null);
-            firstArgumentRef.current = null;
-            const defaultSecondArgument = item.targetKind === 'room-object-container' ? ROOM_TARGET_VALUE : null;
+            firstArgumentRef.current = recentSocialCommand?.value ?? null;
+            const defaultSecondArgument = getDefaultSecondArgument(item.targetKind);
             setSelectedSecondArgument(defaultSecondArgument);
-            setSelectedSecondArgumentKey(item.targetKind === 'room-object-container' ? 'get-from-room' : null);
+            setSelectedSecondArgumentKey(getDefaultSecondArgumentKey(item.targetKind));
             secondArgumentRef.current = defaultSecondArgument;
             const initialTarget = item.targetKind === 'room-object-container'
                 ? defaultSecondArgument
-                : getInitialTarget(item, target, roomOccupants, characterName);
+                : getInitialTarget(item, target, roomOccupants, characterName, roomZone);
             setPendingTarget(initialTarget);
             pendingTargetRef.current = initialTarget;
             setIsSecondArgumentStage(false);
             setIsTargetMenuOpen(true);
+            refreshGearTargets(item);
             triggerHaptic?.(20);
         }, 220);
-    }, [characterName, clearHoldTimer, roomOccupants, target, triggerHaptic]);
+    }, [characterName, clearHoldTimer, refreshGearTargets, roomOccupants, roomZone, target, triggerHaptic]);
 
     const handlePointerUp = useCallback((item: DeckItem, _e: React.PointerEvent<HTMLButtonElement>) => {
         if (holdTimerRef.current !== null) {
@@ -444,6 +519,18 @@ export const useDeckTargeting = ({
                 const firstArgument = firstArgumentRef.current;
                 if (firstArgument) executeStagedCommand(item, firstArgument, ROOM_TARGET_VALUE);
                 else closeTargetMenu();
+                return;
+            }
+            if (item.targetKind && STAGED_TARGET_KINDS.has(item.targetKind)) {
+                const firstArgument = firstArgumentRef.current;
+                const secondArgument = secondArgumentRef.current;
+                if (firstArgument && secondArgument) executeStagedCommand(item, firstArgument, secondArgument);
+                else closeTargetMenu();
+                return;
+            }
+            if (item.targetKind === 'group' || item.targetKind === 'shop' || item.targetKind === 'status-panel') {
+                heldPointerIdRef.current = null;
+                setIsTargetMenuHeld(false);
                 return;
             }
             if (item.targetKind || item.holdOpensMenuOnly) {
@@ -479,8 +566,12 @@ export const useDeckTargeting = ({
             suppressNextClickRef.current = false;
             return;
         }
+        if (item.targetKind === 'group' || item.targetKind === 'shop' || item.targetKind === 'status-panel') {
+            openTargetMenuFor(item);
+            return;
+        }
         fire(item);
-    }, [fire]);
+    }, [fire, openTargetMenuFor]);
 
     const handleSelectTarget = useCallback((targetValue: string, preserveMenuOnPointerUp = false, columnIndex?: number, suggestion?: CommandTargetSuggestion, keepOpenAfterFire = false) => {
         const itemToFire = activeItemRef.current;

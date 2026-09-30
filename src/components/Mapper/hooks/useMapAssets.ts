@@ -70,10 +70,11 @@ const bakeTreeShadow = (img: HTMLImageElement, isDarkMode: boolean): HTMLCanvasE
     return canvas;
 };
 
-export const useMapAssets = (imagesRef: MutableRefObject<Record<string, HTMLImageElement | HTMLCanvasElement>>) => {
+export const useMapAssets = (imagesRef: MutableRefObject<Record<string, HTMLImageElement | HTMLCanvasElement>>, enabled = true) => {
     const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
+        if (!enabled) return;
         let loadedCount = 0;
         const total = Object.keys(ASSETS).length;
         
@@ -106,7 +107,7 @@ export const useMapAssets = (imagesRef: MutableRefObject<Record<string, HTMLImag
             img.src = src;
             imagesRef.current[key] = img;
         });
-    }, [imagesRef]);
+    }, [imagesRef, enabled]);
 
     return { assetsLoaded: loaded };
 };

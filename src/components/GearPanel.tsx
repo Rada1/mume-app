@@ -9,6 +9,7 @@ import { useGearPanel } from '../hooks/useGearPanel';
 import { useObjectDragCommands } from '../hooks/useObjectDragCommands';
 import { useUIStore } from '../stores/useUIStore';
 import { toGearRow, visibleContainerLine, type GearRow } from '../utils/gearPanelUtils';
+import { classifyItemTier } from '../utils/itemTier';
 import type { DrawerLine } from '../types';
 import './GearPanel.css';
 
@@ -44,6 +45,8 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
         const category = nested ? 'cat-container-item' : section === 'worn' ? 'cat-worn-object' : 'cat-inventory-object';
         const itemColor = getInlineGlowColor(category, inlineSettings.inlineCategories,
             { object: inlineSettings.objectColor }, inlineSettings.theme) || inlineSettings.objectColor;
+        const itemTier = classifyItemTier(row.line.text);
+        const conditionLabel = itemTier.stateLabel || row.condition.replace(/[()]/g, '').trim();
         const isExpanded = gear.expandedContainers.has(row.line.id);
         const contents = gear.containerContents[row.line.id]?.filter(visibleContainerLine) ?? [];
         return <React.Fragment key={id}>
@@ -64,11 +67,19 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
                         parentContainerId: parentId,
                     })}
                     title={row.noun} aria-label={`Select ${row.name}`}>
-                    {!nested && section === 'worn' && <span className="gear-slot">{row.slot}</span>}
+                    {!nested && section === 'worn' && <span className="gear-slot">{row.slotLabel}</span>}
                     <span className="gear-item-text">
                         {row.article && <span className="gear-article">{row.article} </span>}
-                        <span className="gear-item-name" style={{ color: itemColor }}>{row.name}</span>
-                        {row.condition && <span className="gear-condition"> {row.condition}</span>}
+                        <span
+                            className={`gear-item-name${itemTier.tier ? ` inline-item-tier-${itemTier.tier}` : ''}`}
+                            style={itemTier.tier ? undefined : { color: itemColor }}
+                        >{row.name}</span>
+                        {row.condition && <span
+                            className={`gear-condition-indicator${itemTier.state ? ` item-state-${itemTier.state}` : ' is-unknown'}`}
+                            role="img"
+                            aria-label={`Condition: ${conditionLabel}`}
+                            title={`Condition: ${conditionLabel}`}
+                        />}
                     </span>
                 </button>
                 {row.isContainer && <button className="gear-container-toggle" type="button"

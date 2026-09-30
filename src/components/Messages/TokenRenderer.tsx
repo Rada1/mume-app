@@ -10,6 +10,7 @@ import { classifyItemTier } from '../../utils/itemTier';
 import { isObjectSelected } from '../../utils/selectionUtils';
 import { Box, DoorOpen, UserRound } from 'lucide-react';
 import { NpcEntityIcon } from './EntityTypeIcons';
+import { getPromptVitalValueRanges, PromptTextRange } from '../../utils/promptVitalText';
 
 import { MessageType } from '../../types';
 
@@ -70,6 +71,7 @@ export interface TokenRendererProps {
     disableRoomInline?: boolean;
     isRoomContentsLine?: boolean;
     preferSettingsEntityColor?: boolean;
+    highlightPromptVitals?: boolean;
     metadata?: {
         id?: string;
         context?: string;
@@ -90,6 +92,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
     disableRoomInline = false,
     isRoomContentsLine = false,
     preferSettingsEntityColor = false,
+    highlightPromptVitals = false,
     metadata: propMetadata
 }) => {
     const { target, opponentId, opponentName } = useTokenHighlight();
@@ -102,6 +105,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
         roomColor: s.roomColor,
         theme: s.theme,
         isTextRevealEnabled: s.isTextRevealEnabled,
+        isClassicMode: s.isClassicMode,
     })));
     const { inlineCategories, selectedObjectIds, inCombat } = useBaseGame();
     const { popoverState } = useUI();
@@ -112,8 +116,30 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
         }, settings.theme) || settings.roomColor || '#22c55e';
     }, [inlineCategories, settings.roomColor, settings.theme]);
 
+    const promptVitalRangesByToken = useMemo(() => {
+        const byToken = new Map<number, PromptTextRange[]>();
+        if (!highlightPromptVitals || !tokens?.length) return byToken;
+
+        const ranges = getPromptVitalValueRanges(tokens.map(token => token.content).join(''));
+        let tokenStart = 0;
+        tokens.forEach((token, tokenIndex) => {
+            const tokenEnd = tokenStart + token.content.length;
+            const tokenRanges = ranges.flatMap(range => {
+                const start = Math.max(range.start, tokenStart);
+                const end = Math.min(range.end, tokenEnd);
+                return start < end ? [{ start: start - tokenStart, end: end - tokenStart, percent: range.percent, vitalType: range.vitalType }] : [];
+            });
+            if (tokenRanges.length > 0) byToken.set(tokenIndex, tokenRanges);
+            tokenStart = tokenEnd;
+        });
+        return byToken;
+    }, [highlightPromptVitals, tokens]);
+
     if (!tokens || tokens.length === 0) {
         if (!fallbackHtml) return null;
+        if (settings.isClassicMode) {
+            return <span dangerouslySetInnerHTML={{ __html: fallbackHtml }} />;
+        }
         if (splitFirstWord) {
             if (fallbackHtml.includes('<')) {
                 return <span className="first-word-static" dangerouslySetInnerHTML={{ __html: fallbackHtml }} />;
@@ -154,6 +180,10 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
 
     const targetMatcher = useMemo(() => buildTargetMatcher(target), [target]);
     const currentTarget = targetMatcher?.value || null;
+
+    if (settings.isClassicMode) {
+        return <>{tokens.map(token => token.content).join('')}</>;
+    }
 
     const propCategoryAxes = propMetadata?.category ? getInlineCategoryAxes(propMetadata.category) : null;
     
@@ -206,6 +236,44 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
 
         return <React.Fragment key={key}>{parts}</React.Fragment>;
     };
+
+    const renderPromptVitalText = (text: string, tokenIndex: number, textOffset = 0): React.ReactNode => {
+        const ranges = promptVitalRangesByToken.get(tokenIndex) || [];
+        const matchingRanges = ranges.filter(range => range.end > textOffset && range.start < textOffset + text.length);
+        if (matchingRanges.length === 0) return text;
+
+        const parts: React.ReactNode[] = [];
+        let cursor = 0;
+        matchingRanges.forEach((range, rangeIndex) => {
+            const start = Math.max(range.start, textOffset) - textOffset;
+            const end = Math.min(range.end, textOffset + text.length) - textOffset;
+            if (start > cursor) parts.push(text.slice(cursor, start));
+            parts.push(
+                <span
+                    key={`prompt-vital-${tokenIndex}-${rangeIndex}`}
+                    className="prompt-vital-value"
+                    data-vital-percent={range.percent === undefined ? undefined : ''}
+                    data-vital-type={range.vitalType}
+                    style={range.percent === undefined ? undefined : { '--prompt-vital-percent': `${range.percent}%` } as React.CSSProperties}
+                >
+                    {text.slice(start, end)}
+                </span>
+            );
+            cursor = end;
+        });
+        if (cursor < text.length) parts.push(text.slice(cursor));
+        return <>{parts}</>;
+    };
+
+    const renderTokenText = (
+        text: string,
+        state: string | undefined,
+        stateLabel: string | undefined,
+        tokenIndex: number | string,
+        textOffset = 0
+    ): React.ReactNode => highlightPromptVitals
+        ? renderPromptVitalText(text, Number(tokenIndex), textOffset)
+        : renderItemConditionText(text, state, stateLabel);
 
     const renderToken = (token: Token, idx: number | string, textOverride?: string) => {
         const content = textOverride !== undefined ? textOverride : token.content;
@@ -382,9 +450,12 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 const ansiWords = content.split(' ');
                 if (ansiWords.length > 1) {
                     const baseWIdx = typeof idx === 'number' ? idx * 4 : 0;
+                    let wordOffset = 0;
                     return (
                         <React.Fragment key={idx}>
                             {ansiWords.map((w, wi) => {
+                                const currentWordOffset = wordOffset;
+                                wordOffset += w.length + 1;
                                 if (!w) {
                                     if (wi === ansiWords.length - 1) return null;
                                     return <span key={`sp-${wi}`}> </span>;
@@ -395,7 +466,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                                             className={`log-text-word${ansiClasses ? ` ${ansiClasses}` : ''}`}
                                             style={{ ...a.style, '--word-idx': baseWIdx + wi } as any}
                                         >
-                                            {w}
+                                            {renderTokenText(w, ansiItemState.state, ansiItemState.stateLabel, idx, currentWordOffset)}
                                         </span>
                                         {wi < ansiWords.length - 1 ? ' ' : null}
                                     </React.Fragment>
@@ -410,7 +481,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                         className={`log-text-word${ansiClasses ? ` ${ansiClasses}` : ''}`}
                         style={{ ...a.style, '--word-idx': typeof idx === 'number' ? idx : 0 } as any}
                     >
-                        {renderItemConditionText(content, ansiItemState.state, ansiItemState.stateLabel)}
+                        {renderTokenText(content, ansiItemState.state, ansiItemState.stateLabel, idx)}
                     </span>
                 );
             
@@ -432,9 +503,12 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                 const textWords = content.split(' ');
                 if (textWords.length > 1) {
                     const baseWIdx = typeof idx === 'number' ? idx * 4 : 0;
+                    let wordOffset = 0;
                     return (
                         <React.Fragment key={idx}>
                             {textWords.map((w, wi) => {
+                                const currentWordOffset = wordOffset;
+                                wordOffset += w.length + 1;
                                 if (!w) {
                                     if (wi === textWords.length - 1) return null;
                                     return <span key={`sp-${wi}`}> </span>;
@@ -445,7 +519,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                                             className={`log-text-word${textClasses ? ` ${textClasses}` : ''}`}
                                             style={{ ...textToken.style, '--word-idx': baseWIdx + wi } as any}
                                         >
-                                            {w}
+                                            {renderTokenText(w, textItemState.state, textItemState.stateLabel, idx, currentWordOffset)}
                                         </span>
                                         {wi < textWords.length - 1 ? ' ' : null}
                                     </React.Fragment>
@@ -460,7 +534,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                         className={`log-text-word${textClasses ? ` ${textClasses}` : ''}`}
                         style={{ ...textToken.style, '--word-idx': typeof idx === 'number' ? idx : 0 } as any}
                     >
-                        {renderItemConditionText(content, textItemState.state, textItemState.stateLabel)}
+                        {renderTokenText(content, textItemState.state, textItemState.stateLabel, idx)}
                     </span>
                 );
         }

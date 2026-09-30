@@ -4,12 +4,12 @@
  */
 
 import React, { useState } from 'react';
-import { Upload, Trash2, Volume2, Plus, Music, Sliders, RotateCcw, Play } from 'lucide-react';
+import { Upload, Trash2, Volume2, Plus, Music, RotateCcw } from 'lucide-react';
 import { SoundTrigger } from '../../types';
 import { useGame } from '../../context/GameContext';
-import { useSettingsStore } from '../../stores/useSettingsStore';
 import { AUDIO_MANIFEST } from '../../constants/audioManifest';
-import { audioManager } from '../../services/audio/AudioManager';
+import SoundEffectOverrides from './SoundEffectOverrides';
+import SoundVolumeSettings from './SoundVolumeSettings';
 
 interface SoundSettingsProps {
     isSoundEnabled: boolean;
@@ -35,12 +35,6 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
     handleSoundUpload,
 }) => {
     const { zoneMusic, setZoneMusic } = useGame();
-    const { 
-        masterVolume, setMasterVolume, 
-        sfxVolume, setSfxVolume, 
-        musicVolume, setMusicVolume,
-        customSoundEffects, setCustomSoundEffect, removeCustomSoundEffect
-    } = useSettingsStore();
 
     const [newZoneName, setNewZoneName] = useState('');
     const [newZoneUrl, setNewZoneUrl] = useState('');
@@ -63,14 +57,6 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
 
     const removeZoneMusic = (zone: string) => {
         setZoneMusic(prev => prev.filter(m => m.zone !== zone));
-    };
-
-    const handleOverrideUpload = (key: string, e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const url = URL.createObjectURL(file);
-            setCustomSoundEffect(key, url);
-        }
     };
 
     const handleZoneOverrideUpload = (zone: string, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,113 +108,8 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                 </div>
             </div>
 
-            {/* Volume Levels */}
-            <div className="setting-group" style={{ 
-                opacity: isSoundEnabled ? 1 : 0.5, 
-                pointerEvents: isSoundEnabled ? 'auto' : 'none', 
-                transition: 'opacity 0.3s',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '15px'
-            }}>
-                <label className="setting-label" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
-                    <Sliders size={16} /> Volume Levels
-                </label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontSize: '0.8rem', color: 'var(--text-primary, #fff)' }}>Master Volume</span>
-                            <span style={{ fontSize: '0.75rem', color: 'var(--accent)' }}>{Math.round(masterVolume * 100)}%</span>
-                        </div>
-                        <input 
-                            type="range" min="0" max="1" step="0.01" 
-                            value={masterVolume} 
-                            onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
-                            style={{ width: '100%', cursor: 'pointer', accentColor: 'var(--accent)' }}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontSize: '0.8rem', color: 'var(--text-primary, #fff)' }}>Sound Effects (Combat, UI)</span>
-                            <span style={{ fontSize: '0.75rem', color: 'var(--accent)' }}>{Math.round(sfxVolume * 100)}%</span>
-                        </div>
-                        <input 
-                            type="range" min="0" max="1" step="0.01" 
-                            value={sfxVolume} 
-                            onChange={(e) => setSfxVolume(parseFloat(e.target.value))}
-                            style={{ width: '100%', cursor: 'pointer', accentColor: 'var(--accent)' }}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontSize: '0.8rem', color: 'var(--text-primary, #fff)' }}>Atmosphere & Music</span>
-                            <span style={{ fontSize: '0.75rem', color: 'var(--accent)' }}>{Math.round(musicVolume * 100)}%</span>
-                        </div>
-                        <input 
-                            type="range" min="0" max="1" step="0.01" 
-                            value={musicVolume} 
-                            onChange={(e) => setMusicVolume(parseFloat(e.target.value))}
-                            style={{ width: '100%', cursor: 'pointer', accentColor: 'var(--accent)' }}
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Default Sound Effects List */}
-            <div className="setting-group" style={{ opacity: isSoundEnabled ? 1 : 0.5, pointerEvents: isSoundEnabled ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
-                <label className="setting-label" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Volume2 size={16} /> Default Sound Effects
-                </label>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginBottom: '12px' }}>
-                    Preview default game sound effects or upload custom overrides.
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '300px', overflowY: 'auto', paddingRight: '4px' }}>
-                    {Object.entries(AUDIO_MANIFEST.effects).map(([key, config]) => {
-                        const hasOverride = !!customSoundEffects[key];
-                        return (
-                            <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-panel, rgba(255,255,255,0.03))', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                                <div style={{ overflow: 'hidden' }}>
-                                    <div style={{ color: 'var(--text-primary, #fff)', fontWeight: '500', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        {key}
-                                        {hasOverride && <span style={{ color: 'var(--accent)', fontSize: '0.7rem', border: '1px solid var(--accent)', padding: '1px 4px', borderRadius: '3px' }}>Custom Override</span>}
-                                    </div>
-                                    <div style={{ color: 'var(--text-dim, #aaa)', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                        {hasOverride ? 'Custom blob URL' : config.path}
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <button 
-                                        onClick={() => audioManager.playEffect(key, { skipJitter: true })}
-                                        style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
-                                        title="Preview sound"
-                                    >
-                                        <Play size={16} />
-                                    </button>
-                                    <input
-                                        type="file"
-                                        id={`override-${key}`}
-                                        hidden
-                                        onChange={(e) => handleOverrideUpload(key, e)}
-                                        accept="audio/*"
-                                    />
-                                    <label htmlFor={`override-${key}`} style={{ cursor: 'pointer', color: 'var(--text-dim, #aaa)', display: 'flex', alignItems: 'center' }} title="Upload custom sound">
-                                        <Upload size={14} />
-                                    </label>
-                                    {hasOverride && (
-                                        <button 
-                                            onClick={() => removeCustomSoundEffect(key)}
-                                            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
-                                            title="Restore default"
-                                        >
-                                            <RotateCcw size={14} />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
+            <SoundVolumeSettings isSoundEnabled={isSoundEnabled} />
+            <SoundEffectOverrides isSoundEnabled={isSoundEnabled} />
 
             {/* Zone Music Section */}
             <div className="setting-group" style={{ opacity: isSoundEnabled ? 1 : 0.5, pointerEvents: isSoundEnabled ? 'auto' : 'none', transition: 'opacity 0.3s' }}>

@@ -308,6 +308,84 @@
     }
 }
 
+@media (max-width: 768px), (max-width: 1024px) and (orientation: portrait) {
+    .mobile-header-panel-blur-backdrop {
+        position: fixed;
+        z-index: 65000;
+        inset: 0;
+        /* A near-zero alpha forces a real backdrop surface on mobile browsers
+           while keeping the background visually untinted. */
+        background: rgba(0, 0, 0, 0.01);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        pointer-events: none;
+    }
+
+    /* Keep every tab panel's own stacking context above the full-screen blur. */
+    .app-container .docked-panel {
+        z-index: 65001 !important;
+        background: transparent !important;
+        backdrop-filter: blur(14px) !important;
+        -webkit-backdrop-filter: blur(14px) !important;
+    }
+
+    /* The log is rendered inside the same scroll lane as the docked panels, so
+       blur that underlay directly as well as using the glass backdrop layer. */
+    .content-layer.has-docked-panels .desktop-center-column {
+        filter: blur(8px);
+    }
+
+    .app-container .command-docked-panel,
+    .app-container .gear-panel,
+    .app-container .chat-window-panel:not(.shop-panel),
+    .app-container .help-panel {
+        left: 0 !important;
+        right: 0 !important;
+        width: 100vw !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        top: calc(env(safe-area-inset-top, 0px) + 50px) !important;
+        bottom: 0 !important;
+        height: auto !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+    }
+
+    .app-container .right-panel-close,
+    .app-container .gear-panel-header > button,
+    .app-container .help-panel-header-actions > button:last-child,
+    .app-container .chat-transcript-header-actions > button[aria-label="Close chat"],
+    .app-container .chat-window-header > button[aria-label^="Close"],
+    .app-container .shop-heading-close,
+    .app-container .mume-editor-panel button[aria-label="Close editor"],
+    .app-container .mume-archive-panel > header button[title="Close"] {
+        width: 48px !important;
+        min-width: 48px !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        padding: 10px !important;
+        border-radius: 12px !important;
+        touch-action: manipulation;
+    }
+
+    .app-container .right-panel-close svg,
+    .app-container .gear-panel-header > button svg,
+    .app-container .help-panel-header-actions > button:last-child svg,
+    .app-container .chat-transcript-header-actions > button[aria-label="Close chat"] svg,
+    .app-container .chat-window-header > button[aria-label^="Close"] svg,
+    .app-container .shop-heading-close svg,
+    .app-container .mume-editor-panel button[aria-label="Close editor"] svg,
+    .app-container .mume-archive-panel > header button[title="Close"] svg {
+        width: 24px !important;
+        height: 24px !important;
+        stroke-width: 2.5px;
+    }
+}
+
 /* Suppress mobile HUD buttons, command deck, and tactical bar when docked panels are open */
 @media (max-width: 1024px) {
     body.has-docked-panels .mobile-map-panel,
@@ -473,6 +551,38 @@
 .custom-btn.target-ready .custom-btn-icon-node svg {
     color: #86efac;
     filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.78));
+}
+
+.custom-btn.auto-target-ready .button-label,
+.custom-btn.auto-target-ready .button-icon,
+.custom-btn.auto-target-ready .custom-btn-icon-node,
+.custom-btn.auto-target-ready .custom-btn-icon-node svg {
+    color: #f87171;
+    text-shadow: 0 0 6px rgba(248, 113, 113, 0.9), 0 0 12px rgba(239, 68, 68, 0.65);
+    filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.78));
+}
+
+.custom-btn.tactical-defense-ready .button-label,
+.custom-btn.tactical-defense-ready .button-icon,
+.custom-btn.tactical-defense-ready .custom-btn-icon-node {
+    color: var(--target-glow-color);
+    text-shadow: 0 0 6px color-mix(in srgb, var(--target-glow-color) 90%, transparent), 0 0 12px color-mix(in srgb, var(--target-glow-color) 65%, transparent);
+    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--target-glow-color) 78%, transparent));
+}
+
+.custom-btn.tactical-defense-ready .custom-btn-icon-node svg {
+    color: var(--target-glow-color) !important;
+    stroke: currentColor;
+    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--target-glow-color) 78%, transparent));
+}
+
+.custom-btn.tactical-offense-ready .button-label,
+.custom-btn.tactical-offense-ready .button-icon,
+.custom-btn.tactical-offense-ready .custom-btn-icon-node,
+.custom-btn.tactical-offense-ready .custom-btn-icon-node svg {
+    color: var(--target-glow-color);
+    text-shadow: 0 0 6px color-mix(in srgb, var(--target-glow-color) 90%, transparent), 0 0 12px color-mix(in srgb, var(--target-glow-color) 65%, transparent);
+    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--target-glow-color) 78%, transparent));
 }
 
 
@@ -1075,7 +1185,7 @@
         align-items: center !important;
         padding: 0 18px !important;
         box-sizing: border-box !important;
-        border-radius: 24px !important;
+        border-radius: 0 !important;
         background: rgba(18, 20, 24, 0.44) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         transition: border-color 0.14s ease, background 0.14s ease !important;
@@ -1119,7 +1229,7 @@
 
     .app-container.stage-login.is-mobile .login-btn {
         height: 38px !important;
-        border-radius: 19px !important;
+        border-radius: 0 !important;
         margin: 0 !important;
         font-family: var(--font-mono, monospace) !important;
         font-size: 0.85rem !important;
@@ -1148,7 +1258,7 @@
 
     .app-container.stage-login.is-mobile .login-new-acc-btn {
         height: 36px !important;
-        border-radius: 18px !important;
+        border-radius: 0 !important;
         padding: 0 24px !important;
         display: flex !important;
         align-items: center !important;
@@ -2431,7 +2541,7 @@
 .login-input-wrapper {
     background: rgba(22, 27, 38, 0.85);
     border: 1px solid rgba(255, 255, 255, 0.09);
-    border-radius: 7px;
+    border-radius: 0;
     padding: 10px 14px;
     margin-bottom: 20px;
     transition: background 0.14s ease, border-color 0.14s ease;
@@ -2488,7 +2598,7 @@
     justify-content: center;
     background: rgba(22, 27, 38, 0.85);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 7px;
+    border-radius: 0;
     color: #cbd5e1;
     font-family: var(--font-mono, monospace);
     font-size: 11px;
@@ -2649,7 +2759,7 @@
         align-items: center;
         padding: 0 14px;
         box-sizing: border-box;
-        border-radius: 7px;
+        border-radius: 0;
     }
     .state-account .login-input-field {
         text-align: left;
@@ -2674,7 +2784,7 @@
     }
     .state-account .login-btn {
         height: 38px !important;
-        border-radius: 7px !important;
+        border-radius: 0 !important;
         margin: 0 !important;
         font-family: var(--font-mono, monospace) !important;
         font-size: 0.85rem !important;
@@ -2692,7 +2802,7 @@
     }
     .state-account .login-new-acc-btn {
         height: 38px !important;
-        border-radius: 7px !important;
+        border-radius: 0 !important;
         padding: 0 20px !important;
         display: flex !important;
         align-items: center !important;
@@ -2744,7 +2854,7 @@
     align-items: center;
     padding: 0 14px;
     box-sizing: border-box;
-    border-radius: 7px;
+    border-radius: 0;
 }
 .force-desktop.state-account .login-input-field {
     text-align: left;
@@ -2769,7 +2879,7 @@
 }
 .force-desktop.state-account .login-btn {
     height: 38px !important;
-    border-radius: 7px !important;
+    border-radius: 0 !important;
     margin: 0 !important;
     font-family: var(--font-mono, monospace) !important;
     font-size: 0.85rem !important;
@@ -2787,7 +2897,7 @@
 }
 .force-desktop.state-account .login-new-acc-btn {
     height: 38px !important;
-    border-radius: 7px !important;
+    border-radius: 0 !important;
     padding: 0 20px !important;
     display: flex !important;
     align-items: center !important;

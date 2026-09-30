@@ -5,7 +5,7 @@ import { useGearPanelStore } from '../stores/useGearPanelStore';
 import { useHelpStore } from '../stores/useHelpStore';
 import { useSettingsStore } from '../stores/useSettingsStore';
 
-type HeaderTab = 'commands' | 'gear' | 'players' | 'chat' | 'help' | 'menu';
+type HeaderTab = 'commands' | 'gear' | 'chat' | 'help' | 'menu';
 
 // --- Logic Section ---
 export function useMobileHeaderTabs(isMobile: boolean, menuOpen: boolean, setMenuOpen: (open: boolean) => void) {
@@ -15,8 +15,6 @@ export function useMobileHeaderTabs(isMobile: boolean, menuOpen: boolean, setMen
     const setCommandPanelOpen = isMobile ? setIsMobileCommandPanelOpen : setIsCommandPanelOpen;
     const isGearPanelOpen = useGearPanelStore(state => state.isOpen);
     const setIsGearPanelOpen = useGearPanelStore(state => state.setIsOpen);
-    const showPlayersPanel = useSettingsStore(state => state.showPlayersPanel);
-    const setShowPlayersPanel = useSettingsStore(state => state.setShowPlayersPanel);
     const showChatWindow = useSettingsStore(state => state.showChatWindow);
     const setShowChatWindow = useSettingsStore(state => state.setShowChatWindow);
     const isHelpOpen = useHelpStore(state => state.isOpen);
@@ -26,27 +24,26 @@ export function useMobileHeaderTabs(isMobile: boolean, menuOpen: boolean, setMen
     const toggleHeaderTab = (tab: HeaderTab): boolean => {
         const current = {
             commands: isCommandPanelOpen, gear: isGearPanelOpen,
-            players: showPlayersPanel, chat: showChatWindow,
+            chat: showChatWindow,
             help: isHelpOpen, menu: menuOpen,
         };
         const opening = !current[tab];
         if (isMobile && opening) {
             setIsMobileCommandPanelOpen(false);
             setIsGearPanelOpen(false);
-            setShowPlayersPanel(false);
             setShowChatWindow(false);
             setIsHelpOpen(false);
             setMenuOpen(false);
         }
         const setters = {
             commands: setCommandPanelOpen, gear: setIsGearPanelOpen,
-            players: setShowPlayersPanel, chat: setShowChatWindow,
+            chat: setShowChatWindow,
             help: setIsHelpOpen, menu: setMenuOpen,
         };
         setters[tab](opening);
         return opening;
     };
 
-    return { isCommandPanelOpen, isGearPanelOpen, showPlayersPanel, showChatWindow,
+    return { isCommandPanelOpen, isGearPanelOpen, showChatWindow,
         isHelpOpen, helpData, toggleHeaderTab };
 }

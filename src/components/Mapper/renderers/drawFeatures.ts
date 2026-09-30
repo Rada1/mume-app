@@ -887,7 +887,7 @@ export const drawRoomFlagsOptimized = (
         let off = -totalW / 2 + (mobMatched[0]?.size ?? 0) / 2;
         for (const ind of mobMatched) {
             const icon = getMMapperAsset(ind, false) || getIndicatorIcon(ind.sym, ind.color, false, 0, true, true, ind.size);
-            const iconSize = getMMapperAsset(ind, false) ? 35 : icon.width;
+            const iconSize = getMMapperAsset(ind, false) ? 32 : icon.width;
             ctx.save();
             ctx.translate(anchorX + off, anchorY);
             ctx.scale(scale, scale);
@@ -910,7 +910,7 @@ export const drawRoomFlagsOptimized = (
 
             const size = Math.max(9, Math.round(ind.size * 0.75));
             const icon = getMMapperAsset(ind, true) || getIndicatorIcon(ind.sym, ind.color, false, 0, true, true, size);
-            const iconSize = getMMapperAsset(ind, true) ? 25 : icon.width;
+            const iconSize = getMMapperAsset(ind, true) ? 23 : icon.width;
             
             ctx.save();
             ctx.translate(anchorX + ox, anchorY + oy);

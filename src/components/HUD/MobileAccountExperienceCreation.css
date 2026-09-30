@@ -71,7 +71,7 @@
     box-sizing: border-box;
     padding: 13px 15px;
     border: 1px solid rgba(201, 168, 76, 0.34);
-    border-radius: 6px;
+    border-radius: 0;
     background: rgba(27, 21, 16, 0.86);
     color: #ddd3be;
     font: inherit;
@@ -117,7 +117,7 @@
     min-height: 56px;
     padding: 10px 14px !important;
     border: 1px solid rgba(229, 195, 109, 0.62) !important;
-    border-radius: 6px !important;
+    border-radius: 0 !important;
     background: rgba(201, 168, 76, 0.15) !important;
     color: #f0cc6b !important;
     font-family: inherit !important;
@@ -174,7 +174,7 @@
     height: auto !important;
     padding: 8px 16px !important;
     border: 1px solid rgba(201, 168, 76, 0.34) !important;
-    border-radius: 6px !important;
+    border-radius: 0 !important;
     background: rgba(27, 21, 16, 0.92) !important;
     color: #ddd3be !important;
     font-family: inherit !important;

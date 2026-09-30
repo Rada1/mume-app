@@ -16,9 +16,10 @@ import {
     isPlayerFailedAttackLine,
     extractDeadMobName
 } from '../../utils/combatRechargeUtils';
-import { parseResourceGainLine } from '../../utils/resourceGainUtils';
 import { triggerKillPrompt } from '../../stores/useKillPromptStore';
+import { gmcpBus } from '../../events/gmcpBus';
 import { getNearbyCombatImpact } from './nearbyCombatAudio';
+import { useXpTickerParser } from './useXpTickerParser';
 
 export interface CombatParserDeps {
     inCombatRef: React.RefObject<boolean>;
@@ -144,7 +145,12 @@ export function useCombatParser(deps: CombatParserDeps) {
         return { isMatch: true, side, isImpact, modifier, verb, isPlayerTarget, isMainActor };
     }, [inCombatRef, groupMembers, spectateCharacterName, roomPlayers, characterName]);
 
+    // --- Logic Section: Combat Exit and Death ---
     const handleCombatExit = useCallback((lower: string, isSnoop: boolean = false, originalText?: string) => {
+        if (!isSnoop && /you are dead/i.test(lower)) {
+            playEffect?.('death'); gmcpBus.emit('Game.PlayerDeath', undefined);
+        }
+
         if (/\bis dead!\s*r\.?i\.?p/i.test(lower) && (!isSnoop || deps.isSpectateMode)) {
             playKillSound?.();
             // Fire the loot prompt off the R.I.P. line directly — by the time this
@@ -187,49 +193,15 @@ export function useCombatParser(deps: CombatParserDeps) {
         return false;
     }, [inCombatRef, setOpponentHealthStatus, setOpponentName, setDeathRoomId, mapperRef, setSpectateInCombat, setSpectateOpponentStatus, setSpectateOpponentName, playKillSound, playEffect]);
 
-    const handleXpTicker = useCallback((lower: string, isSnoop: boolean = false) => {
-        const resourceGain = parseResourceGainLine(lower);
+    const handleXpTicker = useXpTickerParser({
+        setCharacterInfo,
+        triggerXpTicker,
+        triggerTpTicker,
+        playLevelSound,
+        isSpectateMode: deps.isSpectateMode
+    });
 
-        if (resourceGain?.kind === 'xp') {
-            const delta = resourceGain.amount;
-            if (delta > 0 && !isSnoop) {
-                setCharacterInfo(prev => {
-                    const nextXp = prev.xp + delta;
-                    triggerXpTicker?.(nextXp);
-                    return {
-                        ...prev,
-                        xp: nextXp,
-                        tnl: Math.max(0, prev.tnl - delta)
-                    };
-                });
-            }
-            return true;
-        } else if (resourceGain?.kind === 'tp') {
-            const delta = resourceGain.amount;
-            if (delta > 0 && !isSnoop) {
-                setCharacterInfo(prev => {
-                    const nextTp = prev.tp + delta;
-                    triggerTpTicker?.(nextTp);
-                    return {
-                        ...prev,
-                        tp: nextTp,
-                        tpnl: Math.max(0, prev.tpnl - delta)
-                    };
-                });
-            }
-            return true;
-        } else if (/you receive your share of experience/i.test(lower)) {
-            // Share of experience doesn't give a delta, but it will eventually trigger 
-            // a GMCP update which our session state effect will catch.
-            return true;
-        }
- else if (/you gain a level!/i.test(lower)) {
-            if (!isSnoop || deps.isSpectateMode) playLevelSound?.();
-            return true;
-        }
-        return false;
-    }, [setCharacterInfo, triggerXpTicker, triggerTpTicker, playLevelSound, deps.isSpectateMode]);
-
+    // --- Logic Section: Combat Line Parsing ---
     const parseCombatLine = useCallback((textOnly: string, cleanLine: string, isSnoop: boolean = false): any => {
         const lower = textOnly.toLowerCase();
         if (!isSnoop) recordCombatRechargeBlockedLine(textOnly);

@@ -9,6 +9,7 @@ import { Eye, X } from 'lucide-react';
 import { useGame, useLog, useVitals, useUI } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useModeStore } from '../../stores/useModeStore';
+import { useCharacterPanelStore } from '../../stores/useCharacterPanelStore';
 import { useMapper } from '../../context/useMapper';
 import { MapCanvas } from './MapCanvas';
 import { MapFilterBar } from './MapFilterBar';
@@ -58,10 +59,13 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const [isMobile] = useState(() => isMobileProp ?? /iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const wallBumpAnimationRef = useRef<Animation | null>(null);
     const cameraRef = useRef({ x: 0, y: 0, zoom: 1 });
     const cardRef = useRef<HTMLDivElement>(null);
     const imagesRef = useRef<Record<string, HTMLImageElement>>({});
-    useMapAssets(imagesRef);
+    const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode || state.isClassicMode);
+    const isCharacterPanelMinimized = useCharacterPanelStore(state => state.isMinimized);
+    useMapAssets(imagesRef, !isPerformanceMode);
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number, startTime?: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
 
@@ -69,13 +73,13 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         triggerHaptic, executeCommand, btn, joystick, playClickSound,
         setIsTrackpadModifierActive, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode,
         selectedObjectIds, inCombat, viewport, roomZone,
-        roomName, currentTerrain, weather
+        roomName, roomExits, currentTerrain, weather, characterName: gameCharacterName
     } = useGame();
     const { isLandscape } = viewport;
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
     const { setPopoverState, popoverState, ui } = useUI();
-    const { playerColor, npcColor, enemyColor, objectColor, targetColor, showBackgroundImage } = useSettingsStore();
+    const { playerColor, npcColor, enemyColor, objectColor, targetColor, showBackgroundImage, mapBrightness } = useSettingsStore();
     // The map is always rendered in dark mode regardless of the global app theme.
     const isDarkMode = true;
     const displayPlayerColor = playerColor;
@@ -87,7 +91,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const isMapLookHeld = heldButton?.id === 'map-long-press' && !heldButton.didFire;
     const [backgroundAlignMode, setBackgroundAlignMode] = useState(false);
     const [isCtrlAlignHeld, setIsCtrlAlignHeld] = useState(false);
-    const [mapSwipeWheel, setMapSwipeWheel] = useState<{ x: number; y: number } | null>(null);
+    const [mapSwipeWheel, setMapSwipeWheel] = useState<{ x: number; y: number; originX: number; originY: number } | null>(null);
 
     const entitiesRef = useRef({
         roomChars,
@@ -101,6 +105,29 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         target,
         combatAnimationActive: false
     });
+
+    useEffect(() => {
+        const shakeMap = () => {
+            const canvas = canvasRef.current;
+            if (!canvas?.animate) return;
+            wallBumpAnimationRef.current?.cancel();
+            wallBumpAnimationRef.current = canvas.animate([
+                { transform: 'translate3d(0, 0, 0)' },
+                { transform: 'translate3d(-4px, 1px, 0)' },
+                { transform: 'translate3d(4px, -1px, 0)' },
+                { transform: 'translate3d(-2px, 1px, 0)' },
+                { transform: 'translate3d(1px, 0, 0)' },
+                { transform: 'translate3d(0, 0, 0)' }
+            ], { duration: 150, easing: 'ease-out' });
+        };
+
+        window.addEventListener('mume-mapper-wall-bump', shakeMap);
+        return () => {
+            window.removeEventListener('mume-mapper-wall-bump', shakeMap);
+            wallBumpAnimationRef.current?.cancel();
+            wallBumpAnimationRef.current = null;
+        };
+    }, []);
 
     useEffect(() => {
         let combatAnimationActive = !!(opponentId || opponentName);
@@ -139,7 +166,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const {
         rooms, setRooms, markers, setMarkers, currentRoomId,
         handleAddRoom, handleDeleteRoom, roomsRef,
-        currentRoomIdRef, markersRef, preloadedCoordsRef,
+        currentRoomIdRef, markersRef, preloadedCoordsRef, performanceMapRef, performanceMapRevision,
         unveilMap, exploredVnums, handleSyncLocation,
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
@@ -194,7 +221,16 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
     const { handleCenterOnPlayer } = useMapperPlayerTracking(currentRoomId, rooms, autoCenter, setAutoCenter, cameraRef, canvasRef, playerPosRef, playerTrailRef, lastRoomIdRef, triggerRender, setViewZ, preloadedCoordsRef);
     const revealAll = !!(unveilMap || treatMapAsExplored);
-    const { isWalking, walkTargetId, walkPath, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage, revealAll, exploredVnums);
+    const { isWalking, walkTargetId, walkPath, startWalking, stopWalking } = useSmartWalk(
+        currentRoomId,
+        rooms,
+        executeCommand,
+        preloadedCoordsRef,
+        addMessage,
+        revealAll,
+        exploredVnums,
+        isPerformanceMode ? performanceMapRef.current : null
+    );
     const mode = ui.mapMode || 'play';
 
     useEffect(() => {
@@ -237,6 +273,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         spatialIndexRef: context.spatialIndexRef,
         startWalking, stopWalking,
         executeCommand, joystick, btn, heldButton, heldButtonRef, setHeldButton, target,
+        roomExits,
         setIsTrackpadModifierActive,
         popoverState,
         setPopoverState,
@@ -287,8 +324,9 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             overflow: 'hidden', 
             backgroundColor: 'transparent', 
             touchAction: 'none',
-            zIndex: infoRoomId ? 2900 : undefined
-        }}>
+            zIndex: infoRoomId ? 2900 : undefined,
+            '--map-canvas-brightness': mapBrightness / 100
+        } as React.CSSProperties}>
             {isImmersionMode && !isMobile && (
                 <>
                     <div className="mapper-overlay mapper-sun-overlay" />
@@ -303,6 +341,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 rooms={rooms}
                 markers={markers}
                 currentRoomId={currentRoomId}
+                onPlayerRoom={context.setCurrentRoomId}
                 selectedRoomIds={selectedRoomIds}
                 selectedMarkerId={selectedMarkerId}
                 camera={cameraRef}
@@ -323,6 +362,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 stableRoomIdRef={currentRoomIdRef}
                 stableMarkersRef={markersRef}
                 preloadedCoordsRef={preloadedCoordsRef}
+                performanceMapRef={performanceMapRef}
+                performanceMapRevision={performanceMapRevision}
                 spatialIndexRef={context.spatialIndexRef}
                 lighting={effectiveLighting}
                 isImmersionMode={isImmersionMode}
@@ -340,6 +381,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 walkPath={walkPath}
                 baseMapExitsRef={context.baseMapExitsRef}
                 entitiesRef={entitiesRef}
+                groupMembers={groupMembers}
                 serverIdIndexRef={context.serverIdIndexRef}
                 inlineCategories={inlineCategories}
                 playerColor={displayPlayerColor}
@@ -367,10 +409,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 selectedRegionLabelId={selectedRegionLabelId}
                 joystickActive={joystick?.joystickActive}
             />
-
-
-
-
             {!isWalking && closestRoomId && (
                 (filterPathIds.length > 1 || (selectedSearchRoomId && selectedSearchRoomId.replace(/^(m_|r_)/, '') === closestRoomId.replace(/^(m_|r_)/, ''))) && (
                 <div 
@@ -417,8 +455,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 </div>
             )}
 
-            {mapSwipeWheel && <MapSwipeWheelOverlay
-                pointerPosition={mapSwipeWheel}
+            {!effectiveIsMinimized && isCharacterPanelMinimized && !viewport.isKeyboardOpen && <MapSwipeWheelOverlay
+                isActive={Boolean(mapSwipeWheel)}
                 bounds={(() => {
                     const surface = canvasRef.current?.closest('.mobile-mapper-touch-surface')
                         || canvasRef.current?.closest('.mapper-container');

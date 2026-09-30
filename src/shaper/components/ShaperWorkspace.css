@@ -4,7 +4,7 @@
  */
 
 .shaper-workspace {
-    --shaper-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --shaper-font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     position: fixed;
     inset: 0;
     z-index: 20000;
@@ -19,6 +19,16 @@
 .shaper-workspace *::before,
 .shaper-workspace *::after {
     font-family: inherit;
+}
+
+/* The app's global heading/help rules force decorative theme fonts with !important. */
+.shaper-workspace :is(
+    h1, h2, h3, h4, h5, h6,
+    .drawer-title, .modal-title, .popover-header, .cmd-action-header,
+    .char-detail-header, .player-name,
+    .help-content, .markdown-body, .help-nav-item, .popover-item, .popover-empty
+) {
+    font-family: var(--shaper-font) !important;
 }
 
 .shaper-topbar {
@@ -91,6 +101,12 @@
     border-radius: 12px;
     padding: 3px 10px;
     margin-left: 8px;
+}
+
+.shaper-topbar button.shaper-topbar-zone-info {
+    min-height: unset;
+    padding: 3px 8px;
+    cursor: pointer;
 }
 
 .shaper-topbar-status {

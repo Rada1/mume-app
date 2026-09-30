@@ -7,11 +7,8 @@ import React from 'react';
 import FontSizeSetting from './FontSizeSetting';
 import { ToggleRow } from './SettingHelpers';
 import { useSettingsStore } from '../../stores/useSettingsStore';
-import { UiMode } from '../../types';
 
 interface AppearanceSettingsProps {
-    uiMode: UiMode;
-    setUiMode: (val: UiMode) => void;
     theme: 'light' | 'dark';
     setTheme: (val: 'light' | 'dark') => void;
     fontFamily: string;
@@ -19,14 +16,6 @@ interface AppearanceSettingsProps {
     logFontSize: number;
     logFontSizePx: number;
     setLogFontSize: (v: number | ((prev: number) => number)) => void;
-    isTimestampEnabled: boolean;
-    setIsTimestampEnabled: (val: boolean) => void;
-    hidePrompt: boolean;
-    setHidePrompt: (val: boolean) => void;
-    showBlockHeaders: boolean;
-    setShowBlockHeaders: (val: boolean) => void;
-    isTextRevealEnabled: boolean;
-    setIsTextRevealEnabled: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
     isPerformanceMode: boolean;
@@ -34,8 +23,6 @@ interface AppearanceSettingsProps {
 }
 
 export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
-    uiMode,
-    setUiMode,
     theme,
     setTheme,
     fontFamily,
@@ -43,65 +30,63 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
     logFontSize,
     logFontSizePx,
     setLogFontSize,
-    isTimestampEnabled,
-    setIsTimestampEnabled,
-    hidePrompt,
-    setHidePrompt,
-    showBlockHeaders,
-    setShowBlockHeaders,
-    isTextRevealEnabled,
-    setIsTextRevealEnabled,
     isImmersionMode,
     setIsImmersionMode,
     isPerformanceMode,
     setIsPerformanceMode,
 }) => {
-    const drawerZoom = useSettingsStore(s => s.drawerZoom ?? 1.0);
-    const setDrawerZoom = useSettingsStore(s => s.setDrawerZoom);
-    const showChatWindow = useSettingsStore(s => s.showChatWindow);
-    const setShowChatWindow = useSettingsStore(s => s.setShowChatWindow);
-    const characterDrawerOpacity = useSettingsStore(s => s.characterDrawerOpacity);
-    const setCharacterDrawerOpacity = useSettingsStore(s => s.setCharacterDrawerOpacity);
-    const bottomBarOpacity = useSettingsStore(s => s.bottomBarOpacity);
-    const setBottomBarOpacity = useSettingsStore(s => s.setBottomBarOpacity);
+    const keepScreenAwake = useSettingsStore(s => s.keepScreenAwake);
+    const setKeepScreenAwake = useSettingsStore(s => s.setKeepScreenAwake);
+    const screenWakeLockStatus = useSettingsStore(s => s.screenWakeLockStatus);
+    const isClassicMode = useSettingsStore(s => s.isClassicMode);
+    const setIsClassicMode = useSettingsStore(s => s.setIsClassicMode);
+
+    const screenWakeLockDescription = screenWakeLockStatus === 'insecure-context'
+        ? 'Chrome supports this, but the app must be opened over HTTPS (localhost is also secure).'
+        : screenWakeLockStatus === 'unsupported'
+            ? 'Screen wake lock is unavailable in this browser or platform.'
+        : screenWakeLockStatus === 'unavailable'
+            ? 'The device could not keep the screen awake. Check battery saver settings.'
+            : screenWakeLockStatus === 'paused'
+                ? 'Paused while the app is hidden; it will resume when you return.'
+                : keepScreenAwake
+                    ? 'The screen stays awake while the app is visible. Uses more battery.'
+                    : 'Prevent the screen from dimming while MUME is open.';
 
     return (
         <>
-            {/* Interface Mode */}
-            <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Interface Mode</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Force Desktop or Mobile orientation.</div>
-                    </div>
-                    <div style={{ display: 'flex', backgroundColor: 'var(--input-bg)', borderRadius: '20px', padding: '2px', border: '1px solid var(--border-modal)', overflow: 'hidden', flexWrap: 'wrap', justifyContent: 'center' }}>
-                        {(['auto', 'desktop', 'portrait', 'landscape'] as const).map((m) => (
-                            <button
-                                key={m}
-                                onClick={() => setUiMode(m)}
-                                style={{
-                                    padding: '4px 10px', borderRadius: '18px', border: 'none', cursor: 'pointer',
-                                    backgroundColor: uiMode === m ? 'var(--accent)' : 'transparent',
-                                    color: uiMode === m ? '#000' : 'var(--text-primary)',
-                                    fontSize: '0.7rem', fontWeight: 'bold',
-                                    textTransform: 'capitalize',
-                                    margin: '2px'
-                                }}
-                            >{m}</button>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
             {/* Appearance */}
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Appearance</label>
+
+                <ToggleRow
+                    label="Classic Mode"
+                    description="Show only the map and game terminal. Keeps game-sent ANSI colors and removes client decorations, animations, lighting, and sounds."
+                    value={isClassicMode}
+                    onToggle={() => setIsClassicMode(!isClassicMode)}
+                />
 
                 <ToggleRow
                     label="Light Mode"
                     description="Use the warm parchment-and-gold light theme."
                     value={theme === 'light'}
                     onToggle={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                />
+
+                {/* Immersion Mode */}
+                <ToggleRow
+                    label="Immersion Mode"
+                    description="Enable lighting, weather, fog, embers, and scene backgrounds."
+                    value={isImmersionMode}
+                    onToggle={() => setIsImmersionMode(!isImmersionMode)}
+                />
+
+                {/* Performance Mode */}
+                <ToggleRow
+                    label="Performance Mode"
+                    description="Disable blurs, shadows, animations, transitions, and weather for smoother performance."
+                    value={isPerformanceMode}
+                    onToggle={() => setIsPerformanceMode(!isPerformanceMode)}
                 />
 
                 {/* Main Font Family */}
@@ -147,154 +132,12 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                     inline
                 />
 
-                {/* Utility Drawer Zoom */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Utility Drawer Zoom</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Adjust font size and scaling of utility drawer panels.</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <button
-                            className="btn-secondary"
-                            style={{ padding: '2px 10px', fontSize: '1rem', lineHeight: 1, margin: 0 }}
-                            onClick={() => setDrawerZoom(Math.max(0.5, Math.round((drawerZoom - 0.1) * 10) / 10))}
-                        >-</button>
-                        <span style={{
-                            width: '48px',
-                            textAlign: 'center',
-                            fontSize: '0.85rem',
-                            color: 'var(--text-primary)',
-                            fontFamily: 'monospace',
-                        }}>{Math.round(drawerZoom * 100)}%</span>
-                        <button
-                            className="btn-secondary"
-                            style={{ padding: '2px 10px', fontSize: '1rem', lineHeight: 1, margin: 0 }}
-                            onClick={() => setDrawerZoom(Math.min(2.0, Math.round((drawerZoom + 0.1) * 10) / 10))}
-                        >+</button>
-                        {drawerZoom !== 1.0 && (
-                            <button
-                                className="btn-secondary"
-                                style={{ padding: '2px 8px', fontSize: '0.7rem', margin: 0 }}
-                                onClick={() => setDrawerZoom(1.0)}
-                            >Reset</button>
-                        )}
-                    </div>
-                </div>
-
-                {/* Character Drawer Opacity */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Character Drawer Opacity</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Adjust the transparency of the character drawer on desktop.</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <input
-                            type="range"
-                            min="0.2"
-                            max="1.0"
-                            step="0.05"
-                            value={characterDrawerOpacity}
-                            onChange={(e) => setCharacterDrawerOpacity(parseFloat(e.target.value))}
-                            style={{
-                                cursor: 'pointer',
-                                accentColor: 'var(--accent, #d4aa00)'
-                            }}
-                        />
-                        <span style={{
-                            width: '48px',
-                            textAlign: 'right',
-                            fontSize: '0.85rem',
-                            color: 'var(--text-primary)',
-                            fontFamily: 'monospace',
-                            fontWeight: 'bold'
-                        }}>{Math.round(characterDrawerOpacity * 100)}%</span>
-                    </div>
-                </div>
-
-                {/* Bottom Bar Opacity */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Bottom Bar Opacity</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Adjust the transparency of the bottom interactive action box.</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <input
-                            type="range"
-                            min="0.2"
-                            max="1.0"
-                            step="0.05"
-                            value={bottomBarOpacity}
-                            onChange={(e) => setBottomBarOpacity(parseFloat(e.target.value))}
-                            style={{
-                                cursor: 'pointer',
-                                accentColor: 'var(--accent, #d4aa00)'
-                            }}
-                        />
-                        <span style={{
-                            width: '48px',
-                            textAlign: 'right',
-                            fontSize: '0.85rem',
-                            color: 'var(--text-primary)',
-                            fontFamily: 'monospace',
-                            fontWeight: 'bold'
-                        }}>{Math.round(bottomBarOpacity * 100)}%</span>
-                    </div>
-                </div>
-
-                {/* Show Timestamps */}
+                {/* Keep Screen Awake */}
                 <ToggleRow
-                    label="Show Timestamps"
-                    description="Display the time for each message (excludes room info)."
-                    value={isTimestampEnabled}
-                    onToggle={() => setIsTimestampEnabled(!isTimestampEnabled)}
-                />
-
-                {/* Hide Vitals/Prompt */}
-                <ToggleRow
-                    label="Hide Vitals/Prompt"
-                    description="Hide the prompt bar above the input area."
-                    value={hidePrompt}
-                    onToggle={() => setHidePrompt(!hidePrompt)}
-                />
-
-                {/* Show Combat/Location Headers */}
-                <ToggleRow
-                    label="Show Combat/Location Headers"
-                    description="Show block header indicators for combat messages and location changes."
-                    value={showBlockHeaders}
-                    onToggle={() => setShowBlockHeaders(!showBlockHeaders)}
-                />
-
-                {/* Chat Window */}
-                <ToggleRow
-                    label="Show Chat Window"
-                    description="Show a separate window for tells, says, narrates, and other communication."
-                    value={showChatWindow}
-                    onToggle={() => setShowChatWindow(!showChatWindow)}
-                />
-
-                {/* Text Reveal Effect */}
-                <ToggleRow
-                    label="Text Reveal Effect"
-                    description="Animate new messages with a typewriter-style reveal as they arrive."
-                    value={isTextRevealEnabled}
-                    onToggle={() => setIsTextRevealEnabled(!isTextRevealEnabled)}
-                />
-
-                {/* Immersion Mode */}
-                <ToggleRow
-                    label="Immersion Mode"
-                    description="Enable lighting, weather, fog, embers, and scene backgrounds."
-                    value={isImmersionMode}
-                    onToggle={() => setIsImmersionMode(!isImmersionMode)}
-                />
-
-                {/* Performance Mode */}
-                <ToggleRow
-                    label="Performance Mode"
-                    description="Disable blurs, shadows, animations, transitions, and weather for smoother performance."
-                    value={isPerformanceMode}
-                    onToggle={() => setIsPerformanceMode(!isPerformanceMode)}
+                    label="Keep Screen Awake"
+                    description={screenWakeLockDescription}
+                    value={keepScreenAwake}
+                    onToggle={() => setKeepScreenAwake(!keepScreenAwake)}
                 />
             </div>
         </>

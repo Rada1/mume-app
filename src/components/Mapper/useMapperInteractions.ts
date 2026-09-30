@@ -6,11 +6,17 @@ import { GRID_SIZE, DRAG_SENSITIVITY, ZOOM_SENSITIVITY, checkRoomFilter } from '
 import { useMapHitTest } from './hooks/useMapHitTest';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import { fireHeldCommandAtMapOccupant } from './mapperHeldCommandTarget';
+import { updateDoorInteractionState } from './doorInteractionState';
 import { sanitizeGameTarget } from '../../utils/gameUtils';
 import type { GmcpOccupant, GroupMember, InlineCategoryConfig } from '../../types';
 import { registerOccupantTap } from './occupantAnimStore';
 import { audioManager } from '../../services/audio/AudioManager';
-import { getMapSwipeWheelCommand } from './mapSwipeWheelUtils';
+import {
+    getMapSwipeWheelCell,
+    getMapSwipeWheelGestureCommand,
+    type MapSwipeWheelPoint,
+    type MapSwipeWheelPosition
+} from './mapSwipeWheelUtils';
 
 const MAP_SWIPE_REPEAT_COMMANDS = new Set(['north', 'south', 'east', 'west', 'up', 'down']);
 
@@ -34,7 +40,7 @@ export interface InteractionDeps {
     setAutoCenter: (auto: boolean) => void;
     setContextMenu: (menu: any) => void;
     setInfoRoomId: (id: string | null) => void;
-    setMapSwipeWheel: (position: { x: number; y: number } | null) => void;
+    setMapSwipeWheel: (position: MapSwipeWheelPosition | null) => void;
     setSelectedRoomIds: (ids: Set<string>) => void;
     selectedRoomIds: Set<string>;
     selectedMarkerId: string | null;
@@ -55,6 +61,7 @@ export interface InteractionDeps {
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
     spatialIndexRef: React.MutableRefObject<any>;
     setIsTrackpadModifierActive?: (val: boolean) => void;
+    roomExits?: string[];
     popoverState?: any;
     setPopoverState: (val: any) => void;
     setActiveSet: (setId: string) => void;
@@ -147,6 +154,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
     const comboFiredRef = useRef(false);
     const ignoredPointerUpsRef = useRef<Set<number>>(new Set());
     const mapLookActivatedRef = useRef(false);
+    const mapSwipeOriginRef = useRef<MapSwipeWheelPoint | null>(null);
     const lastMapPointerTypeRef = useRef<string | null>(null);
 
     // Stable ref for event listeners to avoid re-binding
@@ -167,25 +175,26 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
     }, []);
 
     const updateMapSwipeRepeat = useCallback((command: string | null) => {
-        if (!command || !MAP_SWIPE_REPEAT_COMMANDS.has(command)) {
-            clearMapSwipeRepeat();
-            return;
+        const nextCommand = command && MAP_SWIPE_REPEAT_COMMANDS.has(command) ? command : null;
+        if (mapSwipeRepeatCommandRef.current !== nextCommand) {
+            mapSwipeRepeatCommandRef.current = nextCommand;
+            mapSwipeRepeatFiredRef.current = false;
         }
-        if (mapSwipeRepeatCommandRef.current === command && mapSwipeRepeatTimerRef.current !== null) return;
+        if (!nextCommand || mapSwipeRepeatTimerRef.current !== null) return;
 
-        clearMapSwipeRepeat();
-        mapSwipeRepeatCommandRef.current = command;
         mapSwipeRepeatTimerRef.current = window.setInterval(() => {
-            if (!mapLookActivatedRef.current || mapSwipeRepeatCommandRef.current !== command) {
+            if (!mapLookActivatedRef.current) {
                 clearMapSwipeRepeat();
                 return;
             }
+            const activeCommand = mapSwipeRepeatCommandRef.current;
+            if (!activeCommand) return;
             mapSwipeRepeatFiredRef.current = true;
-            depsRef.current.executeCommand(command, false, false, false, false, { fromUi: true });
+            depsRef.current.executeCommand(activeCommand, false, false, false, false, { fromUi: true });
             depsRef.current.playClickSound?.();
             depsRef.current.triggerHaptic(10);
             window.dispatchEvent(new CustomEvent('mume-mapper-center-on-player'));
-        }, 500);
+        }, 300);
     }, [clearMapSwipeRepeat]);
 
     useEffect(() => () => clearMapSwipeRepeat(), [clearMapSwipeRepeat]);
@@ -213,6 +222,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         contextMenuTriggeredRef.current = false;
         comboFiredRef.current = false;
         mapLookActivatedRef.current = false;
+        mapSwipeOriginRef.current = null;
         setMapSwipeWheel(null);
         isDraggingInternalRef.current = false;
         dragTypeRef.current = null;
@@ -375,20 +385,32 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
     useEffect(() => {
         const cvs = canvasRef.current;
         if (!cvs) return;
+        const eventRoot: HTMLElement | Document = cvs.parentElement || document;
+        const currentCanvas = () => canvasRef.current || cvs;
 
         const getMapSwipeBounds = () => {
-            const surface = cvs.closest('.mobile-mapper-touch-surface') || cvs.closest('.mapper-container');
+            const canvas = currentCanvas();
+            const surface = canvas.closest('.mobile-mapper-touch-surface') || canvas.closest('.mapper-container');
             const rect = surface?.getBoundingClientRect();
             return rect
                 ? { x: rect.left, y: rect.top, width: rect.width, height: rect.height }
                 : { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight };
         };
 
+        const getAvailableVerticalSwipeExits = () => {
+            const exits = new Set((depsRef.current.roomExits || []).map(exit => exit.toLowerCase()));
+            const available = new Set<'up' | 'down'>();
+            if (exits.has('up') || exits.has('u')) available.add('up');
+            if (exits.has('down') || exits.has('d')) available.add('down');
+            return available;
+        };
+
         const activateMapSwipeWheel = (x: number, y: number) => {
             if (mapLookActivatedRef.current) return;
             mapLookActivatedRef.current = true;
-            setMapSwipeWheel({ x, y });
-            updateMapSwipeRepeat(getMapSwipeWheelCommand({ x, y }, getMapSwipeBounds()));
+            const origin = mapSwipeOriginRef.current || { x, y };
+            setMapSwipeWheel({ x, y, originX: origin.x, originY: origin.y });
+            updateMapSwipeRepeat(getMapSwipeWheelGestureCommand(origin, { x, y }, getMapSwipeBounds(), getAvailableVerticalSwipeExits()));
             depsRef.current.joystick?.stopRepeatTimer?.();
             depsRef.current.joystick?.handleJoystickCancel?.();
             depsRef.current.setInfoRoomId(null);
@@ -397,6 +419,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         };
 
         const onDown = (e: PointerEvent) => {
+            if (e.target !== currentCanvas()) return;
             // IGNORE all internal map interactions if a window/cluster drag is in progress
             if (document.body.classList.contains('global-dragging')) return;
             lastMapPointerTypeRef.current = e.pointerType;
@@ -417,7 +440,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             e.stopPropagation();
 
             activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-            try { cvs.setPointerCapture(e.pointerId); } catch(err) {}
+            try { currentCanvas().setPointerCapture(e.pointerId); } catch(err) {}
             
             const pointers = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b).map(id => ({ id, ...activePointersRef.current.get(id)! }));
             lastPointersRef.current = pointers;
@@ -426,6 +449,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             if (activePointersRef.current.size === 1) {
                 const { mode, setSelectedRoomIds } = depsRef.current;
                 startMouseRef.current = { x: e.clientX, y: e.clientY };
+                mapSwipeOriginRef.current = { x: e.clientX, y: e.clientY };
                 lastMouseRef.current = { x: e.clientX, y: e.clientY };
                 startTimeRef.current = Date.now();
                 hasDraggedRef.current = false;
@@ -520,8 +544,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
             activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
             if (mapLookActivatedRef.current) {
-                setMapSwipeWheel({ x: e.clientX, y: e.clientY });
-                updateMapSwipeRepeat(getMapSwipeWheelCommand({ x: e.clientX, y: e.clientY }, getMapSwipeBounds()));
+                const origin = mapSwipeOriginRef.current || startMouseRef.current;
+                setMapSwipeWheel({ x: e.clientX, y: e.clientY, originX: origin.x, originY: origin.y });
+                updateMapSwipeRepeat(getMapSwipeWheelGestureCommand(origin, { x: e.clientX, y: e.clientY }, getMapSwipeBounds(), getAvailableVerticalSwipeExits()));
             }
             
             const { setAutoCenter, setIsDragging } = depsRef.current;
@@ -657,7 +682,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             if (!activePointersRef.current.has(e.pointerId)) {
                 if (ignoredPointerUpsRef.current.has(e.pointerId)) {
                     ignoredPointerUpsRef.current.delete(e.pointerId);
-                    try { cvs.releasePointerCapture(e.pointerId); } catch(err) {}
+                    try { currentCanvas().releasePointerCapture(e.pointerId); } catch(err) {}
                 }
                 // Pointer never started on the canvas — leave it to whatever owns it
                 // (popover buttons, action buttons, etc). Otherwise stale dragTypeRef
@@ -671,9 +696,12 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             const wasLongPress = contextMenuTriggeredRef.current;
             const wasMapSwipeWheelHold = mapLookActivatedRef.current;
             if (wasMapSwipeWheelHold) {
-                const command = getMapSwipeWheelCommand(
+                const origin = mapSwipeOriginRef.current || startMouseRef.current;
+                const command = getMapSwipeWheelGestureCommand(
+                    origin,
                     { x: e.clientX, y: e.clientY },
-                    getMapSwipeBounds()
+                    getMapSwipeBounds(),
+                    getAvailableVerticalSwipeExits()
                 );
                 const alreadyRepeated = Boolean(command
                     && MAP_SWIPE_REPEAT_COMMANDS.has(command)
@@ -686,6 +714,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     triggerHaptic(10);
                 }
                 setMapSwipeWheel(null);
+                mapSwipeOriginRef.current = null;
                 // The wheel command is dispatched above; don't fall through to
                 // room, occupant, or exit tap handling on the same release.
                 if (joystick?.handleJoystickCancel) joystick.handleJoystickCancel(e as any);
@@ -699,17 +728,50 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 lastPointersRef.current = [];
                 return;
             }
+
+            const origin = mapSwipeOriginRef.current;
+            const isCenterCellTap = mode === 'play'
+                && lastMapPointerTypeRef.current === 'touch'
+                && !wasLongPress
+                && !hasDraggedRef.current
+                && origin !== null
+                && getMapSwipeWheelCell(origin, getMapSwipeBounds()) === 'center';
+            const centerTapWorld = isCenterCellTap
+                ? hitTestRef.current.screenToWorld(e.clientX, e.clientY)
+                : null;
+            const centerTapExit = centerTapWorld
+                ? hitTestRef.current.getExitAt?.(centerTapWorld.x, centerTapWorld.y)
+                : null;
+            if (isCenterCellTap && !centerTapExit) {
+                activePointersRef.current.delete(e.pointerId);
+                try { currentCanvas().releasePointerCapture(e.pointerId); } catch(err) {}
+                executeCommand('look', false, false, false, false, { fromUi: true });
+                depsRef.current.playClickSound?.();
+                triggerHaptic(10);
+                joystick?.handleJoystickCancel?.(e as any);
+                depsRef.current.setIsTrackpadModifierActive?.(false);
+                mapSwipeOriginRef.current = null;
+                isDraggingInternalRef.current = false;
+                dragTypeRef.current = null;
+                setIsDragging(false);
+                setMarqueeStart(null);
+                setMarqueeEnd(null);
+                activePointersRef.current.clear();
+                lastPointersRef.current = [];
+                return;
+            }
             contextMenuTriggeredRef.current = false;
             mapLookActivatedRef.current = false;
             comboFiredRef.current = false;
             scrollLockRef.current = false;
+            mapSwipeOriginRef.current = null;
             activePointersRef.current.delete(e.pointerId);
-            try { cvs.releasePointerCapture(e.pointerId); } catch(err) {}
+            try { currentCanvas().releasePointerCapture(e.pointerId); } catch(err) {}
 
             if (fireMapLongPressAtPointer(e)) {
                 for (const pointerId of activePointersRef.current.keys()) {
                     ignoredPointerUpsRef.current.add(pointerId);
-                    try { cvs.releasePointerCapture(pointerId); } catch(err) {}
+                    try { currentCanvas().releasePointerCapture(pointerId); } catch(err) {}
                 }
                 activePointersRef.current.clear();
                 lastPointersRef.current = [];
@@ -883,6 +945,13 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                             }
 
                             // Short Tap -> Open or Close
+                            const nextDoorClosed = !exitHit.isClosed;
+                            depsRef.current.setRooms(previous => updateDoorInteractionState(
+                                previous,
+                                exitHit.roomId,
+                                exitHit.direction,
+                                nextDoorClosed,
+                            ));
                             depsRef.current.executeCommand(`${finalAction} exit ${finalDirName}`, false, false, false, false, { fromUi: true });
                             depsRef.current.playClickSound?.();
                         }
@@ -1091,7 +1160,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         const onCancel = (e: PointerEvent) => {
             const { setIsDragging, joystick } = depsRef.current;
             activePointersRef.current.delete(e.pointerId);
-            try { cvs.releasePointerCapture(e.pointerId); } catch(err) {}
+            try { currentCanvas().releasePointerCapture(e.pointerId); } catch(err) {}
 
             if (dragTypeRef.current === 'joystick' && joystick?.handleJoystickCancel) {
                 joystick.handleJoystickCancel(e);
@@ -1106,6 +1175,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 clearMapSwipeRepeat();
                 contextMenuTriggeredRef.current = false;
                 mapLookActivatedRef.current = false;
+                mapSwipeOriginRef.current = null;
                 setMapSwipeWheel(null);
                 isDraggingInternalRef.current = false;
                 dragTypeRef.current = null;
@@ -1197,24 +1267,40 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             depsRef.current.playClickSound?.();
         };
 
-        cvs.addEventListener('pointerdown', onDown, { passive: false });
+        const onCanvasDown = (event: Event) => onDown(event as PointerEvent);
+        const onCanvasWheel = (event: Event) => {
+            if (event.target === currentCanvas()) onWheel(event as WheelEvent);
+        };
+        const onCanvasHover = (event: Event) => {
+            if (event.target === currentCanvas()) onHover(event as PointerEvent);
+        };
+        const onCanvasOut = (event: Event) => {
+            const pointerEvent = event as PointerEvent;
+            const canvas = currentCanvas();
+            if (pointerEvent.target === canvas && !(pointerEvent.relatedTarget instanceof Node && canvas.contains(pointerEvent.relatedTarget))) onPointerLeave();
+        };
+        const onCanvasContextMenu = (event: Event) => {
+            if (event.target === currentCanvas()) onContextMenu(event as MouseEvent);
+        };
+
+        eventRoot.addEventListener('pointerdown', onCanvasDown, { passive: false });
         window.addEventListener('pointermove', onMove, { passive: true });
         window.addEventListener('pointerup', onUp, { passive: false });
         window.addEventListener('pointercancel', onCancel, { passive: false });
-        cvs.addEventListener('wheel', onWheel, { passive: false });
-        cvs.addEventListener('pointermove', onHover, { passive: true });
-        cvs.addEventListener('pointerleave', onPointerLeave);
-        cvs.addEventListener('contextmenu', onContextMenu);
+        eventRoot.addEventListener('wheel', onCanvasWheel, { passive: false });
+        eventRoot.addEventListener('pointermove', onCanvasHover, { passive: true });
+        eventRoot.addEventListener('pointerout', onCanvasOut);
+        eventRoot.addEventListener('contextmenu', onCanvasContextMenu);
 
         return () => {
-            cvs.removeEventListener('pointerdown', onDown);
+            eventRoot.removeEventListener('pointerdown', onCanvasDown);
             window.removeEventListener('pointermove', onMove);
             window.removeEventListener('pointerup', onUp);
             window.removeEventListener('pointercancel', onCancel);
-            cvs.removeEventListener('wheel', onWheel);
-            cvs.removeEventListener('pointermove', onHover);
-            cvs.removeEventListener('pointerleave', onPointerLeave);
-            cvs.removeEventListener('contextmenu', onContextMenu);
+            eventRoot.removeEventListener('wheel', onCanvasWheel);
+            eventRoot.removeEventListener('pointermove', onCanvasHover);
+            eventRoot.removeEventListener('pointerout', onCanvasOut);
+            eventRoot.removeEventListener('contextmenu', onCanvasContextMenu);
             // DO NOT clear activePointersRef or isDraggingInternal here if it's just a re-render
         };
     }, [canvasRef, clearMapSwipeRepeat, updateMapSwipeRepeat]); // Stable effect

@@ -31,6 +31,32 @@
     transition: background 5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
+.client-death-background {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    background: #000;
+    opacity: 0;
+    transition: opacity 10s ease-out;
+}
+
+.client-death-background.is-flashing {
+    opacity: 1;
+    background: #000 url('/assets/Pictures/UIPics/sauroneye.avif') center / cover no-repeat;
+    transition: none;
+}
+
+.client-death-background.is-black {
+    opacity: 1;
+    background: #000;
+    transition: none;
+}
+
+.client-death-background.is-fading {
+    opacity: 0;
+}
+
 .client-lighting-overlay {
     position: absolute;
     inset: 0;

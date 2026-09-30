@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { MapperRoom } from '../mapperTypes';
 import { DIRS } from '../mapperUtils';
+import { mergeExitDoorState } from './exitDoorState';
 
 interface UpdateExitsProps {
     setRooms: React.Dispatch<React.SetStateAction<Record<string, MapperRoom>>>;
@@ -27,25 +28,14 @@ export const useUpdateExitsHandler = ({ setRooms, currentRoomIdRef, preloadedCoo
                 const update = exitUpdates[dir];
                 if (update === false) delete newExits[dir];
                 else {
-                    const gmcpDestId = typeof update === 'number' ? update : (update.id || newExits[dir]?.gmcpDestId);
-                    let name = typeof update === 'object' ? update.name : undefined;
-                    let flags = typeof update === 'object' ? (update.flags || []) : undefined;
-
-                    const nextFlags = (typeof update === 'object') ? (flags || []) : (newExits[dir]?.flags || []);
-                    const exFlagsLow = nextFlags.map(f => f.toLowerCase());
-                    const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
-                    const isDoor = isClosed || 
-                        (typeof update === 'object' && (update as any).door) ||
-                        !!name || // In MUME GMCP, if a name is provided, it's a door/vines/etc.
-                        exFlagsLow.some(f => /door|gate|portcullis|secret/i.test(f));
+                    const existingExit = newExits[dir];
+                    const gmcpDestId = typeof update === 'number' ? update : (update.id || existingExit?.gmcpDestId);
+                    const doorState = mergeExitDoorState(existingExit, update, true);
 
                     newExits[dir] = {
-                        ...newExits[dir],
-                        name: name || newExits[dir]?.name,
-                        flags: nextFlags,
+                        ...existingExit,
+                        ...doorState,
                         gmcpDestId,
-                        closed: isClosed,
-                        hasDoor: !!isDoor
                     };
 
                     const targetId = newExits[dir]?.target;
@@ -56,16 +46,16 @@ export const useUpdateExitsHandler = ({ setRooms, currentRoomIdRef, preloadedCoo
                         const oppDir = DIRS[dir]?.opp;
                         if (oppDir) {
                             const neighborEx = neighbor.exits[oppDir];
-                            if (neighborEx && (neighborEx.hasDoor || isDoor)) {
+                            if (neighborEx && (neighborEx.hasDoor || doorState.hasDoor)) {
                                 nextRooms[neighborId] = {
                                     ...neighbor,
                                     exits: {
                                         ...neighbor.exits,
                                         [oppDir]: {
                                             ...neighborEx,
-                                            closed: isClosed,
+                                            closed: doorState.closed,
                                             hasDoor: true,
-                                            flags: nextFlags
+                                            flags: doorState.flags
                                         }
                                     }
                                 };

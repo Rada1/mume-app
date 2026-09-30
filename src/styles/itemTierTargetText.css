@@ -1,0 +1,24 @@
+/** @file itemTierTargetText.css — Shared item-tier colors for target menus. */
+
+/* --- Logic Section --- */
+.target-item-tier-artifact { --inline-item-tier-color: #f6c453; }
+.target-item-tier-legendary { --inline-item-tier-color: #c9a4ff; }
+.target-item-tier-focus { --inline-item-tier-color: #8bd3ff; }
+.target-item-tier-power { --inline-item-tier-color: #f59e0b; }
+.target-item-tier-important { --inline-item-tier-color: #f0abfc; }
+.target-item-tier-good { --inline-item-tier-color: #7dd3fc; }
+.target-item-tier-usable { --inline-item-tier-color: #34d399; }
+
+.tactical-target-bar-name-text.target-item-tier,
+.command-suggestion-name.target-item-tier,
+.command-suggestion-option.is-selected .command-suggestion-name.target-item-tier,
+.docked-target-picker-item .target-item-tier {
+    color: var(--inline-item-tier-color) !important;
+}
+
+.light-mode .tactical-target-bar-name-text.target-item-tier,
+.light-mode .command-suggestion-name.target-item-tier,
+.light-mode .command-suggestion-option.is-selected .command-suggestion-name.target-item-tier,
+.light-mode .docked-target-picker-item .target-item-tier {
+    color: color-mix(in srgb, var(--inline-item-tier-color) 68%, #000) !important;
+}

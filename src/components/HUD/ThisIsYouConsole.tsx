@@ -15,6 +15,7 @@ import { calculateRegen, formatRegen } from '../../utils/regenUtils';
 import { useStatDeltas } from '../../hooks/useStatDeltas';
 import { useCharacterConditions } from '../../hooks/useCharacterConditions';
 import { useCharacterInfoRefresh } from '../../hooks/useCharacterInfoRefresh';
+import { useCharacterPanelVitalsRefresh } from '../../hooks/useCharacterPanelVitalsRefresh';
 import { useSwipeUpToMinimize } from '../../hooks/useSwipeUpToMinimize';
 import { getMovementModeActions } from '../../hooks/useMovementModeActions';
 import { ChevronDown, ChevronUp } from 'lucide-react';
@@ -26,6 +27,7 @@ import { ThisIsYouStatePill, StateOption } from './ThisIsYouStatePill';
 import {
     formatHeight,
     formatNumber,
+    getNextWimpyPreset,
     POSITION_OPTIONS,
     ALERTNESS_OPTIONS,
     MOOD_OPTIONS,
@@ -35,10 +37,27 @@ import './ThisIsYouConsole.css';
 import './ThisIsYouTerminal.css';
 import './ThisIsYouMobile.css';
 
-export const ThisIsYouConsole: FC = () => {
+interface ThisIsYouConsoleProps {
+    alwaysExpanded?: boolean;
+}
+
+const normalizeConditionTimerName = (value: string): string => value.toLowerCase().replace(/[^a-z0-9]+/g, '');
+
+const formatConditionTimeLeft = (milliseconds: number): string => {
+    const totalMinutes = Math.max(0, Math.ceil(milliseconds / 60_000));
+    if (totalMinutes >= 60) {
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+    }
+    return `${totalMinutes}m`;
+};
+
+export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = false }) => {
     const isMinimized = useCharacterPanelStore(s => s.isMinimized);
     const toggleMinimized = useCharacterPanelStore(s => s.toggleMinimized);
     const setIsMinimized = useCharacterPanelStore(s => s.setIsMinimized);
+    const panelIsMinimized = alwaysExpanded ? false : isMinimized;
     const mobileHeaderPressRef = useRef<{ pointerId: number; startedAt: number; wasMinimized: boolean } | null>(null);
     const suppressHeaderClickRef = useRef(false);
     const suppressHeaderClickTimerRef = useRef<number | null>(null);
@@ -66,13 +85,24 @@ export const ThisIsYouConsole: FC = () => {
     const vitals = useActiveVitals();
     const { displayEqLines } = useUI();
     const activeTimers = useEffectTimerStore(state => state.timers);
+    const [displayWimpy, setDisplayWimpy] = useState<number | null>(vitals.wimpy ?? null);
+    const [conditionNow, setConditionNow] = useState(Date.now());
+
+    useEffect(() => {
+        setDisplayWimpy(vitals.wimpy ?? null);
+    }, [vitals.wimpy]);
+
+    useEffect(() => {
+        const interval = window.setInterval(() => setConditionNow(Date.now()), 1000);
+        return () => window.clearInterval(interval);
+    }, []);
 
     useLayoutEffect(() => {
         setGlassPortalHost(document.querySelector<HTMLElement>('.content-layer'));
     }, []);
 
     useLayoutEffect(() => {
-        if (!viewport?.isMobile || isMinimized) {
+        if (!viewport?.isMobile || panelIsMinimized) {
             setExpandedGlassBounds(null);
             return;
         }
@@ -106,10 +136,11 @@ export const ThisIsYouConsole: FC = () => {
             window.removeEventListener('resize', updateBounds);
             window.removeEventListener('scroll', updateBounds, true);
         };
-    }, [isMinimized, viewport?.isMobile]);
-    useCharacterInfoRefresh(
+    }, [panelIsMinimized, viewport?.isMobile]);
+    const refreshCharacterInfo = useCharacterInfoRefresh(
         characterInfo?.name || characterName || '', gameState === 'playing' && !isSpectateMode, executeCommand
     );
+    useCharacterPanelVitalsRefresh(panelIsMinimized, gameState === 'playing', isSpectateMode, executeCommand);
 
     // Tick regen calculation
     const [regenNow, setRegenNow] = useState(() => Date.now());
@@ -134,6 +165,11 @@ export const ThisIsYouConsole: FC = () => {
     const handleStateSelect = (kind: 'pos' | 'alert' | 'mood' | 'speed', option: StateOption) => {
         if (isSpectateMode) return;
         if (kind === 'pos') {
+            const currentPosition = (vitals.position || '').toLowerCase();
+            const nextPosition = option.value.toLowerCase();
+            if (currentPosition === 'sleeping' && nextPosition !== 'sleeping') {
+                executeCommand('wake');
+            }
             setPlayerPosition(option.value as 'standing' | 'sitting' | 'resting' | 'sleeping');
             if (option.command) executeCommand(option.command);
         } else if (kind === 'alert') {
@@ -157,6 +193,23 @@ export const ThisIsYouConsole: FC = () => {
     const activeConditions = useCharacterConditions(
         vitals.characterInfo.affectedBy, vitals.conditions, activeTimers, vitals.position, isSpectateMode
     );
+    const conditionTimers = useMemo(() => activeTimers.filter(timer => {
+        if (!timer.expiresAt || timer.expiresAt <= conditionNow) return false;
+        if (!timer.target || timer.target.toLowerCase() === 'self') return true;
+        return normalizeConditionTimerName(timer.target) === normalizeConditionTimerName(characterName || '');
+    }), [activeTimers, characterName, conditionNow]);
+    const getConditionTimeLeft = (condition: string): string | null => {
+        const normalized = normalizeConditionTimerName(condition);
+        const timer = conditionTimers.find(candidate => {
+            const timerName = normalizeConditionTimerName(candidate.name);
+            const timerId = normalizeConditionTimerName(candidate.catalogId);
+            return timerName === normalized
+                || timerName.includes(normalized)
+                || normalized.includes(timerName)
+                || timerId.includes(normalized);
+        });
+        return timer?.expiresAt ? formatConditionTimeLeft(timer.expiresAt - conditionNow) : null;
+    };
 
     const name = characterInfo?.name || characterName || 'Adventurer';
     const level = characterInfo?.level || '—';
@@ -171,9 +224,25 @@ export const ThisIsYouConsole: FC = () => {
         vitals.move, vitals.ob, vitals.pb, vitals.db, vitals.armour, vitals.wimpy]);
     const deltas = useStatDeltas(characterInfo?.name || characterName || '', statValues);
     const movementModes = getMovementModeActions(vitals);
+    const handleWimpyChange = () => {
+        const nextPreset = getNextWimpyPreset(displayWimpy ?? 0, vitals.maxHp ?? 0);
+        if (!nextPreset || isSpectateMode) return;
+        setDisplayWimpy(nextPreset.value);
+        triggerHaptic(15);
+        executeCommand(nextPreset.value === 0
+            ? 'cha wimpy 0'
+            : `change wimpy ${nextPreset.value}`);
+    };
+    const handleVitalsRefresh = () => {
+        if (gameState !== 'playing' || isSpectateMode) return;
+        triggerHaptic(10);
+        executeCommand('score', true, true, true, true);
+        window.setTimeout(refreshCharacterInfo, 3000);
+    };
 
     const handleToggleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
+        if (alwaysExpanded) return;
         if (suppressHeaderClickRef.current) {
             suppressHeaderClickRef.current = false;
             if (suppressHeaderClickTimerRef.current !== null) {
@@ -187,6 +256,7 @@ export const ThisIsYouConsole: FC = () => {
     };
 
     const handleMobileHeaderPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+        if (alwaysExpanded) return;
         if (!viewport?.isMobile || event.pointerType !== 'touch') return;
         event.currentTarget.setPointerCapture(event.pointerId);
         mobileHeaderPressRef.current = {
@@ -222,6 +292,7 @@ export const ThisIsYouConsole: FC = () => {
     }, []);
 
     const handleHeaderClick = () => {
+        if (alwaysExpanded) return;
         if (suppressHeaderClickRef.current) {
             suppressHeaderClickRef.current = false;
             if (suppressHeaderClickTimerRef.current !== null) {
@@ -233,7 +304,7 @@ export const ThisIsYouConsole: FC = () => {
         triggerHaptic(10);
         toggleMinimized();
     };
-    const swipeHandlers = useSwipeUpToMinimize(Boolean(viewport?.isMobile && !isMinimized), () => {
+    const swipeHandlers = useSwipeUpToMinimize(Boolean(!alwaysExpanded && viewport?.isMobile && !panelIsMinimized), () => {
         triggerHaptic(10);
         toggleMinimized();
     });
@@ -242,7 +313,7 @@ export const ThisIsYouConsole: FC = () => {
     return (
         <section
             ref={consoleRef}
-            className={`this-is-you-console${isMinimized ? ' is-minimized' : ''}${viewport?.isMobile ? ' is-mobile' : ''}`}
+            className={`this-is-you-console${panelIsMinimized ? ' is-minimized' : ''}${viewport?.isMobile ? ' is-mobile' : ''}${alwaysExpanded ? ' is-always-expanded' : ''}`}
             aria-label="Character Status Console"
             {...swipeHandlers}
         >
@@ -261,8 +332,8 @@ export const ThisIsYouConsole: FC = () => {
                         handleHeaderClick();
                     }
                 }}
-                title={isMinimized ? 'Click to expand character panel' : 'Click to minimize character panel'}
-                aria-label={isMinimized ? 'Character panel minimized. Click to expand.' : 'Character panel expanded. Click to minimize.'}
+                title={alwaysExpanded ? 'Character status' : panelIsMinimized ? 'Click to expand character panel' : 'Click to minimize character panel'}
+                aria-label={alwaysExpanded ? 'Character status' : panelIsMinimized ? 'Character panel minimized. Click to expand.' : 'Character panel expanded. Click to minimize.'}
             >
               <div className="this-is-you-hero-strip">
                 <span className="this-is-you-level-tag">Lv.{level}</span>
@@ -278,15 +349,15 @@ export const ThisIsYouConsole: FC = () => {
                 <TerminalProgression characterName={name}
                   xp={characterInfo?.xp} tp={characterInfo?.tp}
                   tnl={characterInfo?.tnl} tpnl={characterInfo?.tpnl} />
-                <button
+                {!alwaysExpanded && <button
                   type="button"
                   className="this-is-you-toggle-btn"
                   onClick={handleToggleClick}
                   aria-label={isMinimized ? 'Expand character panel' : 'Minimize character panel'}
                   title={isMinimized ? 'Expand character panel (slide up)' : 'Minimize character panel (slide down)'}
                 >
-                  {isMinimized ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                </button>
+                  {!alwaysExpanded && (panelIsMinimized ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
+                </button>}
               </div>
             </div>
 
@@ -305,7 +376,10 @@ export const ThisIsYouConsole: FC = () => {
                 pb={vitals.pb}
                 db={vitals.db}
                 armour={vitals.armour}
-                wimpy={vitals.wimpy}
+                wimpy={displayWimpy}
+                onWimpyChange={handleWimpyChange}
+                canAdjustWimpy={!isSpectateMode && (vitals.maxHp ?? 0) > 0}
+                onRefresh={handleVitalsRefresh}
                 regen={regen}
                 deltas={deltas}
             />
@@ -372,12 +446,15 @@ export const ThisIsYouConsole: FC = () => {
                   {activeConditions.map(condition => (
                     <span key={condition} className="this-is-you-buff-badge">
                       <strong className="this-is-you-buff-name">{condition}</strong>
+                      {getConditionTimeLeft(condition) && <span className="this-is-you-buff-time" aria-label="Time remaining">
+                        {getConditionTimeLeft(condition)}
+                      </span>}
                     </span>
                   ))}
             </div>
               </div>
             </div>
-            {viewport?.isMobile && !isMinimized && glassPortalHost && expandedGlassBounds
+            {viewport?.isMobile && !panelIsMinimized && glassPortalHost && expandedGlassBounds
                 ? createPortal(<div className="this-is-you-expanded-glass" aria-hidden="true" style={expandedGlassBounds} />, glassPortalHost)
                 : null}
         </section>

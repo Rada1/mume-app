@@ -2,7 +2,6 @@ import React, { FC } from 'react';
 import Header from '../HUD/Header';
 import MessageLog from '../Messages/MessageLog';
 import ChatWindow from '../Messages/ChatTranscriptWindow';
-import PlayersPanel from '../Players/PlayersPanel';
 import GearPanel from '../GearPanel';
 import HelpPanel from '../Help/HelpPanel';
 import { MumeEditor } from '../Utility/MumeEditor';
@@ -39,6 +38,7 @@ import { StickyRoomHeader } from './StickyRoomHeader';
 import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { getRoomTerrainVisualKey, getZoneVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
+import { useSleepHints } from '../../hooks/useSleepHints';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -85,6 +85,8 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         spatButtons,
         setSpatButtons,
         executeCommand,
+        playerPosition,
+        status,
         parley,
         setParley,
         whoList,
@@ -111,7 +113,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const isCommandPanelOpen = useCommandPanelStore(s => viewport.isMobile ? s.isMobileOpen : s.isOpen);
     const setIsCommandPanelOpen = useCommandPanelStore(s => s.setIsOpen);
     const isShopOpen = useUIStore(s => s.isShopOpen);
-    const showPlayersPanel = useSettingsStore(s => s.showPlayersPanel);
     const isGearPanelOpen = useGearPanelStore(s => s.isOpen);
     const isHelpOpen = useHelpStore(s => s.isOpen);
     const isArchiveOpen = useArchiveStore(s => s.isOpen);
@@ -131,13 +132,15 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         if (isArchiveOpen) list.push('archive');
         if (isShopOpen) list.push('shop');
         if (isGearPanelOpen) list.push('gear');
-        if (showPlayersPanel) list.push('players');
         if (isHelpOpen) list.push('help');
         if (showChatWindow) list.push('chat');
         if (isCommandPanelOpen) list.push('commands');
         return list;
-    }, [gameState, showChatWindow, isShopOpen, isGearPanelOpen, showPlayersPanel, isHelpOpen, isArchiveOpen, isEditorOpen, isCommandPanelOpen, viewport.isMobile]);
+    }, [gameState, showChatWindow, isShopOpen, isGearPanelOpen, isHelpOpen, isArchiveOpen, isEditorOpen, isCommandPanelOpen, viewport.isMobile]);
     const hasDockedPanels = activeDockedPanels.length > 0;
+    const hasMobileHeaderPanel = viewport.isMobile && activeDockedPanels.some(panel =>
+        panel === 'commands' || panel === 'gear' || panel === 'help' || panel === 'chat'
+    );
 
     React.useEffect(() => {
         if (gameState === 'account' && !viewport.isMobile) setIsCommandPanelOpen(true);
@@ -151,6 +154,13 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     }, [hasDockedPanels]);
 
     const isSpectating = activeSession === 'spectate' || activeView === 'target';
+    useSleepHints({
+        playerPosition,
+        connected: status === 'connected',
+        inCombat,
+        isSpectating,
+        executeCommand
+    });
     const roomCardTerrain = isSpectating ? spectateTerrain : currentTerrain;
 
     // Account mode keeps the log transparent (environment shows through) like the
@@ -413,6 +423,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     : '0px'
             } as React.CSSProperties}
         >
+            {hasMobileHeaderPanel && <div className="mobile-header-panel-blur-backdrop" aria-hidden="true" />}
             {!viewport.isMobile && isImmersionMode && (
                 <div
                     style={{
@@ -582,14 +593,13 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         {gameState === 'account' ? <MobileAccountExperience /> : <RightActionPanel skillsOnly={viewport.isMobile} />}
                     </aside>
                 )}
-                {showPlayersPanel && (
-                    <PlayersPanel style={computeDockedPanelStyle('players', activeDockedPanels, viewport.isMobile)} />
-                )}
                 {isGearPanelOpen && gameState !== 'account' && (
                     <GearPanel style={computeDockedPanelStyle('gear', activeDockedPanels, viewport.isMobile)} />
                 )}
                 {showChatWindow && (
-                    <ChatWindow style={computeDockedPanelStyle('chat', activeDockedPanels, viewport.isMobile)} />
+                    <ChatWindow
+                        style={computeDockedPanelStyle('chat', activeDockedPanels, viewport.isMobile)}
+                    />
                 )}
                 {isShopOpen && gameState !== 'account' && (
                     <ShopPanel style={computeDockedPanelStyle('shop', activeDockedPanels, viewport.isMobile)} />

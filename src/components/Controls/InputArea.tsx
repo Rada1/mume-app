@@ -10,7 +10,10 @@ import { audioManager } from '../../services/audio/AudioManager';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { useCommandSuggestions } from '../../hooks/useCommandSuggestions';
+import { useWhoListRefresh } from '../../hooks/useWhoListRefresh';
 import { CommandSuggestionPopup } from './CommandSuggestionPopup';
+import { TargetChipPicker } from '../HUD/TargetChipPicker';
+import { CHAT_PARLEY_CHANNELS, getChatChannelSuggestions, getChatTargetSuggestions } from '../../utils/chatWindowUtils';
 
 
 
@@ -64,12 +67,15 @@ const InputArea: React.FC<InputAreaProps> = ({
     const { viewport } = useBaseGame();
     const { stats } = useVitals();
     const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode, accountState, env, popoverState, abilities = {}, characterClass = 'none' } = useGame() as any;
+    const isClassicMode = useSettingsStore(s => s.isClassicMode);
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
     const setLoginName = useSettingsStore(s => s.setLoginName);
     const setLoginPassword = useSettingsStore(s => s.setLoginPassword);
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLTextAreaElement>(null);
+    const parleyCommandRef = useRef<HTMLDivElement>(null);
+    const parleyTargetRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const commandInputWrapRef = useRef<HTMLDivElement>(null);
     const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -78,6 +84,10 @@ const InputArea: React.FC<InputAreaProps> = ({
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const isSwiping = useRef(false);
     const [commandIndex, setCommandIndex] = useState(0);
+    const [openParleyPicker, setOpenParleyPicker] = useState<'channel' | 'target' | null>(null);
+    const parleyChannelSuggestions = useMemo(() => getChatChannelSuggestions(), []);
+    const parleyTargetSuggestions = useMemo(() => getChatTargetSuggestions(whoList), [whoList]);
+    const requestWhoList = useWhoListRefresh(whoList, executeCommand);
 
     useEffect(() => {
         return () => {
@@ -159,7 +169,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     // Rotate placeholder commands for playing state
     useEffect(() => {
         const mode = parley.mode || (parley.active ? 'parley' : 'command');
-        if (gameState !== 'playing' || mode !== 'command' || input) {
+        if (isClassicMode || gameState !== 'playing' || mode !== 'command' || input) {
             return;
         }
 
@@ -172,7 +182,7 @@ const InputArea: React.FC<InputAreaProps> = ({
             });
         }, 4000);
         return () => clearInterval(interval);
-    }, [gameState, parley.mode, parley.active, input, dynamicCommands]);
+    }, [gameState, parley.mode, parley.active, input, dynamicCommands, isClassicMode]);
 
 
     // Global listeners to catch fast swipes that leave the element bounds
@@ -344,40 +354,33 @@ const InputArea: React.FC<InputAreaProps> = ({
         window.dispatchEvent(new CustomEvent('mume-input-paste', { detail: text }));
     };
 
-    const handleParleyCommandClick = (e: React.MouseEvent) => {
+    const handleParleyCommandClick = () => {
         initAudio?.();
         if (isSoundEnabled) playClickSound?.();
         triggerHaptic(20);
-        const rect = e.currentTarget.getBoundingClientRect();
-        setPopoverState({
-            x: rect.left + rect.width / 2,
-            y: rect.top,
-            type: 'select-parley-command',
-            setId: 'parley-commands',
-            context: 'Select Command',
-            menuDisplay: 'list'
-        });
+        setOpenParleyPicker(current => current === 'channel' ? null : 'channel');
     };
 
-    const handleParleyTargetClick = (e: React.MouseEvent) => {
+    const handleParleyTargetClick = () => {
         initAudio?.();
         if (isSoundEnabled) playClickSound?.();
         triggerHaptic(20);
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = rect.left + rect.width / 2;
-        const y = rect.top;
-        executeCommand('who', true, true, false, false);
-        setTimeout(() => {
-            setPopoverState({
-                x,
-                y,
-                type: 'select-parley-target',
-                setId: 'parley-targets',
-                context: 'Select Target',
-                menuDisplay: 'list'
-            });
-        }, 600);
+        const isOpening = openParleyPicker !== 'target';
+        if (isOpening) requestWhoList();
+        setOpenParleyPicker(isOpening ? 'target' : null);
     };
+
+    const chooseParleyChannel = useCallback((value: string) => {
+        const command = CHAT_PARLEY_CHANNELS.find(channel => channel === value);
+        if (!command) return;
+        setParley(current => ({ ...current, command }));
+        setOpenParleyPicker(null);
+    }, [setParley]);
+
+    const chooseParleyTarget = useCallback((value: string) => {
+        setParley(current => ({ ...current, target: value || null }));
+        setOpenParleyPicker(null);
+    }, [setParley]);
 
     const TARGETLESS_COMMANDS = ['say', 'narrate', 'shout', 'yell', 'sing', 'emote'];
 
@@ -433,6 +436,8 @@ const InputArea: React.FC<InputAreaProps> = ({
         chooseCommandSuggestion,
         chooseTargetSuggestion,
         chooseSpellSuggestion,
+        toggleMagicKeyFavorite,
+        clearMagicKey,
         handleSuggestionKeyDown
     } = useCommandSuggestions({
         input,
@@ -440,6 +445,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         gameState,
         isPasswordMode,
         currentMode,
+        disabled: isClassicMode,
         abilities,
         characterClass,
         wrapRef: commandInputWrapRef,
@@ -647,6 +653,8 @@ const InputArea: React.FC<InputAreaProps> = ({
                 selectedCommandFull={mumeCommandMatch.entry?.full}
                 onChooseSpell={chooseSpellSuggestion}
                 onChooseTarget={chooseTargetSuggestion}
+                onToggleMagicKeyFavorite={toggleMagicKeyFavorite}
+                onClearMagicKey={clearMagicKey}
                 onChooseCommand={chooseCommandSuggestion}
             />
             {isLoginStage && (
@@ -692,6 +700,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 
                                 {currentMode === 'parley' && (<>
                                     <div
+                                        ref={parleyCommandRef}
                                         className="parley-indicator parley-command"
                                         onClick={handleParleyCommandClick}
                                         style={{ color: commandColor, borderColor: commandColor !== 'inherit' ? commandColor : undefined }}
@@ -699,6 +708,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                                         {parley.command}
                                     </div>
                                     <div
+                                        ref={parleyTargetRef}
                                         className="parley-indicator parley-target"
                                         onClick={handleParleyTargetClick}
                                         title={isTargetless ? 'This command has no target' : undefined}
@@ -832,7 +842,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                                     inputRef.current.focus();
                                 }
                             }}
-                            placeholder={isPasswordMode ? "Enter password..." : (gameState === 'account' ? "Enter username..." : (commandPreview ? "" : (currentMode === 'help' ? "Enter help topic..." : `Try: ${dynamicCommands[commandIndex] || 'look'}...`)))}
+                            placeholder={isPasswordMode ? "Enter password..." : (gameState === 'account' ? "Enter username..." : (commandPreview ? "" : (isClassicMode ? 'Enter command...' : (currentMode === 'help' ? "Enter help topic..." : `Try: ${dynamicCommands[commandIndex] || 'look'}...`))))}
                         />
                     </div>
 
@@ -874,16 +884,6 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 />
                             )}
 
-                        <button
-                            type="button"
-                            className="msg-repeat-btn"
-                            onClick={() => executeCommand('!', false, false, true)}
-                            onPointerDown={(e) => e.stopPropagation()}
-                            title="Repeat Last Command (!)"
-                        >
-                            <Repeat size={18} />
-                        </button>
-
                         {stats.conditions?.waiting && (
                             <button
                                 type="button"
@@ -898,11 +898,39 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 <XCircle size={18} />
                             </button>
                         )}
+
+                        <button
+                            type="button"
+                            className="msg-repeat-btn"
+                            onClick={() => executeCommand('!', false, false, true)}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            title="Repeat Last Command (!)"
+                        >
+                            <Repeat size={18} />
+                        </button>
                     </div>
                 )}
                 </div>
             </div>
-
+            <TargetChipPicker
+                isOpen={openParleyPicker === 'channel'}
+                anchorRef={parleyCommandRef}
+                suggestions={parleyChannelSuggestions}
+                currentTarget={parley.command}
+                title="Communication channel"
+                showMeta={false}
+                onChoose={chooseParleyChannel}
+                onDismiss={() => setOpenParleyPicker(null)}
+            />
+            <TargetChipPicker
+                isOpen={openParleyPicker === 'target'}
+                anchorRef={parleyTargetRef}
+                suggestions={parleyTargetSuggestions}
+                currentTarget={parley.target}
+                title="Communication target"
+                onChoose={chooseParleyTarget}
+                onDismiss={() => setOpenParleyPicker(null)}
+            />
         </div>
     );
 };

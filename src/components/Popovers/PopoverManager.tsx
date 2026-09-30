@@ -1,5 +1,5 @@
 import React, { useLayoutEffect } from 'react';
-import { CharacterInfo, CustomButton, CustomTraitConfig, PopoverState, TeleportTarget, DrawerLine } from '../../types';
+import { CharacterInfo, CustomButton, CustomTraitConfig, PopoverState, DrawerLine, GroupMember } from '../../types';
 
 interface PopoverManagerProps {
     popoverState: PopoverState | null;
@@ -11,12 +11,11 @@ interface PopoverManagerProps {
     executeCommand: (cmd: string, echo?: boolean) => void;
     addMessage: (...args: any[]) => void;
     setTarget: (target: string | null) => void;
-    teleportTargets: TeleportTarget[];
-    setTeleportTargets: (val: TeleportTarget[] | ((prev: TeleportTarget[]) => TeleportTarget[])) => void;
     handleButtonClick: (btn: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string, direction?: string) => void;
     triggerHaptic: (ms: number) => void;
     roomPlayers: string[];
     roomNpcs: string[];
+    groupMembers: GroupMember[];
     roomItems: string[];
     inventoryLines: DrawerLine[];
     eqLines: DrawerLine[];
@@ -33,9 +32,8 @@ interface PopoverManagerProps {
     isMendingMode?: boolean;
     setIsMendingMode?: (val: boolean) => void;
     setMendingTarget?: (val: string | null) => void;
-    handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
+    handleTabClick: (drawer: 'character' | 'equipment') => void;
     setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
-    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     refreshLogHighlights: () => void;
     practice: any;
@@ -58,7 +56,6 @@ interface PopoverManagerProps {
 import { DialMenu } from './DialMenu';
 import { StandardMenuPopover } from './StandardMenuPopover';
 import { RecipientSelectPopover } from './RecipientSelectPopover';
-import { TeleportSavePopover, TeleportSelectPopover, TeleportManagePopover } from './TeleportPopovers';
 import { ContainerPopover } from './ContainerPopover';
 import { ContainerSelectPopover } from './ContainerSelectPopover';
 import { HelpCard } from '../Utility/HelpCard';
@@ -74,8 +71,8 @@ const formatDialCategoryLabel = (category?: string | null): string => {
 };
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
-    popoverState: parentPopoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, customTraits, setCustomTraits, favorites, setFavorites, parley, setParley, whoList,
-    isMendingMode, setIsMendingMode, setMendingTarget, handleTabClick, setGearTab, setPlayersTab, setCharTab, refreshLogHighlights, practice, openKeywordEdit,
+    popoverState: parentPopoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, roomPlayers, roomNpcs, groupMembers, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, customTraits, setCustomTraits, favorites, setFavorites, parley, setParley, whoList,
+    isMendingMode, setIsMendingMode, setMendingTarget, handleTabClick, setGearTab, setCharTab, refreshLogHighlights, practice, openKeywordEdit,
     entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides, accountCharacters, accountState, setAccountState,
     playerColor, npcColor, objectColor, roomColor, characterInfo, currentTerrain
 }) => {
@@ -476,10 +473,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             zIndex: 70000,
             '--accent': themeColor || 'var(--set-accent, var(--accent))'
         } as any}>
-            {popoverState.type === 'teleport-save' && <TeleportSavePopover popoverState={popoverState} setPopoverState={setPopoverState} setTeleportTargets={setTeleportTargets} addMessage={addMessage} />}
-            {popoverState.type === 'teleport-select' && <TeleportSelectPopover popoverState={popoverState} setPopoverState={setPopoverState} teleportTargets={teleportTargets} executeCommand={executeCommand} />}
-            {popoverState.type === 'teleport-manage' && <TeleportManagePopover teleportTargets={teleportTargets} setTeleportTargets={setTeleportTargets} setPopoverState={setPopoverState} />}
-            {popoverState.type === 'give-recipient-select' && <RecipientSelectPopover popoverState={popoverState} roomPlayers={roomPlayers} roomNpcs={roomNpcs} executeCommand={executeCommand} setPopoverState={setPopoverState} themeColor={themeColor} />}
+            {popoverState.type === 'give-recipient-select' && <RecipientSelectPopover popoverState={popoverState} roomPlayers={roomPlayers} roomNpcs={roomNpcs} groupMembers={groupMembers} executeCommand={executeCommand} setPopoverState={setPopoverState} themeColor={themeColor} />}
             {popoverState.type === 'container' && (
                 <ContainerPopover 
                     popoverState={popoverState} 
@@ -526,7 +520,6 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     setMendingTarget={setMendingTarget}
                     handleTabClick={handleTabClick}
                     setGearTab={setGearTab}
-                    setPlayersTab={setPlayersTab}
                     setCharTab={setCharTab}
                     refreshLogHighlights={refreshLogHighlights}
                     triggerHaptic={triggerHaptic}

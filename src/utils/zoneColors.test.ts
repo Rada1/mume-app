@@ -10,21 +10,23 @@ describe('zoneColors', () => {
         expect(getZoneColor('()')).toBe(DEFAULT_ZONE_COLOR);
     });
 
-    it('groups known zones by culture while retaining distinct shades', () => {
-        expect(getZoneColor('Valinor')).toBe('#b7a65a');
-        expect(getZoneColor('(Valinor)')).toBe('#b7a65a');
-        expect(getZoneColor('The Shire')).toBe('#71a653');
-        expect(getZoneColor('the shire')).toBe('#71a653');
-        expect(getZoneColor('Shire')).toBe('#71a653');
-        expect(getZoneColor('(the Shire)')).toBe('#71a653');
+    it('groups known zones by alignment color', () => {
+        expect(getZoneColor('Valinor')).toBe('#318c66');
+        expect(getZoneColor('(Valinor)')).toBe('#318c66');
+        expect(getZoneColor('The Shire')).toBe('#318c66');
+        expect(getZoneColor('the shire')).toBe('#318c66');
+        expect(getZoneColor('Shire')).toBe('#318c66');
+        expect(getZoneColor('(the Shire)')).toBe('#318c66');
         expect(getZoneColor('Rivendell')).toBe('#318c66');
-        expect(getZoneColor('Bree')).toBe('#467db3');
-        expect(getZoneColor('Moria')).toBe('#aa454c');
-        expect(getZoneColor('Dol Guldur')).toBe('#7947b5');
-        expect(getZoneColor('the Troll Warrens')).toBe('#8246ad');
-        expect(getZoneColor('the Road to Tharbad')).toBe('#527ca1');
-        expect(getZoneColor('the Central Anduin Vale')).toBe('#528f97');
-        expect(getZoneAmbientGlow('Moria')).toBe('rgba(170, 69, 76, 0.18)');
+        expect(getZoneColor('Bree')).toBe('#318c66');
+        expect(getZoneColor('Moria')).toBe('#a51c24');
+        expect(getZoneColor('Dol Guldur')).toBe('#a51c24');
+        expect(getZoneColor('the Troll Warrens')).toBe('#a51c24');
+        expect(getZoneColor('the Trollshaws')).toBe('#8246ad');
+        expect(getZoneColor('the Road to Tharbad')).toBe('#467db3');
+        expect(getZoneColor('the Old Forest')).toBe('#467db3');
+        expect(getZoneColor('the Central Anduin Vale')).toBe('#968894');
+        expect(getZoneAmbientGlow('Moria')).toBe('rgba(165, 28, 36, 0.18)');
     });
 
     it('generates a consistent deterministic color for unlisted zones', () => {

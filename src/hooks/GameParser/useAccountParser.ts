@@ -283,15 +283,11 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
 
             if (!hasSentGameEntrySetupRef.current) {
                 hasSentGameEntrySetupRef.current = true;
-                executeCommandRef.current?.('change xml on', false, true, true, false);
-                executeCommandRef.current?.('change page off', false, true, true, false);
-                executeCommandRef.current?.('change width 80', false, true, true, false);
-                executeCommandRef.current?.('change editor external', false, true, true, false);
+                executeCommandRef.current?.('change xml on', true, true, true, false);
+                executeCommandRef.current?.('change page off', true, true, true, false);
+                executeCommandRef.current?.('change width 80', true, true, true, false);
+                executeCommandRef.current?.('change editor external', true, true, true, false);
                 executeCommandRef.current?.('time', true, true, true, false);
-                executeCommandRef.current?.('info %O %D %k %A', false, true, true, false);
-                setTimeout(() => {
-                    executeCommandRef.current?.('practice', true, true, true, false);
-                }, 250);
             }
 
             return false;

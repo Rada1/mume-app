@@ -23,6 +23,11 @@ import { useModeStore } from '../stores/useModeStore';
 import { useUIStore } from '../stores/useUIStore';
 import { gmcpBus } from '../events/gmcpBus';
 import { useAudioEffects } from '../hooks/useAudioSystem';
+import type { MapData } from '../components/Mapper/performance/webcockpit/model';
+import { readMm2 } from '../components/Mapper/performance/webcockpit/mm2';
+import { mapDataToLegacyImport } from '../components/Mapper/performance/webcockpit/mm2ImportAdapter';
+import { updateDoorInteractionState } from '../components/Mapper/doorInteractionState';
+import type { DoorCommandUpdate } from '../components/Mapper/doorCommand';
 
 interface MapperContextType {
     rooms: Record<string, MapperRoom>;
@@ -34,13 +39,15 @@ interface MapperContextType {
     currentRoomIdRef: React.MutableRefObject<string | null>;
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
+    performanceMapRef: React.MutableRefObject<MapData | null>;
+    performanceMapRevision: number;
     baseMapExitsRef: React.MutableRefObject<Record<string, any>>;
     unveilMap: boolean;
     setUnveilMap: React.Dispatch<React.SetStateAction<boolean>>;
     allowPersistence: boolean;
     setAllowPersistence: React.Dispatch<React.SetStateAction<boolean>>;
     handleResetAndSync: () => void;
-    loadImportedMapData: (data: Record<string, any>) => void;
+    loadImportedMapData: (data: Record<string, any>, canonicalMap?: MapData | null) => void;
     handleClearMap: (force?: boolean) => void;
     handleSyncLocation: (wx: number, wy: number) => void;
     handleRoomInfo: (data: any) => void;
@@ -130,7 +137,8 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         currentRoomId: dataCurrentRoomId, 
         setCurrentRoomId: dataSetCurrentRoomId, 
         currentRoomIdRef,
-        spatialIndexRef, nameIndexRef, serverIdIndexRef, preloadedCoordsRef, baseMapExitsRef
+        spatialIndexRef, nameIndexRef, serverIdIndexRef, preloadedCoordsRef,
+        performanceMapRef, performanceMapRevision, setPerformanceMapRevision, baseMapExitsRef
     } = useMapData();
 
     // High-performance state/ref sync for character position
@@ -221,6 +229,33 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const { activeView, isSpectating } = useModeStore();
     const treatMapAsExplored = isSpectating && activeView === 'target';
+
+    useEffect(() => {
+        const onDoorCommand = (event: Event) => {
+            const update = (event as CustomEvent<DoorCommandUpdate>).detail;
+            const roomId = update?.roomId ?? currentRoomIdRef.current;
+            if (!update || !roomId) return;
+
+            const previous = roomsRef.current;
+            const next = updateDoorInteractionState(
+                previous,
+                roomId,
+                update.direction,
+                update.closed,
+            );
+            if (next !== previous) {
+                // Room.Info may arrive before React's state effect refreshes this
+                // ref. Keep the GMCP handler's synchronous source in step with
+                // the optimistic command so it cannot restore the old door state.
+                roomsRef.current = next;
+                setRooms(next);
+            }
+            triggerRender();
+        };
+
+        window.addEventListener('mume-door-command-sent', onDoorCommand);
+        return () => window.removeEventListener('mume-door-command-sent', onDoorCommand);
+    }, [currentRoomIdRef, setRooms, triggerRender]);
 
     const explored = useMemo(() => {
         const revealAll = treatMapAsExplored || unveilMap;
@@ -378,12 +413,26 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 addMessageRef.current?.('system', 'Loading Master Map Data...');
             }
 
-            // 1. Load basic room coordinates (JSON). This is a static bundled
-            // asset, so do not attach a timestamp: that used to defeat the
-            // browser cache and re-download 19 MB on every startup.
-            const res = await fetch('/mume_map_data.json');
-            if (!res.ok) throw new Error('No preloaded map data');
-            const data = await res.json();
+            // The bundled MMapper map is the canonical startup source. Keep the JSON
+            // asset as a fallback for deployments where the MM2 file is unavailable.
+            let data: Record<string, any>;
+            let canonicalMap: MapData | null = null;
+            let mm2Markers: Record<string, MapperMarker> = {};
+            try {
+                const mm2Res = await fetch('/nazgum-latest.mm2');
+                if (!mm2Res.ok) throw new Error('No bundled MMapper map');
+                canonicalMap = await readMm2(new Uint8Array(await mm2Res.arrayBuffer()));
+                const importedMap = mapDataToLegacyImport(canonicalMap);
+                data = importedMap.rooms as Record<string, any>;
+                mm2Markers = importedMap.markers;
+            } catch (mm2Error) {
+                console.warn('[Mapper] Could not load bundled MMapper map; falling back to JSON:', mm2Error);
+                canonicalMap = null;
+                mm2Markers = {};
+                const res = await fetch('/mume_map_data.json');
+                if (!res.ok) throw new Error('No preloaded map data');
+                data = await res.json();
+            }
 
             // --- Zone Name Propagation and Fallbacks ---
             // 1. Queue all rooms that have a valid, non-empty zone name
@@ -518,34 +567,37 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             nameIndexRef.current = nIndex; 
             serverIdIndexRef.current = sIndex;
             baseMapExitsRef.current = baseMapExits;
+            performanceMapRef.current = canonicalMap;
+            setPerformanceMapRevision(revision => revision + 1);
 
+            const bundledMarkers: Record<string, MapperMarker> = { ...mm2Markers };
             try {
                 const markerRes = await fetch('/mume_map_markers.json');
                 if (markerRes.ok) {
-                    const bundledMarkers = await markerRes.json() as Record<string, MapperMarker>;
-                    const markerIds = Object.keys(bundledMarkers);
-                    if (markerIds.length > 0) {
-                        setMarkers(prev => ({ ...bundledMarkers, ...prev }));
-                        setExploredMarkers(prev => {
-                            const next = new Set(prev);
-                            markerIds.forEach(id => next.add(id));
-                            return next;
-                        });
-                    }
+                    Object.assign(bundledMarkers, await markerRes.json() as Record<string, MapperMarker>);
                 }
             } catch (markerErr) {
                 console.warn("[Mapper] Could not load bundled map markers:", markerErr);
             }
+            const markerIds = Object.keys(bundledMarkers);
+            if (markerIds.length > 0) {
+                setMarkers(prev => ({ ...bundledMarkers, ...prev }));
+                setExploredMarkers(prev => {
+                    const next = new Set(prev);
+                    markerIds.forEach(id => next.add(id));
+                    return next;
+                });
+            }
 
             if (showDebugEchoesRef.current) {
-                addMessageRef.current?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
+                addMessageRef.current?.('system', `[Mapper] Bundled Base Map Loaded: ${Object.keys(data).length} rooms.`);
             }
             hasLoadedRef.current = true;
         } catch (err) { 
             console.warn("[Mapper] Could not load master map data:", err);
             hasStartedLoadingRef.current = false; // Allow retry if failed
         }
-    }, [preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef, baseMapExitsRef, setMarkers, setExploredMarkers]);
+    }, [preloadedCoordsRef, performanceMapRef, setPerformanceMapRevision, spatialIndexRef, nameIndexRef, serverIdIndexRef, baseMapExitsRef, setMarkers, setExploredMarkers]);
 
     useEffect(() => { loadMasterMap(); }, [loadMasterMap]);
 
@@ -581,7 +633,8 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Actions
     const { handleAddRoom, handleDeleteRoom, handleClearMap, handleSyncLocation, handleResetAndSync, loadImportedMapData } = useMapActions({
         rooms, setRooms, roomsRef, markers, setMarkers, markersRef, setExploredVnums, setExploredMarkers, setCurrentRoomId, currentRoomIdRef,
-        preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef, baseMapExitsRef, addMessage, lastDetectedTerrainRef, loadMasterMap
+        preloadedCoordsRef, performanceMapRef, setPerformanceMapRevision,
+        spatialIndexRef, nameIndexRef, serverIdIndexRef, baseMapExitsRef, addMessage, lastDetectedTerrainRef, loadMasterMap
     });
 
     useMapPersistence({
@@ -821,7 +874,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const value = useMemo(() => ({
         rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId, newlyExploredRoomId,
-        currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef,
+        currentRoomIdRef, roomsRef, preloadedCoordsRef, performanceMapRef, performanceMapRevision, baseMapExitsRef,
         unveilMap, setUnveilMap, allowPersistence, setAllowPersistence,
         handleResetAndSync, handleClearMap, handleSyncLocation, loadImportedMapData,
         handleRoomInfo: masterHandlers.handleRoomInfo,
@@ -840,7 +893,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         closestRoomId, selectedSearchRoomId, setSelectedSearchRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     }), [
         rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId, newlyExploredRoomId,
-        currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef,
+        currentRoomIdRef, roomsRef, preloadedCoordsRef, performanceMapRef, performanceMapRevision, baseMapExitsRef,
         unveilMap, setUnveilMap, allowPersistence, setAllowPersistence,
         handleResetAndSync, handleClearMap, handleSyncLocation, loadImportedMapData,
         masterHandlers, handleAddRoom, handleDeleteRoom, pushPendingMove,

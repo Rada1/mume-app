@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { perfMonitor } from '../../utils/perfMonitor';
 import { useMessageStore } from '../../stores/useMessageStore';
+import { getFastMapMetrics } from '../Mapper/performance/fastMapTelemetry';
 
 const PERF_FLAG = 'mume_perf_hud';
 
@@ -10,7 +11,7 @@ const fmtKB = (bytes: number | null | undefined) =>
     bytes == null ? '—' : `${(bytes / 1024).toFixed(0)}KB`;
 
 const Row: React.FC<{ label: string; value: React.ReactNode; warn?: boolean }> = ({ label, value, warn }) => (
-    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+    <div data-perf-label={label} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
         <span style={{ color: '#888' }}>{label}</span>
         <span style={{ color: warn ? '#ff6b6b' : '#7dd3fc', fontWeight: 600 }}>{value}</span>
     </div>
@@ -39,6 +40,7 @@ export const PerfHUD: React.FC = () => {
     // Drive the collector on/off with visibility so it costs nothing when hidden.
     useEffect(() => {
         perfMonitor.enabled = isVisible;
+        window.dispatchEvent(new CustomEvent('mume-perf-hud-toggle', { detail: { enabled: isVisible } }));
         try {
             if (isVisible) localStorage.setItem(PERF_FLAG, '1');
             else localStorage.removeItem(PERF_FLAG);
@@ -49,6 +51,7 @@ export const PerfHUD: React.FC = () => {
     }, [isVisible]);
 
     const userMsgCount = useMessageStore(s => s.user.length);
+    const fastMap = getFastMapMetrics();
 
     if (!isVisible || !snap) return null;
 
@@ -56,7 +59,7 @@ export const PerfHUD: React.FC = () => {
         ? (snap.heapUsedMB / snap.heapLimitMB) * 100 : null;
 
     return (
-        <div style={{
+        <div data-testid="performance-hud" style={{
             position: 'fixed', top: 8, left: 8, zIndex: 100000000,
             background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(6px)',
             border: '1px solid rgba(125,211,252,0.4)', borderRadius: 8,
@@ -74,11 +77,20 @@ export const PerfHUD: React.FC = () => {
             </div>
 
             <Row label="FPS" value={snap.fps} warn={snap.fps > 0 && snap.fps < 30} />
+            {fastMap && <>
+                <Row label="worker map FPS" value={fastMap.fps} warn={fastMap.fps > 0 && fastMap.fps < 30} />
+                <Row label="worker frame interval p95/max" value={`${fmtMs(fastMap.frameIntervalP95Ms)} / ${fmtMs(fastMap.frameIntervalMaxMs)}`} warn={fastMap.frameIntervalP95Ms > 33} />
+                <Row label="worker render p95/max" value={`${fmtMs(fastMap.renderP95Ms)} / ${fmtMs(fastMap.renderMaxMs)}`} warn={fastMap.renderP95Ms > 16} />
+                <Row label="static mesh build" value={`${fmtMs(fastMap.staticBuildMs)} (${fastMap.mapLoads} loads)`} />
+                <Row label="map updates/coalesced" value={`${fastMap.updates} / ${fastMap.coalescedUpdates}`} />
+                <Row label="worker rooms" value={fastMap.roomCount} />
+            </>}
             <Row label="draw avg/p95" value={`${fmtMs(snap.drawAvgMs)} / ${fmtMs(snap.drawP95Ms)}`} warn={snap.drawP95Ms > 16} />
             <Row label="draw peak" value={fmtMs(snap.peakDrawMs)} warn={snap.peakDrawMs > 33} />
             <Row label="parser worker avg/max" value={`${fmtMs(snap.parserWorkerAvgMs)} / ${fmtMs(snap.parserWorkerMaxMs)}`} warn={snap.parserWorkerMaxMs > 50} />
             <Row label="parser sync avg/max" value={`${fmtMs(snap.parserSyncAvgMs)} / ${fmtMs(snap.parserSyncMaxMs)}`} warn={snap.parserSyncMaxMs > 50} />
             <Row label="worst frame gap" value={fmtMs(snap.intervalMaxMs)} warn={snap.intervalMaxMs > 100} />
+            <Row label="main-thread long tasks/10s" value={`${snap.longTasks10s} (max ${fmtMs(snap.longTaskMaxMs)})`} warn={snap.longTaskMaxMs > 50} />
             <Row label="cache rebuilds/s" value={snap.rebuildsPerSec} warn={snap.rebuildsPerSec > 4} />
             {snap.rebuildReasons && (
                 <Row label="↳ triggers" value={snap.rebuildReasons} />

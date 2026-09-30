@@ -59,6 +59,10 @@ export interface MapperMarker {
     text: string;
     dotSize: number;
     fontSize: number;
+    /** MMapper infomark class index, preserved for class-specific map styling. */
+    infomarkClass?: number;
+    /** MMapper infomark rotation, in degrees. */
+    infomarkAngle?: number;
     createdAt: number;
 }
 

@@ -7,6 +7,7 @@ import type {
     GmcpMumeEdit,
     MessageType,
 } from '../types';
+import type { WhereScanSnapshot } from '../types/whereScan';
 
 export interface GmcpEventMap {
     'Char.Vitals': GmcpCharVitals;
@@ -15,6 +16,9 @@ export interface GmcpEventMap {
     'Char.Position': string;
     'Char.Ride': any;
     'Room.Info': GmcpRoomInfo;
+    /** Raw MUME movement event, forwarded for map tracking before Room.Info. */
+    'Event.Moved': unknown;
+    'Char.StatusVars': { name?: string; [key: string]: unknown };
     'Room.Items': any;
     'Room.UpdateExits': GmcpUpdateExits;
     'Room.Chars': any;
@@ -41,6 +45,8 @@ export interface GmcpEventMap {
     'Connection.Disconnect': void;
     'Game.Text': { type: MessageType; text: string; tokens?: any; isReplay?: boolean };
     'Game.CombatPulse': { direction: 'outgoing' | 'incoming'; time: number };
+    'Game.PlayerDeath': void;
+    'Game.WhereScan': WhereScanSnapshot;
     'Session.Reset': void;
     'Session.Start': { characterName: string };
 }

@@ -190,6 +190,7 @@ canvas.map-canvas {
     position: relative;
     z-index: 8;
     opacity: 1;
+    filter: brightness(var(--map-canvas-brightness, 1));
     touch-action: none !important;
     background: transparent !important;
     /* Fade the drawn tiles out at all four edges instead of cutting off hard
@@ -202,6 +203,15 @@ canvas.map-canvas {
         linear-gradient(to right, transparent, black 36px, black calc(100% - 36px), transparent),
         linear-gradient(to bottom, transparent, black 36px, black calc(100% - 36px), transparent);
     -webkit-mask-composite: source-in;
+}
+
+.where-scan-map-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 9;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
 /* --- Map Filters (Option 1 Terminal Docked System) --- */

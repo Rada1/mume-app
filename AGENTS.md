@@ -22,12 +22,14 @@ The MUME Client is an **AI-Native, Hook-Driven Mobile Client** for the MUME MUD.
 | **Fix UI/Layout** | `src/components/Layout/`, `src/styles/layout.css` |
 | **Edit Command Flow** | `src/hooks/useCommandController.ts`, `src/hooks/useCommandExecutor.ts` |
 | **Adjust Mapper** | `src/components/Mapper/`, `src/mapper/renderer.ts` |
+| **Performance Map Renderer** | `src/components/Mapper/performance/`, `docs/performance-map.md`, `src/components/Mapper/README.md` |
 | **Plan or Build Shaper Mode** | `docs/shaper.md`, `src/shaper/`, `src/shaper/access/shaperAccess.ts` |
 | **Generate Shaper Room Prose** | `src/shaper/model/shaperRoomProse.ts`, `scripts/print_shaper_prose_context.js`, `scripts/apply_shaper_room_prose.js` |
 | **Research Mudlle/MUDLLE** | `docs/mudlle_intro.md`, `docs/mhelp_guide.md`, `src/shaper/components/ShaperHelpPanel.tsx` |
 | **Fix Broad Highlighting** | `src/services/parser/Tokenizer.ts`, `src/hooks/useEntityRegistry.ts` |
 | **Spectate Rotation** | `src/hooks/useSpectateAutomator.ts`, `src/hooks/GameParser/useGameParser.ts` |
 | **Manage Entity Traits** | `src/utils/inlineActionModel.ts`, `src/utils/categorizationUtils.ts`, `src/components/Settings/TraitSettings.tsx` |
+| **Track Object Identity and Target Menus** | `src/objects/objectTargetModel.ts`, `src/objects/roomTargetSuggestions.ts`, `src/objects/gearTargetSuggestions.ts`, `src/hooks/GameParser/useObjectActionTracker.ts`, `src/hooks/GameParser/useCaptureParser.ts` |
 | **Manage Sliding Docked Panels** | `src/utils/dockedPanelUtils.ts`, `src/components/Layout/MainContentLayer.tsx`, `src/styles/terminalPanels.css`, `src/stores/useCommandPanelStore.ts`, `src/components/Help/HelpPanel.tsx`, `src/stores/useHelpStore.ts` |
 | **Character Console / Who Am I** | `src/components/HUD/ThisIsYouConsole.tsx`, `src/stores/useCharacterPanelStore.ts`, `src/components/HUD/ThisIsYouVitalsTier.tsx`, `src/components/HUD/ThisIsYouTerminal.css` |
 | **Zone Colors & Highlights** | `src/utils/zoneColors.ts`, `src/hooks/useZoneThemeSync.ts`, `src/components/Messages/MessageLog.tsx`, `src/components/Messages/MessageLog.css` |

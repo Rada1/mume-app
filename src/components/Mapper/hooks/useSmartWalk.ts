@@ -8,6 +8,8 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { MapperRoom } from '../mapperTypes';
 import { ExecuteCommand } from '../../../types';
 import { findSmartWalkPath, getSmartWalkDirection, normalizeSmartWalkId } from './smartWalkPath';
+import { findCanonicalSmartWalkPath, getCanonicalSmartWalkDirection } from './canonicalSmartWalk';
+import type { MapData } from '../performance/webcockpit/model';
 
 export const useSmartWalk = (
     currentRoomId: string | null,
@@ -16,7 +18,8 @@ export const useSmartWalk = (
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>,
     addMessage?: (type: any, text: string) => void,
     revealAll?: boolean,
-    exploredVnums?: Set<string>
+    exploredVnums?: Set<string>,
+    canonicalMap?: MapData | null
 ) => {
     const [isWalking, setIsWalking] = useState(false);
     const [walkTargetId, setWalkTargetId] = useState<string | null>(null);
@@ -30,8 +33,12 @@ export const useSmartWalk = (
     const normalizeId = normalizeSmartWalkId;
 
     const getDirectionToNextRoom = useCallback((fromId: string, toId: string): string | null => {
+        const canonicalDirection = canonicalMap
+            ? getCanonicalSmartWalkDirection(canonicalMap, fromId, toId, rooms)
+            : null;
+        if (canonicalDirection) return canonicalDirection;
         return getSmartWalkDirection(fromId, toId, rooms, preloadedCoordsRef.current);
-    }, [rooms, preloadedCoordsRef]);
+    }, [canonicalMap, rooms, preloadedCoordsRef]);
 
     // --- Pathfinding Section ---
 
@@ -42,11 +49,16 @@ export const useSmartWalk = (
         
         if (normStart === normEnd) return { dirs: [], ids: [startId] };
 
+        const canonicalPath = canonicalMap
+            ? findCanonicalSmartWalkPath(canonicalMap, startId, endId, rooms, { revealAll, exploredVnums })
+            : null;
+        if (canonicalPath) return canonicalPath;
+
         return findSmartWalkPath(startId, endId, rooms, preloadedCoordsRef.current, {
             revealAll,
             exploredVnums
         });
-    }, [rooms, preloadedCoordsRef, revealAll, exploredVnums]);
+    }, [canonicalMap, rooms, preloadedCoordsRef, revealAll, exploredVnums]);
 
     // --- Control Section ---
 

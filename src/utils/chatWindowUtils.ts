@@ -3,7 +3,7 @@
  * @description Headless helpers for selecting communication messages for the optional chat window.
  */
 
-import type { Message } from '../types';
+import type { Message, ParleyState } from '../types';
 
 // --- Logic Section ---
 
@@ -33,6 +33,15 @@ export interface ChatMessageDetails {
     roomName?: string;
     color?: string;
 }
+
+export interface ChatReplyDetails {
+    command: Exclude<ParleyState['command'], 'none'>;
+    target: string | null;
+}
+
+export const CHAT_PARLEY_CHANNELS: ChatReplyDetails['command'][] = [
+    'tell', 'whisper', 'ask', 'say', 'narrate', 'shout', 'yell', 'sing', 'emote', 'group', 'pray'
+];
 
 // Strips leftover ANSI escapes/XML-ish tags from sender/target names so the
 // same person always resolves to the same private-thread identity, regardless
@@ -134,6 +143,23 @@ export const getWhoPlayerNames = (whoList: string[]): string[] => Array.from(new
     whoList.map(entry => (entry.includes('|') ? entry.split('|')[1] : entry).trim()).filter(Boolean)
 )).sort((first, second) => first.localeCompare(second));
 
+export const getChatChannelSuggestions = () => CHAT_PARLEY_CHANNELS.map(command => ({
+    key: `channel-${command}`,
+    label: command,
+    value: command,
+    meta: 'channel'
+}));
+
+export const getChatTargetSuggestions = (whoList: string[]) => [
+    { key: 'no-target', label: '(No Target)', value: '', meta: 'target' },
+    ...getWhoPlayerNames(whoList).map(name => ({
+        key: `who-${name.toLowerCase()}`,
+        label: name,
+        value: name,
+        meta: 'player'
+    }))
+];
+
 export const getChatMessageDetails = (message: Message): ChatMessageDetails | null => {
     if (message.type === 'user') {
         const parsed = parseOutgoingChatCommand(message.textOnly || message.textRaw);
@@ -155,6 +181,36 @@ export const getChatMessageDetails = (message: Message): ChatMessageDetails | nu
         roomName: message.commRoomName,
         color
     };
+};
+
+export const getChatReplyDetails = (message: Message): ChatReplyDetails | null => {
+    const details = getChatMessageDetails(message);
+    if (!details) return null;
+
+    let command: ChatReplyDetails['command'];
+    switch (details.channel) {
+        case 'ask':
+        case 'emote':
+        case 'group':
+        case 'narrate':
+        case 'pray':
+        case 'say':
+        case 'shout':
+        case 'sing':
+        case 'tell':
+        case 'whisper':
+        case 'yell':
+            command = details.channel;
+            break;
+        default:
+            return null;
+    }
+
+    const isDirected = command === 'tell' || command === 'whisper' || command === 'ask';
+    const target = isDirected
+        ? details.isOutgoing ? details.target || null : details.sender
+        : null;
+    return { command, target };
 };
 
 export const isChatMessage = (message: Message): boolean => (

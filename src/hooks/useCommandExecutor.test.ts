@@ -33,7 +33,6 @@ describe('useCommandExecutor movement events', () => {
             status: 'connected',
             handleTabClick: vi.fn(),
             setGearTab: vi.fn(),
-            setPlayersTab: vi.fn(),
             setCharTab: vi.fn(),
             setIsSettingsOpen: vi.fn(),
             setSettingsTab: vi.fn(),

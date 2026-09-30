@@ -40,7 +40,6 @@ export const ShaperWorkspaceTopbar: React.FC<ShaperWorkspaceTopbarProps> = ({
     return (
         <header className="shaper-topbar">
             <div>
-                <span className="shaper-kicker">Builder Workspace</span>
                 {activeDoc ? (
                     <h1 className="shaper-topbar-title">
                         <span className="shaper-topbar-name">{activeDoc.name}</span>
@@ -52,18 +51,15 @@ export const ShaperWorkspaceTopbar: React.FC<ShaperWorkspaceTopbarProps> = ({
                         >
                             <Pencil size={12} />
                         </button>
-                        <span className="shaper-topbar-zone-info">
-                            Zone {activeDoc.zoneNumber}
-                            <button
-                                type="button"
-                                className="shaper-topbar-edit-icon"
-                                style={{ marginLeft: '4px' }}
-                                onClick={onChangeZone}
-                                title="Change zone number"
-                            >
-                                <Pencil size={10} />
-                            </button>
-                        </span>
+                        <button
+                            type="button"
+                            className="shaper-topbar-zone-info"
+                            onClick={onChangeZone}
+                            title="Change zone number"
+                            aria-label={`Change zone number, currently z${activeDoc.zoneNumber}`}
+                        >
+                            z{activeDoc.zoneNumber}
+                        </button>
                     </h1>
                 ) : (
                     <h1>Shaper Mode</h1>

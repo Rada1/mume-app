@@ -19,6 +19,9 @@ import { useDeckTargeting, DeckItem } from './useDeckTargeting';
 import { TacticalTargetBar } from '../Controls/GameButton/TacticalTargetBar';
 import { RightPanelTargetBar } from './RightPanelTargetBar';
 import { DeckCategoryWheel } from './DeckCategoryWheel';
+import { ThisIsYouConsole } from './ThisIsYouConsole';
+import { RightActionPanel } from './RightActionPanel';
+import { ShopTargetMenu } from '../Shop/ShopTargetMenu';
 import type { GameButtonProps } from '../Controls/GameButton/GameButton';
 import { DECK_ACTIONS, DECK_TABS, DECK_LABEL_ICONS, DEFAULT_DECK_ICON, isDeckActionAvailable, type TabKey } from './commandDeckData';
 import { useRoomStore } from '../../stores/useRoomStore';
@@ -75,6 +78,7 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
     const race = characterInfo.race || '';
     const subrace = characterInfo.subrace || '';
     const roomChars = useRoomStore(state => state.chars);
+    const roomZone = useRoomStore(state => state.roomZone);
     const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
     const { displayInventoryLines, displayEqLines, setPopoverState } = useUI();
     const setInput = useInputStore(s => s.setInput);
@@ -175,7 +179,7 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
         }
         const effectiveTarget = getRememberedCommandTarget(item.cmd)
             || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
-            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '');
+            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone);
         if (item.needsTarget && !effectiveTarget) {
             // No target selected — make it obvious one is required rather than
             // silently priming the input (which read as "nothing happened").
@@ -218,6 +222,7 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
         containerContents,
         requestContainerContents,
         characterName,
+        roomZone,
     });
 
     // The visible number badges are command-line shortcuts, not instant-cast
@@ -278,13 +283,13 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
 
     const getWheelTargetReady = (item: DeckItem): boolean => {
         if (!item.needsTarget || item.targetKind) return false;
-        const chipTarget = target || getAutoRoomTarget('hit', roomOccupants, characterName || '');
+        const chipTarget = target || getAutoRoomTarget('hit', roomOccupants, characterName || '', roomZone);
         if (!chipTarget) return false;
         const viableTargets = getViableRoomCharacterTargets(item.cmd, roomOccupants, characterName || '');
         if (!viableTargets.some(value => value.toLowerCase() === chipTarget.toLowerCase())) return false;
         const commandTarget = getRememberedCommandTarget(item.cmd)
             || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
-            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '');
+            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone);
         return commandTarget?.toLowerCase() === chipTarget.toLowerCase();
     };
 
@@ -444,7 +449,7 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                         const itemTarget = item.needsTarget && !item.targetKind
                             ? getRememberedCommandTarget(item.cmd)
                                 || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
-                                || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '')
+                                || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone)
                             : null;
                         const viableTargets = getViableRoomCharacterTargets(item.cmd, roomOccupants, characterName || '');
                         const targetReady = Boolean(itemTarget && viableTargets.some(value => value.toLowerCase() === itemTarget.toLowerCase()));
@@ -504,11 +509,22 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                 characterName={characterName}
                 suggestions={deckTargeting.targetSuggestions}
                 title={deckTargeting.targetMenuTitle}
-                commandLabel={deckTargeting.activeItem?.cmd.trim() || deckTargeting.activeItem?.label}
+                commandLabel={deckTargeting.activeItem?.targetKind === 'status-panel'
+                    ? undefined
+                    : deckTargeting.activeItem?.cmd.trim() || deckTargeting.activeItem?.label}
+                customContent={deckTargeting.activeItem?.targetKind === 'status-panel'
+                    ? deckTargeting.activeItem.cmd.trim().toLowerCase() === 'practice'
+                        ? <RightActionPanel skillsOnly embedded />
+                        : <ThisIsYouConsole alwaysExpanded />
+                    : deckTargeting.activeItem?.targetKind === 'shop' ? <ShopTargetMenu
+                        executeCommand={game.executeCommand}
+                        selectedTarget={deckTargeting.pendingTarget}
+                        onSelectTarget={value => deckTargeting.handleSelectTarget(value)}
+                    /> : undefined}
                 isInteractive
                 isBlurred={false}
                 isSwipeTargeting={deckTargeting.isTargetMenuHeld}
-                showKeepOpenToggle={!deckTargeting.isTargetMenuHeld}
+                showKeepOpenToggle={deckTargeting.activeItem?.targetKind !== 'status-panel' && !deckTargeting.isTargetMenuHeld}
                 onDismiss={deckTargeting.closeTargetMenu}
             />
         </div>

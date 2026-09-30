@@ -20,7 +20,7 @@ interface PopoverActionButtonProps {
     handleButtonClick: (button: CustomButton, e: any, context?: string, isContainer?: boolean, parentNoun?: string, direction?: string) => void;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
     addMessage: (type: MessageType, content: string) => void;
-    handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
+    handleTabClick: (drawer: 'character' | 'equipment') => void;
     setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
     selectedObjectIds: Set<string>;
     clearObjectSelection: () => void;
@@ -64,7 +64,7 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
         }
     };
 
-    const isMenuAction = ['nav', 'menu', 'select-assign', 'select-recipient', 'select-container', 'assign', 'teleport-manage'].includes(button.actionType || '') || button.label === 'Look In';
+    const isMenuAction = ['nav', 'menu', 'select-assign', 'select-recipient', 'select-container', 'assign'].includes(button.actionType || '') || button.label === 'Look In';
     const label = button.label.replace(/%n/g, popoverState.context || '').replace(/%p/g, popoverState.parentNoun || '');
     const actionVerb = button.command.trim().toLowerCase().split(/\s+/)[0];
     const terminalTone = ['remove', 'drop'].includes(actionVerb)

@@ -9,13 +9,14 @@ import { getSpellSyntax } from './spellSyntaxUtils';
 import { sanitizeGameTarget } from './gameUtils';
 
 export const BLANK_TARGET_VALUE = '__blank_target__';
+export const LOOK_IN_TARGET_VALUE = '__look_in__';
 
 const TARGETED_VERBS = new Set([
     'kill', 'consider', 'assist', 'bash', 'kick', 'backstab',
     'charge', 'rescue', 'bandage', 'track', 'order', 'shoot',
     'hit', 'target', 'steal', 'envenom', 'examine', 'look',
-    'open', 'close', 'lock', 'unlock', 'ride', 'lead',
-    'disarm', 'tell', 'whisper', 'ask', 'social', 'portal', 'teleport'
+    'open', 'close', 'lock', 'unlock', 'knock', 'ride', 'lead',
+    'disarm', 'tell', 'whisper', 'ask', 'group', 'protect', 'social', 'portal', 'teleport', 'remove'
 ]);
 
 const SELF_TARGETED_SPELLS = new Set([
@@ -42,6 +43,10 @@ const ROOM_TARGETED_SPELLS = new Set([
 ]);
 
 const NON_SINGLE_TARGET_ROOM_SPELLS = new Set(['earthquake', 'darkness', 'ventriloquate']);
+const CHIP_PRIORITY_OFFENSIVE_SPELLS = new Set([
+    'dispel evil', 'harm', 'lightning bolt', 'burning hands', 'magic missile',
+    'chill touch', 'charm', 'shocking grasp', 'fireball', 'colour spray'
+]);
 const HOSTILE_SINGLE_TARGET_VERBS = new Set([
     'kill', 'bash', 'kick', 'backstab', 'charge', 'shoot', 'hit', 'attack', 'steal', 'disarm'
 ]);
@@ -53,15 +58,23 @@ export type CommandTargetMenuKind =
     | 'containers'
     | 'self-room'
     | 'self-allies'
+    | 'room-allies-or-blank'
     | 'self-only'
     | 'self-inventory'
     | 'movement-wheel'
+    | 'pace-options'
     | 'room-spell'
     | 'room-spell-with-extras'
     | 'door-direction'
+    | 'look-containers'
     | 'gear'
+    | 'inventory-gear'
+    | 'worn-gear'
+    | 'food'
+    | 'drink'
     | 'worn-weapons'
     | 'weather-options'
+    | 'weather-scope'
     | 'room-corpses'
     | 'mounts'
     | 'lanterns'
@@ -70,12 +83,21 @@ export type CommandTargetMenuKind =
     | 'bash'
     | 'pick'
     | 'who'
+    | 'who-or-blank'
+    | 'blank-only'
     | 'social'
+    | 'shop'
     | 'room';
 
 const getSpellName = (command: string): string | null => {
     const match = command.trim().match(/^(?:cast|c|commune)\s+['"]([^'"]+)['"]/i);
     return match?.[1]?.trim().toLowerCase() || null;
+};
+
+/** Spells that prioritize the locked target, then auto target, then room order. */
+export const usesChipPriorityOffensiveTarget = (command: string): boolean => {
+    const spell = getSpellName(command);
+    return Boolean(spell && CHIP_PRIORITY_OFFENSIVE_SPELLS.has(spell));
 };
 
 const getNoArgumentSpellCommand = (command: string): string | null => {
@@ -93,7 +115,19 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
     if (!trimmed) return null;
 
     const verb = trimmed.split(/\s+/, 1)[0].toLowerCase();
-    if (['open', 'close', 'lock', 'unlock'].includes(verb)) return 'containers';
+    if (/^look\s+in(?:\s|$)/i.test(trimmed)) return 'look-containers';
+    if (verb === 'buy') return 'shop';
+    if (verb === 'weather') return 'weather-scope';
+    if (verb === 'eat') return 'food';
+    if (verb === 'drink') return 'drink';
+    if (verb === 'fill') return 'lanterns';
+    if (verb === 'protect') return 'room-allies-or-blank';
+    if (verb === 'remove') return 'worn-gear';
+    if (['wear', 'wield', 'hold', 'drop', 'sell', 'value', 'mend', 'read', 'quaff', 'recite', 'use', 'throw'].includes(verb)) return 'inventory-gear';
+    if (/^locate\s+life(?:\s|$)/i.test(trimmed)) return 'who-or-blank';
+    if (verb === 'locate') return 'blank-only';
+    if (['open', 'close', 'lock', 'unlock', 'knock'].includes(verb)) return 'containers';
+    if (['reveal', 'flush', 'hide'].includes(verb) && trimmed.split(/\s+/).length === 1) return 'pace-options';
     if (['ride', 'lead', 'saddle', 'unsaddle', 'abandon', 'dismount'].includes(verb)) return 'mounts';
     if (verb === 'bash') return 'bash';
     if (verb === 'scout') return /%n\s*\|\s*exit/i.test(trimmed) ? 'door-direction' : 'movement-wheel';
@@ -102,7 +136,6 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
     if (['tell', 'whisper', 'ask'].includes(verb)) return 'who';
     if (verb === 'social') return 'social';
     if (verb === 'escape') return 'self-only';
-    if (verb === 'hide') return 'self-inventory';
 
     const spell = getSpellName(trimmed);
         if (spell) {
@@ -151,11 +184,23 @@ export const isOffensiveSingleTargetCommand = (command: string): boolean => {
     return kind === 'room' && HOSTILE_SINGLE_TARGET_VERBS.has(command.trim().split(/\s+/, 1)[0].toLowerCase());
 };
 
+/** Whether room target menus for this command should omit ally-tagged characters. */
+export const isOffensiveTargetCommand = (command: string): boolean => {
+    const kind = getCommandTargetMenuKind(command);
+    return kind === 'room-spell' || kind === 'room-spell-with-extras' || isOffensiveSingleTargetCommand(command);
+};
+
 /** Target preselected when a specialized menu opens without an explicit choice. */
 export const getDefaultCommandTarget = (command: string): string | null => {
     const verb = command.trim().split(/\s+/, 1)[0].toLowerCase();
-    if (verb === 'look' || verb === 'assist') return BLANK_TARGET_VALUE;
-    if (verb === 'rescue') return '1.ally';
+    if (verb === 'weather') return 'local';
+    if (verb === 'drink') {
+        const explicitTarget = command.trim().match(/^drink\s+(?!%n\b)(.+)$/i);
+        return explicitTarget?.[1]?.trim() || null;
+    }
+    if (/^look\s+in(?:\s|$)/i.test(command.trim())) return null;
+    if (verb === 'look' || verb === 'assist' || verb === 'locate') return BLANK_TARGET_VALUE;
+    if (verb === 'rescue') return BLANK_TARGET_VALUE;
 
     const kind = getCommandTargetMenuKind(command);
     if (kind === 'self-room' || kind === 'self-allies' || kind === 'self-only') return 'self';
@@ -242,6 +287,16 @@ export const applyTargetToCommand = (command: string, target: string | null): st
         const [, verb, , trailingArgs] = doorMatch;
         return `${verb} ${cleanTarget}${trailingArgs ? ` ${trailingArgs}` : ''}`;
     }
+
+    const lookInMatch = trimmed.match(/^(look\s+in)(?:\s+.*)?$/i);
+    if (lookInMatch) return `${lookInMatch[1]} ${cleanTarget}`;
+
+    const locateLifeMatch = trimmed.match(/^locate\s+life(?:\s+.*)?$/i);
+    if (locateLifeMatch) return `locate life ${cleanTarget}`;
+    if (/^locate(?:\s+.*)?$/i.test(trimmed)) return `locate ${cleanTarget}`;
+
+    const directKeyedSpell = trimmed.match(/^(watch\s+room|teleport|portal|scry)(?:\s+.*)?$/i);
+    if (directKeyedSpell) return `${directKeyedSpell[1]} ${cleanTarget}`;
 
     // Quoted spell: cast 'fireball' -> cast 'fireball' orc
     const spellMatch = trimmed.match(/^((?:cast|c|commune)\s+'[^']+')(?:\s+(.*))?$/i);

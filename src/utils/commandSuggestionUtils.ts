@@ -4,27 +4,36 @@
  */
 
 import type { DrawerLine, GmcpOccupant, PracticeSkill, TeleportTarget } from '../types';
-import { getOccupantCommandKeyword } from './occupantKeywordUtils';
-import { extractMumeKeyword } from './keywordUtils';
 import { getWhoPlayerNames } from './chatWindowUtils';
-import { isFluidContainer, isItemContainer, sanitizeGameTarget } from './gameUtils';
+import { sanitizeGameTarget } from './gameUtils';
 import { MAGE_SPELLS } from './spellLists';
 import { getMagicKeyId, pruneExpiredMagicKeys } from './magicKeyUtils';
 import { getTraitsForName } from './inlineActionModel';
-import { getContainerCommand } from './gearPanelUtils';
 import { normalizeOccupantType } from '../services/classification/normalizeOccupantType';
-import { BLANK_TARGET_VALUE } from './commandTargetUtils';
+import { makeCommandTargetSuggestion, type CommandTargetSuggestion } from '../objects/targetSuggestionTypes';
+import {
+    getAssistTargetSuggestions, getGroupTargetSuggestions, getRescueTargetSuggestions,
+    getRoomCorpseTargetSuggestions, getRoomObjectTargetsWithExit, getRoomTargetSuggestions
+} from '../objects/roomTargetSuggestions';
+import {
+    getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions,
+    getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions,
+    getLanternTargetSuggestions
+} from '../objects/gearTargetSuggestions';
+
+export { makeCommandTargetSuggestion };
+export type { CommandTargetSuggestion };
+export {
+    getAssistTargetSuggestions, getGroupTargetSuggestions, getRescueTargetSuggestions,
+    getRoomCorpseTargetSuggestions, getRoomObjectTargetsWithExit, getRoomTargetSuggestions
+};
+export {
+    getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions,
+    getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions,
+    getLanternTargetSuggestions
+};
 
 // --- Type Section ---
-
-export interface CommandTargetSuggestion {
-    key: string;
-    label: string;
-    value: string;
-    meta: string;
-    containerId?: string;
-    containerCommand?: string;
-}
 
 export interface CommandTextParts {
     leading: string;
@@ -33,17 +42,6 @@ export interface CommandTextParts {
     isValid: boolean;
     autocomplete: string;
 }
-
-export const makeCommandTargetSuggestion = (
-    label: string,
-    value: string,
-    meta: string
-): CommandTargetSuggestion => ({
-    key: `${meta}-${value.toLowerCase().replace(/\s+/g, '-')}`,
-    label,
-    value,
-    meta
-});
 
 const normalizeTargetSuggestionValue = (value: string): string => {
     const sanitized = sanitizeGameTarget(value) || value.trim();
@@ -75,6 +73,19 @@ export const prioritizeTargetSuggestion = (
     return [suggestions[matchIndex], ...suggestions.slice(0, matchIndex), ...suggestions.slice(matchIndex + 1)];
 };
 
+export const prioritizeOffensiveRoomEntitySuggestions = (
+    suggestions: CommandTargetSuggestion[]
+): CommandTargetSuggestion[] => suggestions
+    .map((suggestion, index) => ({
+        suggestion,
+        index,
+        priority: suggestion.meta?.toLowerCase() === 'enemy' ? 0
+            : suggestion.meta?.toLowerCase() === 'npc' ? 1
+            : 2
+    }))
+    .sort((left, right) => left.priority - right.priority || left.index - right.index)
+    .map(entry => entry.suggestion);
+
 export const getSelfTargetSuggestion = (): CommandTargetSuggestion =>
     makeCommandTargetSuggestion('Self', 'self', 'self');
 
@@ -90,10 +101,9 @@ export const getSelfAndRoomTargetSuggestions = (
         const tags = [source.category, ...(source.labels || []), ...(source.flags || [])]
             .filter(Boolean)
             .map(tag => String(tag).toLowerCase().replace(/^(?:cat|trait)-/, ''));
-        const isNpc = normalizedType === 'npc' || source.pc === false || source.pc === 0;
         const hasAllyTag = tags.some(tag => ['ally', 'allies', 'friend', 'grouped'].includes(tag));
-        return normalizedType === 'ally' || source.pc === true || source.pc === 1
-            || (isNpc && hasAllyTag);
+        return normalizedType === 'ally' || normalizedType === 'player' || source.pc === true || source.pc === 1
+            || hasAllyTag;
     };
     const isNpc = (source: string | GmcpOccupant): boolean => {
         if (typeof source === 'string') return true;
@@ -127,27 +137,6 @@ export const appendNamedTargetSuggestions = (
     ...roomTargets,
     ...extras.map(extra => makeCommandTargetSuggestion(extra.label, extra.value, extra.meta))
 ];
-
-export const getRoomObjectTargetsWithExit = (
-    roomObjects: Array<string | GmcpOccupant>
-): CommandTargetSuggestion[] => appendNamedTargetSuggestions(
-    getRoomTargetSuggestions([], roomObjects, 'objects'),
-    [{ label: 'Exit', value: 'exit', meta: 'exit' }]
-);
-
-export const getRoomCorpseTargetSuggestions = (
-    roomObjects: Array<string | GmcpOccupant>
-): CommandTargetSuggestion[] => getRoomTargetSuggestions(
-    [],
-    roomObjects.filter(source => {
-        if (typeof source === 'string') return /\bcorpse\b/i.test(source);
-        const searchable = [source.name, source.short, source.shortdesc, source.keyword, source.type, source.category, ...(source.flags || [])]
-            .filter(Boolean)
-            .join(' ');
-        return /\bcorpse\b/i.test(searchable);
-    }),
-    'objects'
-);
 
 export const getMountTargetSuggestions = (
     characters: GmcpOccupant[],
@@ -206,192 +195,10 @@ export const getMagicKeyTargetSuggestions = (targets: TeleportTarget[]): Command
     pruneExpiredMagicKeys(targets).map((target, index) => {
         const value = getMagicKeyId(target);
         const label = target.label || target.name || value;
-        return { key: `magic-key-${target.id || index}`, label, value, meta: 'magic-key' };
-    });
+        return { key: `magic-key-${target.id || index}`, label, value, meta: 'magic-key', customLabel: target.customName, expiresAt: target.expiresAt, isFavorite: target.isFavorite };
+    }).sort((left, right) => Number(Boolean(right.isFavorite)) - Number(Boolean(left.isFavorite)));
 
 // --- Logic Section ---
-
-export const getRoomTargetSuggestions = (
-    characters: Array<string | GmcpOccupant>,
-    objects: Array<string | GmcpOccupant>,
-    kind: 'characters' | 'allies' | 'objects',
-    selfName = ''
-): CommandTargetSuggestion[] => {
-    const sources = kind === 'objects' ? objects : characters;
-    const getAllyPriority = (source: string | GmcpOccupant): number | null => {
-        if (typeof source === 'string') return null;
-        const normalizedType = normalizeOccupantType(source)?.toLowerCase();
-        if (normalizedType === 'enemy' || normalizedType === 'neutral' || normalizedType === 'you' || normalizedType === 'self') return null;
-
-        const tags = [source.category, ...(source.labels || []), ...(source.flags || [])]
-            .filter(Boolean)
-            .map(tag => String(tag).toLowerCase().replace(/^(?:cat|trait)-/, ''));
-        const hasAllyTag = tags.some(tag => ['ally', 'allies', 'friend', 'grouped'].includes(tag));
-        const isNpc = (source.type || '').toLowerCase() === 'npc' || source.pc === false || source.pc === 0;
-        if (isNpc && (hasAllyTag || normalizedType === 'ally')) return 0;
-        if (normalizedType === 'ally' || source.pc === true || source.pc === 1) return 1;
-        return null;
-    };
-    const orderedSources = kind === 'allies'
-        ? sources.map((source, index) => ({ source, index, priority: getAllyPriority(source) }))
-            .filter((entry): entry is { source: string | GmcpOccupant; index: number; priority: number } => entry.priority !== null)
-            .sort((a, b) => a.priority - b.priority)
-        : sources.map((source, index) => ({ source, index, priority: 0 }));
-    const suggestions = orderedSources.flatMap(({ source, index }) => {
-        const occupant: GmcpOccupant = typeof source === 'string' ? { name: source } : source;
-        const type = (occupant.type || '').toLowerCase();
-        const label = occupant.short || occupant.shortdesc || occupant.name || occupant.keyword || '';
-        if (!label || (selfName && label.toLowerCase() === selfName.toLowerCase())) return [];
-        const value = getOccupantCommandKeyword(occupant, label);
-        if (!value) return [];
-        return [{ key: `${occupant.id ?? index}-${value}`, label, value, meta: type || kind }];
-    });
-
-    const totalByKeyword = new Map<string, number>();
-    suggestions.forEach(({ value }) => {
-        const keyword = value.toLowerCase();
-        totalByKeyword.set(keyword, (totalByKeyword.get(keyword) || 0) + 1);
-    });
-
-    const ordinalByKeyword = new Map<string, number>();
-    return suggestions.map(suggestion => {
-        const keyword = suggestion.value.toLowerCase();
-        const total = totalByKeyword.get(keyword) || 0;
-        if (total < 2) return suggestion;
-
-        const ordinal = (ordinalByKeyword.get(keyword) || 0) + 1;
-        ordinalByKeyword.set(keyword, ordinal);
-        const displayKeyword = suggestion.value.replace(/^[*-]+|[*-]+$/g, '');
-        return {
-            ...suggestion,
-            label: `${ordinal}.${displayKeyword}`,
-            value: `${ordinal}.${suggestion.value}`
-        };
-    });
-};
-
-export const getAssistTargetSuggestions = (
-    characters: Array<string | GmcpOccupant>,
-    selfName = ''
-): CommandTargetSuggestion[] => [
-    makeCommandTargetSuggestion('Blank Target', BLANK_TARGET_VALUE, 'source'),
-    ...getRoomTargetSuggestions(characters, [], 'allies', selfName)
-];
-
-export const getRescueTargetSuggestions = (
-    characters: Array<string | GmcpOccupant>,
-    selfName = ''
-): CommandTargetSuggestion[] => [
-    makeCommandTargetSuggestion('1.ally', '1.ally', 'ally'),
-    ...getRoomTargetSuggestions(characters, [], 'allies', selfName)
-];
-
-const disambiguateGearSuggestions = (suggestions: CommandTargetSuggestion[]): CommandTargetSuggestion[] => {
-    const baseValue = (value: string) => value.trim().replace(/^\d+\./, '');
-    const counts = new Map<string, number>();
-    suggestions.forEach(suggestion => {
-        const key = baseValue(suggestion.value).toLowerCase();
-        counts.set(key, (counts.get(key) || 0) + 1);
-    });
-
-    const ordinals = new Map<string, number>();
-    return suggestions.map(suggestion => {
-        const value = baseValue(suggestion.value);
-        const key = value.toLowerCase();
-        if ((counts.get(key) || 0) < 2) return suggestion;
-        const ordinal = (ordinals.get(key) || 0) + 1;
-        ordinals.set(key, ordinal);
-        return { ...suggestion, label: `${ordinal}.${value}`, value: `${ordinal}.${value}` };
-    });
-};
-
-const getRawGearTargetSuggestions = (
-    lines: DrawerLine[],
-    kind: 'inventory' | 'worn'
-): CommandTargetSuggestion[] => lines.flatMap((line, index) => {
-    if (!line.isItem || line.isHeader) return [];
-    const label = line.text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-    const value = line.context || extractMumeKeyword(label);
-    if (!label || !value) return [];
-    return [{ key: line.entityId || line.stableId || line.id || `${kind}-${index}`, label, value, meta: kind }];
-});
-
-export const getGearTargetSuggestions = (
-    lines: DrawerLine[],
-    kind: 'inventory' | 'worn'
-): CommandTargetSuggestion[] => disambiguateGearSuggestions(getRawGearTargetSuggestions(lines, kind));
-
-export const getInventoryAndWornTargetSuggestions = (
-    inventoryLines: DrawerLine[],
-    wornLines: DrawerLine[]
-): CommandTargetSuggestion[] => disambiguateGearSuggestions([
-    ...getRawGearTargetSuggestions(inventoryLines, 'inventory'),
-    ...getRawGearTargetSuggestions(wornLines, 'worn')
-]);
-
-export const getDrinkTargetSuggestions = (
-    inventoryLines: DrawerLine[],
-    wornLines: DrawerLine[]
-): CommandTargetSuggestion[] => {
-    const fluidContainers = (lines: DrawerLine[]) => lines.filter(line =>
-        line.isItem && !line.isHeader && isFluidContainer(`${line.text} ${line.rawText || ''} ${line.context || ''}`)
-    );
-    return [
-        ...getInventoryAndWornTargetSuggestions(fluidContainers(inventoryLines), fluidContainers(wornLines)),
-        { key: 'drink-water', label: 'water', value: 'water', meta: 'source' }
-    ];
-};
-
-export const getLanternTargetSuggestions = (
-    inventoryLines: DrawerLine[],
-    wornLines: DrawerLine[]
-): CommandTargetSuggestion[] => getInventoryAndWornTargetSuggestions(
-    inventoryLines.filter(line => line.isItem && /\blantern\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`)),
-    wornLines.filter(line => line.isItem && /\blantern\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`))
-);
-
-export const getContainerTargetSuggestions = (
-    roomItems: Array<string | GmcpOccupant>,
-    inventoryLines: DrawerLine[],
-    wornLines: DrawerLine[]
-): CommandTargetSuggestion[] => {
-    const roomTargets = roomItems.flatMap((source, index) => {
-        const item: GmcpOccupant = typeof source === 'string' ? { name: source } : source;
-        const label = item.short || item.shortdesc || item.name || item.keyword || '';
-        const classification = [item.type, item.category, ...(item.flags || [])].join(' ');
-        if (!label || (!/container/i.test(classification) && !isItemContainer(label))) return [];
-        const suggestion = getRoomTargetSuggestions([], [item], 'objects')[0];
-        if (!suggestion) return [];
-        const containerId = item.id !== undefined ? String(item.id) : `room-container-${index}-${suggestion.value}`;
-        return [{
-            ...suggestion,
-            key: `room-${containerId}-${suggestion.value}`,
-            meta: 'room',
-            containerId,
-            containerCommand: `look in ${suggestion.value}`
-        }];
-    });
-
-    const gearTargets = (lines: DrawerLine[], kind: 'inventory' | 'worn') => lines.flatMap((line, index) => {
-        if (line.isHeader || !line.isItem || !(line.isContainer || isItemContainer(`${line.text} ${line.rawText || ''}`))) return [];
-        const suggestion = getGearTargetSuggestions([line], kind)[0];
-        if (!suggestion) return [];
-        return [{
-            ...suggestion,
-            key: `${kind}-${suggestion.key || index}`,
-            meta: kind,
-            containerId: line.id,
-            containerCommand: getContainerCommand(line, lines) || `look in ${suggestion.value}`
-        }];
-    });
-
-    return disambiguateGearSuggestions([
-        { key: 'container-exit', label: 'Exit', value: 'exit', meta: 'exit' },
-        ...roomTargets,
-        ...gearTargets(inventoryLines, 'inventory'),
-        ...gearTargets(wornLines, 'worn')
-    ]);
-};
 
 export const getWhoTargetSuggestions = (
     whoList: string[],
@@ -405,7 +212,7 @@ export const getWhoTargetSuggestions = (
 };
 
 export const MUME_SOCIAL_COMMANDS = [
-    'accuse', 'apologize', 'applaud', 'beg', 'blush', 'bounce', 'bow', 'burp',
+    'accuse', 'apologise', 'applaud', 'beg', 'blush', 'bounce', 'bow', 'burp',
     'cackle', 'chuckle', 'clap', 'comfort', 'cough', 'curtsey', 'dance', 'frown',
     'gasp', 'giggle', 'glare', 'grin', 'hiccup', 'hug', 'hum', 'kiss',
     'laugh', 'lick', 'love', 'moan', 'mumble', 'no', 'nod', 'poke',

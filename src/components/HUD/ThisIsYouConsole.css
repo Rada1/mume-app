@@ -181,6 +181,12 @@
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     align-items: stretch;
+    cursor: pointer;
+}
+
+.this-is-you-tier-vitals:focus-visible {
+    outline: 1px solid #f0cb67;
+    outline-offset: 2px;
 }
 
 .this-is-you-vitals-group {
@@ -279,6 +285,31 @@
 
 .this-is-you-capabilities-row strong {
     color: #9bd2a5;
+}
+
+.this-is-you-wimpy-button {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.this-is-you-wimpy-button:disabled {
+    cursor: default;
+}
+
+.this-is-you-wimpy-button:not(:disabled):hover span {
+    color: #f0cb67;
+}
+
+.this-is-you-wimpy-button:focus-visible {
+    outline: 1px solid #f0cb67;
+    outline-offset: 2px;
 }
 
 /* TIER 3: Category State Pills & Buffs */

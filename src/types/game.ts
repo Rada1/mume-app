@@ -210,7 +210,7 @@ export interface ActivePrompt {
 export interface ParleyState {
     active: boolean;
     mode?: 'command' | 'parley' | 'help';
-    command: 'tell' | 'whisper' | 'ask' | 'say' | 'narrate' | 'shout' | 'yell' | 'sing' | 'emote' | 'none';
+    command: 'tell' | 'whisper' | 'ask' | 'say' | 'narrate' | 'shout' | 'yell' | 'sing' | 'emote' | 'group' | 'pray' | 'none';
     target: string | null;
     message: string;
 }
@@ -228,6 +228,7 @@ export interface TeleportTarget {
     sourceLine?: string;
     customName?: string;
     gatheredZone?: string;
+    isFavorite?: boolean;
 }
 
 export interface SpatButton {

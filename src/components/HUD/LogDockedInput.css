@@ -36,7 +36,9 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    height: 20px;
     padding: 2px 6px;
+    box-sizing: border-box;
     background: rgba(201, 168, 76, 0.15);
     border: 1px solid rgba(201, 168, 76, 0.35);
     border-radius: 4px;
@@ -53,6 +55,18 @@
     background: rgba(201, 168, 76, 0.25);
 }
 
+.docked-parley-chip .parley-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
 .docked-parley-chip .parley-cmd {
     font-weight: 700;
     color: #4ade80;
@@ -62,11 +76,36 @@
     color: #38bdf8;
 }
 
+.docked-parley-target-chip {
+    border-color: rgba(56, 189, 248, 0.42);
+    background: rgba(14, 116, 144, 0.16);
+}
+
+.docked-parley-target-chip:hover {
+    border-color: rgba(56, 189, 248, 0.7);
+    background: rgba(14, 116, 144, 0.26);
+}
+
+.docked-parley-target-chip .parley-tgt {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .docked-parley-chip .parley-x {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-size: 13px;
     line-height: 1;
     color: #f87171;
     margin-left: 2px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    cursor: pointer;
 }
 
 .docked-target-badge {
@@ -159,7 +198,10 @@
 }
 
 .docked-target-badge.is-auto-target {
-    background: rgba(22, 101, 52, 0.24);
+    border-color: rgba(248, 113, 113, 0.82);
+    background: rgba(127, 29, 29, 0.24);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.44), inset 0 0 6px rgba(248, 113, 113, 0.16);
+    color: #fca5a5;
 }
 
 .docked-target-picker {
@@ -455,6 +497,11 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    min-height: 34px;
+}
+
+.app-container.is-mobile .docked-parley-chip {
+    height: 34px;
     min-height: 34px;
 }
 

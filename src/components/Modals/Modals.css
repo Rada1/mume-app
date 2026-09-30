@@ -1,4 +1,7 @@
-/* Modals, Popovers, and Menus Styles */
+/**
+ * @file Modals.css
+ * @description Shared modal surfaces and controls.
+ */
 
 .modal-overlay {
     position: fixed;
@@ -41,6 +44,116 @@
     max-width: 850px;
 }
 
+/* --- Settings terminal surface --- */
+.modal.settings {
+    --bg-modal: rgba(33, 27, 22, 0.97);
+    --bg-panel: rgba(25, 21, 17, 0.92);
+    --border-modal: rgba(201, 168, 76, 0.28);
+    --border-color: rgba(201, 168, 76, 0.2);
+    --input-bg: #17120f;
+    --text-primary: #d4cdb8;
+    --text-dim: #a99c86;
+    --accent: #dfbf6c;
+    --accent-rgb: 223, 191, 108;
+    --font-main: var(--font-mono, monospace);
+    color: var(--text-primary);
+    background: var(--bg-modal);
+    border: 1px solid var(--border-modal);
+    border-radius: 0;
+    box-shadow: 8px 12px 20px rgba(0, 0, 0, 0.38);
+    font-family: var(--font-mono, monospace);
+    align-self: flex-start;
+    margin-top: 4vh;
+    margin-top: 4dvh;
+}
+
+.modal.settings .modal-header {
+    margin-bottom: 12px;
+}
+
+.modal.settings .modal-title {
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+}
+
+.modal.settings .modal-header button {
+    color: var(--text-dim) !important;
+    border-radius: 0 !important;
+}
+
+.modal.settings .modal-tabs {
+    gap: 2px;
+    margin-bottom: 12px;
+    border-bottom-color: var(--border-modal);
+}
+
+.modal.settings .modal-tab {
+    padding: 8px 10px;
+    color: var(--text-dim);
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.74rem;
+}
+
+.modal.settings .modal-tab:hover {
+    color: var(--accent);
+    background: rgba(201, 168, 76, 0.08);
+}
+
+.modal.settings .modal-tab.active {
+    color: var(--accent);
+    background: rgba(201, 168, 76, 0.12);
+    border-bottom: 2px solid var(--accent);
+    box-shadow: none;
+}
+
+.modal.settings .modal-body {
+    scrollbar-color: rgba(201, 168, 76, 0.3) transparent;
+}
+
+.modal.settings .modal-body::-webkit-scrollbar-thumb {
+    background-color: rgba(201, 168, 76, 0.3);
+}
+
+.modal.settings .setting-group {
+    color: var(--text-primary);
+    background-color: var(--bg-panel) !important;
+    border-color: var(--border-modal) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.modal.settings .setting-label {
+    color: var(--text-dim);
+    font-family: inherit;
+}
+
+.modal.settings .setting-input {
+    color: var(--text-primary);
+    background-color: var(--input-bg);
+    border-color: var(--border-modal);
+    border-radius: 0;
+    font-family: inherit;
+}
+
+.modal.settings button:not(.setting-toggle) {
+    font-family: inherit;
+    border-radius: 0 !important;
+}
+
+.modal.settings .btn-primary {
+    color: #211b16;
+    background: var(--accent);
+}
+
+.modal.settings .btn-secondary {
+    color: var(--text-primary);
+    background: rgba(201, 168, 76, 0.12);
+    border: 1px solid var(--border-modal);
+}
+
 @media (min-width: 768px) {
     .modal.settings {
         max-width: 760px;
@@ -61,6 +174,11 @@
         max-height: 100dvh;
         border-radius: 0;
         border: none;
+    }
+
+    .modal.settings {
+        align-self: stretch;
+        margin-top: 0;
     }
 }
 

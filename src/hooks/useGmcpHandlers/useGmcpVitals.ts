@@ -17,7 +17,7 @@ interface UseGmcpVitalsProps {
     setMood?: (val: string) => void;
     setSpellSpeed?: (val: string) => void;
     setAlertness?: (val: string) => void;
-    sendCommand?: (cmd: string) => void;
+    sendSilentCommand?: (cmd: string) => void;
     playEffect?: (name: string, options?: { pitch?: number; volume?: number; skipJitter?: boolean }) => void;
     setCurrentWeather: (weather: import('../../types').WeatherType) => void;
     setIsFoggy: (isFoggy: boolean) => void;
@@ -46,7 +46,7 @@ export const useGmcpVitals = ({
     setMood,
     setSpellSpeed,
     setAlertness,
-    sendCommand,
+    sendSilentCommand,
     playEffect,
     setCurrentWeather,
     setIsFoggy,
@@ -64,7 +64,7 @@ export const useGmcpVitals = ({
     // UI sliders update optimistically before GMCP confirms them. Seed this
     // baseline from the current UI mood so that confirmation is still a real
     // change and can play its feedback effect.
-    const lastMoodRef = useRef<string | null>(mood?.toLowerCase() || null);
+    const lastMoodRef = useRef<string | null>(null);
     const lastSpellSpeedRef = useRef<string | null>(null);
     const lastAlertnessRef = useRef<string | null>(null);
     const lastGmcpPositionRef = useRef<string | null>(null);
@@ -78,7 +78,7 @@ export const useGmcpVitals = ({
 
             if (previousMood !== null && previousMood !== nextMood) {
                 playEffect?.('slider', { pitch: getDispositionSliderPitch('mood', nextMood), volume: 0.5, skipJitter: true });
-                sendCommand?.('info %O %D %k %A');
+                sendSilentCommand?.('info %O %D %k %A');
             }
         }
 
@@ -142,7 +142,7 @@ export const useGmcpVitals = ({
                         fighting: 1.24,
                     };
                     playEffect?.('rest', { pitch: positionPitch[nextPosition] ?? 1, skipJitter: true });
-                    sendCommand?.('info %O %D %k %A');
+                    sendSilentCommand?.('info %O %D %k %A');
                 }
                 
                 // Sync combat state from position
@@ -207,7 +207,7 @@ export const useGmcpVitals = ({
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
             gmcpBus.emit('Char.Vitals', { ...data, isSnooped: false });
         });
-    }, [setCurrentTerrain, setCurrentWeather, setIsFoggy, setPlayerHealthStatus, setOpponentId, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, setPlayerPosition, setMood, setSpellSpeed, setAlertness, sendCommand, playEffect, findStatus, getCharNameFromId, isSpectateMode, detectLighting, playerPositionRef, setInCombat]);
+    }, [setCurrentTerrain, setCurrentWeather, setIsFoggy, setPlayerHealthStatus, setOpponentId, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, setPlayerPosition, setMood, setSpellSpeed, setAlertness, sendSilentCommand, playEffect, findStatus, getCharNameFromId, isSpectateMode, detectLighting, playerPositionRef, setInCombat]);
 
     const onCharInfo = useCallback((data: GmcpCharInfo) => {
         // console.log('[GMCP] CharInfo:', data);

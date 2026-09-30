@@ -201,6 +201,10 @@
     flex-direction: column;
 }
 
+.chat-window-entry-replyable {
+    cursor: pointer;
+}
+
 .chat-window-entry-incoming {
     align-items: flex-start;
 }

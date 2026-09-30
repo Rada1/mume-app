@@ -6,7 +6,7 @@
 // --- Logic Section ---
 import React, { useCallback, useMemo, useEffect, useRef } from 'react';
 import { 
-    Compass, Swords, MessageSquare, CloudSun, Footprints,
+    MessageSquare, CloudSun, Footprints,
     ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
     ChevronsUp, ChevronsDown, Heart, Zap,
     ArrowUpLeft, ArrowUpRight, ArrowDownLeft, ArrowDownRight, CircleHelp
@@ -115,6 +115,21 @@ const parseEntityCountPrompt = (text: string) => {
     return matches.map(([, kind, count]) => ({ kind, count }));
 };
 
+const renderClassicMessage = (msg: Message): React.ReactNode => {
+    if (msg.tokens?.length) {
+        return msg.tokens.map((token, index) => {
+            const style = token.type === 'entity'
+                ? token.metadata?.style
+                : token.type === 'ansi' || token.type === 'text'
+                    ? token.style
+                    : undefined;
+            return <span key={`${token.type}-${index}`} style={style}>{token.content}</span>;
+        });
+    }
+
+    return <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(msg.html || ansiConvert.toHtml(msg.textRaw || '')) }} />;
+};
+
 const renderMovementArrowIcon = (direction: string | null, fallback: string) => {
     if (!direction) return fallback;
     switch (direction) {
@@ -211,7 +226,8 @@ const MessageItem = React.memo(({
 }) => {
     const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
     const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
-    const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
+    const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode || s.isClassicMode);
+    const isClassicMode = useSettingsStore(s => s.isClassicMode);
     const theme = useSettingsStore(s => s.theme);
     const roomColorSetting = useSettingsStore(s => s.roomColor);
     const { gameState, inlineCategories } = useBaseGame();
@@ -433,18 +449,11 @@ const MessageItem = React.memo(({
                 '--msg-line-delay': `-${(((lineIndex ?? 0) % 16) * 0.22).toFixed(2)}s`
             } as React.CSSProperties}
         >
-            {showBlockHeaders && msg.isRoomBlockStart && (
-                <div className="room-block-header">
-                    <Compass size={11} strokeWidth={2.5} />
-                    LOCATION
+            {isClassicMode ? (
+                <div className="content-row classic-message-text">
+                    <span className="message-content">{renderClassicMessage(msg)}</span>
                 </div>
-            )}
-            {showBlockHeaders && msg.isCombatBlockStart && (
-                <div className="combat-block-header">
-                    <Swords size={11} strokeWidth={2.5} />
-                    COMBAT
-                </div>
-            )}
+            ) : <>
             {showBlockHeaders && msg.isCommBlockStart && (
                 <div className="comm-block-header">
                     <MessageSquare size={11} strokeWidth={2.5} />
@@ -489,7 +498,7 @@ const MessageItem = React.memo(({
                     <span className="message-content prompt-text">
                         {hasInlinePromptModes(msg.textOnly || msg.textRaw || '')
                             ? <PromptInlineControls text={msg.textOnly || msg.textRaw || ''} />
-                            : <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />}
+                            : <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} highlightPromptVitals />}
                     </span>
                 </div>
             ) : entityCountPrompt ? (
@@ -645,6 +654,7 @@ const MessageItem = React.memo(({
                     )}
                 </div>
             )}
+            </>}
         </div>
     );
 });
@@ -1037,8 +1047,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
             ) {
                 h += Math.round(viewport.logFontSizePx * 1.2);
             }
-            if (showBlockHeaders && msg.isRoomBlockStart) h += 24;
-            if (showBlockHeaders && msg.isCombatBlockStart) h += 24;
             if (showBlockHeaders && msg.isCommBlockStart) h += 24;
             return h;
         }, [viewport.columns, viewport.logFontSize, viewport.logFontSizePx, showBlockHeaders]),

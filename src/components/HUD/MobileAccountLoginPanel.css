@@ -14,7 +14,7 @@
     margin: auto;
     padding: 24px 18px;
     border: 1px solid var(--account-border-strong);
-    border-radius: 9px;
+    border-radius: 0;
     background: var(--account-surface);
     box-shadow: 0 14px 38px rgba(0, 0, 0, 0.34);
 }

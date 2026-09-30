@@ -1,5 +1,8 @@
 import React, { useCallback } from 'react';
 import { parseMM2 } from '../mm2Parser';
+import { mapDataToLegacyImport, type LegacyMapImport } from '../performance/webcockpit/mm2ImportAdapter';
+import { readMm2 } from '../performance/webcockpit/mm2';
+import type { MapData } from '../performance/webcockpit/model';
 
 export const useMapperExportImport = (
     rooms: Record<string, any>,
@@ -53,14 +56,21 @@ export const useMapperExportImport = (
         if (!file) return;
         try {
             addMessage?.('system', '[Mapper] Reading MMapper file...');
-            const data = await parseMM2(file, 1.0);
+            let canonicalMap: MapData | null = null;
+            let data: LegacyMapImport;
+            if (file.name.toLowerCase().endsWith('.xml')) {
+                data = await parseMM2(file, 1.0);
+            } else {
+                canonicalMap = await readMm2(new Uint8Array(await file.arrayBuffer()));
+                data = mapDataToLegacyImport(canonicalMap);
+            }
             const markerCount = data.markers ? Object.keys(data.markers).length : 0;
             console.log('[mm2 import] parser returned:', {
                 rooms: Object.keys(data.rooms || {}).length,
                 markers: markerCount,
                 firstMarkers: data.markers ? Object.values(data.markers).slice(0, 5) : []
             });
-            controller.loadImportedMapData(data.rooms);
+            controller.loadImportedMapData(data.rooms, canonicalMap);
             if (data.markers && markerCount > 0) {
                 setMarkers(data.markers);
                 const ids = Object.keys(data.markers);

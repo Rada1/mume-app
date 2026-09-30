@@ -1,0 +1,274 @@
+/* @file classicMode.css — Monochrome map and plain terminal presentation. */
+
+/* --- Logic Section --- */
+.classic-mode {
+    --bg-app: #000;
+    --bg-panel: #000;
+    --text-primary: #ddd;
+    --text-dim: #aaa;
+    --text-faded: #888;
+    --border-color: #444;
+    --mobile-map-panel-height: min(38dvh, 420px) !important;
+    background: #000 !important;
+    color: #ddd !important;
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace !important;
+}
+
+.classic-mode.app-container::after {
+    display: none !important;
+    content: none !important;
+}
+
+.classic-mode,
+.classic-mode * {
+    animation: none !important;
+    transition: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Keep one menu control so settings remain reachable; Ctrl+, also opens Settings. */
+.classic-mode .header {
+    position: absolute !important;
+    top: 2px !important;
+    right: 2px !important;
+    width: auto !important;
+    height: 32px !important;
+    min-height: 0 !important;
+    z-index: 70001 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+}
+
+.classic-mode .header > :not(.header-right-cluster),
+.classic-mode .header-right-cluster > :not(.controls),
+.classic-mode .controls > :not(.main-menu-dots) {
+    display: none !important;
+}
+
+.classic-mode .header-right-cluster,
+.classic-mode .controls,
+.classic-mode .main-menu-dots,
+.classic-mode .main-menu-dots .menu-toggle-btn {
+    display: flex !important;
+    margin: 0 !important;
+    background: #000 !important;
+    color: #aaa !important;
+    border: 1px solid #444 !important;
+    border-radius: 0 !important;
+}
+
+.classic-mode .controls {
+    gap: 0 !important;
+}
+
+.classic-mode .main-menu-dots .menu-toggle-btn {
+    width: auto !important;
+    min-width: 76px !important;
+    gap: 4px !important;
+    padding: 0 7px !important;
+    font: 600 11px/1 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace !important;
+    letter-spacing: 0.04em !important;
+    pointer-events: auto !important;
+}
+
+.classic-mode .classic-main-menu-label {
+    display: inline !important;
+}
+
+/* Retain only the map from the HUD and only the log/input from the main layout. */
+.classic-mode .app-header-glass-strip,
+.classic-mode .replay-hud,
+.classic-mode .account-target-bar,
+.classic-mode .sticky-room-header,
+.classic-mode .timer-expiry-toast,
+.classic-mode .quick-button-bar,
+.classic-mode .action-box,
+.classic-mode .mobile-account-command-grid,
+.classic-mode .grid-overlay,
+.classic-mode .hud-clusters-absolute-layer,
+.classic-mode .drawer-backdrop,
+.classic-mode .right-drawer-stack,
+.classic-mode .character-drawer-desktop,
+.classic-mode .docked-panel,
+.classic-mode .right-action-panel,
+.classic-mode .chat-window-panel,
+.classic-mode .mobile-header-panel-blur-backdrop,
+.classic-mode .reset-zoom-fab,
+.classic-mode .map-room-info-header,
+.classic-mode .map-room-info-footer,
+.classic-mode .map-filter-bar,
+.classic-mode .mobile-map-command-overlay,
+.classic-mode .mobile-map-bottom-actions,
+.classic-mode .dpad-cluster,
+.classic-mode .line-cluster-container,
+.classic-mode .map-go-there-popup,
+.classic-mode .map-look-hold-indicator,
+.classic-mode .map-swipe-wheel-overlay,
+.classic-mode .mapper-context-menu,
+.classic-mode .room-info-card,
+.classic-mode .tracing-hud,
+.classic-mode .drawer-resize-handle {
+    display: none !important;
+}
+
+.classic-mode .content-layer > :not(.message-log-wrapper):not(.header),
+.classic-mode .message-log-wrapper > :not(.desktop-center-column),
+.classic-mode .desktop-center-column > .action-box,
+.classic-mode .desktop-center-column > .mobile-account-command-grid,
+.classic-mode .message-log-container > .log-opaque-backdrop,
+.classic-mode .message-log-container > .log-background-layer {
+    display: none !important;
+}
+
+.classic-mode .app-viewport-shell,
+.classic-mode .content-layer,
+.classic-mode .message-log-wrapper,
+.classic-mode .desktop-center-column,
+.classic-mode .message-log-container,
+.classic-mode .message-log-layout,
+.classic-mode .message-log {
+    background: #000 !important;
+    color: #ddd !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.classic-mode.app-container {
+    background: #000 !important;
+}
+
+.classic-mode .environment-root,
+.classic-mode .background-layer,
+.classic-mode .terrain-tint-layer,
+.classic-mode .overlay-layer,
+.classic-mode .lighting-container,
+.classic-mode .weather-layer,
+.classic-mode .fog-layer,
+.classic-mode .death-overlay,
+.classic-mode .app-terrain-strip,
+.classic-mode .app-ceiling-strip {
+    display: none !important;
+}
+
+.classic-mode .content-layer {
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.classic-mode .message-log-wrapper {
+    align-items: stretch !important;
+    gap: 0 !important;
+}
+
+.classic-mode .desktop-center-column {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+}
+
+.classic-mode .message-log-container {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    padding: 8px !important;
+    overflow: hidden !important;
+}
+
+/* Keep ANSI foreground/background colors while removing client-only treatments. */
+#root .classic-mode .message-log,
+#root .classic-mode .message-log .message,
+#root .classic-mode .message-log .classic-message-text,
+#root .classic-mode .message-log .classic-message-text .message-content,
+#root .classic-mode .message-log .classic-message-text .message-content * {
+    font-size: var(--dynamic-log-size, 16px) !important;
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace !important;
+}
+
+#root .classic-mode .message-log,
+#root .classic-mode .message-log .message,
+#root .classic-mode .message-log .classic-message-text,
+#root .classic-mode .message-log .classic-message-text .message-content {
+    color: #ddd !important;
+    font-weight: normal !important;
+    letter-spacing: normal !important;
+}
+
+#root .classic-mode .message-log .classic-message-text,
+#root .classic-mode .message-log .classic-message-text .message-content,
+#root .classic-mode .message-log .classic-message-text .message-content * {
+    background-image: none !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+}
+
+#root .classic-mode .message-log *::before,
+#root .classic-mode .message-log *::after {
+    content: none !important;
+}
+
+.classic-mode .message-log .inline-btn,
+.classic-mode .message-log .inline-obj-char,
+.classic-mode .message-log .shop-card {
+    pointer-events: none !important;
+    cursor: text !important;
+}
+
+/* Terminal prompt: plain text and a single command field. Enter submits commands. */
+.classic-mode .message-log-docked-input {
+    flex: 0 0 auto !important;
+    min-height: 32px !important;
+    padding: 4px 0 0 !important;
+    background: #000 !important;
+    border: 0 !important;
+    border-top: 1px solid #444 !important;
+    border-radius: 0 !important;
+    color: #ddd !important;
+}
+
+.classic-mode .docked-input-form,
+.classic-mode .docked-input-wrap {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    background: #000 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.classic-mode .docked-input-field {
+    width: 100% !important;
+    padding: 0 !important;
+    background: #000 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    color: #ddd !important;
+    caret-color: #ddd !important;
+    font: inherit !important;
+}
+
+.classic-mode .docked-prompt-symbol {
+    color: #ddd !important;
+}
+
+.classic-mode .docked-input-highlight,
+.classic-mode .docked-parley-chip,
+.classic-mode .docked-target-badge,
+.classic-mode .docked-timers-cluster,
+.classic-mode .docked-cancel-btn,
+.classic-mode .docked-repeat-btn,
+.classic-mode .docked-login-actions,
+.classic-mode .docked-send-btn,
+.classic-mode .command-suggestion-popup,
+.classic-mode .target-chip-picker {
+    display: none !important;
+}
+

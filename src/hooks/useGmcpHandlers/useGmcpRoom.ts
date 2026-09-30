@@ -1,3 +1,8 @@
+/**
+ * @file useGmcpRoom.ts
+ * @description Processes room information and preserves room object instance identities.
+ */
+
 import React, { useCallback } from 'react';
 import { GmcpOccupant, GmcpRoomInfo, GmcpUpdateExits } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
@@ -5,6 +10,7 @@ import { gmcpBus } from '../../events/gmcpBus';
 import { normalizeGmcpWeather } from '../../utils/weatherUtils';
 import { mergeGmcpExitUpdate, normalizeExitMap } from '../../utils/gmcpExitUtils';
 import type { GmcpExitMap } from '../../utils/gmcpExitUtils';
+import { reconcileRoomObjectSnapshot } from '../../objects/objectTargetModel';
 
 interface UseGmcpRoomProps {
     mapperRef: React.RefObject<MapperRef>;
@@ -48,8 +54,10 @@ const parseRoomItemsFromDescription = (desc?: string | null): GmcpOccupant[] => 
         const name = normalizeRoomObjectName(match[1]);
         const label = name || 'object';
 
+        const id = `roomitems:${label}:${items.length}`;
         items.push({
-            id: `roomitems:${label}:${items.length}`,
+            id,
+            objectId: id,
             name: label,
             short: label
         });
@@ -137,6 +145,11 @@ export const useGmcpRoom = ({
             lastExitsRef.current = normExits;
         }
 
+        if (setRoomItems && (roomChanged || data.desc !== undefined)) {
+            const roomObjects = parseRoomItemsFromDescription(data.desc);
+            setRoomItems(previous => roomChanged ? roomObjects : reconcileRoomObjectSnapshot(previous, roomObjects));
+        }
+
         if (roomChanged) {
             lastRoomChangeTimeRef.current = Date.now();
             
@@ -144,7 +157,6 @@ export const useGmcpRoom = ({
             // doesn't use stale data from the previous room. Keep any occupants
             // that have already been tagged with the new room number — these are
             // followers whose Room.Chars.Add raced ahead of this Room.Info.
-            setRoomItems?.(parseRoomItemsFromDescription(data.desc));
             const newRoomKey = roomNum != null ? String(roomNum) : null;
             setRoomChars?.(prev => {
                 if (!newRoomKey) return {};

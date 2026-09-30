@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { MapperRoom, MapperMarker } from '../mapperTypes';
+import type { MapData } from '../performance/webcockpit/model';
 
 const MARKER_STORAGE_KEY = 'mume_mapper_markers_global';
 
@@ -53,6 +54,8 @@ export const useMapData = () => {
     const nameIndexRef = useRef<Record<string, string[]>>({});
     const serverIdIndexRef = useRef<Record<string, string>>({});
     const preloadedCoordsRef = useRef<Record<string, any>>({});
+    const performanceMapRef = useRef<MapData | null>(null);
+    const [performanceMapRevision, setPerformanceMapRevision] = useState(0);
     const baseMapExitsRef = useRef<Record<string, any>>({});
 
     return {
@@ -61,6 +64,7 @@ export const useMapData = () => {
         exploredVnums, setExploredVnums, exploredRef,
         exploredMarkers, setExploredMarkers, exploredMarkersRef,
         currentRoomId, setCurrentRoomId, currentRoomIdRef,
-        spatialIndexRef, nameIndexRef, serverIdIndexRef, preloadedCoordsRef, baseMapExitsRef
+        spatialIndexRef, nameIndexRef, serverIdIndexRef, preloadedCoordsRef,
+        performanceMapRef, performanceMapRevision, setPerformanceMapRevision, baseMapExitsRef
     };
 };

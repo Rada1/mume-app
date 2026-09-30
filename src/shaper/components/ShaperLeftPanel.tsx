@@ -3,23 +3,15 @@
  * @description Displays Shaper workspace navigation and validation summary.
  */
 
-import type { ShaperWorkspaceDoc } from '../model/shaperTypes';
-
 interface ShaperLeftPanelProps {
-    doc: ShaperWorkspaceDoc;
     issueCount: number;
     openPanels: Record<string, boolean>;
     onTogglePanel: (panel: string) => void;
 }
 
 // --- Component Section ---
-export const ShaperLeftPanel: React.FC<ShaperLeftPanelProps> = ({ doc, issueCount, openPanels, onTogglePanel }) => (
+export const ShaperLeftPanel: React.FC<ShaperLeftPanelProps> = ({ issueCount, openPanels, onTogglePanel }) => (
     <aside className="shaper-left-panel">
-        <div className="shaper-panel-heading">
-            <span>Workspace</span>
-            <strong>{doc.name}</strong>
-        </div>
-
         <div className="shaper-nav-section">
             <button
                 type="button"

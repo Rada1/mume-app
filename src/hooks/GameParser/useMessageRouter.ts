@@ -4,14 +4,18 @@
  */
 
 import { useCallback } from 'react';
-import { InlineCategoryConfig, DrawerType } from '../../types';
+import { InlineCategoryConfig } from '../../types';
 import type { GmcpOccupant } from '../../types';
 import { isEnvironmentEventLine } from '../../utils/environmentEventUtils';
 import { hasXmlTag } from '../../utils/xmlTagUtils';
+import { getTraitsForName } from '../../utils/inlineActionModel';
+import { getPlainRoomObjectDescription, getRoomObjectEntityNames, getTaggedRoomObjectNames, isRoomItemPresenceLine } from './roomItemDetection';
+import type { Token } from '../../types';
 
 interface RoomItemDetectionOptions {
     isRoomContext?: boolean;
     expectedCaptureType?: string;
+    tokens?: Token[];
 }
 
 export const isEquipmentObjectContext = (textOnly: string, cleanLine: string, expectedCaptureType?: string) => {
@@ -19,6 +23,7 @@ export const isEquipmentObjectContext = (textOnly: string, cleanLine: string, ex
         .replace(/&lt;/gi, '<')
         .replace(/&gt;/gi, '>')
         .replace(/&amp;/gi, '&');
+    const isRoomDescription = /<room\b/i.test(decodedLine);
     const lowerText = textOnly.toLowerCase();
     const lowerLine = decodedLine.toLowerCase();
 
@@ -26,7 +31,7 @@ export const isEquipmentObjectContext = (textOnly: string, cleanLine: string, ex
         expectedCaptureType === 'inventory' ||
         expectedCaptureType === 'container' ||
         /<\s*worn\b[^>]*>/i.test(decodedLine) ||
-        /^<[^>]+>\s*(?:a|an|the|some)?\s*<object\b/i.test(decodedLine) ||
+        (!isRoomDescription && /^<[^>]+>\s*(?:a|an|the|some)?\s*<object\b/i.test(decodedLine)) ||
         lowerText.includes('you are using') ||
         lowerText.includes('you are equipped with') ||
         lowerText.includes('you are carrying') ||
@@ -41,9 +46,11 @@ export const shouldDetectRoomItemsFromLine = (
     const line = textOnly.trim();
     const isObjectActionResult = /^(?:You|[A-Z][\w' -]+)\s+(?:drop|drops|get|gets|take|takes|pick up|picks up)\s+/i.test(line);
     if (isObjectActionResult) return false;
-    if (isEquipmentObjectContext(textOnly, cleanLine, options.expectedCaptureType)) return false;
-    return !!options.isRoomContext ||
-        /\b(?:is|are|lies|lie|rests|rest|sits|sit|has been left|have been left)\s+here\b/i.test(line);
+    const isRoomItemLine = isRoomItemPresenceLine(textOnly, cleanLine, options.isRoomContext);
+    if (isEquipmentObjectContext(textOnly, cleanLine, options.expectedCaptureType) && !isRoomItemLine) return false;
+    const foodAppearance = line.match(/^(?:a|an|some)\s+(.+?)\s+(?:suddenly\s+)?appears[.!]?$/i);
+    if (foodAppearance && getTraitsForName(foodAppearance[1]).some(trait => trait.id === 'trait-food')) return true;
+    return isRoomItemLine;
 };
 
 export const isVisibleDuringSuppressedCapture = (
@@ -51,6 +58,19 @@ export const isVisibleDuringSuppressedCapture = (
     isImportantMessage: boolean,
     isRoomContent: boolean
 ): boolean => isPromptBoundary || isImportantMessage || isRoomContent;
+
+export const isSelfPositionFeedback = (lower: string): boolean => {
+    const line = lower.trim();
+    return /^you (?:stand(?: up)?|sit(?: down)?|lie(?: down)?|wake(?: up)?|go to sleep|fall asleep|(?:start|stop) resting|rest)\b/i.test(line)
+        || /^you are (?:now )?(?:standing|sitting|resting|sleeping)\b/i.test(line);
+};
+
+export const isLiveCharacterStateOrMovement = (lower: string): boolean =>
+    /\b(?:panics?|panicked|panicking|flee|flees|fled|fleeing)\b/i.test(lower) ||
+    /\b(?:leaves|flees|fled|rides)\b/i.test(lower) ||
+    /\b(?:arrives?|arrived|enters?)\b/i.test(lower) ||
+    /\b(?:stands? up|sits? down|lies? down|starts? resting|stops? resting|rests?|falls? asleep|wakes? up|goes? to sleep)\b/i.test(lower) ||
+    /\bis\s+(?:now\s+)?(?:standing|sitting|resting|sleeping|lying|asleep)\b/i.test(lower);
 
 export const classifyRoutedMessageType = (
     msgType: string,
@@ -78,7 +98,6 @@ export const classifyRoutedMessageType = (
 
 interface MessageRouterDeps {
     capture: import('../../types/capture').CaptureController;
-    drawer: DrawerType;
     setWhoList: (val: string[] | ((prev: string[]) => string[])) => void;
     setWhereList: (val: any[] | ((prev: any[]) => any[])) => void;
     setRoomItems: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
@@ -99,7 +118,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         playerPosition, isSpectateMode
     } = deps;
 
-    const determineVisibility = useCallback((lower: string, isImportantMessage: boolean, isRoomContent: boolean, isRoomDescription: boolean, isEndPrompt: boolean, isNewbieMode: boolean, cleanLine: string, isRoomWindow?: boolean, isSnoop?: boolean) => {
+    const determineVisibility = useCallback((lower: string, isSnoop?: boolean) => {
         // --- Snoop Visibility ---
         if (isSnoop) return true;
 
@@ -109,42 +128,8 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
             if (isWeatherOrLighting) return false;
         }
 
-        let isDrawerHiding = false;
-        const stage = capture.getActiveType();
-        const fromDrawer = capture.isFromDrawer();
-        const isSilent = capture.isSilent();
-
-        // Check if current capture session should hide this line from the main log.
-        // Drawer visibility alone must not suppress manual commands typed while a
-        // drawer is open; only drawer-origin or otherwise silent captures are hidden.
-        if (capture.hasSession()) {
-            // Keep the real server prompt even when a drawer capture hides its body.
-            if (fromDrawer) return isVisibleDuringSuppressedCapture(isEndPrompt, false, false);
-            else if (stage === 'practice' && isSilent) isDrawerHiding = true;
-            else if (stage === 'container' && (fromDrawer || isSilent)) isDrawerHiding = true;
-            else if (stage === 'score' || stage === 'help') isDrawerHiding = true;
-            
-            // Safety: if silent capture is active but no specific hiding logic triggered yet
-            if (!isDrawerHiding && isSilent) isDrawerHiding = true;
-        }
-
-        // --- Final Visibility Calculation ---
-        if (isDrawerHiding) {
-            return isVisibleDuringSuppressedCapture(isEndPrompt, isImportantMessage, isRoomContent);
-        }
-
-        // Spacing: Always show truly empty lines to preserve game pacing
-        if (lower === '' && !capture.hasSession()) {
-            return true;
-        }
-
-        // Bypassing silence for who/where lists to ensure they appear in the log when manually typed
-        const isWhoWhereList = (stage === 'who' || stage === 'where');
-        const classicBypass = (!isNewbieMode && isRoomWindow);
-        const isVisibleResult = !isSilent || isWhoWhereList || isImportantMessage || isRoomContent || isRoomDescription || classicBypass;
-        
-        return isVisibleResult;
-    }, [capture, playerPosition]);
+        return true;
+    }, [playerPosition]);
 
     const routeMessage = useCallback((msgType: string, textOnly: string, lower: string, cleanLine: string, attachedText: string, isMatch: boolean, isSnoop?: boolean) => {
         return classifyRoutedMessageType(msgType, textOnly, lower, cleanLine, attachedText, isMatch, isSpectateMode, isSnoop);
@@ -161,39 +146,63 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
     }, []);
 
     const detectItemsInRoom = useCallback((textOnly: string, cleanLine: string, isDrawerHiding: boolean, options: RoomItemDetectionOptions = {}) => {
+        const plainRoomObjectName = getPlainRoomObjectDescription(textOnly);
+        const appearanceMatch = textOnly.trim().match(/^(?:a|an|some)\s+(.+?)\s+(?:suddenly\s+)?appears[.!]?$/i);
+        const isFoodAppearance = Boolean(appearanceMatch && getTraitsForName(appearanceMatch[1]).some(trait => trait.id === 'trait-food'));
+        const isRoomItemLine = isRoomItemPresenceLine(textOnly, cleanLine, options.isRoomContext);
+        const taggedObjects = isRoomItemLine ? getTaggedRoomObjectNames(cleanLine) : [];
+        const tokenObjects = isRoomItemLine ? getRoomObjectEntityNames(options.tokens || []) : [];
         // A `look` response is commonly handled as a capture session. Corpses
         // are nevertheless loot sources, so retain them in roomItems even while
         // that response is being captured; otherwise `get <item> ` has no way
-        // to offer the corpse as a source.
+        // to offer the corpse as a source. Food spawn messages also describe
+        // new room targets and must survive an overlapping capture.
         const containsCorpse = /\bcorpse\b/i.test(textOnly) || /<object\b[^>]*>[^<]*\bcorpse\b/i.test(cleanLine);
-        if ((capture.hasSession() && !containsCorpse) || isDrawerHiding) return;
+        if ((capture.hasSession() && !containsCorpse && !isFoodAppearance && !plainRoomObjectName && taggedObjects.length === 0 && tokenObjects.length === 0) || isDrawerHiding) return;
         if (!shouldDetectRoomItemsFromLine(textOnly, cleanLine, options)) return;
 
-        const objects: string[] = [];
-        const objectMatcher = /<object\b[^>]*>(.*?)<\/object>/gis;
-        let match;
-        while ((match = objectMatcher.exec(cleanLine)) !== null) {
-            objects.push(normalizeRoomObjectName(match[1]) || 'object');
+        const observedTaggedObjects = taggedObjects.length > 0 ? taggedObjects : tokenObjects;
+        const objects: string[] = observedTaggedObjects.map(name => normalizeRoomObjectName(name) || 'object');
+
+        // Some room descriptions include visible objects in plain prose, with
+        // no <object> tag. Preserve those targets for Get and command menus.
+        if (plainRoomObjectName && !objects.some(name => normalizeRoomObjectName(name).toLowerCase() === normalizeRoomObjectName(plainRoomObjectName).toLowerCase())) {
+            objects.push(normalizeRoomObjectName(plainRoomObjectName));
+        }
+
+        // Createfood reports its new mushroom as a plain-text appearance event,
+        // rather than as a room-description object. Track it so Eat can target it.
+        if (isFoodAppearance && appearanceMatch) {
+            objects.push(normalizeRoomObjectName(appearanceMatch[1]));
         }
 
         const skipNouns = /^(here|to|at|is|are|the|some|you|it|from|with|in|on|by)$/i;
+        const objectCounts = new Map<string, { name: string; count: number }>();
         objects.forEach(objName => {
             const noun = extractNoun(objName);
             if (noun && noun.length > 2 && !skipNouns.test(noun)) {
                 setDiscoveredItems(prev => Array.from(new Set([...prev, noun])));
-                setRoomItems(prev => {
-                    const normalizedObjName = normalizeRoomObjectName(objName).toLowerCase();
-                    const alreadyExists = prev.some(item => 
-                        normalizeRoomObjectName(typeof item === 'string' ? item : item.name || item.short || '').toLowerCase() === normalizedObjName
-                    );
-                    if (alreadyExists) return prev;
-                    
-                    const newItem = { name: objName, short: objName, id: `roomitems:${objName}` };
-                    registerEntity(`roomitems:${objName}`, objName, 'room', 'cat-room-object');
-                    return [...prev, newItem];
-                });
+                const key = normalizeRoomObjectName(objName).toLowerCase();
+                const current = objectCounts.get(key);
+                objectCounts.set(key, { name: objName, count: (current?.count || 0) + 1 });
             }
         });
+        if (objectCounts.size > 0) {
+            setRoomItems(prev => {
+                const next = [...prev];
+                objectCounts.forEach(({ name, count }, normalizedName) => {
+                    const currentCount = next.filter(item => normalizeRoomObjectName(
+                        typeof item === 'string' ? item : item.name || item.short || ''
+                    ).toLowerCase() === normalizedName).length;
+                    for (let occurrence = currentCount; occurrence < count; occurrence += 1) {
+                        const id = `roomitems:${normalizedName}:${Date.now()}:${occurrence}:${Math.random().toString(36).slice(2, 7)}`;
+                        next.push({ id, objectId: id, name, short: name });
+                        registerEntity(id, name, 'room', 'cat-room-object');
+                    }
+                });
+                return next;
+            });
+        }
 
         return objects;
     }, [
@@ -206,7 +215,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
     }, [normalizeRoomObjectName]);
 
     const trackRoomItemAction = useCallback((textOnly: string, cleanLine: string, isDrawerHiding: boolean) => {
-        if (capture.hasSession() || isDrawerHiding) return;
+        if (isDrawerHiding) return;
 
         const objectMatches = Array.from(cleanLine.matchAll(/<object\b[^>]*>(.*?)<\/object>/gis));
         if (objectMatches.length === 0) return;
@@ -216,13 +225,16 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
 
         const dropMatch = line.match(/^(?:You|[A-Z][\w' -]+)\s+(?:drop|drops)\s+/i);
         if (dropMatch) {
+            // The action tracker moves the player's selected inventory instance
+            // into the room. Keep this fallback for other visible actors only.
+            if (/^You\s+drop\s+/i.test(line)) return;
             objectMatches.forEach((objectMatch, index) => {
                 const objName = normalizeRoomObjectName(objectMatch[1]) || 'object';
                 const noun = extractNoun(objName);
                 if (noun) setDiscoveredItems(prev => Array.from(new Set([...prev, noun])));
 
                 const id = `roomitems:${objName}:${Date.now()}:${index}:${Math.random().toString(36).slice(2, 7)}`;
-                const newItem: GmcpOccupant = { name: objName, short: objName, id };
+                const newItem: GmcpOccupant = { name: objName, short: objName, id, objectId: id };
                 registerEntity(id, objName, 'room', 'cat-room-object');
                 setRoomItems(prev => [...prev, newItem]);
             });
@@ -231,6 +243,9 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
 
         const getMatch = line.match(/^(?:You|[A-Z][\w' -]+)\s+(?:get|gets|take|takes|pick up|picks up)\s+/i);
         if (!getMatch || /\s+from\s+/i.test(line)) return;
+        // The action tracker transfers the player's selected room occurrence
+        // into inventory, preserving its client object ID.
+        if (/^You\s+(?:get|take|pick up)\s+/i.test(line)) return;
 
         setRoomItems(prev => {
             if (prev.length === 0) return prev;
@@ -251,12 +266,15 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
                         (targetNoun.length > 0 && itemNoun === targetNoun);
                 });
 
-                next.splice(matchIndex >= 0 ? matchIndex : next.length - 1, 1);
+                // A remote character may act on an item that is not in this
+                // room snapshot (for example, an item inside a container).
+                // Never remove an unrelated last room object as a fallback.
+                if (matchIndex >= 0) next.splice(matchIndex, 1);
             });
             return next;
         });
     }, [
-        capture, extractNoun, getRoomItemName, normalizeRoomObjectName,
+        extractNoun, getRoomItemName, normalizeRoomObjectName,
         registerEntity, setDiscoveredItems, setRoomItems
     ]);
 

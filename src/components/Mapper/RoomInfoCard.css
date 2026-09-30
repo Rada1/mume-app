@@ -1,0 +1,224 @@
+/**
+ * @file RoomInfoCard.css
+ * @description Flat terminal styling for the map room info card.
+ */
+.mapper-room-info-panel {
+    --room-info-accent: #dfbf6c;
+    --room-info-muted: #8f8374;
+    --room-info-border: rgba(201, 168, 76, 0.28);
+    box-sizing: border-box;
+    padding: 12px 14px !important;
+    gap: 8px !important;
+    color: #d4cdb8 !important;
+    background: rgba(33, 27, 22, 0.97) !important;
+    border: 1px solid var(--room-info-border) !important;
+    border-radius: 6px !important;
+    box-shadow: 8px 12px 20px rgba(0, 0, 0, 0.38) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    font-family: var(--font-mono, monospace) !important;
+    scrollbar-color: rgba(201, 168, 76, 0.3) transparent;
+}
+
+.mapper-room-info-panel,
+.mapper-room-info-panel * {
+    box-sizing: border-box;
+}
+
+.room-info-card-header {
+    min-height: 32px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid var(--room-info-border);
+}
+
+.room-info-card-header h3 {
+    color: var(--room-info-accent) !important;
+    font-family: inherit;
+    font-size: 0.84rem !important;
+    letter-spacing: 0.02em;
+}
+
+.room-info-card-header h3::before {
+    content: '>';
+    margin-right: 8px;
+    color: var(--room-info-accent);
+}
+
+.room-info-card-header button {
+    min-height: 28px;
+    border-radius: 4px !important;
+    font-family: inherit;
+    font-size: 0.7rem !important;
+    transition: background 120ms ease, color 120ms ease;
+}
+
+.room-info-card-header button:hover {
+    background: rgba(201, 168, 76, 0.1) !important;
+}
+
+.room-info-card-header button:last-child {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    color: var(--room-info-muted) !important;
+}
+
+.room-info-card-ids {
+    padding: 0 0 2px;
+    color: var(--room-info-muted) !important;
+    font-size: 0.64rem !important;
+    font-family: inherit;
+}
+
+.room-info-card-ids span span {
+    color: #d7c9a6 !important;
+}
+
+.room-info-card-name input,
+.room-info-card-meta input,
+.room-info-card-meta select,
+.mapper-room-info-panel select,
+.mapper-room-info-panel textarea {
+    min-width: 0;
+    color: #e4d6b5 !important;
+    background: #17120f !important;
+    border: 1px solid var(--room-info-border) !important;
+    border-radius: 4px !important;
+    font-family: inherit;
+    outline: none;
+}
+
+.room-info-card-name input {
+    padding: 6px 2px !important;
+    font-size: 0.9rem !important;
+    font-weight: 700;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+}
+
+.room-info-card-meta > div {
+    min-width: 0;
+    padding: 4px 2px !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    font-family: inherit;
+}
+
+.room-info-card-meta span,
+.room-info-card-editor > span,
+.room-info-card-editor > div > span,
+.room-info-card-exits > div:first-child > span:first-child {
+    color: var(--room-info-muted) !important;
+}
+
+.room-info-card-meta > div > span:last-child {
+    color: var(--room-info-accent) !important;
+}
+
+.room-info-card-meta input,
+.room-info-card-meta select {
+    padding: 1px 2px !important;
+    font-size: 0.7rem !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+}
+
+.room-info-card-editor {
+    padding: 6px 2px !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    font-family: inherit;
+}
+
+.room-info-card-description,
+.room-info-card-static,
+.room-info-card-notes {
+    padding: 6px 2px !important;
+    color: #c9bea5 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    font-family: inherit;
+    font-size: 0.72rem !important;
+    line-height: 1.55 !important;
+}
+
+.room-info-card-static > span,
+.room-info-card-notes > span {
+    color: var(--room-info-accent) !important;
+    font-size: 0.63rem !important;
+}
+
+.room-info-card-flags > span {
+    padding: 2px 3px !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    border-radius: 0 !important;
+    font-family: inherit;
+    font-size: 0.6rem !important;
+    letter-spacing: 0.02em;
+}
+
+.room-info-card-divider {
+    background: var(--room-info-border) !important;
+}
+
+.room-info-card-exits {
+    gap: 7px !important;
+}
+
+.room-info-card-exit-grid {
+    gap: 6px 14px !important;
+}
+
+.room-info-card-exit {
+    min-width: 0;
+    padding: 6px 2px !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+}
+
+.room-info-card-exit > div:first-child span:first-child {
+    color: var(--room-info-accent) !important;
+    font-family: inherit;
+}
+
+.room-info-card-exit button {
+    padding: 4px 0 !important;
+    color: #d7c9a6 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    text-align: left;
+    font-family: inherit;
+    font-size: 0.64rem !important;
+}
+
+.room-info-card-exit > div:last-child span {
+    padding: 1px 0 !important;
+    color: var(--room-info-muted) !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    font-family: inherit;
+}
+
+.mapper-room-info-panel input:focus,
+.mapper-room-info-panel select:focus,
+.mapper-room-info-panel textarea:focus {
+    border-color: rgba(223, 191, 108, 0.7) !important;
+    box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.1);
+}
+
+@media (max-width: 600px) {
+    .mapper-room-info-panel {
+        padding: 9px 10px !important;
+        gap: 7px !important;
+    }
+}

@@ -155,18 +155,12 @@
 /* Vital status and numbers */
 .custom-prompt-bar .prompt-vital-status {
     font-weight: 700;
-    color: var(--prompt-positive);
+    color: #fff;
 }
 
 .light-mode .custom-prompt-bar .prompt-vital-status {
-    color: var(--prompt-positive-light);
+    color: #fff;
 }
-
-.custom-prompt-bar .vital-hp.tier-hurt .prompt-vital-status { color: #facc15; }
-.custom-prompt-bar .vital-hp.tier-wounded .prompt-vital-status { color: #fb923c; }
-.custom-prompt-bar .vital-hp.tier-bad .prompt-vital-status,
-.custom-prompt-bar .vital-hp.tier-awful .prompt-vital-status,
-.custom-prompt-bar .vital-hp.tier-dying .prompt-vital-status { color: #ef4444; }
 
 .custom-prompt-bar .prompt-vital-raw {
     margin-left: 0.3em;

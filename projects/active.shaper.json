@@ -1,9 +1,9 @@
 {
-  "id": "c208e55d-e5ac-4ada-8c66-3f1ab6aa2c3b",
-  "name": "Z 31",
+  "id": "03992fac-344c-4143-9b97-bc4c6a62451a",
+  "name": "New Concept Zone",
   "zoneNumber": 31,
-  "updatedAt": 1788884757818,
-  "selectedRoomId": "room-0-8-0",
+  "updatedAt": 1790658898127,
+  "selectedRoomId": "room-0-4-0",
   "rooms": {
     "room-0-0-0": {
       "id": "room-0-0-0",
@@ -28,8 +28,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655458558,
-        "statRoomFull": "Room 31:0 (3100) - in a@Vine Choked Forest Thicket\nMagical key: anchaoxice, Owner: none, Sector: forest, MapId: 3868361\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe forest grows deeper and tighter here, with thick vines coiling around\ntrunks and hanging low from the branches. Little light reaches the ground,\nleaving the air heavy with damp shadow. A few pale strands cling high among the\nleaves, easy to miss in the gloom.\nExtra description keywords: none\n------- Chars present -------\n  a coil of oozing vines (2663)\n  an ibex (6011)\n  a blue dragonfly (1970)\n  a blue dragonfly (1970)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 10, flags: none\nSouth  31:  1, flags: none",
+        "importedAt": 1790657857170,
+        "statRoomFull": "Room 31:0 (3100) - in a@Vine Choked Forest Thicket\nMagical key: nuswejugtie, Owner: none, Sector: forest, MapId: 3868361\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe forest grows deeper and tighter here, with thick vines coiling around\ntrunks and hanging low from the branches. Little light reaches the ground,\nleaving the air heavy with damp shadow. A few pale strands cling high among the\nleaves, easy to miss in the gloom.\nExtra description keywords: none\n------- Chars present -------\n  a coil of oozing vines (2663)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 10, flags: none\nSouth  31:  1, flags: none",
         "comListCommands": "1   Mobile  2663 (a coil of oozing vines) (--/--/1/100%)",
         "libRoomCommands": "Commands on room 31:0 (Vine Choked Forest Thicket):"
       },
@@ -58,8 +58,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655510051,
-        "statRoomFull": "Room 31:10 (3110) - in a@Muddy Pit Surrounded by Trees\nMagical key: dibcoleeaus, Owner: none, Sector: forest, MapId: 934319\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe forest floor sinks into black, sucking mud, broken by twisted roots and\nmats of rotting leaves. Tiny tracks and strange marks freckle the wet earth,\nvanishing beneath low branches. Here and there, old strands of webbing cling to\nbark and thorn.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 20, flags: none\nWest   31:  0, flags: none",
+        "importedAt": 1790658230678,
+        "statRoomFull": "Room 31:10 (3110) - in a@Muddy Pit Surrounded by Trees\nMagical key: teeafethsea, Owner: none, Sector: forest, MapId: 934319\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe forest floor sinks into black, sucking mud, broken by twisted roots and\nmats of rotting leaves. Tiny tracks and strange marks freckle the wet earth,\nvanishing beneath low branches. Here and there, old strands of webbing cling to\nbark and thorn.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 20, flags: none\nWest   31:  0, flags: none",
         "comListCommands": "1   Mobile  1970 (a blue dragonfly) (--/2/--/100%)",
         "libRoomCommands": "Commands on room 31:10 (Muddy Pit Surrounded by Trees):"
       },
@@ -90,8 +90,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655528050,
-        "statRoomFull": "Room 31:20 (3120) - in@a Shadowy Forest by the River\nMagical key: skiavudlha, Owner: none, Sector: forest, MapId: 15019284\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: DARK BUILD SUNLIT\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe trees press close here, their tangled boughs shutting out nearly all light.\nRope-thick webs sag between the trunks and roots, beaded with cold moisture\nfrom the nearby river. To the east, the faint rush of water stirs the stale\nair, carrying the scent of mud, rot, and old silk.\nExtra description keywords: none\n------- Chars present -------\n  a huge, venomous spider (6113)\n  a huge tarantula (6114)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nWest   31: 10, flags: none",
+        "importedAt": 1790658000668,
+        "statRoomFull": "Room 31:20 (3120) - in@a Shadowy Forest by the River\nMagical key: traelwidfyl, Owner: none, Sector: forest, MapId: 15019284\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: DARK BUILD SUNLIT\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe trees press close here, their tangled boughs shutting out nearly all light.\nRope-thick webs sag between the trunks and roots, beaded with cold moisture\nfrom the nearby river. To the east, the faint rush of water stirs the stale\nair, carrying the scent of mud, rot, and old silk.\nExtra description keywords: none\n------- Chars present -------\n  a huge, venomous spider (6113)\n  a huge tarantula (6114)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nWest   31: 10, flags: none",
         "comListCommands": "1   Mobile  6114 (a huge tarantula) (--/--/1/100%)\n2   Mobile  6113 (a huge, venomous spider) (--/--/1/100%)",
         "libRoomCommands": "Commands on room 31:20 (a Shadowy Forest by the River):"
       },
@@ -121,8 +121,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655559580,
-        "statRoomFull": "Room 31:30 (3130) - in@the River Running\nMagical key: inplakidhob, Owner: none, Sector: water, MapId: 2156685\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD WATER\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe cold, murky waters of the River Running flow steadily here. The current is\nrelatively calm compared to the deeper stretches of the river, though the mud\nbeneath makes navigation somewhat sluggish. Near the stony riverbank to the\neast lies the Dorwinion Road, while the river continues southward, deepening\ninto a muddy riverbed. Below the surface, small currents stir the silt, and\noccasionally the dark shell of a river crayfish can be seen darting between the\nsubmerged rocks.\nExtra description keywords: none\n------- Chars present -------\n  a trout (28)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 40, flags: none\nSouth  31: 31, flags: none",
+        "importedAt": 1790658030914,
+        "statRoomFull": "Room 31:30 (3130) - in@the River Running\nMagical key: gendeazetee, Owner: none, Sector: water, MapId: 2156685\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD WATER\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe cold, murky waters of the River Running flow steadily here. The current is\nrelatively calm compared to the deeper stretches of the river, though the mud\nbeneath makes navigation somewhat sluggish. Near the stony riverbank to the\neast lies the Dorwinion Road, while the river continues southward, deepening\ninto a muddy riverbed. Below the surface, small currents stir the silt, and\noccasionally the dark shell of a river crayfish can be seen darting between the\nsubmerged rocks.\nExtra description keywords: none\n------- Chars present -------\n  a trout (28)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 40, flags: none\nSouth  31: 31, flags: none",
         "comListCommands": "1   Mobile  1331 (a crayfish) (--/1/--/100%)",
         "libRoomCommands": "Commands on room 31:30 (the River Running):"
       },
@@ -151,8 +151,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655582046,
-        "statRoomFull": "Room 31:40 (3140) - on the@Dorwinion Road\nMagical key: luwidcyro, Owner: none, Sector: road, MapId: 5935201\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThis well-travelled dirt highway cuts a clear path directly north and south\nthrough the borderlands. To the west, the thunderous rush of the River Running\nthrows a faint, cool mist over the edge of the road, while the rough hills to\nthe east are dominated by an ancient stone watchtower looming against the\nskyline. The open sky overhead offers no shelter, leaving travellers feeling\nentirely exposed to any watchful eyes monitoring the passage.\nExtra description keywords: none\n------- Chars present -------\n  a black bear (1599)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 50, flags: none\nSouth  31: 41, flags: none\nWest   31: 30, flags: none",
+        "importedAt": 1790658053415,
+        "statRoomFull": "Room 31:40 (3140) - on the@Dorwinion Road\nMagical key: gymavstayt, Owner: none, Sector: road, MapId: 5935201\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThis well-travelled dirt highway cuts a clear path directly north and south\nthrough the borderlands. To the west, the thunderous rush of the River Running\nthrows a faint, cool mist over the edge of the road, while the rough hills to\nthe east are dominated by an ancient stone watchtower looming against the\nskyline. The open sky overhead offers no shelter, leaving travellers feeling\nentirely exposed to any watchful eyes monitoring the passage.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 50, flags: none\nSouth  31: 41, flags: none\nWest   31: 30, flags: none",
         "libRoomCommands": "Commands on room 31:40 (Dorwinion Road):"
       },
       "mapId": "5935201"
@@ -180,10 +180,10 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655603047,
-        "statRoomFull": "Room 31:50 (3150) - at@the Old Road Lookout\nMagical key: mohulplavy, Owner: none, Sector: hills, MapId: 5262803\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nRolling, grass-covered hills swell and dip in rhythmic waves across this high\nvantage point. Low ridges of fractured stone break through the green landscape,\nwhere patches of coarse weeds and dry brush fight for survival in the shallow\nsoil. To the west, the grassy slopes descend toward a dusty, well-worn\nhighway, while a weathered wooden lookout stands to one side, its crumbling\ntimbers quietly succumbing to the constant buffeting of the upland wind.\nExtra description keywords: none\n------- Chars present -------\n  a giant earth beetle (7004)\n  Ellessar (player 695470)\n--------- Contents ---------\n  a watchtower is here (9902)\n--------- Hidden -----------\n------- Exits -------\nEast   31: 60, flags: none\nSouth  31: 51, flags: none\nWest   31: 40, flags: none\nUp     31:101, flags: none\nDown   31:100, flags: DOOR CLOSED LOCKED NO_MOB, name: trapdoor, key: none,\n               pick: 14%, weight: 1\nDescription:\n  A musty trapdoor is barely visible in the dust.",
+        "importedAt": 1790658074417,
+        "statRoomFull": "Room 31:50 (3150) - at@the Old Road Lookout\nMagical key: dyeoldbliin, Owner: none, Sector: hills, MapId: 5262803\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nRolling, grass-covered hills swell and dip in rhythmic waves across this high\nvantage point. Low ridges of fractured stone break through the green landscape,\nwhere patches of coarse weeds and dry brush fight for survival in the shallow\nsoil. To the west, the grassy slopes descend toward a dusty, well-worn\nhighway, while a weathered wooden lookout stands to one side, its crumbling\ntimbers quietly succumbing to the constant buffeting of the upland wind.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n  a watchtower is here (9902)\n--------- Hidden -----------\n------- Exits -------\nEast   31: 60, flags: none\nSouth  31: 51, flags: none\nWest   31: 40, flags: none\nUp     31:101, flags: none\nDown   31:100, flags: DOOR CLOSED LOCKED NO_MOB, name: trapdoor, key: none,\npick: 19%, weight: 1\nDescription:\n  A musty trapdoor is barely visible in the dust.",
         "comListCommands": "1   Object  9902 (some cracked and splintered pieces of wood) (--/--/1/100%)\n2   Door    lock down  (trapdoor) (pick 10..20)",
-        "libRoomCommands": "Commands on room 31:50 (the Old Road Lookout):\n1: redress-obj\n  object:       obj 9902 (some cracked and splintered pieces of wood)\n  keywords:     watchtower\n  short-desc:   a watchtower is here\n  long-desc:    A crumbling, circular watchtower rises above the hills.\n  plural-desc:  watchtowers\n  full-desc:    \n    A withered wooden watchtower of Dorwinion slumps beside the old\n                    road, its narrow beams gray with rot and weather. Little\n    more\n                    than a raised lookout now, it creaks in the wind over empty\n                    fields once guarded by eastern men.\n  ptype:        the\n2: redress-obj\n  object:       obj 0 (unknown object)\n  keywords:     \n  short-desc:   a redressed object\n  long-desc:    The redressed object is here.\n  plural-desc:  redressed objects\n  full-desc:    \n  ptype:        the"
+        "libRoomCommands": "Commands on room 31:50 (the Old Road Lookout):\n1: redress-obj\n  object:       obj 9902 (some cracked and splintered pieces of wood)\n  keywords:     watchtower\n  short-desc:   a watchtower is here\n  long-desc:    A crumbling, circular watchtower rises above the hills.\n  plural-desc:  watchtowers\n  full-desc:    \n    A withered wooden watchtower of Dorwinion slumps beside the old\n                    road, its narrow beams gray with rot and weather. Little\nmore\n                    than a raised lookout now, it creaks in the wind over empty\n                    fields once guarded by eastern men.\n  ptype:        the\n2: redress-obj\n  object:       obj 0 (unknown object)\n  keywords:     \n  short-desc:   a redressed object\n  long-desc:    The redressed object is here.\n  plural-desc:  redressed objects\n  full-desc:    \n  ptype:        the"
       },
       "mapId": "5262803"
     },
@@ -210,10 +210,10 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655615048,
-        "statRoomFull": "Room 31:60 (3160) - among@the Rocky Hills\nMagical key: lhaawebhoin, Owner: none, Sector: hills, MapId: 9349144\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  Rocky hills rise in uneven shelves from the open ground, their stony\n  faces broken by patches of dry grass and low, stubborn brush. Loose\n  stones lie scattered between the slopes, and the land falls away toward\n  rougher scrub to the east. The old road can still be seen to the west,\n  where it winds past the shoulder of the hills.\nExtra description keywords: none\n------- Chars present -------\n  a small centipede (4002)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 70, flags: none\nSouth  31: 61, flags: none\nWest   31: 50, flags: none",
+        "importedAt": 1790658186910,
         "comListCommands": "1   Mobile  4002 (a small centipede) (--/--/1/100%)",
-        "libRoomCommands": "Commands on room 31:60 (the Rocky Hills):"
+        "libRoomCommands": "Commands on room 31:60 (the Rocky Hills):",
+        "statRoomFull": "Room 31:60 (3160) - among@the Rocky Hills\nMagical key: tzaethevyt, Owner: none, Sector: hills, MapId: 9349144\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  Rocky hills rise in uneven shelves from the open ground, their stony\n  faces broken by patches of dry grass and low, stubborn brush. Loose\n  stones lie scattered between the slopes, and the land falls away toward\n  rougher scrub to the east. The old road can still be seen to the west,\n  where it winds past the shoulder of the hills.\nExtra description keywords: none\n------- Chars present -------\n  a small centipede (4002)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 70, flags: none\nSouth  31: 61, flags: none\nWest   31: 50, flags: none"
       },
       "mapId": "9349144"
     },
@@ -240,8 +240,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655633047,
-        "statRoomFull": "Room 31:70 (3170) - on@a Brushy Hillside\nMagical key: ghamiazxen, Owner: none, Sector: brush, MapId: 10089080\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nLow brush clings to the rough slope, its thin stems crowding the stony ground\nbetween scattered patches of dry grass. The hillside rises unevenly here, with\nthe broader hills standing to the west. The land feels open despite the scrub,\nand the wind moves easily across the slope, carrying the scent of dust and\ncrushed leaves.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 80, flags: none\nSouth  31: 71, flags: none\nWest   31: 60, flags: none",
+        "importedAt": 1790658158407,
+        "statRoomFull": "Room 31:70 (3170) - on@a Brushy Hillside\nMagical key: wygodeava, Owner: none, Sector: brush, MapId: 10089080\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nLow brush clings to the rough slope, its thin stems crowding the stony ground\nbetween scattered patches of dry grass. The hillside rises unevenly here, with\nthe broader hills standing to the west. The land feels open despite the scrub,\nand the wind moves easily across the slope, carrying the scent of dust and\ncrushed leaves.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 80, flags: none\nSouth  31: 71, flags: none\nWest   31: 60, flags: none",
         "libRoomCommands": "Commands on room 31:70 (a Brushy Hillside):"
       },
       "mapId": "10089080"
@@ -257,7 +257,7 @@
       "status": "verified",
       "name": "the Open Meadow",
       "preposition": "in",
-      "description": "Rough grass covers the low field, broken by patches of bare earth and\ntufts of hardy weeds. The ground rises only gently here, with a brushy\nslope to the west and open land stretching away toward the east. The air is\nclear and still, and the uneven terrain gives the place a quiet, weathered look\ndespite the broad openness of the field.",
+      "description": "Rough grass covers the low field, broken by patches of bare earth and tufts of\nhardy weeds. The ground rises only gently here, with a brushy slope to the west\nand open land stretching away toward the east. The air is clear and still, and\nthe uneven terrain gives the place a quiet, weathered look despite the broad\nopenness of the field.",
       "sector": "field",
       "flags": [
         "build"
@@ -269,10 +269,9 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655643544,
-        "statRoomFull": "Room 31:80 (3180) - in@the Open Meadow\nMagical key: itlatymiz, Owner: none, Sector: field, MapId: 9060081\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nRough grass covers the low field, broken by patches of bare earth and\ntufts of hardy weeds. The ground rises only gently here, with a brushy\nslope to the west and open land stretching away toward the east. The air is\nclear and still, and the uneven terrain gives the place a quiet, weathered look\ndespite the broad openness of the field.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nWest   31: 70, flags: none",
-        "libRoomCommands": "Commands on room 31:80 (the Open Meadow):",
-        "comListCommands": "A blue dragonfly leaves south."
+        "importedAt": 1790658168906,
+        "statRoomFull": "Room 31:80 (3180) - in@the Open Meadow\nMagical key: fablystamo, Owner: none, Sector: field, MapId: 9060081\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nRough grass covers the low field, broken by patches of bare earth and tufts of\nhardy weeds. The ground rises only gently here, with a brushy slope to the west\nand open land stretching away toward the east. The air is clear and still, and\nthe uneven terrain gives the place a quiet, weathered look despite the broad\nopenness of the field.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nWest   31: 70, flags: none",
+        "libRoomCommands": "Commands on room 31:80 (the Open Meadow):"
       },
       "mapId": "9060081"
     },
@@ -299,10 +298,9 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655467552,
-        "statRoomFull": "Room 31:1 (3101) - under@the Dark Branches\nMagical key: zyitmnesmi, Owner: none, Sector: forest, MapId: 270349\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe forest is dark and close here, with twisted trees crowding on every side.\nLittle light reaches the mossy ground, and the stale air carries the smell of\ndamp bark and old leaves. Shadows gather beneath the branches, making the path\nahead feel narrow and uncertain.\nExtra description keywords: none\n------- Chars present -------\n  a blue dragonfly (1970)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  0, flags: none\nSouth  31:  2, flags: none",
-        "libRoomCommands": "Commands on room 31:1 (the Dark Branches):",
-        "comListCommands": "A blue dragonfly leaves south."
+        "importedAt": 1790657866176,
+        "statRoomFull": "Room 31:1 (3101) - under@the Dark Branches\nMagical key: onajlayt, Owner: none, Sector: forest, MapId: 270349\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe forest is dark and close here, with twisted trees crowding on every side.\nLittle light reaches the mossy ground, and the stale air carries the smell of\ndamp bark and old leaves. Shadows gather beneath the branches, making the path\nahead feel narrow and uncertain.\nExtra description keywords: none\n------- Chars present -------\n  a blue dragonfly (1970)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  0, flags: none\nSouth  31:  2, flags: none",
+        "libRoomCommands": "Commands on room 31:1 (the Dark Branches):"
       },
       "mapId": "270349"
     },
@@ -330,10 +328,10 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655511551,
-        "statRoomFull": "Room 31:11 (3111) - in a@Muddy Tree-filled Ravine\nMagical key: kysweqincad, Owner: none, Sector: forest, MapId: 14181886\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: DARK BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nSparsely lit by a choked canopy, this damp, twisting ravine cuts deeply into\nthe earth, pooling with thick runoff from the nearby river. The heavy scent\nof rotting fish hangs stagnant in the humid air, trapped by tangled roots and\ndecaying timber. Stripped fish skeletons and sticky, silk-strewn debris litter\nthe muddy ground, warning of a repulsive, hidden appetite that actively preys\nupon the water's edge from the deep shadows of the undergrowth.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 21, flags: none",
+        "importedAt": 1790658234943,
         "comListCommands": "1   Mobile  7004 (a giant earth beetle) (--/2/--/100%)\n2   Mobile  2730 (a brown, long-legged spider) (--/1/--/100%)",
-        "libRoomCommands": "Commands on room 31:11 (Muddy Tree-filled Ravine):\n1: redress-mob\n  mobile:      mob 2730 (a brown, long-legged spider)\n  act:         hisses and gurgles at you with malice\n  full-desc:   Abnormally large and bloated, the hairy legs of this spider\n               struggle to support its immense weight. A stench of rotting fish\n               eminates from its swollen and grotesque orafice of a mouth. Its\n               mandibles have two fangs protruding from either side with the\n               left one cracked from what one can only assume was a fierce\n               encounter. On its back, a violet hourglass shape bears claw\n               marks that have been raked across its hidious vestiges.\n  no-charm?:   yes\n  no-summon?:  yes\n2: redress-mob\n  mobile:      mob 0 (unknown mobile)\n  act:         \n  full-desc:   \n  no-charm?:   yes\n  no-summon?:  yes"
+        "libRoomCommands": "Commands on room 31:11 (Muddy Tree-filled Ravine):\n1: redress-mob\n  mobile:      mob 2730 (a brown, long-legged spider)\n  act:         hisses and gurgles at you with malice\n  full-desc:   Abnormally large and bloated, the hairy legs of this spider\nstruggle to support its immense weight. A stench of rotting fish eminates from\nits swollen and grotesque orafice of a mouth. Its mandibles have two fangs\nprotruding from either side with the left one cracked from what one can only\nassume was a fierce encounter. On its back, a violet hourglass shape bears claw\nmarks that have been raked across its hidious vestiges.\n  no-charm?:   yes\n  no-summon?:  yes\n2: redress-mob\n  mobile:      mob 0 (unknown mobile)\n  act:         \n  full-desc:   \n  no-charm?:   yes\n  no-summon?:  yes",
+        "statRoomFull": "Room 31:11 (3111) - in a@Muddy Tree-filled Ravine\nMagical key: peeeelegoun, Owner: none, Sector: forest, MapId: 14181886\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: DARK BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nSparsely lit by a choked canopy, this damp, twisting ravine cuts deeply into\nthe earth, pooling with thick runoff from the nearby river. The heavy scent\nof rotting fish hangs stagnant in the humid air, trapped by tangled roots and\ndecaying timber. Stripped fish skeletons and sticky, silk-strewn debris litter\nthe muddy ground, warning of a repulsive, hidden appetite that actively preys\nupon the water's edge from the deep shadows of the undergrowth.\nExtra description keywords: none\n------- Chars present -------\n  a giant earth beetle (7004)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 21, flags: none"
       },
       "mapId": "14181886"
     },
@@ -362,10 +360,9 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655537050,
-        "statRoomFull": "Room 31:21 (3121) - in@a Silk-Choked Bank\nMagical key: flaakamac, Owner: none, Sector: forest, MapId: 15409217\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: DARK BUILD SUNLIT\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe tree-filled ravine opens up slightly to the east, flattening into a damp\nriverbank that directly borders the steady flow of the water channel. Sticky,\nmilky-white webbing clings stubbornly to the low-hanging branches and coats\nthe muddy soil, entangling chunks of driftwood and dried reeds. Strung tight\nacross the brush, these heavy strands pulse slightly with every vibration from\nthe shore, marking a clear trail where a massive hunger leaves the deep hollow.\nExtra description keywords: none\n------- Chars present -------\n  a giant earth beetle (7004)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 31, flags: none\nWest   31: 11, flags: none",
-        "libRoomCommands": "Commands on room 31:21 (a Silk-Choked Bank):",
-        "comListCommands": "A blue dragonfly leaves east."
+        "importedAt": 1790658009667,
+        "statRoomFull": "Room 31:21 (3121) - in@a Silk-Choked Bank\nMagical key: umquaillvy, Owner: none, Sector: forest, MapId: 15409217\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: DARK BUILD SUNLIT\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe tree-filled ravine opens up slightly to the east, flattening into a damp\nriverbank that directly borders the steady flow of the water channel. Sticky,\nmilky-white webbing clings stubbornly to the low-hanging branches and coats\nthe muddy soil, entangling chunks of driftwood and dried reeds. Strung tight\nacross the brush, these heavy strands pulse slightly with every vibration from\nthe shore, marking a clear trail where a massive hunger leaves the deep hollow.\nExtra description keywords: none\n------- Chars present -------\n  a giant earth beetle (7004)\n  a brown, long-legged spider (2730)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 31, flags: none\nWest   31: 11, flags: none",
+        "libRoomCommands": "Commands on room 31:21 (a Silk-Choked Bank):"
       },
       "mapId": "15409217"
     },
@@ -393,8 +390,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655561051,
-        "statRoomFull": "Room 31:31 (3131) - in@a Muddy Riverbed\nMagical key: cadbhotwiam, Owner: none, Sector: water, MapId: 11642468\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD WATER\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe river channel maintains its steady southward path, though the visibility\ndecreases as suspended sediment clouds the water column. Along the bottom, the\nclean stone gives way to thick, heavy deposits of dark river mud and soft silt.\nShadowy, whiskered silhouettes stir lazily within the murky twilight of the\nriverbed, their bottom-feeding habits leaving trailing clouds of dust in the\nsluggish lower currents.\nExtra description keywords: none\n------- Chars present -------\n  a catfish (1010)\n  a catfish (1010)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 30, flags: none\nEast   31: 41, flags: none\nSouth  31: 32, flags: none\nWest   31: 21, flags: none",
+        "importedAt": 1790658032415,
+        "statRoomFull": "Room 31:31 (3131) - in@a Muddy Riverbed\nMagical key: jiblobqinoe, Owner: none, Sector: water, MapId: 11642468\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD WATER\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe river channel maintains its steady southward path, though the visibility\ndecreases as suspended sediment clouds the water column. Along the bottom, the\nclean stone gives way to thick, heavy deposits of dark river mud and soft silt.\nShadowy, whiskered silhouettes stir lazily within the murky twilight of the\nriverbed, their bottom-feeding habits leaving trailing clouds of dust in the\nsluggish lower currents.\nExtra description keywords: none\n------- Chars present -------\n  a catfish (1010)\n  a catfish (1010)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 30, flags: none\nEast   31: 41, flags: none\nSouth  31: 32, flags: none\nWest   31: 21, flags: none",
         "comListCommands": "1   Mobile  1010 (a catfish) (--/2/--/100%)",
         "libRoomCommands": "Commands on room 31:31 (a Muddy Riverbed):"
       },
@@ -423,8 +420,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655591059,
-        "statRoomFull": "Room 31:41 (3141) - on the@Dorwinion Road\nMagical key: szechaoddpi, Owner: none, Sector: road, MapId: 5870898\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nCenturies of heavy traffic have worn a deep, permanent scar across this\nborderland highway, where weathered stone pavers peek through the shifting\ndust. To the west, the relentless roar of the River Running fills the air,\nspraying a cool, biting mist over the weeds lining the ditches. The empty,\ndesolate hills to the east roll away under a vast sky, offering neither shelter\nnor concealment for anyone travelling this route.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 40, flags: none\nEast   31: 51, flags: none\nSouth  31: 42, flags: none\nWest   31: 31, flags: none",
+        "importedAt": 1790658062412,
+        "statRoomFull": "Room 31:41 (3141) - on the@Dorwinion Road\nMagical key: kidlyvabho, Owner: none, Sector: road, MapId: 5870898\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nCenturies of heavy traffic have worn a deep, permanent scar across this\nborderland highway, where weathered stone pavers peek through the shifting\ndust. To the west, the relentless roar of the River Running fills the air,\nspraying a cool, biting mist over the weeds lining the ditches. The empty,\ndesolate hills to the east roll away under a vast sky, offering neither shelter\nnor concealment for anyone travelling this route.\nExtra description keywords: none\n------- Chars present -------\n  an ibex (6011)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 40, flags: none\nEast   31: 51, flags: none\nSouth  31: 42, flags: none\nWest   31: 31, flags: none",
         "libRoomCommands": "Commands on room 31:41 (Dorwinion Road):"
       },
       "mapId": "5870898"
@@ -452,8 +449,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655604541,
-        "statRoomFull": "Room 31:51 (3151) - on@a Grassy Rise beside the Road\nMagical key: kafviavphe, Owner: none, Sector: hills, MapId: 11266864\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nGentle, grass-covered slopes roll across the landscape, marking a soft rise\njust east of the dusty highway. Low ridges swell and dip in rhythmic waves,\ntheir green surfaces broken only by the occasional cluster of resilient weeds.\nTo the west, the open ground descends slightly before meeting the structured,\nhard-packed dirt of the thoroughfare, while further eastward the landscape\nstretches out into an uninterrupted expanse of empty hills.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 50, flags: none\nEast   31: 61, flags: none\nSouth  31: 52, flags: none\nWest   31: 41, flags: none",
+        "importedAt": 1790658180411,
+        "statRoomFull": "Room 31:51 (3151) - on@a Grassy Rise beside the Road\nMagical key: axguaatvy, Owner: none, Sector: hills, MapId: 11266864\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nGentle, grass-covered slopes roll across the landscape, marking a soft rise\njust east of the dusty highway. Low ridges swell and dip in rhythmic waves,\ntheir green surfaces broken only by the occasional cluster of resilient weeds.\nTo the west, the open ground descends slightly before meeting the structured,\nhard-packed dirt of the thoroughfare, while further eastward the landscape\nstretches out into an uninterrupted expanse of empty hills.\nExtra description keywords: none\n------- Chars present -------\n  an ibex (6011)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 50, flags: none\nEast   31: 61, flags: none\nSouth  31: 52, flags: none\nWest   31: 41, flags: none",
         "comListCommands": "1   Mobile  6011 (an ibex) (--/2/2/100%)",
         "libRoomCommands": "Commands on room 31:51 (a Grassy Rise beside the Road):"
       },
@@ -482,8 +479,9 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655624049,
-        "statRoomFull": "Room 31:61 (3161) - on@a Low Hill\nMagical key: rabeskunu, Owner: none, Sector: hills, MapId: 10372658\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The hill rises in a low, uneven stretch of grass and stone, with rough turf\n  giving way to patches of bare earth. The slope leans toward the road to the\n  west and climbs back toward harder ground to the north. Small stones and\n  stubborn weeds break up the open surface, and the place feels shaped more by\n  repeated passage than by any single feature.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 60, flags: none\nWest   31: 51, flags: none",
+        "importedAt": 1790658149412,
+        "statRoomFull": "Room 31:61 (3161) - on@a Low Hill\nMagical key: agefraflaold, Owner: none, Sector: hills, MapId: 10372658\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The hill rises in a low, uneven stretch of grass and stone, with rough turf\n  giving way to patches of bare earth. The slope leans toward the road to the\n  west and climbs back toward harder ground to the north. Small stones and\n  stubborn weeds break up the open surface, and the place feels shaped more by\n  repeated passage than by any single feature.\nExtra description keywords: none\n------- Chars present -------\n  an ibex (6011)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 60, flags: none\nWest   31: 51, flags: none",
+        "comListCommands": "Players\n-------\n      Zern the Rug Burn\n      Smooth be the journey!!, Dwarf-friend\n      Siska E nya Tiga\n      Xaark\n*[Va] Orlanth the Wonderous [:lightning:] (Idle) (i1)\n  <W> Qiansa ntang, the Prabu\n      Devourest the Troll Brute\n      Läderkvänen the Orkish Shaman\n      Avicenna the Elf Priestess (Idle)\n      Lakota Sioux\n      Iodvin\n*[Mw] Ellessar test (iM)\n*[ A] Dáin II Ironfoot (Idle) (iM)\n*[ A] Imago the Ainu of Win & Great Success (Idle) (iM)\n14 players on.\n108 accounts engaged in the war, with 16 recently active.",
         "libRoomCommands": "Commands on room 31:61 (a Low Hill):"
       },
       "mapId": "10372658"
@@ -511,8 +509,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655634545,
-        "statRoomFull": "Room 31:71 (3171) - in@the Broken Timber Grove\nMagical key: deakrapacif, Owner: none, Sector: field, MapId: 15677516\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nBroken lengths of timber lie scattered through the field, splintered and\nweathered as if they were once part of a larger structure. Short grass pushes\nup around the fallen wood, softening the edges of the broken shapes. The ground\nhere opens toward the north, where a brushy hillside rises above the grove,\nwhile the rest of the land remains low and open.\nExtra description keywords: none\n------- Chars present -------\n  an ibex (6011)\n  Ellessar (player 695470)\n--------- Contents ---------\n  some cracked and splintered pieces of wood (9902)\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 70, flags: none",
+        "importedAt": 1790658159906,
+        "statRoomFull": "Room 31:71 (3171) - in@the Broken Timber Grove\nMagical key: mysubiceyt, Owner: none, Sector: field, MapId: 15677516\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nBroken lengths of timber lie scattered through the field, splintered and\nweathered as if they were once part of a larger structure. Short grass pushes\nup around the fallen wood, softening the edges of the broken shapes. The ground\nhere opens toward the north, where a brushy hillside rises above the grove,\nwhile the rest of the land remains low and open.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n  some cracked and splintered pieces of wood (9902)\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 70, flags: none",
         "comListCommands": "1   Object  9902 (some cracked and splintered pieces of wood) (--/--/1/100%)",
         "libRoomCommands": "Commands on room 31:71 (the Broken Timber Grove):"
       },
@@ -541,8 +539,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655476553,
-        "statRoomFull": "Room 31:2 (3102) - in a@Clump of Trees\nMagical key: peeytkafkla, Owner: none, Sector: forest, MapId: 16180528\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe forest lies heavy in shadow here, its crooked trees pressing close around a\nnarrow path. Wisps of old cobweb cling to bark and low branches, growing\nthicker toward the east. The air is damp and still, carrying the faint smell of\nrot and river-mist.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  1, flags: none\nEast   31: 12, flags: none\nSouth  31:  3, flags: none",
+        "importedAt": 1790657875170,
+        "statRoomFull": "Room 31:2 (3102) - in a@Clump of Trees\nMagical key: colhasmipac, Owner: none, Sector: forest, MapId: 16180528\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe forest lies heavy in shadow here, its crooked trees pressing close around a\nnarrow path. Wisps of old cobweb cling to bark and low branches, growing\nthicker toward the east. The air is damp and still, carrying the faint smell of\nrot and river-mist.\nExtra description keywords: none\n------- Chars present -------\n  a blue dragonfly (1970)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  1, flags: none\nEast   31: 12, flags: none\nSouth  31:  3, flags: none",
         "libRoomCommands": "Commands on room 31:2 (Clump of Trees):"
       },
       "mapId": "16180528"
@@ -572,8 +570,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655513044,
-        "statRoomFull": "Room 31:12 (3112) - among@Roots and Cobwebs\nMagical key: genweebbzig, Owner: none, Sector: forest, MapId: 10251233\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: DARK BUILD SUNLIT\nRoom temporary flags: none\nLight sources: 0\nDescription:\nAncient roots twist across the forest floor, rising like dark, grasping fingers\nfrom the earth. The trees crowd close overhead, leaving the air still, damp,\nand heavy. Faint scratchings mark the bark and soil, while thin strands of silk\ntrail between the roots.\nExtra description keywords: none\n------- Chars present -------\n  a black widow (1550)\n  a clump of roots (1804)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nWest   31:  2, flags: none",
+        "importedAt": 1790657985665,
+        "statRoomFull": "Room 31:12 (3112) - among@Roots and Cobwebs\nMagical key: widwycadrub, Owner: none, Sector: forest, MapId: 10251233\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: DARK BUILD SUNLIT\nRoom temporary flags: none\nLight sources: 0\nDescription:\nAncient roots twist across the forest floor, rising like dark, grasping fingers\nfrom the earth. The trees crowd close overhead, leaving the air still, damp,\nand heavy. Faint scratchings mark the bark and soil, while thin strands of silk\ntrail between the roots.\nExtra description keywords: none\n------- Chars present -------\n  a black widow (1550)\n  a clump of roots (1804)\n  a blue dragonfly (1970)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nWest   31:  2, flags: none",
         "comListCommands": "1   Mobile  1804 (a clump of roots) (--/--/1/100%)\n2   Mobile  1550 (a black widow) (--/--/1/100%)",
         "libRoomCommands": "Commands on room 31:12 (Roots and Cobwebs):"
       },
@@ -602,8 +600,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655546048,
-        "statRoomFull": "Room 31:22 (3122) - in a@Field by the River Running\nMagical key: nthdeaigum, Owner: none, Sector: field, MapId: 2915719\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nTo the west and north, the low meadows quickly give way to the dark, oppressive\nedge of a forest, while the field extends further to the south. The eastern\nboundary of the field dominated by the waters of the River Running cutting\ndeeply into the rocky landscape. High overhead, wide thermal currents trace the\nsky, leaving an uneasy impression of distant, unseen eyes watching the borders\nof the wood.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 32, flags: none\nSouth  31: 23, flags: none",
+        "importedAt": 1790658018664,
+        "statRoomFull": "Room 31:22 (3122) - in a@Field by the River Running\nMagical key: idegoevfyl, Owner: none, Sector: field, MapId: 2915719\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nTo the west and north, the low meadows quickly give way to the dark, oppressive\nedge of a forest, while the field extends further to the south. The eastern\nboundary of the field dominated by the waters of the River Running cutting\ndeeply into the rocky landscape. High overhead, wide thermal currents trace the\nsky, leaving an uneasy impression of distant, unseen eyes watching the borders\nof the wood.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 32, flags: none\nSouth  31: 23, flags: none",
         "libRoomCommands": "Commands on room 31:22 (Field by the River Running):"
       },
       "mapId": "2915719"
@@ -632,8 +630,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655570051,
-        "statRoomFull": "Room 31:32 (3132) - in the@Strong Current of River Running\nMagical key: onsylguagym, Owner: none, Sector: water, MapId: 13727235\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD WATER\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe crushing force of the river dominates this stretch, its swift and powerful\nwaters churning violently. To the west, the chaotic torrent cuts sharply\nagainst the low banks of a quiet field, throwing cold spray over the rocky\nedge. Heavy, fresh tracks are deeply impressed into the soft mud along the\nwaterline, leaving a clear and unsettling warning of whatever large creature\nrecently paused by the rushing flow.\nExtra description keywords: none\n------- Chars present -------\n  a crayfish (1331)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 31, flags: none\nEast   31: 42, flags: none\nSouth  31: 33, flags: none\nWest   31: 22, flags: none",
+        "importedAt": 1790658041419,
+        "statRoomFull": "Room 31:32 (3132) - in the@Strong Current of River Running\nMagical key: uitsaerav, Owner: none, Sector: water, MapId: 13727235\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD WATER\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe crushing force of the river dominates this stretch, its swift and powerful\nwaters churning violently. To the west, the chaotic torrent cuts sharply\nagainst the low banks of a quiet field, throwing cold spray over the rocky\nedge. Heavy, fresh tracks are deeply impressed into the soft mud along the\nwaterline, leaving a clear and unsettling warning of whatever large creature\nrecently paused by the rushing flow.\nExtra description keywords: none\n------- Chars present -------\n  a crayfish (1331)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 31, flags: none\nEast   31: 42, flags: none\nSouth  31: 33, flags: none\nWest   31: 22, flags: none",
         "libRoomCommands": "Commands on room 31:32 (Strong Current of River Running):"
       },
       "mapId": "13727235"
@@ -661,8 +659,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655600051,
-        "statRoomFull": "Room 31:42 (3142) - on@the Dorwinion Road\nMagical key: myquapremed, Owner: none, Sector: road, MapId: 10583545\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The historic trade road presses steadily north and south, tracking a parallel\n  path\n  just east of the low riverbanks. Time and abandonment have left the surfaced\n  stone severely cracked, allowing tough weeds to claim the deep fissures. To\n  the west, the open ground dips slightly toward the edge of the channel where\n  the water flows smoothly, while the terrain to the east begins a gradual,\n  grassy rise into the quiet baseline of the foothills.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 41, flags: none\nEast   31: 52, flags: none\nSouth  31: 43, flags: none\nWest   31: 32, flags: none",
+        "importedAt": 1790658071418,
+        "statRoomFull": "Room 31:42 (3142) - on@the Dorwinion Road\nMagical key: efseaimoth, Owner: none, Sector: road, MapId: 10583545\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The historic trade road presses steadily north and south, tracking a parallel\n  path\n  just east of the low riverbanks. Time and abandonment have left the surfaced\n  stone severely cracked, allowing tough weeds to claim the deep fissures. To\n  the west, the open ground dips slightly toward the edge of the channel where\n  the water flows smoothly, while the terrain to the east begins a gradual,\n  grassy rise into the quiet baseline of the foothills.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 41, flags: none\nEast   31: 52, flags: none\nSouth  31: 43, flags: none\nWest   31: 32, flags: none",
         "libRoomCommands": "Commands on room 31:42 (the Dorwinion Road):"
       },
       "mapId": "10583545"
@@ -690,10 +688,10 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655613547,
-        "statRoomFull": "Room 31:52 (3152) - on@a Grassy Hill\nMagical key: mogabsaush, Owner: none, Sector: hills, MapId: 8301947\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The hill rises in a broad, uneven mound of grass and stone,\n  with rough earth showing between the tufts of short growth. To the\n  west the ground falls toward the Dorwinion Road, while the slope continues\n  north toward the higher hills. Small rocks and scattered weeds mark the\n  surface, giving the place a worn, open look where the road runs close beside\n  the rise.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 51, flags: none\nWest   31: 42, flags: none",
+        "importedAt": 1790658209659,
+        "statRoomFull": "Room 31:52 (3152) - on@a Grassy Hill\nMagical key: livagymqua, Owner: none, Sector: hills, MapId: 8301947\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The hill rises in a broad, uneven mound of grass and stone,\n  with rough earth showing between the tufts of short growth. To the\n  west the ground falls toward the Dorwinion Road, while the slope continues\n  north toward the higher hills. Small rocks and scattered weeds mark the\n  surface, giving the place a worn, open look where the road runs close beside\n  the rise.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 51, flags: none\nWest   31: 42, flags: none",
         "libRoomCommands": "Commands on room 31:52 (a Grassy Hill):",
-        "comListCommands": "A blue dragonfly has arrived from the east."
+        "comListCommands": "Players\n-------\n      Siska E nya Tiga\n      Zern the Rug Burn\n      Smooth be the journey!!, Dwarf-friend\n      Xaark\n*[Va] Orlanth the Wonderous [:lightning:] (Idle) (i1)\n  <W> Qiansa ntang, the Prabu\n      Devourest the Troll Brute\n      Läderkvänen the Orkish Shaman\n      Avicenna the Elf Priestess (Idle)\n      Lakota Sioux\n      Iodvin\n*[Mw] Ellessar test (iM)\n*[ A] Dáin II Ironfoot (Idle) (iM)\n*[ A] Imago the Ainu of Win & Great Success (Idle) (iM)\n14 players on.\n108 accounts engaged in the war, with 16 recently active."
       },
       "mapId": "8301947"
     },
@@ -722,10 +720,10 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655478051,
-        "statRoomFull": "Room 31:3 (3103) - under@Some Dark Bows\nMagical key: pregabviir, Owner: none, Sector: forest, MapId: 16426941\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: DARK BUILD SUNLIT\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The trees thin here, though crooked boughs still cast deep shadows over the\n  forest floor. To the east, the land opens beyond the last trunks, leading out\n  of the wood. Westward, the forest closes back into gloom and silence.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  2, flags: none\nEast   31: 13, flags: DOOR CLOSED NO_MOB PLURAL, name: branches,\n               key: no-keyhole, pick: 0%, weight: 1\nDescription:\n  Thick branches block the path east.",
-        "libRoomCommands": "Commands on room 31:3 (Some Dark Bows):",
-        "comListCommands": "1   Door    close east  (branches)"
+        "importedAt": 1790657876669,
+        "statRoomFull": "Room 31:3 (3103) - under@Some Dark Bows\nMagical key: wadtheillup, Owner: none, Sector: forest, MapId: 16426941\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: DARK BUILD SUNLIT\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The trees thin here, though crooked boughs still cast deep shadows over the\n  forest floor. To the east, the land opens beyond the last trunks, leading out\n  of the wood. Westward, the forest closes back into gloom and silence.\nExtra description keywords: none\n------- Chars present -------\n  a blue dragonfly (1970)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  2, flags: none\nEast   31: 13, flags: DOOR CLOSED NO_MOB PLURAL, name: branches,\nkey: no-keyhole, pick: 0%, weight: 1\nDescription:\n  Thick branches block the path east.",
+        "comListCommands": "1   Door    close east  (branches)",
+        "libRoomCommands": "Commands on room 31:3 (Some Dark Bows):"
       },
       "mapId": "16426941"
     },
@@ -752,10 +750,10 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655514551,
-        "statRoomFull": "Room 31:13 (3113) - in a@Field on Edge of Mirkwood\nMagical key: oxannycwy, Owner: none, Sector: field, MapId: 8106256\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nTo the north and west, a dark treeline obscures any light past their twisted\ntrunks. The field stretches out to the south and east in an easy undulating\ngrassy wave. Broken twigs and leaves are strewn in a broken line towards to the\nforest to the west.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 23, flags: none\nSouth  31: 14, flags: none\nWest   31:  3, flags: DOOR CLOSED NO_MOB PLURAL, name: branches,\n               key: no-keyhole, pick: 0%, weight: 1\nDescription:\n  The branches block the path west.",
-        "libRoomCommands": "Commands on room 31:13 (Field on Edge of Mirkwood):",
-        "comListCommands": "1   Door    close west  (branches)"
+        "importedAt": 1790657987170,
+        "statRoomFull": "Room 31:13 (3113) - in a@Field on Edge of Mirkwood\nMagical key: namneethmne, Owner: none, Sector: field, MapId: 8106256\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nTo the north and west, a dark treeline obscures any light past their twisted\ntrunks. The field stretches out to the south and east in an easy undulating\ngrassy wave. Broken twigs and leaves are strewn in a broken line towards to the\nforest to the west.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 23, flags: none\nSouth  31: 14, flags: none\nWest   31:  3, flags: DOOR CLOSED NO_MOB PLURAL, name: branches,\nkey: no-keyhole, pick: 0%, weight: 1\nDescription:\n  The branches block the path west.",
+        "comListCommands": "1   Door    close west  (branches)",
+        "libRoomCommands": "Commands on room 31:13 (Field on Edge of Mirkwood):"
       },
       "mapId": "8106256"
     },
@@ -782,8 +780,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655547543,
-        "statRoomFull": "Room 31:23 (3123) - in a@Field by a River\nMagical key: egooyssakra, Owner: none, Sector: field, MapId: 16433793\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The tall grasses of the open meadow stretch across the landscape, bordered to\n  the south by the edge of a forest. Along the eastern shoreline, the swift\n  waters of the River Running lap continuously against the muddy bank, washing\n  over a scattered pile of splintered fish bones. The clean-picked remains hint\n  at a recent meal.\nExtra description keywords: none\n------- Chars present -------\n  a fisherman (6481)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 22, flags: none\nEast   31: 33, flags: none\nSouth  31: 24, flags: none\nWest   31: 13, flags: none",
+        "importedAt": 1790658020162,
+        "statRoomFull": "Room 31:23 (3123) - in a@Field by a River\nMagical key: umxystaak, Owner: none, Sector: field, MapId: 16433793\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The tall grasses of the open meadow stretch across the landscape, bordered to\n  the south by the edge of a forest. Along the eastern shoreline, the swift\n  waters of the River Running lap continuously against the muddy bank, washing\n  over a scattered pile of splintered fish bones. The clean-picked remains hint\n  at a recent meal.\nExtra description keywords: none\n------- Chars present -------\n  a fisherman (6481)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 22, flags: none\nEast   31: 33, flags: none\nSouth  31: 24, flags: none\nWest   31: 13, flags: none",
         "comListCommands": "1   Mobile  6481 (a fisherman) (stand) (--/--/1/100%)",
         "libRoomCommands": "Commands on room 31:23 (Field by a River):"
       },
@@ -813,8 +811,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655571554,
-        "statRoomFull": "Room 31:33 (3133) - in the@River Running\nMagical key: scaslonoto, Owner: none, Sector: water, MapId: 3486568\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD WATER\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe river continues its steady, southwards journey, flowing smoothly between\nlow, earthen banks that show signs of gradual erosion. The water remains crisp\nand relatively shallow, allowing the bright sunlight to illuminate the clean,\nstony riverbed beneath the main channel. Tiny ripples disrupt the surface where\nsmaller fish dart between the rocks, while deep along the bottom, massive and\nancient forms glide silently through the shadows of the lower current.\nExtra description keywords: none\n------- Chars present -------\n  a crayfish (1331)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 32, flags: none\nEast   31: 43, flags: none\nSouth  31: 34, flags: none\nWest   31: 23, flags: none",
+        "importedAt": 1790658042913,
+        "statRoomFull": "Room 31:33 (3133) - in the@River Running\nMagical key: dhocojibor, Owner: none, Sector: water, MapId: 3486568\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD WATER\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe river continues its steady, southwards journey, flowing smoothly between\nlow, earthen banks that show signs of gradual erosion. The water remains crisp\nand relatively shallow, allowing the bright sunlight to illuminate the clean,\nstony riverbed beneath the main channel. Tiny ripples disrupt the surface where\nsmaller fish dart between the rocks, while deep along the bottom, massive and\nancient forms glide silently through the shadows of the lower current.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 32, flags: none\nEast   31: 43, flags: none\nSouth  31: 34, flags: none\nWest   31: 23, flags: none",
         "comListCommands": "1   Mobile    28 (a trout) (--/1/--/100%)",
         "libRoomCommands": "Commands on room 31:33 (River Running):"
       },
@@ -838,15 +836,15 @@
       ],
       "owner": "none",
       "keywords": [],
-      "notes": "Extra description keyword: runes",
+      "notes": "",
       "annotations": [],
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655601540,
-        "statRoomFull": "Room 31:43 (3143) - on the@Dorwinion Road\nMagical key: drokidouthul, Owner: none, Sector: road, MapId: 14623727\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe ancient, cracked stones of the road give way to a small, makeshift fishing\ncamp nestled along the wayside, where a few worn tents and drying racks stand\nagainst the wilderness. To the west, the thunderous rush of the River Running\ncuts close to the camp's edge. Broken wagon ruts trail onward through the dust\nand low brush, passing a weathered sign that still hints at forgotten vineyards\nfurther down the road.\nExtra description keyword: runes\n------- Chars present -------\n  a fisherman (6481)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 42, flags: none\nWest   31: 33, flags: none",
-        "libRoomCommands": "Commands on room 31:43 (Dorwinion Road):\n1: sign\n  signs:  [1 defined]\n            runes [Sindarin]",
-        "comListCommands": "1   Mobile  6481 (a fisherman) (stand) (--/--/1/100%)"
+        "importedAt": 1790658072916,
+        "statRoomFull": "Room 31:43 (3143) - on the@Dorwinion Road\nMagical key: iceayeeelego, Owner: none, Sector: road, MapId: 14623727\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe ancient, cracked stones of the road give way to a small, makeshift fishing\ncamp nestled along the wayside, where a few worn tents and drying racks stand\nagainst the wilderness. To the west, the thunderous rush of the River Running\ncuts close to the camp's edge. Broken wagon ruts trail onward through the dust\nand low brush, passing a weathered sign that still hints at forgotten vineyards\nfurther down the road.\nExtra description keyword: runes\n------- Chars present -------\n  a fisherman (6481)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 42, flags: none\nWest   31: 33, flags: none",
+        "comListCommands": "1   Mobile  6481 (a fisherman) (stand) (--/--/1/100%)",
+        "libRoomCommands": "Commands on room 31:43 (Dorwinion Road):\n1: sign\n  signs:  [1 defined]\n            runes [Sindarin]"
       },
       "mapId": "14623727"
     },
@@ -873,8 +871,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655487051,
-        "statRoomFull": "Room 31:4 (3104) - in a@Field Bordering a Forest\nMagical key: nigutekafim, Owner: none, Sector: field, MapId: 1135945\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe open meadows begin to choke and fade here as they press directly against\nthe dark, imposing wall of the forest looming to the north. To the south, the\ngentle grassland fractures into rough foothills that rise sharply toward the\nsheer slopes of a massive mountain. Caught between the claustrophobic eaves of\nthe woods and the cold stone peaks above, this exposed borderland feels charged\nwith a tense and watchful silence.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 14, flags: none\nSouth  31:  5, flags: none",
+        "importedAt": 1790657885669,
+        "statRoomFull": "Room 31:4 (3104) - in a@Field Bordering a Forest\nMagical key: quaoysohmog, Owner: none, Sector: field, MapId: 1135945\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe open meadows begin to choke and fade here as they press directly against\nthe dark, imposing wall of the forest looming to the north. To the south, the\ngentle grassland fractures into rough foothills that rise sharply toward the\nsheer slopes of a massive mountain. Caught between the claustrophobic eaves of\nthe woods and the cold stone peaks above, this exposed borderland feels charged\nwith a tense and watchful silence.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nEast   31: 14, flags: none\nSouth  31:  5, flags: none",
         "libRoomCommands": "Commands on room 31:4 (Field Bordering a Forest):"
       },
       "mapId": "1135945"
@@ -902,10 +900,10 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655516045,
-        "statRoomFull": "Room 31:14 (3114) - in a@Root-Filled Forest\nMagical key: wyllawobtee, Owner: none, Sector: forest, MapId: 4476407\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe ancient forest floor is completely overrun by an intricate web of massive,\ngnarled roots bursting through the dark loam. Travelling through this choked\nthicket requires absolute focus, as the woody protrusions form a low, twisting\nmaze that threatens to trip anyone travelling on foot. Above, a dense canopy\nweaves together tightly.\nExtra description keywords: none\n------- Chars present -------\n  a clump of roots (1804)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 13, flags: none\nEast   31: 24, flags: none\nSouth  31: 15, flags: none\nWest   31:  4, flags: none",
-        "libRoomCommands": "Commands on room 31:14 (Root-Filled Forest):",
-        "comListCommands": "1   Mobile  1804 (a clump of roots) (--/--/1/100%)"
+        "importedAt": 1790657988665,
+        "statRoomFull": "Room 31:14 (3114) - in a@Root-Filled Forest\nMagical key: spazurvysmi, Owner: none, Sector: forest, MapId: 4476407\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe ancient forest floor is completely overrun by an intricate web of massive,\ngnarled roots bursting through the dark loam. Travelling through this choked\nthicket requires absolute focus, as the woody protrusions form a low, twisting\nmaze that threatens to trip anyone travelling on foot. Above, a dense canopy\nweaves together tightly.\nExtra description keywords: none\n------- Chars present -------\n  a clump of roots (1804)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 13, flags: none\nEast   31: 24, flags: none\nSouth  31: 15, flags: none\nWest   31:  4, flags: none",
+        "comListCommands": "1   Mobile  1804 (a clump of roots) (--/--/1/100%)",
+        "libRoomCommands": "Commands on room 31:14 (Root-Filled Forest):"
       },
       "mapId": "4476407"
     },
@@ -932,10 +930,10 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655549051,
-        "statRoomFull": "Room 31:24 (3124) - in@Amongst Some Ragged Trees\nMagical key: dhosylapetu, Owner: none, Sector: forest, MapId: 2332683\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nA sparse cluster of stunted, wind-battered trees fights for survival against\nthe encroaching wilderness, their broken branches clutching at the heavy air.\nPressed deeply into the damp earth the loam has been heavily disturbed by the\nunmistakable tracks of some unidentifiable creature or creatures. The scent of\nfreshly disturbed soil lingers in the air.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n  a redressed corpse (6008)\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 23, flags: none\nSouth  31: 25, flags: none\nWest   31: 14, flags: none",
+        "importedAt": 1790658021670,
+        "statRoomFull": "Room 31:24 (3124) - in@Amongst Some Ragged Trees\nMagical key: gendibtzaox, Owner: none, Sector: forest, MapId: 2332683\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nA sparse cluster of stunted, wind-battered trees fights for survival against\nthe encroaching wilderness, their broken branches clutching at the heavy air.\nPressed deeply into the damp earth the loam has been heavily disturbed by the\nunmistakable tracks of some unidentifiable creature or creatures. The scent of\nfreshly disturbed soil lingers in the air.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n  a redressed corpse (6008)\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 23, flags: none\nSouth  31: 25, flags: none\nWest   31: 14, flags: none",
         "comListCommands": "1   Object  6008 (a rotting corpse) (--/--/1/100%)",
-        "libRoomCommands": "Commands on room 31:24 (Amongst Some Ragged Trees):\n1: redress-corpse\n  mobile:       mob 2138 (a bear cub)\n  keywords:     \n  short-desc:   a half-eaten corpse\n  long-desc:    The half-eaten corpse of a bear cub is lying here.\n  plural-desc:  half-eaten corpses\n  full-desc:    \n    The corpse of a young bear cub has been picked and gnawed at by\n                    some carnivore who has made this its dinner. The meat has\n    been\n                    torn off the bones and what is left offers little\n    nutritional\n                    value.\n  butchered?:   no\n  drainable?:   no\n  hanging?:     no\n  head?:        yes\n2: redress-corpse\n  mobile:       mob 0 (unknown mobile)\n  keywords:     \n  short-desc:   a redressed corpse\n  long-desc:    The redressed corpse is lying here.\n  plural-desc:  redressed corpses\n  full-desc:    You see nothing special...\n  butchered?:   no\n  drainable?:   no\n  hanging?:     no\n  head?:        yes"
+        "libRoomCommands": "Commands on room 31:24 (Amongst Some Ragged Trees):\n1: redress-corpse\n  mobile:       mob 2138 (a bear cub)\n  keywords:     \n  short-desc:   a half-eaten corpse\n  long-desc:    The half-eaten corpse of a bear cub is lying here.\n  plural-desc:  half-eaten corpses\n  full-desc:    \n    The corpse of a young bear cub has been picked and gnawed at by\n                    some carnivore who has made this its dinner. The meat has\nbeen\n                    torn off the bones and what is left offers little\nnutritional\n                    value.\n  butchered?:   no\n  drainable?:   no\n  hanging?:     no\n  head?:        yes\n2: redress-corpse\n  mobile:       mob 0 (unknown mobile)\n  keywords:     \n  short-desc:   a redressed corpse\n  long-desc:    The redressed corpse is lying here.\n  plural-desc:  redressed corpses\n  full-desc:    You see nothing special...\n  butchered?:   no\n  drainable?:   no\n  hanging?:     no\n  head?:        yes"
       },
       "mapId": "2332683"
     },
@@ -963,8 +961,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655573056,
-        "statRoomFull": "Room 31:34 (3134) - at@a Clear Channel in the River Running\nMagical key: zurfiprebea, Owner: none, Sector: water, MapId: 8262684\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD WATER\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The river straightens completely here, running in a clean, unhurried channel\n  between the low banks. Beneath the surface, the heavy current drops its silt,\n  revealing a smooth bed of light clay and flat stones well out of the sun's\n  reach.\n  Faint ripples mar the water as ancient, bottom-dwelling life stirs sluggishly\n  through the cool depths, entirely concealed by the steady, unyielding flow of\n  the main channel.\nExtra description keywords: none\n------- Chars present -------\n  a large sturgeon (1453)\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 33, flags: none",
+        "importedAt": 1790658044414,
+        "statRoomFull": "Room 31:34 (3134) - at@a Clear Channel in the River Running\nMagical key: feawobaxir, Owner: none, Sector: water, MapId: 8262684\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD WATER\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The river straightens completely here, running in a clean, unhurried channel\n  between the low banks. Beneath the surface, the heavy current drops its silt,\n  revealing a smooth bed of light clay and flat stones well out of the sun's\n  reach.\n  Faint ripples mar the water as ancient, bottom-dwelling life stirs sluggishly\n  through the cool depths, entirely concealed by the steady, unyielding flow of\n  the main channel.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 33, flags: none",
         "comListCommands": "1   Mobile  1453 (a large sturgeon) (--/1/--/100%)",
         "libRoomCommands": "Commands on room 31:34 (a Clear Channel in the River Running):"
       },
@@ -993,8 +991,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655488569,
-        "statRoomFull": "Room 31:5 (3105) - in@a Nook in the Mountains\nMagical key: whochamicza, Owner: none, Sector: mountains, MapId: 16309478\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nA narrow, rocky shelf clings to the sheer mountain face, providing a small\npocket of level ground amidst the towering peaks. Jagged stone walls press in\nfrom the sides, their grey surfaces split by deep fissures where hardy alpine\nmosses manage to take root. Littered across the dirt floor are the cracked,\nhollow remains of discarded eggshells, half-buried in the scree. A sharp,\ndistinct musk hangs heavy in the thin air, hinting at the large predators that\noccasionally seek shelter within this rugged alcove.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  4, flags: none\nEast   31: 15, flags: none\nSouth  31:  6, flags: none",
+        "importedAt": 1790657887218,
+        "statRoomFull": "Room 31:5 (3105) - in@a Nook in the Mountains\nMagical key: miudiller, Owner: none, Sector: mountains, MapId: 16309478\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nA narrow, rocky shelf clings to the sheer mountain face, providing a small\npocket of level ground amidst the towering peaks. Jagged stone walls press in\nfrom the sides, their grey surfaces split by deep fissures where hardy alpine\nmosses manage to take root. Littered across the dirt floor are the cracked,\nhollow remains of discarded eggshells, half-buried in the scree. A sharp,\ndistinct musk hangs heavy in the thin air, hinting at the large predators that\noccasionally seek shelter within this rugged alcove.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  4, flags: none\nEast   31: 15, flags: none\nSouth  31:  6, flags: none",
         "comListCommands": "1   Mobile  1599 (a black bear) (--/1/1/100%)\n2   Mobile  2138 (a bear cub) (--/1/--/100%)",
         "libRoomCommands": "Commands on room 31:5 (a Nook in the Mountains):"
       },
@@ -1023,8 +1021,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655525050,
-        "statRoomFull": "Room 31:15 (3115) - on@a Brambly Slope\nMagical key: edsweavwe, Owner: none, Sector: mountains, MapId: 15413516\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The hillside rises steeply here, choked with tangled brambles and patches\n  of coarse heather clinging to the rocky soil. Loose stones shift underfoot\n  on the narrow path winding between the thorns. To the north the slope\n  descends into dense woodland, while to the south the ridge climbs toward\n  a more elevated and windswept vantage point.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 14, flags: none\nEast   31: 25, flags: none\nSouth  31: 16, flags: none\nWest   31:  5, flags: none",
+        "importedAt": 1790657997670,
+        "statRoomFull": "Room 31:15 (3115) - on@a Brambly Slope\nMagical key: wadspaerok, Owner: none, Sector: mountains, MapId: 15413516\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The hillside rises steeply here, choked with tangled brambles and patches\n  of coarse heather clinging to the rocky soil. Loose stones shift underfoot\n  on the narrow path winding between the thorns. To the north the slope\n  descends into dense woodland, while to the south the ridge climbs toward\n  a more elevated and windswept vantage point.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 14, flags: none\nEast   31: 25, flags: none\nSouth  31: 16, flags: none\nWest   31:  5, flags: none",
         "libRoomCommands": "Commands on room 31:15 (a Brambly Slope):"
       },
       "mapId": "15413516"
@@ -1052,8 +1050,9 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655558100,
-        "statRoomFull": "Room 31:25 (3125) - in@a Silted Woodland Glade\nMagical key: edfeavomed, Owner: none, Sector: forest, MapId: 11583968\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  Moss-covered boulders lie half-buried in the earth, tumbled down from the\n  higher ridges to the west. The air carries a heavy, damp stillness,\n  characteristic of the wild borderlands where the great lake meets the forest\n  eaves. Sedge and coarse river grass sprout in patches between the trees,\n  surviving where the woodland floor dips low and gathers the runoff from the\n  northern plains.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 24, flags: none\nWest   31: 15, flags: none",
+        "importedAt": 1790658029415,
+        "statRoomFull": "Room 31:25 (3125) - in@a Silted Woodland Glade\nMagical key: macntheflha, Owner: none, Sector: forest, MapId: 11583968\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  Moss-covered boulders lie half-buried in the earth, tumbled down from the\n  higher ridges to the west. The air carries a heavy, damp stillness,\n  characteristic of the wild borderlands where the great lake meets the forest\n  eaves. Sedge and coarse river grass sprout in patches between the trees,\n  surviving where the woodland floor dips low and gathers the runoff from the\n  northern plains.\nExtra description keywords: none\n------- Chars present -------\n  a black bear (1599)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 24, flags: none\nWest   31: 15, flags: none",
+        "comListCommands": "Players\n-------\n      Zern the Rug Burn\n      Smooth be the journey!!, Dwarf-friend\n      Siska E nya Tiga\n      Xaark\n      Krûzgukk Psycho, of the Path\n*[Va] Orlanth the Wonderous [:lightning:] (Idle) (i1)\n  <W> Qiansa ntang, the Prabu\n      Devourest the Troll Brute\n      Läderkvänen the Orkish Shaman\n      Avicenna the Elf Priestess (Idle)\n      Lakota Sioux\n      Iodvin\n*[Mw] Ellessar test (iM)\n*[ A] Dáin II Ironfoot (Idle) (iM)\n*[ A] Imago the Ainu of Win & Great Success (Idle) (iM)\n15 players on.\n108 accounts engaged in the war, with 16 recently active.",
         "libRoomCommands": "Commands on room 31:25 (a Silted Woodland Glade):"
       },
       "mapId": "11583968"
@@ -1081,8 +1080,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655497552,
-        "statRoomFull": "Room 31:6 (3106) - on a@Windswept Mountain Ridge\nMagical key: mutheigog, Owner: none, Sector: mountains, MapId: 4437341\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  A treacherous, exposed path winds precariously along the sun-bleached rock of\n  the mountain ridge. To the north, the trail dips slightly toward a sheltered\n  recess, while southern views reveal a gradual descent toward greener slopes.\n  Stunted, wind-battered shrubs claw for a foothold in the sparse soil, their\n  twisted branches frozen in defensive postures against the elements. Ground\n  predators and nimble mountain herbivores frequently cross this high\n  thoroughfare.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  5, flags: none\nSouth  31:  7, flags: none",
+        "importedAt": 1790658338424,
+        "statRoomFull": "Room 31:6 (3106) - on a@Windswept Mountain Ridge\nMagical key: bableeozaus, Owner: none, Sector: mountains, MapId: 4437341\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  A treacherous, exposed path winds precariously along the sun-bleached rock of\n  the mountain ridge. To the north, the trail dips slightly toward a sheltered\n  recess, while southern views reveal a gradual descent toward greener slopes.\n  Stunted, wind-battered shrubs claw for a foothold in the sparse soil, their\n  twisted branches frozen in defensive postures against the elements. Ground\n  predators and nimble mountain herbivores frequently cross this high\n  thoroughfare.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  5, flags: none\nSouth  31:  7, flags: none",
         "libRoomCommands": "Commands on room 31:6 (Windswept Mountain Ridge):"
       },
       "mapId": "4437341"
@@ -1110,8 +1109,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655526554,
-        "statRoomFull": "Room 31:16 (3116) - on a@Elevated Perch\nMagical key: moavoddsub, Owner: none, Sector: mountains, MapId: 730781\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe rugged ridge ascends sharply to a high, windswept vantage point, offering\na commanding view over the lower forest canopy spreading out towards the east.\nSkeletal branches of weather-beaten pine trees claw at the sky, anchoring\nthemselves precariously among the pale, fractured crags. Deep fissures score\nthe grey stone underfoot, where coarse mountain grass grows in sparse clumps\nsheltered from the biting northern gales.\nExtra description keywords: none\n------- Chars present -------\n  a vulture (7018)\n  a vulture (7018)\n  Ellessar (player 695470)\n--------- Contents ---------\n  a nest (1750)\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 15, flags: none",
+        "importedAt": 1790657999169,
+        "statRoomFull": "Room 31:16 (3116) - on a@Elevated Perch\nMagical key: ughsylnectu, Owner: none, Sector: mountains, MapId: 730781\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThe rugged ridge ascends sharply to a high, windswept vantage point, offering\na commanding view over the lower forest canopy spreading out towards the east.\nSkeletal branches of weather-beaten pine trees claw at the sky, anchoring\nthemselves precariously among the pale, fractured crags. Deep fissures score\nthe grey stone underfoot, where coarse mountain grass grows in sparse clumps\nsheltered from the biting northern gales.\nExtra description keywords: none\n------- Chars present -------\n  a vulture (7018)\n  a vulture (7018)\n  a black bear (1599)\n--------- Contents ---------\n  a nest (1750)\n--------- Hidden -----------\n------- Exits -------\nNorth  31: 15, flags: none",
         "comListCommands": "1   Mobile  7018 (a vulture) (--/--/2/100%)\n2   Object  1750 (a nest) (--/--/1/100%)",
         "libRoomCommands": "Commands on room 31:16 (Elevated Perch):"
       },
@@ -1140,48 +1139,18 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655506801,
-        "statRoomFull": "Room 31:7 (3107) - at@the Base of the Crags\nMagical key: aeroarnuage, Owner: none, Sector: field, MapId: 11578953\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The steep mountain terrain flattens out, giving way to a broken landscape of\n  low, rolling hills. To the north, the massive stone ridges of the high peaks\n  tower dramatically against the skyline, marking a sharp contrast to the open\n  ground here. Patches of tough, coarse brush claw for survival among scattered\n  boulders that have tumbled down from the upper slopes over the centuries. A\n  hardy alpine breeze sweeps across the expanse, carrying the faint scent of\n  pine.\nExtra description keywords: none\n------- Chars present -------\n  Ellessar (player 695470)\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  6, flags: none\nSouth  31:  8, flags: NO_MOB",
+        "importedAt": 1790657905175,
+        "statRoomFull": "Room 31:7 (3107) - at@the Base of the Crags\nMagical key: leeopszenyc, Owner: none, Sector: field, MapId: 11578953\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  The steep mountain terrain flattens out, giving way to a broken landscape of\n  low, rolling hills. To the north, the massive stone ridges of the high peaks\n  tower dramatically against the skyline, marking a sharp contrast to the open\n  ground here. Patches of tough, coarse brush claw for survival among scattered\n  boulders that have tumbled down from the upper slopes over the centuries. A\n  hardy alpine breeze sweeps across the expanse, carrying the faint scent of\n  pine.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  6, flags: none\nSouth  31:  8, flags: NO_MOB",
         "libRoomCommands": "Commands on room 31:7 (the Base of the Crags):"
       },
       "mapId": "11578953"
     },
-    "room-0-8-0": {
-      "id": "room-0-8-0",
+    "room-mum7l07f-25": {
+      "id": "room-mum7l07f-25",
       "x": 0,
-      "y": 8,
-      "z": 0,
-      "kind": "grid",
-      "anchorRoomId": null,
-      "roomNumber": "31:08",
-      "status": "verified",
-      "name": "a Jagged Crag",
-      "preposition": "on",
-      "description": "Scattered boulders and splintered branches choke this narrow, rocky hollow,\nwhere the mountain terrain transitions into the low hills. A murky, stagnant\npond is nestled tightly between old roots, its dark water reflecting the grim\ncliffs above. High overhead, wide thermal currents trace the sky, watched by\ndistant, unseen eyes waiting for signs of weakness below. Fresh, heavy tracks\ndeep in the soft mud along the water's edge give clear warning of what roams.",
-      "sector": "hills",
-      "flags": [
-        "build"
-      ],
-      "owner": "none",
-      "keywords": [],
-      "notes": "",
-      "annotations": [],
-      "mobs": [],
-      "objects": [],
-      "liveSnapshot": {
-        "importedAt": 1783714921243,
-        "statRoomFull": "Room 31:8 (3108) - on@a Jagged Crag\nMagical key: rabszecyodd, Owner: none, Sector: hills, MapId: 5184203\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\n  Scattered boulders and splintered branches choke this narrow, rocky hollow,\n  where the mountain terrain transitions into the low hills. A murky, stagnant\n  pond is nestled tightly between old roots, its dark water reflecting the grim\n  cliffs above. High overhead, wide thermal currents trace the sky, watched by\n  distant, unseen eyes waiting for signs of weakness below. Fresh, heavy tracks\n  deep in the soft mud along the water's edge give clear warning of what roams.\nExtra description keywords: none\n------- Chars present -------\n  a scrawny Durbûk-hai orc (2996)\n  a scrawny Durbûk-hai orc (2996)\n  Ellessar (player 695470)\n--------- Contents ---------\n  fir tree (6029)\n  a brown pond (6515)\n--------- Hidden -----------\n------- Exits -------\nNorth  31:  7, flags: NO_MOB",
-        "comListCommands": "1   Object  6515 (a brown pond) (--/1/1/100%)\n2   Mobile  2996 (a scrawny Durbûk-hai orc) (--/--/2/100%)\n3   Object  6029 (an apple tree) (--/--/1/100%)\n4   Put     6001 (a large sack) in 6029 (tree) (--/--/1/100%)\n5   Put     8002 (a small piece of raw meat) in 6001 (sack) (--/--/2/100%)\n6   Put     2104 (a pan) in 6001 (sack) (--/--/1/100%)",
-        "libRoomCommands": "Commands on room 31:8 (a Jagged Crag):\n1: redress-obj\n  object:       obj 6029 (an apple tree)\n  keywords:     tree\n  short-desc:   fir tree\n  long-desc:    A fir tree with claw marks on it is here.\n  plural-desc:  fir trees\n  full-desc:    a thick fir tree with claw marks on its trunk grows here,\n                majestic in its solitude.\n  ptype:        the"
-      },
-      "mapId": "5184203"
-    },
-    "room-mrdlyfgm-24": {
-      "id": "room-mrdlyfgm-24",
-      "x": 5,
       "y": 0,
-      "z": 1,
-      "kind": "grid",
+      "z": 0,
+      "kind": "extra",
       "anchorRoomId": null,
       "roomNumber": "31:101",
       "status": "verified",
@@ -1200,19 +1169,19 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655646537,
-        "statRoomFull": "Room 31:101 (39769) - in@an Ancient Watchtower\nMagical key: vaoarelawe, Owner: none, Sector: building, MapId: 10240692\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: INDOORS BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThis ancient wooden tower, though now a decaying ruin, still offers a\ncommanding view of the surrounding landscape. To the west, the wide and dusty\nDorwinion Road runs from north to south through the rugged hills, serving as a\nvital artery for traders and travellers alike. Looking out across the\nhighlands, the rolling, grass-covered slopes stretch as far as the eye can see,\nwith only a distant river breaking through the open ridges below.\nExtra description keywords: none\n------- Chars present -------\n  a black bear (1599)\n  Ellessar (player 695470)\n--------- Contents ---------\n  some cracked and splintered pieces of wood (9902)\n--------- Hidden -----------\n------- Exits -------\nDown   31: 50, flags: none",
+        "importedAt": 1790658171909,
+        "statRoomFull": "Room 31:101 (39769) - in@an Ancient Watchtower\nMagical key: hemyanor, Owner: none, Sector: building, MapId: 10240692\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: INDOORS BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nThis ancient wooden tower, though now a decaying ruin, still offers a\ncommanding view of the surrounding landscape. To the west, the wide and dusty\nDorwinion Road runs from north to south through the rugged hills, serving as a\nvital artery for traders and travellers alike. Looking out across the\nhighlands, the rolling, grass-covered slopes stretch as far as the eye can see,\nwith only a distant river breaking through the open ridges below.\nExtra description keywords: none\n------- Chars present -------\n--------- Contents ---------\n  some cracked and splintered pieces of wood (9902)\n--------- Hidden -----------\n------- Exits -------\nDown   31: 50, flags: none",
         "comListCommands": "1   Object  9902 (some cracked and splintered pieces of wood) (--/--/1/100%)",
         "libRoomCommands": "Commands on room 31:101 (an Ancient Watchtower):"
       },
       "mapId": "10240692"
     },
-    "room-mrdlyfgm-25": {
-      "id": "room-mrdlyfgm-25",
-      "x": 5,
+    "room-mum7l07g-26": {
+      "id": "room-mum7l07g-26",
+      "x": 0,
       "y": 0,
-      "z": -1,
-      "kind": "grid",
+      "z": 0,
+      "kind": "extra",
       "anchorRoomId": null,
       "roomNumber": "31:100",
       "status": "verified",
@@ -1233,8 +1202,8 @@
       "mobs": [],
       "objects": [],
       "liveSnapshot": {
-        "importedAt": 1783655645046,
-        "statRoomFull": "Room 31:100 (39768) - in an@Abandoned Hideout\nMagical key: ytczadabow, Owner: none, Sector: cavern, MapId: 2132898\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: DARK INDOORS NO_RIDE BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nHeavy stone walls, weeping with moisture and choked with thick cobwebs, enclose\nthis cramped basement beneath the ancient watchtower. The damp dirt floor is\ncluttered with forgotten debris, broken crates, and the remnants of old rot. A\nheavy, stagnant draft carries the sharp scent of decay, hinting at the crawling\nthings that have claimed this subterranean refuge as their own.\nExtra description keywords: none\n------- Chars present -------\n  a small termite (3800)\n  a small termite (3800)\n  a small termite (3800)\n  a giant termite (3801)\n  Ellessar (player 695470)\n--------- Contents ---------\n  a wooden crate (6042)\n--------- Hidden -----------\n------- Exits -------\nUp     31: 50, flags: DOOR CLOSED LOCKED NO_MOB, name: trapdoor, key: none,\n               pick: 13%, weight: 1\nDescription:\n  A dingy trapdoor is embedded in the ceiling.",
+        "importedAt": 1790658170408,
+        "statRoomFull": "Room 31:100 (39768) - in an@Abandoned Hideout\nMagical key: fihabyeaof, Owner: none, Sector: cavern, MapId: 2132898\nEntrances: 0.00 (0.0000%), Magic: [0.00%,0.00%]\nRoom permanent flags: DARK INDOORS NO_RIDE BUILD\nRoom temporary flags: none\nLight sources: 0\nDescription:\nHeavy stone walls, weeping with moisture and choked with thick cobwebs, enclose\nthis cramped basement beneath the ancient watchtower. The damp dirt floor is\ncluttered with forgotten debris, broken crates, and the remnants of old rot. A\nheavy, stagnant draft carries the sharp scent of decay, hinting at the crawling\nthings that have claimed this subterranean refuge as their own.\nExtra description keywords: none\n------- Chars present -------\n  a giant termite (3801)\n--------- Contents ---------\n  a wooden crate (6042)\n--------- Hidden -----------\n------- Exits -------\nUp     31: 50, flags: DOOR CLOSED LOCKED NO_MOB, name: trapdoor, key: none,\npick: 10%, weight: 1\nDescription:\n  A dingy trapdoor is embedded in the ceiling.",
         "comListCommands": "1   Mobile  3801 (a giant termite) (--/--/1/100%)\n2   Object  6042 (a wooden crate) (--/--/1/100%)\n3   Door    lock up    (trapdoor) (pick 10..20)",
         "libRoomCommands": "Commands on room 31:100 (Abandoned Hideout):"
       },
@@ -1378,67 +1347,11 @@
       "doorFlags": [],
       "hasDoor": false
     },
-    "room-0-6-0:n": {
-      "id": "room-0-6-0:n",
-      "fromRoomId": "room-0-6-0",
-      "direction": "n",
-      "toRoomId": "room-0-5-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
-    },
-    "room-0-6-0:s": {
-      "id": "room-0-6-0:s",
-      "fromRoomId": "room-0-6-0",
-      "direction": "s",
-      "toRoomId": "room-0-7-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
-    },
     "room-0-7-0:n": {
       "id": "room-0-7-0:n",
       "fromRoomId": "room-0-7-0",
       "direction": "n",
       "toRoomId": "room-0-6-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
-    },
-    "room-0-7-0:s": {
-      "id": "room-0-7-0:s",
-      "fromRoomId": "room-0-7-0",
-      "direction": "s",
-      "toRoomId": "room-0-8-0",
-      "isTwoWay": false,
-      "doorFlags": [
-        "no_mob"
-      ],
-      "hasDoor": false
-    },
-    "room-1-0-0:e": {
-      "id": "room-1-0-0:e",
-      "fromRoomId": "room-1-0-0",
-      "direction": "e",
-      "toRoomId": "room-2-0-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
-    },
-    "room-1-0-0:w": {
-      "id": "room-1-0-0:w",
-      "fromRoomId": "room-1-0-0",
-      "direction": "w",
-      "toRoomId": "room-0-0-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
-    },
-    "room-1-1-0:e": {
-      "id": "room-1-1-0:e",
-      "fromRoomId": "room-1-1-0",
-      "direction": "e",
-      "toRoomId": "room-2-1-0",
       "isTwoWay": false,
       "doorFlags": [],
       "hasDoor": false
@@ -1979,7 +1892,7 @@
       "id": "room-5-0-0:u",
       "fromRoomId": "room-5-0-0",
       "direction": "u",
-      "toRoomId": "room-mrdlyfgm-24",
+      "toRoomId": "room-mum7l07f-25",
       "isTwoWay": false,
       "doorFlags": [],
       "hasDoor": false
@@ -1988,7 +1901,7 @@
       "id": "room-5-0-0:d",
       "fromRoomId": "room-5-0-0",
       "direction": "d",
-      "toRoomId": "room-mrdlyfgm-25",
+      "toRoomId": "room-mum7l07g-26",
       "isTwoWay": false,
       "doorFlags": [
         "door",
@@ -1999,90 +1912,9 @@
       "hasDoor": true,
       "doorName": "trapdoor",
       "keyMode": "none",
-      "doorPickPercent": 14,
+      "doorPickPercent": 19,
       "doorWeight": 1,
       "exitDescription": "A musty trapdoor is barely visible in the dust."
-    },
-    "room-5-1-0:n": {
-      "id": "room-5-1-0:n",
-      "fromRoomId": "room-5-1-0",
-      "direction": "n",
-      "toRoomId": "room-5-0-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
-    },
-    "room-5-1-0:e": {
-      "id": "room-5-1-0:e",
-      "fromRoomId": "room-5-1-0",
-      "direction": "e",
-      "toRoomId": "room-6-1-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
-    },
-    "room-5-1-0:s": {
-      "id": "room-5-1-0:s",
-      "fromRoomId": "room-5-1-0",
-      "direction": "s",
-      "toRoomId": "room-5-2-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
-    },
-    "room-5-1-0:w": {
-      "id": "room-5-1-0:w",
-      "fromRoomId": "room-5-1-0",
-      "direction": "w",
-      "toRoomId": "room-4-1-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
-    },
-    "room-5-2-0:n": {
-      "id": "room-5-2-0:n",
-      "fromRoomId": "room-5-2-0",
-      "direction": "n",
-      "toRoomId": "room-5-1-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
-    },
-    "room-5-2-0:w": {
-      "id": "room-5-2-0:w",
-      "fromRoomId": "room-5-2-0",
-      "direction": "w",
-      "toRoomId": "room-4-2-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
-    },
-    "room-6-0-0:e": {
-      "id": "room-6-0-0:e",
-      "fromRoomId": "room-6-0-0",
-      "direction": "e",
-      "toRoomId": "room-7-0-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
-    },
-    "room-6-0-0:s": {
-      "id": "room-6-0-0:s",
-      "fromRoomId": "room-6-0-0",
-      "direction": "s",
-      "toRoomId": "room-6-1-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
-    },
-    "room-6-0-0:w": {
-      "id": "room-6-0-0:w",
-      "fromRoomId": "room-6-0-0",
-      "direction": "w",
-      "toRoomId": "room-5-0-0",
-      "isTwoWay": false,
-      "doorFlags": [],
-      "hasDoor": false
     },
     "room-6-1-0:n": {
       "id": "room-6-1-0:n",
@@ -2147,9 +1979,9 @@
       "doorFlags": [],
       "hasDoor": false
     },
-    "room-mrdlyfgm-25:u": {
-      "id": "room-mrdlyfgm-25:u",
-      "fromRoomId": "room-mrdlyfgm-25",
+    "room-mum7l07g-26:u": {
+      "id": "room-mum7l07g-26:u",
+      "fromRoomId": "room-mum7l07g-26",
       "direction": "u",
       "toRoomId": "room-5-0-0",
       "isTwoWay": false,
@@ -2162,34 +1994,149 @@
       "hasDoor": true,
       "doorName": "trapdoor",
       "keyMode": "none",
-      "doorPickPercent": 13,
+      "doorPickPercent": 10,
       "doorWeight": 1,
       "exitDescription": "A dingy trapdoor is embedded in the ceiling."
     },
-    "room-mrdlyfgm-24:d": {
-      "id": "room-mrdlyfgm-24:d",
-      "fromRoomId": "room-mrdlyfgm-24",
+    "room-mum7l07f-25:d": {
+      "id": "room-mum7l07f-25:d",
+      "fromRoomId": "room-mum7l07f-25",
       "direction": "d",
       "toRoomId": "room-5-0-0",
       "isTwoWay": false,
       "doorFlags": [],
       "hasDoor": false
     },
-    "room-0-8-0:n": {
-      "id": "room-0-8-0:n",
-      "fromRoomId": "room-0-8-0",
+    "room-5-1-0:n": {
+      "id": "room-5-1-0:n",
+      "fromRoomId": "room-5-1-0",
       "direction": "n",
+      "toRoomId": "room-5-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-1-0:e": {
+      "id": "room-5-1-0:e",
+      "fromRoomId": "room-5-1-0",
+      "direction": "e",
+      "toRoomId": "room-6-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-1-0:s": {
+      "id": "room-5-1-0:s",
+      "fromRoomId": "room-5-1-0",
+      "direction": "s",
+      "toRoomId": "room-5-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-1-0:w": {
+      "id": "room-5-1-0:w",
+      "fromRoomId": "room-5-1-0",
+      "direction": "w",
+      "toRoomId": "room-4-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-6-0-0:e": {
+      "id": "room-6-0-0:e",
+      "fromRoomId": "room-6-0-0",
+      "direction": "e",
+      "toRoomId": "room-7-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-6-0-0:s": {
+      "id": "room-6-0-0:s",
+      "fromRoomId": "room-6-0-0",
+      "direction": "s",
+      "toRoomId": "room-6-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-6-0-0:w": {
+      "id": "room-6-0-0:w",
+      "fromRoomId": "room-6-0-0",
+      "direction": "w",
+      "toRoomId": "room-5-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-2-0:n": {
+      "id": "room-5-2-0:n",
+      "fromRoomId": "room-5-2-0",
+      "direction": "n",
+      "toRoomId": "room-5-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-5-2-0:w": {
+      "id": "room-5-2-0:w",
+      "fromRoomId": "room-5-2-0",
+      "direction": "w",
+      "toRoomId": "room-4-2-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-1-0-0:e": {
+      "id": "room-1-0-0:e",
+      "fromRoomId": "room-1-0-0",
+      "direction": "e",
+      "toRoomId": "room-2-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-1-0-0:w": {
+      "id": "room-1-0-0:w",
+      "fromRoomId": "room-1-0-0",
+      "direction": "w",
+      "toRoomId": "room-0-0-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-1-1-0:e": {
+      "id": "room-1-1-0:e",
+      "fromRoomId": "room-1-1-0",
+      "direction": "e",
+      "toRoomId": "room-2-1-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-6-0:n": {
+      "id": "room-0-6-0:n",
+      "fromRoomId": "room-0-6-0",
+      "direction": "n",
+      "toRoomId": "room-0-5-0",
+      "isTwoWay": false,
+      "doorFlags": [],
+      "hasDoor": false
+    },
+    "room-0-6-0:s": {
+      "id": "room-0-6-0:s",
+      "fromRoomId": "room-0-6-0",
+      "direction": "s",
       "toRoomId": "room-0-7-0",
       "isTwoWay": false,
-      "doorFlags": [
-        "no_mob"
-      ],
+      "doorFlags": [],
       "hasDoor": false
     }
   },
   "commandNodes": {
-    "room-mreeenlz-1": {
-      "id": "room-mreeenlz-1",
+    "room-mum7gcyn-1": {
+      "id": "room-mum7gcyn-1",
       "roomId": "room-0-0-0",
       "parentId": null,
       "order": 0,
@@ -2211,8 +2158,8 @@
       },
       "notes": ""
     },
-    "room-mreefar8-2": {
-      "id": "room-mreefar8-2",
+    "room-mum7h03x-2": {
+      "id": "room-mum7h03x-2",
       "roomId": "room-0-5-0",
       "parentId": null,
       "order": 0,
@@ -2234,8 +2181,8 @@
       },
       "notes": ""
     },
-    "room-mreefar8-3": {
-      "id": "room-mreefar8-3",
+    "room-mum7h03x-3": {
+      "id": "room-mum7h03x-3",
       "roomId": "room-0-5-0",
       "parentId": null,
       "order": 1,
@@ -2257,77 +2204,8 @@
       },
       "notes": ""
     },
-    "room-mreefr5k-11": {
-      "id": "room-mreefr5k-11",
-      "roomId": "room-1-0-0",
-      "parentId": null,
-      "order": 0,
-      "type": "mobile",
-      "limit": {
-        "world": null,
-        "zone": 2,
-        "room": null,
-        "chancePercent": 100,
-        "raw": "20000"
-      },
-      "fields": {
-        "vnum": "1970",
-        "name": "a blue dragonfly",
-        "target": "parent",
-        "container": "parent",
-        "master": "parent",
-        "position": ""
-      },
-      "notes": ""
-    },
-    "room-mreefsi4-12": {
-      "id": "room-mreefsi4-12",
-      "roomId": "room-1-1-0",
-      "parentId": null,
-      "order": 0,
-      "type": "mobile",
-      "limit": {
-        "world": null,
-        "zone": 2,
-        "room": null,
-        "chancePercent": 100,
-        "raw": "20000"
-      },
-      "fields": {
-        "vnum": "7004",
-        "name": "a giant earth beetle",
-        "target": "parent",
-        "container": "parent",
-        "master": "parent",
-        "position": ""
-      },
-      "notes": ""
-    },
-    "room-mreefsi4-13": {
-      "id": "room-mreefsi4-13",
-      "roomId": "room-1-1-0",
-      "parentId": null,
-      "order": 1,
-      "type": "mobile",
-      "limit": {
-        "world": null,
-        "zone": 1,
-        "room": null,
-        "chancePercent": 100,
-        "raw": "10000"
-      },
-      "fields": {
-        "vnum": "2730",
-        "name": "a brown, long-legged spider",
-        "target": "parent",
-        "container": "parent",
-        "master": "parent",
-        "position": ""
-      },
-      "notes": ""
-    },
-    "room-mreeftnq-16": {
-      "id": "room-mreeftnq-16",
+    "room-mum7j43x-8": {
+      "id": "room-mum7j43x-8",
       "roomId": "room-1-2-0",
       "parentId": null,
       "order": 0,
@@ -2349,8 +2227,8 @@
       },
       "notes": ""
     },
-    "room-mreeftnq-17": {
-      "id": "room-mreeftnq-17",
+    "room-mum7j43x-9": {
+      "id": "room-mum7j43x-9",
       "roomId": "room-1-2-0",
       "parentId": null,
       "order": 1,
@@ -2372,8 +2250,8 @@
       },
       "notes": ""
     },
-    "room-mreefvz2-18": {
-      "id": "room-mreefvz2-18",
+    "room-mum7j6fa-10": {
+      "id": "room-mum7j6fa-10",
       "roomId": "room-1-4-0",
       "parentId": null,
       "order": 0,
@@ -2395,8 +2273,8 @@
       },
       "notes": ""
     },
-    "room-mreeg42q-19": {
-      "id": "room-mreeg42q-19",
+    "room-mum7jej4-11": {
+      "id": "room-mum7jej4-11",
       "roomId": "room-1-6-0",
       "parentId": null,
       "order": 0,
@@ -2418,8 +2296,8 @@
       },
       "notes": ""
     },
-    "room-mreeg42q-20": {
-      "id": "room-mreeg42q-20",
+    "room-mum7jej4-12": {
+      "id": "room-mum7jej4-12",
       "roomId": "room-1-6-0",
       "parentId": null,
       "order": 1,
@@ -2441,8 +2319,8 @@
       },
       "notes": ""
     },
-    "room-mreeg58j-21": {
-      "id": "room-mreeg58j-21",
+    "room-mum7jfop-13": {
+      "id": "room-mum7jfop-13",
       "roomId": "room-2-0-0",
       "parentId": null,
       "order": 0,
@@ -2464,8 +2342,8 @@
       },
       "notes": ""
     },
-    "room-mreeg58j-22": {
-      "id": "room-mreeg58j-22",
+    "room-mum7jfop-14": {
+      "id": "room-mum7jfop-14",
       "roomId": "room-2-0-0",
       "parentId": null,
       "order": 1,
@@ -2487,8 +2365,8 @@
       },
       "notes": ""
     },
-    "room-mreegka0-23": {
-      "id": "room-mreegka0-23",
+    "room-mum7juqc-15": {
+      "id": "room-mum7juqc-15",
       "roomId": "room-2-3-0",
       "parentId": null,
       "order": 0,
@@ -2510,8 +2388,8 @@
       },
       "notes": ""
     },
-    "room-mreeglfm-24": {
-      "id": "room-mreeglfm-24",
+    "room-mum7jvw2-16": {
+      "id": "room-mum7jvw2-16",
       "roomId": "room-2-4-0",
       "parentId": null,
       "order": 0,
@@ -2533,8 +2411,8 @@
       },
       "notes": ""
     },
-    "room-mreegtjd-27": {
-      "id": "room-mreegtjd-27",
+    "room-mum7k30t-19": {
+      "id": "room-mum7k30t-19",
       "roomId": "room-3-0-0",
       "parentId": null,
       "order": 0,
@@ -2556,8 +2434,8 @@
       },
       "notes": ""
     },
-    "room-mreeguoz-28": {
-      "id": "room-mreeguoz-28",
+    "room-mum7k46g-20": {
+      "id": "room-mum7k46g-20",
       "roomId": "room-3-1-0",
       "parentId": null,
       "order": 0,
@@ -2579,8 +2457,8 @@
       },
       "notes": ""
     },
-    "room-mreeh2su-29": {
-      "id": "room-mreeh2su-29",
+    "room-mum7kcaa-21": {
+      "id": "room-mum7kcaa-21",
       "roomId": "room-3-3-0",
       "parentId": null,
       "order": 0,
@@ -2602,8 +2480,8 @@
       },
       "notes": ""
     },
-    "room-mreeh3yn-30": {
-      "id": "room-mreeh3yn-30",
+    "room-mum7kdfw-22": {
+      "id": "room-mum7kdfw-22",
       "roomId": "room-3-4-0",
       "parentId": null,
       "order": 0,
@@ -2625,8 +2503,8 @@
       },
       "notes": ""
     },
-    "room-mreehpy3-31": {
-      "id": "room-mreehpy3-31",
+    "room-mum7kzfh-23": {
+      "id": "room-mum7kzfh-23",
       "roomId": "room-4-3-0",
       "parentId": null,
       "order": 0,
@@ -2648,8 +2526,8 @@
       },
       "notes": ""
     },
-    "room-mreehr3h-33": {
-      "id": "room-mreehr3h-33",
+    "room-mum7l0l3-27": {
+      "id": "room-mum7l0l3-27",
       "roomId": "room-5-0-0",
       "parentId": null,
       "order": 0,
@@ -2671,54 +2549,8 @@
       },
       "notes": ""
     },
-    "room-mreehs9b-36": {
-      "id": "room-mreehs9b-36",
-      "roomId": "room-5-1-0",
-      "parentId": null,
-      "order": 0,
-      "type": "mobile",
-      "limit": {
-        "world": null,
-        "zone": 2,
-        "room": 2,
-        "chancePercent": 100,
-        "raw": "20200"
-      },
-      "fields": {
-        "vnum": "6011",
-        "name": "an ibex",
-        "target": "parent",
-        "container": "parent",
-        "master": "parent",
-        "position": ""
-      },
-      "notes": ""
-    },
-    "room-mreei0d0-37": {
-      "id": "room-mreei0d0-37",
-      "roomId": "room-6-0-0",
-      "parentId": null,
-      "order": 0,
-      "type": "mobile",
-      "limit": {
-        "world": null,
-        "zone": null,
-        "room": 1,
-        "chancePercent": 100,
-        "raw": "100"
-      },
-      "fields": {
-        "vnum": "4002",
-        "name": "a small centipede",
-        "target": "parent",
-        "container": "parent",
-        "master": "parent",
-        "position": ""
-      },
-      "notes": ""
-    },
-    "room-mreeifeo-38": {
-      "id": "room-mreeifeo-38",
+    "room-mum7muk5-31": {
+      "id": "room-mum7muk5-31",
       "roomId": "room-7-1-0",
       "parentId": null,
       "order": 0,
@@ -2740,9 +2572,9 @@
       },
       "notes": ""
     },
-    "room-mreeini8-39": {
-      "id": "room-mreeini8-39",
-      "roomId": "room-mrdlyfgm-25",
+    "room-mum7n2nn-32": {
+      "id": "room-mum7n2nn-32",
+      "roomId": "room-mum7l07g-26",
       "parentId": null,
       "order": 0,
       "type": "mobile",
@@ -2763,9 +2595,9 @@
       },
       "notes": ""
     },
-    "room-mreeini8-40": {
-      "id": "room-mreeini8-40",
-      "roomId": "room-mrdlyfgm-25",
+    "room-mum7n2nn-33": {
+      "id": "room-mum7n2nn-33",
+      "roomId": "room-mum7l07g-26",
       "parentId": null,
       "order": 1,
       "type": "object",
@@ -2786,9 +2618,9 @@
       },
       "notes": ""
     },
-    "room-mreeionw-41": {
-      "id": "room-mreeionw-41",
-      "roomId": "room-mrdlyfgm-24",
+    "room-mum7n3tf-34": {
+      "id": "room-mum7n3tf-34",
+      "roomId": "room-mum7l07f-25",
       "parentId": null,
       "order": 0,
       "type": "object",
@@ -2809,22 +2641,22 @@
       },
       "notes": ""
     },
-    "room-mrfdt5b5-1": {
-      "id": "room-mrfdt5b5-1",
-      "roomId": "room-0-8-0",
+    "room-mum7nade-35": {
+      "id": "room-mum7nade-35",
+      "roomId": "room-5-1-0",
       "parentId": null,
       "order": 0,
-      "type": "object",
+      "type": "mobile",
       "limit": {
         "world": null,
-        "zone": 1,
-        "room": 1,
+        "zone": 2,
+        "room": 2,
         "chancePercent": 100,
-        "raw": "10100"
+        "raw": "20200"
       },
       "fields": {
-        "vnum": "6515",
-        "name": "a brown pond",
+        "vnum": "6011",
+        "name": "an ibex",
         "target": "parent",
         "container": "parent",
         "master": "parent",
@@ -2832,157 +2664,109 @@
       },
       "notes": ""
     },
-    "room-mrfdt5b5-2": {
-      "id": "room-mrfdt5b5-2",
-      "roomId": "room-0-8-0",
+    "room-mum7nfe3-38": {
+      "id": "room-mum7nfe3-38",
+      "roomId": "room-6-0-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": null,
+        "room": 1,
+        "chancePercent": 100,
+        "raw": "100"
+      },
+      "fields": {
+        "vnum": "4002",
+        "name": "a small centipede",
+        "target": "parent",
+        "container": "parent",
+        "master": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mum7od5r-39": {
+      "id": "room-mum7od5r-39",
+      "roomId": "room-1-0-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": 2,
+        "room": null,
+        "chancePercent": 100,
+        "raw": "20000"
+      },
+      "fields": {
+        "vnum": "1970",
+        "name": "a blue dragonfly",
+        "target": "parent",
+        "container": "parent",
+        "master": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mum7ogfz-40": {
+      "id": "room-mum7ogfz-40",
+      "roomId": "room-1-1-0",
+      "parentId": null,
+      "order": 0,
+      "type": "mobile",
+      "limit": {
+        "world": null,
+        "zone": 2,
+        "room": null,
+        "chancePercent": 100,
+        "raw": "20000"
+      },
+      "fields": {
+        "vnum": "7004",
+        "name": "a giant earth beetle",
+        "target": "parent",
+        "container": "parent",
+        "master": "parent",
+        "position": ""
+      },
+      "notes": ""
+    },
+    "room-mum7ogfz-41": {
+      "id": "room-mum7ogfz-41",
+      "roomId": "room-1-1-0",
       "parentId": null,
       "order": 1,
       "type": "mobile",
       "limit": {
         "world": null,
-        "zone": null,
-        "room": 2,
+        "zone": 1,
+        "room": null,
         "chancePercent": 100,
-        "raw": "200"
+        "raw": "10000"
       },
       "fields": {
-        "vnum": "2996",
-        "name": "a scrawny Durbûk-hai orc",
+        "vnum": "2730",
+        "name": "a brown, long-legged spider",
         "target": "parent",
         "container": "parent",
         "master": "parent",
         "position": ""
-      },
-      "notes": ""
-    },
-    "room-mrfdt5b5-3": {
-      "id": "room-mrfdt5b5-3",
-      "roomId": "room-0-8-0",
-      "parentId": null,
-      "order": 2,
-      "type": "object",
-      "limit": {
-        "world": null,
-        "zone": null,
-        "room": 1,
-        "chancePercent": 100,
-        "raw": "100"
-      },
-      "fields": {
-        "vnum": "6029",
-        "name": "an apple tree",
-        "target": "parent",
-        "container": "parent",
-        "master": "parent",
-        "position": ""
-      },
-      "notes": ""
-    },
-    "room-mrfdt5b5-4": {
-      "id": "room-mrfdt5b5-4",
-      "roomId": "room-0-8-0",
-      "parentId": null,
-      "order": 3,
-      "type": "put",
-      "limit": {
-        "world": null,
-        "zone": null,
-        "room": 1,
-        "chancePercent": 100,
-        "raw": "100"
-      },
-      "fields": {
-        "vnum": "6001",
-        "name": "a large sack",
-        "target": "parent",
-        "container": "6029",
-        "master": "parent",
-        "position": "",
-        "containerName": "tree"
-      },
-      "notes": ""
-    },
-    "room-mrfdt5b5-5": {
-      "id": "room-mrfdt5b5-5",
-      "roomId": "room-0-8-0",
-      "parentId": null,
-      "order": 4,
-      "type": "put",
-      "limit": {
-        "world": null,
-        "zone": null,
-        "room": 2,
-        "chancePercent": 100,
-        "raw": "200"
-      },
-      "fields": {
-        "vnum": "8002",
-        "name": "a small piece of raw meat",
-        "target": "parent",
-        "container": "6001",
-        "master": "parent",
-        "position": "",
-        "containerName": "sack"
-      },
-      "notes": ""
-    },
-    "room-mrfdt5b5-6": {
-      "id": "room-mrfdt5b5-6",
-      "roomId": "room-0-8-0",
-      "parentId": null,
-      "order": 5,
-      "type": "put",
-      "limit": {
-        "world": null,
-        "zone": null,
-        "room": 1,
-        "chancePercent": 100,
-        "raw": "100"
-      },
-      "fields": {
-        "vnum": "2104",
-        "name": "a pan",
-        "target": "parent",
-        "container": "6001",
-        "master": "parent",
-        "position": "",
-        "containerName": "sack"
-      },
-      "notes": ""
-    },
-    "room-mrfdwjtn-8": {
-      "id": "room-mrfdwjtn-8",
-      "roomId": "room-0-8-0",
-      "parentId": "room-mrfdt5b5-2",
-      "order": 0,
-      "type": "equip",
-      "limit": {
-        "world": null,
-        "zone": null,
-        "room": 1,
-        "chancePercent": 100,
-        "raw": "100"
-      },
-      "fields": {
-        "vnum": "3013",
-        "name": "a pair of soft leather trousers",
-        "target": "parent",
-        "container": "parent",
-        "position": "legs"
       },
       "notes": ""
     }
   },
   "libraries": {
-    "room-mrdlw044-8": {
-      "id": "room-mrdlw044-8",
+    "room-mum7j3c8-6": {
+      "id": "room-mum7j3c8-6",
       "targetType": "mobile",
-      "targetId": "room-mrdlvzpd-7",
+      "targetId": "room-mum7j2yb-5",
       "name": "redress-mob",
       "parameters": {
         "mobile": "mob 2730 (a brown, long-legged spider)",
         "act": "hisses and gurgles at you with malice",
-        "full-desc": "Abnormally large and bloated, the hairy legs of this spider\n               struggle to support its immense weight. A stench of rotting fish\n               eminates from its swollen and grotesque orafice of a mouth. Its\n               mandibles have two fangs protruding from either side with the\n               left one cracked from what one can only assume was a fierce\n               encounter. On its back, a violet hourglass shape bears claw\n               marks that have been raked across its hidious vestiges.",
+        "full-desc": "Abnormally large and bloated, the hairy legs of this spider\nstruggle to support its immense weight. A stench of rotting fish eminates from\nits swollen and grotesque orafice of a mouth. Its mandibles have two fangs\nprotruding from either side with the left one cracked from what one can only\nassume was a fierce encounter. On its back, a violet hourglass shape bears claw\nmarks that have been raked across its hidious vestiges.",
         "no-charm?": "yes",
         "no-summon?": "yes"
       },
@@ -2990,127 +2774,8 @@
       "requiresLoad": true,
       "notes": ""
     },
-    "room-mrdlyga1-27": {
-      "id": "room-mrdlyga1-27",
-      "targetType": "object",
-      "targetId": "room-mrdlyfw7-26",
-      "name": "redress-obj",
-      "parameters": {
-        "object": "obj 9902 (some cracked and splintered pieces of wood)",
-        "keywords": "watchtower",
-        "short-desc": "a watchtower is here",
-        "long-desc": "A crumbling, circular watchtower rises above the hills.",
-        "plural-desc": "watchtowers",
-        "full-desc": "    A withered wooden watchtower of Dorwinion slumps beside the old\n                    road, its narrow beams gray with rot and weather. Little\n    more\n                    than a raised lookout now, it creaks in the wind over empty\n                    fields once guarded by eastern men.",
-        "ptype": "the"
-      },
-      "requiresSupervisorReview": false,
-      "requiresLoad": true,
-      "notes": ""
-    },
-    "room-mrdma9xe-43": {
-      "id": "room-mrdma9xe-43",
-      "targetType": "mobile",
-      "targetId": "room-mrdma9d7-42",
-      "name": "redress-mob",
-      "parameters": {
-        "mobile": "mob 2730 (a brown, long-legged spider)",
-        "act": "hisses and gurgles at you with malice",
-        "full-desc": "Abnormally large and bloated, the hairy legs of this spider\n               struggle to support its immense weight. A stench of rotting fish\n               eminates from its swollen and grotesque orafice of a mouth. Its\n               mandibles have two fangs protruding from either side with the\n               left one cracked from what one can only assume was a fierce\n               encounter. On its back, a violet hourglass shape bears claw\n               marks that have been raked across its hidious vestiges.",
-        "no-charm?": "yes",
-        "no-summon?": "yes"
-      },
-      "requiresSupervisorReview": false,
-      "requiresLoad": true,
-      "notes": ""
-    },
-    "room-mrdmhy9c-58": {
-      "id": "room-mrdmhy9c-58",
-      "targetType": "object",
-      "targetId": "room-mrdmhxsf-57",
-      "name": "redress-obj",
-      "parameters": {
-        "object": "obj 9902 (some cracked and splintered pieces of wood)",
-        "keywords": "watchtower",
-        "short-desc": "a watchtower is here",
-        "long-desc": "A crumbling, circular watchtower rises above the hills.",
-        "plural-desc": "watchtowers",
-        "full-desc": "    A withered wooden watchtower of Dorwinion slumps beside the old\n                    road, its narrow beams gray with rot and weather. Little\n    more\n                    than a raised lookout now, it creaks in the wind over empty\n                    fields once guarded by eastern men.",
-        "ptype": "the"
-      },
-      "requiresSupervisorReview": false,
-      "requiresLoad": true,
-      "notes": ""
-    },
-    "room-mrdv6uqn-8": {
-      "id": "room-mrdv6uqn-8",
-      "targetType": "object",
-      "targetId": "room-mrdv6npt-7",
-      "name": "redress-obj",
-      "parameters": {
-        "object": "6029",
-        "keywords": "tree",
-        "short-desc": "fir tree",
-        "long-desc": "A fir tree with claw marks on it is here. ",
-        "plural-desc": "fir trees",
-        "full-desc": "a thick fir tree with claw marks on its trunk grows here, majestic in its solitude. "
-      },
-      "requiresSupervisorReview": false,
-      "requiresLoad": true,
-      "notes": ""
-    },
-    "room-mreefqdr-10": {
-      "id": "room-mreefqdr-10",
-      "targetType": "object",
-      "targetId": "room-mreefpzn-6",
-      "name": "redress-obj",
-      "parameters": {
-        "object": "obj 6029 (an apple tree)",
-        "keywords": "tree",
-        "short-desc": "fir tree",
-        "long-desc": "A fir tree with claw marks on it is here.",
-        "plural-desc": "fir trees",
-        "full-desc": "a thick fir tree with claw marks on its trunk grows here,\n                majestic in its solitude.",
-        "ptype": "the"
-      },
-      "requiresSupervisorReview": false,
-      "requiresLoad": true,
-      "notes": ""
-    },
-    "room-mreefsvz-14": {
-      "id": "room-mreefsvz-14",
-      "targetType": "mobile",
-      "targetId": "room-mreefsi4-13",
-      "name": "redress-mob",
-      "parameters": {
-        "mobile": "mob 2730 (a brown, long-legged spider)",
-        "act": "hisses and gurgles at you with malice",
-        "full-desc": "Abnormally large and bloated, the hairy legs of this spider\n               struggle to support its immense weight. A stench of rotting fish\n               eminates from its swollen and grotesque orafice of a mouth. Its\n               mandibles have two fangs protruding from either side with the\n               left one cracked from what one can only assume was a fierce\n               encounter. On its back, a violet hourglass shape bears claw\n               marks that have been raked across its hidious vestiges.",
-        "no-charm?": "yes",
-        "no-summon?": "yes"
-      },
-      "requiresSupervisorReview": false,
-      "requiresLoad": true,
-      "notes": ""
-    },
-    "room-mreefsvz-15": {
-      "id": "room-mreefsvz-15",
-      "targetType": "room",
-      "targetId": "room-1-1-0",
-      "name": "redress-mob",
-      "parameters": {
-        "mobile": "mob 0 (unknown mobile)",
-        "act": "",
-        "full-desc": "",
-        "no-charm?": "yes",
-        "no-summon?": "yes"
-      },
-      "requiresSupervisorReview": false,
-      "requiresLoad": true,
-      "notes": ""
-    },
-    "room-mreegltn-25": {
-      "id": "room-mreegltn-25",
+    "room-mum7jw9y-17": {
+      "id": "room-mum7jw9y-17",
       "targetType": "room",
       "targetId": "room-2-4-0",
       "name": "redress-corpse",
@@ -3120,7 +2785,7 @@
         "short-desc": "a half-eaten corpse",
         "long-desc": "The half-eaten corpse of a bear cub is lying here.",
         "plural-desc": "half-eaten corpses",
-        "full-desc": "    The corpse of a young bear cub has been picked and gnawed at by\n                    some carnivore who has made this its dinner. The meat has\n    been\n                    torn off the bones and what is left offers little\n    nutritional\n                    value.",
+        "full-desc": "    The corpse of a young bear cub has been picked and gnawed at by\n                    some carnivore who has made this its dinner. The meat has\nbeen\n                    torn off the bones and what is left offers little\nnutritional\n                    value.",
         "butchered?": "no",
         "drainable?": "no",
         "hanging?": "no",
@@ -3130,8 +2795,8 @@
       "requiresLoad": true,
       "notes": ""
     },
-    "room-mreegltn-26": {
-      "id": "room-mreegltn-26",
+    "room-mum7jw9y-18": {
+      "id": "room-mum7jw9y-18",
       "targetType": "room",
       "targetId": "room-2-4-0",
       "name": "redress-corpse",
@@ -3151,8 +2816,8 @@
       "requiresLoad": true,
       "notes": ""
     },
-    "room-mreehqbo-32": {
-      "id": "room-mreehqbo-32",
+    "room-mum7kztg-24": {
+      "id": "room-mum7kztg-24",
       "targetType": "room",
       "targetId": "room-4-3-0",
       "name": "sign",
@@ -3163,10 +2828,10 @@
       "requiresLoad": true,
       "notes": ""
     },
-    "room-mreehrhj-34": {
-      "id": "room-mreehrhj-34",
+    "room-mum7l0z5-28": {
+      "id": "room-mum7l0z5-28",
       "targetType": "object",
-      "targetId": "room-mreehr3h-33",
+      "targetId": "room-mum7l0l3-27",
       "name": "redress-obj",
       "parameters": {
         "object": "obj 9902 (some cracked and splintered pieces of wood)",
@@ -3174,15 +2839,15 @@
         "short-desc": "a watchtower is here",
         "long-desc": "A crumbling, circular watchtower rises above the hills.",
         "plural-desc": "watchtowers",
-        "full-desc": "    A withered wooden watchtower of Dorwinion slumps beside the old\n                    road, its narrow beams gray with rot and weather. Little\n    more\n                    than a raised lookout now, it creaks in the wind over empty\n                    fields once guarded by eastern men.",
+        "full-desc": "    A withered wooden watchtower of Dorwinion slumps beside the old\n                    road, its narrow beams gray with rot and weather. Little\nmore\n                    than a raised lookout now, it creaks in the wind over empty\n                    fields once guarded by eastern men.",
         "ptype": "the"
       },
       "requiresSupervisorReview": false,
       "requiresLoad": true,
       "notes": ""
     },
-    "room-mreehrhj-35": {
-      "id": "room-mreehrhj-35",
+    "room-mum7l0z5-29": {
+      "id": "room-mum7l0z5-29",
       "targetType": "room",
       "targetId": "room-5-0-0",
       "name": "redress-obj",
@@ -3199,19 +2864,33 @@
       "requiresLoad": true,
       "notes": ""
     },
-    "room-mrfdt5p8-7": {
-      "id": "room-mrfdt5p8-7",
-      "targetType": "object",
-      "targetId": "room-mrfdt5b5-3",
-      "name": "redress-obj",
+    "room-mum7ogu7-42": {
+      "id": "room-mum7ogu7-42",
+      "targetType": "mobile",
+      "targetId": "room-mum7ogfz-41",
+      "name": "redress-mob",
       "parameters": {
-        "object": "obj 6029 (an apple tree)",
-        "keywords": "tree",
-        "short-desc": "fir tree",
-        "long-desc": "A fir tree with claw marks on it is here.",
-        "plural-desc": "fir trees",
-        "full-desc": "a thick fir tree with claw marks on its trunk grows here,\n                majestic in its solitude.",
-        "ptype": "the"
+        "mobile": "mob 2730 (a brown, long-legged spider)",
+        "act": "hisses and gurgles at you with malice",
+        "full-desc": "Abnormally large and bloated, the hairy legs of this spider\nstruggle to support its immense weight. A stench of rotting fish eminates from\nits swollen and grotesque orafice of a mouth. Its mandibles have two fangs\nprotruding from either side with the left one cracked from what one can only\nassume was a fierce encounter. On its back, a violet hourglass shape bears claw\nmarks that have been raked across its hidious vestiges.",
+        "no-charm?": "yes",
+        "no-summon?": "yes"
+      },
+      "requiresSupervisorReview": false,
+      "requiresLoad": true,
+      "notes": ""
+    },
+    "room-mum7ogu7-43": {
+      "id": "room-mum7ogu7-43",
+      "targetType": "room",
+      "targetId": "room-1-1-0",
+      "name": "redress-mob",
+      "parameters": {
+        "mobile": "mob 0 (unknown mobile)",
+        "act": "",
+        "full-desc": "",
+        "no-charm?": "yes",
+        "no-summon?": "yes"
       },
       "requiresSupervisorReview": false,
       "requiresLoad": true,
@@ -3224,70 +2903,70 @@
       "keyword": "asciimap",
       "body": "Keyword \"asciimap\" (lgit: info/zones/31/asciimap)\nThe ASCIIMAP is the \"root\" map we use for all building projects. This map\ndirectly informs the \"sector\" of each room.\nKey\n===\n. = field or brush\n~ = river or water\nt = trail through field or brush\nf = forest\n( = forested hills\n[ = barren/grass/brush hills\n> = mountains\n                15\n           fff~t[[..\n           fff~t[[.\n           ff.~t[\n           f..~t\n     306   .ff~\n           >>f\n           >>\n           .\n           [",
       "rawText": "Keyword \"asciimap\" (lgit: info/zones/31/asciimap)\nThe ASCIIMAP is the \"root\" map we use for all building projects. This map\ndirectly informs the \"sector\" of each room.\nKey\n===\n. = field or brush\n~ = river or water\nt = trail through field or brush\nf = forest\n( = forested hills\n[ = barren/grass/brush hills\n> = mountains\n                15\n           fff~t[[..\n           fff~t[[.\n           ff.~t[\n           f..~t\n     306   .ff~\n           >>f\n           >>\n           .\n           [",
-      "importedAt": 1783655452571
+      "importedAt": 1790657851176
     },
     "lore": {
       "id": "lore",
       "keyword": "lore",
       "body": "Keyword \"lore\" (lgit: info/zones/31/lore)\nThis region lies just south of Esgaroth (Long Lake) and east of the dark eaves\nof Mirkwood, where the River Running (Celduin) flows south toward the Sea of\nRhûn. Historically, this area serves as a vital trade corridor where the\nRaft-men of Thranduil's realm, the Men of Dale, and the merchants of Dorwinion\ninteract. The presence of the Dorwinion Road highlights its role as a bustling\nmercantile highway, though its proximity to the wild edges of Mirkwood leaves\nit vulnerable to stray orcs, spiders, and bandits preying on wealthy wine\ncaravans.",
       "rawText": "Keyword \"lore\" (lgit: info/zones/31/lore)\nThis region lies just south of Esgaroth (Long Lake) and east of the dark eaves\nof Mirkwood, where the River Running (Celduin) flows south toward the Sea of\nRhûn. Historically, this area serves as a vital trade corridor where the\nRaft-men of Thranduil's realm, the Men of Dale, and the merchants of Dorwinion\ninteract. The presence of the Dorwinion Road highlights its role as a bustling\nmercantile highway, though its proximity to the wild edges of Mirkwood leaves\nit vulnerable to stray orcs, spiders, and bandits preying on wealthy wine\ncaravans.",
-      "importedAt": 1783655453053
+      "importedAt": 1790657851671
     },
     "map": {
       "id": "map",
       "keyword": "map",
       "body": "Keyword \"map\" (lgit: info/zones/31/map)\nKEY:\na  inside/city     f  forest        -  horizontal path\nb  brushy plains   h  hills         |  vertical path\nc  cavern/tunnel   m  mountains     ~  water path\np  plains/fields   r  river/stream  +  road/trail path\nt  trail room      %  shallows      D  door\n    f00---f10---f20   r30~~~p40+++h50---h60---b70---p80\n    |                 ~     +     |     |     |\n    |                 ~     +     |     |     |\n    |                 ~     +     |     |     |\n    f01   f11---f21~~~r31~~~p41+++h51---h61   p71\n    |                 ~     +     |\n    |                 ~     +     |\n    |                 ~     +     |\n    f02---f12   p22~~~r32~~~p42+++h52\n    |           |     ~     +\n    |           |     ~     +\n    |           |     ~     +\n    f03D-Dp13---p23~~~r33~~~p43\n          |     |     ~\n          |     |     ~\n          |     |     ~\n    p04---f14---f24   r34\n    |     |     |\n    |     |     |\n    |     |     |\n    m05---m15---f25\n    |     |\n    |     |\n    |     |\n    m06   m16\n    |\n    |\n    |\n    p07\n    |\n    |\n    |\n    h08",
       "rawText": "Keyword \"map\" (lgit: info/zones/31/map)\nKEY:\na  inside/city     f  forest        -  horizontal path\nb  brushy plains   h  hills         |  vertical path\nc  cavern/tunnel   m  mountains     ~  water path\np  plains/fields   r  river/stream  +  road/trail path\nt  trail room      %  shallows      D  door\n    f00---f10---f20   r30~~~p40+++h50---h60---b70---p80\n    |                 ~     +     |     |     |\n    |                 ~     +     |     |     |\n    |                 ~     +     |     |     |\n    f01   f11---f21~~~r31~~~p41+++h51---h61   p71\n    |                 ~     +     |\n    |                 ~     +     |\n    |                 ~     +     |\n    f02---f12   p22~~~r32~~~p42+++h52\n    |           |     ~     +\n    |           |     ~     +\n    |           |     ~     +\n    f03D-Dp13---p23~~~r33~~~p43\n          |     |     ~\n          |     |     ~\n          |     |     ~\n    p04---f14---f24   r34\n    |     |     |\n    |     |     |\n    |     |     |\n    m05---m15---f25\n    |     |\n    |     |\n    |     |\n    m06   m16\n    |\n    |\n    |\n    p07\n    |\n    |\n    |\n    h08",
-      "importedAt": 1783655453552
+      "importedAt": 1790657852178
     },
     "mb-review": {
       "id": "mb-review",
       "keyword": "mb-review",
       "body": "Keyword \"mb-review\" (lgit: info/zones/31/mb-review)\nKeyword \"mb-review\" (lgit: info/zones/15/mb-review)\nThe MB-REVIEW keyword is your Supervisor documents any issues during the Mb\nphase.\nThe builder will also document that the issues have been rectified in this\ndocument.\nMb review for the zone 31\nText = Veladan\n/V = comments by Veladan\n/E = comments by Ellessar\n*******************************************************************************\nOPEN ISSUES\n*******************************************************************************\n*******************************************************************************\nRE-CHECK\n*******************************************************************************\nKEYWORDS:\nMAP:\nROOMS:\n*******************************************************************************\nCLOSED ISSUES\n*******************************************************************************",
       "rawText": "Keyword \"mb-review\" (lgit: info/zones/31/mb-review)\nKeyword \"mb-review\" (lgit: info/zones/15/mb-review)\nThe MB-REVIEW keyword is your Supervisor documents any issues during the Mb\nphase.\nThe builder will also document that the issues have been rectified in this\ndocument.\nMb review for the zone 31\nText = Veladan\n/V = comments by Veladan\n/E = comments by Ellessar\n*******************************************************************************\nOPEN ISSUES\n*******************************************************************************\n*******************************************************************************\nRE-CHECK\n*******************************************************************************\nKEYWORDS:\nMAP:\nROOMS:\n*******************************************************************************\nCLOSED ISSUES\n*******************************************************************************",
-      "importedAt": 1783655454055
+      "importedAt": 1790657852672
     },
     "mc-checklist": {
       "id": "mc-checklist",
       "keyword": "mc-checklist",
       "body": "Keyword \"mc-checklist\" (lgit: info/zones/31/mc-checklist)\nMc Builder Checklist\n=====================\n- Ensure all rooms are sectored correctly in accordance with the\nASCII keyword (/room sector XXX).\n- Ensure all rooms have the correct flags associated with them (/room flag\nXXX).\n        - Descriptions should support these flags.\n- Ensure all rooms have a room name (/room name XXX).\n        - Room names should include a preposition (eg. in a@XXX).\n- Ensure all rooms have a description (/room desc).\n        - All room descriptions should be at least three sentences long.\n- Ensure all doors, climbable, swimmable, dive exits, and one-ways include\nan exit description on both sides (/room edesc XXX).\n- Ensure all other miscellaneous details are accounted for.\n        - eg. Exit flags, door names, keyword descriptions, etc.\n* Ensure correct capitalization and use of British English spelling.\n** Always /check zone to see if the autochecker picks up anything!\n*** Don't forget to reference the /help files and Builder Manual!",
       "rawText": "Keyword \"mc-checklist\" (lgit: info/zones/31/mc-checklist)\nMc Builder Checklist\n=====================\n- Ensure all rooms are sectored correctly in accordance with the\nASCII keyword (/room sector XXX).\n- Ensure all rooms have the correct flags associated with them (/room flag\nXXX).\n        - Descriptions should support these flags.\n- Ensure all rooms have a room name (/room name XXX).\n        - Room names should include a preposition (eg. in a@XXX).\n- Ensure all rooms have a description (/room desc).\n        - All room descriptions should be at least three sentences long.\n- Ensure all doors, climbable, swimmable, dive exits, and one-ways include\nan exit description on both sides (/room edesc XXX).\n- Ensure all other miscellaneous details are accounted for.\n        - eg. Exit flags, door names, keyword descriptions, etc.\n* Ensure correct capitalization and use of British English spelling.\n** Always /check zone to see if the autochecker picks up anything!\n*** Don't forget to reference the /help files and Builder Manual!",
-      "importedAt": 1783655454554
+      "importedAt": 1790657853174
     },
     "mc-review": {
       "id": "mc-review",
       "keyword": "mc-review",
       "body": "Keyword \"mc-review\" (lgit: info/zones/31/mc-review)\nKeyword \"mc-review\" (lgit: info/zones/15/mc-review)\nThe MC-REVIEW keyword is your Supervisor documents any issues during the Mc\nphase.\nThe builder will also document that the issues have been rectified in this\ndocument.\nMc review for the zone 31\nText = Veladan\n/V = comments by Veladan\n/E = comments by Ellessar\n*******************************************************************************\nOPEN ISSUES\n*******************************************************************************\n*******************************************************************************\nRE-CHECK\n*******************************************************************************\nKEYWORDS:\nMAP:\nROOMS:\n*******************************************************************************\nCLOSED ISSUES\n*******************************************************************************",
       "rawText": "Keyword \"mc-review\" (lgit: info/zones/31/mc-review)\nKeyword \"mc-review\" (lgit: info/zones/15/mc-review)\nThe MC-REVIEW keyword is your Supervisor documents any issues during the Mc\nphase.\nThe builder will also document that the issues have been rectified in this\ndocument.\nMc review for the zone 31\nText = Veladan\n/V = comments by Veladan\n/E = comments by Ellessar\n*******************************************************************************\nOPEN ISSUES\n*******************************************************************************\n*******************************************************************************\nRE-CHECK\n*******************************************************************************\nKEYWORDS:\nMAP:\nROOMS:\n*******************************************************************************\nCLOSED ISSUES\n*******************************************************************************",
-      "importedAt": 1783655455048
+      "importedAt": 1790657853671
     },
     "mobs": {
       "id": "mobs",
       "keyword": "mobs",
-      "body": "Keyword \"mobs\" (lgit: info/zones/31/mobs)\nz31, mobs\nJUL 10 2026, Shaper\nThis zone contains automatically summarized mobile load data.\n\nInformation:\n This is summary of the mobile load for z31.\n                                      First Load   Max load\n New\n Significant (lvl 15+)                2            2\n High        (lvl 10-14)              9            9\n Mid         (lvl 5-9)                7            7\n Low         (lvl 0-4)                10           10\n===========================================================\n Total       (all levels)             28           28\n\nSignificant mobiles:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m7018 a vulture                      16         2           Elevated Perch\n\nHigh:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m2663 a coil of oozing vines         14         1           Vine Choked Forest Thicket\n m6114 a huge tarantula               14         1           a Shadowy Forest by the River\n m1599 a black bear                   13         1           a Nook in the Mountains\n m1453 a large sturgeon               12         1           a Clear Channel in the River Running\n m1804 a clump of roots               12         2           Roots and Cobwebs, Root-Filled Forest\n m2730 [a brown, long-legged          11         1           Muddy Tree-filled Ravine\n m3801 a giant termite                11         1           Abandoned Hideout\n m1550 a black widow                  10         1           Roots and Cobwebs\n\nMid:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m6113 a huge, venomous spider        9          1           a Shadowy Forest by the River\n m6481 a fisherman                    6          2           Field by a River, Dorwinion Road\n m2996 [a scrawny Durbûk-hai          5          2           a Jagged Crag\n m7004 a giant earth beetle           5          2           Muddy Tree-filled Ravine\n\nLow:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m1010 a catfish                      4          2           a Muddy Riverbed\n m2138 a bear cub                     4          1           a Nook in the Mountains\n m6011 an ibex                        4          2           a Grassy Rise beside the Road\n m28   a trout                        1          1           River Running\n m1331 a crayfish                     1          1           the River Running\n m4002 a small centipede              1          1           the Rocky Hills\n m1970 a blue dragonfly               0          2           Muddy Pit Surrounded by Trees\n",
-      "rawText": "Keyword \"mobs\" (lgit: info/zones/31/mobs)\nz31, mobs\nJUL 10 2026, Shaper\nThis zone contains automatically summarized mobile load data.\n\nInformation:\n This is summary of the mobile load for z31.\n                                      First Load   Max load\n New\n Significant (lvl 15+)                2            2\n High        (lvl 10-14)              9            9\n Mid         (lvl 5-9)                7            7\n Low         (lvl 0-4)                10           10\n===========================================================\n Total       (all levels)             28           28\n\nSignificant mobiles:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m7018 a vulture                      16         2           Elevated Perch\n\nHigh:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m2663 a coil of oozing vines         14         1           Vine Choked Forest Thicket\n m6114 a huge tarantula               14         1           a Shadowy Forest by the River\n m1599 a black bear                   13         1           a Nook in the Mountains\n m1453 a large sturgeon               12         1           a Clear Channel in the River Running\n m1804 a clump of roots               12         2           Roots and Cobwebs, Root-Filled Forest\n m2730 [a brown, long-legged          11         1           Muddy Tree-filled Ravine\n m3801 a giant termite                11         1           Abandoned Hideout\n m1550 a black widow                  10         1           Roots and Cobwebs\n\nMid:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m6113 a huge, venomous spider        9          1           a Shadowy Forest by the River\n m6481 a fisherman                    6          2           Field by a River, Dorwinion Road\n m2996 [a scrawny Durbûk-hai          5          2           a Jagged Crag\n m7004 a giant earth beetle           5          2           Muddy Tree-filled Ravine\n\nLow:\n MOB:                                 LEVEL:     LOAD:       AREA:\n -----------------------------------------------------------------\n m1010 a catfish                      4          2           a Muddy Riverbed\n m2138 a bear cub                     4          1           a Nook in the Mountains\n m6011 an ibex                        4          2           a Grassy Rise beside the Road\n m28   a trout                        1          1           River Running\n m1331 a crayfish                     1          1           the River Running\n m4002 a small centipede              1          1           the Rocky Hills\n m1970 a blue dragonfly               0          2           Muddy Pit Surrounded by Trees\n",
-      "importedAt": 1783655455554
+      "body": "Keyword \"mobs\" (lgit: info/zones/31/mobs)\nKeyword \"mobs\" (lgit: info/zones/31/mobs) z31, mobs JUL 10 2026, Shaper This\nzone contains automatically summarized mobile load data.\nInformation: This is summary of the mobile load for z31. First Load Max load\nNew\nSignificant (lvl 15+) 2 2 High (lvl 10-14) 9 9 Mid (lvl 5-9) 7 7 Low (lvl 0-4)\n10 10 =========================================================== Total (all\nlevels) 28 28\nSignificant mobiles: MOB: LEVEL: LOAD: AREA:\n----------------------------------------------------------------- m7018 a\nvulture 16 2 Elevated Perch\nHigh: MOB: LEVEL: LOAD: AREA:\n----------------------------------------------------------------- m2663 a coil\nof oozing vines 14 1 Vine Choked Forest Thicket m6114 a huge tarantula 14 1 a\nShadowy Forest by the River m1599 a black bear 13 1 a Nook in the Mountains\nm1453 a large sturgeon 12 1 a Clear Channel in the River Running m1804 a clump\nof roots 12 2 Roots and Cobwebs, Root-Filled Forest m2730 [a brown, long-legged\n11 1 Muddy Tree-filled Ravine m3801 a giant termite 11 1 Abandoned Hideout\nm1550\na black widow 10 1 Roots and Cobwebs\nMid: MOB: LEVEL: LOAD: AREA:\n----------------------------------------------------------------- m6113 a huge,\nvenomous spider 9 1 a Shadowy Forest by the River m6481 a fisherman 6 2 Field\nby\na River, Dorwinion Road m2996 [a scrawny Durbûk-hai 5 2 a Jagged Crag m7004 a\ngiant earth beetle 5 2 Muddy Tree-filled Ravine\nLow: MOB: LEVEL: LOAD: AREA:\n----------------------------------------------------------------- m1010 a\ncatfish 4 2 a Muddy Riverbed m2138 a bear cub 4 1 a Nook in the Mountains m6011\nan ibex 4 2 a Grassy Rise beside the Road m28 a trout 1 1 River Running m1331 a\ncrayfish 1 1 the River Running m4002 a small centipede 1 1 the Rocky Hills\nm1970\na blue dragonfly 0 2 Muddy Pit Surrounded by Trees",
+      "rawText": "Keyword \"mobs\" (lgit: info/zones/31/mobs)\nKeyword \"mobs\" (lgit: info/zones/31/mobs) z31, mobs JUL 10 2026, Shaper This\nzone contains automatically summarized mobile load data.\nInformation: This is summary of the mobile load for z31. First Load Max load\nNew\nSignificant (lvl 15+) 2 2 High (lvl 10-14) 9 9 Mid (lvl 5-9) 7 7 Low (lvl 0-4)\n10 10 =========================================================== Total (all\nlevels) 28 28\nSignificant mobiles: MOB: LEVEL: LOAD: AREA:\n----------------------------------------------------------------- m7018 a\nvulture 16 2 Elevated Perch\nHigh: MOB: LEVEL: LOAD: AREA:\n----------------------------------------------------------------- m2663 a coil\nof oozing vines 14 1 Vine Choked Forest Thicket m6114 a huge tarantula 14 1 a\nShadowy Forest by the River m1599 a black bear 13 1 a Nook in the Mountains\nm1453 a large sturgeon 12 1 a Clear Channel in the River Running m1804 a clump\nof roots 12 2 Roots and Cobwebs, Root-Filled Forest m2730 [a brown, long-legged\n11 1 Muddy Tree-filled Ravine m3801 a giant termite 11 1 Abandoned Hideout\nm1550\na black widow 10 1 Roots and Cobwebs\nMid: MOB: LEVEL: LOAD: AREA:\n----------------------------------------------------------------- m6113 a huge,\nvenomous spider 9 1 a Shadowy Forest by the River m6481 a fisherman 6 2 Field\nby\na River, Dorwinion Road m2996 [a scrawny Durbûk-hai 5 2 a Jagged Crag m7004 a\ngiant earth beetle 5 2 Muddy Tree-filled Ravine\nLow: MOB: LEVEL: LOAD: AREA:\n----------------------------------------------------------------- m1010 a\ncatfish 4 2 a Muddy Riverbed m2138 a bear cub 4 1 a Nook in the Mountains m6011\nan ibex 4 2 a Grassy Rise beside the Road m28 a trout 1 1 River Running m1331 a\ncrayfish 1 1 the River Running m4002 a small centipede 1 1 the Rocky Hills\nm1970\na blue dragonfly 0 2 Muddy Pit Surrounded by Trees",
+      "importedAt": 1790657854173
     },
     "mudlle": {
       "id": "mudlle",
       "keyword": "mudlle",
       "body": "Keyword \"mudlle\" (lgit: info/zones/31/mudlle)\nThe MUDLLE keyword is where you document all the non-custom mudlle in your\nzone.\nBegin this during the Mb phase.\nMudlle list for z31\nSUMMARY\n=======\n  room_echo              X\n  slope                  X\n  special-door           X\n  redress_obj            X\n  redress_mob            X\n  redress-corpse         X\n  watch-tower            X\n  watched-room           X\n...\nTotal:                  XX\nroom_echo\n=========\n  :XX \nslope\n=====\nspecial-door\n============\nredress_obj\n===========\nredress-corpse\n==============\nredress_mob\n===========\nwatch-tower\n===========\nwatched-room\n============",
       "rawText": "Keyword \"mudlle\" (lgit: info/zones/31/mudlle)\nThe MUDLLE keyword is where you document all the non-custom mudlle in your\nzone.\nBegin this during the Mb phase.\nMudlle list for z31\nSUMMARY\n=======\n  room_echo              X\n  slope                  X\n  special-door           X\n  redress_obj            X\n  redress_mob            X\n  redress-corpse         X\n  watch-tower            X\n  watched-room           X\n...\nTotal:                  XX\nroom_echo\n=========\n  :XX \nslope\n=====\nspecial-door\n============\nredress_obj\n===========\nredress-corpse\n==============\nredress_mob\n===========\nwatch-tower\n===========\nwatched-room\n============",
-      "importedAt": 1783655456050
+      "importedAt": 1790657854673
     },
     "objects": {
       "id": "objects",
       "keyword": "objects",
-      "body": "Keyword \"objects\" (lgit: info/zones/31/objects)\nz31, objects\nJUL 10 2026, Shaper\n                                    MIN LOAD        MAX LOAD\n    Herbs/plants                    0               0\n    Food                            0               0\n    Immobile                        13              13\n    Equipment                       0               0\n    Other                           0               0\n    Key                             0               0\n                                    ======          ======\n    Total                           13              13\n\nHERBS/PLANTS:\n (None)\n\nFOOD:\n (None)\n\nIMMOBILE:\no1750 a nest                             1                       31:16\no2104 a pan                              1                       31:08\no3013 a pair of soft leather trousers    1                       31:08\no6001 a large sack                       1                       31:08\no6008 a rotting corpse                   1                       31:24\no6029 an apple tree                      1                       31:08\no6042 a wooden crate                     1                       31:100\no6515 a brown pond                       1                       31:08\no8002 a small piece of raw meat          2                       31:08\no9902 some cracked and splintered pieces of wood3                       31:50/71/101\n\nEQUIPMENT:\n (None)\n\nKEY:\n (None)\n\nOTHER:\n (None)\n",
-      "rawText": "Keyword \"objects\" (lgit: info/zones/31/objects)\nz31, objects\nJUL 10 2026, Shaper\n                                    MIN LOAD        MAX LOAD\n    Herbs/plants                    0               0\n    Food                            0               0\n    Immobile                        13              13\n    Equipment                       0               0\n    Other                           0               0\n    Key                             0               0\n                                    ======          ======\n    Total                           13              13\n\nHERBS/PLANTS:\n (None)\n\nFOOD:\n (None)\n\nIMMOBILE:\no1750 a nest                             1                       31:16\no2104 a pan                              1                       31:08\no3013 a pair of soft leather trousers    1                       31:08\no6001 a large sack                       1                       31:08\no6008 a rotting corpse                   1                       31:24\no6029 an apple tree                      1                       31:08\no6042 a wooden crate                     1                       31:100\no6515 a brown pond                       1                       31:08\no8002 a small piece of raw meat          2                       31:08\no9902 some cracked and splintered pieces of wood3                       31:50/71/101\n\nEQUIPMENT:\n (None)\n\nKEY:\n (None)\n\nOTHER:\n (None)\n",
-      "importedAt": 1783655456569
+      "body": "Keyword \"objects\" (lgit: info/zones/31/objects)\nKeyword \"objects\" (lgit: info/zones/31/objects)\nz31, objects\nJUN 15 2026, Shaper\n                                    MIN LOAD        MAX LOAD\n    Herbs/plants                    0               0\n    Food                            0               0\n    Immobile                        7               7\n    Equipment                       0               0\n    Other                           0               0\n    Key                             0               0\n                                    ======          ======\n    Total                           7               7\nHERBS/PLANTS:\n (None)\nFOOD:\n (None)\nIMMOBILE:\no1750 a nest                             1                       31:16\no6008 a rotting corpse                   1                       31:24\no6042 a wooden crate                     1                       31:100\no6515 a brown pond                       1                       31:08\no9902 some cracked and splintered pieces of wood3\n31:50/71/101\nEQUIPMENT:\n (None)\nKEY:\n (None)\nOTHER:\n (None)",
+      "rawText": "Keyword \"objects\" (lgit: info/zones/31/objects)\nKeyword \"objects\" (lgit: info/zones/31/objects)\nz31, objects\nJUN 15 2026, Shaper\n                                    MIN LOAD        MAX LOAD\n    Herbs/plants                    0               0\n    Food                            0               0\n    Immobile                        7               7\n    Equipment                       0               0\n    Other                           0               0\n    Key                             0               0\n                                    ======          ======\n    Total                           7               7\nHERBS/PLANTS:\n (None)\nFOOD:\n (None)\nIMMOBILE:\no1750 a nest                             1                       31:16\no6008 a rotting corpse                   1                       31:24\no6042 a wooden crate                     1                       31:100\no6515 a brown pond                       1                       31:08\no9902 some cracked and splintered pieces of wood3\n31:50/71/101\nEQUIPMENT:\n (None)\nKEY:\n (None)\nOTHER:\n (None)",
+      "importedAt": 1790657855198
     },
     "these": {
       "id": "these",
       "keyword": "these",
       "body": "No such keyword found.",
       "rawText": "No such keyword found.",
-      "importedAt": 1783655457048
+      "importedAt": 1790657855670
     }
   }
 }

@@ -26,9 +26,8 @@ export interface CommandContext {
     target: string | null;
     setPopoverState: (val: any) => void;
     status: 'connected' | 'disconnected' | 'connecting';
-    handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
+    handleTabClick: (drawer: 'character' | 'equipment') => void;
     setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
-    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     setIsSettingsOpen: (open: boolean) => void;
     setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help' | 'buttons' | 'map') => void;

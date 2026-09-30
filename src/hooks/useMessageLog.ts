@@ -326,8 +326,9 @@ export function useMessageLog(
 
         messageBufferRef.current = [];
         // The server emits a prompt after nearly every response. Keep only the
-        // newest one so it can be shown as a stable, current footer in the log
-        // without consuming the history limit or accumulating prompt spam.
+        // newest one so it can be shown as a stable footer without accumulating
+        // prompt spam. A batch can arrive before its replacement prompt, so the
+        // previous prompt must remain visible until that replacement arrives.
         const latestPrompt = [...pending].reverse().find(m => m.type === 'prompt');
         const ordered: Message[] = pending.filter(m => m.type !== 'prompt');
         if (latestPrompt) ordered.push(latestPrompt);
@@ -339,6 +340,10 @@ export function useMessageLog(
 
         setMessages(prev => {
             const nextMessages = [...prev.filter(m => m.type !== 'prompt'), ...ordered];
+            if (!latestPrompt) {
+                const previousPrompt = [...prev].reverse().find(m => m.type === 'prompt');
+                if (previousPrompt) nextMessages.push(previousPrompt);
+            }
             if (nextMessages.length >= messageLimit) {
                 const trimmed = nextMessages.slice(nextMessages.length - messageLimit);
                 // Remove evicted IDs from the set so it stays bounded.
@@ -472,6 +477,7 @@ export function useMessageLog(
         // Description logic
 
         const isUrgent = isArriveLeave ||
+            /\b(?:panics?|panicked|panicking)\b/i.test(currentTextLower) ||
             currentTextLower.includes('strange incantations') ||
             currentTextLower.includes('utters the words') ||
             currentTextLower.includes('is dead! r.i.p.') ||

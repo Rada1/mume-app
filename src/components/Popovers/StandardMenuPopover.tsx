@@ -42,9 +42,8 @@ interface StandardMenuProps {
     isMendingMode?: boolean;
     setIsMendingMode?: (val: boolean) => void;
     setMendingTarget?: (val: string | null) => void;
-    handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
+    handleTabClick: (drawer: 'character' | 'equipment') => void;
     setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
-    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     refreshLogHighlights?: () => void;
     triggerHaptic?: (ms: number) => void;
@@ -113,7 +112,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     const {
         popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, favorites,
         setFavorites, keywordOverrides, parley, setParley, whoList, executeCommand, inlineCategories, customTraits, setCustomTraits,
-        handleTabClick, setGearTab, setPlayersTab, setCharTab,
+        handleTabClick, setGearTab, setCharTab,
         refreshLogHighlights, triggerHaptic, openKeywordEdit, roomNpcs,
         entities, selectedObjectIds, clearObjectSelection, accountCharacters, accountState, setAccountState, direction, characterInfo,
         themeColor

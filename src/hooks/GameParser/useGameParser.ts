@@ -13,7 +13,7 @@ import { useQuestsHandler } from '../useQuestsHandler';
 import { useEntityRegistry } from '../useEntityRegistry';
 import { useCaptureParser } from './useCaptureParser';
 import { useTriggerProcessor } from '../useTriggerProcessor';
-import { useMessageRouter } from './useMessageRouter';
+import { isLiveCharacterStateOrMovement, isSelfPositionFeedback, useMessageRouter } from './useMessageRouter';
 import { useCombatParser } from './useCombatParser';
 import { useRoomParser } from './useRoomParser';
 import { useCommParser } from './useCommParser';
@@ -44,6 +44,11 @@ import { consumeCommandCompletionSound } from '../../services/audio/commandCompl
 import { changesCombatStatsFromSpell } from '../../utils/spellCombatStatUtils';
 import { parseShopVariant } from '../../utils/shopVariantParser';
 import { hasXmlTag } from '../../utils/xmlTagUtils';
+import { parseWhereScanPlayers } from '../../services/parser/whereScan';
+import {
+    isSilentEquipmentCaptureResponseLine,
+    type EquipmentCaptureProgress,
+} from './equipmentCaptureOutput';
 
 const decodeTextEntities = (text: string) => text
     .replace(/&gt;/gi, '>')
@@ -250,11 +255,27 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const { 
         setRoomName, setRoomDesc, setRoomZone, setCurrentTerrain, setInCombat, 
         setPlayerPosition, setIsRiding, setWeather, setIsFoggy, setLightningEnabled, 
-        setInventoryLines: sessionSetInventoryLines, setStatsLines: sessionSetStatsLines, 
+        inventoryLines: sessionInventoryLines, setInventoryLines: sessionSetInventoryLines, setStatsLines: sessionSetStatsLines,
         setInfoLines, setScoreLines: sessionSetScoreLines, setQuestLines, setAchievementLines,
         setPracticeLines: sessionSetPracticeLines, setWhoLines, setWhereLines, 
-        setEqLines: sessionSetEqLines, setRoomExits, setGameTime 
+        eqLines: sessionEqLines, setEqLines: sessionSetEqLines, setRoomItems: sessionSetRoomItems,
+        roomItems: sessionRoomItems, setContainerContents: sessionSetContainerContents,
+        containerContents: sessionContainerContents, setRoomExits, setGameTime
     } = session.game as any;
+
+    useEffect(() => {
+        if (deps.gameState !== 'playing' || typeof window === 'undefined') return;
+        const inventoryTimer = window.setTimeout(() => {
+            deps.executeCommandRef.current?.('inventory', true, true, false, true);
+        }, 0);
+        const equipmentTimer = window.setTimeout(() => {
+            deps.executeCommandRef.current?.('equipment', true, true, false, true);
+        }, 150);
+        return () => {
+            window.clearTimeout(inventoryTimer);
+            window.clearTimeout(equipmentTimer);
+        };
+    }, [deps.gameState, deps.executeCommandRef]);
 
     // 2. Core Logic Hooks
     const { processTriggers } = useTriggerProcessor({ 
@@ -277,15 +298,23 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const shopCaptureRef = useRef<{ active: boolean; items: import('../../types').ShopItem[] }>({ active: false, items: [] });
     const shopVariantCaptureRef = useRef<import('../../types').ShopVariant[]>([]);
     const shopVariantLineRef = useRef<string | null>(null);
+    const silentEquipmentCaptureProgressRef = useRef<EquipmentCaptureProgress>({ active: false });
     const pendingHelpInterestRef = useRef(false);
     const pendingCommXmlRef = useRef<{ tag: string; line: string; isSnoop: boolean } | null>(null);
     const textMapperStateRef = useRef(createTextMapperState());
     const finalizeNearbyCapture = useCallback(() => {
         if (!nearbyCaptureRef.current.active) return;
-        setWhereLines([...nearbyCaptureRef.current.lines]);
+        const capture = nearbyCaptureRef.current;
+        setWhereLines([...capture.lines]);
+        if (!capture.isSilent && !deps.isSpectateMode) {
+            gmcpBus.emit('Game.WhereScan', {
+                players: parseWhereScanPlayers(capture.lines.map(line => line.text)),
+                startedAt: performance.now(),
+            });
+        }
         nearbyCaptureRef.current = { active: false, isSilent: false, lines: [] };
         if (deps.captureStage.current === 'where') deps.captureStage.current = 'none' as any;
-    }, [setWhereLines, deps.captureStage]);
+    }, [setWhereLines, deps.captureStage, deps.isSpectateMode]);
     
     // 3. The Reactive Capture Machine (The only capture system left)
     const capture = useCaptureParser({
@@ -336,7 +365,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
     const router = useMessageRouter({
         capture,
-        drawer: deps.drawer,
         setWhoList: session.game.setWhoList, 
         setWhereList: session.game.setWhereList, 
         setRoomItems: session.game.setRoomItems, 
@@ -397,6 +425,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         capture,
         setInventoryLines: sessionSetInventoryLines,
         setEqLines: sessionSetEqLines,
+        inventoryLines: sessionInventoryLines,
+        eqLines: sessionEqLines,
+        roomItems: sessionRoomItems,
+        setRoomItems: sessionSetRoomItems,
+        containerContents: sessionContainerContents,
+        setContainerContents: sessionSetContainerContents,
+        registerEntity,
         setCharacterInfo,
         extractNoun,
         ansiConvert: deps.ansiConvert,
@@ -409,7 +444,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             refreshEquipmentCombatStats();
         },
         onGet: () => deps.playEffect?.('get'),
-        onDrop: () => deps.playEffect?.('drop')
+        onDrop: () => {
+            deps.playEffect?.('drop');
+            setTimeout(() => deps.executeCommandRef.current?.('inventory', true, true, false, true), 0);
+        }
     });
 
     const spellCompletion = useSpellCompletionTracker({
@@ -856,11 +894,18 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         // 2. Room Detection & Trigger Processing
-        const isImportant = lineToParse.includes('\x1b[1m') || lineToParse.includes('\x1b[33m');
+        const isImportant = lineToParse.includes('\x1b[1m') || lineToParse.includes('\x1b[33m') ||
+            /\bis dead!\s*r\.?i\.?p\b/i.test(lower) || /\byou have slain\b/i.test(lower) ||
+            /\byou are dead\b/i.test(lower);
         const isRoom = lineToParse.includes('\x1b[32m') && textOnly.startsWith('  ');
         const isRoomDescription = isRoom && textOnly.length > 5;
-        const roomType = isSnoop ? null : room.parseRoomLine(textOnly, lineToParse, isSnoop);
+        const hasRoomObjectEntity = derivedTokens.some((token: any) => token.type === 'entity'
+            && token.metadata?.kind === 'object'
+            && token.metadata?.location === 'room');
+        const roomType = isSnoop ? null : room.parseRoomLine(textOnly, lineToParse, isSnoop, hasRoomObjectEntity);
         const isEffectivelyRoomDesc = isRoomDescription || roomType === 'room-description';
+        const isRoomOutput = isRoom || isEffectivelyRoomDesc || roomType === 'room-name' ||
+            lower.startsWith('exits:') || lower.startsWith('obvious exits');
 
         // 1. System/Trigger Processing (skip sound triggers for room descriptions)
         processTriggers(lineToParse, isEffectivelyRoomDesc);
@@ -868,16 +913,30 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const promptInfo = prompt.parsePrompt(textOnly, isSnoop);
         const isEndPrompt = isPromptResolved || promptInfo.isMatch;
 
-        let isVisible = router.determineVisibility(lower, isImportant, isRoom, isRoomDescription, isEndPrompt, deps.isNewbieMode, lineToParse, undefined, isSnoop);
-        
         // 3. Sub-Parser Dispatch
         let msgType: MessageType = 'game';
         const resourceGain = parseResourceGainLine(textOnly);
         
         const combatType = isEffectivelyRoomDesc || isEndPrompt ? null : combat.parseCombatLine(textOnly, lineToParse, isSnoop);
+        const isCombatMessage = Boolean(combatType);
         if (combatType) msgType = combatType;
 
         if (roomType) msgType = roomType;
+
+        const isProtectedLiveLine = isCombatMessage || isRoomOutput ||
+            isSelfPositionFeedback(lower) || isLiveCharacterStateOrMovement(lower) ||
+            isImportant;
+        const isSilentEquipmentCapture = !isSnoop && (
+            (capture.getActiveType() === 'equipment' && capture.isSilent()) ||
+            (normalizeStageToCaptureType(deps.captureStage.current) === 'equipment' && capture.isPendingSilent())
+        );
+        const isSilentEquipmentResponseLine = !isProtectedLiveLine && isSilentEquipmentCaptureResponseLine(
+            textOnly,
+            lineToParse,
+            isSilentEquipmentCapture,
+            silentEquipmentCaptureProgressRef
+        );
+        let isVisible = router.determineVisibility(lower, isSnoop) && !isSilentEquipmentResponseLine;
 
         const commResult = comm.parseComm(lineToParse, textOnly, lower);
         if (commResult.isSuppressed) return;
@@ -931,6 +990,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         const expectedCaptureType = normalizeStageToCaptureType(deps.captureStage.current) as any;
+        const captureAttachedText = (promptInfo as any).attachedText?.trim();
         // `/misc build <zone> list` rows are `[zone:room] ...`, which the prompt
         // parser mistakes for a bracket prompt (e.g. `[0:0]`). While the build-list
         // capture is expected or active, treat those rows as data, not boundaries.
@@ -947,14 +1007,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
         const archiveCaptureTypes = ['board_list', 'board_read', 'mail_list', 'mail_read', 'book_read'];
         const isArchiveCapture = archiveCaptureTypes.includes(expectedCaptureType) || archiveCaptureTypes.includes(capture.getActiveType());
-        const captureAttachedText = (promptInfo as any).attachedText?.trim();
         const effectiveCaptureText = isArchiveCapture && captureAttachedText ? captureAttachedText : textOnly;
         const effectiveCaptureBoundary = isCaptureBoundary && !(isArchiveCapture && captureAttachedText);
-        const shouldHidePendingSilentCapture = !isSnoop &&
-            !effectiveCaptureBoundary &&
-            capture.isPendingSilent() &&
-            expectedCaptureType !== 'none';
-
         // Nearby capture records the `where` table for the Nearby roster drawer tab.
         // When triggered silently (e.g. from drawer refresh), it suppresses lines from the log.
         // When triggered manually (e.g. user typed `where`), lines flow to the log with inline ally buttons.
@@ -1069,8 +1123,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // Action Tracking (for manual inventory updates)
         actionTracker.trackAction(lineToParse, textOnly, lower);
         router.detectItemsInRoom(textOnly, lineToParse, false, {
-            isRoomContext: isRoomDescription || /<room\b/i.test(lineToParse),
-            expectedCaptureType: expectedCaptureBeforeTokenize
+            isRoomContext: isEffectivelyRoomDesc || /<room\b/i.test(lineToParse),
+            expectedCaptureType: expectedCaptureBeforeTokenize,
+            tokens: derivedTokens
         });
         router.trackRoomItemAction(textOnly, lineToParse, false);
 
@@ -1388,7 +1443,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                     affectedBy: currentAffects.filter(affect => affect.trim().toLowerCase() !== endedEffect.name.toLowerCase())
                 });
             }
-            parseActionTimerLine(textOnly);
+            parseActionTimerLine(textOnly, () => deps.playEffect('search'));
             if (changesCombatStatsFromSpell(textOnly)) refreshEquipmentCombatStats();
         }
         if (time.parseTimeLine(textOnly)) msgType = 'info' as any;
@@ -1417,13 +1472,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             }
         }
 
-        // Suppress response lines from silent capture sessions (e.g. drawer auto-commands like eq/who)
-        if (!isSnoop && capture.hasSession() && capture.isSilent()) {
-            isVisible = false;
-        }
-        if (shouldHidePendingSilentCapture) {
-            isVisible = false;
-        }
         // A live Shaper import streams hundreds of god-command output lines; keep
         // them out of the log entirely (progress is shown in the Shaper topbar).
         if (!isSnoop && useShaperLiveImportStore.getState().importing) {

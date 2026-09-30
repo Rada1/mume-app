@@ -33,7 +33,7 @@ const isPlayerListHeader = (text: string) => {
     );
 };
 
-const extractPlayerName = (text: string) => {
+export const extractPlayerName = (text: string): string | null => {
     if (isPlayerListHeader(text)) return null;
 
     const markerPrefix = String.raw`(?:\[[^\]]*\]|<[^>]+>|\([^)]+\))\s*`;

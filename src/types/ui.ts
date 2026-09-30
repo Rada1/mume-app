@@ -13,7 +13,7 @@ export interface QuickButton {
     label: string;
     command: string;
 }
-export type ActionType = 'command' | 'menu' | 'nav' | 'select-assign' | 'select-recipient' | 'select-container' | 'assign' | 'teleport-manage' | 'historical' | 'preload' | 'show' | 'modifier';
+export type ActionType = 'command' | 'menu' | 'nav' | 'select-assign' | 'select-recipient' | 'select-container' | 'assign' | 'historical' | 'preload' | 'show' | 'modifier';
 export type ObjectDragRow = 'inventory' | 'worn' | 'room';
 
 export interface ObjectDragSource {
@@ -52,7 +52,7 @@ export interface PopoverState {
     y: number;
     sourceHeight?: number;
     sourceRect?: { left: number; top: number; width: number; height: number };
-    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'session-log' | 'help-card' | 'account-character' | 'account-stat-edit';
+    type?: 'menu' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'session-log' | 'help-card' | 'account-character' | 'account-stat-edit';
     setId: string; // The legacy command or set ID. Can still hold standard menu set IDs.
     kind?: EntityKind; 
     location?: EntityLocation; 
@@ -78,8 +78,6 @@ export interface PopoverState {
     // Special data for cards
     shopItems?: any[];
     helpData?: any;
-    teleportId?: string;
-    spellCommand?: string;
     capturedExamineLines?: string[];
     capturedConsiderLines?: string[];
     isCapturingExamine?: boolean;
@@ -187,4 +185,4 @@ export interface CustomButton {
     hotkey?: string; // e.g. "F1" through "F12" — fires command on keydown
 }
 
-export type DrawerType = 'none' | 'account' | 'character' | 'players' | 'equipment' | 'status';
+export type DrawerType = 'none' | 'account' | 'character' | 'equipment' | 'status';

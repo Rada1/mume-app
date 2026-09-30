@@ -4,30 +4,44 @@
  */
 
 import React from 'react';
-import { Send, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useGame } from '../../context/GameContext';
-import { useChatPanel, CHAT_COMMANDS } from '../../hooks/useChatPanel';
+import { useChatPanel } from '../../hooks/useChatPanel';
 import { ChatEntry } from './ChatEntry';
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
+import ChatCommunicationBar from './ChatCommunicationBar';
 
 // --- Component Section ---
 
 const ChatTranscriptWindow: React.FC<{ style?: React.CSSProperties }> = ({ style }) => {
-    const { viewport } = useGame();
+    const { viewport, triggerHaptic, playClickSound } = useGame();
     const setShowChatWindow = useSettingsStore(state => state.setShowChatWindow);
     const chat = useChatPanel();
     const scrollRef = React.useRef<HTMLDivElement>(null);
-    const inputRef = React.useRef<HTMLInputElement>(null);
 
     React.useEffect(() => {
         const scrollElement = scrollRef.current;
         if (scrollElement) scrollElement.scrollTop = scrollElement.scrollHeight;
     }, [chat.visibleMessages.length, chat.filter]);
 
-    const handleSend = (event: React.FormEvent<HTMLFormElement>) => {
-        chat.send(event);
-        inputRef.current?.focus();
+    const handleReply = (message: Parameters<typeof chat.replyToMessage>[0], event: React.SyntheticEvent<HTMLElement>) => {
+        if (!chat.replyToMessage(message)) return;
+        event.stopPropagation();
+        triggerHaptic?.(20);
+        playClickSound?.();
+
+        window.setTimeout(() => {
+            const inputElement = document.querySelector('.chat-communication-input') as HTMLInputElement | null;
+            if (!inputElement) return;
+            inputElement.focus();
+            if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                const wasReadOnly = inputElement.readOnly;
+                inputElement.readOnly = false;
+                inputElement.focus();
+                window.setTimeout(() => { inputElement.readOnly = wasReadOnly; }, 100);
+            }
+        }, 50);
     };
 
     return (
@@ -51,44 +65,9 @@ const ChatTranscriptWindow: React.FC<{ style?: React.CSSProperties }> = ({ style
             <div className="chat-transcript-scroll" ref={scrollRef} aria-label="Communication history">
                 {chat.visibleMessages.length === 0
                     ? <div className="chat-transcript-empty">No communications of this type.</div>
-                    : chat.visibleMessages.map(message => <ChatEntry key={message.id} message={message} />)}
+                    : chat.visibleMessages.map(message => <ChatEntry key={message.id} message={message} triggerParley={event => handleReply(message, event)} />)}
             </div>
-            <form className="chat-transcript-compose" onSubmit={handleSend}>
-                {chat.recipientOpen && chat.needsRecipient && (
-                    <div className="chat-recipient-list" role="group" aria-label="WHO recipients">
-                        <div className="chat-recipient-title">WHO · choose recipient</div>
-                        {chat.recipients.length === 0
-                            ? <div className="chat-recipient-empty">WHO list is empty</div>
-                            : chat.recipients.map(name => (
-                                <button type="button" key={name} onClick={() => { chat.chooseRecipient(name); inputRef.current?.focus(); }}>{name}</button>
-                            ))}
-                    </div>
-                )}
-                <span className="chat-input-prompt" aria-hidden="true">&gt;</span>
-                <label className="chat-command-label">
-                    <span className="chat-sr-only">Communication command</span>
-                    <select value={chat.command} onChange={event => chat.chooseCommand(event.target.value)} aria-label="Communication command">
-                        {CHAT_COMMANDS.map(command => <option key={command} value={command}>{command}</option>)}
-                    </select>
-                </label>
-                {chat.needsRecipient && (
-                    <button type="button" className="chat-target-button" onClick={chat.toggleRecipients}>
-                        {chat.recipient || 'choose target'} ▾
-                    </button>
-                )}
-                <input
-                    ref={inputRef}
-                    className="chat-transcript-input"
-                    type="text"
-                    value={chat.inputValue}
-                    onChange={event => chat.setInputValue(event.target.value)}
-                    aria-label="Message"
-                    placeholder="type a message..."
-                    autoComplete="off"
-                />
-                <button type="submit" className="chat-transcript-send" disabled={!chat.inputValue.trim()} aria-label="Send message"><Send size={15} /></button>
-                {chat.status && <span className="chat-compose-status" role="status">{chat.status}</span>}
-            </form>
+            <ChatCommunicationBar chat={chat} />
         </aside>
     );
 };

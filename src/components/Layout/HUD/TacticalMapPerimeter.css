@@ -1,4 +1,4 @@
-/* @file TacticalMapPerimeter.css — Places mobile command buttons in two map rows. */
+/* @file TacticalMapPerimeter.css — Places mobile commands around the expanded map. */
 
 /* --- Shared Two-By-Seven Grid --- */
 .mobile-map-panel.map-expanded .mobile-map-command-overlay {
@@ -18,16 +18,11 @@
     pointer-events: none;
 }
 
-/* Flatten the category and tactical wrappers so every button shares this grid. */
+/* Flatten category wrappers so category buttons can occupy the first grid row. */
 .mobile-map-panel.map-expanded .mobile-command-deck-persistent,
 .mobile-map-panel.map-expanded .mobile-command-deck-persistent .command-deck,
 .mobile-map-panel.map-expanded .mobile-command-deck-persistent .deck-tab-rail,
-.mobile-map-panel.map-expanded .mobile-command-deck-persistent .deck-category-control,
-.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent,
-.mobile-map-panel.map-expanded .tactical-line-wrapper,
-.mobile-map-panel.map-expanded .line-cluster,
-.mobile-map-panel.map-expanded .line-cluster-step,
-.mobile-map-panel.map-expanded .line-cluster-aux {
+.mobile-map-panel.map-expanded .mobile-command-deck-persistent .deck-category-control {
     display: contents !important;
 }
 
@@ -48,19 +43,51 @@
 .mobile-map-panel.map-expanded [data-id="deck-category-consume"] { grid-area: 1 / 6; }
 .mobile-map-panel.map-expanded [data-id="deck-category-mounts"] { grid-area: 1 / 7; }
 
-/* Tactical commands fill the second row. */
-.mobile-map-panel.map-expanded [data-id="tactical-ranger"] { grid-area: 2 / 1; }
-.mobile-map-panel.map-expanded [data-id="tactical-cleric"] { grid-area: 2 / 2; }
-.mobile-map-panel.map-expanded [data-id="tactical-thief"] { grid-area: 2 / 3; }
-.mobile-map-panel.map-expanded [data-id="tactical-warrior"] { grid-area: 2 / 4; }
-.mobile-map-panel.map-expanded [data-id="tactical-mage"] { grid-area: 2 / 5; }
-.mobile-map-panel.map-expanded [data-id="tactical-doors"] { grid-area: 2 / 6; }
-.mobile-map-panel.map-expanded [data-id="tactical-eye"] { grid-area: 2 / 7; }
+/* Keep available tactical commands together in the second row. Each button
+   keeps one grid-cell width, so the group grows as more commands are learned. */
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent {
+    grid-area: 2 / 1 / 3 / -1;
+    display: flex !important;
+    align-items: stretch;
+    justify-content: center;
+    min-width: 0;
+    padding: 0;
+}
+
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .tactical-line-wrapper {
+    display: flex !important;
+    width: 100%;
+    min-width: 0;
+    align-items: stretch;
+    justify-content: center;
+    margin: 0;
+}
+
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster {
+    display: flex !important;
+    width: fit-content !important;
+    max-width: 100%;
+    height: 100%;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0 !important;
+    padding: 0 !important;
+}
+
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-step {
+    display: flex !important;
+    flex: 0 0 calc(var(--tactical-frame-size) / 7);
+    width: calc(var(--tactical-frame-size) / 7);
+    height: 100%;
+    min-width: 0;
+    align-items: stretch;
+    justify-content: center;
+}
 
 /* Charmie is class-specific and does not fit the 14-button grid. */
 .mobile-map-panel.map-expanded [data-id="tactical-charmie"] { display: none !important; }
 
-/* Equal square hit targets touch edge-to-edge on the rectangular perimeter. */
+/* Equal square hit targets touch edge-to-edge in both command rows. */
 .mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn {
     position: relative !important;
     inset: auto !important;
@@ -133,8 +160,8 @@ body:has(.mapper-container.map-swipe-wheel-open) .mobile-map-panel.map-expanded 
     border: 0 !important;
     border-radius: 0 !important;
     background: transparent !important;
-    backdrop-filter: blur(5px) !important;
-    -webkit-backdrop-filter: blur(5px) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     color: rgba(255, 255, 255, 0.72) !important;
     box-sizing: border-box;
     pointer-events: auto;
@@ -156,6 +183,18 @@ body:has(.mapper-container.map-swipe-wheel-open) .mobile-map-panel.map-expanded 
 .mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.target-ready .button-label,
 .mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.target-ready:hover .button-label {
     color: #86efac !important;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.auto-target-ready .button-label,
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.auto-target-ready:hover .button-label {
+    color: #f87171 !important;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.tactical-defense-ready .button-label,
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.tactical-defense-ready:hover .button-label,
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.tactical-offense-ready .button-label,
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.tactical-offense-ready:hover .button-label {
+    color: var(--target-glow-color) !important;
 }
 
 .mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn-icon-node svg {
