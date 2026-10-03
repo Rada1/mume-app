@@ -46,6 +46,8 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
     const setIsImmersionWeatherEffectsEnabled = useSettingsStore(s => s.setIsImmersionWeatherEffectsEnabled);
     const showCommandSuggestions = useSettingsStore(s => s.showCommandSuggestions);
     const setShowCommandSuggestions = useSettingsStore(s => s.setShowCommandSuggestions);
+    const isTimestampEnabled = useSettingsStore(s => s.isTimestampEnabled);
+    const setIsTimestampEnabled = useSettingsStore(s => s.setIsTimestampEnabled);
 
     const screenWakeLockDescription = screenWakeLockStatus === 'insecure-context'
         ? 'Chrome supports this, but the app must be opened over HTTPS (localhost is also secure).'
@@ -117,6 +119,13 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                     description="Show command, spell, and target suggestions while typing in the command bar. Off by default."
                     value={showCommandSuggestions}
                     onToggle={() => setShowCommandSuggestions(!showCommandSuggestions)}
+                />
+
+                <ToggleRow
+                    label="Show Timestamps"
+                    description="Show the time beside messages in the game log."
+                    value={isTimestampEnabled}
+                    onToggle={() => setIsTimestampEnabled(!isTimestampEnabled)}
                 />
 
                 {/* Main Font Family */}

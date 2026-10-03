@@ -1756,6 +1756,11 @@
     box-shadow: none !important;
 }
 
+.message.prompt.has-timestamp {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
 
 
 .sticky-room-header {
@@ -2392,13 +2397,16 @@ span.inline-btn {
 /* Spat Buttons inside Command Bar */
 .message-timestamp {
     display: inline-block;
+    flex: 0 0 10ch;
+    width: 10ch;
+    box-sizing: border-box;
     font-size: 0.7rem;
     color: var(--text-primary);
     opacity: 0.4;
-    margin-right: 6px;
+    margin-right: 0;
     font-family: var(--font-mono);
+    text-align: right;
     user-select: none;
-    flex-shrink: 0;
 }
 
 .message-type-label {

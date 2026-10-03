@@ -43,7 +43,7 @@ interface LootTarget {
     queuedCorpseId?: string;
 }
 
-const SEEK_RIVENDELL_ROOM_IDS = new Set(['7491', '7136', '7490', '6978', '6976', '6979', '7711490', '954872']);
+const SEEK_RIVENDELL_ROOM_IDS = new Set(['7492', '7491', '7136', '7488', '6978', '6977', '6972', '7711490', '10085070', '5590844', '11348499', '7571803']);
 
 // --- Logic Section ---
 export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
@@ -56,6 +56,7 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     const setCommandsOpen = useCommandPanelStore(state => state.setIsOpen);
     const setMobileCommandsOpen = useCommandPanelStore(state => state.setIsMobileOpen);
     const roomNum = useRoomStore(state => state.roomNum);
+    const roomMapId = useRoomStore(state => state.mapId);
     const roomItems = useRoomStore(state => state.items);
     const corpses = useKillPromptStore(state => state.corpses);
     const removeCorpse = useKillPromptStore(state => state.removeCorpse);
@@ -73,12 +74,13 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
         const rawId = String(mapper.currentRoomId || '').replace(/^m_/, '');
         return getShopRoomLabel(mapper.currentRoomId, mapper.rooms, mapper.preloadedCoordsRef.current?.[rawId]);
     }, [mapper.currentRoomId, mapper.rooms, mapper.preloadedCoordsRef, mapper.renderVersion]);
-    const seekRoomId = String(mapper.currentRoomId || '').replace(/^(m_|r_)/, '');
+    const seekRoomId = String(mapper.currentRoomId || '').trim().replace(/^(m_|r_)/, '');
     const seekRoom = mapper.rooms[mapper.currentRoomId || ''] || mapper.rooms[`m_${seekRoomId}`] || mapper.rooms[seekRoomId];
     const seekRoomData = mapper.preloadedCoordsRef.current?.[seekRoomId] as readonly unknown[] | undefined;
     const seekRoomIdentifiers = [
         seekRoomId,
         String(roomNum ?? '').trim(),
+        String(roomMapId ?? '').trim(),
         String(seekRoom?.gmcpId ?? '').trim(),
         String(seekRoomData?.[6] ?? '').trim()
     ];

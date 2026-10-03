@@ -3,8 +3,10 @@
  * @description GMCP-backed table renderer for the Players > Group tab.
  */
 
+// --- Logic Section ---
 import React from 'react';
 import { GroupMember } from '../../types';
+import { getMemberColor } from '../../utils/groupUtils';
 
 type VitalValue = string | number | undefined;
 type GroupTableMember = GroupMember & {
@@ -84,9 +86,10 @@ export const GroupTableView: React.FC<{ members: GroupMember[]; compact?: boolea
     return (
         <div style={{ flex: compact ? '0 0 auto' : 1, overflow: 'auto', padding: compact ? '2px 10px 5px' : '10px 12px', fontFamily: 'var(--font-mono, monospace)', fontSize: compact ? '11px' : 'var(--dynamic-log-size, 16px)', whiteSpace: 'nowrap', lineHeight: compact ? 1.25 : 1.55 }}>
             <HeaderRow />
-            {members.map((member) => {
+            {members.map((member, index) => {
                 const tableMember = member as GroupTableMember;
                 const name = getName(member);
+                const memberColor = getMemberColor(index).core;
 
                 return (
                     <div
@@ -106,7 +109,7 @@ export const GroupTableView: React.FC<{ members: GroupMember[]; compact?: boolea
                         <span className="inline-btn" data-id={String(member.id || name)}
                             data-cmd="inline-player" data-category="cat-ally"
                             data-context={name} data-action="menu"
-                            style={{ overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer' }}>{name}</span>
+                            style={{ overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer', '--glow-color': memberColor } as React.CSSProperties}>{name}</span>
                         <span style={{ color: '#44ff70', fontWeight: 800 }}>{getHits(tableMember)}</span>
                         <span style={{ color: '#44ff70', fontWeight: 800 }}>{getMana(tableMember)}</span>
                         <span style={{ color: '#44ff70', fontWeight: 800 }}>{getMoves(tableMember)}</span>

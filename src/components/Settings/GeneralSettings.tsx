@@ -8,6 +8,7 @@ import { ConnectionDetails } from './ConnectionDetails';
 import { AppearanceSettings } from './AppearanceSettings';
 import { ExperimentalSettings } from './ExperimentalSettings';
 import { LootSettings } from './LootSettings';
+import ClientVersionInfo from './ClientVersionInfo';
 
 interface GeneralSettingsProps {
     connectionUrl: string;
@@ -71,6 +72,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = (props) => {
                 autoSaveSessions={props.autoSaveSessions}
                 setAutoSaveSessions={props.setAutoSaveSessions}
             />
+
+            <ClientVersionInfo />
         </>
     );
 };

@@ -402,11 +402,7 @@ const MessageItem = React.memo(({
         return () => window.clearTimeout(timer);
     }, [isImmersionMode, isImmersionTextAnimationsEnabled, isPerformanceMode, msg.id, msg.isRoomArrival, msg.timestamp]);
 
-    const showTimestamp = isTimestampEnabled &&
-        !msg.isRoomName &&
-        msg.type !== 'room-description' &&
-        msg.type !== 'weather' &&
-        msg.type !== 'gmcp-event';
+    const showTimestamp = isTimestampEnabled && msg.type !== 'gmcp-event';
     const timestampEl = showTimestamp ? (
         <span className="message-timestamp">{formatTimestamp(msg.timestamp)}</span>
     ) : null;
@@ -496,6 +492,7 @@ const MessageItem = React.memo(({
                 </div>
             ) : msg.type === 'prompt' ? (
                 <div className="content-row">
+                    {timestampEl}
                     <span className="message-content prompt-text">
                         {hasInlinePromptModes(msg.textOnly || msg.textRaw || '')
                             ? <PromptInlineControls text={msg.textOnly || msg.textRaw || ''} tokens={msg.tokens} />

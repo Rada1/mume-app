@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import { execFileSync } from 'node:child_process';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -10,8 +11,20 @@ const SHAPER_AI_PROVIDER_AGENT = 'agent';
 const SHAPER_AI_PROVIDER_GEMINI = 'gemini';
 const SHAPER_AI_PROVIDER_OLLAMA = 'ollama';
 
+const getBuildRevision = (): string => {
+  try {
+    const revision = execFileSync('git', ['rev-parse', '--short=8', 'HEAD'], { encoding: 'utf8' }).trim();
+    const isDirty = execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim().length > 0;
+    return `${revision}${isDirty ? '-dirty' : ''}`;
+  } catch {
+    return 'local';
+  }
+};
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
+  const buildRevision = getBuildRevision();
+  const builtAt = new Date().toISOString();
   return {
     server: {
       port: 3000,
@@ -376,6 +389,8 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     define: {
+      'import.meta.env.VITE_APP_BUILD_REVISION': JSON.stringify(buildRevision),
+      'import.meta.env.VITE_APP_BUILT_AT': JSON.stringify(builtAt),
       'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
     },
