@@ -7,6 +7,7 @@
 
 import { DIR_COUNT, type FastMapData } from './model';
 import { rgb, type RGBA } from './vendor/palette';
+import { ROOM_VISITED } from './roomExploration';
 
 const CONNECTION_COLOR = rgb(0xffffff, 0.5);
 const CONNECTION_DASH_LENGTH = 0.12;
@@ -121,7 +122,7 @@ export function buildExitConnectionGeometry(map: FastMapData, roomStates?: Uint8
       for (let edge = map.exitTargetStarts[slot]!; edge < map.exitTargetStarts[slot + 1]!; edge++) {
         const target = map.exitTargets[edge]!;
         if (target === room || target >= map.roomCount) continue;
-        if (roomStates && (roomStates[room] === 0 || roomStates[target] === 0)) continue;
+        if (roomStates && (roomStates[room] !== ROOM_VISITED || roomStates[target] !== ROOM_VISITED)) continue;
         const targetDir = OPPOSITE_DIR[dir]!;
         const reverseSlot = target * DIR_COUNT + targetDir;
         let twoWay = false;

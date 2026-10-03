@@ -9,6 +9,7 @@ import { MumeArchive } from '../Utility/MumeArchive';
 import { LogDockedInput } from '../HUD/LogDockedInput';
 import InputArea from '../Controls/InputArea';
 import { RightActionPanel } from '../HUD/RightActionPanel';
+import { CommandGuidePanel } from '../HUD/CommandGuidePanel';
 import { useGame, useUI, useLog } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -111,8 +112,11 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const manualBgImage = useSettingsStore(s => s.bgImage);
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
     const showGroupPanel = useSettingsStore(s => s.showGroupPanel);
-    const isCommandPanelOpen = useCommandPanelStore(s => viewport.isMobile ? s.isMobileOpen : s.isOpen);
+    const isCommandPanelOpen = useCommandPanelStore(s => viewport.isMobile ? s.isMobileGuideOpen : s.isOpen);
+    const isSkillsPanelOpen = useCommandPanelStore(s => viewport.isMobile ? s.isMobileOpen : s.isSkillsOpen);
     const setIsCommandPanelOpen = useCommandPanelStore(s => s.setIsOpen);
+    const setIsSkillsPanelOpen = useCommandPanelStore(s => s.setIsSkillsOpen);
+    const setIsMobileSkillsPanelOpen = useCommandPanelStore(s => s.setIsMobileOpen);
     const isShopOpen = useUIStore(s => s.isShopOpen);
     const isGearPanelOpen = useGearPanelStore(s => s.isOpen);
     const isHelpOpen = useHelpStore(s => s.isOpen);
@@ -135,9 +139,9 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         if (isGearPanelOpen) list.push('gear');
         if (isHelpOpen) list.push('help');
         if (showChatWindow) list.push('chat');
-        if (isCommandPanelOpen) list.push('commands');
+        if (isCommandPanelOpen || isSkillsPanelOpen) list.push('commands');
         return list;
-    }, [gameState, showChatWindow, isShopOpen, isGearPanelOpen, isHelpOpen, isArchiveOpen, isEditorOpen, isCommandPanelOpen, viewport.isMobile]);
+    }, [gameState, showChatWindow, isShopOpen, isGearPanelOpen, isHelpOpen, isArchiveOpen, isEditorOpen, isCommandPanelOpen, isSkillsPanelOpen, viewport.isMobile]);
     const hasDockedPanels = activeDockedPanels.length > 0;
     const hasMobileHeaderPanel = viewport.isMobile && activeDockedPanels.some(panel =>
         panel === 'commands' || panel === 'gear' || panel === 'help' || panel === 'chat'
@@ -591,10 +595,12 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         />
                     )}
                 </div>
-                {isCommandPanelOpen && (
-                    <aside className="docked-panel command-docked-panel" style={computeDockedPanelStyle('commands', activeDockedPanels, viewport.isMobile)} aria-label="Commands panel">
+                {(isCommandPanelOpen || isSkillsPanelOpen) && (
+                    <aside className="docked-panel command-docked-panel" style={computeDockedPanelStyle('commands', activeDockedPanels, viewport.isMobile)} aria-label={isSkillsPanelOpen ? 'Skills and Practice panel' : 'Command Guide panel'}>
                         {!viewport.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" minWidth={14} maxWidth={50} />}
-                        {gameState === 'account' ? <MobileAccountExperience /> : <RightActionPanel skillsOnly={viewport.isMobile} />}
+                        {gameState === 'account' ? <MobileAccountExperience /> : isSkillsPanelOpen
+                            ? <RightActionPanel skillsOnly onClose={() => viewport.isMobile ? setIsMobileSkillsPanelOpen(false) : setIsSkillsPanelOpen(false)} />
+                            : <CommandGuidePanel />}
                     </aside>
                 )}
                 {isGearPanelOpen && gameState !== 'account' && (

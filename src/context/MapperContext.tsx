@@ -550,15 +550,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             } catch (markerErr) {
                 console.warn("[Mapper] Could not load bundled map markers:", markerErr);
             }
-            const markerIds = Object.keys(bundledMarkers);
-            if (markerIds.length > 0) {
-                setMarkers(prev => ({ ...bundledMarkers, ...prev }));
-                setExploredMarkers(prev => {
-                    const next = new Set(prev);
-                    markerIds.forEach(id => next.add(id));
-                    return next;
-                });
-            }
+            if (Object.keys(bundledMarkers).length > 0) setMarkers(prev => ({ ...bundledMarkers, ...prev }));
 
             if (showDebugEchoesRef.current) {
                 addMessageRef.current?.('system', `[Mapper] Bundled Base Map Loaded: ${Object.keys(data).length} rooms.`);
@@ -901,7 +893,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             }
         }
 
-        const discoveryRadius = 15; // Reveal when within 15 rooms
+        const discoveryRadius = 1.5; // Nearby map markers are found within about one room.
         const newlyDiscovered: string[] = [];
 
         Object.values(markers).forEach((marker: any) => {

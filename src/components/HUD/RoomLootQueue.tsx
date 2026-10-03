@@ -53,7 +53,7 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     const setIsShopOpen = useUIStore(state => state.setIsShopOpen);
     const setShopkeeperName = useUIStore(state => state.setShopkeeperName);
     const requestCommandTab = useCommandPanelStore(state => state.requestTab);
-    const setCommandsOpen = useCommandPanelStore(state => state.setIsOpen);
+    const setSkillsOpen = useCommandPanelStore(state => state.setIsSkillsOpen);
     const setMobileCommandsOpen = useCommandPanelStore(state => state.setIsMobileOpen);
     const roomNum = useRoomStore(state => state.roomNum);
     const roomMapId = useRoomStore(state => state.mapId);
@@ -209,7 +209,7 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     const openSkillsPanel = () => {
         requestCommandTab('skills');
         if (isMobile) setMobileCommandsOpen(true);
-        else setCommandsOpen(true);
+        else setSkillsOpen(true);
         triggerHaptic?.(10);
     };
 

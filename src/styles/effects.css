@@ -1,3 +1,4 @@
+/* @file Performance mode rendering overrides. */
 /* --- Performance Mode overrides --- */
 .performance-mode,
 .performance-mode * {
@@ -24,6 +25,28 @@
 .performance-mode .terrain-tint-layer,
 .performance-mode .overlay-layer {
   display: none !important;
+}
+
+/* Keep the map and log on the same scene surface when both modes are active.
+   The worker canvas is transparent in immersion mode, so this layer mirrors
+   the log's image opacity and treatment behind the map artwork. */
+.app-container.performance-mode.immersion-mode .mapper-container {
+  background-color: var(--bg-app);
+}
+
+.app-container.performance-mode.immersion-mode .mapper-container::before {
+  content: '';
+  display: block !important;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--account-gutter-bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.55;
+  filter: brightness(0.55) contrast(1.1);
 }
 
 /* Disable backdrop filters on mobile for GPU and fill-rate performance */

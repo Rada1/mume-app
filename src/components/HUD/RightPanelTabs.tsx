@@ -13,6 +13,7 @@ interface RightPanelTabsProps {
     count: number;
     onSelect: (tab: MainTab) => void;
     skillsOnly?: boolean;
+    onClose?: () => void;
 }
 
 const TABS: { id: MainTab; label: string }[] = [
@@ -21,20 +22,21 @@ const TABS: { id: MainTab; label: string }[] = [
     { id: 'utility', label: 'Util' },
 ];
 
-export const RightPanelTabs: FC<RightPanelTabsProps> = ({ activeTab, count, onSelect, skillsOnly = false }) => {
+export const RightPanelTabs: FC<RightPanelTabsProps> = ({ activeTab, count, onSelect, skillsOnly = false, onClose }) => {
     const closePanel = useCommandPanelStore(state => state.setIsOpen);
+    const closeMobileSkills = useCommandPanelStore(state => state.setIsMobileOpen);
     return (
     <>
         <div className="right-panel-terminal-heading">
             <span className="right-panel-terminal-prompt">&gt;</span>
-            <strong>commands</strong>
-            <span className="right-panel-terminal-count">{count} available</span>
-            <button type="button" className="right-panel-close" aria-label="Close commands panel" title="Close commands panel" onClick={() => closePanel(false)}>
+            <strong>{skillsOnly ? 'skills & practice' : 'commands'}</strong>
+            <span className="right-panel-terminal-count">{count} {skillsOnly ? 'listed' : 'available'}</span>
+            <button type="button" className="right-panel-close" aria-label={skillsOnly ? 'Close skills and practice' : 'Close command panel'} title={skillsOnly ? 'Close skills and practice' : 'Close command panel'} onClick={onClose || (() => skillsOnly ? closeMobileSkills(false) : closePanel(false))}>
                 <X size={16} />
             </button>
         </div>
-        <div className="right-panel-tabs" role="tablist" aria-label="Command categories">
-            {TABS.filter(tab => !skillsOnly || tab.id === 'skills').map(tab => (
+        {!skillsOnly && <div className="right-panel-tabs" role="tablist" aria-label="Command categories">
+            {TABS.map(tab => (
                 <button
                     key={tab.id}
                     type="button"
@@ -46,7 +48,7 @@ export const RightPanelTabs: FC<RightPanelTabsProps> = ({ activeTab, count, onSe
                     <span>{activeTab === tab.id ? `[ ${tab.label} ]` : tab.label}</span>
                 </button>
             ))}
-        </div>
+        </div>}
     </>
     );
 };

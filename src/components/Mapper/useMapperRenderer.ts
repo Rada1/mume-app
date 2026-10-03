@@ -595,7 +595,7 @@ export const useMapperRenderer = ({
                                 const irx = Math.round(rData[0]), iry = Math.round(rData[1]);
                                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
                                 roomAtCoord[`${irx},${iry}`] = normalizeTerrain(localRoom ? localRoom.terrain : rData[3]);
-                                visitedAtCoord[`${irx},${iry}`] = true;
+                                visitedAtCoord[`${irx},${iry}`] = isExplored;
                             }
                         }
                     }

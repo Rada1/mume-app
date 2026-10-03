@@ -295,6 +295,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             >
                         {/* Overlay controls keep the map center and edge swipe gutter clear. */}
                         <div className="mobile-map-command-overlay">
+                            <div className="mobile-map-edge-vignette" aria-hidden="true" />
                             <div className="mobile-command-deck-persistent">
                                 <CommandDeck tactical={{
                                     isEditMode,

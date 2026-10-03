@@ -2,6 +2,7 @@ import React from 'react';
 import './RoomInfoCard.css';
 import { MapperRoom } from './mapperTypes';
 import { TERRAIN_MAP, DIRS, generateId, getRoomPortableState, getRoomRidableState, normalizeTerrain, stripAnsi } from './mapperUtils';
+import { getMmapperTerrainLabel } from './mmapperTerrain';
 
 interface RoomInfoCardProps {
     roomId: string;
@@ -11,6 +12,7 @@ interface RoomInfoCardProps {
     onClose: () => void;
     cardRef: React.RefObject<HTMLDivElement>;
     preloadedCoordsRef?: React.MutableRefObject<Record<string, any[]>>;
+    isMmapperMap?: boolean;
     setViewZ?: (z: number | null) => void;
     isDarkMode: boolean;
     onWalkStart?: (roomId: string) => void;
@@ -19,10 +21,15 @@ interface RoomInfoCardProps {
 }
 
 export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
-    roomId, rooms, setRooms, mode, onClose, cardRef, preloadedCoordsRef, setViewZ, isDarkMode,
+    roomId, rooms, setRooms, mode, onClose, cardRef, preloadedCoordsRef, isMmapperMap = false, setViewZ, isDarkMode,
     onWalkStart, stopWalking, walkTargetId
 }) => {
     let room = rooms[roomId];
+    const terrainLabelFor = (terrain: string | number | null) => {
+        const value = terrain ?? 'Field';
+        if (isMmapperMap) return getMmapperTerrainLabel(value);
+        return TERRAIN_MAP[String(value)] ?? normalizeTerrain(value);
+    };
 
     React.useEffect(() => {
         if (room && setViewZ) {
@@ -74,8 +81,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
 
             let resolvedTerrain = 'Field';
             if (mTVal !== undefined) {
-                const tKey = String(mTVal);
-                resolvedTerrain = TERRAIN_MAP[tKey] || normalizeTerrain(tKey);
+                resolvedTerrain = terrainLabelFor(mTVal);
             }
 
             let resolvedZone = mArea || 'Imported Map';
@@ -113,8 +119,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
 
             // Fallback terrain if live is generic or missing
             if (!clonedRoom.terrain || clonedRoom.terrain === 'Field') {
-                const tKey = String(mTVal);
-                clonedRoom.terrain = TERRAIN_MAP[tKey] || normalizeTerrain(tKey);
+                clonedRoom.terrain = terrainLabelFor(mTVal);
                 hasChanged = true;
             }
 
@@ -161,6 +166,10 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
     }
 
     if (!room) return null;
+
+    const hasSpecificTerrain = room.terrain !== undefined && room.terrain !== null && room.terrain !== '' && room.terrain !== 'Field';
+    const terrainValue = hasSpecificTerrain ? room.terrain : masterData?.[3] ?? room.terrain ?? 'Field';
+    const terrainLabel = terrainLabelFor(terrainValue);
 
     const updateRoom = (patch: Partial<MapperRoom>) => {
         setRooms(prev => ({
@@ -349,16 +358,16 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                     <span style={{ color: '#71717a', marginRight: '4px' }}>Terrain: </span>
                     {mode === 'edit' ? (
                         <select
-                            value={room.terrain || 'Field'}
+                            value={terrainLabel}
                             onChange={(e) => updateRoom({ terrain: e.target.value })}
                             style={{ backgroundColor: 'transparent', border: 'none', color: '#10b981', fontWeight: 'bold', cursor: 'pointer', outline: 'none', fontSize: '12px' }}
                         >
-                            {Array.from(new Set(Object.values(TERRAIN_MAP))).map(t => (
+                            {Array.from(new Set([...Object.values(TERRAIN_MAP), terrainLabel])).map(t => (
                                 <option key={t} value={t} style={{ backgroundColor: '#181825', color: 'white' }}>{t}</option>
                             ))}
                         </select>
                     ) : (
-                        <span style={{ color: '#10b981', fontWeight: 'bold' }}>{room.terrain || 'Field'}</span>
+                        <span style={{ color: '#10b981', fontWeight: 'bold' }}>{terrainLabel}</span>
                     )}
                 </div>
             </div>

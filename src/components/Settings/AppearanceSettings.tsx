@@ -116,7 +116,7 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
 
                 <ToggleRow
                     label="Command Suggestions"
-                    description="Show command, spell, and target suggestions while typing in the command bar. Off by default."
+                    description="Show command, spell, and target suggestions while typing in the command bar. On by default."
                     value={showCommandSuggestions}
                     onToggle={() => setShowCommandSuggestions(!showCommandSuggestions)}
                 />

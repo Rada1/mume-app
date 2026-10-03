@@ -56,6 +56,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
     // is looping through lines. This avoids stale closures and state timing issues.
     const sessionRef = useRef<CaptureSession | null>(null);
     const pendingFlagsRef = useRef<{ isSilent: boolean; fromDrawer: boolean; command?: string; timestamp?: number }>({ isSilent: false, fromDrawer: false });
+    const pendingSilentScoreAtRef = useRef<number | null>(null);
     const pendingSilentCommandsRef = useRef<string[]>([]);
     const lastSilentCaptureEndedAtRef = useRef(0);
     const lastRequestedContainerIdRef = useRef<string | null>(null);
@@ -728,6 +729,9 @@ export function useCaptureParser(deps: CaptureParserDeps) {
 
     const setPendingFlags = useCallback((isSilent: boolean, fromDrawer: boolean, command?: string) => {
         pendingFlagsRef.current = { isSilent, fromDrawer, command, timestamp: Date.now() };
+        if (/^(?:score|sc)(?:\s|$)/i.test(command?.trim() ?? '')) {
+            pendingSilentScoreAtRef.current = isSilent ? Date.now() : null;
+        }
         if (!isSilent || !command?.trim()) return;
 
         pendingSilentCommandsRef.current.push(normalizeCommandEcho(command));
@@ -761,6 +765,17 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         return Date.now() - lastSilentCaptureEndedAtRef.current < 900;
     }, []);
 
+    const shouldSuppressSilentScoreResponse = useCallback(() => {
+        const pendingAt = pendingSilentScoreAtRef.current;
+        if (sessionRef.current?.type === 'score' && sessionRef.current.isSilent) {
+            pendingSilentScoreAtRef.current = null;
+            return true;
+        }
+        if (pendingAt === null) return false;
+        pendingSilentScoreAtRef.current = null;
+        return Date.now() - pendingAt <= 10_000;
+    }, [sessionRef]);
+
     const getSession = useCallback(() => sessionRef.current, [sessionRef]);
 
     return {
@@ -777,6 +792,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         isPendingSilent,
         shouldSuppressCommandEcho,
         shouldSuppressSilentBlank,
+        shouldSuppressSilentScoreResponse,
         setLastRequestedContainerId,
         getSession
     };

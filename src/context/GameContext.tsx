@@ -35,6 +35,7 @@ import { useSpectateBuffer } from '../hooks/useSpectateBuffer';
 import { useSpectateBufferSync } from '../hooks/useSpectateBufferSync';
 import { useSettings } from '../hooks/useSettings';
 import { useAgentObservability } from '../hooks/useAgentObservability';
+import { useLoginWimpySetup } from '../hooks/useLoginWimpySetup';
 import { ansiConvert } from '../utils/ansi';
 import { Tokenizer } from '../services/parser/Tokenizer';
 
@@ -963,6 +964,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         executeCommandRef.current = controller.executeCommand;
         parserExecuteCommandRef.current = controller.executeCommand;
     }, [controller.executeCommand]);
+
+    useLoginWimpySetup(controller.executeCommand);
 
     const logValue: LogContextType = useMemo(() => ({
         ...activeLog,

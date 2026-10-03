@@ -17,6 +17,11 @@ function appendGeometry(target: number[], source: ArrayLike<number>): void {
   for (let index = 0; index < source.length; index++) target.push(source[index]!);
 }
 
+function hideColorGeometryWhenUnexplored(vertices: Float32Array, initialState: number): void {
+  if (initialState !== 0) return;
+  for (let index = 6; index < vertices.length; index += 7) vertices[index] = 0;
+}
+
 function incomingFlowMasks(map: FastMapData): Uint8Array {
   const masks = new Uint8Array(map.roomCount);
   for (let room = 0; room < map.roomCount; room++) for (let dir = 0; dir < 6; dir++) {
@@ -80,6 +85,7 @@ function buildChunk(map: FastMapData, chunk: Chunk, incoming: Uint8Array, doorSt
     const exits = buildVerticalExitGeometry(map, room);
     if (exits.length) {
       verticalExitRoomRanges.set(room, { first: verticalExitVertices.length / 7, count: exits.length / 7 });
+      hideColorGeometryWhenUnexplored(exits, initialState);
       appendGeometry(verticalExitVertices, exits);
     }
     const doorFirst = doorVertices.length / 7;
@@ -87,7 +93,9 @@ function buildChunk(map: FastMapData, chunk: Chunk, incoming: Uint8Array, doorSt
       const slot = room * DIR_COUNT + dir;
       if (!(map.exitFlags[slot]! & EXIT_FLAG.DOOR)) continue;
       doorSlots.push(slot);
-      appendGeometry(doorVertices, buildDoorVertices(map.x[room]!, map.y[room]!, map.z[room]!, dir, map.doorOpen?.[slot] === 1, doorStyle));
+      const doorGeometry = buildDoorVertices(map.x[room]!, map.y[room]!, map.z[room]!, dir, map.doorOpen?.[slot] === 1, doorStyle);
+      hideColorGeometryWhenUnexplored(doorGeometry, initialState);
+      appendGeometry(doorVertices, doorGeometry);
     }
     const doorCount = doorVertices.length / 7 - doorFirst;
     if (doorCount) doorRoomRanges.set(room, { first: doorFirst, count: doorCount });

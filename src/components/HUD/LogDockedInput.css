@@ -129,6 +129,14 @@
     flex-shrink: 0;
 }
 
+@media (min-width: 1025px) {
+    .docked-input-form > .docked-target-badge:not(.docked-command-target-chip) {
+        height: 28px;
+        min-height: 28px;
+        box-sizing: border-box;
+    }
+}
+
 .docked-target-symbol {
     display: inline-flex;
     align-items: center;

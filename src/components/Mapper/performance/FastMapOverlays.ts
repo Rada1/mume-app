@@ -20,6 +20,7 @@ import { buildGroupMemberGeometry, buildGroupMemberLabels } from './groupMarkerG
 import { drawColorGeometry } from './roomGpuDrawing';
 import { buildSearchGeometry } from './searchGeometry';
 import { drawRoomSpriteFlags } from './roomSpriteDrawing';
+import { ROOM_VISITED } from './roomExploration';
 
 const SPRITE_UNIFORMS = ['uView', 'uTex', 'uColor'] as const;
 const COLOR_UNIFORMS = ['uView', 'uColor'] as const;
@@ -49,6 +50,7 @@ export class FastMapOverlays {
   private extraLabels: FastMapTextLabel[] = [];
   private roomStates: Uint8Array = new Uint8Array();
   private roomIndexByPosition = new Map<string, number>();
+  private revealAll = false;
 
   constructor(private readonly gl: WebGL2RenderingContext) {
     this.spriteProgram = compileProgram(gl, SPRITE_VS, SPRITE_FS, SPRITE_UNIFORMS);
@@ -75,6 +77,7 @@ export class FastMapOverlays {
 
   setExploration(roomStates: Uint8Array): void {
     this.roomStates = roomStates;
+    this.revealAll = roomStates.length > 0 && roomStates.every(state => state === ROOM_VISITED);
     this.refreshLabels();
     if (this.map) this.updateMapGeometry(roomStates);
   }
@@ -83,11 +86,14 @@ export class FastMapOverlays {
     const map = this.map;
     if (!map) return;
     const geometry = buildMapOverlayGeometry(map, roomStates);
-    const vertices: number[] = [];
+    const vertexCount = geometry.lines.reduce((total, batch) => total + batch.vertices.length, 0);
+    const vertices = new Float32Array(vertexCount);
+    let vertexOffset = 0;
     this.lineRanges.clear();
     for (const batch of geometry.lines) {
-      const first = vertices.length / 7;
-      for (const value of batch.vertices) vertices.push(value);
+      const first = vertexOffset / 7;
+      vertices.set(batch.vertices, vertexOffset);
+      vertexOffset += batch.vertices.length;
       this.lineRanges.set(batch.z, { first, count: batch.vertices.length / 7 });
     }
     this.gl.bindVertexArray(this.lineMesh.vao);
@@ -95,11 +101,14 @@ export class FastMapOverlays {
     this.gl.bufferData(this.gl.ARRAY_BUFFER, Float32Array.from(vertices), this.gl.STATIC_DRAW);
     this.gl.bindVertexArray(null);
 
-    const arrowVertices: number[] = [];
+    const arrowVertexCount = geometry.arrows.reduce((total, batch) => total + batch.vertices.length, 0);
+    const arrowVertices = new Float32Array(arrowVertexCount);
+    let arrowVertexOffset = 0;
     this.arrowRanges.clear();
     for (const batch of geometry.arrows) {
-      const first = arrowVertices.length / 7;
-      for (const value of batch.vertices) arrowVertices.push(value);
+      const first = arrowVertexOffset / 7;
+      arrowVertices.set(batch.vertices, arrowVertexOffset);
+      arrowVertexOffset += batch.vertices.length;
       this.arrowRanges.set(batch.z, { first, count: batch.vertices.length / 7 });
     }
     this.gl.bindVertexArray(this.arrowMesh.vao);
@@ -115,16 +124,30 @@ export class FastMapOverlays {
 
   private refreshLabels(): void {
     const applyState = (label: FastMapTextLabel): FastMapTextLabel | null => {
-      const room = label.roomIndex ?? this.roomIndexByPosition.get(`${Math.floor(label.x)}:${Math.floor(label.y)}:${Math.round(label.z)}`);
-      if (room === undefined) return label;
-      const state = this.roomStates[room] ?? 0;
-      if (state === 0) return null;
-      if (state !== 2) return label;
-      const color = label.color ?? 0xffffff;
-      const gray = Math.round((((color >> 16) & 255) * 0.299) + (((color >> 8) & 255) * 0.587) + ((color & 255) * 0.114));
-      return { ...label, color: (gray << 16) | (gray << 8) | gray };
+      const room = label.roomIndex ?? this.nearbyVisitedRoom(label);
+      if (room === undefined) return this.revealAll ? label : null;
+      return (this.roomStates[room] ?? 0) === ROOM_VISITED ? label : null;
     };
     this.text.setLabels([...this.baseLabels, ...this.extraLabels].map(applyState).filter((label): label is FastMapTextLabel => label !== null));
+  }
+
+  private nearbyVisitedRoom(label: FastMapTextLabel): number | undefined {
+    const map = this.map;
+    if (!map) return undefined;
+    const centerX = label.x;
+    const centerY = label.y;
+    const floor = Math.round(label.z);
+    const cellX = Math.floor(centerX);
+    const cellY = Math.floor(centerY);
+    let nearest: number | undefined;
+    let nearestDistance = 1.5;
+    for (let x = cellX - 2; x <= cellX + 2; x++) for (let y = cellY - 2; y <= cellY + 2; y++) {
+      const room = this.roomIndexByPosition.get(`${x}:${y}:${floor}`);
+      if (room === undefined || this.roomStates[room] !== ROOM_VISITED) continue;
+      const distance = Math.hypot(centerX - (map.x[room]! + 0.5), centerY - (map.y[room]! + 0.5));
+      if (distance <= nearestDistance) { nearest = room; nearestDistance = distance; }
+    }
+    return nearest;
   }
 
   setGroupMembers(members: FastMapGroupMember[]): void {

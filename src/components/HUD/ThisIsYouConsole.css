@@ -186,22 +186,12 @@
 .this-is-you-vitals-cluster {
     grid-column: 1;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 28px;
+    grid-template-columns: minmax(0, 1fr);
     gap: 4px;
     align-items: center;
 }
 
 .this-is-you-vitals-group { grid-column: 1; }
-.this-is-you-vitals-cluster > .this-is-you-refresh-button {
-    grid-column: 2;
-    align-self: center;
-    width: 28px;
-    height: 28px;
-    min-height: 28px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-}
 
 .this-is-you-vitals-group {
     display: grid;
@@ -296,12 +286,12 @@
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    min-height: 21px;
-    padding: 1px 5px;
-    border: 1px solid rgba(201, 168, 76, 0.38);
-    border-radius: 999px;
-    background: rgba(201, 168, 76, 0.1);
-    color: #d7b653;
+    min-height: 0;
+    padding: 0 2px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #9a9182;
     font: inherit;
     font-size: 0.52rem;
     font-weight: 700;
@@ -311,10 +301,25 @@
     cursor: pointer;
 }
 
+.this-is-you-wimpy-badge::before,
+.this-is-you-wimpy-badge::after {
+    color: rgba(255, 255, 255, 0.32);
+    font-weight: 500;
+}
+
+.this-is-you-wimpy-badge::before { content: '['; }
+.this-is-you-wimpy-badge::after { content: ']'; }
+.this-is-you-wimpy-badge:hover { color: #fff2c2; }
+.this-is-you-wimpy-badge:hover::before,
+.this-is-you-wimpy-badge:hover::after { color: rgba(201, 168, 76, 0.8); }
+
 .this-is-you-refresh-button {
     display: flex;
-    min-width: 0;
-    min-height: 28px;
+    flex: 0 0 var(--this-is-you-action-hitbox, 24px);
+    width: var(--this-is-you-action-hitbox, 24px);
+    min-width: var(--this-is-you-action-hitbox, 24px);
+    height: var(--this-is-you-action-hitbox, 24px);
+    min-height: var(--this-is-you-action-hitbox, 24px);
     align-items: center;
     justify-content: center;
     gap: 5px;
@@ -330,6 +335,7 @@
 }
 
 .this-is-you-refresh-button:hover { background: rgba(201, 168, 76, 0.12); }
+.this-is-you-refresh-button:disabled { cursor: default; opacity: 0.45; }
 
 .this-is-you-combat-heading {
     display: flex;
@@ -344,7 +350,7 @@
 }
 
 .this-is-you-wimpy-badge strong {
-    color: #fff2c2;
+    color: #ff5555;
     font-size: inherit;
 }
 

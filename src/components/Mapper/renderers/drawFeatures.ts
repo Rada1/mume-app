@@ -1022,7 +1022,7 @@ export const drawFeatures = (
                             const isTargetExplored = explored.has(targetVnum);
                             const isTargetRevealed = ring1Revealed.has(targetVnum);
 
-                            if (!unveilMap && !isExplored && !isRevealed && !isTargetExplored && !isTargetRevealed) continue;
+                            if (!unveilMap && !(isExplored && isTargetExplored)) continue;
 
                             const ardaMapping = preloaded[vnum];
                             const sId = ardaMapping ? String(ardaMapping[6]) : vnum;
@@ -1251,7 +1251,7 @@ export const drawFeatures = (
                             const isTargetExplored = explored.has(targetVnum);
                             const isTargetRevealed = ring1Revealed.has(targetVnum);
 
-                            if (!unveilMap && !isExplored && !isRevealed && !isTargetExplored && !isTargetRevealed) continue;
+                            if (!unveilMap && !(isExplored && isTargetExplored)) continue;
 
                             const oppDir = dir === 'u' ? 'd' : 'u';
                             const targetExits = targetData[4];
@@ -1288,7 +1288,7 @@ export const drawFeatures = (
                             const isTargetExplored = explored.has(targetVnum);
                             const isTargetRevealed = ring1Revealed.has(targetVnum);
 
-                            if (!unveilMap && !isExplored && !isRevealed && !isTargetExplored && !isTargetRevealed) continue;
+                            if (!unveilMap && !(isExplored && isTargetExplored)) continue;
 
                             const dx = Math.abs(rx - targetData[0]);
                             const dy = Math.abs(ry - targetData[1]);
@@ -1496,8 +1496,8 @@ export const drawFeatures = (
                         ctx.restore();
                     }
 
-                    // Up/down arrows: show for explored, ring-1 revealed, and unveil-all mode
-                    if (ghostExits && (ghostExits.u || ghostExits.d) && (isExplored || isRevealed || unveilMap)) {
+                    // Exit arrows belong to their source room and appear when that room is explored.
+                    if (ghostExits && (ghostExits.u || ghostExits.d) && (isExplored || unveilMap)) {
                         const iconColor = 'rgba(148, 163, 184, 0.8)';
                         const cOff = 12;
                         const arrowSize = 18;
@@ -1536,7 +1536,7 @@ export const drawFeatures = (
                             const uPointsBack = uTarget?.[4]?.d && String(uTarget[4].d.target).replace(/^m_/, '') === String(vnum).replace(/^m_/, '');
                             const dPointsBack = dTarget?.[4]?.u && String(dTarget[4].u.target).replace(/^m_/, '') === String(vnum).replace(/^m_/, '');
 
-                            if (uPointsBack && dPointsBack) {
+                            if (uPointsBack && dPointsBack && explored.has(uTargetVnum) && explored.has(dTargetVnum)) {
                                 ctx.save();
                                 ctx.globalAlpha = isExplored ? exploredAlphaMul * 0.5 : 0.15;
                                 drawLine(ctx, anchorX - cOff, anchorY - cOff, anchorX + cOff, anchorY + cOff, iconColor, 1.5, dpr, invZoom, true);
@@ -1684,7 +1684,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 const uPointsBack = uN?.exits?.d && String(uN.exits.d.target || uN.exits.d.gmcpDestId || "").replace(/^m_/, '') === String(room.id).replace(/^m_/, '');
                 const dPointsBack = dN?.exits?.u && String(dN.exits.u.target || dN.exits.u.gmcpDestId || "").replace(/^m_/, '') === String(room.id).replace(/^m_/, '');
 
-                if (uPointsBack && dPointsBack) {
+                if (uPointsBack && dPointsBack && rCtx.explored.has(String(uTargetId).replace(/^m_/, '')) && rCtx.explored.has(String(dTargetId).replace(/^m_/, ''))) {
                     const iconColor = 'rgba(148, 163, 184, 0.8)'; // Tactical grey connection line
                     ctx.save();
                     ctx.globalAlpha = 0.5;

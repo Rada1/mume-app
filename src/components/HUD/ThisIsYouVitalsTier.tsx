@@ -5,7 +5,6 @@
 
 // --- Logic Section ---
 import React, { FC } from 'react';
-import { RefreshCw } from 'lucide-react';
 import { StatDelta } from './StatDelta';
 import { formatRegen } from '../../utils/regenUtils';
 
@@ -34,7 +33,6 @@ export interface ThisIsYouVitalsTierProps {
     wimpy: number | null | undefined;
     onWimpyChange: () => void;
     canAdjustWimpy: boolean;
-    onRefresh: () => void;
     regen: { hp: number; mana: number; move: number };
     deltas: VitalsTierDeltas;
 }
@@ -54,7 +52,6 @@ export const ThisIsYouVitalsTier: FC<ThisIsYouVitalsTierProps> = ({
     wimpy,
     onWimpyChange,
     canAdjustWimpy,
-    onRefresh,
     regen,
     deltas
 }) => {
@@ -103,15 +100,6 @@ export const ThisIsYouVitalsTier: FC<ThisIsYouVitalsTierProps> = ({
                     </div>
                 </div>
             </div>
-            <button
-                type="button"
-                className="this-is-you-refresh-button"
-                aria-label="Refresh score"
-                title="Refresh score"
-                onClick={onRefresh}
-            >
-                <RefreshCw size={16} aria-hidden="true" />
-            </button>
             </div>
 
             {/* Combat capabilities */}
@@ -121,10 +109,10 @@ export const ThisIsYouVitalsTier: FC<ThisIsYouVitalsTierProps> = ({
                 </div>
                 <div className="this-is-you-capabilities-cell">
                     <div className="this-is-you-capabilities-row">
-                        <span title="Offensive Power (OB): strike accuracy and damage">Offense: <strong>{ob ?? '—'}</strong><StatDelta delta={deltas.ob} /></span>
-                        <span title="Parry Deflection (PB): weapon blocking rating">Parry: <strong>{pb ?? '—'}</strong><StatDelta delta={deltas.pb} /></span>
-                        <span title="Defensive Evasion (DB): makes you harder to hit">Dodge: <strong>{db ?? '—'}</strong><StatDelta delta={deltas.db} /></span>
-                        <span title="Armor Absorption (ARM): physical damage reduction">Armor: <strong>{armour ?? '—'}</strong><StatDelta delta={deltas.armour} /></span>
+                        <span title="Offensive Power (OB): strike accuracy and damage"><span className="this-is-you-capability-label">Offense:</span><strong>{ob ?? '—'}</strong><StatDelta delta={deltas.ob} /></span>
+                        <span title="Parry Deflection (PB): weapon blocking rating"><span className="this-is-you-capability-label">Parry:</span><strong>{pb ?? '—'}</strong><StatDelta delta={deltas.pb} /></span>
+                        <span title="Defensive Evasion (DB): makes you harder to hit"><span className="this-is-you-capability-label">Dodge:</span><strong>{db ?? '—'}</strong><StatDelta delta={deltas.db} /></span>
+                        <span title="Armor Absorption (ARM): physical damage reduction"><span className="this-is-you-capability-label">Armor:</span><strong>{armour ?? '—'}</strong><StatDelta delta={deltas.armour} /></span>
                     </div>
                 </div>
             </div>

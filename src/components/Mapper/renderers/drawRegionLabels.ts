@@ -64,6 +64,7 @@ export const drawRegionLabels = (
 
     for (const label of list) {
         if ((label.z ?? 0) !== currentZ) continue;
+        if (!editMode && !rCtx.unveilMap && !rCtx.treatMapAsExplored && !isNearExploredRoom(label.x, label.y, rCtx.visitedAtCoord)) continue;
 
         const geom = getRegionLabelGeometry(label, ctx);
         const screenPx = geom.fontPx * camera.zoom;
@@ -145,6 +146,18 @@ export const drawRegionLabels = (
         ctx.restore();
     }
 };
+
+function isNearExploredRoom(x: number, y: number, exploredAtCoord: Record<string, boolean>): boolean {
+    const roomX = Math.floor(x);
+    const roomY = Math.floor(y);
+    for (let dx = -2; dx <= 2; dx++) {
+        for (let dy = -2; dy <= 2; dy++) {
+            if (!exploredAtCoord[`${roomX + dx},${roomY + dy}`]) continue;
+            if (Math.hypot(x - (roomX + dx + 0.5), y - (roomY + dy + 0.5)) <= 1.5) return true;
+        }
+    }
+    return false;
+}
 
 export type RegionLabelHitMode = 'move' | 'resize' | 'rotate';
 export interface RegionLabelHit {

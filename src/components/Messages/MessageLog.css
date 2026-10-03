@@ -862,7 +862,8 @@
 
 /* Zone name displayed in small, 25% transparent faded text in parentheses after room name */
 .message.is-room-name .room-zone-name,
-.room-zone-name {
+.room-zone-name,
+.regen-slow-note {
     font-size: 0.78em;
     font-weight: 400 !important;
     letter-spacing: normal !important;

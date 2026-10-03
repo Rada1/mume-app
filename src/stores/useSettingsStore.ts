@@ -325,7 +325,7 @@ export const useSettingsStore = create<SettingsState>()(
             useMobileAccountPanels: true,
             showChatWindow: false,
             showGroupPanel: false,
-            showCommandSuggestions: false,
+            showCommandSuggestions: true,
             showControls: true,
             showOrganicTerrain: true,
             hidePrompt: false,
@@ -352,7 +352,7 @@ export const useSettingsStore = create<SettingsState>()(
             customSoundEffects: {},
 
             allowMapPersistence: true,
-            unveilMap: false,
+            unveilMap: true,
             zoneFocusGrayscale: false,
             showMapperToolbar: false,
             isTextRevealEnabled: false,
@@ -524,8 +524,16 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 36,
+            version: 38,
             migrate: (persistedState: any, version: number) => {
+                if (version < 38) {
+                    persistedState.unveilMap = true;
+                }
+
+                if (version < 37) {
+                    persistedState.showCommandSuggestions = true;
+                }
+
                 if (version < 35) {
                     persistedState.autoLootValuables = false;
                 }
@@ -833,7 +841,7 @@ export const useSettingsStore = create<SettingsState>()(
                 merged.hideMapHeaderFooter = merged.hideMapHeaderFooter ?? false;
                 merged.showChatWindow = merged.showChatWindow ?? false;
                 merged.showGroupPanel = merged.showGroupPanel ?? false;
-                merged.showCommandSuggestions = merged.showCommandSuggestions ?? false;
+                merged.showCommandSuggestions = merged.showCommandSuggestions ?? true;
                 merged.isImmersionWeatherEffectsEnabled = merged.isImmersionWeatherEffectsEnabled ?? false;
                 merged.isImmersionTextAnimationsEnabled = merged.isImmersionTextAnimationsEnabled ?? false;
                 let validFilters = merged.zoneFilters;

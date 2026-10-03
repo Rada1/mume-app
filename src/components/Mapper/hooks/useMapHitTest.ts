@@ -1,3 +1,4 @@
+/** @file Converts pointer positions into map room, marker, and exit hits. */
 import { useCallback } from 'react';
 import { MapperRoom, MapperMarker } from '../mapperTypes';
 import { GRID_SIZE, getGateState } from '../mapperUtils';
@@ -24,6 +25,7 @@ interface UseMapHitTestProps {
     npcColorRef?: React.MutableRefObject<string | undefined>;
 }
 
+// --- Logic Section ---
 export const useMapHitTest = ({
     roomsRef, markersRef, currentRoomIdRef, cameraRef, canvasRef, viewZ, spatialIndexRef, preloadedCoordsRef,
     roomCharsRef, roomPlayersRef, roomNpcsRef, groupMembersRef, inlineCategoriesRef,
@@ -34,10 +36,10 @@ export const useMapHitTest = ({
         const cvs = canvasRef.current;
         if (!cvs) return { x: 0, y: 0 };
         const rect = cvs.getBoundingClientRect();
-        const performanceYOffset = cvs.dataset.mapRenderer === 'performance-worker' ? GRID_SIZE : 0;
+        const workerYOffset = cvs.dataset.mapRenderer?.endsWith('-worker') ? GRID_SIZE : 0;
         return {
             x: ((sx - rect.left) / cameraRef.current.zoom) + cameraRef.current.x,
-            y: ((sy - rect.top) / cameraRef.current.zoom) + cameraRef.current.y + performanceYOffset
+            y: ((sy - rect.top) / cameraRef.current.zoom) + cameraRef.current.y + workerYOffset
         };
     }, [canvasRef, cameraRef]);
 
@@ -45,47 +47,65 @@ export const useMapHitTest = ({
         const roomsToSearch = roomsRef.current;
         const currentZ = viewZ !== null ? viewZ : (currentRoomIdRef.current ? (roomsToSearch[currentRoomIdRef.current]?.z || 0) : 0);
         const margin = 10;
-        let foundRoom: string | null = null;
-        let bestDist = Infinity;
+        let currentFloorRoom: string | null = null;
+        let currentFloorDistance = Infinity;
+        let otherFloorRoom: string | null = null;
+        let otherFloorDistance = Infinity;
+        let otherFloorZDistance = Infinity;
 
-        // 1. Search Local State first
-        for (const key in roomsToSearch) {
-            const r = roomsToSearch[key];
+        // Overlapping edge hitboxes resolve to the tile closest to the pointer.
+        for (const r of Object.values(roomsToSearch)) {
             const rx = Math.round(r.x) * GRID_SIZE, ry = Math.round(r.y) * GRID_SIZE;
             if (wx >= rx - margin && wx <= rx + GRID_SIZE + margin && wy >= ry - margin && wy <= ry + GRID_SIZE + margin) {
                 const rz = r.z || 0;
-                if (rz === currentZ) return r.id;
-                if (!strictZ) {
-                    const dist = Math.abs(rz - currentZ);
-                    if (dist < bestDist) { bestDist = dist; foundRoom = r.id; }
+                const tileDistance = Math.hypot(wx - (rx + GRID_SIZE / 2), wy - (ry + GRID_SIZE / 2));
+                if (rz === currentZ) {
+                    if (tileDistance < currentFloorDistance) {
+                        currentFloorDistance = tileDistance;
+                        currentFloorRoom = r.id;
+                    }
+                } else if (!strictZ) {
+                    const zDistance = Math.abs(rz - currentZ);
+                    if (zDistance < otherFloorZDistance || (zDistance === otherFloorZDistance && tileDistance < otherFloorDistance)) {
+                        otherFloorZDistance = zDistance;
+                        otherFloorDistance = tileDistance;
+                        otherFloorRoom = r.id;
+                    }
                 }
             }
         }
+        if (currentFloorRoom) return currentFloorRoom;
 
-        // 2. Search Master Map if nothing in local
+        // Resolve overlapping master-map hitboxes the same way.
         if (spatialIndexRef.current && preloadedCoordsRef.current) {
             const floor = Math.round(currentZ);
             const floorBuckets = spatialIndexRef.current[floor];
             if (floorBuckets) {
                 const bx = Math.floor(wx / GRID_SIZE / 5);
                 const by = Math.floor(wy / GRID_SIZE / 5);
+                let masterRoom: string | null = null;
+                let masterDistance = Infinity;
                 for (let dx = -1; dx <= 1; dx++) {
                     for (let dy = -1; dy <= 1; dy++) {
-                        const vnums = floorBuckets[`${bx + dx},${by + dy}`];
-                        if (vnums) {
-                            for (const vnum of vnums) {
-                                const [rx_g, ry_g] = preloadedCoordsRef.current[vnum];
-                                const rx = Math.round(rx_g) * GRID_SIZE, ry = Math.round(ry_g) * GRID_SIZE;
-                                if (wx >= rx - margin && wx <= rx + GRID_SIZE + margin && wy >= ry - margin && wy <= ry + GRID_SIZE + margin) {
-                                    return `m_${vnum}`;
+                        for (const vnum of floorBuckets[`${bx + dx},${by + dy}`] || []) {
+                            const coords = preloadedCoordsRef.current[vnum];
+                            if (!coords) continue;
+                            const [rx_g, ry_g] = coords;
+                            const rx = Math.round(rx_g) * GRID_SIZE, ry = Math.round(ry_g) * GRID_SIZE;
+                            if (wx >= rx - margin && wx <= rx + GRID_SIZE + margin && wy >= ry - margin && wy <= ry + GRID_SIZE + margin) {
+                                const tileDistance = Math.hypot(wx - (rx + GRID_SIZE / 2), wy - (ry + GRID_SIZE / 2));
+                                if (tileDistance < masterDistance) {
+                                    masterDistance = tileDistance;
+                                    masterRoom = `m_${vnum}`;
                                 }
                             }
                         }
                     }
                 }
+                if (masterRoom) return masterRoom;
             }
         }
-        return foundRoom;
+        return otherFloorRoom;
     }, [viewZ, preloadedCoordsRef, spatialIndexRef, roomsRef, currentRoomIdRef]);
 
     const getMarkerAt = useCallback((wx: number, wy: number) => {

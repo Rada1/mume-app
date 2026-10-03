@@ -17,7 +17,7 @@ export const useMapData = () => {
         return saved ? new Set(JSON.parse(saved)) : new Set();
     });
     const [exploredMarkers, setExploredMarkers] = useState<Set<string>>(() => {
-        const saved = localStorage.getItem('mume_mapper_explored_markers');
+        const saved = localStorage.getItem('mume_mapper_explored_markers_v2');
         return saved ? new Set(JSON.parse(saved)) : new Set();
     });
     const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);

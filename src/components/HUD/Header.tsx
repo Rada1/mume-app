@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, DraftingCompass, MessageSquare, TerminalSquare, Shield, UsersRound } from 'lucide-react';
+import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, DraftingCompass, MessageSquare, TerminalSquare, Shield, UsersRound, BookOpen } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
 import { useModeStore } from '../../stores/useModeStore';
@@ -175,7 +175,7 @@ const Header: React.FC<HeaderProps> = () => {
     const [isMenuOpen, setIsMenuOpen] = [ui.isMenuOpen, (val: boolean) => setUI(prev => ({ ...prev, isMenuOpen: val })) as any];
     const [isSetMenuOpen, setIsSetMenuOpen] = [ui.isSetMenuOpen, (val: boolean) => setUI(prev => ({ ...prev, isSetMenuOpen: val })) as any];
     const [menuView, setMenuView] = [ui.menuView, (val: 'main' | 'availableSets') => setUI(prev => ({ ...prev, menuView: val })) as any];
-    const { isCommandPanelOpen, isGearPanelOpen, showChatWindow, showGroupPanel,
+    const { isCommandPanelOpen, isSkillsPanelOpen, isGearPanelOpen, showChatWindow, showGroupPanel,
         isHelpOpen, helpData, toggleHeaderTab } = useMobileHeaderTabs(viewport.isMobile, isMenuOpen, setIsMenuOpen);
 
     const menuRef = useRef<HTMLDivElement>(null);
@@ -397,12 +397,26 @@ const Header: React.FC<HeaderProps> = () => {
                                 toggleHeaderTab('commands');
                                 triggerHaptic?.(10);
                             }}
-                            title="Toggle Commands Panel"
-                            aria-label="Toggle Commands Panel"
+                            title="Toggle Command Guide"
+                            aria-label="Toggle Command Guide"
                             aria-pressed={isCommandPanelOpen}
                             style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
                         >
                             <TerminalSquare size={17} />
+                        </button>
+
+                        <button
+                            className={`menu-toggle-btn${isSkillsPanelOpen ? ' active' : ''}`}
+                            onClick={() => {
+                                toggleHeaderTab('skills');
+                                triggerHaptic?.(10);
+                            }}
+                            title="Toggle Skills and Practice"
+                            aria-label="Toggle Skills and Practice"
+                            aria-pressed={isSkillsPanelOpen}
+                            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
+                        >
+                            <BookOpen size={17} />
                         </button>
 
                         <button

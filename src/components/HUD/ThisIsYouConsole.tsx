@@ -17,7 +17,7 @@ import { useCharacterConditions } from '../../hooks/useCharacterConditions';
 import { useCharacterInfoRefresh } from '../../hooks/useCharacterInfoRefresh';
 import { useCharacterPanelVitalsRefresh } from '../../hooks/useCharacterPanelVitalsRefresh';
 import { getMovementModeActions } from '../../hooks/useMovementModeActions';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
 import { useCharacterPanelStore } from '../../stores/useCharacterPanelStore';
 import { ThisIsYouVitalsTier } from './ThisIsYouVitalsTier';
 import { StatDelta } from './StatDelta';
@@ -282,6 +282,19 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                 <TerminalProgression characterName={name}
                   xp={characterInfo?.xp} tp={characterInfo?.tp}
                   tnl={characterInfo?.tnl} tpnl={characterInfo?.tpnl} />
+                {!panelIsMinimized && <button
+                  type="button"
+                  className="this-is-you-refresh-button"
+                  aria-label="Refresh score"
+                  title="Refresh score"
+                  disabled={gameState !== 'playing' || isSpectateMode}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleVitalsRefresh();
+                  }}
+                >
+                  <RefreshCw size={16} aria-hidden="true" />
+                </button>}
                 {!alwaysExpanded && <span className="this-is-you-expand-indicator" aria-hidden="true">
                   {panelIsMinimized ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </span>}
@@ -306,7 +319,6 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                 wimpy={displayWimpy}
                 onWimpyChange={handleWimpyChange}
                 canAdjustWimpy={!isSpectateMode && (vitals.maxHp ?? 0) > 0}
-                onRefresh={handleVitalsRefresh}
                 regen={regen}
                 deltas={deltas}
             />

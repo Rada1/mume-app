@@ -402,6 +402,10 @@
     flex-shrink: 0;
 }
 
+.right-panel-target-bar-placeholder {
+    flex: 0 0 31px;
+}
+
 .target-bar-label {
     color: #8a7a5e;
     font-weight: 600;

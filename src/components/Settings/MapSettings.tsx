@@ -57,7 +57,7 @@ const MapSettings: React.FC = () => {
     } = useSettingsStore();
     const {
         rooms, setRooms, markers, setMarkers, allowPersistence, setAllowPersistence,
-        unveilMap, setUnveilMap, handleClearMap, setExploredMarkers
+        unveilMap, setUnveilMap, handleClearMap
     } = mapper;
 
     const { handleExportMap, handleImportMap, handleImportMMapper } = useMapperExportImport(
@@ -67,8 +67,7 @@ const MapSettings: React.FC = () => {
         setMarkers,
         characterName,
         addMessage,
-        mapper,
-        setExploredMarkers
+        mapper
     );
 
     return (

@@ -36,9 +36,10 @@ import './RightActionTerminal.css';
 interface RightActionPanelProps {
     skillsOnly?: boolean;
     embedded?: boolean;
+    onClose?: () => void;
 }
 
-export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false, embedded = false }) => {
+export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false, embedded = false, onClose }) => {
     // --- Logic Section ---
     const {
         executeCommand, triggerHaptic, abilities = {}, gameState, characterClass = '', practice,
@@ -299,7 +300,7 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
 
     // --- Render Section ---
     return (
-        <aside className={`right-action-panel${embedded ? ' is-embedded-practice-menu' : ''}`} aria-label="Action Deck">
+        <aside className={`right-action-panel${embedded ? ' is-embedded-practice-menu' : ''}`} aria-label={skillsOnly ? 'Skills and Practice' : 'Action Deck'}>
             {gameState === 'account' && (
                 <div className="right-panel-locked-overlay">
                     <div className="right-panel-locked-icon-ring"><Swords size={22} /></div>
@@ -313,6 +314,7 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
                 count={visibleTab === 'combat' ? COMBAT_ACTIONS.length : visibleTab === 'utility' ? UTILITY_ACTIONS.length : displayedSkills.length}
                 onSelect={handleSelectTab}
                 skillsOnly={skillsOnly}
+                onClose={onClose}
             />
 
             {needsTargetHint && (
@@ -383,9 +385,11 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
             </div>
 
             {/* Movement Controls Section - Always visible */}
-            {!skillsOnly && <div className="right-panel-navigation" role="region" aria-label="Movement Controls">
+            {!embedded && <div className="right-panel-navigation" role="region" aria-label="Movement Controls">
                 <MovementPad />
             </div>}
+
+            {skillsOnly && !embedded && <div className="right-panel-target-bar-placeholder" aria-hidden="true" />}
 
             {/* Target Status Bar */}
             {!skillsOnly && <RightPanelTargetBar target={target} setTarget={setTarget} />}

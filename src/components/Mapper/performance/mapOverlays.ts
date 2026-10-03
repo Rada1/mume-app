@@ -8,6 +8,7 @@ import { type FastMapData, type FastMapTextLabel, type FastRoomOverlay } from '.
 import { INFOMARK_CLASS_COLORS, WATER, WHITE, type RGBA } from './vendor/palette';
 import { infomarkLabelStyle } from './infomarkStyle';
 import { buildExitConnectionGeometry } from './exitConnectionGeometry';
+import { ROOM_VISITED } from './roomExploration';
 const INFOMARK_LABEL_FONT_SIZE = 18;
 const DOOR_LABEL_FONT_SIZE = 18;
 const DOOR_LABEL_COLOR = 0xc0c0c0;
@@ -94,9 +95,54 @@ function appendSegment(out: number[], a: readonly [number, number, number], b: r
   out.push(...a, color[0], color[1], color[2], color[3], ...b, color[0], color[1], color[2], color[3]);
 }
 
+function buildVisitedRoomIndex(map: FastMapData, roomStates: Uint8Array): Map<string, number> {
+  const index = new Map<string, number>();
+  for (let room = 0; room < map.roomCount; room++) {
+    if (roomStates[room] === ROOM_VISITED) index.set(`${Math.round(map.z[room]!)}:${map.x[room]}:${map.y[room]}`, room);
+  }
+  return index;
+}
+
+function pointNearVisitedRoom(map: FastMapData, visitedRooms: ReadonlyMap<string, number>, x: number, y: number, z: number): boolean {
+  const cellX = Math.floor(x);
+  const cellY = Math.floor(y);
+  const floor = Math.round(z);
+  for (let roomX = cellX - 2; roomX <= cellX + 2; roomX++) for (let roomY = cellY - 2; roomY <= cellY + 2; roomY++) {
+    const room = visitedRooms.get(`${floor}:${roomX}:${roomY}`);
+    if (room !== undefined && Math.hypot(x - (map.x[room]! + 0.5), y - (map.y[room]! + 0.5)) <= 1.5) return true;
+  }
+  return false;
+}
+
+function appendVisibleSegment(
+  out: number[], map: FastMapData, visitedRooms: ReadonlyMap<string, number>,
+  a: readonly [number, number, number], b: readonly [number, number, number], color: RGBA,
+): void {
+  if (a[2] !== b[2]) return;
+  const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+  const pieces = Math.max(1, Math.ceil(length / 0.25));
+  for (let piece = 0; piece < pieces; piece++) {
+    const start = piece / pieces;
+    const end = (piece + 1) / pieces;
+    const pointAt = (fraction: number): readonly [number, number, number] => [
+      a[0] + (b[0] - a[0]) * fraction,
+      a[1] + (b[1] - a[1]) * fraction,
+      a[2],
+    ];
+    const middle = (start + end) / 2;
+    if (pointNearVisitedRoom(map, visitedRooms, a[0] + (b[0] - a[0]) * middle, a[1] + (b[1] - a[1]) * middle, a[2])) {
+      appendSegment(out, pointAt(start), pointAt(end), color);
+    }
+  }
+}
+
 /** Batches MMapper LINE and ARROW marks plus exit connections by floor. */
 export function buildMapOverlayGeometry(map: FastMapData, roomStates?: Uint8Array): MapOverlayGeometry {
   const marks = map.infomarks;
+  const hasExploration = roomStates !== undefined;
+  const states = roomStates ?? new Uint8Array();
+  const revealAll = hasExploration && states.length > 0 && states.every(state => state === ROOM_VISITED);
+  const visitedRooms = hasExploration && !revealAll ? buildVisitedRoomIndex(map, states) : new Map<string, number>();
   const floors = new Map<number, number[]>();
   if (marks) for (let i = 0; i < marks.count; i++) {
     const type = marks.type[i]!;
@@ -111,7 +157,8 @@ export function buildMapOverlayGeometry(map: FastMapData, roomStates?: Uint8Arra
     const cls = marks.cls[i] ?? 0;
     const color = INFOMARK_CLASS_COLORS[cls] ?? WHITE;
     const resolved = color ?? (cls === 2 ? WATER : WHITE);
-    appendSegment(list, a, b, resolved);
+    if (!hasExploration || revealAll) appendSegment(list, a, b, resolved);
+    else appendVisibleSegment(list, map, visitedRooms, a, b, resolved);
     if (type === 2) {
       const dx = b[0] - a[0];
       const dy = b[1] - a[1];
@@ -122,8 +169,15 @@ export function buildMapOverlayGeometry(map: FastMapData, roomStates?: Uint8Arra
       const backX = b[0] - ux * head;
       const backY = b[1] - uy * head;
       const side = head * 0.55;
-      appendSegment(list, [backX - uy * side, backY + ux * side, z1], b, resolved);
-      appendSegment(list, [backX + uy * side, backY - ux * side, z1], b, resolved);
+      const arrowA: readonly [number, number, number] = [backX - uy * side, backY + ux * side, z1];
+      const arrowB: readonly [number, number, number] = [backX + uy * side, backY - ux * side, z1];
+      if (!hasExploration || revealAll) {
+        appendSegment(list, arrowA, b, resolved);
+        appendSegment(list, arrowB, b, resolved);
+      } else {
+        appendVisibleSegment(list, map, visitedRooms, arrowA, b, resolved);
+        appendVisibleSegment(list, map, visitedRooms, arrowB, b, resolved);
+      }
     }
   }
   const connections = buildExitConnectionGeometry(map, roomStates);

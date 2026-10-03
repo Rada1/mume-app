@@ -9,7 +9,7 @@ import {
     MessageSquare, CloudSun, Footprints,
     ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
     ChevronsUp, ChevronsDown, Heart, Zap,
-    ArrowUpLeft, ArrowUpRight, ArrowDownLeft, ArrowDownRight, CircleHelp
+    ArrowUpLeft, ArrowUpRight, ArrowDownLeft, ArrowDownRight
 } from 'lucide-react';
 import { GmcpOccupant, Message, Token } from '../../types';
 import { ansiConvert } from '../../utils/ansi';
@@ -590,6 +590,7 @@ const MessageItem = React.memo(({
                                         <span>{statusNotice.startsWith('you begin') ? 'You begin to feel ' : 'You are '}</span>
                                         <span className="regen-slow-word">{statusCondition}</span>
                                         <span>.</span>
+                                        {regenSlowTooltip && <span className="regen-slow-note">(regen slowed!)</span>}
                                     </>
                                 ) : (
                                     <TokenRenderer
@@ -599,11 +600,6 @@ const MessageItem = React.memo(({
                                         disableRoomInline={false}
                                         isRoomContentsLine={msg.isRoomContentsLine}
                                     />
-                                )}
-                                {regenSlowTooltip && (
-                                    <span className="regen-slow-info-cue" aria-hidden="true">
-                                        <CircleHelp size={12} strokeWidth={2.2} />
-                                    </span>
                                 )}
                                 <ResourceGainBadge gain={msg.resourceGain} />
                                 {msg.isHitImpact && sheenActive && !isPerformanceMode && (

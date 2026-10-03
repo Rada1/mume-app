@@ -1,3 +1,4 @@
+/** @file Renders the map with the selected legacy or worker-backed canvas. */
 import React, { useRef, useCallback, useEffect, useMemo, forwardRef } from 'react';
 import { useMapperRenderer } from './useMapperRenderer';
 import { useMapAnimation } from './useMapAnimation';
@@ -258,12 +259,11 @@ const LegacyMapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps 
 LegacyMapCanvas.displayName = 'LegacyMapCanvas';
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
-    const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode || state.isClassicMode);
     const [workerFailed, setWorkerFailed] = React.useState(false);
     const [workerFailureReason, setWorkerFailureReason] = React.useState<string | undefined>();
 
     if (!workerFailed) {
-        return <FastMapCanvas ref={ref} mapProps={props} transparentBackground={props.isImmersionMode === true && !isPerformanceMode} onFallback={reason => {
+        return <FastMapCanvas ref={ref} mapProps={props} transparentBackground={props.isImmersionMode === true} onFallback={reason => {
             console.error('[Mapper] WebGL renderer fell back to Canvas2D:', reason);
             setWorkerFailureReason(reason);
             setWorkerFailed(true);

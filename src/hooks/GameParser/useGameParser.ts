@@ -954,7 +954,11 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             isSilentEquipmentCapture,
             silentEquipmentCaptureProgressRef
         );
-        let isVisible = router.determineVisibility(lower, isSnoop) && !isSilentEquipmentResponseLine;
+        const isSilentScoreResponseLine = !isSnoop &&
+            /\d+\/\d+ hits, \d+\/\d+ mana, and \d+\/\d+ moves/i.test(lower) &&
+            capture.shouldSuppressSilentScoreResponse();
+        let isVisible = router.determineVisibility(lower, isSnoop) &&
+            !isSilentEquipmentResponseLine && !isSilentScoreResponseLine;
 
         const commResult = comm.parseComm(lineToParse, textOnly, lower);
         if (commResult.isSuppressed) return;

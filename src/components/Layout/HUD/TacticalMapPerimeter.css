@@ -17,6 +17,22 @@
     pointer-events: none;
 }
 
+/* A light radial vignette frames the expanded map edges while keeping its center clear. */
+.mobile-map-panel.map-expanded .mobile-map-edge-vignette {
+    position: absolute;
+    inset: 0;
+    display: block;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(4, 7, 8, 0) 28%,
+        rgba(4, 7, 8, 0.16) 42%,
+        rgba(4, 7, 8, 0.5) 66%,
+        rgba(4, 7, 8, 0.68) 100%
+    );
+}
+
 .mobile-map-panel.map-expanded .mobile-command-deck-persistent {
     position: absolute;
     top: 0;
@@ -25,6 +41,7 @@
     width: auto;
     height: var(--tactical-control-size);
     transform: none;
+    z-index: 1;
 }
 
 /* Keep the category controls in a slim centered rail above the map. */

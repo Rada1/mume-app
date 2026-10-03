@@ -12,7 +12,6 @@ export const useMapperExportImport = (
     characterName: string | null | undefined,
     addMessage: ((type: string, msg: string) => void) | undefined,
     controller: any,
-    setExploredMarkers?: React.Dispatch<React.SetStateAction<Set<string>>>
 ) => {
     const handleExportMap = useCallback(() => {
         const data = {
@@ -40,8 +39,6 @@ export const useMapperExportImport = (
                 if (data.rooms) setRooms(data.rooms);
                 if (data.markers) {
                     setMarkers(data.markers);
-                    const ids = Object.keys(data.markers);
-                    if (ids.length > 0) setExploredMarkers?.(prev => new Set([...prev, ...ids]));
                 }
                 addMessage?.('system', '[Mapper] Map data imported successfully.');
             } catch (err) {
@@ -49,7 +46,7 @@ export const useMapperExportImport = (
             }
         };
         reader.readAsText(file);
-    }, [addMessage, setRooms, setMarkers, setExploredMarkers]);
+    }, [addMessage, setRooms, setMarkers]);
 
     const handleImportMMapper = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -73,10 +70,8 @@ export const useMapperExportImport = (
             controller.loadImportedMapData(data.rooms, canonicalMap);
             if (data.markers && markerCount > 0) {
                 setMarkers(data.markers);
-                const ids = Object.keys(data.markers);
-                setExploredMarkers?.(prev => new Set([...prev, ...ids]));
                 const sampleTexts = Object.values(data.markers).slice(0, 5).map((m: any) => `"${m.text}" @(${m.x},${m.y})`).join(', ');
-                addMessage?.('system', `[Mapper] Imported ${ids.length} markers (saved). First few: ${sampleTexts}`);
+                addMessage?.('system', `[Mapper] Imported ${markerCount} markers (saved). First few: ${sampleTexts}`);
             } else {
                 addMessage?.('system', '[Mapper] No markers found in .mm2 (parser may not have decoded them).');
             }
@@ -84,7 +79,7 @@ export const useMapperExportImport = (
             console.error('[mm2 import] error:', err);
             addMessage?.('system', '[Mapper] Error parsing .mm2 file.');
         }
-    }, [addMessage, controller, setMarkers, setExploredMarkers]);
+    }, [addMessage, controller, setMarkers]);
 
     return { handleExportMap, handleImportMap, handleImportMMapper };
 };

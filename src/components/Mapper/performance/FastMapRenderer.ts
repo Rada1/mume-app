@@ -133,7 +133,10 @@ export class FastMapRenderer {
 
   setExploredRooms(roomIds: readonly string[], revealAll: boolean): void {
     const changed = this.exploration.setVisitedRooms(roomIds, revealAll);
-    if (changed.length && this.map) { applyRoomVisibility(this.gl, this.map, changed, this.roomLayerByRoom, room => this.exploration.getRoomState(room)); this.overlays.setExploration(this.exploration.getRoomStates()); }
+    if (this.map) {
+      if (changed.length) applyRoomVisibility(this.gl, this.map, changed, this.roomLayerByRoom, room => this.exploration.getRoomState(room));
+      this.overlays.setExploration(this.exploration.getRoomStates());
+    }
   }
 
   visitRoom(roomId: string): void {

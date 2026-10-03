@@ -79,7 +79,7 @@ export const useMapPersistence = ({
                 localStorage.setItem(storageKey, roomsJson);
                 localStorage.setItem(markerStorageKey, JSON.stringify(markers));
                 localStorage.setItem('mume_mapper_explored', JSON.stringify(Array.from(exploredVnums)));
-                localStorage.setItem('mume_mapper_explored_markers', JSON.stringify(Array.from(exploredMarkers)));
+                localStorage.setItem('mume_mapper_explored_markers_v2', JSON.stringify(Array.from(exploredMarkers)));
                 localStorage.setItem('mume_mapper_unveil', String(unveilMap));
                 perfMonitor.recordSave('full', performance.now() - t0, roomsJson.length, Object.keys(rooms).length);
             } catch (e) {

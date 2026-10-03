@@ -521,6 +521,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                     onClose={() => setInfoRoomId(null)}
                     cardRef={cardRef}
                     preloadedCoordsRef={preloadedCoordsRef}
+                    isMmapperMap={performanceMapRef.current !== null}
                     setViewZ={setViewZ}
                     isDarkMode={isDarkMode}
                     onWalkStart={(rid) => { startWalking(rid); }}
