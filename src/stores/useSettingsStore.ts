@@ -352,7 +352,7 @@ export const useSettingsStore = create<SettingsState>()(
             customSoundEffects: {},
 
             allowMapPersistence: true,
-            unveilMap: true,
+            unveilMap: false,
             zoneFocusGrayscale: false,
             showMapperToolbar: false,
             isTextRevealEnabled: false,
@@ -524,10 +524,10 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 38,
+            version: 39,
             migrate: (persistedState: any, version: number) => {
-                if (version < 38) {
-                    persistedState.unveilMap = true;
+                if (version < 39) {
+                    persistedState.unveilMap = false;
                 }
 
                 if (version < 37) {
