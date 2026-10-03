@@ -3,13 +3,13 @@
  * @description Logic for determining message visibility and routing to various UI logs.
  */
 
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { InlineCategoryConfig } from '../../types';
 import type { GmcpOccupant } from '../../types';
 import { isEnvironmentEventLine } from '../../utils/environmentEventUtils';
 import { hasXmlTag } from '../../utils/xmlTagUtils';
 import { getTraitsForName } from '../../utils/inlineActionModel';
-import { getPlainRoomObjectDescription, getRoomObjectEntityNames, getTaggedRoomObjectNames, isRoomItemPresenceLine } from './roomItemDetection';
+import { getPlainRoomObjectDescription, getRoomObjectEntityNames, getTaggedRoomObjectNames, isRoomItemPresenceLine, parseRoomSurfaceItemList } from './roomItemDetection';
 import type { Token } from '../../types';
 
 interface RoomItemDetectionOptions {
@@ -112,6 +112,7 @@ interface MessageRouterDeps {
 }
 
 export const useMessageRouter = (deps: MessageRouterDeps) => {
+    const pendingRoomSurfaceListRef = useRef<{ surface: string; pendingItem: string } | null>(null);
     const {
         capture,
         setWhoList, setWhereList, setRoomItems, registerEntity, setDiscoveredItems, extractNoun,
@@ -146,10 +147,51 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
     }, []);
 
     const detectItemsInRoom = useCallback((textOnly: string, cleanLine: string, isDrawerHiding: boolean, options: RoomItemDetectionOptions = {}) => {
-        const plainRoomObjectName = getPlainRoomObjectDescription(textOnly);
+        const plainObjectCandidate = getPlainRoomObjectDescription(textOnly);
+        const directSurfaceList = parseRoomSurfaceItemList(textOnly);
+        let surfaceItems = directSurfaceList?.items || [];
+        let isSurfaceContinuation = false;
+        if (directSurfaceList) {
+            pendingRoomSurfaceListRef.current = directSurfaceList.pendingItem
+                ? { surface: directSurfaceList.surface, pendingItem: directSurfaceList.pendingItem }
+                : null;
+        } else if (pendingRoomSurfaceListRef.current) {
+            const hasCharacterEntity = options.tokens?.some(token => token.type === 'entity'
+                && ['character', 'player', 'npc', 'enemy', 'neutral', 'ally', 'mount'].includes(token.metadata?.kind?.toLowerCase() || ''));
+            const hasRoomEntity = options.tokens?.some(token => token.type === 'entity'
+                && (token.metadata?.kind?.toLowerCase() === 'room' || token.metadata?.category?.toLowerCase() === 'cat-room'));
+            const continuation = textOnly.trim();
+            if (!hasCharacterEntity && !hasRoomEntity && continuation
+                && !/^(?:exits?:|obvious exits:)/i.test(continuation)) {
+                const pending = pendingRoomSurfaceListRef.current;
+                const continuedList = parseRoomSurfaceItemList(`On the ${pending.surface}, there are ${pending.pendingItem} ${continuation}`);
+                if (continuedList) {
+                    isSurfaceContinuation = true;
+                    surfaceItems = continuedList.items;
+                    pendingRoomSurfaceListRef.current = continuedList.pendingItem
+                        ? { surface: pending.surface, pendingItem: continuedList.pendingItem }
+                        : null;
+                }
+            } else {
+                pendingRoomSurfaceListRef.current = null;
+            }
+        }
+        const candidateName = plainObjectCandidate ? normalizeRoomObjectName(plainObjectCandidate).toLowerCase() : '';
+        const matchesCharacterEntity = Boolean(candidateName && options.tokens?.some(token => {
+            if (token.type !== 'entity') return false;
+            const kind = token.metadata?.kind?.toLowerCase();
+            const category = token.metadata?.category?.toLowerCase();
+            const isCharacter = ['character', 'player', 'npc', 'enemy', 'neutral', 'ally', 'mount'].includes(kind || '')
+                || ['cat-npc', 'cat-mount', 'cat-enemy', 'cat-neutral', 'cat-ally'].includes(category || '');
+            if (!isCharacter) return false;
+            const characterName = normalizeRoomObjectName(token.content).toLowerCase();
+            return characterName && (candidateName.includes(characterName) || characterName.includes(candidateName));
+        }));
+        const plainRoomObjectName = matchesCharacterEntity ? null : plainObjectCandidate;
         const appearanceMatch = textOnly.trim().match(/^(?:a|an|some)\s+(.+?)\s+(?:suddenly\s+)?appears[.!]?$/i);
         const isFoodAppearance = Boolean(appearanceMatch && getTraitsForName(appearanceMatch[1]).some(trait => trait.id === 'trait-food'));
-        const isRoomItemLine = isRoomItemPresenceLine(textOnly, cleanLine, options.isRoomContext);
+        const isRoomItemLine = isSurfaceContinuation || directSurfaceList !== null
+            || isRoomItemPresenceLine(textOnly, cleanLine, options.isRoomContext);
         const taggedObjects = isRoomItemLine ? getTaggedRoomObjectNames(cleanLine) : [];
         const tokenObjects = isRoomItemLine ? getRoomObjectEntityNames(options.tokens || []) : [];
         // A `look` response is commonly handled as a capture session. Corpses
@@ -158,11 +200,19 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         // to offer the corpse as a source. Food spawn messages also describe
         // new room targets and must survive an overlapping capture.
         const containsCorpse = /\bcorpse\b/i.test(textOnly) || /<object\b[^>]*>[^<]*\bcorpse\b/i.test(cleanLine);
-        if ((capture.hasSession() && !containsCorpse && !isFoodAppearance && !plainRoomObjectName && taggedObjects.length === 0 && tokenObjects.length === 0) || isDrawerHiding) return;
-        if (!shouldDetectRoomItemsFromLine(textOnly, cleanLine, options)) return;
+        if ((capture.hasSession() && !containsCorpse && !isFoodAppearance && !plainRoomObjectName && surfaceItems.length === 0 && taggedObjects.length === 0 && tokenObjects.length === 0) || isDrawerHiding) return;
+        if (!isSurfaceContinuation && !shouldDetectRoomItemsFromLine(textOnly, cleanLine, options)) return;
 
-        const observedTaggedObjects = taggedObjects.length > 0 ? taggedObjects : tokenObjects;
+        const hasIncompleteSurfaceChunk = Boolean(directSurfaceList?.pendingItem) || isSurfaceContinuation;
+        const observedTaggedObjects = hasIncompleteSurfaceChunk ? [] : taggedObjects.length > 0 ? taggedObjects : tokenObjects;
         const objects: string[] = observedTaggedObjects.map(name => normalizeRoomObjectName(name) || 'object');
+
+        surfaceItems.forEach(name => {
+            const normalizedName = normalizeRoomObjectName(name).toLowerCase();
+            if (normalizedName && !objects.some(objectName => normalizeRoomObjectName(objectName).toLowerCase() === normalizedName)) {
+                objects.push(name);
+            }
+        });
 
         // Some room descriptions include visible objects in plain prose, with
         // no <object> tag. Preserve those targets for Get and command menus.

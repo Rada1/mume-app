@@ -24,6 +24,9 @@ const QuickChip: React.FC<QuickChipProps> = ({ label, command, hotkey, isPressed
     const didSwipe = useRef(false);
 
     const handlePointerDown = (e: React.PointerEvent) => {
+        // Keep the command input focused so tapping a quick button does not
+        // dismiss the mobile keyboard before its command is sent.
+        e.preventDefault();
         e.currentTarget.setPointerCapture(e.pointerId);
         pointerStartX.current = e.clientX;
         didSwipe.current = false;
@@ -87,22 +90,24 @@ export const QuickButtonBar: React.FC = () => {
     const quickButtons = useUIStore(s => s.quickButtons);
     const addQuickButton = useUIStore(s => s.addQuickButton);
     const removeQuickButton = useUIStore(s => s.removeQuickButton);
-    const { executeCommand, triggerHaptic } = useGame();
+    const { executeCommand, triggerHaptic, viewport } = useGame();
 
     const [isCreating, setIsCreating] = useState(false);
     const [labelInput, setLabelInput] = useState('');
     const [commandInput, setCommandInput] = useState('');
     const formRef = useRef<HTMLDivElement>(null);
     const commandInputRef = useRef<HTMLInputElement>(null);
+    const restoreCommandFocusRef = useRef(false);
 
     const nextDefaultLabel = `Q${quickButtons.length + 1}`;
 
     const openCreate = useCallback(() => {
         triggerHaptic(10);
+        restoreCommandFocusRef.current = Boolean(viewport?.isMobile);
         setLabelInput(`Q${quickButtons.length + 1}`);
         setCommandInput('');
         setIsCreating(true);
-    }, [triggerHaptic, quickButtons.length]);
+    }, [triggerHaptic, quickButtons.length, viewport?.isMobile]);
 
     const closeCreate = useCallback(() => {
         setIsCreating(false);
@@ -116,7 +121,14 @@ export const QuickButtonBar: React.FC = () => {
         const lbl = labelInput.trim() || nextDefaultLabel;
         addQuickButton({ label: lbl, command: cmd });
         triggerHaptic(20);
+        const shouldRestoreCommandFocus = restoreCommandFocusRef.current;
+        restoreCommandFocusRef.current = false;
         closeCreate();
+        if (shouldRestoreCommandFocus) {
+            window.requestAnimationFrame(() => {
+                document.getElementById('mud-input')?.focus();
+            });
+        }
     }, [commandInput, labelInput, nextDefaultLabel, addQuickButton, triggerHaptic, closeCreate]);
 
     const [pressedId, setPressedId] = useState<string | null>(null);
@@ -151,8 +163,10 @@ export const QuickButtonBar: React.FC = () => {
     const handleFire = useCallback((command: string, id?: string) => {
         if (id) flashPressed(id);
         triggerHaptic(15);
-        executeCommand(command);
-    }, [triggerHaptic, executeCommand, flashPressed]);
+        executeCommand(command, false, false, false, false, {
+            shouldFocus: !viewport?.isMobile || viewport?.isKeyboardOpen
+        });
+    }, [triggerHaptic, executeCommand, flashPressed, viewport?.isKeyboardOpen, viewport?.isMobile]);
 
     // Global hotkey F1-F12 mapping
     useEffect(() => {
@@ -240,6 +254,7 @@ export const QuickButtonBar: React.FC = () => {
                     />
                     <button
                         className="quick-create-confirm"
+                        onPointerDown={e => e.preventDefault()}
                         onClick={handleCreate}
                         disabled={!commandInput.trim()}
                     >

@@ -22,7 +22,6 @@ const PROFILE_QUERIES: CharacterInfoQuery[] = [
 ];
 
 const QUERIES: CharacterInfoQuery[] = [
-    { field: 'citizenships', command: 'info %c' },
     { field: 'age', command: 'info %a' },
     { field: 'height', command: 'info %h' },
     { field: 'warFame', command: 'info %K' },
@@ -33,7 +32,8 @@ const QUERIES: CharacterInfoQuery[] = [
 export const useCharacterInfoRefresh = (
     characterName: string,
     isPlaying: boolean,
-    executeCommand: (command: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void
+    executeCommand: (command: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void,
+    autoStartProfileRefresh = true
 ): (() => void) => {
     const requestRefreshRef = useRef<(() => void) | null>(null);
 
@@ -89,9 +89,11 @@ export const useCharacterInfoRefresh = (
         };
         const unsubscribe = subscribeToCharacterInfoRefresh(requestNext);
         requestRefreshRef.current = startRefresh;
-        // These four values are shown in the character bar but are not part of
+        // These profile values are shown in the character bar but are not part of
         // the regular vitals stream. Fetch them quietly once after login.
-        autoStartTimeout = window.setTimeout(() => startRefresh(PROFILE_QUERIES), 1500);
+        if (autoStartProfileRefresh) {
+            autoStartTimeout = window.setTimeout(() => startRefresh(PROFILE_QUERIES), 1500);
+        }
         return () => {
             active = false;
             window.clearTimeout(autoStartTimeout);
@@ -100,7 +102,7 @@ export const useCharacterInfoRefresh = (
             requestRefreshRef.current = null;
             beginCharacterInfoRefresh([]);
         };
-    }, [characterName, isPlaying, executeCommand]);
+    }, [autoStartProfileRefresh, characterName, isPlaying, executeCommand]);
 
     return useCallback(() => requestRefreshRef.current?.(), []);
 };

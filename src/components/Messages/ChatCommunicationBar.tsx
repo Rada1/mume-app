@@ -7,6 +7,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Send } from 'lucide-react';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { useGame } from '../../context/GameContext';
 import { useChatPanel } from '../../hooks/useChatPanel';
 import { CHAT_PARLEY_CHANNELS, getChatChannelColor, getChatChannelSuggestions, getChatTargetSuggestions } from '../../utils/chatWindowUtils';
 import { getTargetClassificationColor } from '../../utils/targetClassificationColor';
@@ -18,6 +19,7 @@ interface ChatCommunicationBarProps {
 }
 
 const ChatCommunicationBar: React.FC<ChatCommunicationBarProps> = ({ chat }) => {
+    const { triggerHaptic } = useGame();
     const channelAnchorRef = useRef<HTMLButtonElement>(null);
     const targetAnchorRef = useRef<HTMLButtonElement>(null);
     const [openPicker, setOpenPicker] = useState<'channel' | 'target' | null>(null);
@@ -46,6 +48,7 @@ const ChatCommunicationBar: React.FC<ChatCommunicationBarProps> = ({ chat }) => 
 
     const chooseTarget = (value: string) => {
         chat.setTarget(value || null);
+        if (value !== (chat.target || '')) triggerHaptic?.(15);
         setOpenPicker(null);
     };
 

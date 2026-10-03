@@ -69,6 +69,8 @@ interface SettingsState {
     theme: 'dark' | 'light';
     drawerZoom: number;
     isImmersionMode: boolean;
+    isImmersionWeatherEffectsEnabled: boolean;
+    isImmersionTextAnimationsEnabled: boolean;
     isClassicMode: boolean;
     isPerformanceMode: boolean;
     keepScreenAwake: boolean;
@@ -94,6 +96,8 @@ interface SettingsState {
     showSpectatePromptInLog: boolean;
     useMobileAccountPanels: boolean;
     showChatWindow: boolean;
+    showGroupPanel: boolean;
+    showCommandSuggestions: boolean;
     showControls: boolean;
     showOrganicTerrain: boolean;
     hidePrompt: boolean;
@@ -102,6 +106,7 @@ interface SettingsState {
     isDiscordEnabled: boolean;
     isNewbieMode: boolean;
     autoSaveSessions: boolean;
+    autoLootValuables: boolean;
     soundTriggers: import('../types').SoundTrigger[];
     teleportTargets: TeleportTarget[];
     teleportTargetsByCharacter: Record<string, TeleportTarget[]>;
@@ -142,6 +147,8 @@ interface SettingsState {
     setTheme: (val: 'dark' | 'light') => void;
     setDrawerZoom: (val: number) => void;
     setIsImmersionMode: (val: boolean) => void;
+    setIsImmersionWeatherEffectsEnabled: (val: boolean) => void;
+    setIsImmersionTextAnimationsEnabled: (val: boolean) => void;
     setIsClassicMode: (val: boolean) => void;
     setIsPerformanceMode: (val: boolean) => void;
     setKeepScreenAwake: (val: boolean) => void;
@@ -169,6 +176,8 @@ interface SettingsState {
     setShowSpectatePromptInLog: (val: boolean) => void;
     setUseMobileAccountPanels: (val: boolean) => void;
     setShowChatWindow: (val: boolean) => void;
+    setShowGroupPanel: (val: boolean) => void;
+    setShowCommandSuggestions: (val: boolean) => void;
     setShowControls: (val: boolean) => void;
     setShowOrganicTerrain: (val: boolean) => void;
     setHidePrompt: (val: boolean) => void;
@@ -177,6 +186,7 @@ interface SettingsState {
     setIsDiscordEnabled: (val: boolean) => void;
     setIsNewbieMode: (val: boolean) => void;
     setAutoSaveSessions: (val: boolean) => void;
+    setAutoLootValuables: (val: boolean) => void;
     setSoundTriggers: (val: import('../types').SoundTrigger[]) => void;
     setTeleportTargets: (val: TeleportTarget[] | ((prev: TeleportTarget[]) => TeleportTarget[])) => void;
     setCurrentCharacter: (name: string | null) => void;
@@ -286,6 +296,8 @@ export const useSettingsStore = create<SettingsState>()(
             theme: 'dark',
             drawerZoom: 1.0,
             isImmersionMode: false,
+            isImmersionWeatherEffectsEnabled: false,
+            isImmersionTextAnimationsEnabled: false,
             isClassicMode: false,
             isPerformanceMode: false,
             keepScreenAwake: false,
@@ -312,6 +324,8 @@ export const useSettingsStore = create<SettingsState>()(
             showSpectatePromptInLog: true,
             useMobileAccountPanels: true,
             showChatWindow: false,
+            showGroupPanel: false,
+            showCommandSuggestions: false,
             showControls: true,
             showOrganicTerrain: true,
             hidePrompt: false,
@@ -321,6 +335,7 @@ export const useSettingsStore = create<SettingsState>()(
             isDiscordEnabled: true,
             isNewbieMode: false,
             autoSaveSessions: true,
+            autoLootValuables: false,
             soundTriggers: [],
             teleportTargets: [],
             teleportTargetsByCharacter: {},
@@ -332,7 +347,7 @@ export const useSettingsStore = create<SettingsState>()(
             zoneMusic: [],
             masterVolume: 1.0,
             sfxVolume: 0.5,
-            musicVolume: 0.5,
+            musicVolume: 0.1,
             drumVolume: 0.65,
             customSoundEffects: {},
 
@@ -346,7 +361,7 @@ export const useSettingsStore = create<SettingsState>()(
             useLegacyMapArt: true,
             hideMapHeaderFooter: false,
             mapDrawerOpacity: 1.0,
-            mapBrightness: 100,
+            mapBrightness: 50,
             characterDrawerOpacity: 1.0,
             bottomBarOpacity: 1.0,
             mapTileVisuals: DEFAULT_MAP_TILE_VISUALS,
@@ -370,6 +385,8 @@ export const useSettingsStore = create<SettingsState>()(
             setTheme: (theme) => set({ theme }),
             setDrawerZoom: (drawerZoom) => set({ drawerZoom }),
             setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
+            setIsImmersionWeatherEffectsEnabled: (isImmersionWeatherEffectsEnabled) => set({ isImmersionWeatherEffectsEnabled }),
+            setIsImmersionTextAnimationsEnabled: (isImmersionTextAnimationsEnabled) => set({ isImmersionTextAnimationsEnabled }),
             setIsClassicMode: (isClassicMode) => set({ isClassicMode }),
             setIsPerformanceMode: (isPerformanceMode) => set({ isPerformanceMode }),
             setKeepScreenAwake: (keepScreenAwake) => set({ keepScreenAwake }),
@@ -395,6 +412,8 @@ export const useSettingsStore = create<SettingsState>()(
             setShowSpectatePromptInLog: (showSpectatePromptInLog) => set({ showSpectatePromptInLog }),
             setUseMobileAccountPanels: (useMobileAccountPanels) => set({ useMobileAccountPanels }),
             setShowChatWindow: (showChatWindow) => set({ showChatWindow }),
+            setShowGroupPanel: (showGroupPanel) => set({ showGroupPanel }),
+            setShowCommandSuggestions: (showCommandSuggestions) => set({ showCommandSuggestions }),
             setShowControls: (showControls) => set({ showControls }),
             setShowOrganicTerrain: (showOrganicTerrain) => set({ showOrganicTerrain }),
             setHidePrompt: (hidePrompt) => set({ hidePrompt }),
@@ -403,6 +422,7 @@ export const useSettingsStore = create<SettingsState>()(
             setIsDiscordEnabled: (isDiscordEnabled) => set({ isDiscordEnabled }),
             setIsNewbieMode: (isNewbieMode) => set({ isNewbieMode }),
             setAutoSaveSessions: (autoSaveSessions) => set({ autoSaveSessions }),
+            setAutoLootValuables: (autoLootValuables) => set({ autoLootValuables }),
             setSoundTriggers: (soundTriggers) => set({ soundTriggers }),
             setTeleportTargets: (val) => set((state) => {
                 const next = typeof val === 'function' ? val(state.teleportTargets) : val;
@@ -459,7 +479,7 @@ export const useSettingsStore = create<SettingsState>()(
             setUseLegacyMapArt: (useLegacyMapArt) => set({ useLegacyMapArt }),
             setHideMapHeaderFooter: (hideMapHeaderFooter) => set({ hideMapHeaderFooter }),
             setMapDrawerOpacity: (mapDrawerOpacity) => set({ mapDrawerOpacity }),
-            setMapBrightness: (mapBrightness) => set({ mapBrightness: Math.max(50, Math.min(300, mapBrightness)) }),
+            setMapBrightness: (mapBrightness) => set({ mapBrightness: Math.max(50, Math.min(100, mapBrightness)) }),
             setCharacterDrawerOpacity: (characterDrawerOpacity) => set({ characterDrawerOpacity }),
             setBottomBarOpacity: (bottomBarOpacity) => set({ bottomBarOpacity }),
             setMapTileVisuals: (mapTileVisuals) => set((state) => ({
@@ -504,8 +524,26 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 32,
+            version: 36,
             migrate: (persistedState: any, version: number) => {
+                if (version < 35) {
+                    persistedState.autoLootValuables = false;
+                }
+
+                if (version < 36 && typeof persistedState.mapBrightness === 'number') {
+                    persistedState.mapBrightness = persistedState.mapBrightness === 100
+                        ? 50
+                        : Math.max(50, Math.min(100, persistedState.mapBrightness));
+                }
+
+                if (version < 34) {
+                    persistedState.isImmersionWeatherEffectsEnabled = false;
+                }
+
+                if (version < 33) {
+                    persistedState.isImmersionTextAnimationsEnabled = false;
+                }
+
                 if (version < 1) {
                     // Update category IDs to canonical format
                     if (persistedState.inlineCategories && Array.isArray(persistedState.inlineCategories)) {
@@ -789,10 +827,15 @@ export const useSettingsStore = create<SettingsState>()(
                     ...DEFAULT_MAP_BACKGROUND_VISUALS,
                     ...(merged.mapBackgroundVisuals || {})
                 };
+                merged.mapBrightness = Math.max(50, Math.min(100, merged.mapBrightness ?? 50));
                 merged.showBackgroundImage = merged.showBackgroundImage ?? true;
                 merged.useLegacyMapArt = merged.useLegacyMapArt ?? true;
                 merged.hideMapHeaderFooter = merged.hideMapHeaderFooter ?? false;
                 merged.showChatWindow = merged.showChatWindow ?? false;
+                merged.showGroupPanel = merged.showGroupPanel ?? false;
+                merged.showCommandSuggestions = merged.showCommandSuggestions ?? false;
+                merged.isImmersionWeatherEffectsEnabled = merged.isImmersionWeatherEffectsEnabled ?? false;
+                merged.isImmersionTextAnimationsEnabled = merged.isImmersionTextAnimationsEnabled ?? false;
                 let validFilters = merged.zoneFilters;
                 if (validFilters) {
                     const firstKey = Object.keys(validFilters)[0];

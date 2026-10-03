@@ -217,16 +217,27 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
 
     const getAdditionalFlags = () => {
         const flags: React.JSX.Element[] = [];
-        
-        if (room.align) {
+
+        const alignLabels: Readonly<Record<number, string>> = {
+            0: 'undefined',
+            1: 'good',
+            2: 'neutral',
+            3: 'evil',
+        };
+        const alignLabel = typeof room.align === 'number'
+            ? alignLabels[room.align] || String(room.align)
+            : room.align?.trim();
+        const normalizedAlign = alignLabel?.toLowerCase();
+
+        if (alignLabel && normalizedAlign !== 'undefined' && normalizedAlign !== '0') {
             let color = '#cad3f5';
             let bg = 'rgba(202, 211, 245, 0.1)';
-            if (room.align.toLowerCase() === 'good') { color = '#89b4fa'; bg = 'rgba(137, 180, 250, 0.15)'; }
-            else if (room.align.toLowerCase() === 'evil') { color = '#f38ba8'; bg = 'rgba(243, 139, 168, 0.15)'; }
+            if (normalizedAlign === 'good') { color = '#89b4fa'; bg = 'rgba(137, 180, 250, 0.15)'; }
+            else if (normalizedAlign === 'evil') { color = '#f38ba8'; bg = 'rgba(243, 139, 168, 0.15)'; }
             
             flags.push(
                 <span key="align" style={{ color, backgroundColor: bg, padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', border: `1px solid ${color}33`, textTransform: 'uppercase' }}>
-                    Align: {room.align}
+                    Align: {alignLabel}
                 </span>
             );
         }

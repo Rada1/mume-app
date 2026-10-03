@@ -9,6 +9,7 @@ import { Swords, Target } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import { useActiveRoom, useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
+import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import {
     PRACTICE_CLASS_SKILLS, PracticeClassKey,
     PASSIVE_SKILLS, TARGETED_SKILLS
@@ -60,6 +61,14 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
         if (saved === 'spells' || saved === 'move') return 'combat';
         return (['combat', 'skills', 'utility'] as string[]).includes(saved || '') ? (saved as MainTab) : 'combat';
     });
+    const requestedTab = useCommandPanelStore(state => state.requestedTab);
+    const clearRequestedTab = useCommandPanelStore(state => state.clearRequestedTab);
+    useEffect(() => {
+        if (!requestedTab) return;
+        setActiveTab(requestedTab);
+        localStorage.setItem('mume-right-panel-tab', requestedTab);
+        clearRequestedTab();
+    }, [clearRequestedTab, requestedTab]);
 
     const [selectedClass, setSelectedClass] = useState<PracticeClassKey>(() => {
         const lower = (characterClass || '').toLowerCase();

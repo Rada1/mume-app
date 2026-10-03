@@ -689,7 +689,7 @@ export class AudioManager {
 
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(this.getEffectiveVolume(0.7, true), ctx.currentTime + 0.1);
+        gain.gain.linearRampToValueAtTime(this.getEffectiveVolume(0.7), ctx.currentTime + 0.1);
 
         source.connect(filter);
         filter.connect(gain);

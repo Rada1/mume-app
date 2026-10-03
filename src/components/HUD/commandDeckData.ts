@@ -2,8 +2,8 @@
 
 import React from 'react';
 import {
-    Box, MessageSquare, Hand,
-    Sword, HeartPulse, Footprints, Target, ScrollText, FlameKindling,
+    Box, MessageSquare,
+    Sword, HeartPulse, Footprints, Target, ScrollText,
     Eye, Tent, BedDouble, PackagePlus, PackageMinus, PackageOpen,
     Utensils, CupSoda, Shirt, Handshake, Cigarette,
     MessageSquareQuote, Smile, Info
@@ -44,10 +44,13 @@ const HorseHeadIcon: React.FC<{ size?: number; strokeWidth?: number }> = ({ size
 export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
     combat: [
         { label: 'Use', cmd: 'use ', targetKind: 'inventory' },
+        { label: 'Smoke', cmd: 'smoke ', targetKind: 'inventory' },
+        { label: 'Quaff', cmd: 'quaff ', targetKind: 'inventory' },
         { label: 'Draw', cmd: 'draw ', targetKind: 'worn-sheaths' },
         { label: 'Sheath', cmd: 'sheath ', targetKind: 'worn-weapons' },
         { label: 'Throw', cmd: 'throw ', targetKind: 'inventory' },
         { label: 'Recite', cmd: 'recite ', targetKind: 'inventory' },
+        { label: 'Wield', cmd: 'wield ', targetKind: 'inventory-weapons' },
     ],
     social: [
         { label: 'Say', cmd: 'say ' }, { label: 'Narrate', cmd: 'narrate ' },
@@ -60,8 +63,8 @@ export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
         { label: 'Equipment', cmd: 'equipment' }, { label: 'Time', cmd: 'time' },
         { label: 'Weather', cmd: 'weather' }, { label: 'Info', cmd: 'info' },
         { label: 'Group', cmd: 'group', needsTarget: true, targetKind: 'group' },
-        { label: 'Status', cmd: 'status', needsTarget: true, targetKind: 'status-panel' },
-        { label: 'Who', cmd: 'who' }, { label: 'Where', cmd: 'where' },
+        { label: 'Status', cmd: 'stat' },
+        { label: 'Who', cmd: 'who' },
         { label: 'Practice', cmd: 'practice', needsTarget: true, targetKind: 'status-panel' },
     ],
     room: [
@@ -78,11 +81,9 @@ export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
         { label: 'Put', cmd: 'put ', targetKind: 'inventory-container' },
         { label: 'Drop', cmd: 'drop ', targetKind: 'inventory' },
         { label: 'Wear', cmd: 'wear ', targetKind: 'inventory' },
-        { label: 'Wield', cmd: 'wield ', targetKind: 'inventory-weapons' },
         { label: 'Remove', cmd: 'remove ', targetKind: 'worn' },
         { label: 'Give', cmd: 'give ', targetKind: 'inventory-recipient' },
         { label: 'Empty', cmd: 'empty' },
-        { label: 'Use', cmd: 'use ' },
         { label: 'Buy', cmd: 'buy ', needsTarget: true, targetKind: 'shop' },
         { label: 'Sell', cmd: 'sell ', needsTarget: true, targetKind: 'inventory' },
         { label: 'Mend', cmd: 'mend ', needsTarget: true, targetKind: 'inventory' },
@@ -92,8 +93,6 @@ export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
         { label: 'Eat', cmd: 'eat ', targetKind: 'inventory' },
         { label: 'Drink', cmd: 'drink ', targetKind: 'inventory' },
         { label: 'Pour', cmd: 'pour ', needsTarget: true, targetKind: 'pour' },
-        { label: 'Smoke', cmd: 'smoke ', targetKind: 'inventory' },
-        { label: 'Quaff', cmd: 'quaff ', targetKind: 'inventory' },
         { label: 'Butcher', cmd: 'butcher' },
         { label: 'Cook', cmd: 'cook' },
         { label: 'Mix', cmd: 'mix' },
@@ -114,9 +113,7 @@ export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
 export const DECK_TABS: { key: TabKey; label: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number }> }[] = [
     { key: 'combat', label: 'Special', icon: Box },
     { key: 'social', label: 'Social', icon: MessageSquare },
-    { key: 'utility', label: 'Utility', icon: Info },
-    { key: 'room', label: 'Room', icon: FlameKindling },
-    { key: 'personal', label: 'Personal', icon: Hand },
+    { key: 'utility', label: 'Info', icon: Info },
     { key: 'consume', label: 'Consume', icon: Utensils },
     { key: 'mounts', label: 'Mounts', icon: HorseHeadIcon },
 ];

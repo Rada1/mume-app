@@ -72,11 +72,14 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             triggerRingAnimation(cx, cy, color);
         }
 
+        const inputEl = document.querySelector('.input-field');
+        const preserveInputFocus = viewport.isMobile && !!popoverState && !!inputEl && document.activeElement === inputEl;
+
         // --- Keyboard Focus Fix (Mobile) ---
         // If we are on mobile, and the keyboard is NOT currently open (according to viewport tracker),
         // we explicitly blur the input to ensure focus isn't "stuck" there.
         // A stuck focus causes the OS to re-trigger the keyboard on the next pointer interaction.
-        if (viewport.isMobile && !viewport.isKeyboardOpen) {
+        if (viewport.isMobile && !viewport.isKeyboardOpen && !preserveInputFocus) {
             const inputEl = document.querySelector('.input-field') as HTMLInputElement;
             if (inputEl && document.activeElement === inputEl) {
                 inputEl.blur();
@@ -300,7 +303,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                 isSilentCapture ? true : false,
                 false,
                 isSilentCapture ? true : false,
-                { shouldFocus: false, fromUi: true }
+                { shouldFocus: preserveInputFocus, fromUi: true }
             );
 
             // Handle Close Keyboard feature

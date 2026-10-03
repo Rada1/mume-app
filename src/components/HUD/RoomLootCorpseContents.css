@@ -1,0 +1,120 @@
+/** @file RoomLootCorpseContents.css — Item selection and transfer controls within a corpse row. */
+/* --- Component Styles --- */
+.room-loot-corpse { border-top: 1px solid rgba(255, 255, 255, 0.06); }
+
+.room-loot-corpse-toggle {
+    width: 100%;
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 2px;
+    border: 0;
+    color: #c6b995;
+    background: transparent;
+    font-size: 10px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.room-loot-loading { margin-left: auto; color: #a99d87; }
+
+.room-loot-corpse-body {
+    display: grid;
+    gap: 3px;
+    padding: 0 0 8px 18px;
+}
+
+.room-loot-empty { padding: 7px 0; color: #9f9685; font-size: 10px; }
+
+.room-loot-item-row {
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.room-loot-item-row label {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #ded5c4;
+    font-size: 11px;
+}
+
+.room-loot-item-row label input {
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    accent-color: #edb84f;
+}
+.room-loot-item-row label span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.room-loot-item-row > button {
+    border: 1px solid rgba(217, 178, 106, 0.3);
+    border-radius: 4px;
+    padding: 4px 7px;
+    color: #d8c08d;
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.room-loot-selection-bar {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    margin: 4px -10px -8px -18px;
+    padding: 8px 10px;
+    border-top: 1px solid rgba(217, 178, 106, 0.26);
+    background: rgba(25, 23, 19, 0.98);
+}
+
+.room-loot-selection-bar > span { margin-right: auto; color: #b8ac96; font-size: 10px; }
+.room-loot-selection-bar > button {
+    padding: 6px 8px;
+    border: 1px solid rgba(237, 184, 79, 0.48);
+    border-radius: 4px;
+    color: #f5d99e;
+    background: rgba(237, 184, 79, 0.12);
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.room-loot-overlay.is-mobile .room-loot-corpse-toggle,
+.room-loot-overlay.is-mobile .room-loot-item-row > button,
+.room-loot-overlay.is-mobile .room-loot-selection-bar > button {
+    min-height: 44px;
+}
+
+.room-loot-overlay.is-mobile .room-loot-item-row > button {
+    flex: 0 0 58px;
+}
+
+.room-loot-overlay.is-mobile .room-loot-selection-bar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    margin-right: -10px;
+    margin-left: -10px;
+}
+
+.room-loot-overlay.is-mobile .room-loot-selection-bar > span {
+    grid-column: 1 / -1;
+    margin-right: 0;
+}
+
+.room-loot-overlay.is-mobile .room-loot-selection-bar > button {
+    min-width: 0;
+    padding: 7px 5px;
+    white-space: normal;
+    line-height: 1.2;
+}

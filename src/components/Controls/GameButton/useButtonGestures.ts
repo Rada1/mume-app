@@ -6,9 +6,8 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { ActionType, CustomButton, PopoverState, SwipeDirection, ExecuteCommand } from '../../../types';
 
 import { getButtonCommand } from '../../../utils/buttonUtils';
-import { rememberCommandTarget } from '../../../utils/commandTargetMemory';
-import { canCommandAcceptTarget } from '../../../utils/commandTargetUtils';
-import type { UseTacticalTargetingReturn } from './useTacticalTargeting';
+import { BLANK_TARGET_VALUE, canCommandAcceptTarget, getDefaultCommandTarget } from '../../../utils/commandTargetUtils';
+import type { UseTacticalTargetingReturn } from './tacticalTargetingTypes';
 import type { TacticalSwapCell } from './TacticalCommandPalette';
 
 export interface UseButtonGesturesProps {
@@ -28,8 +27,6 @@ export interface UseButtonGesturesProps {
     isCancelling: boolean;
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
     executeCommand: ExecuteCommand;
-    onCommandExecuted?: (command: string) => void;
-    repeatTapCommand?: string;
     setActiveSet: (setId: string) => void;
     handleButtonClick: (button: CustomButton, e: React.MouseEvent | React.PointerEvent) => void;
     setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;
@@ -41,6 +38,8 @@ export interface UseButtonGesturesProps {
     setRayParams: React.Dispatch<React.SetStateAction<{ angle: number, length: number, opacity: number, color?: string }>>;
     isMobile?: boolean;
     tacticalTargeting?: UseTacticalTargetingReturn;
+    gestureDefaultTargetRef?: React.MutableRefObject<(command: string) => string | null>;
+    gestureDefaultCommandRef?: React.MutableRefObject<(command: string) => string | null>;
     isStagedTargetMenuRef?: React.RefObject<boolean>;
     onSelectStagedTargetRef?: React.RefObject<(targetValue: string, columnIndex: number) => boolean>;
     onCommitStagedTargetRef?: React.RefObject<() => boolean>;
@@ -73,8 +72,6 @@ export const useButtonGestures = ({
     isCancelling,
     setPopoverState,
     executeCommand,
-    onCommandExecuted,
-    repeatTapCommand = '',
     setActiveSet,
     handleButtonClick,
     setButtons,
@@ -86,6 +83,8 @@ export const useButtonGestures = ({
     setRayParams,
     isMobile,
     tacticalTargeting,
+    gestureDefaultTargetRef,
+    gestureDefaultCommandRef,
     isStagedTargetMenuRef,
     onSelectStagedTargetRef,
     onCommitStagedTargetRef,
@@ -106,6 +105,20 @@ export const useButtonGestures = ({
     const lastActiveDirRef = useRef<SwipeDirection | 'center' | null>(null);
     const lastCancellingRef = useRef(false);
     const currentCommandRef = useRef<string>(button.command);
+    const isTacticalSwipeButton = (element: HTMLElement) => button.setId.toLowerCase() === 'tactical'
+        || button.id.startsWith('tactical-')
+        || element.classList.contains('deck-category-button');
+    const getGestureTarget = (command: string, element: HTMLElement): string | null => {
+        const effectiveTarget = tacticalTargeting
+            ? tacticalTargeting.getEffectiveTarget(command)
+            : target;
+        if (effectiveTarget) return effectiveTarget === BLANK_TARGET_VALUE ? null : effectiveTarget;
+        if (!isTacticalSwipeButton(element) || tacticalTargeting?.isTargetColumnOpen) return null;
+        const defaultTarget = gestureDefaultTargetRef
+            ? gestureDefaultTargetRef.current(command)
+            : getDefaultCommandTarget(command);
+        return defaultTarget === BLANK_TARGET_VALUE ? null : defaultTarget;
+    };
 
     const getNextCommandPrefixes = useCallback((prev?: { commandPrefixes?: string[] } | null) => {
         const prefixes = prev?.commandPrefixes || [];
@@ -632,10 +645,15 @@ export const useButtonGestures = ({
         const distVal = Math.sqrt(dxVal * dxVal + dyVal * dyVal);
 
         const isLong = joystick.isTargetModifierActive;
-        const effectiveTarget = tacticalTargeting
-            ? tacticalTargeting.getEffectiveTarget(currentCommandRef.current || button.command)
-            : target;
-        const preview = getButtonCommand(button, dxVal, dyVal, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, effectiveTarget, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
+        const basePreview = getButtonCommand(button, dxVal, dyVal, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, null, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
+        const commandForTarget = basePreview?.cmd || currentCommandRef.current || button.command;
+        const effectiveTarget = getGestureTarget(commandForTarget, el);
+        const defaultCommand = isTacticalSwipeButton(el) && !tacticalTargeting?.isTargetColumnOpen
+            ? gestureDefaultCommandRef?.current(commandForTarget)
+            : null;
+        const preview = defaultCommand && basePreview
+            ? { ...basePreview, cmd: defaultCommand }
+            : getButtonCommand(button, dxVal, dyVal, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, effectiveTarget, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
         const nextPreview = preview?.cmd || null;
         if (preview?.cmd) {
             currentCommandRef.current = preview.cmd;
@@ -751,7 +769,7 @@ export const useButtonGestures = ({
         const rayLength = isDial ? 140 : distVal + 55;
         updateRay(snappedAngle, rayLength, shouldShowRay ? 1 : 0, rayColor);
 
-    }, [isEditMode, heldButton, button, activeDir, setActiveDir, setCommandPreview, wasDraggingRef, setHeldButton, joystick, target, setIsCancelling, isRebindingGestureRef, triggerHaptic, setPopoverState, isSoundEnabled, playClickSound, updateRay, isMobile, getNextCommandPrefixes, tacticalTargeting, isPanelPinned, selectPanelCellAtPoint]);
+    }, [isEditMode, heldButton, button, activeDir, setActiveDir, setCommandPreview, wasDraggingRef, setHeldButton, joystick, target, setIsCancelling, isRebindingGestureRef, triggerHaptic, setPopoverState, isSoundEnabled, playClickSound, updateRay, isMobile, getNextCommandPrefixes, tacticalTargeting, gestureDefaultTargetRef, gestureDefaultCommandRef, isPanelPinned, selectPanelCellAtPoint]);
 
     // --- Execution & Termination ---
     const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -878,7 +896,6 @@ export const useButtonGestures = ({
                 const resolved = canCommandAcceptTarget(paletteCommand)
                     ? tacticalTargeting.resolveCommandWithTarget(paletteCommand)
                     : paletteCommand;
-                onCommandExecuted?.(resolved);
                 executeCommand(resolved, false, false);
             }
             tacticalTargeting.resetTargeting();
@@ -1060,11 +1077,9 @@ export const useButtonGestures = ({
                 ?.closest('.unified-tactical-wheel .swipe-wheel-container'));
             if (didExecuteTargetedCommand) {
                 const resolvedCommand = tacticalTargeting.resolveCommandWithTarget(targetCommand);
-                onCommandExecuted?.(resolvedCommand);
-                executeCommand(resolvedCommand, false, false);
+            executeCommand(resolvedCommand, false, false);
             } else if (didExecuteBlankTargetCommand) {
-                onCommandExecuted?.(targetCommand.trim());
-                executeCommand(targetCommand.trim(), false, false);
+            executeCommand(targetCommand.trim(), false, false);
             }
             if (releasedOnSwipeWheel && (didCommitStagedCommand || didExecuteTargetedCommand || didExecuteBlankTargetCommand)) {
                 triggerHaptic(35);
@@ -1101,15 +1116,10 @@ export const useButtonGestures = ({
         const finalDy = isReturnToCenter ? 0 : dy;
 
         tacticalTargeting?.cancelHoldTimer();
-        const isQuickTap = dist < 15 && (el._maxDist || 0) < 15;
-        const tapRepeatCommand = isQuickTap ? repeatTapCommand.trim() : '';
-        const tapButton = tapRepeatCommand
-            ? { ...button, command: tapRepeatCommand, actionType: 'command' as ActionType }
-            : button;
-        const currentTargetCommand = tapRepeatCommand || currentCommandRef.current || button.command;
-        const effectiveTarget = tacticalTargeting
-            ? tacticalTargeting.getEffectiveTarget(currentTargetCommand)
-            : target;
+        const tapButton = button;
+        const basePreviewCmd = getButtonCommand(tapButton, finalDx, finalDy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, null, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
+        const currentTargetCommand = basePreviewCmd?.cmd || currentCommandRef.current || button.command;
+        const effectiveTarget = getGestureTarget(currentTargetCommand, el);
         if (tacticalTargeting?.isTargetColumnOpen && !effectiveTarget) {
             setHeldButton(null);
             setCommandPreview(null);
@@ -1128,7 +1138,22 @@ export const useButtonGestures = ({
             tacticalTargeting.releaseTargetMenu();
             return;
         }
-        const previewCmd = getButtonCommand(tapButton, finalDx, finalDy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, effectiveTarget, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
+        const defaultCommand = isTacticalSwipeButton(el) && !tacticalTargeting?.isTargetColumnOpen
+            ? gestureDefaultCommandRef?.current(currentTargetCommand)
+            : null;
+        const previewCmd = defaultCommand && basePreviewCmd
+            ? { ...basePreviewCmd, cmd: defaultCommand }
+            : getButtonCommand(tapButton, finalDx, finalDy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, effectiveTarget, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
+
+        const isTacticalSwipe = isTacticalSwipeButton(el);
+        if (isTacticalSwipe && (el._maxDist || 0) > 15 && previewCmd?.dir) {
+            el.dataset.shortSwipeFeedback = previewCmd.dir;
+            if (el._shortSwipeFeedbackTimer) window.clearTimeout(el._shortSwipeFeedbackTimer);
+            el._shortSwipeFeedbackTimer = window.setTimeout(() => {
+                delete el.dataset.shortSwipeFeedback;
+                el._shortSwipeFeedbackTimer = null;
+            }, 1000);
+        }
 
         setHeldButton(null);
         setCommandPreview(null);
@@ -1163,7 +1188,7 @@ export const useButtonGestures = ({
             return;
         }
 
-        if (button.actionType === 'modifier' && !tapRepeatCommand) {
+        if (button.actionType === 'modifier') {
             tacticalTargeting?.resetTargeting();
             return;
         }
@@ -1180,9 +1205,6 @@ export const useButtonGestures = ({
                 lastCancellingRef.current = false;
                 document.documentElement.style.removeProperty('--preview-glow-color');
                 return;
-            }
-            if (effectiveTarget && canCommandAcceptTarget(currentTargetCommand)) {
-                rememberCommandTarget(currentTargetCommand, effectiveTarget);
             }
             if (previewCmd.actionType === 'nav') {
                 setActiveSet(previewCmd.cmd);
@@ -1253,7 +1275,7 @@ export const useButtonGestures = ({
         }
 
         tacticalTargeting?.resetTargeting();
-    }, [isEditMode, heldButton, button, activeDir, joystick, target, isCancelling, isPanelPinned, setHeldButton, setCommandPreview, setActiveDir, setIsCancelling, setRayParams, onCancelPanel, onRebindPanel, onMovePinnedCell, onAssignPinnedCommand, setActiveSet, triggerHaptic, setPopoverState, executeCommand, onCommandExecuted, repeatTapCommand, handleButtonClick, setButtons, updateRay, tacticalTargeting, isStagedTargetMenuRef, onSelectStagedTargetRef, onCommitStagedTargetRef, swapSourceRef]);
+    }, [isEditMode, heldButton, button, activeDir, joystick, target, isCancelling, isPanelPinned, setHeldButton, setCommandPreview, setActiveDir, setIsCancelling, setRayParams, onCancelPanel, onRebindPanel, onMovePinnedCell, onAssignPinnedCommand, setActiveSet, triggerHaptic, setPopoverState, executeCommand, handleButtonClick, setButtons, updateRay, tacticalTargeting, gestureDefaultTargetRef, gestureDefaultCommandRef, isStagedTargetMenuRef, onSelectStagedTargetRef, onCommitStagedTargetRef, swapSourceRef]);
 
     const onPointerCancel = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         const el = e.currentTarget as any;

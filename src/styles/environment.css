@@ -447,91 +447,63 @@ body.ui-gesturing .environment-root.front > :not(.embers-container):not(.client-
    sun/moon/cloud pixel-art strip's weather modifier class, and an unscoped
    selector here would leak these rules onto that element too. */
 .weather-layer.weather-cloud {
-    background: rgba(76, 76, 76, 0.12);
+    background: transparent;
     mix-blend-mode: normal;
     z-index: 4;
     transition: opacity 5s ease-in-out;
     pointer-events: none;
-    height: 65dvh;
+    height: 72dvh;
     bottom: auto !important;
-    /* The oversized ellipse sets the arch; soft lobes add an uneven, patchy
-       cloud fringe below it without creating a straight cutoff. */
-    mask-image:
-        radial-gradient(ellipse 62vw 90vh at 50% 154%, transparent 0%, transparent 95%, rgba(0, 0, 0, 0.75) 100%, #000 108%),
-        radial-gradient(ellipse 17vw 13vh at 7% 58%, #000 0%, rgba(0, 0, 0, 0.82) 42%, transparent 100%),
-        radial-gradient(ellipse 14vw 10vh at 23% 43%, #000 0%, rgba(0, 0, 0, 0.78) 42%, transparent 100%),
-        radial-gradient(ellipse 20vw 14vh at 39% 37%, #000 0%, rgba(0, 0, 0, 0.8) 42%, transparent 100%),
-        radial-gradient(ellipse 16vw 12vh at 62% 40%, #000 0%, rgba(0, 0, 0, 0.82) 42%, transparent 100%),
-        radial-gradient(ellipse 19vw 14vh at 81% 48%, #000 0%, rgba(0, 0, 0, 0.78) 42%, transparent 100%),
-        radial-gradient(ellipse 15vw 12vh at 98% 62%, #000 0%, rgba(0, 0, 0, 0.82) 42%, transparent 100%);
-    -webkit-mask-image:
-        radial-gradient(ellipse 62vw 90vh at 50% 154%, transparent 0%, transparent 95%, rgba(0, 0, 0, 0.75) 100%, #000 108%),
-        radial-gradient(ellipse 17vw 13vh at 7% 58%, #000 0%, rgba(0, 0, 0, 0.82) 42%, transparent 100%),
-        radial-gradient(ellipse 14vw 10vh at 23% 43%, #000 0%, rgba(0, 0, 0, 0.78) 42%, transparent 100%),
-        radial-gradient(ellipse 20vw 14vh at 39% 37%, #000 0%, rgba(0, 0, 0, 0.8) 42%, transparent 100%),
-        radial-gradient(ellipse 16vw 12vh at 62% 40%, #000 0%, rgba(0, 0, 0, 0.82) 42%, transparent 100%),
-        radial-gradient(ellipse 19vw 14vh at 81% 48%, #000 0%, rgba(0, 0, 0, 0.78) 42%, transparent 100%),
-        radial-gradient(ellipse 15vw 12vh at 98% 62%, #000 0%, rgba(0, 0, 0, 0.82) 42%, transparent 100%);
-    mask-composite: add;
-    -webkit-mask-composite: source-over;
+    overflow: hidden;
 }
 
 .weather-layer.weather-cloud::before {
     content: '';
     position: absolute;
-    inset: 0;
-    background: rgba(116, 116, 116, 0.12);
-    mix-blend-mode: normal;
+    top: -4dvh;
+    left: -5%;
+    width: 110%;
+    height: 62dvh;
+    /* A faint overcast veil softens the scene behind the distinct cloud bank. */
+    background: linear-gradient(to bottom,
+        rgba(154, 162, 166, 0.08) 0%,
+        rgba(154, 162, 166, 0.035) 56%,
+        transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.7) 56%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.7) 56%, transparent 100%);
+    pointer-events: none;
     z-index: 1;
 }
 
 .weather-layer.weather-cloud::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
+    top: -2dvh;
+    left: -2%;
     width: 200%;
-    height: 100%;
+    height: 64dvh;
+    /* Overlapping rounded tops and a continuous shaded base form readable,
+       billowing cloud banks instead of a broad, indistinct gray wash. */
     background:
-        radial-gradient(ellipse 46% 62% at 2% 4%, rgba(225, 225, 225, 0.6) 0%, rgba(118, 118, 118, 0.46) 42%, rgba(48, 48, 48, 0.28) 72%, transparent 100%),
-        radial-gradient(ellipse 38% 47% at 24% 16%, rgba(74, 74, 74, 0.38) 0%, rgba(130, 130, 130, 0.3) 48%, transparent 100%),
-        radial-gradient(ellipse 40% 50% at 48% 0%, rgba(205, 205, 205, 0.4) 0%, rgba(112, 112, 112, 0.34) 44%, transparent 100%),
-        radial-gradient(ellipse 42% 56% at 74% 13%, rgba(76, 76, 76, 0.4) 0%, rgba(142, 142, 142, 0.34) 45%, transparent 100%),
-        radial-gradient(ellipse 48% 65% at 103% 0%, rgba(232, 232, 232, 0.58) 0%, rgba(118, 118, 118, 0.44) 42%, rgba(48, 48, 48, 0.26) 72%, transparent 100%);
+        radial-gradient(ellipse 8% 20% at 5% 28%, rgba(218, 223, 224, 0.52) 0%, rgba(155, 163, 166, 0.38) 62%, transparent 100%),
+        radial-gradient(ellipse 11% 25% at 13% 23%, rgba(226, 230, 231, 0.58) 0%, rgba(158, 166, 169, 0.42) 60%, transparent 100%),
+        radial-gradient(ellipse 9% 19% at 22% 31%, rgba(206, 213, 215, 0.48) 0%, rgba(137, 146, 150, 0.36) 64%, transparent 100%),
+        radial-gradient(ellipse 13% 29% at 16% 37%, rgba(97, 108, 113, 0.44) 0%, rgba(76, 87, 92, 0.36) 65%, transparent 100%),
+        radial-gradient(ellipse 10% 22% at 35% 26%, rgba(222, 227, 229, 0.54) 0%, rgba(150, 159, 163, 0.4) 62%, transparent 100%),
+        radial-gradient(ellipse 12% 26% at 45% 20%, rgba(230, 234, 235, 0.6) 0%, rgba(161, 169, 172, 0.42) 60%, transparent 100%),
+        radial-gradient(ellipse 9% 20% at 55% 30%, rgba(205, 212, 214, 0.48) 0%, rgba(138, 147, 151, 0.36) 64%, transparent 100%),
+        radial-gradient(ellipse 14% 30% at 46% 37%, rgba(91, 102, 107, 0.46) 0%, rgba(69, 80, 85, 0.34) 66%, transparent 100%),
+        radial-gradient(ellipse 9% 20% at 68% 26%, rgba(222, 227, 229, 0.54) 0%, rgba(152, 161, 165, 0.4) 62%, transparent 100%),
+        radial-gradient(ellipse 12% 26% at 79% 20%, rgba(231, 235, 236, 0.6) 0%, rgba(161, 170, 173, 0.42) 60%, transparent 100%),
+        radial-gradient(ellipse 10% 22% at 89% 31%, rgba(206, 213, 215, 0.5) 0%, rgba(139, 148, 152, 0.37) 64%, transparent 100%),
+        radial-gradient(ellipse 15% 31% at 80% 38%, rgba(87, 98, 103, 0.46) 0%, rgba(65, 76, 81, 0.34) 66%, transparent 100%),
+        linear-gradient(to bottom, transparent 24%, rgba(111, 121, 125, 0.25) 45%, rgba(48, 57, 61, 0.3) 68%, transparent 100%);
     background-size: 200% 100%;
     background-blend-mode: normal;
-    opacity: 0.72;
+    opacity: 0.84;
     animation: cloud-pulse 10s ease-in-out infinite alternate, cloud-drift 340s linear infinite;
     z-index: 2;
-    /* Dropped blur(1px): animating a filter:blur() on a continuously-drifting element
-       forces a per-frame neighborhood-sampling blur pass, one of the most expensive
-       compositor ops on mobile. The soft radial gradients already read as fuzzy.
-       Cheap per-pixel color filters are kept so the cloud tone is unchanged. */
-    filter: brightness(1) grayscale(1) contrast(1.15);
-}
-
-.weather-layer.weather-cloud.storm-clouds {
-    background: rgba(62, 62, 62, 0.5);
-    mix-blend-mode: normal;
-}
-
-.weather-layer.weather-cloud.storm-clouds::before {
-    background: rgba(78, 78, 78, 0.32);
-    mix-blend-mode: normal;
-}
-
-.weather-layer.weather-cloud.storm-clouds::after {
-    /* Neutral grayscale layers make rain clouds read as dense gray and white masses. */
-    background:
-        radial-gradient(ellipse 40% 35% at 12% 15%, rgba(230, 230, 230, 0.78) 0%, rgba(145, 145, 145, 0.68) 34%, rgba(55, 55, 55, 0.32) 68%, transparent 100%),
-        radial-gradient(ellipse 48% 42% at 44% 6%, rgba(205, 205, 205, 0.74) 0%, rgba(105, 105, 105, 0.68) 42%, rgba(48, 48, 48, 0.28) 75%, transparent 100%),
-        radial-gradient(ellipse 42% 38% at 78% 17%, rgba(235, 235, 235, 0.8) 0%, rgba(135, 135, 135, 0.66) 38%, rgba(52, 52, 52, 0.3) 72%, transparent 100%),
-        radial-gradient(ellipse 52% 46% at 103% 28%, rgba(195, 195, 195, 0.76) 0%, rgba(95, 95, 95, 0.62) 44%, rgba(45, 45, 45, 0.3) 76%, transparent 100%);
-    background-size: 200% 100%;
-    background-blend-mode: normal;
-    filter: grayscale(1) brightness(1) contrast(1.15);
-    opacity: 0.95;
-    transition: filter 0.05s ease-out;
+    filter: grayscale(1);
 }
 
 .weather-layer.weather-cloud.lightning-active::after {

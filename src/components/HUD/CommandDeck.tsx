@@ -25,7 +25,7 @@ import { ShopTargetMenu } from '../Shop/ShopTargetMenu';
 import type { GameButtonProps } from '../Controls/GameButton/GameButton';
 import { DECK_ACTIONS, DECK_TABS, DECK_LABEL_ICONS, DEFAULT_DECK_ICON, isDeckActionAvailable, type TabKey } from './commandDeckData';
 import { useRoomStore } from '../../stores/useRoomStore';
-import { getAutoRoomTarget, getViableRoomCharacterTargets } from '../../utils/commandAutoTarget';
+import { getAutoRoomTarget, getCombatRoomTarget, getViableRoomCharacterTargets } from '../../utils/commandAutoTarget';
 import type { CustomButton, DrawerLine, SwipeDirection } from '../../types';
 import type { CommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 import './CommandDeck.css';
@@ -35,6 +35,16 @@ const WHEEL_DIRECTIONS = ['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne']
 type DeckWheelAssignments = Partial<Record<TabKey, Array<string | null>>>;
 
 const getWheelActionKey = (item: DeckItem): string => `${item.label.trim()}::${item.cmd.trim()}`;
+
+const getWheelActionForCommand = (actions: DeckItem[], command: string): DeckItem | undefined => {
+    const normalized = command.trim().toLowerCase();
+    return [...actions]
+        .sort((left, right) => right.cmd.trim().length - left.cmd.trim().length)
+        .find(action => {
+            const baseCommand = action.cmd.trim().toLowerCase();
+            return normalized === baseCommand || normalized.startsWith(`${baseCommand} `);
+        });
+};
 
 const WHEEL_DIRECTION_MAP: SwipeDirection[] = ['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'];
 
@@ -62,6 +72,8 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
         triggerHaptic?: (ms: number) => void;
         setTarget: (target: string | null) => void;
         characterName?: string;
+        opponentId?: string | number | null;
+        opponentName?: string | null;
         viewport?: { isMobile: boolean };
         btn: { setActiveSet: (setId: string) => void; setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>> };
         handleButtonClick: (button: CustomButton, event: React.MouseEvent | React.PointerEvent) => void;
@@ -72,7 +84,8 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
         };
         containerContents?: Record<string, DrawerLine[]>;
     };
-    const { executeCommand, triggerHaptic, setTarget, characterName, viewport, parser, containerContents } = game;
+    const { executeCommand, triggerHaptic, setTarget, characterName, opponentId, opponentName, viewport, parser, containerContents } = game;
+    const combatOpponent = useMemo(() => ({ id: opponentId ?? null, name: opponentName ?? null }), [opponentId, opponentName]);
     const { target } = useActiveVitals() as { target: string | null };
     const { characterInfo } = useVitals();
     const race = characterInfo.race || '';
@@ -93,8 +106,8 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
 
     const [activeTab, setActiveTab] = useState<TabKey | null>(() => {
         const saved = localStorage.getItem('mud-deck-tab');
-        const isKnownTab = (['combat', 'social', 'utility', 'room', 'personal', 'consume', 'mounts'] as string[]).includes(saved || '');
-        const isMobileOnlyTab = saved === 'personal' || saved === 'consume';
+        const isKnownTab = DECK_TABS.some(tab => tab.key === saved);
+        const isMobileOnlyTab = saved === 'consume';
         return isKnownTab && (viewport?.isMobile || !isMobileOnlyTab) ? (saved as TabKey) : 'combat';
     });
     const [deckWheelAssignments, setDeckWheelAssignments] = useState<DeckWheelAssignments>(readDeckWheelAssignments);
@@ -106,7 +119,12 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
     const deckWheelCatalog = useMemo(() => Object.values(DECK_ACTIONS).flatMap(category => category.map(makeDeckItem)), []);
 
     useEffect(() => {
-        if (!viewport?.isMobile && (activeTab === 'personal' || activeTab === 'consume')) setActiveTab('utility');
+        const isAvailableTab = DECK_TABS.some(tab => tab.key === activeTab)
+            && (viewport?.isMobile || activeTab !== 'consume');
+        if (activeTab && !isAvailableTab) {
+            setActiveTab('combat');
+            localStorage.setItem('mud-deck-tab', 'combat');
+        }
     }, [activeTab, viewport?.isMobile]);
 
     const selectTab = (key: TabKey) => {
@@ -177,9 +195,10 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
             document.getElementById('mud-input')?.focus();
             return;
         }
-        const effectiveTarget = getRememberedCommandTarget(item.cmd)
-            || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
-            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone);
+        const effectiveTarget = (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
+            || getCombatRoomTarget(item.cmd, roomOccupants, characterName || '', combatOpponent)
+            || getRememberedCommandTarget(item.cmd)
+            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone, combatOpponent);
         if (item.needsTarget && !effectiveTarget) {
             // No target selected — make it obvious one is required rather than
             // silently priming the input (which read as "nothing happened").
@@ -223,6 +242,7 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
         requestContainerContents,
         characterName,
         roomZone,
+        combatOpponent,
     });
 
     // The visible number badges are command-line shortcuts, not instant-cast
@@ -283,13 +303,15 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
 
     const getWheelTargetReady = (item: DeckItem): boolean => {
         if (!item.needsTarget || item.targetKind) return false;
-        const chipTarget = target || getAutoRoomTarget('hit', roomOccupants, characterName || '', roomZone);
+        const chipTarget = target || getCombatRoomTarget('hit', roomOccupants, characterName || '', combatOpponent)
+            || getAutoRoomTarget('hit', roomOccupants, characterName || '', roomZone, combatOpponent);
         if (!chipTarget) return false;
-        const viableTargets = getViableRoomCharacterTargets(item.cmd, roomOccupants, characterName || '');
+        const viableTargets = getViableRoomCharacterTargets(item.cmd, roomOccupants, characterName || '', combatOpponent);
         if (!viableTargets.some(value => value.toLowerCase() === chipTarget.toLowerCase())) return false;
-        const commandTarget = getRememberedCommandTarget(item.cmd)
-            || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
-            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone);
+        const commandTarget = (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
+            || getCombatRoomTarget(item.cmd, roomOccupants, characterName || '', combatOpponent)
+            || getRememberedCommandTarget(item.cmd)
+            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone, combatOpponent);
         return commandTarget?.toLowerCase() === chipTarget.toLowerCase();
     };
 
@@ -301,13 +323,11 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                     <span>Pick a target for <strong>{needsTargetHint}</strong> — tap a name in the room or log</span>
                 </div>
             )}
-            <div className="deck-tab-rail" role="tablist" aria-label="Action loadouts">
+            <div className="deck-tab-rail" role={viewport?.isMobile ? 'toolbar' : 'tablist'} aria-label={viewport?.isMobile ? 'Action controls' : 'Action loadouts'}>
                 {DECK_TABS.filter(tab => viewport?.isMobile || (tab.key !== 'personal' && tab.key !== 'consume')).map(tab => {
                     const Icon = tab.icon;
                     const defaults = DECK_ACTIONS[tab.key].map(makeDeckItem);
                     const categoryAvailableActions = defaults.filter(item => isDeckActionAvailable(item, race, subrace));
-                    const defaultCenterAction = categoryAvailableActions.slice(8)[0]
-                        || categoryAvailableActions[0];
                     const savedKeys = deckWheelAssignments[tab.key];
                     const categoryActions = savedKeys?.length
                         ? Array.from({ length: 8 }, (_, index) => {
@@ -319,11 +339,15 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                             return item;
                         })
                         : defaults.slice(0, 8);
+                    const assignedSpokeKeys = new Set(categoryActions
+                        .filter((item): item is DeckItem => item !== undefined && isDeckActionAvailable(item, race, subrace))
+                        .map(item => getWheelActionKey(item)));
+                    const defaultCenterAction = categoryAvailableActions.find(item => !assignedSpokeKeys.has(getWheelActionKey(item)));
                     const savedCenterKey = savedKeys?.[8];
                     const savedCenterAction = savedCenterKey
                         ? categoryAvailableActions.find(item => getWheelActionKey(item) === savedCenterKey)
                         : undefined;
-                    const centerAction = savedCenterAction
+                    const centerAction = savedCenterAction && !assignedSpokeKeys.has(getWheelActionKey(savedCenterAction))
                         ? savedCenterAction
                         : defaultCenterAction;
                     const wheelActions = categoryActions.map(item => item && isDeckActionAvailable(item, race, subrace)
@@ -387,15 +411,21 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                         if (index < 8) return defaults[index] ? getWheelActionKey(defaults[index]) : null;
                         return defaultCenterAction ? getWheelActionKey(defaultCenterAction) : null;
                     });
-                    const swapCategoryCells = (sourceIndex: number, destinationIndex: number): boolean => {
+                    const swapCategoryCells = (sourceIndex: number, destinationIndex: number, displayedCenterCommand: string): boolean | string => {
                         if (sourceIndex < 0 || sourceIndex > 8 || destinationIndex < 0 || destinationIndex > 8 || sourceIndex === destinationIndex) return false;
                         const currentKeys = getCurrentWheelKeys(deckWheelAssignments[tab.key]);
+                        const displayedCenterAction = getWheelActionForCommand(categoryAvailableActions, displayedCenterCommand);
+                        if ((sourceIndex === 8 || destinationIndex === 8) && displayedCenterAction) {
+                            currentKeys[8] = getWheelActionKey(displayedCenterAction);
+                        }
                         if (currentKeys[sourceIndex] === currentKeys[destinationIndex]) return false;
+                        [currentKeys[sourceIndex], currentKeys[destinationIndex]] = [currentKeys[destinationIndex], currentKeys[sourceIndex]];
                         setDeckWheelAssignments(previous => {
-                            const nextKeys = getCurrentWheelKeys(previous[tab.key]);
-                            [nextKeys[sourceIndex], nextKeys[destinationIndex]] = [nextKeys[destinationIndex], nextKeys[sourceIndex]];
-                            return { ...previous, [tab.key]: nextKeys };
+                            return { ...previous, [tab.key]: currentKeys };
                         });
+                        if (sourceIndex === 8 || destinationIndex === 8) {
+                            return categoryAvailableActions.find(action => getWheelActionKey(action) === currentKeys[8])?.cmd || '';
+                        }
                         return true;
                     };
                     const assignCategoryAction = (directionIndex: number, replacement: DeckItem): boolean => {
@@ -447,11 +477,12 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                         const Icon = iconFor(item);
                         const hotkey = i < 9 ? String(i + 1) : i === 9 ? '0' : null;
                         const itemTarget = item.needsTarget && !item.targetKind
-                            ? getRememberedCommandTarget(item.cmd)
-                                || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
-                                || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone)
+                            ? (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
+                                || getCombatRoomTarget(item.cmd, roomOccupants, characterName || '', combatOpponent)
+                                || getRememberedCommandTarget(item.cmd)
+                                || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone, combatOpponent)
                             : null;
-                        const viableTargets = getViableRoomCharacterTargets(item.cmd, roomOccupants, characterName || '');
+                        const viableTargets = getViableRoomCharacterTargets(item.cmd, roomOccupants, characterName || '', combatOpponent);
                         const targetReady = Boolean(itemTarget && viableTargets.some(value => value.toLowerCase() === itemTarget.toLowerCase()));
                         return (
                             <button

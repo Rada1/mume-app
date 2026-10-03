@@ -27,9 +27,11 @@ const INV_ACTIONS: { id: InvAction; label: string }[] = [
 
 interface ShopPanelProps {
     style?: React.CSSProperties;
+    embedded?: boolean;
+    hidden?: boolean;
 }
 
-export const ShopPanel: React.FC<ShopPanelProps> = ({ style }) => {
+export const ShopPanel: React.FC<ShopPanelProps> = ({ style, embedded = false, hidden = false }) => {
     const isShopOpen      = useUIStore(s => s.isShopOpen);
     const setIsShopOpen   = useUIStore(s => s.setIsShopOpen);
     const shopItems        = useUIStore(s => s.shopItems);
@@ -84,13 +86,15 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ style }) => {
     // Open inventory drawer and refresh balance when shop is open
     useEffect(() => {
         if (isShopOpen) {
-            setGearTab('inv');
-            handleTabClick('equipment');
+            if (!embedded) {
+                setGearTab('inv');
+                handleTabClick('equipment');
+            }
             refreshBalance();
         } else {
             setShopBalance(null);
         }
-    }, [isShopOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [isShopOpen, embedded]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const heldActionRef   = useRef(heldAction);
     const compareFirstRef = useRef(compareFirst);
@@ -213,13 +217,14 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ style }) => {
 
     const isTargeting = heldAction !== null;
 
+    const panelClassName = `docked-panel chat-window-panel shop-panel${embedded ? ' gear-shop-panel' : ''}${hidden ? ' is-hidden' : ''}`;
     return (
-        <aside className="docked-panel chat-window-panel shop-panel" style={style} aria-label="Shop">
-            {!viewport?.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-shop-width" minWidth={18} maxWidth={60} />}
+        <aside className={panelClassName} style={embedded ? undefined : style} aria-label="Shop">
+            {!embedded && !viewport?.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-shop-width" minWidth={18} maxWidth={60} />}
 
             <ShopPanelHeader shopkeeperName={shopkeeperName} roomName={roomName}
                 itemCount={shopItems.length} balance={shopBalance}
-                search={search} onSearch={setSearch} onClose={handleClose} />
+                search={search} onSearch={setSearch} onClose={handleClose} embedded={embedded} />
 
             <div className="shop-panel-content">
                 {filteredItems.length === 0 ? (

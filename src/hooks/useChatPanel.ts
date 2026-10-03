@@ -18,8 +18,8 @@ export const useChatPanel = () => {
     const { executeCommand, triggerHaptic, whoList } = useGame();
     const isSpectating = useModeStore(state => state.isSpectating);
     const activeView = useModeStore(state => state.activeView);
-    const userMessages = useMessageStore(state => state.user);
-    const spectateMessages = useMessageStore(state => state.spectate);
+    const userMessages = useMessageStore(state => state.userChat);
+    const spectateMessages = useMessageStore(state => state.spectateChat);
     const [filter, setFilter] = useState('all');
     const [command, setCommand] = useState<Exclude<ParleyState['command'], 'none'>>('say');
     const [target, setTarget] = useState<string | null>(null);

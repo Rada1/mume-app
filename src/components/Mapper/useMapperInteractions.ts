@@ -6,19 +6,74 @@ import { GRID_SIZE, DRAG_SENSITIVITY, ZOOM_SENSITIVITY, checkRoomFilter } from '
 import { useMapHitTest } from './hooks/useMapHitTest';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import { fireHeldCommandAtMapOccupant } from './mapperHeldCommandTarget';
-import { updateDoorInteractionState } from './doorInteractionState';
 import { sanitizeGameTarget } from '../../utils/gameUtils';
 import type { GmcpOccupant, GroupMember, InlineCategoryConfig } from '../../types';
 import { registerOccupantTap } from './occupantAnimStore';
 import { audioManager } from '../../services/audio/AudioManager';
+import { dispatchMapSwipeEdgeFeedback } from '../../utils/mapSwipeFeedback';
 import {
     getMapSwipeWheelCell,
+    getMapSwipeWheelGestureCell,
     getMapSwipeWheelGestureCommand,
     type MapSwipeWheelPoint,
     type MapSwipeWheelPosition
 } from './mapSwipeWheelUtils';
 
 const MAP_SWIPE_REPEAT_COMMANDS = new Set(['north', 'south', 'east', 'west', 'up', 'down']);
+
+const getDoorScreenPosition = (
+    roomId: string,
+    direction: string,
+    canvas: HTMLCanvasElement | null,
+    camera: { x: number; y: number; zoom: number },
+    rooms: Record<string, MapperRoom>,
+    preloaded: Record<string, [number, number, number, number, Record<string, unknown>, string, string, string[], string[]]>
+): { x: number; y: number } | null => {
+    if (!canvas) return null;
+    const rawId = roomId.replace(/^m_/, '');
+    const room = rooms[roomId] || rooms[`m_${rawId}`] || rooms[rawId];
+    const tuple = preloaded[rawId];
+    const roomX = room?.x ?? tuple?.[0];
+    const roomY = room?.y ?? tuple?.[1];
+    if (typeof roomX !== 'number' || typeof roomY !== 'number') return null;
+
+    const size = GRID_SIZE;
+    const x = Math.round(roomX) * size;
+    const y = Math.round(roomY) * size;
+    const centers: Record<string, { x: number; y: number }> = {
+        n: { x: x + size / 2, y }, north: { x: x + size / 2, y },
+        s: { x: x + size / 2, y: y + size }, south: { x: x + size / 2, y: y + size },
+        e: { x: x + size, y: y + size / 2 }, east: { x: x + size, y: y + size / 2 },
+        w: { x, y: y + size / 2 }, west: { x, y: y + size / 2 },
+        u: { x: x + size / 2 - 12, y: y + size / 2 - 12 }, up: { x: x + size / 2 - 12, y: y + size / 2 - 12 },
+        d: { x: x + size / 2 + 12, y: y + size / 2 + 12 }, down: { x: x + size / 2 + 12, y: y + size / 2 + 12 }
+    };
+    const point = centers[direction.toLowerCase()];
+    if (!point) return null;
+
+    const rect = canvas.getBoundingClientRect();
+    const performanceYOffset = canvas.dataset.mapRenderer === 'performance-worker' ? size : 0;
+    return {
+        x: rect.left + (point.x - camera.x) * camera.zoom,
+        y: rect.top + (point.y - camera.y - performanceYOffset) * camera.zoom
+    };
+};
+
+const getReleasedSwipeDirection = (origin: MapSwipeWheelPoint | null, point: MapSwipeWheelPoint) => {
+    if (!origin) return null;
+    const dx = point.x - origin.x;
+    const dy = point.y - origin.y;
+    if (Math.hypot(dx, dy) < 25) return null;
+    const angle = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360;
+    if (angle >= 337.5 || angle < 22.5) return 'e';
+    if (angle < 67.5) return 'se';
+    if (angle < 112.5) return 's';
+    if (angle < 157.5) return 'sw';
+    if (angle < 202.5) return 'w';
+    if (angle < 247.5) return 'nw';
+    if (angle < 292.5) return 'n';
+    return 'ne';
+};
 
 export interface InteractionDeps {
     canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -703,6 +758,14 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     getMapSwipeBounds(),
                     getAvailableVerticalSwipeExits()
                 );
+                const cell = getMapSwipeWheelGestureCell(
+                    origin,
+                    { x: e.clientX, y: e.clientY },
+                    getMapSwipeBounds(),
+                    18,
+                    getAvailableVerticalSwipeExits()
+                );
+                if (cell && cell !== 'center') dispatchMapSwipeEdgeFeedback(cell);
                 const alreadyRepeated = Boolean(command
                     && MAP_SWIPE_REPEAT_COMMANDS.has(command)
                     && mapSwipeRepeatCommandRef.current === command
@@ -805,11 +868,15 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 && !depsRef.current.isTracingMode;
 
             if (canFastReleaseJoystick) {
-                joystick.handleJoystickEnd(
+                const swipeDirection = joystick.currentDir;
+                const result = joystick.handleJoystickEnd(
                     e as any,
                     executeMapJoystickCommand,
                     triggerHaptic
                 );
+                if (result === true || (typeof result === 'object' && result?.dir)) {
+                    dispatchMapSwipeEdgeFeedback(getReleasedSwipeDirection(mapSwipeOriginRef.current, e) || swipeDirection || result?.dir);
+                }
                 stopWalking();
                 if (depsRef.current.setIsTrackpadModifierActive) {
                     depsRef.current.setIsTrackpadModifierActive(false);
@@ -944,15 +1011,22 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                 }
                             }
 
-                            // Short Tap -> Open or Close
-                            const nextDoorClosed = !exitHit.isClosed;
-                            depsRef.current.setRooms(previous => updateDoorInteractionState(
-                                previous,
+                            depsRef.current.executeCommand(`${finalAction} exit ${finalDirName}`, false, false, false, false, { fromUi: true });
+                            const feedbackPoint = getDoorScreenPosition(
                                 exitHit.roomId,
                                 exitHit.direction,
-                                nextDoorClosed,
-                            ));
-                            depsRef.current.executeCommand(`${finalAction} exit ${finalDirName}`, false, false, false, false, { fromUi: true });
+                                depsRef.current.canvasRef.current,
+                                depsRef.current.cameraRef.current,
+                                roomsRef.current,
+                                depsRef.current.preloadedCoordsRef.current
+                            );
+                            window.dispatchEvent(new CustomEvent('map-door-tap-feedback', {
+                                detail: {
+                                    x: feedbackPoint?.x ?? e.clientX,
+                                    y: feedbackPoint?.y ?? e.clientY,
+                                    direction: exitHit.direction
+                                }
+                            }));
                             depsRef.current.playClickSound?.();
                         }
                         if (isTap && !isMapLongPress) depsRef.current.triggerHaptic(40);
@@ -1044,7 +1118,11 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     if (!exitHit && !didHandleMapLongPressRelease && !isMapLongPress && dragTypeRef.current === 'joystick') {
                         // Priority 2: Standard Joystick Tap/Release
                         const activeHeldButton = depsRef.current.heldButtonRef?.current || depsRef.current.heldButton;
+                        const swipeDirection = joystick.currentDir;
                         const resultData = joystick.handleJoystickEnd(e as any, executeMapJoystickCommand, triggerHaptic, !!activeHeldButton);
+                        if (resultData === true || (typeof resultData === 'object' && resultData?.dir)) {
+                            dispatchMapSwipeEdgeFeedback(getReleasedSwipeDirection(mapSwipeOriginRef.current, e) || swipeDirection || resultData?.dir);
+                        }
                         
                         const isJoyTap = resultData === true || (typeof resultData === 'object' && resultData.isCenterTap);
                         const comboDir = (typeof resultData === 'object') ? resultData.dir : null;

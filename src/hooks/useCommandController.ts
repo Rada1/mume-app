@@ -302,9 +302,9 @@ export function useCommandController(deps: CommandControllerDeps) {
                         }
                     }
                 }, 10);
-            } else if (viewport.isMobile) {
-                // FORCE BLUR on mobile if focus wasn't requested.
-                // This breaks the "stuck focus" that causes the OS to re-open the keyboard.
+            } else if (viewport.isMobile && !viewport.isKeyboardOpen) {
+                // Clear stale focus only while the keyboard is closed. Preserve
+                // focus when a popover command is fired with the keyboard open.
                 const inputEl = findCommandInput();
                 if (inputEl && document.activeElement === inputEl) {
                     inputEl.blur();
@@ -325,7 +325,9 @@ export function useCommandController(deps: CommandControllerDeps) {
                 });
             }
         } else if (cmd.toLowerCase() === 'help' || cmd.toLowerCase().startsWith('help ') || cmd.trim().startsWith('?')) {
-            d.help.setIsUiRequested(true);
+            // Help requested from the docked panel is captured into the panel.
+            // A command-line help request should remain visible in the message log.
+            if (fromDrawer) d.help.setIsUiRequested(true);
             if (!isSystem && !silent && d.isSoundEnabled && d.playEffect && d.status === 'connected' && d.sessionMode !== 'replay') {
                 queueCommandCompletionSound('help');
             }

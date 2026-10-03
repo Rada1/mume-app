@@ -59,11 +59,26 @@ export class FastMapLocationTracker {
     if (typeof data !== 'object' || data === null || Array.isArray(data)) return null;
     const info = data as RoomObservation;
     const result = locateRoom(index, this.state, info);
+    const roomNumber = info.id ?? info.num ?? info.vnum;
+    const normalizedRoomNumber = String(roomNumber ?? '').trim();
+    const hasRoomNumber = normalizedRoomNumber !== '' && normalizedRoomNumber !== '0';
+    const pendingDirection = this.state.pendingDirection;
     this.state.pendingDirection = null;
-    if (!result.roomId) return result;
-    this.state.lastRoomId = result.roomId;
-    learnRoomIds(index, this.state, info, result.roomId);
-    return result;
+    if (result.roomId) {
+      this.state.lastRoomId = result.roomId;
+      learnRoomIds(index, this.state, info, result.roomId);
+      return result;
+    }
+
+    // MUME reports room number 0 in darkness. When its room name and exits are
+    // hidden too, keep MMapper-style direction tracking alive through a unique
+    // mapped exit instead of losing the player's location on the first dark step.
+    const darkStep = !hasRoomNumber && this.state.lastRoomId && pendingDirection
+      ? this.followExit(this.state.lastRoomId, pendingDirection)
+      : null;
+    if (!darkStep) return result;
+    this.state.lastRoomId = darkStep;
+    return { roomId: darkStep, matchedBy: 'direction' };
   }
 
   private followExit(roomId: string, direction: string): string | null {

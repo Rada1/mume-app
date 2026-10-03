@@ -12,19 +12,23 @@ import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useRoomStore } from '../../stores/useRoomStore';
-import { useAutomaticTargetStore } from '../../stores/useAutomaticTargetStore';
-import { getAutoRoomTarget, isAutoTargetChipDisabledZone } from '../../utils/commandAutoTarget';
-import { getRoomTargetSuggestions } from '../../utils/commandSuggestionUtils';
+import { useAutomaticTargetForRoom, useAutomaticTargetStore } from '../../stores/useAutomaticTargetStore';
+import { getRoomIdentityKey } from '../../utils/roomIdentityUtils';
+import { getAutoRoomTarget, getCombatRoomTarget, isAutoTargetChipDisabledZone } from '../../utils/commandAutoTarget';
+import { getRoomTargetSuggestions, makeCommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 import { CHAT_PARLEY_CHANNELS, getChatChannelSuggestions, getChatChannelColor, getChatTargetSuggestions } from '../../utils/chatWindowUtils';
 import { getTargetClassificationColor } from '../../utils/targetClassificationColor';
 import type { EntityColorMap } from '../../utils/inlineActionModel';
 import OpponentRechargeTimer from '../Combat/OpponentRechargeTimer';
 import { ActionTimerDisplay } from './ActionTimerDisplay';
 import { useCommandSuggestions } from '../../hooks/useCommandSuggestions';
+import { CommandArgumentText } from '../Controls/CommandArgumentText';
 import { useRotatingCommandSuggestion } from '../../hooks/useRotatingCommandSuggestion';
 import { useWhoListRefresh } from '../../hooks/useWhoListRefresh';
 import { CommandSuggestionPopup } from '../Controls/CommandSuggestionPopup';
 import { TargetChipPicker } from './TargetChipPicker';
+import { TacticalArgumentChips } from './TacticalArgumentChips';
+import { useTacticalArgumentChipStore } from '../../stores/useTacticalArgumentChipStore';
 import './LogDockedInput.css';
 
 interface LogDockedInputProps {
@@ -64,26 +68,46 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         setParley,
         abilities,
         characterClass,
+        practice,
         executeCommand,
         setTarget,
         triggerHaptic,
         characterName,
-        whoList
+        whoList,
+        opponentId,
+        opponentName
     } = useGame();
-    const { target } = useActiveVitals();
-    const automaticTarget = useAutomaticTargetStore(state => state.target);
+    const { target, characterInfo } = useActiveVitals();
     const setAutomaticTarget = useAutomaticTargetStore(state => state.setTarget);
     const roomChars = useRoomStore(state => state.chars);
     const roomItems = useRoomStore(state => state.items);
+    const roomNum = useRoomStore(state => state.roomNum);
+    const roomName = useRoomStore(state => state.roomName);
+    const roomDesc = useRoomStore(state => state.roomDesc);
     const roomZone = useRoomStore(state => state.roomZone);
+    const automaticTargetRoomKey = getRoomIdentityKey({ roomNum, roomName, roomZone, roomDesc });
+    const automaticTarget = useAutomaticTargetForRoom(automaticTargetRoomKey);
     const autoTargetChipDisabled = isAutoTargetChipDisabledZone(roomZone);
     const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
     const roomTargetSuggestions = useMemo(() => [
         ...getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName || ''),
         ...getRoomTargetSuggestions([], Object.values(roomItems), 'objects'),
     ], [characterName, roomItems, roomOccupants]);
+    const characterRaces = [characterInfo.race, characterInfo.subrace]
+        .filter(Boolean)
+        .map(value => value!.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, ''));
+    const isEvilRace = characterRaces.some(race => ['blacknumenorean', 'troll', 'orc'].includes(race));
+    const commonPvpTargetNames = isEvilRace
+        ? ['man', 'hobbit', 'elf', 'dwarf', 'half-elf']
+        : ['orc', 'troll', 'man'];
+    const commonPvpTargets = useMemo(() => commonPvpTargetNames.map(name =>
+        makeCommandTargetSuggestion(`*${name}*`, `*${name}*`, 'player')
+    ), [isEvilRace]);
+    const combatOpponent = { id: opponentId, name: opponentName };
     const displayedTarget = target || (!autoTargetChipDisabled
-        ? automaticTarget || getAutoRoomTarget('hit', roomOccupants, characterName || '', roomZone)
+        ? getCombatRoomTarget('hit', roomOccupants, characterName || '', combatOpponent)
+            || automaticTarget
+            || getAutoRoomTarget('hit', roomOccupants, characterName || '', roomZone, combatOpponent)
         : null);
     useEffect(() => {
         if (target || gameState !== 'playing') setAutomaticTarget(null);
@@ -95,6 +119,8 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
 
     const input = useInputStore(s => s.input);
     const setInput = useInputStore(s => s.setInput);
+    const tacticalArgumentCommand = useTacticalArgumentChipStore(state => state.command);
+    const tacticalArgumentChips = useTacticalArgumentChipStore(state => state.chips);
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const isClassicMode = useSettingsStore(s => s.isClassicMode);
     const inlineCategories = useSettingsStore(s => s.inlineCategories);
@@ -161,9 +187,9 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
 
     const chooseGlobalTarget = useCallback((value: string) => {
         setTarget(value);
-        triggerHaptic?.(15);
+        if (value !== (target || '')) triggerHaptic?.(15);
         setIsTargetPickerOpen(false);
-    }, [setTarget, triggerHaptic]);
+    }, [setTarget, target, triggerHaptic]);
 
     const openManualTargetEntry = useCallback(() => {
         setIsTargetPickerOpen(false);
@@ -181,6 +207,8 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         showSpellPopup,
         visibleCommandSuggestions,
         targetSuggestions,
+        commandArgumentChips,
+        commandArgumentCaretKey,
         selectedTargetSuggestion,
         spellSuggestions,
         popupStyle,
@@ -188,10 +216,13 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         setIsFocused,
         chooseCommandSuggestion,
         chooseTargetSuggestion,
+        chooseCommandArgumentSuggestion,
         chooseSpellSuggestion,
         toggleMagicKeyFavorite,
         clearMagicKey,
-        handleSuggestionKeyDown
+        handleSuggestionKeyDown,
+        handleCommandArgumentKeyDown,
+        clearCommandArgumentCaret
     } = useCommandSuggestions({
         input,
         setInput,
@@ -207,7 +238,9 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         placement: (viewport?.isMobile || gameState === 'playing') ? 'top' : 'bottom',
         positionOverMap: gameState === 'playing' && !viewport?.isMobile,
         inventoryLines: displayInventoryLines,
-        wornLines: displayEqLines
+        wornLines: displayEqLines,
+        characterName: characterName || '',
+        practiceSkills: practice?.practiceData?.skills || []
     });
 
     const showsStandaloneAccountInput = accountState?.stage === 'login' ||
@@ -230,6 +263,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         if (savedValue) setInput(savedValue);
     }, [isLoginStage, isPasswordPrompt, isNamePrompt, rememberLogin, loginName, loginPassword, setInput]);
     const showRotatingSuggestion = !isClassicMode && gameState === 'playing' && currentMode === 'command' && !input && !commandPreview;
+    const showTacticalArgumentChips = gameState === 'playing' && !input && Boolean(tacticalArgumentCommand && tacticalArgumentChips.length);
     const rotatingCommand = useRotatingCommandSuggestion(showRotatingSuggestion);
 
     const isParleyActive = Boolean(parley?.active && parley?.command);
@@ -261,13 +295,15 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     }, [setParley]);
 
     const chooseParleyTarget = useCallback((value: string) => {
+        if ((parley.target || '') !== value) triggerHaptic?.(15);
         setParley(current => ({ ...current, target: value || null }));
         setOpenParleyPicker(null);
-    }, [setParley]);
+    }, [parley.target, setParley, triggerHaptic]);
 
     const handleParleyClear = useCallback(() => {
         setParley(prev => ({ ...prev, active: false, mode: 'command', command: 'none', target: null, message: '' }));
-    }, [setParley]);
+        if (viewport?.isMobile) inputRef.current?.blur();
+    }, [setParley, viewport?.isMobile]);
 
     const handleParleyTargetClear = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
@@ -329,6 +365,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         if (handleSuggestionKeyDown(e)) {
             return;
         }
+        if (handleCommandArgumentKeyDown(e)) return;
 
         if (e.key === 'Enter') {
             // Let the form's onSubmit handle form submission to avoid double-execution
@@ -343,7 +380,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
             e.preventDefault();
             setInput('');
         }
-    }, [handleSuggestionKeyDown, handleSubmit, setInput]);
+    }, [handleCommandArgumentKeyDown, handleSuggestionKeyDown, handleSubmit, setInput]);
 
     const placeholder = isPasswordMode
         ? 'Enter password...'
@@ -506,9 +543,11 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                     className="docked-input-wrap"
                     onClick={focusCommandInput}
                 >
-                    {(commandTextParts || (commandPreview && !input)) && (
-                        <div className="docked-input-highlight" aria-hidden={!(commandPreview && !input)}>
-                            {inlineTargetParts ? (
+                    {(commandTextParts || (commandPreview && !input) || showTacticalArgumentChips) && (
+                        <div className="docked-input-highlight" aria-hidden={!(commandPreview && !input) && !showTacticalArgumentChips && commandArgumentChips.length === 0}>
+                            {showTacticalArgumentChips ? (
+                                <TacticalArgumentChips />
+                            ) : inlineTargetParts ? (
                                 <>
                                     <span className="docked-command-preview">{inlineTargetParts.before}</span>
                                     {targetBadge}
@@ -527,7 +566,13 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                                             {commandTextParts.autocomplete}
                                         </span>
                                     )}
-                                    <span>{commandTextParts.suffix}</span>
+                                    <CommandArgumentText
+                                    text={commandTextParts.suffix}
+                                    offset={commandTextParts.leading.length + commandTextParts.token.length}
+                                    chips={commandArgumentChips}
+                                    caretKey={commandArgumentCaretKey}
+                                    onChooseChip={chooseCommandArgumentSuggestion}
+                                    />
                                 </>
                             )}
                         </div>
@@ -536,11 +581,12 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                         ref={inputRef}
                         id="mud-input"
                         type={isPasswordMode ? 'password' : 'text'}
-                        className={`docked-input-field input-field account-input-trigger${commandTextParts || (commandPreview && !input) ? ' command-highlight-source' : ''}`}
+                        className={`docked-input-field input-field account-input-trigger${commandTextParts || (commandPreview && !input) || showTacticalArgumentChips ? ' command-highlight-source' : ''}${commandArgumentCaretKey ? ' command-argument-caret-hidden' : ''}`}
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
                         onPointerDown={event => {
+                            clearCommandArgumentCaret();
                             if (!viewport?.isMobile) return;
                             event.preventDefault();
                             focusCommandInput();
@@ -561,7 +607,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                                 blurTimeoutRef.current = null;
                             }, 150);
                         }}
-                        placeholder={commandPreview && !input ? '' : placeholder}
+                        placeholder={(commandPreview && !input) || showTacticalArgumentChips ? '' : placeholder}
                         autoComplete="off"
                         spellCheck="false"
                     />
@@ -572,6 +618,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                 isOpen={isTargetPickerOpen}
                 anchorRef={targetBadgeRef}
                 suggestions={roomTargetSuggestions}
+                commonTargets={commonPvpTargets}
                 currentTarget={target || displayedTarget}
                 onChoose={chooseGlobalTarget}
                 onManualEntry={openManualTargetEntry}

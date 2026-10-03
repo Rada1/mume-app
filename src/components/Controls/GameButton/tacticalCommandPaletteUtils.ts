@@ -26,6 +26,28 @@ const getButtonAbilityName = (command: string, label = ''): string => {
     return normalizeAbility(quotedName || label || command.split(' ')[0]);
 };
 
+export const getClassCommandLearnedState = (
+    command: string,
+    classKey: PracticeClassKey,
+    practiceData: PracticeData | null | undefined,
+    abilities: Record<string, number>
+): boolean | undefined => {
+    const requestedAbility = canonicalAbility(getButtonAbilityName(command));
+    const abilityName = PRACTICE_CLASS_SKILLS[classKey].find(name => canonicalAbility(name) === requestedAbility);
+    if (!abilityName) return undefined;
+
+    const learnedNames = new Set((practiceData?.skills || [])
+        .filter(skill => skill.proficiency > 0 && (skill.skillClass?.toLowerCase() === classKey || getPracticeClassKey(skill.name) === classKey))
+        .flatMap(skill => abilityAliases(skill.name)));
+    const aliases = abilityAliases(abilityName);
+    if (aliases.some(alias => learnedNames.has(alias) || (abilities[alias] || 0) > 0)) return true;
+
+    const prerequisite = requestedAbility === 'protect' ? 'rescue' : requestedAbility === 'recover' ? 'missile' : '';
+    return prerequisite
+        ? learnedNames.has(prerequisite) || (abilities[prerequisite] || 0) > 0
+        : false;
+};
+
 // --- Public API ---
 export const getClassPalette = (
     classKey: PracticeClassKey,
@@ -88,6 +110,7 @@ export const getClassPalette = (
     const seen = new Set<string>();
     return [...learnedCommands, ...additionalGeneratedCommands].filter(item => {
         const key = canonicalAbility(getButtonAbilityName(item.command, item.label));
+        if (classKey === 'thief' && key === 'attack') return false;
         if (classKey === 'ranger' && (key === 'climb' || key === 'swim')) return false;
         if (!key || seen.has(key)) return false;
         seen.add(key);

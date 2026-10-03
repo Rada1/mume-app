@@ -27,10 +27,12 @@ import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import { TokenRenderer } from '../Messages/TokenRenderer';
 import { ShopPanel } from '../Shop/ShopPanel';
 import { TimerExpiryToast } from '../Timers/TimerExpiryToast';
+import { RoomLootQueue } from '../HUD/RoomLootQueue';
 import { QuickButtonBar } from '../HUD/QuickButtonBar';
 import { AccountTargetBar } from '../HUD/AccountTargetBar';
 import { MobileAccountCommandGrid } from '../HUD/MobileAccountCommandGrid';
 import { MobileAccountExperience } from '../HUD/MobileAccountExperience';
+import GroupStatusWindow from '../Messages/GroupStatusWindow';
 import { ReplayHUD } from './HUD/ReplayHUD';
 import type { MumeEditState } from '../../stores/useUIStore';
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
@@ -38,7 +40,6 @@ import { StickyRoomHeader } from './StickyRoomHeader';
 import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { getRoomTerrainVisualKey, getZoneVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
-import { useSleepHints } from '../../hooks/useSleepHints';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -85,8 +86,8 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         spatButtons,
         setSpatButtons,
         executeCommand,
-        playerPosition,
-        status,
+        parser,
+        roomNpcs,
         parley,
         setParley,
         whoList,
@@ -94,7 +95,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         isNewbieMode,
         gameState,
         sessionMode,
-        inCombat,
         accountState,
         activeSession,
         spectateTerrain
@@ -110,6 +110,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const useMobileAccountPanels = useSettingsStore(s => s.useMobileAccountPanels ?? true);
     const manualBgImage = useSettingsStore(s => s.bgImage);
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
+    const showGroupPanel = useSettingsStore(s => s.showGroupPanel);
     const isCommandPanelOpen = useCommandPanelStore(s => viewport.isMobile ? s.isMobileOpen : s.isOpen);
     const setIsCommandPanelOpen = useCommandPanelStore(s => s.setIsOpen);
     const isShopOpen = useUIStore(s => s.isShopOpen);
@@ -130,7 +131,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         const list: DockedPanelId[] = [];
         if (isEditorOpen) list.push('editor');
         if (isArchiveOpen) list.push('archive');
-        if (isShopOpen) list.push('shop');
+        if (isShopOpen && !isGearPanelOpen) list.push('shop');
         if (isGearPanelOpen) list.push('gear');
         if (isHelpOpen) list.push('help');
         if (showChatWindow) list.push('chat');
@@ -154,13 +155,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     }, [hasDockedPanels]);
 
     const isSpectating = activeSession === 'spectate' || activeView === 'target';
-    useSleepHints({
-        playerPosition,
-        connected: status === 'connected',
-        inCombat,
-        isSpectating,
-        executeCommand
-    });
     const roomCardTerrain = isSpectating ? spectateTerrain : currentTerrain;
 
     // Account mode keeps the log transparent (environment shows through) like the
@@ -505,6 +499,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 isLandscape={isLandscape}
                 getWeatherIcon={getWeatherIcon}
             />
+            {viewport.isMobile && showGroupPanel && gameState !== 'account' && <GroupStatusWindow />}
             <ReplayHUD />
 
             <div className={`message-log-wrapper${hasDockedPanels && gameState !== 'account' ? ' chat-window-active' : ''}`} style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
@@ -563,6 +558,15 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             onPointerUp={handleLogPointerUp}
                         />
                         <TimerExpiryToast />
+                        {gameState !== 'account' && (
+                            <RoomLootQueue
+                                isMobile={viewport.isMobile}
+                                executeCommand={executeCommand}
+                                roomNpcs={roomNpcs || []}
+                                parser={parser}
+                                triggerHaptic={triggerHaptic}
+                            />
+                        )}
                         {gameState !== 'account' && <QuickButtonBar />}
                         <LogDockedInput
                             handleSend={handleSend}
@@ -601,7 +605,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         style={computeDockedPanelStyle('chat', activeDockedPanels, viewport.isMobile)}
                     />
                 )}
-                {isShopOpen && gameState !== 'account' && (
+                {isShopOpen && !isGearPanelOpen && gameState !== 'account' && (
                     <ShopPanel style={computeDockedPanelStyle('shop', activeDockedPanels, viewport.isMobile)} />
                 )}
                 {isHelpOpen && gameState !== 'account' && (

@@ -1,0 +1,31 @@
+/** @file MapDoorTapFeedback.css — One-second yellow door tap glow. */
+
+.map-door-tap-feedback {
+    position: fixed;
+    z-index: 95002;
+    width: 25px;
+    height: 7px;
+    border: 1px solid rgba(255, 235, 128, 0.98);
+    border-radius: 999px;
+    background: #ffe16a;
+    box-shadow: 0 0 7px 3px rgba(255, 204, 55, 0.9), 0 0 15px 7px rgba(255, 183, 0, 0.48);
+    pointer-events: none;
+    transform: translate(-50%, -50%) rotate(var(--door-angle, 0deg));
+    animation: map-door-tap-glow 1s ease-out forwards;
+}
+
+@keyframes map-door-tap-glow {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(var(--door-angle, 0deg)) scale(0.65);
+    }
+    12% { opacity: 1; }
+    48% {
+        opacity: 1;
+        box-shadow: 0 0 11px 5px rgba(255, 224, 91, 1), 0 0 23px 10px rgba(255, 183, 0, 0.62);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(var(--door-angle, 0deg)) scale(1.25);
+    }
+}

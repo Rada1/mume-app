@@ -26,8 +26,6 @@ import { useAudioEffects } from '../hooks/useAudioSystem';
 import type { MapData } from '../components/Mapper/performance/webcockpit/model';
 import { readMm2 } from '../components/Mapper/performance/webcockpit/mm2';
 import { mapDataToLegacyImport } from '../components/Mapper/performance/webcockpit/mm2ImportAdapter';
-import { updateDoorInteractionState } from '../components/Mapper/doorInteractionState';
-import type { DoorCommandUpdate } from '../components/Mapper/doorCommand';
 
 interface MapperContextType {
     rooms: Record<string, MapperRoom>;
@@ -229,33 +227,6 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const { activeView, isSpectating } = useModeStore();
     const treatMapAsExplored = isSpectating && activeView === 'target';
-
-    useEffect(() => {
-        const onDoorCommand = (event: Event) => {
-            const update = (event as CustomEvent<DoorCommandUpdate>).detail;
-            const roomId = update?.roomId ?? currentRoomIdRef.current;
-            if (!update || !roomId) return;
-
-            const previous = roomsRef.current;
-            const next = updateDoorInteractionState(
-                previous,
-                roomId,
-                update.direction,
-                update.closed,
-            );
-            if (next !== previous) {
-                // Room.Info may arrive before React's state effect refreshes this
-                // ref. Keep the GMCP handler's synchronous source in step with
-                // the optimistic command so it cannot restore the old door state.
-                roomsRef.current = next;
-                setRooms(next);
-            }
-            triggerRender();
-        };
-
-        window.addEventListener('mume-door-command-sent', onDoorCommand);
-        return () => window.removeEventListener('mume-door-command-sent', onDoorCommand);
-    }, [currentRoomIdRef, setRooms, triggerRender]);
 
     const explored = useMemo(() => {
         const revealAll = treatMapAsExplored || unveilMap;

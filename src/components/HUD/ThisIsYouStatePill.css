@@ -8,9 +8,18 @@
     display: inline-block;
 }
 
+.this-is-you-pill-wrapper.accent-blue,
+.this-is-you-popover.accent-blue { --state-accent: #75c9ee; }
+.this-is-you-pill-wrapper.accent-purple,
+.this-is-you-popover.accent-purple { --state-accent: #c5a0f0; }
+.this-is-you-pill-wrapper.accent-red,
+.this-is-you-popover.accent-red { --state-accent: #f18c83; }
+.this-is-you-pill-wrapper.accent-gold,
+.this-is-you-popover.accent-gold { --state-accent: #f0cb67; }
+
 .this-is-you-pill {
     background: rgba(22, 17, 12, 0.92);
-    border: 1px solid rgba(201, 168, 76, 0.22);
+    border: 1px solid color-mix(in srgb, var(--state-accent, #c9a84c) 28%, transparent);
     padding: 2px 7px;
     border-radius: 4px;
     font-family: var(--font-mono, monospace);
@@ -27,13 +36,13 @@
 
 .this-is-you-pill:hover,
 .this-is-you-pill.is-active {
-    border-color: var(--mume-gold, #c9a84c);
+    border-color: var(--state-accent, var(--mume-gold, #c9a84c));
     background: rgba(40, 32, 23, 0.98);
     transform: translateY(-1px);
 }
 
 .this-is-you-pill-category {
-    color: #8c826f;
+    color: color-mix(in srgb, var(--state-accent, #c9a84c) 80%, #8c826f);
     font-size: 0.6rem;
     text-transform: uppercase;
     font-weight: 600;
@@ -41,7 +50,7 @@
 
 .this-is-you-pill-value {
     font-weight: 700;
-    color: #9bd2a5;
+    color: var(--state-accent, #9bd2a5);
 }
 
 .this-is-you-pill-arrow {
@@ -56,7 +65,7 @@
     max-height: calc(100dvh - 16px);
     overflow-y: auto;
     background: #17120d;
-    border: 1px solid rgba(201, 168, 76, 0.45);
+    border: 1px solid color-mix(in srgb, var(--state-accent, #c9a84c) 55%, transparent);
     border-radius: 5px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.9);
     padding: 4px;
@@ -70,11 +79,11 @@
 .this-is-you-popover-header {
     font-family: var(--font-mono, monospace);
     font-size: 0.56rem;
-    color: #8c826f;
+    color: var(--state-accent, #8c826f);
     padding: 2px 6px;
     text-transform: uppercase;
     font-weight: 700;
-    border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+    border-bottom: 1px solid color-mix(in srgb, var(--state-accent, #c9a84c) 25%, transparent);
     margin-bottom: 2px;
 }
 
@@ -95,18 +104,64 @@
 }
 
 .this-is-you-popover-item:hover {
-    background: rgba(201, 168, 76, 0.2);
-    color: #f0cb67;
+    background: color-mix(in srgb, var(--state-accent, #c9a84c) 20%, transparent);
+    color: var(--state-accent, #f0cb67);
 }
 
 .this-is-you-popover-item.is-selected {
-    background: rgba(201, 168, 76, 0.28);
-    color: #f0cb67;
+    background: color-mix(in srgb, var(--state-accent, #c9a84c) 28%, transparent);
+    color: var(--state-accent, #f0cb67);
     font-weight: 700;
 }
 
 .this-is-you-check {
-    color: #f0cb67;
+    color: var(--state-accent, #f0cb67);
     font-size: 0.64rem;
     margin-left: 6px;
+}
+
+.this-is-you-option-anchor {
+    position: relative;
+    min-width: 0;
+}
+
+.this-is-you-inline-slider-options > .this-is-you-option-anchor {
+    display: flex;
+}
+
+.this-is-you-inline-slider-options .this-is-you-option-anchor > .disposition-option {
+    width: 100%;
+}
+
+.this-is-you-confirmation-note {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 0;
+    z-index: 10002;
+    width: max-content;
+    max-width: min(220px, calc(100vw - 24px));
+    padding: 7px 8px;
+    border: 1px solid rgba(248, 113, 113, 0.7);
+    border-radius: 5px;
+    background: #20110f;
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.8);
+    color: #ffc1b8;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.58rem;
+    line-height: 1.35;
+}
+
+.this-is-you-popover .this-is-you-confirmation-note {
+    position: static;
+    width: auto;
+    max-width: none;
+    margin-top: 4px;
+}
+
+.this-is-you-popover-item.is-confirmation-pending { color: #ffc1b8; }
+
+.this-is-you-inline-slider-options .disposition-option.is-confirmation-pending {
+    color: #ffc1b8;
+    background: rgba(248, 113, 113, 0.18);
+    border-radius: 3px;
 }

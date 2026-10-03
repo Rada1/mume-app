@@ -4,6 +4,7 @@ import { gmcpBus } from '../events/gmcpBus';
 import { useModeStore } from './useModeStore';
 import { VitalsState, initialVitalsState, createVitalsActions } from './slices/vitalsSlice';
 import { setGlobalCommandTarget } from '../utils/commandTargetMemory';
+import { useAutomaticTargetStore } from './useAutomaticTargetStore';
 
 export type VitalsStore = VitalsState;
 
@@ -13,6 +14,7 @@ export const useVitalsStore = create<VitalsStore>((set, get) => ({
     // Extra actions that might not be in slice but used by main store
     setTarget: (target: string | null) => {
         setGlobalCommandTarget(target);
+        useAutomaticTargetStore.getState().setTarget(null);
         set({ target } as any);
     },
     setActivePrompt: (activePrompt: any) => set({ activePrompt } as any),

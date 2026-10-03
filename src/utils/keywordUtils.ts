@@ -145,11 +145,6 @@ export const sanitizeGameTarget = (target: string | null | undefined): string | 
         return clean;
     }
     
-    // Rule: any corpse object should eliminate all the -s and just use corpse as the target.
-    if (clean.toLowerCase().startsWith('corpse-')) {
-        return 'corpse';
-    }
-
     // Rule: specific container simplifications for easier interaction (e.g. leather-backpack -> backpack)
     const containerTypes = ['backpack', 'bag', 'sack', 'pouch', 'satchel', 'quiver', 'chest', 'box', 'barrel', 'crate', 'keg', 'vial', 'flask', 'bottle', 'waterskin', 'skin', 'water-skin'];
     const parts = clean.toLowerCase().split('-');
@@ -186,6 +181,7 @@ export const formatMumeTarget = (target: string | null | undefined): string | nu
     if (/^(?:\d+\.)?\*[^*]+\*$/.test(clean)) {
         return clean;
     }
+    if (/^(?:\d+\.)?[\w'-]+-corpse$/i.test(clean)) return clean.toLowerCase();
 
     const indexed = clean.match(/^(\d+\.)(.+)$/);
     const keyword = extractMumeKeyword(indexed ? indexed[2] : clean);

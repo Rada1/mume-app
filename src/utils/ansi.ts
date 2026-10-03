@@ -5,6 +5,17 @@
 
 import Convert from 'ansi-to-html';
 
+const ANSI_CSI_SEQUENCE = /\x1b\[[0-?]*[ -/]*[@-~]/g;
+
+// --- ANSI Cleanup Section ---
+export const stripAnsiControlSequences = (text: string): string =>
+    text.replace(ANSI_CSI_SEQUENCE, '');
+
+export const stripNonSgrAnsiSequences = (text: string): string =>
+    text.replace(/\x1b\[[0-?]*[ -/]*([@-~])/g, (sequence, finalByte: string) =>
+        finalByte === 'm' ? sequence : ''
+    );
+
 // --- Palette Section ---
 const generatePalette = () => {
     const names = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
@@ -97,7 +108,7 @@ export const ansiConvert = {
             return result;
         }
 
-        let preprocessed = text;
+        let preprocessed = stripNonSgrAnsiSequences(text);
         if (preprocessed.includes('&')) {
             // Translate MUME tags to ANSI escape sequences BEFORE html conversion.
             // This ensures they override any basic fallback ANSI escapes MUME already sent.

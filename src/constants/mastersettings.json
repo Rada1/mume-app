@@ -207,6 +207,7 @@
         "h": 50,
         "backgroundColor": "rgba(255, 255, 255, 0.05)",
         "borderColor": "#22c55e",
+        "color": "#22c55e",
         "borderWidth": 2.5,
         "transparent": true,
         "curvedText": true,
@@ -217,7 +218,8 @@
       "longCommand": "rangerskilllist",
       "swipeCommands": {
         "up": "ride",
-        "down": "lead"
+        "down": "lead",
+        "left": "camp"
       },
       "swipeActionTypes": {
         "up": "command",
@@ -482,7 +484,8 @@
         "down": "reveal",
         "left": "flush",
         "ne": "watch",
-        "nw": "consider"
+        "nw": "consider",
+        "se": "where"
       },
       "longCommand": "look",
       "longActionType": "assign",

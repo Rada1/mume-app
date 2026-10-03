@@ -60,6 +60,8 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
 }) => {
     const input = useInputStore(s => s.input);
     const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
+    const isImmersionWeatherEffectsEnabled = useSettingsStore(s => s.isImmersionWeatherEffectsEnabled);
+    const showImmersionWeatherEffects = isImmersionMode && isImmersionWeatherEffectsEnabled;
     const deathFadePhase = useDeathBackgroundFade();
 
     const [prevPropBg, setPrevPropBg] = React.useState<string | null>(bgImage || null);
@@ -191,7 +193,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                 {isImmersionMode && (
                     <EnvironmentGlow terrain={terrain || undefined} zone={zone} lighting={lighting} input={input} />
                 )}
-                {isImmersionMode && (
+                {showImmersionWeatherEffects && (
                     <div className={`storm-overlay-layer ${weather === 'heavy-rain' ? 'active' : ''}`} />
                 )}
                 {isImmersionMode && (
@@ -233,10 +235,10 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
 
             {/* --- FRONT LAYER: Atmospheric & Interactive [z-index: 4500+] --- */}
             <div className={`environment-root front`}>
-                {isImmersionMode && (
+                {showImmersionWeatherEffects && (
                     <>
                         <div
-                            className={`weather-layer weather-cloud ${(weather === 'rain' || weather === 'heavy-rain') ? 'storm-clouds' : ''} ${lightning ? 'lightning-active' : ''}`}
+                            className={`weather-layer weather-cloud ${lightning ? 'lightning-active' : ''}`}
                             style={{ opacity: (weather === 'cloud' || weather === 'rain' || weather === 'heavy-rain') ? 1 : 0 }}
                         />
                         {lightning && <div className="lightning-glow-drop" />}

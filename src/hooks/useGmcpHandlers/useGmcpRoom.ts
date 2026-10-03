@@ -11,6 +11,7 @@ import { normalizeGmcpWeather } from '../../utils/weatherUtils';
 import { mergeGmcpExitUpdate, normalizeExitMap } from '../../utils/gmcpExitUtils';
 import type { GmcpExitMap } from '../../utils/gmcpExitUtils';
 import { reconcileRoomObjectSnapshot } from '../../objects/objectTargetModel';
+import { useVitalsStore } from '../../stores/useVitalsStore';
 
 interface UseGmcpRoomProps {
     mapperRef: React.RefObject<MapperRef>;
@@ -25,11 +26,8 @@ interface UseGmcpRoomProps {
     setDiscoveredItems: (items: string[]) => void;
     roomDescRef?: React.RefObject<string>;
     detectLighting?: (symbol: string | number) => void;
-    playMovementSound?: (isRiding: boolean) => void;
+    playMovementSound?: (isRiding: boolean, terrain?: string, isSneaking?: boolean) => void;
     playDoorSound?: (isOpen: boolean) => void;
-    isSpectateMode?: boolean;
-    isRidingRef?: React.RefObject<boolean>;
-    playerPositionRef: React.MutableRefObject<string>;
     lastRoomChangeTimeRef: React.MutableRefObject<number>;
     lastRoomNumRef: React.MutableRefObject<number | string | null>;
     lastExitsRef: React.MutableRefObject<Record<string, any>>;
@@ -81,9 +79,6 @@ export const useGmcpRoom = ({
     detectLighting,
     playMovementSound,
     playDoorSound,
-    isSpectateMode,
-    isRidingRef,
-    playerPositionRef,
     lastRoomChangeTimeRef,
     lastRoomNumRef,
     lastExitsRef
@@ -99,6 +94,7 @@ export const useGmcpRoom = ({
         }
 
         const roomNum = data.num || data.id || data.vnum;
+        const hadPreviousRoom = lastRoomNumRef.current !== null;
         const roomChanged = roomNum !== undefined && roomNum !== lastRoomNumRef.current;
         lastRoomNumRef.current = roomNum ?? null;
 
@@ -169,13 +165,16 @@ export const useGmcpRoom = ({
                 return next;
             });
             
-            // if (playMovementSound) {
-            //     // Determine riding status: if spectating, we can check Room.Chars or fallback.
-            //     const isRiding = isRidingRef?.current || playerPositionRef.current === 'riding' || playerPositionRef.current === 'mounted';
-            //     playMovementSound(isRiding);
-            // }
+            // The first Room.Info initializes the current room; only later room
+            // changes represent movement and should trigger the movement sound.
+            if (hadPreviousRoom && playMovementSound) {
+                const vitals = useVitalsStore.getState();
+                const isRiding = vitals.isRiding || vitals.position === 'riding' || vitals.position === 'mounted';
+                const isSneaking = Boolean(vitals.sneak && vitals.sneak.toLowerCase() !== 'off');
+                playMovementSound(isRiding, terrain, isSneaking);
+            }
         }
-    }, [mapperRef, setCurrentTerrain, setWeather, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomItems, setRoomChars, setDiscoveredItems, playMovementSound, isSpectateMode, detectLighting, isRidingRef, playerPositionRef, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef]);
+    }, [mapperRef, setCurrentTerrain, setWeather, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomItems, setRoomChars, setDiscoveredItems, playMovementSound, detectLighting, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef]);
 
     const onRoomUpdateExits = useCallback((data: GmcpUpdateExits) => {
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-gmcp-room-exits', { detail: data }));
@@ -217,7 +216,7 @@ export const useGmcpRoom = ({
             lastExitsRef.current = mergedExits;
             setRoomExits(Object.keys(mergedExits));
         }
-    }, [setRoomExits, playDoorSound, isSpectateMode, lastExitsRef]);
+    }, [setRoomExits, playDoorSound, lastExitsRef]);
 
     return { onRoomInfo, onRoomUpdateExits };
 };

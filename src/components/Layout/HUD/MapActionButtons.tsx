@@ -12,6 +12,8 @@ const MAP_ACTIONS: CustomButton[] = [
         command: 'hit',
         setId: 'Tactical',
         actionType: 'command',
+        swipeCommands: { up: 'assist' },
+        swipeActionTypes: { up: 'command' },
         display: 'floating',
         style: { x: 0, y: 0, w: 270, h: 40, backgroundColor: 'rgba(255, 255, 255, 0.04)', borderColor: 'rgba(255, 255, 255, 0.18)', color: 'rgba(255, 255, 255, 0.82)', borderRadius: 8, fontSize: 13, shape: 'pill' },
         position: { x: 0, y: 0, w: 270, h: 40 },

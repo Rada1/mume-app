@@ -1,0 +1,32 @@
+/**
+ * @file ImmersionTextAnimations.css
+ * @description Disables animated game-log text effects unless the user opts in.
+ */
+
+/* --- Default-off Immersion Text Animation Gate --- */
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .log-char,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .log-word,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .log-text-word,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .room-title-text,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .room-name-inline,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .message-content .inline-btn,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .comm-action,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .custom-prompt-container .prompt-entity-inline,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .message.room-jiggle-active .room-title-badge,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .message.room-jiggle-active .room-desc-line,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .message.room-jiggle-active .content-row,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .message.magic-ripple-active .magic-text,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .message.red-weather-ripple-active .message-content,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .message.red-weather-ripple-active .message-content *,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .message.audio-sheen-active .log-text-word,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .message.audio-sheen-active .message-content .inline-btn,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .message.audio-sheen-active .comm-action,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .message-content .inline-btn[class*="inline-item-tier-"] {
+    animation: none !important;
+}
+
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .hit-sheen-overlay,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .damage-sheen-overlay,
+.app-container.immersion-mode:not(.immersion-text-animations-enabled) .message-log .rip-sheen-overlay {
+    display: none !important;
+}

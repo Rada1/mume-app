@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import './index.css';
 import './components/Messages/MessageLog.css';
 import './components/Messages/MagicRipple.css';
+import './components/Messages/ImmersionTextAnimations.css';
 import './components/Messages/ChatWindow.css';
 import './components/Messages/ChatTranscriptWindow.css';
 import './components/Controls/Stats.css';
@@ -108,6 +109,7 @@ const MudClient = () => {
     const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
     const displayMode = useDisplayMode();
     const isClassicMode = useSettingsStore(s => s.isClassicMode);
+    const isImmersionTextAnimationsEnabled = useSettingsStore(s => s.isImmersionTextAnimationsEnabled);
     const keepScreenAwake = useSettingsStore(s => s.keepScreenAwake);
     useScreenWakeLock(keepScreenAwake);
     useZoneThemeSync();
@@ -269,7 +271,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container state-${gameState} stage-${accountState?.stage || 'none'} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isPerformanceMode || isClassicMode ? 'performance-mode' : ''} ${isClassicMode ? 'classic-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
+            className={`app-container state-${gameState} stage-${accountState?.stage || 'none'} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isImmersionMode && isImmersionTextAnimationsEnabled ? 'immersion-text-animations-enabled' : ''} ${isPerformanceMode || isClassicMode ? 'performance-mode' : ''} ${isClassicMode ? 'classic-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
             style={{
                 ...(isImmersionMode ? { '--terrain-glow-color': getZoneAmbientGlow(gameState === 'account' ? null : roomZone) } : {})
             } as React.CSSProperties}

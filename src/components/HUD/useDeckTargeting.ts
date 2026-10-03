@@ -6,7 +6,7 @@
 // --- Logic Section ---
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { canCommandAcceptTarget, getCommandTargetMenuKind, getDefaultCommandTarget } from '../../utils/commandTargetUtils';
-import { getAutoRoomTarget } from '../../utils/commandAutoTarget';
+import { getAutoRoomTarget, getCombatRoomTarget, type CombatTargetIdentity } from '../../utils/commandAutoTarget';
 import {
     getRememberedCommandTarget,
     isCompatibleGlobalTarget,
@@ -15,11 +15,13 @@ import {
 import {
     getContainerTargetSuggestions,
     getDrinkTargetSuggestions,
+    getFluidContainerTargetSuggestions,
     getGearTargetSuggestions,
     getFillTargetSuggestions,
     getInventoryAndWornTargetSuggestions,
     getLanternTargetSuggestions,
     getMountTargetSuggestions,
+    getGiveRecipientSuggestions,
     getRoomTargetSuggestions,
     getSelfTargetSuggestion,
     getSelfAndRoomAlliesTargetSuggestions,
@@ -71,11 +73,12 @@ const getDefaultSecondArgumentKey = (kind?: string): string | null => (
             : null
 );
 
-const getInitialTarget = (item: DeckItem, target: string | null, roomOccupants: GmcpOccupant[], characterName: string, roomZone?: string | null): string | null => {
+const getInitialTarget = (item: DeckItem, target: string | null, roomOccupants: GmcpOccupant[], characterName: string, roomZone?: string | null, combatOpponent?: CombatTargetIdentity | null): string | null => {
     if (item.targetKind && (STAGED_TARGET_KINDS.has(item.targetKind) || item.targetKind === 'shop')) return null;
-    return getRememberedCommandTarget(item.cmd)
-        || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
-        || getAutoRoomTarget(item.cmd, roomOccupants, characterName, roomZone)
+    return (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
+        || getCombatRoomTarget(item.cmd, roomOccupants, characterName, combatOpponent)
+        || getRememberedCommandTarget(item.cmd)
+        || getAutoRoomTarget(item.cmd, roomOccupants, characterName, roomZone, combatOpponent)
         || getDefaultCommandTarget(item.cmd);
 };
 
@@ -103,6 +106,7 @@ export interface UseDeckTargetingProps {
     requestContainerContents?: (source: CommandTargetSuggestion) => void;
     characterName?: string;
     roomZone?: string | null;
+    combatOpponent?: CombatTargetIdentity | null;
 }
 
 export interface UseDeckTargetingReturn {
@@ -144,7 +148,8 @@ export const useDeckTargeting = ({
     containerContents = {},
     requestContainerContents,
     characterName = '',
-    roomZone
+    roomZone,
+    combatOpponent
 }: UseDeckTargetingProps): UseDeckTargetingReturn => {
     const [isTargetMenuOpen, setIsTargetMenuOpen] = useState(false);
     const [isTargetMenuHeld, setIsTargetMenuHeld] = useState(false);
@@ -202,11 +207,10 @@ export const useDeckTargeting = ({
             ];
         }
         if (activeItem?.targetKind === 'inventory-recipient') {
-            return getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName);
+            return getGiveRecipientSuggestions(roomOccupants, characterName);
         }
         if (activeItem?.targetKind === 'pour') {
-            return getDrinkTargetSuggestions(inventoryLines, wornLines)
-                .filter(suggestion => suggestion.value.trim().toLowerCase() !== 'water');
+            return getFluidContainerTargetSuggestions(inventoryLines, wornLines, selectedFirstArgument);
         }
         if (activeItem?.targetKind === 'inventory-container' || activeItem?.targetKind === 'room-object-container') {
             const containers = getContainerTargetSuggestions(roomItems, inventoryLines, wornLines)
@@ -217,7 +221,7 @@ export const useDeckTargeting = ({
                 : withAll;
         }
         return [];
-    }, [activeItem?.targetKind, roomOccupants, roomItems, inventoryLines, wornLines, characterName]);
+    }, [activeItem?.targetKind, roomOccupants, roomItems, inventoryLines, wornLines, characterName, selectedFirstArgument]);
 
     const selectedGetSource = activeItem?.targetKind === 'room-object-container'
         ? secondArgumentSuggestions.find(suggestion => suggestion.key === selectedSecondArgumentKey)
@@ -327,7 +331,7 @@ export const useDeckTargeting = ({
         }
         if (isSecondArgumentStage) {
             if (activeItem.targetKind === 'inventory-recipient') {
-                return getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName);
+                return getGiveRecipientSuggestions(roomOccupants, characterName);
             }
             if (activeItem.targetKind === 'pour') return secondArgumentSuggestions;
             const containers = getContainerTargetSuggestions(roomItems, inventoryLines, wornLines)
@@ -429,12 +433,12 @@ export const useDeckTargeting = ({
         const initialSecondArgument = defaultSecondArgument;
         const initialTarget = item.targetKind === 'room-object-container'
             ? initialSecondArgument
-            : getInitialTarget(item, target, roomOccupants, characterName, roomZone);
+            : getInitialTarget(item, target, roomOccupants, characterName, roomZone, combatOpponent);
         setPendingTarget(initialTarget);
         pendingTargetRef.current = initialTarget;
         setIsTargetMenuOpen(true);
         triggerHaptic?.(20);
-    }, [characterName, clearHoldTimer, roomOccupants, roomZone, target, triggerHaptic]);
+    }, [characterName, clearHoldTimer, combatOpponent, roomOccupants, roomZone, target, triggerHaptic]);
 
     const executeStagedCommand = useCallback((item: DeckItem, firstArgument: string, secondArgument: string, keepOpenAfterFire = false) => {
         const targetPart = (item.targetKind === 'room-object-container' && secondArgument === ROOM_TARGET_VALUE)
@@ -497,7 +501,7 @@ export const useDeckTargeting = ({
             secondArgumentRef.current = defaultSecondArgument;
             const initialTarget = item.targetKind === 'room-object-container'
                 ? defaultSecondArgument
-                : getInitialTarget(item, target, roomOccupants, characterName, roomZone);
+                : getInitialTarget(item, target, roomOccupants, characterName, roomZone, combatOpponent);
             setPendingTarget(initialTarget);
             pendingTargetRef.current = initialTarget;
             setIsSecondArgumentStage(false);
@@ -505,7 +509,7 @@ export const useDeckTargeting = ({
             refreshGearTargets(item);
             triggerHaptic?.(20);
         }, 220);
-    }, [characterName, clearHoldTimer, refreshGearTargets, roomOccupants, roomZone, target, triggerHaptic]);
+    }, [characterName, clearHoldTimer, combatOpponent, refreshGearTargets, roomOccupants, roomZone, target, triggerHaptic]);
 
     const handlePointerUp = useCallback((item: DeckItem, _e: React.PointerEvent<HTMLButtonElement>) => {
         if (holdTimerRef.current !== null) {
@@ -537,8 +541,10 @@ export const useDeckTargeting = ({
                 closeTargetMenu();
                 return;
             }
-            const effectiveTarget = pendingTargetRef.current || getRememberedCommandTarget(item.cmd)
-                || (isCompatibleGlobalTarget(item.cmd, target) ? target : null);
+            const effectiveTarget = pendingTargetRef.current
+                || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
+                || getCombatRoomTarget(item.cmd, roomOccupants, characterName, combatOpponent)
+                || getRememberedCommandTarget(item.cmd);
             if (effectiveTarget) {
                 rememberCommandTarget(item.cmd, effectiveTarget);
                 if (pendingTargetRef.current) {
@@ -552,7 +558,7 @@ export const useDeckTargeting = ({
             }
             closeTargetMenu();
         }
-    }, [clearHoldTimer, closeTargetMenu, executeCommand, executeStagedCommand, flashPressed, isSecondArgumentStage, pendingTargetRef, target, triggerHaptic]);
+    }, [characterName, clearHoldTimer, closeTargetMenu, combatOpponent, executeCommand, executeStagedCommand, flashPressed, isSecondArgumentStage, pendingTargetRef, roomOccupants, target, triggerHaptic]);
 
     const handlePointerCancel = useCallback(() => {
         closeTargetMenu();
@@ -586,6 +592,14 @@ export const useDeckTargeting = ({
                         firstArgumentRef.current = targetValue;
                         setSelectedFirstArgument(targetValue);
                         setSelectedFirstArgumentKey(suggestion?.key ?? null);
+                        if (itemToFire.targetKind === 'inventory-recipient' && !secondArgumentRef.current) {
+                            const defaultRecipient = secondArgumentSuggestions[0];
+                            if (defaultRecipient) {
+                                secondArgumentRef.current = defaultRecipient.value;
+                                setSelectedSecondArgument(defaultRecipient.value);
+                                setSelectedSecondArgumentKey(defaultRecipient.key);
+                            }
+                        }
                     } else {
                         if (itemToFire.targetKind === 'room-object-container') {
                             firstArgumentRef.current = null;
@@ -610,7 +624,8 @@ export const useDeckTargeting = ({
                     }
                     setIsSecondArgumentStage(true);
                     if (heldPointerIdRef.current !== null) return;
-                    if (firstArgumentRef.current && secondArgumentRef.current) {
+                    if (firstArgumentRef.current && secondArgumentRef.current
+                        && !(itemToFire.targetKind === 'inventory-recipient' && selectedColumn === 0)) {
                         executeStagedCommand(itemToFire, firstArgumentRef.current, secondArgumentRef.current, keepOpenAfterFire);
                     }
                     return;

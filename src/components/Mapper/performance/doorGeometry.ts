@@ -6,7 +6,7 @@
 import { rgb, type RGBA } from './vendor/palette';
 
 export const DOOR_VERTEX_COUNT = 24;
-const DOOR_COLOR = rgb(0xc9a84c);
+const DOOR_COLOR = rgb(0xffffff);
 const REMOTE_DOOR_COLOR = rgb(0x000000);
 const POST_COLOR = rgb(0x000000);
 const DOOR_LINE_WIDTH = 0.07;

@@ -2,7 +2,6 @@ import { useCallback, useMemo, useRef, useEffect } from 'react';
 import { Direction, TeleportTarget, MessageType, DrawerLine, GameAction, CaptureStage } from '../types';
 import { extractNoun } from '../utils/gameUtils';
 import { MapperRef } from '../components/Mapper/mapperTypes';
-import { parseDoorCommand } from '../components/Mapper/doorCommand';
 import { getExitTargetId, getGateState } from '../components/Mapper/mapperUtils';
 import { useSettingsStore } from '../stores/useSettingsStore';
 
@@ -130,24 +129,9 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         const normalizedFinalCmd = finalCmd.trim().toLowerCase();
         const shouldRefreshPractice = !silent && !isSystem && normalizedFinalCmd.startsWith('practice ');
 
-        // --- Apply local door feedback, then send bytes ASAP ---
-        // Door state is optimistic so it renders immediately and is not lost if
-        // the server omits an open-state exit update. Other bookkeeping follows.
+        // --- Send bytes ASAP; GMCP remains authoritative for mapper door state. ---
         if (status === 'connected') {
             if (typeof window !== 'undefined') {
-                const mapper = mapperRef.current;
-                const roomId = mapper?.stableRoomIdRef.current ?? null;
-                const currentRoom = roomId
-                    ? mapper?.stableRoomsRef.current[roomId]
-                        ?? mapper?.stableRoomsRef.current[`m_${roomId.replace(/^m_/, '')}`]
-                        ?? mapper?.stableRoomsRef.current[roomId.replace(/^m_/, '')]
-                    : undefined;
-                const doorUpdate = parseDoorCommand(finalCmd, currentRoom?.exits);
-                if (doorUpdate) {
-                    window.dispatchEvent(new CustomEvent('mume-door-command-sent', {
-                        detail: { ...doorUpdate, roomId },
-                    }));
-                }
                 telnet.sendCommand(finalCmd);
                 window.dispatchEvent(new CustomEvent('mume-command-sent', { detail: { cmd: finalCmd, silent, isSystem } }));
             } else {

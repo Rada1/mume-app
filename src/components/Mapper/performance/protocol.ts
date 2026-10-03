@@ -35,6 +35,7 @@ export interface FastMapFrame {
   liveRoom: FastRoomOverlay | null;
   prediction: FastMapPrediction | null;
   background: FastMapBackground;
+  brightness: number;
 }
 
 export type FastMapGameEvent = { kind: 'moved' | 'room-info'; data: unknown };

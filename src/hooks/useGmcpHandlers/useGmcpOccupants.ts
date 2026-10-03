@@ -1,79 +1,13 @@
+/** @file useGmcpOccupants.ts — Synchronizes GMCP room occupants with client room state. */
+
+// --- Logic Section ---
 import { useCallback, useEffect } from 'react';
 import { GmcpOccupant } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { occupantAnims, getOccupantKey } from '../../components/Mapper/occupantAnimStore';
-import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
 import { initFollowerSync, cancelArrival, cancelDeparture } from '../../utils/followerSync';
-
-const getRoomCharKey = (id: string | number): number => {
-    const numericId = Number(id);
-    if (Number.isFinite(numericId)) return numericId;
-
-    const idString = String(id);
-    let hash = 0;
-    for (let i = 0; i < idString.length; i++) {
-        hash = ((hash << 5) - hash + idString.charCodeAt(i)) | 0;
-    }
-    return hash || -1;
-};
-
-const knownRoomChars = new Map<string, GmcpOccupant>();
-
-const rememberOccupant = (occupant: GmcpOccupant) => {
-    if (occupant.id === undefined) return;
-    const key = String(occupant.id);
-    knownRoomChars.set(key, { ...(knownRoomChars.get(key) || {}), ...occupant });
-};
-
-const hydrateOccupant = (occupant: GmcpOccupant): GmcpOccupant => {
-    if (occupant.id === undefined) return occupant;
-    const cached = knownRoomChars.get(String(occupant.id));
-    const hydrated = cached ? { ...cached, ...occupant } : occupant;
-    if (!hydrated.name) {
-        hydrated.name = hydrated.short || hydrated.shortdesc || hydrated.keyword || hydrated.desc;
-    }
-    return hydrated;
-};
-
-const parseOccupant = (data: any, characterName: string | null): GmcpOccupant | null => {
-    if (!data) return null;
-    let obj: GmcpOccupant;
-    const normalizedType = normalizeOccupantType(data);
-    if (typeof data === 'string' || typeof data === 'number') {
-        obj = { id: String(data), name: String(data), short: String(data) };
-    } else {
-        obj = { ...data };
-        obj.id = data.id !== undefined ? String(data.id) : (data.name || data.keyword || data.short || data.shortdesc);
-        // Only set name if it exists in the data, preserving partial updates
-        if (data.name || data.keyword || data.short || data.shortdesc) {
-            obj.name = data.name || data.keyword || data.short || data.shortdesc;
-        }
-    }
-    if (normalizedType) obj.type = normalizedType;
-    if (obj.name || obj.keyword || obj.short || obj.shortdesc) {
-        obj.keyword = getOccupantCommandKeyword(obj, String(obj.id || ''));
-    }
-    // Normalize MUME's `pc` flag into the canonical `type` field so the
-    // classifier (strict on `type`) sees a usable value for NPCs that arrive
-    // with only `pc: 0` and no explicit type.
-
-    if (!obj.id) return null;
-    const hydrated = hydrateOccupant(obj);
-    if (characterName && hydrated.name && hydrated.name.toLowerCase() === characterName.toLowerCase()) return null;
-
-    rememberOccupant(hydrated);
-    return hydrated;
-};
-
-const parseOccupants = (data: any, characterName: string | null): GmcpOccupant[] => {
-    const rawList = Array.isArray(data)
-        ? data
-        : (data?.chars || data?.char || data?.members || data?.list || data?.npcs || data?.players || [data]);
-    return rawList
-        .map((entry: any) => parseOccupant(entry, characterName))
-        .filter((entry: GmcpOccupant | null): entry is GmcpOccupant => !!entry && entry.id !== undefined);
-};
+import { getRoomCharKey, parseOccupants, rememberOccupant } from './roomOccupantParser';
 
 interface UseGmcpOccupantsProps {
     mapperRef: React.RefObject<MapperRef>;
@@ -162,7 +96,8 @@ export const useGmcpOccupants = ({
             return;
         }
 
-        const parsedChars = parseOccupants(rawList, characterName).reduce<Record<number, GmcpOccupant>>((acc, obj) => {
+        const parsedChars = parseOccupants(rawList, characterName).reduce<Record<number, GmcpOccupant>>((acc, obj, index) => {
+            obj._roomOrder = index;
             acc[getRoomCharKey(obj.id!)] = obj;
             return acc;
         }, {});
@@ -179,11 +114,20 @@ export const useGmcpOccupants = ({
             );
             const parsedCount = Object.keys(parsedChars).length;
             const shouldPreserveExisting = parsedCount > 0 && (prevCount > parsedCount || looksLikePartialCombatUpdate);
+            const hasCompleteRoster = parsedCount >= prevCount
+                && Object.keys(prev).every(key => parsedChars[Number(key)] !== undefined);
             const newChars: Record<number, GmcpOccupant> = shouldPreserveExisting ? { ...prev } : {};
+            let nextRoomOrder = Object.values(prev).reduce(
+                (maximum, occupant) => Math.max(maximum, occupant._roomOrder ?? -1),
+                -1
+            ) + 1;
 
             Object.entries(parsedChars).forEach(([key, obj]) => {
                 const id = Number(key);
-                const merged = tagRoom({ ...(prev[id] || {}), ...obj });
+                const roomOrder = !shouldPreserveExisting || hasCompleteRoster
+                    ? obj._roomOrder
+                    : prev[id]?._roomOrder ?? nextRoomOrder++;
+                const merged = tagRoom({ ...(prev[id] || {}), ...obj, _roomOrder: roomOrder });
                 newChars[id] = merged;
                 rememberOccupant(merged);
 
@@ -236,9 +180,15 @@ export const useGmcpOccupants = ({
 
         setRoomChars?.(prev => {
             const next = { ...prev };
+            let nextRoomOrder = Object.values(prev).reduce(
+                (maximum, occupant) => Math.max(maximum, occupant._roomOrder ?? -1),
+                -1
+            ) + 1;
             occupants.forEach(obj => {
                 const id = getRoomCharKey(obj.id!);
-                const merged = tagRoom({ ...(next[id] || {}), ...obj });
+                const existing = next[id];
+                const roomOrder = existing?._roomOrder ?? nextRoomOrder++;
+                const merged = tagRoom({ ...(existing || {}), ...obj, _roomOrder: roomOrder });
                 rememberOccupant(merged);
                 next[id] = merged;
             });

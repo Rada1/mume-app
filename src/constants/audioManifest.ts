@@ -190,6 +190,7 @@ export const AUDIO_MANIFEST = {
         'buy': { path: '/assets/Sounds/SoundEffects/sellandbuy.mp3', defaultVolume: 0.8 },
         'sell': { path: '/assets/Sounds/SoundEffects/sellandbuy.mp3', defaultVolume: 0.8 },
         'sellandbuy': { path: '/assets/Sounds/SoundEffects/sellandbuy.mp3' },
+        'backstab': { path: '/assets/Sounds/SoundEffects/backstab.mp3', defaultVolume: 0.5 },
         'slash': { path: '/assets/Sounds/SoundEffects/slash.mp3', defaultVolume: 0.5 },
         'slider': { path: '/assets/Sounds/SoundEffects/slider.mp3', defaultVolume: 1.0 },
         'social': { path: '/assets/Sounds/SoundEffects/social.mp3', defaultVolume: 0.8 },

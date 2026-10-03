@@ -12,13 +12,35 @@ import { makeCommandTargetSuggestion, type CommandTargetSuggestion } from './tar
 
 // --- Room Target Projections ---
 
+const getAllyPriority = (source: string | GmcpOccupant): number | null => {
+    if (typeof source === 'string') return null;
+    const normalizedType = normalizeOccupantType(source)?.toLowerCase();
+    if (normalizedType === 'enemy' || normalizedType === 'neutral' || normalizedType === 'you' || normalizedType === 'self') return null;
+
+    const tags = [source.category, ...(source.labels || []), ...(source.flags || [])]
+        .filter(Boolean)
+        .map(tag => String(tag).toLowerCase().replace(/^(?:cat|trait)-/, ''));
+    const hasAllyTag = tags.some(tag => ['ally', 'allies', 'friend', 'grouped'].includes(tag));
+    if (hasAllyTag) return 0;
+    if (normalizedType === 'ally' || normalizedType === 'player' || source.pc === true || source.pc === 1) return 1;
+    return null;
+};
+
 export const getRoomTargetSuggestions = (
     characters: Array<string | GmcpOccupant>,
     objects: Array<string | GmcpOccupant>,
     kind: 'characters' | 'allies' | 'objects',
     selfName = ''
 ): CommandTargetSuggestion[] => {
-    const sources = kind === 'objects' ? objects : characters;
+    const roomSources = kind === 'objects' ? objects : characters;
+    const hasRoomOrder = kind !== 'objects'
+        && roomSources.some(source => typeof source !== 'string' && source._roomOrder !== undefined);
+    const sources = hasRoomOrder
+        ? roomSources
+            .map((source, index) => ({ source, index, order: typeof source === 'string' ? undefined : source._roomOrder }))
+            .sort((left, right) => (left.order ?? Number.POSITIVE_INFINITY) - (right.order ?? Number.POSITIVE_INFINITY) || left.index - right.index)
+            .map(entry => entry.source)
+        : roomSources;
     if (kind === 'objects') {
         return createObjectTargetEntries(getRoomObjectCandidates(objects)).map(entry => {
             const source = entry.source as GmcpOccupant;
@@ -33,19 +55,6 @@ export const getRoomTargetSuggestions = (
             };
         });
     }
-    const getAllyPriority = (source: string | GmcpOccupant): number | null => {
-        if (typeof source === 'string') return null;
-        const normalizedType = normalizeOccupantType(source)?.toLowerCase();
-        if (normalizedType === 'enemy' || normalizedType === 'neutral' || normalizedType === 'you' || normalizedType === 'self') return null;
-
-        const tags = [source.category, ...(source.labels || []), ...(source.flags || [])]
-            .filter(Boolean)
-            .map(tag => String(tag).toLowerCase().replace(/^(?:cat|trait)-/, ''));
-        const hasAllyTag = tags.some(tag => ['ally', 'allies', 'friend', 'grouped'].includes(tag));
-        if (hasAllyTag) return 0;
-        if (normalizedType === 'ally' || normalizedType === 'player' || source.pc === true || source.pc === 1) return 1;
-        return null;
-    };
     const orderedSources = kind === 'allies'
         ? sources.map((source, index) => ({ source, index, priority: getAllyPriority(source) }))
             .filter((entry): entry is { source: string | GmcpOccupant; index: number; priority: number } => entry.priority !== null)
@@ -85,6 +94,22 @@ export const getRoomTargetSuggestions = (
             value: `${ordinal}.${suggestion.value}`
         };
     });
+};
+
+export const getGiveRecipientSuggestions = (
+    characters: Array<string | GmcpOccupant>,
+    selfName = ''
+): CommandTargetSuggestion[] => {
+    const orderedCharacters = characters
+        .map((source, index) => ({
+            source,
+            index,
+            priority: getAllyPriority(source)
+                ?? (typeof source !== 'string' && (source.pc === true || source.pc === 1) ? 1 : 2)
+        }))
+        .sort((left, right) => left.priority - right.priority || left.index - right.index)
+        .map(entry => entry.source);
+    return getRoomTargetSuggestions(orderedCharacters, [], 'characters', selfName);
 };
 
 export const getAssistTargetSuggestions = (

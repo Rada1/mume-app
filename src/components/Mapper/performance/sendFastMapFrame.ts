@@ -7,8 +7,6 @@ import type { MapCanvasProps } from '../MapCanvas';
 import type { FastMapWorkerClient } from './client';
 import { snapPixelCamera, toFastMapView } from './cameraAdapter';
 import { adaptLiveRoom } from './mapAdapter';
-import type { DoorCommandUpdate } from '../doorCommand';
-import { DIR_SLOT } from './model';
 import { mergeRoomExits, preferLiveFlags } from './canvasDataAdapters';
 import { createFastMapPrediction } from './predictionPath';
 import type { FastMapBackground } from './mapBackground';
@@ -19,7 +17,6 @@ export function sendFastMapFrame(
   canvas: HTMLCanvasElement | null,
   client: FastMapWorkerClient | null,
   background: FastMapBackground,
-  doorOverride?: DoorCommandUpdate,
 ): void {
   if (!canvas || !client) return;
   const camera = mapProps.camera.current as Parameters<typeof snapPixelCamera>[0];
@@ -47,12 +44,6 @@ export function sendFastMapFrame(
       ridable: rawRoom.ridable ?? (typeof bundledRoomFields?.[14] === 'string' || typeof bundledRoomFields?.[14] === 'number' || typeof bundledRoomFields?.[14] === 'boolean' ? bundledRoomFields[14] : undefined),
     })
     : null;
-  const overrideRoomId = doorOverride?.roomId ?? mapProps.currentRoomId;
-  const normalizeId = (roomId: string | null) => roomId?.replace(/^m_/, '') ?? '';
-  if (liveRoom && doorOverride && normalizeId(overrideRoomId) === normalizeId(mapProps.currentRoomId)) {
-    const doorSlot = DIR_SLOT[doorOverride.direction as keyof typeof DIR_SLOT];
-    if (doorSlot !== undefined && doorSlot < liveRoom.doorOpen.length) liveRoom.doorOpen[doorSlot] = doorOverride.closed ? 0 : 1;
-  }
   const predictions = mapProps.clientPredictionsRef?.current ?? [];
   const plannedTargetId = mapProps.walkTargetId ? mapProps.walkPath?.[1] ?? null : null;
   const frame: FastMapFrame = {
@@ -61,6 +52,7 @@ export function sendFastMapFrame(
     liveRoom,
     prediction: createFastMapPrediction(mapProps.currentRoomId, predictions, mapProps.preMoveRef?.current ?? null, plannedTargetId),
     background,
+    brightness: Math.max(50, Math.min(100, mapProps.mapBrightness ?? 50)) / 100,
   };
   client.update(frame);
 }

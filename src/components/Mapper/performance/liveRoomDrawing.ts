@@ -22,10 +22,11 @@ export function drawLiveRoomMesh(
   room: GpuRoomMesh,
   overlays: FastMapOverlays,
   projection: Float32Array,
+  brightness: number,
 ): void {
   drawRoomCover(gl, roomProgram, cover);
   for (const category of CATEGORIES) {
-    drawRoomCategory(gl, roomProgram, textures, room, category, CATEGORY_TEX[category], category === 'terrain' || category === 'walls' || category === 'dottedWalls' ? FAST_MAP_TILE_TINT : WHITE);
+    drawRoomCategory(gl, roomProgram, textures, room, category, CATEGORY_TEX[category], category === 'terrain' || category === 'walls' || category === 'dottedWalls' ? FAST_MAP_TILE_TINT : WHITE, brightness);
   }
   overlays.drawRoomFlags(room.trails, textures[TEX.A64] ?? null, projection);
   drawDoorGeometry(gl, colorProgram, room.doorMesh, room.doorCount);

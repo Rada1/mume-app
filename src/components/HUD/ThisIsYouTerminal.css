@@ -12,7 +12,7 @@
     backdrop-filter: blur(18px) saturate(1.05);
     -webkit-backdrop-filter: blur(18px) saturate(1.05);
     border: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 0;
     border-radius: 0;
     box-shadow: none;
     color: #d4cdb8;
@@ -23,6 +23,13 @@
 
 .this-is-you-console.is-minimized {
     padding: 4px 4px 3px;
+}
+
+/* Keep the compact desktop identity strip aligned with neighboring HUD rules. */
+.this-is-you-console:not(.is-mobile).is-minimized {
+    top: 3px;
+    padding-top: 3px;
+    padding-bottom: 2px;
 }
 
 .this-is-you-tier-identity {
@@ -47,6 +54,11 @@
     padding: 2px 4px;
 }
 
+.this-is-you-console:not(.is-mobile).is-minimized .this-is-you-tier-identity {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
 .this-is-you-tier-identity:hover {
     background: rgba(201, 168, 76, 0.08);
 }
@@ -58,26 +70,15 @@
     flex-shrink: 0;
 }
 
-.this-is-you-toggle-btn {
+.this-is-you-expand-indicator {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 22px;
-    height: 20px;
-    padding: 0;
-    border-radius: 3px;
-    border: 1px solid rgba(201, 168, 76, 0.25);
-    background: rgba(201, 168, 76, 0.08);
+    width: 24px;
+    height: 24px;
     color: #c9a84c;
-    cursor: pointer;
-    transition: all 0.15s ease;
     line-height: 1;
-}
-
-.this-is-you-toggle-btn:hover {
-    border-color: rgba(201, 168, 76, 0.6);
-    background: rgba(201, 168, 76, 0.22);
-    color: #f0cb67;
+    pointer-events: none;
 }
 
 /* Collapsible Body Wrapper */
@@ -156,12 +157,29 @@
 
 /* --- Aligned Terminal Columns --- */
 .this-is-you-tier-vitals { display: contents; }
+.this-is-you-vitals-cluster {
+    grid-column: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 28px;
+    align-items: center;
+    gap: 4px;
+}
+.this-is-you-vitals-group { grid-column: 1; }
+.this-is-you-vitals-cluster > .this-is-you-refresh-button {
+    grid-column: 2;
+    align-self: center;
+    width: 28px;
+    height: 28px;
+    min-height: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
 .this-is-you-vitals-group,
 .this-is-you-combat-slot,
 .this-is-you-tier-states,
 .this-is-you-tier-modes { min-width: 0; }
 .this-is-you-vitals-group {
-    grid-column: 1;
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -196,7 +214,7 @@
     letter-spacing: 0.14em;
 }
 .this-is-you-vitals-group::before { content: 'VITALS'; }
-.this-is-you-combat-slot::before { content: 'COMBAT'; }
+.this-is-you-combat-slot::before { display: none; content: none; }
 .this-is-you-tier-states::before { content: 'STATE'; }
 .this-is-you-tier-modes::before { content: 'MOVEMENT'; }
 .this-is-you-mode-row {
@@ -232,12 +250,25 @@
     border-radius: 0;
 }
 .this-is-you-cell-header { display: contents; }
+.this-is-you-health-cell { grid-template-columns: 70px max-content max-content max-content; }
 .this-is-you-cell-header .label {
     grid-column: 1;
     color: #9a9182 !important;
     font-size: 0.66rem;
     font-weight: 500;
     text-transform: capitalize;
+}
+.this-is-you-health-header .this-is-you-wimpy-badge {
+    grid-column: 4;
+    grid-row: 1;
+}
+.this-is-you-health-cell .this-is-you-cell-val {
+    grid-column: 2;
+    grid-row: 1;
+}
+.this-is-you-health-header .regen {
+    grid-column: 3;
+    grid-row: 1;
 }
 .this-is-you-cell-header .regen {
     grid-column: 3;
@@ -249,9 +280,12 @@
     grid-row: 1;
     margin: 0;
     color: #9bd2a5;
-    font-size: 0.69rem;
+    font-size: 0.75rem;
     white-space: nowrap;
 }
+.this-is-you-cell-val[data-vital-type="health"] { color: #ff5555; }
+.this-is-you-cell-val[data-vital-type="mana"] { color: #aa55ff; }
+.this-is-you-cell-val[data-vital-type="move"] { color: #55ff55; }
 
 .this-is-you-capabilities-cell {
     height: auto;
@@ -270,10 +304,9 @@
     gap: 1px 18px;
     margin: 0;
     color: #9a9182;
-    font-size: 0.67rem;
+    font-size: 0.73rem;
 }
-.this-is-you-capabilities-row > span,
-.this-is-you-capabilities-row > .this-is-you-wimpy-button {
+.this-is-you-capabilities-row > span {
     display: grid;
     grid-template-columns: 58px max-content auto;
     align-items: baseline;
@@ -282,6 +315,17 @@
 }
 .this-is-you-capabilities-row strong { margin-left: 2px; color: #9bd2a5; }
 .this-is-you-capabilities-row .this-is-you-delta { align-self: baseline; }
+.this-is-you-combat-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 30px;
+    margin-bottom: 3px;
+    color: #c9a84c;
+    font-size: 0.61rem;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+}
 
 /* --- Text Controls And Affects --- */
 .this-is-you-pills-row {
@@ -404,8 +448,7 @@
     .this-is-you-cell-val { grid-column: 2; grid-row: 1; }
     .this-is-you-cell-header .regen { display: none; }
     .this-is-you-capabilities-row { grid-auto-flow: row; grid-template-columns: 1fr; grid-template-rows: none; gap: 0; }
-    .this-is-you-capabilities-row > span,
-    .this-is-you-capabilities-row > .this-is-you-wimpy-button { grid-template-columns: max-content max-content auto; align-items: center; min-height: 21px; gap: 3px; font-size: 0.58rem; }
+    .this-is-you-capabilities-row > span { grid-template-columns: max-content max-content auto; align-items: center; min-height: 21px; gap: 3px; font-size: 0.58rem; }
     .this-is-you-capabilities-row strong { margin-left: 0; }
     .this-is-you-console .this-is-you-pill { grid-template-columns: max-content max-content; gap: 3px; font-size: 0.55rem; }
     .this-is-you-pill-category { font-size: 0.55rem; }

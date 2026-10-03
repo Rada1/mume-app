@@ -14,9 +14,61 @@
     z-index: 95000;
 }
 
+.map-swipe-wheel-backdrop.has-edge-feedback {
+    z-index: 95001;
+}
+
 .map-swipe-wheel-backdrop.is-idle,
 .map-swipe-wheel-backdrop.is-idle * {
     pointer-events: none !important;
+}
+
+.map-swipe-edge-indicator {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: var(--accent, #7dd3fc);
+    filter: drop-shadow(0 0 5px var(--accent, #7dd3fc));
+    opacity: 0;
+}
+
+.map-swipe-edge-indicator[data-direction] {
+    animation: map-swipe-edge-blink 1s ease-out forwards;
+}
+
+.map-swipe-edge-indicator[data-direction='n'] { clip-path: polygon(35% 0, 65% 0, 65% 4px, 35% 4px); }
+.map-swipe-edge-indicator[data-direction='s'] { clip-path: polygon(35% calc(100% - 4px), 65% calc(100% - 4px), 65% 100%, 35% 100%); }
+.map-swipe-edge-indicator[data-direction='w'],
+.map-swipe-edge-indicator[data-direction='e'] {
+    clip-path: none;
+    background: transparent;
+    filter: none;
+}
+
+.map-swipe-edge-indicator[data-direction='w']::after,
+.map-swipe-edge-indicator[data-direction='e']::after {
+    content: '';
+    position: absolute;
+    top: 35%;
+    width: 6px;
+    height: 30%;
+    border-radius: 4px;
+    background: var(--accent, #7dd3fc);
+    box-shadow: 0 0 8px 2px var(--accent, #7dd3fc);
+}
+
+.map-swipe-edge-indicator[data-direction='w']::after { left: 8px; }
+.map-swipe-edge-indicator[data-direction='e']::after { right: 8px; }
+.map-swipe-edge-indicator[data-direction='nw'] { clip-path: polygon(0 0, 28% 0, 28% 4px, 4px 4px, 4px 28%, 0 28%); }
+.map-swipe-edge-indicator[data-direction='ne'] { clip-path: polygon(72% 0, 100% 0, 100% 28%, calc(100% - 4px) 28%, calc(100% - 4px) 4px, 72% 4px); }
+.map-swipe-edge-indicator[data-direction='sw'] { clip-path: polygon(0 72%, 4px 72%, 4px calc(100% - 4px), 28% calc(100% - 4px), 28% 100%, 0 100%); }
+.map-swipe-edge-indicator[data-direction='se'] { clip-path: polygon(72% 100%, 100% 100%, 100% 72%, calc(100% - 4px) 72%, calc(100% - 4px) calc(100% - 4px), 72% calc(100% - 4px)); }
+
+@keyframes map-swipe-edge-blink {
+    0%, 100% { opacity: 0; }
+    12%, 42% { opacity: 0.95; }
+    65% { opacity: 0.25; }
 }
 
 .map-swipe-wheel-grid.unified-tactical-wheel {

@@ -11,6 +11,7 @@ import { getActiveVitals, getActiveCombat } from '../stores/useActiveGameState';
 import { normalizeMovementDirection, MovementDirection } from '../utils/movementDirections';
 import { matchSpellCompletion } from '../constants/spellCompletionMessages';
 import { foldRoomEntityStatus } from '../utils/roomEntityStatus';
+import { isChatMessage } from '../utils/chatWindowUtils';
 
 // ---------------------------------------------------------------------------
 // Regex constants
@@ -325,25 +326,14 @@ export function useMessageLog(
         }
 
         messageBufferRef.current = [];
-        // The server emits a prompt after nearly every response. Keep only the
-        // newest one so it can be shown as a stable footer without accumulating
-        // prompt spam. A batch can arrive before its replacement prompt, so the
-        // previous prompt must remain visible until that replacement arrives.
-        const latestPrompt = [...pending].reverse().find(m => m.type === 'prompt');
-        const ordered: Message[] = pending.filter(m => m.type !== 'prompt');
-        if (latestPrompt) ordered.push(latestPrompt);
-        
+        const ordered: Message[] = pending;
         if (ordered.length > 0) ordered[ordered.length - 1] = { ...ordered[ordered.length - 1], isBatchEnd: true };
         // Register all flushed mids before committing to state so deduplication
         // is current even before the next render cycle.
         ordered.forEach(m => { if (m.id) addedMidSetRef.current.add(m.id); });
 
         setMessages(prev => {
-            const nextMessages = [...prev.filter(m => m.type !== 'prompt'), ...ordered];
-            if (!latestPrompt) {
-                const previousPrompt = [...prev].reverse().find(m => m.type === 'prompt');
-                if (previousPrompt) nextMessages.push(previousPrompt);
-            }
+            const nextMessages = [...prev, ...ordered];
             if (nextMessages.length >= messageLimit) {
                 const trimmed = nextMessages.slice(nextMessages.length - messageLimit);
                 // Remove evicted IDs from the set so it stays bounded.
@@ -362,7 +352,15 @@ export function useMessageLog(
         extra?: any,           // Maps to combatOverride
         mid?: string,          // Maps to cmd
         isRoomName?: boolean,  // Maps to context
-        precalculated?: { textOnly: string, lower: string, html?: string, tokens?: any[] }, // Maps to htmlProps
+        precalculated?: {
+            textOnly: string;
+            lower: string;
+            html?: string;
+            tokens?: any[];
+            isXmlRoomName?: boolean;
+            xmlRoomArea?: string | null;
+            isRedrawPrompt?: boolean;
+        }, // Maps to htmlProps
         _shopItem?: any,       // Maps to sender (unused — shop system removed)
         practiceSkill?: any,   // Maps to channel
         practiceHeader?: any,  // Maps to id
@@ -596,8 +594,9 @@ export function useMessageLog(
                 isSocial,
                 isNarrate,
                 isRoomName: isActuallyRoomName,
+                isXmlRoomName: isActuallyRoomName && !!precalculated?.isXmlRoomName,
                 terrain: isActuallyRoomName ? roomContext.terrain : undefined,
-                roomZone: isActuallyRoomName ? (roomContext.roomZone || (isSpectateSession ? useSpectateRoomStore.getState().roomZone : useRoomStore.getState().roomZone) || undefined) : undefined,
+                roomZone: isActuallyRoomName ? (precalculated?.xmlRoomArea || roomContext.roomZone || (isSpectateSession ? useSpectateRoomStore.getState().roomZone : useRoomStore.getState().roomZone) || undefined) : undefined,
                 commSender,
                 commAction,
                 commText,
@@ -748,8 +747,9 @@ export function useMessageLog(
             replyTarget,
             replyCommand,
             isRoomName: isActuallyRoomName,
+            isXmlRoomName: isActuallyRoomName && !!precalculated?.isXmlRoomName,
             terrain: isActuallyRoomName ? roomContext.terrain : undefined,
-            roomZone: isActuallyRoomName ? (roomContext.roomZone || (isSpectateSession ? useSpectateRoomStore.getState().roomZone : useRoomStore.getState().roomZone) || undefined) : undefined,
+            roomZone: isActuallyRoomName ? (precalculated?.xmlRoomArea || roomContext.roomZone || (isSpectateSession ? useSpectateRoomStore.getState().roomZone : useRoomStore.getState().roomZone) || undefined) : undefined,
             isRoomBlock: isActuallyRoomName,
             isRoomBlockStart: isActuallyRoomName,
             roomArrivalDirection,
@@ -814,6 +814,10 @@ export function useMessageLog(
                 if (addedMidSetRef.current.has(mid) || drained.some(m => m.id === mid)) return;
             }
 
+            if (isChatMessage(msg)) {
+                useMessageStore.getState().addUserChatMessage(msg);
+            }
+
             if (msg.type !== 'prompt' && !msg.isEmpty) {
                 lastMessageRef.current = msg;
             }
@@ -827,6 +831,49 @@ export function useMessageLog(
             // addedMidSetRef is always current (no stale closure), unlike messages state.
             if (mid) {
                 if (addedMidSetRef.current.has(mid)) return;
+            }
+
+            // A lone carriage return from the server marks a prompt redraw.
+            // Replace the immediately preceding prompt in place so its scroll
+            // position remains stable while its vitals/text update.
+            if (finalType === 'prompt' && precalculated?.isRedrawPrompt) {
+                const buffered = messageBufferRef.current;
+                let previousBufferedIndex = buffered.length - 1;
+                while (previousBufferedIndex >= 0 && buffered[previousBufferedIndex].isEmpty) previousBufferedIndex--;
+                if (previousBufferedIndex >= 0 && buffered[previousBufferedIndex].type === 'prompt') {
+                    const previous = buffered[previousBufferedIndex];
+                    buffered[previousBufferedIndex] = {
+                        ...msg,
+                        id: previous.id,
+                        timestamp: previous.timestamp,
+                        isBatchEnd: previous.isBatchEnd
+                    };
+                    return;
+                }
+                if (buffered.length === 0) {
+                    let replaced = false;
+                    setMessages(prev => {
+                        let previousIndex = prev.length - 1;
+                        while (previousIndex >= 0 && prev[previousIndex].isEmpty) previousIndex--;
+                        if (previousIndex < 0 || prev[previousIndex].type !== 'prompt') return prev;
+                        replaced = true;
+                        const next = [...prev];
+                        next[previousIndex] = {
+                            ...msg,
+                            id: prev[previousIndex].id,
+                            timestamp: prev[previousIndex].timestamp,
+                            isBatchEnd: prev[previousIndex].isBatchEnd
+                        };
+                        return next;
+                    });
+                    if (replaced) return;
+                }
+            }
+
+            if (isChatMessage(msg)) {
+                const messageStore = useMessageStore.getState();
+                if (isSpectateSession) messageStore.addSpectateChatMessage(msg);
+                else messageStore.addUserChatMessage(msg);
             }
 
             if (msg.type !== 'prompt' && !msg.isEmpty) {

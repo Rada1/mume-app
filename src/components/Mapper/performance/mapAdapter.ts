@@ -17,7 +17,7 @@ export interface AdaptedFastMap {
 }
 
 const terrainAliases: Readonly<Record<string, string>> = {
-  building: 'indoors', 'inside/cavern': 'cavern', grasslands: 'field', 'water (shallow)': 'shallow',
+  building: 'indoors', 'inside/cavern': 'cavern', grasslands: 'field', shallows: 'shallow', 'water (shallow)': 'shallow',
   'water (deep)': 'water', base: 'undefined', '0': 'cavern', '1': 'city', '2': 'field',
   '3': 'field', '4': 'forest', '5': 'hills', '6': 'mountains', '7': 'shallow',
   '8': 'water', '9': 'underwater', '11': 'road', '12': 'brush',

@@ -5,6 +5,7 @@
 
 // --- Logic Section ---
 import React, { FC } from 'react';
+import { RefreshCw } from 'lucide-react';
 import { StatDelta } from './StatDelta';
 import { formatRegen } from '../../utils/regenUtils';
 
@@ -58,28 +59,26 @@ export const ThisIsYouVitalsTier: FC<ThisIsYouVitalsTierProps> = ({
     deltas
 }) => {
     return (
-            <div
-                className="this-is-you-tier-vitals"
-                role="group"
-                aria-label="Vitals. Activate to refresh with score."
-                tabIndex={0}
-                onClick={onRefresh}
-                onKeyDown={event => {
-                    if (event.target !== event.currentTarget) return;
-                    if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        onRefresh();
-                    }
-                }}
-            >
+            <div className="this-is-you-tier-vitals" role="group" aria-label="Vitals and combat ratings">
+            <div className="this-is-you-vitals-cluster">
             {/* Pure Numerical Vitals */}
             <div className="this-is-you-vitals-group" role="group" aria-label="Vitals">
-                <div className="this-is-you-telemetry-cell">
-                    <div className="this-is-you-cell-header">
+                <div className="this-is-you-telemetry-cell this-is-you-health-cell">
+                    <div className="this-is-you-cell-header this-is-you-health-header">
                         <span className="label hp">HEALTH</span>
                         <span className="regen" title="Regen rate per tick">({formatRegen(regen.hp)})</span>
+                        <button
+                            type="button"
+                            className="this-is-you-wimpy-badge"
+                            title="Tap to cycle the automatic flee threshold"
+                            aria-label={`Automatic flee at ${wimpy === 0 ? 'off' : `${wimpy ?? 'unknown'} HP`}. Tap to change.`}
+                            disabled={!canAdjustWimpy}
+                            onClick={onWimpyChange}
+                        >
+                            Flee <strong>{wimpy !== undefined && wimpy !== null && wimpy > 0 ? wimpy : 'off'}</strong>
+                        </button>
                     </div>
-                    <div className={`this-is-you-cell-val${(hp ?? 100) < 30 ? ' is-critical' : ''}`}>
+                    <div className="this-is-you-cell-val" data-vital-type="health">
                         {hp ?? '—'}{maxHp ? ` / ${maxHp}` : ''}<StatDelta delta={deltas.hp} />
                     </div>
                 </div>
@@ -89,7 +88,7 @@ export const ThisIsYouVitalsTier: FC<ThisIsYouVitalsTierProps> = ({
                         <span className="label mana">MANA</span>
                         <span className="regen" title="Regen rate per tick">({formatRegen(regen.mana)})</span>
                     </div>
-                    <div className="this-is-you-cell-val">
+                    <div className="this-is-you-cell-val" data-vital-type="mana">
                         {mana ?? '—'}{maxMana ? ` / ${maxMana}` : ''}<StatDelta delta={deltas.mana} />
                     </div>
                 </div>
@@ -99,35 +98,33 @@ export const ThisIsYouVitalsTier: FC<ThisIsYouVitalsTierProps> = ({
                         <span className="label move">MOVES</span>
                         <span className="regen" title="Regen rate per tick">({formatRegen(regen.move)})</span>
                     </div>
-                    <div className="this-is-you-cell-val">
+                    <div className="this-is-you-cell-val" data-vital-type="move">
                         {move ?? '—'}{maxMove ? ` / ${maxMove}` : ''}<StatDelta delta={deltas.move} />
                     </div>
                 </div>
             </div>
+            <button
+                type="button"
+                className="this-is-you-refresh-button"
+                aria-label="Refresh score"
+                title="Refresh score"
+                onClick={onRefresh}
+            >
+                <RefreshCw size={16} aria-hidden="true" />
+            </button>
+            </div>
 
             {/* Combat capabilities */}
             <div className="this-is-you-combat-slot" role="group" aria-label="Combat">
+                <div className="this-is-you-combat-heading">
+                    <span>COMBAT</span>
+                </div>
                 <div className="this-is-you-capabilities-cell">
                     <div className="this-is-you-capabilities-row">
                         <span title="Offensive Power (OB): strike accuracy and damage">Offense: <strong>{ob ?? '—'}</strong><StatDelta delta={deltas.ob} /></span>
                         <span title="Parry Deflection (PB): weapon blocking rating">Parry: <strong>{pb ?? '—'}</strong><StatDelta delta={deltas.pb} /></span>
                         <span title="Defensive Evasion (DB): makes you harder to hit">Dodge: <strong>{db ?? '—'}</strong><StatDelta delta={deltas.db} /></span>
                         <span title="Armor Absorption (ARM): physical damage reduction">Armor: <strong>{armour ?? '—'}</strong><StatDelta delta={deltas.armour} /></span>
-                        <button
-                            type="button"
-                            className="this-is-you-wimpy-button"
-                            title="Tap to cycle the wimpy threshold through 0%, 25%, 50%, 75%, and 100% of max HP"
-                            aria-label={`Wimpy threshold ${wimpy ?? 'unknown'} HP. Tap to change.`}
-                            disabled={!canAdjustWimpy}
-                            onClick={event => {
-                                event.stopPropagation();
-                                onWimpyChange();
-                            }}
-                        >
-                            <span>Wimpy:</span>
-                            <strong>{wimpy !== undefined && wimpy !== null ? wimpy : '—'}</strong>
-                            <StatDelta delta={deltas.wimpy} />
-                        </button>
                     </div>
                 </div>
             </div>

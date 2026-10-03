@@ -8,6 +8,7 @@ import { GameStats, CharacterInfo } from '../../types';
 import { useVitalsStore } from '../../stores/useVitalsStore';
 import { parseCitizenshipAgeWarFameInfo } from '../../utils/characterInfoUtils';
 import { consumeCharacterInfoRefreshLine, parseWarFameLine } from '../../utils/characterInfoRefreshTracker';
+import { parseCharacterAttributes, toCharacterAttributeValues } from '../../utils/characterAttributeUtils';
 
 export interface StatParserDeps {
     setMood: (val: string) => void;
@@ -31,6 +32,7 @@ export function useStatParser(deps: StatParserDeps) {
     } = deps;
 
     const parseGlobalStatus = useCallback((content: string, contentLower: string) => {
+        const attributeValues = toCharacterAttributeValues(parseCharacterAttributes([content]));
         const refreshedCharacterInfo = consumeCharacterInfoRefreshLine(content);
         if (refreshedCharacterInfo) {
             if (refreshedCharacterInfo.wimpy !== undefined) {
@@ -39,11 +41,18 @@ export function useStatParser(deps: StatParserDeps) {
             setCharacterInfo(prev => ({
                 ...prev,
                 ...refreshedCharacterInfo,
+                ...(Object.keys(attributeValues).length > 0 && {
+                    stats: { ...prev.stats, ...attributeValues }
+                }),
                 ...(refreshedCharacterInfo.warFame !== undefined && {
                     warPoints: refreshedCharacterInfo.warFame
                 })
             }));
             return true;
+        }
+
+        if (Object.keys(attributeValues).length > 0) {
+            setCharacterInfo(prev => ({ ...prev, stats: { ...prev.stats, ...attributeValues } }));
         }
 
         const warFame = parseWarFameLine(content);

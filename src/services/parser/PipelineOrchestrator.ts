@@ -23,7 +23,7 @@ export class PipelineOrchestrator {
     }
 
     public static ingestChunk(
-        chunkLines: (string | { line: string, isPrompt: boolean })[],
+        chunkLines: (string | { line: string, isPrompt: boolean; isRedrawPrompt?: boolean })[],
         contextBuilder: () => TokenizerContext,
         processLineCallback: (line: string, tokens: any) => void
     ) {
@@ -37,11 +37,15 @@ export class PipelineOrchestrator {
         for (const entry of chunkLines) {
              const textRaw = typeof entry === 'string' ? entry : entry.line;
              const isPrompt = typeof entry === 'string' ? false : entry.isPrompt;
+             const isRedrawPrompt = typeof entry === 'string' ? false : !!entry.isRedrawPrompt;
              
              tokenizer.reset('room');
              const tokens = tokenizer.tokenize(textRaw, context, undefined, true);
              if (isPrompt) {
                  (tokens as any).isPrompt = true;
+             }
+             if (isRedrawPrompt) {
+                 (tokens as any).isRedrawPrompt = true;
              }
              
              processLineCallback(textRaw, tokens);

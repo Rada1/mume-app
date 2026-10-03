@@ -1,6 +1,6 @@
 /**
  * @file CommandSuggestionPopup.tsx
- * @description Portal popup component displaying command, spell, and target suggestions with number hotkeys.
+ * @description Portal popup component displaying selectable command, spell, and target suggestions.
  */
 
 // --- Logic Section ---
@@ -9,7 +9,7 @@ import ReactDOM from 'react-dom';
 import { Star, X } from 'lucide-react';
 import { MumeCommandEntry } from '../../utils/mumeCommandCatalog';
 import { SpellSuggestion } from '../../utils/spellSuggestionUtils';
-import { CommandTargetSuggestion, suggestionHotkeyForIndex } from '../../utils/commandSuggestionUtils';
+import { CommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 import { formatMagicKeyRemaining } from '../../utils/magicKeyUtils';
 import { getTargetItemTierClassName } from '../../utils/itemTier';
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -63,6 +63,11 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
 
     if (!show || isClassicMode) return null;
 
+    const appContainer = document.querySelector<HTMLElement>('.app-container');
+    const isMobileKeyboardOpen = appContainer?.classList.contains('is-mobile')
+        && appContainer.classList.contains('kb-open');
+    const portalTarget = isMobileKeyboardOpen && appContainer ? appContainer : document.body;
+
     return ReactDOM.createPortal(
         <div
             className={`command-suggestion-popup placement-${placement}${isImmersionMode ? ' immersion-glass' : ''}`}
@@ -74,7 +79,6 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
         >
             {showSpellPopup
                 ? spellSuggestions.map((entry, index) => {
-                    const hotkey = suggestionHotkeyForIndex(index);
                     return (
                         <button
                             key={entry.key}
@@ -85,15 +89,13 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                                 onChooseSpell(entry.value);
                             }}
                         >
-                            {hotkey && <span className="command-suggestion-key">{hotkey}</span>}
                             <span className="command-suggestion-name">{entry.label}</span>
                             <span className="command-suggestion-full">spell</span>
                         </button>
                     );
                 })
                 : showTargetPopup
-                ? targetSuggestions.map((entry, index) => {
-                    const hotkey = suggestionHotkeyForIndex(index);
+                ? targetSuggestions.map(entry => {
                     const isSelected = selectedTargetKey === entry.key;
                     const isMagicKey = entry.meta === 'magic-key';
                     const option = (
@@ -105,7 +107,6 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                                 onChooseTarget(entry.value);
                             }}
                         >
-                            {hotkey && <span className="command-suggestion-key">{hotkey}</span>}
                             <span className={`command-suggestion-name ${getTargetItemTierClassName(entry.label)}`.trim()} title={isMagicKey ? entry.label : undefined}>
                                 {isMagicKey ? entry.customLabel || entry.label : entry.value}
                             </span>
@@ -156,8 +157,7 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                         </div>
                     ) : React.cloneElement(option, { key: entry.key });
                 })
-                : commandSuggestions.map((entry, index) => {
-                    const hotkey = suggestionHotkeyForIndex(index);
+                : commandSuggestions.map(entry => {
                     const isSelected = selectedCommandFull === entry.full;
                     return (
                         <button
@@ -169,7 +169,6 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                                 onChooseCommand(entry);
                             }}
                         >
-                            {hotkey && <span className="command-suggestion-key">{hotkey}</span>}
                             <span className="command-suggestion-name">{entry.display}</span>
                             <span className="command-suggestion-full">
                                 {isSelected ? 'selected' : entry.full}
@@ -178,7 +177,7 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                     );
                 })}
         </div>,
-        document.body
+        portalTarget
     );
 };
 

@@ -151,13 +151,7 @@
         display: none !important;
     }
 
-    /* The browser resizes the viewport for the keyboard. Remove the lower
-       panes from layout in one step so the log and command bar fill that space;
-       React keeps both panes mounted, preserving their state. */
-    .app-container.is-mobile.kb-open .mobile-map-panel {
-        display: none !important;
-    }
-
+    /* Keep the keyboard command field above the resized terminal viewport. */
     .app-container.is-mobile.kb-open .action-box {
         display: none !important;
     }

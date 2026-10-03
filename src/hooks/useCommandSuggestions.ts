@@ -4,26 +4,29 @@
  */
 
 // --- Logic Section ---
-import { useState, useMemo, useCallback, useEffect, RefObject, CSSProperties, KeyboardEvent } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef, RefObject, CSSProperties, KeyboardEvent } from 'react';
 import { getMumeCommandMatch, replaceMumeCommandToken, MumeCommandEntry, MumeCommandMatch } from '../utils/mumeCommandCatalog';
 import { getCastSpellFragment, getCastSpellSuggestions, replaceCastSpellArgument, SpellSuggestion } from '../utils/spellSuggestionUtils';
 import { useRoomStore } from '../stores/useRoomStore';
 import { useInputStore } from '../stores/useInputStore';
 import { useSettingsStore } from '../stores/useSettingsStore';
+import { useUIStore } from '../stores/useUIStore';
 import { DrawerLine, GameState } from '../types/game';
+import type { PracticeSkill } from '../types';
 import {
     CommandTargetSuggestion,
     CommandTextParts,
-    getAssistTargetSuggestions,
-    getGearTargetSuggestions,
-    getMagicKeyTargetSuggestions,
-    getRescueTargetSuggestions,
-    getRoomTargetSuggestions,
-    makeCommandTargetSuggestion,
-    replaceCommandArgumentToken
+    getMagicKeyTargetSuggestions
 } from '../utils/commandSuggestionUtils';
-import { BLANK_TARGET_VALUE } from '../utils/commandTargetUtils';
+import { BLANK_TARGET_VALUE, getCommandTargetMenuKind } from '../utils/commandTargetUtils';
 import { getMagicKeyId, parseKeyedSpellCommand } from '../utils/magicKeyUtils';
+import {
+    replaceActiveCommandArgumentToken,
+    replaceFirstCommandArgument,
+    resolveCommandTargetSuggestions,
+    type ResolvedCommandTargetSuggestions,
+    type SelectedCommandArgumentChip
+} from '../utils/commandTargetSuggestionResolver';
 
 export interface UseCommandSuggestionsOptions {
     input: string; setInput: (val: string) => void; gameState: GameState;
@@ -33,16 +36,22 @@ export interface UseCommandSuggestionsOptions {
     isMobile?: boolean; targetPickerRequestId?: number; placement?: 'top' | 'bottom';
     positionOverMap?: boolean;
     inventoryLines?: DrawerLine[]; wornLines?: DrawerLine[];
+    characterName?: string; practiceSkills?: PracticeSkill[];
 }
 
 export interface UseCommandSuggestionsReturn {
     commandTextParts: CommandTextParts | null; mumeCommandMatch: MumeCommandMatch;
     showCompletionPopup: boolean; showCommandPopup: boolean; showTargetPopup: boolean; showSpellPopup: boolean;
     visibleCommandSuggestions: MumeCommandEntry[]; targetSuggestions: CommandTargetSuggestion[];
+    commandArgumentChips: Array<{ key: string; label: string; value: string; start: number; end: number; suggestions: CommandTargetSuggestion[] }>;
+    commandArgumentCaretKey: string | null;
     selectedTargetSuggestion: CommandTargetSuggestion | null; spellSuggestions: SpellSuggestion[];
     popupStyle: CSSProperties; placement: 'top' | 'bottom';
     isFocused: boolean; setIsFocused: (val: boolean) => void; setIsTargetPickerForced: (val: boolean) => void;
     chooseCommandSuggestion: (entry: MumeCommandEntry) => void; chooseTargetSuggestion: (val: string) => void;
+    chooseCommandArgumentSuggestion: (key: string, value: string) => void;
+    clearCommandArgumentCaret: () => void;
+    handleCommandArgumentKeyDown: (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => boolean;
     chooseSpellSuggestion: (val: string) => void; toggleMagicKeyFavorite: (key: string) => void;
     clearMagicKey: (key: string) => void;
     handleSuggestionKeyDown: (e: KeyboardEvent) => boolean;
@@ -64,24 +73,32 @@ export const useCommandSuggestions = ({
     placement: propPlacement,
     positionOverMap = false,
     inventoryLines = [],
-    wornLines = []
+    wornLines = [],
+    characterName = '',
+    practiceSkills = []
 }: UseCommandSuggestionsOptions): UseCommandSuggestionsReturn => {
     const effectivePlacement: 'top' | 'bottom' = propPlacement ?? (isMobile ? 'top' : 'bottom');
     const [isFocused, setIsFocused] = useState(false);
     const [popupStyle, setPopupStyle] = useState<CSSProperties>({});
     const [isTargetPickerForced, setIsTargetPickerForced] = useState(false);
+    const [selectedCommandArguments, setSelectedCommandArguments] = useState<SelectedCommandArgumentChip[]>([]);
+    const [commandArgumentCaretKey, setCommandArgumentCaretKey] = useState<string | null>(null);
+    const commandArgumentChipId = useRef(0);
 
     const chars = useRoomStore(s => s.chars);
     const roomItems = useRoomStore(s => s.items);
+    const whoList = useRoomStore(s => s.whoList);
+    const shopItems = useUIStore(s => s.shopItems);
     const teleportTargets = useSettingsStore(s => s.teleportTargets);
     const setTeleportTargets = useSettingsStore(s => s.setTeleportTargets);
+    const showCommandSuggestions = useSettingsStore(s => s.showCommandSuggestions);
     const storeTargetPickerRequestId = useInputStore(s => s.targetPickerRequestId);
     const targetPickerRequestId = propTargetPickerRequestId ?? storeTargetPickerRequestId;
 
-    const shouldSuggest = !disabled && gameState === 'playing' && currentMode === 'command' && !isPasswordMode;
+    const shouldSuggest = showCommandSuggestions && !disabled && gameState === 'playing' && currentMode === 'command' && !isPasswordMode;
 
     const mumeCommandMatch = useMemo(
-        () => shouldSuggest ? getMumeCommandMatch(input) : getMumeCommandMatch(''),
+        () => shouldSuggest ? getMumeCommandMatch(input, 8) : getMumeCommandMatch(''),
         [input, shouldSuggest]
     );
 
@@ -104,51 +121,93 @@ export const useCommandSuggestions = ({
 
     const hasCommandArgumentSpace = !!commandTextParts?.isValid && /^\s/.test(commandTextParts.suffix);
     const keyedSpellInput = useMemo(() => parseKeyedSpellCommand(input), [input]);
+    const commandToken = mumeCommandMatch.entry?.full || commandTextParts?.token.toLowerCase() || '';
+    const commandTokenKey = commandToken.toLowerCase();
 
-    const targetFragment = useMemo(() => {
-        if (!hasCommandArgumentSpace || !commandTextParts) return '';
-        return (commandTextParts.suffix.match(/^\s*(\S*)/)?.[1] ?? '').toLowerCase();
-    }, [commandTextParts, hasCommandArgumentSpace]);
+    const commandArgumentChips = useMemo(() => {
+        if (!input || !commandTokenKey) return [];
+        const leadingLength = input.match(/^\s*/)?.[0].length ?? 0;
+        const rawCommandToken = /^\S+/.exec(input.slice(leadingLength))?.[0] || '';
+        let searchFrom = leadingLength + rawCommandToken.length;
+        return selectedCommandArguments.flatMap(chip => {
+            if (chip.commandToken !== commandTokenKey) return [];
+            if (chip.isVirtual) {
+                if (chip.snapshot !== input) return [];
+                return [{
+                    key: chip.key, value: chip.value, label: chip.label,
+                    start: input.length, end: input.length, suggestions: chip.suggestions
+                }];
+            }
+            let start = chip.start;
+            const matchesAtStart = input.slice(start, start + chip.value.length).toLowerCase() === chip.value.toLowerCase();
+            if (!matchesAtStart || start < searchFrom) {
+                start = input.toLowerCase().indexOf(chip.value.toLowerCase(), searchFrom);
+            }
+            if (start < searchFrom || start < 0) return [];
+            const end = start + chip.value.length;
+            searchFrom = end;
+            return [{ key: chip.key, value: chip.value, label: chip.label, start, end, suggestions: chip.suggestions }];
+        });
+    }, [commandTokenKey, input, selectedCommandArguments]);
 
-    const targetSuggestions = useMemo<CommandTargetSuggestion[]>(() => {
+    useEffect(() => {
+        const visibleKeys = new Set(commandArgumentChips.map(chip => chip.key));
+        setSelectedCommandArguments(current => {
+            const next = current.filter(chip => visibleKeys.has(chip.key));
+            return next.length === current.length ? current : next;
+        });
+    }, [commandArgumentChips]);
+
+    const targetSuggestionResolution = useMemo<ResolvedCommandTargetSuggestions>(() => {
         if (keyedSpellInput) {
             const fragment = keyedSpellInput.target.toLowerCase();
-            return getMagicKeyTargetSuggestions(teleportTargets)
+            const suggestions = getMagicKeyTargetSuggestions(teleportTargets)
                 .filter(entry => !fragment || [entry.value, entry.label, entry.customLabel]
                     .some(value => value?.toLowerCase().startsWith(fragment)))
                 .slice(0, 10);
+            return { suggestions, fragment, argumentIndex: 0 };
         }
-        if (!hasCommandArgumentSpace) return [];
+        if (!hasCommandArgumentSpace || !commandTextParts) return { suggestions: [], fragment: '', argumentIndex: 0 };
 
-        const command = mumeCommandMatch.entry?.full || commandTextParts?.token.toLowerCase() || '';
-        const gearKind = command === 'wear' ? 'inventory' : command === 'remove' ? 'worn' : null;
-        const kind = /^(get|take|pick)$/.test(command) ? 'objects'
-            : /^(assist|rescue|follow)$/.test(command) ? 'allies' : 'characters';
-        const roomCharacters = Object.values(chars || {});
-        const roomSuggestions = gearKind
-            ? getGearTargetSuggestions(gearKind === 'inventory' ? inventoryLines : wornLines, gearKind)
-            : getRoomTargetSuggestions(roomCharacters, roomItems, kind);
-        const suggestions = command === 'assist'
-            ? getAssistTargetSuggestions(roomCharacters)
-            : command === 'rescue'
-            ? getRescueTargetSuggestions(roomCharacters)
-            : command === 'look'
-            ? [makeCommandTargetSuggestion('Blank Target', BLANK_TARGET_VALUE, 'source'), ...roomSuggestions]
-            : roomSuggestions;
-        return suggestions
+        const command = `${commandToken}${commandTextParts?.suffix || ''}`.trim();
+        return resolveCommandTargetSuggestions({
+            command,
+            argumentText: commandTextParts?.suffix || '',
+            menuKind: getCommandTargetMenuKind(command),
+            roomOccupants: Object.values(chars || {}),
+            roomObjects: Object.values(roomItems || {}),
+            inventoryLines,
+            wornLines,
+            characterName,
+            abilities,
+            practiceSkills,
+            teleportTargets,
+            whoList,
+            shopItems
+        });
+    }, [abilities, characterName, chars, commandTextParts, commandToken, hasCommandArgumentSpace, inventoryLines, keyedSpellInput, practiceSkills, roomItems, shopItems, teleportTargets, whoList, wornLines]);
+
+    const targetSuggestions = useMemo<CommandTargetSuggestion[]>(() => {
+        const isStagedCommand = /^(give|put|get)$/.test(commandTokenKey)
+            || (commandTokenKey === 'look' && commandArgumentChips.some(chip => chip.value === 'in'));
+        const maxSelectedArguments = isStagedCommand ? 2 : 1;
+        if (commandArgumentChips.length >= maxSelectedArguments) return [];
+
+        const fragment = targetSuggestionResolution.fragment.toLowerCase();
+        return targetSuggestionResolution.suggestions
             .filter(entry => {
                 if (!entry.value) return false;
-                if (!targetFragment) return true;
+                if (!fragment) return true;
                 const cleanValue = entry.value.replace(/^[*-]+|[*-]+$/g, '').toLowerCase();
                 const valueLower = entry.value.toLowerCase();
                 const labelLower = entry.label.toLowerCase();
-                return cleanValue.startsWith(targetFragment) ||
-                    valueLower.startsWith(targetFragment) ||
-                    labelLower.startsWith(targetFragment) ||
-                    labelLower.split(/\s+/).some(w => w.startsWith(targetFragment));
+                return cleanValue.startsWith(fragment) ||
+                    valueLower.startsWith(fragment) ||
+                    labelLower.startsWith(fragment) ||
+                    labelLower.split(/\s+/).some(w => w.startsWith(fragment));
             })
             .slice(0, 8);
-    }, [chars, roomItems, inventoryLines, wornLines, commandTextParts?.token, mumeCommandMatch.entry, hasCommandArgumentSpace, targetFragment, keyedSpellInput, teleportTargets]);
+    }, [commandArgumentChips, commandTokenKey, targetSuggestionResolution]);
 
     const selectedTargetSuggestion = targetSuggestions[0] ?? null;
 
@@ -179,18 +238,149 @@ export const useCommandSuggestions = ({
 
     const chooseTargetSuggestion = useCallback((value: string) => {
         const keyedSpell = parseKeyedSpellCommand(input);
+        const chosenSuggestion = targetSuggestions.find(entry => entry.value === value);
+        let nextInput = input;
+        let chipStart = input.length;
+        let isVirtualChip = false;
         if (keyedSpell) {
-            setInput(`${keyedSpell.prefix} ${value}`);
+            nextInput = `${keyedSpell.prefix} ${value}`;
+            chipStart = nextInput.length - value.length;
         } else if (value === BLANK_TARGET_VALUE) {
             const leadingWhitespace = input.match(/^\s*/)?.[0] ?? '';
             const commandToken = input.trimStart().match(/^(\S+)/)?.[1] ?? '';
-            setInput(commandToken ? `${leadingWhitespace}${commandToken} ` : input);
+            nextInput = commandToken ? `${leadingWhitespace}${commandToken} ` : input;
+        } else if (value === '__room__') {
+            nextInput = replaceActiveCommandArgumentToken(input, '');
+            isVirtualChip = true;
         } else {
-            setInput(replaceCommandArgumentToken(input, value));
+            const isFirstStagedArgument = /^(give|put|get)$/.test(commandTokenKey)
+                && targetSuggestionResolution.argumentIndex === 0;
+            if (isFirstStagedArgument) {
+                nextInput = replaceFirstCommandArgument(input, value);
+                const commandTokenMatch = /^\s*\S+/.exec(nextInput);
+                chipStart = (commandTokenMatch?.[0].length ?? 0) + 1;
+            } else {
+                const activeToken = /\S+$/.exec(input);
+                chipStart = /\s$/.test(input) || !activeToken ? input.length : activeToken.index ?? input.length;
+                nextInput = replaceActiveCommandArgumentToken(input, value);
+            }
         }
+        setInput(nextInput);
+        let nextCaretChipKey: string | null = null;
+        if (chosenSuggestion && value !== BLANK_TARGET_VALUE) {
+            const key = `command-argument-${commandArgumentChipId.current++}`;
+            nextCaretChipKey = key;
+            setSelectedCommandArguments(current => [...current, {
+                key,
+                label: chosenSuggestion.label,
+                value,
+                start: chipStart,
+                end: chipStart + value.length,
+                suggestions: targetSuggestionResolution.suggestions,
+                commandToken: commandTokenKey,
+                isVirtual: isVirtualChip,
+                snapshot: isVirtualChip ? nextInput : undefined
+            }]);
+        }
+        setCommandArgumentCaretKey(nextCaretChipKey);
         setIsTargetPickerForced(false);
-        requestAnimationFrame(() => inputRef?.current?.focus());
-    }, [input, inputRef, setInput]);
+        const caretPosition = value === BLANK_TARGET_VALUE || value === '__room__'
+            ? nextInput.length
+            : chipStart + value.length;
+        requestAnimationFrame(() => {
+            const inputElement = inputRef?.current;
+            inputElement?.focus();
+            inputElement?.setSelectionRange(caretPosition, caretPosition);
+        });
+    }, [commandTokenKey, input, inputRef, setInput, targetSuggestionResolution, targetSuggestions]);
+
+    const chooseCommandArgumentSuggestion = useCallback((key: string, value: string) => {
+        const chip = commandArgumentChips.find(candidate => candidate.key === key);
+        const suggestion = chip?.suggestions.find(candidate => candidate.value === value);
+        if (!chip || !suggestion) return;
+
+        const nextInput = value === '__room__'
+            ? `${input.slice(0, chip.start)}${input.slice(chip.end)}`
+            : value === BLANK_TARGET_VALUE
+                ? `${input.slice(0, chip.start)}${input.slice(chip.end)}`
+                : `${input.slice(0, chip.start)}${value}${input.slice(chip.end)}`;
+        setInput(nextInput);
+        if (value === BLANK_TARGET_VALUE) {
+            setSelectedCommandArguments(current => current.filter(argument => argument.key !== key));
+            setCommandArgumentCaretKey(null);
+        } else {
+            setCommandArgumentCaretKey(key);
+            setSelectedCommandArguments(current => current.map(argument => argument.key === key
+                ? {
+                    ...argument,
+                    label: suggestion.label,
+                    value,
+                    start: chip.start,
+                    end: value === '__room__' ? chip.start : chip.start + value.length,
+                    isVirtual: value === '__room__',
+                    snapshot: value === '__room__' ? nextInput : undefined
+                }
+                : argument));
+        }
+        const caretPosition = value === BLANK_TARGET_VALUE
+            ? Math.min(chip.start, nextInput.length)
+            : value === '__room__'
+                ? nextInput.length
+                : chip.start + value.length;
+        requestAnimationFrame(() => {
+            const inputElement = inputRef?.current;
+            inputElement?.focus();
+            inputElement?.setSelectionRange(caretPosition, caretPosition);
+        });
+    }, [commandArgumentChips, input, inputRef, setInput]);
+
+    const clearCommandArgumentCaret = useCallback(() => {
+        if (!commandArgumentCaretKey) return;
+        setCommandArgumentCaretKey(null);
+        setSelectedCommandArguments(current => current.filter(argument => argument.key !== commandArgumentCaretKey));
+    }, [commandArgumentCaretKey]);
+
+    const handleCommandArgumentKeyDown = useCallback((event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (event.key !== 'Backspace') {
+            const editsTextOrMovesCaret = event.key.length === 1
+                || ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'Delete'].includes(event.key);
+            if (editsTextOrMovesCaret) clearCommandArgumentCaret();
+            return false;
+        }
+        const selectionStart = event.currentTarget.selectionStart;
+        const selectionEnd = event.currentTarget.selectionEnd;
+        if (selectionStart === null || selectionEnd === null || selectionStart !== selectionEnd) {
+            clearCommandArgumentCaret();
+            return false;
+        }
+
+        const chip = commandArgumentChips.find(candidate => candidate.start === candidate.end
+            ? selectionStart === candidate.end
+            : candidate.start < selectionStart && selectionStart <= candidate.end);
+        if (!chip) {
+            clearCommandArgumentCaret();
+            return false;
+        }
+
+        event.preventDefault();
+        let removeStart = chip.start;
+        let removeEnd = chip.end;
+        if (/\s/.test(input[removeEnd] || '')) {
+            removeEnd += 1;
+        } else if (removeStart > 0 && /\s/.test(input[removeStart - 1])) {
+            removeStart -= 1;
+        }
+        const nextInput = `${input.slice(0, removeStart)}${input.slice(removeEnd)}`;
+        setInput(nextInput);
+        setCommandArgumentCaretKey(null);
+        setSelectedCommandArguments(current => current.filter(argument => argument.key !== chip.key));
+        requestAnimationFrame(() => {
+            const inputElement = inputRef?.current;
+            inputElement?.focus();
+            inputElement?.setSelectionRange(removeStart, removeStart);
+        });
+        return true;
+    }, [clearCommandArgumentCaret, commandArgumentChips, input, inputRef, setInput]);
 
     const toggleMagicKeyFavorite = useCallback((key: string) => {
         setTeleportTargets(current => current.map(target => getMagicKeyId(target) === key
@@ -309,33 +499,6 @@ export const useCommandSuggestions = ({
 
     const handleSuggestionKeyDown = useCallback((e: KeyboardEvent): boolean => {
         if (disabled) return false;
-        const isNumpad = e.location === 3 || e.code.startsWith('Numpad');
-
-        if (showCompletionPopup && !isNumpad && /^[0-9]$/.test(e.key)) {
-            const optionIndex = e.key === '0' ? 9 : parseInt(e.key, 10) - 1;
-            if (showSpellPopup) {
-                const option = spellSuggestions[optionIndex];
-                if (option) {
-                    e.preventDefault();
-                    chooseSpellSuggestion(option.value);
-                    return true;
-                }
-            } else if (showTargetPopup) {
-                const option = targetSuggestions[optionIndex];
-                if (option) {
-                    e.preventDefault();
-                    chooseTargetSuggestion(option.value);
-                    return true;
-                }
-            } else if (showCommandPopup) {
-                const option = visibleCommandSuggestions[optionIndex];
-                if (option) {
-                    e.preventDefault();
-                    chooseCommandSuggestion(option);
-                    return true;
-                }
-            }
-        }
 
         if (e.key === 'Tab' && !isMobile) {
             e.preventDefault();
@@ -352,7 +515,7 @@ export const useCommandSuggestions = ({
         }
 
         return false;
-    }, [chooseCommandSuggestion, chooseSpellSuggestion, chooseTargetSuggestion, disabled, isMobile, mumeCommandMatch.entry, selectedTargetSuggestion, showCommandPopup, showCompletionPopup, showSpellPopup, showTargetPopup, spellSuggestions, targetSuggestions, visibleCommandSuggestions]);
+    }, [chooseCommandSuggestion, chooseSpellSuggestion, chooseTargetSuggestion, disabled, isMobile, mumeCommandMatch.entry, selectedTargetSuggestion, showSpellPopup, showTargetPopup]);
 
     return {
         commandTextParts,
@@ -363,12 +526,17 @@ export const useCommandSuggestions = ({
         showSpellPopup,
         visibleCommandSuggestions,
         targetSuggestions,
+        commandArgumentChips,
+        commandArgumentCaretKey,
         selectedTargetSuggestion,
         spellSuggestions,
         popupStyle,
         placement: effectivePlacement,
         isFocused, setIsFocused, setIsTargetPickerForced,
         chooseCommandSuggestion, chooseTargetSuggestion, chooseSpellSuggestion,
+        chooseCommandArgumentSuggestion,
+        clearCommandArgumentCaret,
+        handleCommandArgumentKeyDown,
         toggleMagicKeyFavorite, clearMagicKey,
         handleSuggestionKeyDown
     };

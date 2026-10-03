@@ -75,7 +75,7 @@ export const parseActionTimerLine = (text: string, onSearchStart?: () => void) =
     const active = store.activeTimer;
     console.log('[ActionTimer] parseActionTimerLine:', text, 'pending:', pending, 'active:', active);
 
-    if (/^you (?:start searching|begin to search)/i.test(text.trim())) {
+    if (/^you (?:start searching|begin to search|search the surroundings for your\b)/i.test(text.trim())) {
         onSearchStart?.();
     }
 
@@ -102,7 +102,7 @@ export const parseActionTimerLine = (text: string, onSearchStart?: () => void) =
                 matched = true;
             } else if (pending.name === 'Picking lock' && /you start to pick/i.test(text)) {
                 matched = true;
-            } else if (pending.name === 'Searching' && /you (?:start searching|begin to search)/i.test(text)) {
+            } else if (pending.name === 'Searching' && /you (?:start searching|begin to search|search the surroundings for your\b)/i.test(text)) {
                 matched = true;
             } else if (pending.name === 'Subduing' && /you start to subdue/i.test(text)) {
                 matched = true;

@@ -16,7 +16,7 @@ export interface MapperRoom {
     roomQuestFlags?: string[];
     light?: string | number | null;
     sundeath?: number;
-    align?: string;
+    align?: string | number | null;
     portable?: string | boolean | number | null;
     ridable?: string | boolean | number | null;
     isPermanentSnow?: boolean;

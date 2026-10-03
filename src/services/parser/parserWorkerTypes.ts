@@ -6,11 +6,12 @@
 import { Token } from '../../types';
 import { TokenizerContext } from './Tokenizer';
 
-export type WorkerLineEntry = string | { line: string; isPrompt: boolean };
+export type WorkerLineEntry = string | { line: string; isPrompt: boolean; isRedrawPrompt?: boolean };
 
 export interface TokenizedLine {
     line: string;
     isPrompt: boolean;
+    isRedrawPrompt?: boolean;
     tokens: Token[];
 }
 

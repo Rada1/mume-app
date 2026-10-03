@@ -41,7 +41,7 @@
 }
 
 .swipe-sq-label .swipe-action-card.is-target-ready .swipe-action-text {
-    color: var(--target-glow-color, #f87171);
+    color: var(--wheel-command-text-color, var(--target-glow-color, #f87171));
     text-shadow: 0 0 6px var(--target-glow-color, rgba(248, 113, 113, 0.9)), 0 0 12px color-mix(in srgb, var(--target-glow-color, #ef4444) 65%, transparent);
 }
 
@@ -61,10 +61,17 @@
     max-width: 100%;
     max-height: 2.22em;
     overflow: hidden;
-    color: inherit;
+    color: var(--wheel-command-text-color, inherit);
     line-height: 1.1;
     text-align: center;
     text-overflow: ellipsis;
+}
+
+.swipe-sq-label.is-unlearned .swipe-action-text,
+.swipe-center.is-unlearned .swipe-center-label {
+    opacity: 0.38;
+    filter: saturate(0.35);
+    text-shadow: none;
 }
 
 .swipe-button-icon {

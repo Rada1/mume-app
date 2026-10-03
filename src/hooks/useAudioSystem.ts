@@ -215,7 +215,15 @@ export const useAudioEffects = () => {
     const playWeatherSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('weather', options), [playEffect]);
     const playMagicCompleteSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('magiccomplete', options), [playEffect]);
     const playAchievementSound = useCallback(() => playEffect('achievement'), [playEffect]);
-    const playEventMoveSound = useCallback(() => playEffect('event-move'), [playEffect]);
+    const playEventMoveSound = useCallback((isRiding: boolean = false, isSneaking: boolean = false) => {
+        if (isRiding) {
+            playEffect('ride');
+        } else if (isSneaking) {
+            playEffect('move', { pitch: 1.05, volume: 0.6, filterFrequency: 500 });
+        } else {
+            playEffect('event-move');
+        }
+    }, [playEffect]);
     const playWearSound = useCallback(() => playEffect('wear'), [playEffect]);
     const playRemoveSound = useCallback(() => playEffect('remove'), [playEffect]);
     const playLoadFlagSound = useCallback(() => playEffect('loadflag', { pitch: 1.0, volume: 0.2, skipJitter: true }), [playEffect]);
@@ -223,7 +231,7 @@ export const useAudioEffects = () => {
     const playStopRidingSound = useCallback(() => playEffect('stopriding'), [playEffect]);
 
     const playDoorSound = useCallback((isOpen: boolean) => playEffect('door1', { pitch: isOpen ? 1.0 : 0.8, volume: 1.5 }), [playEffect]);
-    const playMovementSound = useCallback((isRiding: boolean = false, terrain?: string) => {
+    const playMovementSound = useCallback((isRiding: boolean = false, terrain?: string, isSneaking: boolean = false) => {
         const isWaterTerrain = terrain && (
             terrain.toLowerCase().includes('water') ||
             terrain.toLowerCase().includes('shall') ||
@@ -235,7 +243,11 @@ export const useAudioEffects = () => {
         if (isRiding) {
             playEffect('ride');
         } else {
-            playEffect(effectName, { pitch: 1.05, volume: 0.6 });
+            playEffect(effectName, {
+                pitch: 1.05,
+                volume: 0.6,
+                filterFrequency: isSneaking ? 500 : undefined
+            });
         }
     }, [playEffect]);
 

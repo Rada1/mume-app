@@ -7,11 +7,13 @@
 import { useRoomStore } from '../stores/useRoomStore';
 import { getMountTargetSuggestions, getRoomTargetSuggestions } from './commandSuggestionUtils';
 import { getCommandTargetMenuKind } from './commandTargetUtils';
+import { getRoomIdentityKey } from './roomIdentityUtils';
 
 type GlobalTargetKind = 'room-entity' | 'mount' | 'room-object' | 'corpse' | 'exit' | 'self';
 interface CommandTargetEntry {
     target: string;
     revision: number;
+    roomKey: string;
 }
 
 const targetsByCommand = new Map<string, CommandTargetEntry>();
@@ -29,6 +31,16 @@ export const getCommandTargetKey = (command: string): string | null => {
 };
 
 const normalizeTarget = (target: string): string => target.trim().toLowerCase().replace(/\s+/g, ' ');
+
+const getCurrentRoomKey = (): string => {
+    const room = useRoomStore.getState();
+    return getRoomIdentityKey({
+        roomNum: room.roomNum,
+        roomName: room.roomName,
+        roomZone: room.roomZone,
+        roomDesc: room.roomDesc
+    });
+};
 
 const classifyGlobalTarget = (target: string): GlobalTargetKind => {
     const normalized = normalizeTarget(target);
@@ -95,18 +107,19 @@ export const getRememberedCommandTarget = (command: string): string | null => {
     const key = getCommandTargetKey(command);
     if (!key) return null;
     const commandTarget = targetsByCommand.get(key);
+    const currentRoomTarget = commandTarget?.roomKey === getCurrentRoomKey() ? commandTarget : null;
     const globalApplies = globalTarget && isGlobalTargetCompatible(command, globalTarget.kind);
-    if (globalApplies && (!commandTarget || globalTarget.revision > commandTarget.revision)) {
+    if (globalApplies && (!currentRoomTarget || globalTarget.revision > currentRoomTarget.revision)) {
         return globalTarget.target;
     }
-    return commandTarget?.target || null;
+    return currentRoomTarget?.target || null;
 };
 
 export const rememberCommandTarget = (command: string, target: string | null): void => {
     const key = getCommandTargetKey(command);
     if (!key) return;
     revision += 1;
-    if (target?.trim()) targetsByCommand.set(key, { target: target.trim(), revision });
+    if (target?.trim()) targetsByCommand.set(key, { target: target.trim(), revision, roomKey: getCurrentRoomKey() });
     else targetsByCommand.delete(key);
 };
 

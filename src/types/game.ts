@@ -69,6 +69,7 @@ export interface Message {
     replyTarget?: string; // Sender name for comm messages — enables the inline reply button
     replyCommand?: string; // Channel command for the reply button (e.g. 'tell', 'say', 'narrate')
     isRoomName?: boolean; // True if this line is a room title/name
+    isXmlRoomName?: boolean; // True only when this title came from an XML <name> tag
     terrain?: string | null; // The terrain of the room if this is a room name line
     isRoomBlock?: boolean; // True if this line is a room name (with embedded description)
     isRoomBlockStart?: boolean;
@@ -177,15 +178,7 @@ export interface CharacterInfo {
     warFame?: number;
     actsForWar?: number;
     citizenships?: number;
-    stats?: {
-        str: number;
-        int: number;
-        wis: number;
-        dex: number;
-        con: number;
-        wil: number;
-        per: number;
-    };
+    stats?: Partial<Record<'str' | 'int' | 'wis' | 'dex' | 'con' | 'wil' | 'per', number>>;
     perception?: {
         vision: string;
         hearing: string;
@@ -195,6 +188,7 @@ export interface CharacterInfo {
     height?: string;
     weight?: string;
     eqWeight?: string;
+    burden?: string;
     alertness?: string;
     session?: string;
     affectedBy?: string[];

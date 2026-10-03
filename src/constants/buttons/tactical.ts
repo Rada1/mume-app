@@ -59,7 +59,7 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
         actionType: "command",
         display: "floating",
         hideIfUnknown: true,
-        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: "rgba(21, 128, 61, 0.8)", borderColor: "#22c55e", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: "rgba(21, 128, 61, 0.8)", borderColor: "#22c55e", color: "#22c55e", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
         position: { x: 0, y: 0, w: 90, h: 40 },
         isVisible: true,
         trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
@@ -147,7 +147,8 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
             down: "reveal",
             left: "flush",
             ne: "watch",
-            nw: "consider"
+            nw: "consider",
+            se: "where"
         },
         style: { x: 570, y: 0, w: 90, h: 40, backgroundColor: "rgba(101, 75, 20, 0.8)", borderColor: "#eab308", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
         position: { x: 570, y: 0, w: 90, h: 40 },

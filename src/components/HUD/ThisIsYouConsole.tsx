@@ -16,7 +16,6 @@ import { useStatDeltas } from '../../hooks/useStatDeltas';
 import { useCharacterConditions } from '../../hooks/useCharacterConditions';
 import { useCharacterInfoRefresh } from '../../hooks/useCharacterInfoRefresh';
 import { useCharacterPanelVitalsRefresh } from '../../hooks/useCharacterPanelVitalsRefresh';
-import { useSwipeUpToMinimize } from '../../hooks/useSwipeUpToMinimize';
 import { getMovementModeActions } from '../../hooks/useMovementModeActions';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useCharacterPanelStore } from '../../stores/useCharacterPanelStore';
@@ -56,11 +55,7 @@ const formatConditionTimeLeft = (milliseconds: number): string => {
 export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = false }) => {
     const isMinimized = useCharacterPanelStore(s => s.isMinimized);
     const toggleMinimized = useCharacterPanelStore(s => s.toggleMinimized);
-    const setIsMinimized = useCharacterPanelStore(s => s.setIsMinimized);
     const panelIsMinimized = alwaysExpanded ? false : isMinimized;
-    const mobileHeaderPressRef = useRef<{ pointerId: number; startedAt: number; wasMinimized: boolean } | null>(null);
-    const suppressHeaderClickRef = useRef(false);
-    const suppressHeaderClickTimerRef = useRef<number | null>(null);
     const consoleRef = useRef<HTMLElement | null>(null);
     const bodyWrapperRef = useRef<HTMLDivElement | null>(null);
     const [glassPortalHost, setGlassPortalHost] = useState<HTMLElement | null>(null);
@@ -138,9 +133,14 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
         };
     }, [panelIsMinimized, viewport?.isMobile]);
     const refreshCharacterInfo = useCharacterInfoRefresh(
-        characterInfo?.name || characterName || '', gameState === 'playing' && !isSpectateMode, executeCommand
+        characterInfo?.name || characterName || '', gameState === 'playing' && !isSpectateMode, executeCommand, !alwaysExpanded
     );
-    useCharacterPanelVitalsRefresh(panelIsMinimized, gameState === 'playing', isSpectateMode, executeCommand);
+    useCharacterPanelVitalsRefresh(
+        panelIsMinimized,
+        gameState === 'playing',
+        isSpectateMode,
+        executeCommand
+    );
 
     // Tick regen calculation
     const [regenNow, setRegenNow] = useState(() => Date.now());
@@ -240,74 +240,11 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
         window.setTimeout(refreshCharacterInfo, 3000);
     };
 
-    const handleToggleClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (alwaysExpanded) return;
-        if (suppressHeaderClickRef.current) {
-            suppressHeaderClickRef.current = false;
-            if (suppressHeaderClickTimerRef.current !== null) {
-                window.clearTimeout(suppressHeaderClickTimerRef.current);
-                suppressHeaderClickTimerRef.current = null;
-            }
-            return;
-        }
-        triggerHaptic(10);
-        toggleMinimized();
-    };
-
-    const handleMobileHeaderPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-        if (alwaysExpanded) return;
-        if (!viewport?.isMobile || event.pointerType !== 'touch') return;
-        event.currentTarget.setPointerCapture(event.pointerId);
-        mobileHeaderPressRef.current = {
-            pointerId: event.pointerId,
-            startedAt: Date.now(),
-            wasMinimized: isMinimized
-        };
-        suppressHeaderClickRef.current = true;
-        triggerHaptic(10);
-        if (isMinimized) {
-            setIsMinimized(false);
-        }
-    };
-
-    const handleMobileHeaderPointerEnd = (event: React.PointerEvent<HTMLDivElement>) => {
-        const press = mobileHeaderPressRef.current;
-        if (!press || press.pointerId !== event.pointerId) return;
-        mobileHeaderPressRef.current = null;
-        const wasHeld = Date.now() - press.startedAt >= 450;
-        if (wasHeld || !press.wasMinimized) {
-            setIsMinimized(true);
-            triggerHaptic(10);
-        }
-        if (suppressHeaderClickTimerRef.current !== null) window.clearTimeout(suppressHeaderClickTimerRef.current);
-        suppressHeaderClickTimerRef.current = window.setTimeout(() => {
-            suppressHeaderClickRef.current = false;
-            suppressHeaderClickTimerRef.current = null;
-        }, 1000);
-    };
-
-    useEffect(() => () => {
-        if (suppressHeaderClickTimerRef.current !== null) window.clearTimeout(suppressHeaderClickTimerRef.current);
-    }, []);
-
     const handleHeaderClick = () => {
         if (alwaysExpanded) return;
-        if (suppressHeaderClickRef.current) {
-            suppressHeaderClickRef.current = false;
-            if (suppressHeaderClickTimerRef.current !== null) {
-                window.clearTimeout(suppressHeaderClickTimerRef.current);
-                suppressHeaderClickTimerRef.current = null;
-            }
-            return;
-        }
         triggerHaptic(10);
         toggleMinimized();
     };
-    const swipeHandlers = useSwipeUpToMinimize(Boolean(!alwaysExpanded && viewport?.isMobile && !panelIsMinimized), () => {
-        triggerHaptic(10);
-        toggleMinimized();
-    });
 
     // --- Render Section ---
     return (
@@ -315,15 +252,11 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
             ref={consoleRef}
             className={`this-is-you-console${panelIsMinimized ? ' is-minimized' : ''}${viewport?.isMobile ? ' is-mobile' : ''}${alwaysExpanded ? ' is-always-expanded' : ''}`}
             aria-label="Character Status Console"
-            {...swipeHandlers}
         >
             {/* TIER 1: Identity, Full Bio Metrics & Progression */}
             <div
                 className="this-is-you-tier-identity"
                 onClick={handleHeaderClick}
-                onPointerDown={handleMobileHeaderPointerDown}
-                onPointerUp={handleMobileHeaderPointerEnd}
-                onPointerCancel={handleMobileHeaderPointerEnd}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
@@ -349,15 +282,9 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                 <TerminalProgression characterName={name}
                   xp={characterInfo?.xp} tp={characterInfo?.tp}
                   tnl={characterInfo?.tnl} tpnl={characterInfo?.tpnl} />
-                {!alwaysExpanded && <button
-                  type="button"
-                  className="this-is-you-toggle-btn"
-                  onClick={handleToggleClick}
-                  aria-label={isMinimized ? 'Expand character panel' : 'Minimize character panel'}
-                  title={isMinimized ? 'Expand character panel (slide up)' : 'Minimize character panel (slide down)'}
-                >
-                  {!alwaysExpanded && (panelIsMinimized ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
-                </button>}
+                {!alwaysExpanded && <span className="this-is-you-expand-indicator" aria-hidden="true">
+                  {panelIsMinimized ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                </span>}
               </div>
             </div>
 
@@ -389,6 +316,7 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
               <div className="this-is-you-pills-row">
                 <ThisIsYouStatePill
                   category="Position"
+                  accentColor="blue"
                   value={currentPosition}
                   options={POSITION_OPTIONS}
                   inlineOptions={Boolean(viewport?.isMobile)}
@@ -397,18 +325,12 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                   onSelect={opt => handleStateSelect('pos', opt)}
                 />
                 <ThisIsYouStatePill
-                  category="Alertness"
-                  value={currentAlertness}
-                  options={ALERTNESS_OPTIONS}
-                  inlineOptions={Boolean(viewport?.isMobile)}
-                  disabled={isSpectateMode}
-                  onInteract={() => triggerHaptic(15)}
-                  onSelect={opt => handleStateSelect('alert', opt)}
-                />
-                <ThisIsYouStatePill
                   category="Mood"
+                  accentColor="red"
                   value={currentMood}
                   options={MOOD_OPTIONS}
+                  confirmOptionValue="berserk"
+                  confirmMessage="Berserk prevents fleeing. Tap Berserk again within 4 seconds to confirm."
                   inlineOptions={Boolean(viewport?.isMobile)}
                   disabled={isSpectateMode}
                   onInteract={() => triggerHaptic(15)}
@@ -416,12 +338,23 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                 />
                 <ThisIsYouStatePill
                   category="Cast Speed"
+                  accentColor="purple"
                   value={currentSpellSpeed}
                   options={SPELL_SPEED_OPTIONS}
                   inlineOptions={Boolean(viewport?.isMobile)}
                   disabled={isSpectateMode}
                   onInteract={() => triggerHaptic(15)}
                   onSelect={opt => handleStateSelect('speed', opt)}
+                />
+                <ThisIsYouStatePill
+                  category="Alertness"
+                  accentColor="gold"
+                  value={currentAlertness}
+                  options={ALERTNESS_OPTIONS}
+                  inlineOptions={Boolean(viewport?.isMobile)}
+                  disabled={isSpectateMode}
+                  onInteract={() => triggerHaptic(15)}
+                  onSelect={opt => handleStateSelect('alert', opt)}
                 />
               </div>
             </div>

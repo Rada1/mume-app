@@ -1,3 +1,6 @@
+/** @file mapperUtils.ts — Shared mapper geometry, state, and presentation utilities. */
+
+// --- Logic Section ---
 export const GRID_SIZE = 50;
 
 // Strips ANSI/VT100 escape sequences (e.g. "\x1b[32m...\x1b[0m") from a string.
@@ -201,23 +204,42 @@ export const getExitTargetId = (exit: any): string => {
     return String(exit.target || exit.gmcpDestId || exit.id || exit.to || exit.to_vnum || '');
 };
 
+const DIRECTION_ALIASES: Record<string, string> = {
+    n: 'north', north: 'n',
+    s: 'south', south: 's',
+    e: 'east', east: 'e',
+    w: 'west', west: 'w',
+    u: 'up', up: 'u',
+    d: 'down', down: 'd',
+    ne: 'northeast', northeast: 'ne',
+    nw: 'northwest', northwest: 'nw',
+    se: 'southeast', southeast: 'se',
+    sw: 'southwest', southwest: 'sw'
+};
+
+const getDirectionalExit = <T,>(exits: Readonly<Record<string, T>> | null | undefined, direction: string): T | undefined => {
+    const normalizedDirection = direction.toLowerCase();
+    const alternateDirection = DIRECTION_ALIASES[normalizedDirection];
+    return exits?.[normalizedDirection] ?? (alternateDirection ? exits?.[alternateDirection] : undefined);
+};
+
 export const getPreloadedExit = (preloadedExitOrMap: any, d: string) => {
     if (!preloadedExitOrMap) return undefined;
     if (getExitTargetId(preloadedExitOrMap) || preloadedExitOrMap.hasDoor !== undefined || preloadedExitOrMap.flags) {
         return preloadedExitOrMap;
     }
-    return preloadedExitOrMap[d];
+    return getDirectionalExit(preloadedExitOrMap, d);
 };
 
 export const getGateState = (rA: any, wE: any, d: string, allRooms: Record<string, any>, preloaded: Record<string, any>) => {
     // Authoritative data source: trust live exits if they exist, but fallback to preloaded if specific exit is missing
-    const exA = (rA?.exits && rA.exits[d]) ? rA.exits[d] : getPreloadedExit(wE, d);
+    const exA = getDirectionalExit(rA?.exits, d) || getPreloadedExit(wE, d);
     if (!exA) return { hasExit: false, hasDoor: false, isClosed: false };
 
     const tV = getExitTargetId(exA), oD = DIRS[d]?.opp;
     const nId = tV && !tV.startsWith('m_') ? `m_${tV}` : tV;
     const n = tV ? (allRooms[nId] || allRooms[tV] || (preloaded[tV] ? { exits: preloaded[tV][4] } : null)) : null;
-    const exB = n?.exits?.[oD], hasDF = (f?: any[]) => f?.some(x => /^(door|gate|portcullis|secret)$/i.test(String(x)));
+    const exB = getDirectionalExit(n?.exits, oD), hasDF = (f?: any[]) => f?.some(x => /^(door|gate|portcullis|secret)$/i.test(String(x)));
 
     const mappedExit = getPreloadedExit(wE, d);
     const exitHasDoor = !!(

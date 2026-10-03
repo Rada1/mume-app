@@ -5,6 +5,7 @@
 
 import { MapperExit, MapperRoom } from '../mapperTypes';
 import { normalizeTerrain } from '../../../utils/terrainUtils';
+import { isNoRideRoom } from './smartWalkRideRules';
 
 type SmartWalkExit = Partial<MapperExit> & { target?: string };
 type SmartWalkExitMap = Record<string, SmartWalkExit>;
@@ -14,6 +15,7 @@ type PreloadedMap = Record<string, PreloadedRoomData>;
 interface SmartWalkPathOptions {
     revealAll?: boolean;
     exploredVnums?: Set<string>;
+    riding?: boolean;
 }
 
 interface PathNode {
@@ -195,6 +197,20 @@ export const findSmartWalkPath = (
         return options.exploredVnums.has(normId) || !!(rooms[id] || rooms[`m_${normId}`] || rooms[normId]);
     };
 
+    const isRideAllowed = (id: string): boolean => {
+        if (!options.riding) return true;
+        const normId = normalizeSmartWalkId(id);
+        const local = rooms[id] || rooms[`m_${normId}`] || rooms[normId];
+        const preloadedRoom = preloaded[normId];
+        const localFlags = local?.loadFlags ?? [];
+        const preloadedFlags = Array.isArray(preloadedRoom?.[8]) ? preloadedRoom[8] : [];
+        return !isNoRideRoom(
+            local?.terrain ?? preloadedRoom?.[3],
+            [...preloadedFlags, ...localFlags],
+            local?.ridable ?? preloadedRoom?.[14]
+        );
+    };
+
     const queue: PathNode[] = [{ id: startId, dirs: [], ids: [startId], g: 0, f: getHeuristic(startId) }];
     // Cheapest known cost-to-reach per room, so a later, cheaper route can
     // relax a node that was already discovered via a costlier path. A plain
@@ -242,6 +258,7 @@ export const findSmartWalkPath = (
             const targetId = String(exit.target);
             const normNext = normalizeSmartWalkId(targetId);
             if (closed.has(normNext)) continue;
+            if (!isRideAllowed(targetId)) continue;
             if (!isTraversable(targetId)) continue;
 
             const standardId = targetId.startsWith('m_') ? targetId : (preloaded[normNext] ? `m_${normNext}` : targetId);

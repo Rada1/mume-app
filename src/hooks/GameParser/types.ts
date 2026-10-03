@@ -20,7 +20,15 @@ export interface UseGameParserDeps {
         extra?: any, 
         mid?: string, 
         isRoomName?: boolean, 
-        precalculated?: { textOnly: string, lower: string, html?: string, tokens?: any[] },
+        precalculated?: {
+            textOnly: string;
+            lower: string;
+            html?: string;
+            tokens?: any[];
+            isXmlRoomName?: boolean;
+            xmlRoomArea?: string | null;
+            isRedrawPrompt?: boolean;
+        },
         shopItem?: any,
         practiceSkill?: any,
         practiceHeader?: any,
@@ -70,7 +78,7 @@ export interface UseGameParserDeps {
     playEffect: (name: string, options?: any) => void;
     playArrowHitSound?: (options?: { pitch?: number, volume?: number }) => void;
     playDoorSound: (isOpen: boolean) => void;
-    playMovementSound: (isRiding?: boolean, terrain?: string) => void;
+    playMovementSound: (isRiding?: boolean, terrain?: string, isSneaking?: boolean) => void;
     triggerHaptic: (ms: number) => void;
     playSound?: (buffer: any) => void;
     playRandomSound?: (buffers: any[]) => void;
@@ -104,6 +112,7 @@ export interface UseGameParserDeps {
     roomPlayers: any[];
     roomNpcs: any[];
     roomItems: any[];
+    bufferName?: string | null;
     target: string | null;
     
     accountState: AccountState;

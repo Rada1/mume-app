@@ -118,6 +118,7 @@ interface RendererProps {
     matchedRoomIds?: Set<string>;
     combatPulsesRef?: MutableRefObject<CombatPulse[]>;
     mapTileOpacity?: number;
+    mapBrightness?: number;
     mapTileVisuals?: any;
     zoneFilters?: Record<string, ZoneFilterConfig>;
     lighting?: string;
@@ -199,7 +200,7 @@ export const useMapperRenderer = ({
     activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
     activeMapFilter, mapSearchQuery, combatPulsesRef,
     closestRoomId = null, hoveredSearchRoomId = null, filterPathIds = [], filterPathDistance = 0, matchedRoomIds = new Set(),
-    mapTileVisuals, mapTileOpacity, zoneFilters,
+    mapTileVisuals, mapTileOpacity, mapBrightness = 50, zoneFilters,
     lighting = 'none',
     isImmersionMode = false,
     weather = 'none',
@@ -892,6 +893,7 @@ export const useMapperRenderer = ({
             }
             ctx.clip(terrainWindow ? 'evenodd' : 'nonzero');
             ctx.globalAlpha = TERRAIN_LAYER_OPACITY * fade;
+            ctx.filter = `brightness(${Math.max(50, Math.min(100, mapBrightness)) / 100})`;
             ctx.drawImage(cache.terrainCanvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
             ctx.drawImage(cache.featureCanvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
             ctx.restore();
@@ -911,6 +913,7 @@ export const useMapperRenderer = ({
         if (showTerrainTiles || terrainWindow) {
             ctx.save();
             ctx.globalAlpha = TERRAIN_LAYER_OPACITY;
+            ctx.filter = `brightness(${Math.max(50, Math.min(100, mapBrightness)) / 100})`;
             ctx.drawImage(cache.terrainCanvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
             ctx.restore();
         }
@@ -972,7 +975,10 @@ export const useMapperRenderer = ({
             ctx.restore();
         }
 
+        ctx.save();
+        ctx.filter = `brightness(${Math.max(50, Math.min(100, mapBrightness)) / 100})`;
         ctx.drawImage(cache.featureCanvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
+        ctx.restore();
 
         // 4. Overlay Dynamic Entities (Player, Trails, Markers)
         ctx.save();
@@ -1001,7 +1007,7 @@ export const useMapperRenderer = ({
 
 
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, entitiesRef, serverIdIndexRef, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, walkTargetId, walkPath, activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, hoveredSearchRoomId, filterPathIds, filterPathDistance, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, zoneFilters, lighting, weather, regionLabels, selectedRegionLabelId, showTerrainTiles]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, entitiesRef, serverIdIndexRef, inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton, walkTargetId, walkPath, activeMapFilter, mapSearchQuery, matchedRoomIds, closestRoomId, hoveredSearchRoomId, filterPathIds, filterPathDistance, combatPulsesRef, currentRoomId, mapTileVisuals, mapTileOpacity, mapBrightness, zoneFilters, lighting, weather, regionLabels, selectedRegionLabelId, showTerrainTiles]);
 
     return { drawMap, filterFitRef };
 };

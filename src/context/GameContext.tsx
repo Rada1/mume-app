@@ -712,6 +712,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roomPlayers: s.roomPlayers,
         roomNpcs: s.roomNpcs,
         roomItems: s.roomItems,
+        bufferName: v.bufferName,
         target: v.target,
         selectedObjectIds: s.selectedObjectIds,
 

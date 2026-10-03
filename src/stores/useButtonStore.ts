@@ -49,6 +49,9 @@ const normalizeTacticalAssignActions = (button: CustomButton, applyLegacyPlaceme
         shape: 'circle',
         iconScale: 1
     };
+    const normalizedRangerStyle: CustomButton['style'] = button.id === 'tactical-ranger'
+        ? { ...(button.style || {}), color: '#22c55e' }
+        : button.style;
     let swipeCommands = button.swipeCommands ? { ...button.swipeCommands } : button.swipeCommands;
     let swipeActionTypes = button.id === 'tactical-doors'
         ? undefined
@@ -74,6 +77,10 @@ const normalizeTacticalAssignActions = (button: CustomButton, applyLegacyPlaceme
             const key = direction as keyof NonNullable<CustomButton['swipeCommands']>;
             delete swipeCommands?.[key];
             if (swipeActionTypes) delete swipeActionTypes[key];
+        }
+        if (!swipeCommands?.left?.trim()) {
+            swipeCommands = { ...(swipeCommands || {}), left: 'camp' };
+            swipeActionTypes = { ...(swipeActionTypes || {}), left: 'command' };
         }
     }
 
@@ -106,7 +113,7 @@ const normalizeTacticalAssignActions = (button: CustomButton, applyLegacyPlaceme
                 ? ''
                 : button.command,
         actionType: button.id === 'tactical-charmie' ? 'modifier' : button.id === 'tactical-doors' ? 'command' : button.actionType,
-        style: button.id === 'tactical-charmie' ? normalizedCharmieStyle : button.style,
+        style: button.id === 'tactical-charmie' ? normalizedCharmieStyle : normalizedRangerStyle,
         position: button.id === 'tactical-charmie' ? { ...button.position, w: 34, h: 34 } : button.position,
         swipeCommands,
         swipeActionTypes,

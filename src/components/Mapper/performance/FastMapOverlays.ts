@@ -19,12 +19,13 @@ import type { FastMapPoint } from './predictionPath';
 import { buildGroupMemberGeometry, buildGroupMemberLabels } from './groupMarkerGeometry';
 import { drawColorGeometry } from './roomGpuDrawing';
 import { buildSearchGeometry } from './searchGeometry';
+import { drawRoomSpriteFlags } from './roomSpriteDrawing';
 
 const SPRITE_UNIFORMS = ['uView', 'uTex', 'uColor'] as const;
 const COLOR_UNIFORMS = ['uView', 'uColor'] as const;
 const PREDICTION_ALPHA = 0.95;
 const ROOM_OVERLAY_COLOR = new Float32Array([
-  FAST_MAP_TILE_TINT[0], FAST_MAP_TILE_TINT[1], FAST_MAP_TILE_TINT[2], 0.9,
+  FAST_MAP_TILE_TINT[0], FAST_MAP_TILE_TINT[1], FAST_MAP_TILE_TINT[2], 1,
 ]);
 
 export class FastMapOverlays {
@@ -213,18 +214,11 @@ export class FastMapOverlays {
     this.text.setLiveLabels(live);
   }
 
-  drawRoomFlags(mesh: GpuSpriteMesh | null, texture: WebGLTexture | null, view: Float32Array): void {
-    if (!mesh || !texture) return;
-    const gl = this.gl;
-    gl.useProgram(this.spriteProgram.program);
-    gl.uniform4fv(this.spriteProgram.uniforms.get('uView') ?? null, view);
-    gl.uniform4fv(this.spriteProgram.uniforms.get('uColor') ?? null, ROOM_OVERLAY_COLOR);
-    gl.uniform1i(this.spriteProgram.uniforms.get('uTex') ?? null, 0);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
-    gl.bindVertexArray(mesh.vao);
-    gl.drawArrays(gl.TRIANGLES, 0, mesh.vertexCount);
+  drawRoomFlags(mesh: GpuSpriteMesh | null, texture: WebGLTexture | null, view: Float32Array, range?: { first: number; count: number }): void {
+    drawRoomSpriteFlags(this.gl, this.spriteProgram, mesh, texture, view, ROOM_OVERLAY_COLOR, range);
   }
+
+  roomIndexAt(x: number, y: number, z: number): number | undefined { return this.roomIndexByPosition.get(`${x}:${y}:${z}`); }
 
   drawLines(floor: number, view: Float32Array): void {
     const range = this.lineRanges.get(floor);
@@ -284,9 +278,7 @@ export class FastMapOverlays {
     drawColorGeometry(gl, this.lineProgram, this.groupMesh, vertices.length / 7);
   }
 
-  drawLabels(floor: number, zoom: number, view: Float32Array, width: number, height: number): void {
-    if (zoom >= 0.45) this.text.render(floor, view, width, height);
-  }
+  drawLabels(floor: number, zoom: number, view: Float32Array, width: number, height: number): void { if (zoom >= 0.45) this.text.render(floor, view, width, height); }
 
   dispose(): void {
     const gl = this.gl;

@@ -106,7 +106,9 @@ export const useObjectActionTracker = (deps: ObjectActionTrackerDeps) => {
             }
         };
 
-        const wearMatch = textOnly.match(/^You (?:wear|put on|fasten|sling|slip|tie|buckle|don|drape|loop|attach|wrap) (.*?)\.$/i);
+        const wearMatch = textOnly.match(/^You (?:wear|put on|fasten|sling|slip|tie|buckle|don|drape|loop|attach|wrap) (.*?)\.$/i)
+            || textOnly.match(/^You put (.*?) on your .+ finger\.$/i)
+            || textOnly.match(/^You put (.*?) over your shoulder\.$/i);
         if (wearMatch) {
             const itemText = cleanLine.match(/<object\b[^>]*>(.*?)<\/object>/i)?.[1] || wearMatch[1];
             moveToEquipment(itemText, inferWearSlot(itemText), ['wear']);
@@ -226,7 +228,7 @@ export const useObjectActionTracker = (deps: ObjectActionTrackerDeps) => {
             clear(); return true;
         }
 
-        const wieldMatch = textOnly.match(/^You (?:\w+\s+)*(?:wield|hold) (.*?)(?:, .*)?\.$/i);
+        const wieldMatch = textOnly.match(/^You (?!(?:have to|need to|must|should)\b)(?:\w+\s+)*(?:wield|hold) (.*?)(?:, .*)?\.$/i);
         if (wieldMatch) {
             const itemText = cleanLine.match(/<object\b[^>]*>(.*?)<\/object>/i)?.[1] || wieldMatch[1];
             moveToEquipment(itemText, '<wielded>', ['wield', 'hold']);

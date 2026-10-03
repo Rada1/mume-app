@@ -10,13 +10,14 @@ import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { useRoomStore } from '../../../stores/useRoomStore';
 import { ButtonSwipeOverlay } from './ButtonSwipeOverlay';
 import { TacticalTargetBar, type TacticalTargetColumn } from './TacticalTargetBar';
-import type { UseTacticalTargetingReturn } from './useTacticalTargeting';
+import type { UseTacticalTargetingReturn } from './tacticalTargetingTypes';
 import type { TacticalPaletteCommand, TacticalSwapCell } from './TacticalCommandPalette';
 import './TacticalSwipeWheel.css';
 import './TacticalCommandPanel.css';
 
 // --- Logic Section ---
 const SELF_BUFF_GLOW_SPELLS = new Set(['armour', 'armor', 'shield', 'breath of briskness']);
+const SHOW_ALLY_COMMAND_TARGET_GLOW = false;
 
 const getSelfBuffGlowSpell = (command: string): string | null => {
     const spell = command.trim().match(/^(?:(?:cast|c|commune)\s+)?['"]?([^'"]+?)['"]?(?:\s+.*)?$/i)?.[1];
@@ -73,6 +74,7 @@ interface Props {
     onPinnedPointerUp?: React.PointerEventHandler<HTMLElement>;
     onPinnedPointerCancel?: React.PointerEventHandler<HTMLElement>;
     paletteCommands?: TacticalPaletteCommand[];
+    getCommandLearnedState?: (command: string) => boolean | undefined;
     onPalettePointerDown?: React.PointerEventHandler<HTMLElement>;
     onPalettePointerMove?: React.PointerEventHandler<HTMLElement>;
     onPalettePointerUp?: React.PointerEventHandler<HTMLElement>;
@@ -91,7 +93,7 @@ export const TacticalCommandPanel: React.FC<Props> = ({
     button, activeDir, isCancelling, isPinned, swapSource, onSwapCells, onClose, buttonRect, rayParams, isMobile,
     isTargetMenuOpen, isTargetMenuHeld, command, currentCommandRef, activeTarget, targetChipTarget,
     selectedTarget, selectedDirection, directionPadMode, suggestions, title,
-    characterName, targeting, executeCommand, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, paletteCommands, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel, hidePreviewWheel,
+    characterName, targeting, executeCommand, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, paletteCommands, getCommandLearnedState, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel, hidePreviewWheel,
     wheelReplacementMode, columns, onSelectColumnTarget, onToggleTargetLock, onTargetSelected, customContent, customContentInteractive
 }) => {
     const inlineCategories = useSettingsStore(state => state.inlineCategories);
@@ -117,10 +119,12 @@ export const TacticalCommandPanel: React.FC<Props> = ({
         }
     }, [button.command, currentCommandRef, onTargetSelected, targeting, wheelReplacementMode, columns]);
     const getCommandTargetGlowColor = useCallback((swipeCommand: string) => {
-        // These buffs have no command argument, but conceptually target the
-        // caster. Keep their ally-colored glow visible across the wheel.
+        // Retain the caster-targeted buff highlight behind a feature flag for
+        // possible later use; ally command highlighting is currently disabled.
         if (getSelfBuffGlowSpell(swipeCommand)) {
-            return getTargetClassificationColor('ally', inlineCategories, entityColors, theme) || '#61c290';
+            return SHOW_ALLY_COMMAND_TARGET_GLOW
+                ? getTargetClassificationColor('ally', inlineCategories, entityColors, theme) || '#61c290'
+                : null;
         }
         if (!swipeCommand.trim() || !canCommandAcceptTarget(swipeCommand)) return null;
         // Keep wheel target glows tied to each command's own default target.
@@ -136,7 +140,9 @@ export const TacticalCommandPanel: React.FC<Props> = ({
 
         if (isOffensiveSingleTargetCommand(swipeCommand)) return '#f87171';
         if (selectedMeta === 'self' || selectedMeta === 'ally' || selectedMeta === 'allies') {
-            return getTargetClassificationColor(selectedMeta, inlineCategories, entityColors, theme) || '#61c290';
+            return SHOW_ALLY_COMMAND_TARGET_GLOW
+                ? getTargetClassificationColor(selectedMeta, inlineCategories, entityColors, theme) || '#61c290'
+                : null;
         }
 
         if (!targetChipTarget) return null;
@@ -233,6 +239,7 @@ export const TacticalCommandPanel: React.FC<Props> = ({
         isMobile={isMobile}
         isTargetMenuVisible={isTargetMenuOpen}
         getCommandTargetGlowColor={getCommandTargetGlowColor}
+        getCommandLearnedState={getCommandLearnedState}
         targetMenu={targetMenu}
         paletteCommands={paletteCommands}
         onPinnedPointerDown={onPinnedPointerDown}

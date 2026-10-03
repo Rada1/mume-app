@@ -3,15 +3,16 @@
  * @description Coordinates desktop sliding dock panels and calculates dynamic right-offsets.
  */
 
-export type DockedPanelId = 'commands' | 'chat' | 'shop' | 'gear' | 'help' | 'archive' | 'editor';
+export type DockedPanelId = 'commands' | 'chat' | 'group' | 'shop' | 'gear' | 'help' | 'archive' | 'editor';
 
 export const DOCKED_PANEL_ORDER: readonly DockedPanelId[] = [
-    'editor', 'archive', 'shop', 'gear', 'help', 'chat', 'commands'
+    'editor', 'archive', 'shop', 'gear', 'help', 'chat', 'group', 'commands'
 ] as const;
 
 export const PANEL_WIDTH_VARS: Record<DockedPanelId, string> = {
     commands: '--desktop-character-width',
     chat: '--desktop-chat-width',
+    group: '--desktop-group-width',
     shop: '--desktop-shop-width',
     gear: '--desktop-gear-width',
     help: '--desktop-help-width',
@@ -22,6 +23,7 @@ export const PANEL_WIDTH_VARS: Record<DockedPanelId, string> = {
 export const PANEL_DEFAULT_WIDTHS: Record<DockedPanelId, string> = {
     commands: '260px',
     chat: '24vw',
+    group: '30vw',
     shop: '30vw',
     gear: '30vw',
     help: '28vw',

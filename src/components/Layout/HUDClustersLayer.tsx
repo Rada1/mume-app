@@ -10,6 +10,7 @@ import { StatsCluster } from './HUD/StatsCluster';
 import { LineCluster } from './HUD/LineCluster';
 import { LiveBufferHUD } from './HUD/LiveBufferHUD';
 import { SpectateQueueHUD } from './HUD/SpectateQueueHUD';
+import './KeyboardMapPreview.css';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/useMapper';
 

@@ -846,13 +846,6 @@
     opacity: var(--message-dim-opacity, 0.50) !important;
 }
 
-/* Room name titles are slightly larger and stay at full brightness for rapid spatial scanning */
-.message.is-room-name .message-content {
-    font-size: 1.2em;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-}
-
 .message.is-room-name .message-content,
 .message.is-room-name .message-content span:not(.room-description-merged):not(.room-desc-line):not(.room-zone-name),
 .message.is-room-name .message-content .room-title-text,
@@ -3371,14 +3364,6 @@ span.inline-btn {
     color: var(--glow-color, var(--room-color, var(--mume-wiki-link-color, #c9a84c))) !important;
 }
 
-.message.is-room-name .message-content,
-.message.is-room-name .message-content .room-title-badge,
-.message.is-room-name .message-content .room-title-text,
-.room-title-text {
-    --mume-wiki-link-color: var(--room-color, #c9a84c);
-    color: var(--glow-color, var(--room-color, var(--mume-wiki-link-color, #c9a84c))) !important;
-}
-
 .light-mode .message-content .room-name-inline,
 .light-mode .message-content .room-name-inline span,
 .light-mode .message-content .room-name-inline *,
@@ -3435,14 +3420,9 @@ span.inline-btn {
 }
 
 .message-content .prompt-vital-value {
-    color: hsl(var(--prompt-vital-hue, 120) 84% 60%) !important;
     -webkit-text-fill-color: currentColor !important;
     opacity: 1 !important;
     filter: none !important;
-}
-
-.message-content .prompt-vital-value[data-vital-percent] {
-    color: color-mix(in srgb, #fff calc(100% - var(--prompt-vital-percent)), var(--prompt-vital-full-color) var(--prompt-vital-percent)) !important;
 }
 
 .message-content .prompt-vital-value[data-vital-type="health"] {
@@ -3457,12 +3437,8 @@ span.inline-btn {
     --prompt-vital-full-color: #55ff55;
 }
 
-.light-mode .message-content .prompt-vital-value {
-    color: hsl(var(--prompt-vital-hue, 120) 78% 34%) !important;
-}
-
-.light-mode .message-content .prompt-vital-value[data-vital-percent] {
-    color: color-mix(in srgb, #fff calc(100% - var(--prompt-vital-percent)), var(--prompt-vital-full-color) var(--prompt-vital-percent)) !important;
+.message-content .prompt-vital-value[data-vital-type] {
+    color: var(--prompt-vital-full-color) !important;
 }
 
 .message.prompt .message-content,
@@ -3743,3 +3719,4 @@ span.inline-btn {
 .message-content .inline-btn.menu-active:not(.room-name-inline)::after {
     content: none !important;
 }
+

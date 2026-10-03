@@ -67,6 +67,7 @@ export interface MapCanvasProps {
     enemyColor?: string;
     objectColor?: string;
     targetColor?: string;
+    mapBrightness?: number;
     activeInlineEntityId?: string | null;
     selectedObjectIds?: Set<string>;
     deathRoomId?: string | null;
@@ -131,6 +132,7 @@ const LegacyMapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps 
         closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds, hoveredSearchRoomId,
         mapTileVisuals,
         mapTileOpacity,
+        mapBrightness: props.mapBrightness,
         lighting,
         isImmersionMode,
         weather,

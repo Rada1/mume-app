@@ -8,9 +8,9 @@ import { getRoomRouteDirections, getTrailPixmapSuffix } from '../trailUtils';
 
 const TERRAIN_TILE_INSET = 0;
 const TERRAIN_ICON_OPACITY = 0.2;
-export const TERRAIN_LAYER_OPACITY = 0.3;
+export const TERRAIN_LAYER_OPACITY = 1;
 const FIELD_ICON_OPACITY = 0.35;
-const DARK_MODE_TILE_BRIGHTNESS = 0.36;
+const DARK_MODE_TILE_BRIGHTNESS = 0.62;
 const FAR_ZOOM_TERRAIN_LOD = 0.04;
 const OVERVIEW_TERRAIN_ZOOM = 0.15;
 export const RING_REVEAL_MS = 0;

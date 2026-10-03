@@ -5,6 +5,24 @@
 
 import { SwipeDirection } from './game';
 import { EntityKind, EntityLocation } from './entities';
+import type { CommandTargetSuggestion } from '../objects/targetSuggestionTypes';
+
+export interface TacticalArgumentChip {
+    id: string;
+    title: string;
+    displayLabel: string;
+    selectedValue: string | null;
+    suggestions: CommandTargetSuggestion[];
+    onChoose: (value: string) => void;
+}
+
+export interface TacticalArgumentChipState {
+    ownerId: string | null;
+    command: string | null;
+    chips: TacticalArgumentChip[];
+    setArguments: (ownerId: string, command: string, chips: TacticalArgumentChip[]) => void;
+    clearArguments: (ownerId: string) => void;
+}
 
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
 

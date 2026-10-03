@@ -78,11 +78,11 @@ const HeaderRow = () => (
     </>
 );
 
-export const GroupTableView: React.FC<{ members: GroupMember[] }> = ({ members }) => {
-    if (members.length === 0) return <EmptyGroup />;
+export const GroupTableView: React.FC<{ members: GroupMember[]; compact?: boolean }> = ({ members, compact = false }) => {
+    if (members.length === 0) return compact ? null : <EmptyGroup />;
 
     return (
-        <div style={{ flex: 1, overflow: 'auto', padding: '10px 12px', fontFamily: 'var(--font-mono, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', whiteSpace: 'nowrap', lineHeight: 1.55 }}>
+        <div style={{ flex: compact ? '0 0 auto' : 1, overflow: 'auto', padding: compact ? '2px 10px 5px' : '10px 12px', fontFamily: 'var(--font-mono, monospace)', fontSize: compact ? '11px' : 'var(--dynamic-log-size, 16px)', whiteSpace: 'nowrap', lineHeight: compact ? 1.25 : 1.55 }}>
             <HeaderRow />
             {members.map((member) => {
                 const tableMember = member as GroupTableMember;
@@ -96,7 +96,7 @@ export const GroupTableView: React.FC<{ members: GroupMember[] }> = ({ members }
                             gridTemplateColumns: columns,
                             columnGap: '1ch',
                             minWidth: '74ch',
-                            padding: 0,
+                            padding: compact ? '2px 0' : 0,
                             background: 'transparent',
                             color: '#fff',
                             font: 'inherit',

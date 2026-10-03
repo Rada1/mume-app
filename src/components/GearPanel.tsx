@@ -1,27 +1,42 @@
 /** @file GearPanel.tsx — Terminal equipment and inventory docked panel. */
-import React, { useState } from 'react';
-import { Backpack, ChevronDown, ChevronRight, RefreshCw, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ArrowLeft, Backpack, ChevronDown, ChevronRight, RefreshCw, ShoppingBag, X } from 'lucide-react';
 import { DrawerResizeHandle } from './Drawers/DrawerResizeHandle';
 import { useGearPanelStore } from '../stores/useGearPanelStore';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { getInlineGlowColor } from '../utils/inlineActionModel';
+import { getObjectTraits } from '../objects/objectTargetModel';
 import { useGearPanel } from '../hooks/useGearPanel';
 import { useObjectDragCommands } from '../hooks/useObjectDragCommands';
 import { useUIStore } from '../stores/useUIStore';
 import { toGearRow, visibleContainerLine, type GearRow } from '../utils/gearPanelUtils';
 import { classifyItemTier } from '../utils/itemTier';
+import { getShopRoomLabel } from '../utils/shopRoomUtils';
+import { useMapper } from '../context/MapperContext';
 import type { DrawerLine } from '../types';
+import { ShopPanel } from './Shop/ShopPanel';
 import './GearPanel.css';
 
 interface GearPanelProps { style?: React.CSSProperties }
-type Section = 'worn' | 'carried';
+type Section = 'worn' | 'carried' | 'room';
+type SelectedGear = { id: string; row: GearRow; section: Section; parentNoun?: string };
 
 // --- Render Section ---
 const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
     const setIsOpen = useGearPanelStore(state => state.setIsOpen);
+    const mapper = useMapper();
     const inlineSettings = useSettingsStore();
     const gear = useGearPanel();
     const dragState = useUIStore(state => state.objectDragState);
+    const isShopOpen = useUIStore(state => state.isShopOpen);
+    const setIsShopOpen = useUIStore(state => state.setIsShopOpen);
+    const setShopkeeperName = useUIStore(state => state.setShopkeeperName);
+    const shopRoomLabel = getShopRoomLabel(
+        mapper.currentRoomId,
+        mapper.rooms,
+        mapper.preloadedCoordsRef.current?.[String(mapper.currentRoomId || '').replace(/^m_/, '')]
+    );
+    const isShopRoom = Boolean(shopRoomLabel);
     const startObjectDrag = useObjectDragCommands({
         executeCommand: gear.executeCommand,
         triggerHaptic: gear.triggerHaptic,
@@ -32,17 +47,25 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
             if (containerId) gear.refreshContainer(containerId);
         },
     });
-    const [expanded, setExpanded] = useState({ worn: true, carried: true });
-    const [selected, setSelected] = useState<{ id: string; row: GearRow; section: Section; parentNoun?: string } | null>(null);
+    const [expanded, setExpanded] = useState({ worn: true, carried: true, room: false });
+    const [selected, setSelected] = useState<SelectedGear | null>(null);
+    const [showRecipients, setShowRecipients] = useState(false);
+    const [activeView, setActiveView] = useState<'gear' | 'shop'>('gear');
+
+    useEffect(() => {
+        setActiveView(isShopOpen ? 'shop' : 'gear');
+    }, [isShopOpen]);
 
     const choose = (row: GearRow, section: Section, id: string, parentNoun?: string) => {
         gear.triggerHaptic?.(10);
+        setShowRecipients(false);
         setSelected(current => current?.id === id ? null : { id, row, section, parentNoun });
     };
 
     const renderRow = (row: GearRow, section: Section, source: DrawerLine[], id: string, parentNoun?: string, parentId?: string) => {
         const nested = Boolean(parentNoun);
-        const category = nested ? 'cat-container-item' : section === 'worn' ? 'cat-worn-object' : 'cat-inventory-object';
+        const category = nested ? 'cat-container-item' : section === 'worn'
+            ? 'cat-worn-object' : section === 'room' ? 'cat-room-object' : 'cat-inventory-object';
         const itemColor = getInlineGlowColor(category, inlineSettings.inlineCategories,
             { object: inlineSettings.objectColor }, inlineSettings.theme) || inlineSettings.objectColor;
         const itemTier = classifyItemTier(row.line.text);
@@ -55,13 +78,13 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
                 data-object-drop-noun={row.isContainer ? row.noun : undefined}
                 data-object-drop-label={row.isContainer ? row.name : undefined}>
                 <button className={`gear-item-select${gear.viewport.isMobile ? ' inline-btn' : ''}`} type="button"
-                    onClick={event => gear.viewport.isMobile ? gear.handleLogClick(event) : choose(row, section, id, parentNoun)}
+                    onClick={() => choose(row, section, id, parentNoun)}
                     data-id={row.line.entityId || row.line.stableId || row.line.id}
                     data-cmd={nested ? 'inline-container-item' : row.line.cmd || category}
                     data-context={row.noun} data-category={category} data-action="menu"
                     data-parent-noun={parentNoun} data-menu-display="list"
                     onPointerDown={event => startObjectDrag(event, {
-                        row: nested ? 'inventory' : section === 'worn' ? 'worn' : 'inventory',
+                        row: nested ? 'inventory' : section === 'carried' ? 'inventory' : section,
                         noun: row.noun, label: row.name, itemId: row.line.id,
                         parentContainerNoun: parentNoun,
                         parentContainerId: parentId,
@@ -100,26 +123,29 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
     };
 
     const renderSection = (section: Section) => {
-        const rows = section === 'worn' ? gear.worn : gear.carried;
-        const source = section === 'worn' ? gear.displayEqLines : gear.displayInventoryLines;
+        const rows = section === 'worn' ? gear.worn : section === 'room' ? gear.nearby : gear.carried;
+        const source = section === 'worn' ? gear.displayEqLines
+            : section === 'room' ? gear.roomItemLines : gear.displayInventoryLines;
+        const sectionName = section === 'worn' ? 'worn' : section === 'room' ? 'nearby' : 'inventory';
+        const dropRow = section === 'carried' ? 'inventory' : section;
         return <section className="gear-section" key={section}>
-            <div className={`gear-section-heading${dragState?.target?.type === 'row' && dragState.target.row === (section === 'worn' ? 'worn' : 'inventory') ? ' is-drop-target' : ''}`}
-                data-object-drop-row={section === 'worn' ? 'worn' : 'inventory'}>
+            <div className={`gear-section-heading${dragState?.target?.type === 'row' && dragState.target.row === dropRow ? ' is-drop-target' : ''}`}
+                data-object-drop-row={dropRow}>
                 <button className="gear-section-toggle" type="button"
                     onClick={() => setExpanded(previous => ({ ...previous, [section]: !previous[section] }))}
                     aria-expanded={expanded[section]}>
                     {expanded[section] ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                    <span>{section === 'worn' ? 'worn' : 'inventory'}</span>
+                    <span>{sectionName}{section === 'room' ? ` (${rows.length})` : ''}</span>
                 </button>
-                <button className="gear-refresh" type="button" onClick={() => gear.refresh(section)}
-                    title={`Refresh ${section === 'worn' ? 'equipment' : 'inventory'}`} aria-label={`Refresh ${section}`}>
+                {section !== 'room' && <button className="gear-refresh" type="button" onClick={() => gear.refresh(section)}
+                    title={`Refresh ${section === 'worn' ? 'equipment' : 'inventory'}`} aria-label={`Refresh ${sectionName}`}>
                     <RefreshCw size={13} />
-                </button>
+                </button>}
             </div>
-            {expanded[section] && <div className={`gear-section-body${dragState?.target?.type === 'row' && dragState.target.row === (section === 'worn' ? 'worn' : 'inventory') ? ' is-drop-target' : ''}`}
-                data-object-drop-row={section === 'worn' ? 'worn' : 'inventory'}>
+            {expanded[section] && <div className={`gear-section-body${dragState?.target?.type === 'row' && dragState.target.row === dropRow ? ' is-drop-target' : ''}`}
+                data-object-drop-row={dropRow}>
                 {rows.length ? rows.map((row, index) => renderRow(row, section, source, `${section}:${row.line.id}:${index}`))
-                    : <span className="gear-empty">{section === 'worn' ? 'Nothing equipped.' : 'Nothing carried.'}</span>}
+                    : <span className="gear-empty">{section === 'worn' ? 'Nothing equipped.' : section === 'room' ? 'No items nearby.' : 'Nothing carried.'}</span>}
             </div>}
         </section>;
     };
@@ -129,28 +155,85 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
         gear.triggerHaptic?.(10);
     };
 
-    return <aside className="docked-panel gear-panel" style={style} aria-label="Equipment and inventory panel">
+    return <aside className="docked-panel gear-panel" style={style} aria-label="Gear and shop panel">
         {!gear.viewport.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-gear-width" minWidth={18} maxWidth={60} />}
         <header className="gear-panel-header">
-            <span><Backpack size={14} /> equipment / inventory</span>
-            <button type="button" onClick={() => setIsOpen(false)} title="Close equipment and inventory"
-                aria-label="Close equipment and inventory"><X size={15} /></button>
-        </header>
-        <div className="gear-panel-body">{renderSection('worn')}{renderSection('carried')}</div>
-        {selected && <div className="gear-actions" aria-label={`Actions for ${selected.row.name}`}>
-            <span className="gear-actions-label">&gt; {selected.row.name}</span>
-            <div className="gear-action-buttons">
-                <button type="button" onClick={() => runAction(`examine ${selected.row.noun}`)}>examine</button>
-                {selected.parentNoun
-                    ? <button type="button" onClick={() => runAction(`get ${selected.row.noun} ${selected.parentNoun}`)}>get</button>
-                    : <>
-                        <button type="button" onClick={() => runAction(`${selected.section === 'worn' ? 'remove' : 'wear'} ${selected.row.noun}`)}>
-                            {selected.section === 'worn' ? 'remove' : 'wear'}
-                        </button>
-                        {selected.section === 'carried' && <button type="button" onClick={() => runAction(`drop ${selected.row.noun}`)}>drop</button>}
-                    </>}
+            <div className="gear-panel-tabs" role="tablist" aria-label="Panel">
+                <button type="button" role="tab" aria-selected={activeView === 'gear'}
+                    className={activeView === 'gear' ? 'is-active' : ''} onClick={() => setActiveView('gear')}>
+                    <Backpack size={14} /> Gear
+                </button>
+                <button type="button" role="tab" aria-selected={activeView === 'shop'} disabled={!isShopRoom && !isShopOpen}
+                    className={activeView === 'shop' ? 'is-active' : ''} onClick={event => {
+                        event.stopPropagation();
+                        setActiveView('shop');
+                        if (!isShopOpen) {
+                            setShopkeeperName(null);
+                            setIsShopOpen(true);
+                            gear.executeCommand('list');
+                            gear.triggerHaptic?.(10);
+                        }
+                    }}>
+                    <ShoppingBag size={14} /> Shop
+                </button>
             </div>
-        </div>}
+            <button type="button" onClick={() => { setIsShopOpen(false); setIsOpen(false); }} title="Close panel"
+                aria-label="Close panel"><X size={15} /></button>
+        </header>
+        {isShopOpen && <ShopPanel embedded hidden={activeView !== 'shop'} />}
+        {(activeView !== 'shop' || !isShopOpen) && <>
+                <div className="gear-panel-body">{renderSection('worn')}{renderSection('carried')}{renderSection('room')}</div>
+                {selected && <div className="gear-actions" aria-label={`Actions for ${selected.row.name}`}>
+            {showRecipients ? <>
+                <div className="gear-give-heading">
+                    <button type="button" className="gear-give-back" onClick={() => setShowRecipients(false)} aria-label="Back to item actions">
+                        <ArrowLeft size={14} /> Back
+                    </button>
+                    <span>give {selected.row.name} to…</span>
+                </div>
+                {gear.recipients.length ? <div className="gear-recipient-list">
+                    {gear.recipients.map(recipient => <button key={recipient.id} type="button"
+                        onClick={() => {
+                            runAction(`give ${selected.row.noun} ${recipient.noun}`);
+                            setShowRecipients(false);
+                            setSelected(null);
+                        }}>
+                        <span>{recipient.label}</span><small>{recipient.kind}</small>
+                    </button>)}
+                </div> : <span className="gear-empty">No eligible room entities.</span>}
+            </> : <>
+                <span className="gear-actions-label">&gt; {selected.row.name}</span>
+                <div className="gear-action-buttons">
+                    {selected.section === 'carried' && !selected.parentNoun && getObjectTraits(selected.row.line).includes('trait-fluid-container')
+                        && <button type="button" onClick={() => runAction(`drink ${selected.row.noun}`)}>drink</button>}
+                    {selected.section === 'carried' && !selected.parentNoun && getObjectTraits(selected.row.line).includes('trait-food')
+                        && <button type="button" onClick={() => runAction(`eat ${selected.row.noun}`)}>eat</button>}
+                    {selected.section === 'carried' && !selected.parentNoun && getObjectTraits(selected.row.line).includes('trait-food')
+                        && /\b(?:raw\s+)?(?:meat|mutton)\b/i.test(selected.row.name)
+                        && !/\b(?:cooked|roasted|fried)\b/i.test(selected.row.name)
+                        && <button type="button" onClick={() => runAction(`cook ${selected.row.noun}`)}>cook</button>}
+                    {selected.section === 'carried' && !selected.parentNoun && getObjectTraits(selected.row.line).includes('trait-herb')
+                        && <button type="button" onClick={() => runAction(`crush ${selected.row.noun}`)}>crush</button>}
+                    {selected.parentNoun || selected.section === 'room'
+                        ? <button type="button" onClick={() => runAction(selected.parentNoun
+                            ? `get ${selected.row.noun} ${selected.parentNoun}` : `get ${selected.row.noun}`)}>get</button>
+                        : <>
+                            <button type="button" onClick={() => runAction(`${selected.section === 'worn' ? 'remove' : 'wear'} ${selected.row.noun}`)}>
+                                {selected.section === 'worn' ? 'remove' : 'wear'}
+                            </button>
+                            {selected.section === 'carried' && !selected.parentNoun && <>
+                                {isShopRoom && <>
+                                    <button type="button" onClick={() => runAction(`sell ${selected.row.noun}`)}>sell</button>
+                                    <button type="button" onClick={() => runAction(`mend ${selected.row.noun}`)}>mend</button>
+                                </>}
+                                <button type="button" onClick={() => { setShowRecipients(true); gear.triggerHaptic?.(10); }}>give…</button>
+                                <button type="button" onClick={() => runAction(`drop ${selected.row.noun}`)}>drop</button>
+                            </>}
+                        </>}
+                </div>
+            </>}
+                </div>}
+            </>}
     </aside>;
 };
 

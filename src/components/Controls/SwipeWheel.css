@@ -93,7 +93,7 @@
 .swipe-center-label {
     font-size: 0.58rem;
     font-weight: 750;
-    color: #cbd5e1;
+    color: var(--wheel-command-text-color, #cbd5e1);
     text-transform: uppercase;
     letter-spacing: 0;
     text-align: center;
@@ -104,7 +104,7 @@
 }
 
 .swipe-center.active .swipe-center-label {
-    color: #fff;
+    color: var(--wheel-command-text-color, #fff);
     text-shadow: 0 0 10px var(--set-accent, var(--accent));
 }
 

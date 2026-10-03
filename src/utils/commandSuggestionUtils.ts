@@ -12,11 +12,11 @@ import { getTraitsForName } from './inlineActionModel';
 import { normalizeOccupantType } from '../services/classification/normalizeOccupantType';
 import { makeCommandTargetSuggestion, type CommandTargetSuggestion } from '../objects/targetSuggestionTypes';
 import {
-    getAssistTargetSuggestions, getGroupTargetSuggestions, getRescueTargetSuggestions,
+    getAssistTargetSuggestions, getGiveRecipientSuggestions, getGroupTargetSuggestions, getRescueTargetSuggestions,
     getRoomCorpseTargetSuggestions, getRoomObjectTargetsWithExit, getRoomTargetSuggestions
 } from '../objects/roomTargetSuggestions';
 import {
-    getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions,
+    getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions, getFluidContainerTargetSuggestions,
     getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions,
     getLanternTargetSuggestions
 } from '../objects/gearTargetSuggestions';
@@ -24,11 +24,11 @@ import {
 export { makeCommandTargetSuggestion };
 export type { CommandTargetSuggestion };
 export {
-    getAssistTargetSuggestions, getGroupTargetSuggestions, getRescueTargetSuggestions,
+    getAssistTargetSuggestions, getGiveRecipientSuggestions, getGroupTargetSuggestions, getRescueTargetSuggestions,
     getRoomCorpseTargetSuggestions, getRoomObjectTargetsWithExit, getRoomTargetSuggestions
 };
 export {
-    getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions,
+    getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions, getFluidContainerTargetSuggestions,
     getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions,
     getLanternTargetSuggestions
 };

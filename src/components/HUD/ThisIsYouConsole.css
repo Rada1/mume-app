@@ -181,12 +181,26 @@
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     align-items: stretch;
-    cursor: pointer;
 }
 
-.this-is-you-tier-vitals:focus-visible {
-    outline: 1px solid #f0cb67;
-    outline-offset: 2px;
+.this-is-you-vitals-cluster {
+    grid-column: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 28px;
+    gap: 4px;
+    align-items: center;
+}
+
+.this-is-you-vitals-group { grid-column: 1; }
+.this-is-you-vitals-cluster > .this-is-you-refresh-button {
+    grid-column: 2;
+    align-self: center;
+    width: 28px;
+    height: 28px;
+    min-height: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
 }
 
 .this-is-you-vitals-group {
@@ -240,23 +254,14 @@
 }
 
 .this-is-you-cell-val {
-    font-size: 0.68rem;
+    font-size: 0.74rem;
     font-weight: 700;
     color: #9bd2a5;
     margin-top: 1px;
 }
 
-.this-is-you-cell-val.is-critical {
-    color: #f87171;
-    animation: thisIsYouPulse 1s infinite;
-}
-
-@keyframes thisIsYouPulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
 .this-is-you-combat-slot {
+    grid-column: 2;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -278,7 +283,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.64rem;
+    font-size: 0.7rem;
     color: #a89f8c;
     margin-top: 2px;
 }
@@ -287,28 +292,70 @@
     color: #9bd2a5;
 }
 
-.this-is-you-wimpy-button {
+.this-is-you-wimpy-badge {
     display: inline-flex;
-    align-items: baseline;
-    gap: 2px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: inherit;
+    align-items: center;
+    gap: 3px;
+    min-height: 21px;
+    padding: 1px 5px;
+    border: 1px solid rgba(201, 168, 76, 0.38);
+    border-radius: 999px;
+    background: rgba(201, 168, 76, 0.1);
+    color: #d7b653;
     font: inherit;
+    font-size: 0.52rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+    white-space: nowrap;
     cursor: pointer;
 }
 
-.this-is-you-wimpy-button:disabled {
+.this-is-you-refresh-button {
+    display: flex;
+    min-width: 0;
+    min-height: 28px;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #c9a84c;
+    font: inherit;
+    font-size: 0.64rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.this-is-you-refresh-button:hover { background: rgba(201, 168, 76, 0.12); }
+
+.this-is-you-combat-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 30px;
+    margin-bottom: 3px;
+    color: #c9a84c;
+    font-size: 0.61rem;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+}
+
+.this-is-you-wimpy-badge strong {
+    color: #fff2c2;
+    font-size: inherit;
+}
+
+.this-is-you-wimpy-badge:disabled {
     cursor: default;
+    opacity: 0.55;
 }
 
-.this-is-you-wimpy-button:not(:disabled):hover span {
-    color: #f0cb67;
-}
-
-.this-is-you-wimpy-button:focus-visible {
-    outline: 1px solid #f0cb67;
+.this-is-you-wimpy-badge:focus-visible,
+.this-is-you-refresh-button:focus-visible {
+    outline: 2px solid #f0cb67;
     outline-offset: 2px;
 }
 

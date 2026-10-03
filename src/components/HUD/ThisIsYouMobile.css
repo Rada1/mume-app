@@ -18,6 +18,36 @@
     color: #f0cb67;
 }
 
+/* Full-screen controls use the extra space for a clear header and larger touch targets. */
+.this-is-you-console.is-mobile:not(.is-minimized) .this-is-you-tier-identity {
+    position: relative;
+    min-height: 58px;
+    align-items: flex-start;
+    padding-right: 76px;
+}
+
+.this-is-you-console.is-mobile:not(.is-minimized) .this-is-you-hero-strip {
+    flex-wrap: wrap;
+    white-space: normal;
+}
+
+.this-is-you-console.is-mobile:not(.is-minimized) .this-is-you-identity-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    gap: 0;
+}
+
+.this-is-you-console.is-mobile:not(.is-minimized) .terminal-progress {
+    display: none;
+}
+
+.this-is-you-console.is-mobile .this-is-you-expand-indicator {
+    width: 28px;
+    height: 28px;
+    color: #f0cb67;
+}
+
 .this-is-you-console.is-mobile .this-is-you-body-inner {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -31,26 +61,75 @@
     gap: 4px;
 }
 
+.this-is-you-console.is-mobile .this-is-you-tier-vitals {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "vitals" "combat";
+    gap: 4px;
+}
+
+.this-is-you-console.is-mobile .this-is-you-vitals-cluster {
+    grid-area: vitals;
+    grid-template-columns: minmax(0, 1fr) 28px;
+    gap: 4px;
+}
+
+.this-is-you-console.is-mobile .this-is-you-refresh-button {
+    flex: 0 0 28px;
+    width: 28px;
+    min-height: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.this-is-you-console.is-mobile .this-is-you-wimpy-badge {
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 20px;
+    gap: 3px;
+    padding: 1px 4px;
+    white-space: nowrap;
+}
+
+.this-is-you-console.is-mobile .this-is-you-refresh-button svg {
+    width: 15px;
+    height: 15px;
+}
+
+.this-is-you-console.is-mobile .this-is-you-vitals-group { grid-area: auto; }
+.this-is-you-console.is-mobile .this-is-you-combat-slot { grid-area: combat; }
+
 .this-is-you-console.is-mobile .this-is-you-telemetry-cell {
     display: flex;
     min-width: 0;
     min-height: 0;
-    flex-direction: row;
-    align-items: baseline;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 1px;
+    padding: 2px 1px;
 }
 
 .this-is-you-console.is-mobile .this-is-you-cell-header {
     display: flex;
-    gap: 3px;
+    justify-content: center;
+    gap: 2px;
     white-space: nowrap;
+}
+
+.this-is-you-console.is-mobile .this-is-you-health-header {
+    width: 100%;
+    justify-content: space-between;
+    gap: 1px;
 }
 
 .this-is-you-console.is-mobile .this-is-you-cell-header .label,
 .this-is-you-console.is-mobile .this-is-you-cell-val {
-    font-size: 0.57rem;
+    font-size: 0.58rem;
 }
+
+.this-is-you-console.is-mobile .this-is-you-cell-val { font-size: 0.62rem; }
 
 .this-is-you-console.is-mobile .this-is-you-cell-header .regen {
     display: none;
@@ -58,15 +137,16 @@
 
 .this-is-you-console.is-mobile .this-is-you-combat-slot {
     grid-column: 1;
+    margin-bottom: 6px;
 }
 
 .this-is-you-console.is-mobile .this-is-you-capabilities-row {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-template-rows: none;
     grid-auto-flow: row;
     gap: 2px;
-    font-size: 0.54rem;
+    font-size: 0.62rem;
 }
 
 .this-is-you-console.is-mobile .this-is-you-capabilities-row > span {
@@ -111,7 +191,7 @@
 
 .this-is-you-console.is-mobile .this-is-you-state-column-title {
     overflow: hidden;
-    color: #c9a84c;
+    color: var(--state-accent, #c9a84c);
     font-size: 0.56rem;
     font-weight: 700;
     text-overflow: ellipsis;
@@ -144,7 +224,7 @@
 }
 
 .this-is-you-console.is-mobile .this-is-you-inline-slider-codes .is-active {
-    color: #c9a84c;
+    color: var(--state-accent, #c9a84c);
 }
 
 .this-is-you-console.is-mobile .this-is-you-inline-slider-range {
@@ -152,7 +232,7 @@
     height: 100%;
     margin: 0;
     padding: 0;
-    accent-color: #c9a84c;
+    accent-color: var(--state-accent, #c9a84c);
     cursor: pointer;
     writing-mode: vertical-lr;
     direction: rtl;
@@ -175,7 +255,9 @@
 }
 
 .this-is-you-console.is-mobile .this-is-you-inline-slider-options .disposition-option.active {
-    color: #c9a84c;
+    color: var(--state-accent, #c9a84c);
+    background: color-mix(in srgb, var(--state-accent, #c9a84c) 12%, transparent);
+    border-radius: 3px;
     font-weight: 900;
 }
 
@@ -183,6 +265,53 @@
 .this-is-you-console.is-mobile .this-is-you-inline-slider-options .disposition-option:disabled {
     cursor: default;
     opacity: 0.58;
+}
+
+.this-is-you-console.is-mobile:not(.is-minimized) .this-is-you-pills-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.this-is-you-console.is-mobile:not(.is-minimized) .this-is-you-state-column {
+    gap: 8px;
+}
+
+.this-is-you-console.is-mobile:not(.is-minimized) .this-is-you-state-column-title {
+    font-size: 0.72rem;
+}
+
+.this-is-you-console.is-mobile:not(.is-minimized) .this-is-you-inline-slider {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 4px;
+    height: min(24dvh, 190px);
+    min-height: 150px;
+}
+
+.this-is-you-console.is-mobile:not(.is-minimized) .this-is-you-inline-slider-codes {
+    display: none;
+}
+
+.this-is-you-console.is-mobile:not(.is-minimized) .this-is-you-inline-slider-range {
+    width: 40px;
+    min-width: 40px;
+    padding: 4px 8px;
+    touch-action: none;
+}
+
+.this-is-you-console.is-mobile:not(.is-minimized) .this-is-you-inline-slider-range::-webkit-slider-thumb {
+    width: 26px;
+    height: 26px;
+}
+
+.this-is-you-console.is-mobile:not(.is-minimized) .this-is-you-inline-slider-range::-moz-range-thumb {
+    width: 26px;
+    height: 26px;
+}
+
+.this-is-you-console.is-mobile:not(.is-minimized) .this-is-you-inline-slider-options .disposition-option {
+    min-height: 32px;
+    padding: 5px 2px;
+    font-size: 0.66rem;
 }
 
 .this-is-you-console.is-mobile .this-is-you-tier-modes {
@@ -208,6 +337,40 @@
         gap: 4px;
     }
 
+    .this-is-you-console .this-is-you-tier-vitals {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: "vitals" "combat";
+        gap: 4px;
+    }
+
+    .this-is-you-console .this-is-you-vitals-cluster {
+        grid-area: vitals;
+        grid-template-columns: minmax(0, 1fr) 28px;
+        gap: 4px;
+    }
+
+    .this-is-you-console .this-is-you-refresh-button {
+        flex: 0 0 28px;
+        width: 28px;
+        min-height: 28px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+    }
+
+    .this-is-you-console .this-is-you-wimpy-badge {
+        flex: 0 0 auto;
+        width: auto;
+        min-height: 20px;
+        gap: 3px;
+        padding: 1px 4px;
+        white-space: nowrap;
+    }
+
+    .this-is-you-console .this-is-you-vitals-group { grid-area: auto; }
+    .this-is-you-console .this-is-you-combat-slot { grid-area: combat; }
+
     .this-is-you-console .this-is-you-vitals-group::before {
         grid-column: 1 / -1;
     }
@@ -216,22 +379,26 @@
         display: flex;
         min-width: 0;
         min-height: 0;
-        flex-direction: row;
-        align-items: baseline;
+        flex-direction: column;
+        align-items: center;
         justify-content: center;
-        gap: 4px;
+        gap: 1px;
+        padding: 2px 1px;
     }
 
     .this-is-you-console .this-is-you-cell-header {
         display: flex;
-        gap: 3px;
+        justify-content: center;
+        gap: 2px;
         white-space: nowrap;
     }
 
     .this-is-you-console .this-is-you-cell-header .label,
     .this-is-you-console .this-is-you-cell-val {
-        font-size: 0.57rem;
+        font-size: 0.58rem;
     }
+
+    .this-is-you-console .this-is-you-cell-val { font-size: 0.62rem; }
 
     .this-is-you-console .this-is-you-cell-header .regen {
         display: none;
@@ -245,11 +412,11 @@
 
     .this-is-you-console .this-is-you-capabilities-row {
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         grid-template-rows: none;
         grid-auto-flow: row;
         gap: 2px;
-        font-size: 0.54rem;
+        font-size: 0.62rem;
     }
 
     .this-is-you-console .this-is-you-capabilities-row > span {

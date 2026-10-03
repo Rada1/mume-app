@@ -11,47 +11,15 @@ import {
     canCommandAcceptTarget,
     getCommandTargetMenuKind,
     getDefaultCommandTarget,
+    isOffensiveSingleTargetCommand,
     usesChipPriorityOffensiveTarget
 } from '../../../utils/commandTargetUtils';
+import type { UseTacticalTargetingOptions, UseTacticalTargetingReturn } from './tacticalTargetingTypes';
 import {
     getRememberedCommandTarget,
     isCompatibleGlobalTarget,
     rememberCommandTarget,
 } from '../../../utils/commandTargetMemory';
-
-export interface UseTacticalTargetingOptions {
-    activeTarget: string | null;
-    autoTargetForCommand?: (command: string) => string | null;
-    isMobile?: boolean;
-    openOnHoldWithoutTarget?: boolean;
-    setCommandPreview: (cmd: string | null) => void;
-    triggerHaptic?: (ms: number) => void;
-    onTargetMenuOpened?: (command: string) => void;
-}
-
-export interface UseTacticalTargetingReturn {
-    isTargetColumnOpen: boolean;
-    isTargetMenuHeld: boolean;
-    isTargetMenuPending: boolean;
-    fireOnTargetTap: boolean;
-    setFireOnTargetTap: React.Dispatch<React.SetStateAction<boolean>>;
-    pendingTarget: string | null;
-    pendingDirection: string | null;
-    hasSelectedTarget: boolean;
-    hasManuallySelectedTarget: boolean;
-    pendingTargetRef: React.RefObject<string | null>;
-    startHoldTimer: (cmd: string) => void;
-    cancelHoldTimer: () => void;
-    releaseTargetMenu: () => void;
-    openTargetMenu: (command: string) => void;
-    handleSelectTarget: (targetVal: string | null, currentCmd: string, shouldTriggerHaptic?: boolean, isManualSelection?: boolean) => void;
-    handleSelectDirection: (direction: string, currentCmd: string) => void;
-    getEffectiveTarget: (command: string, ignorePendingSelection?: boolean) => string | null;
-    resolveCommandWithTarget: (baseCmd: string) => string;
-    resetTargeting: () => void;
-    clearSelection: () => void;
-    updateCommandPreviewWithTarget: (baseCmd: string) => void;
-}
 
 export const useTacticalTargeting = ({
     activeTarget,
@@ -115,6 +83,8 @@ export const useTacticalTargeting = ({
                 const isForcedDefaultCommand = ['look', 'assist', 'rescue'].includes(commandVerb);
                 const acceptsTarget = canCommandAcceptTarget(activeCmd);
                 const usesChipPriority = usesChipPriorityOffensiveTarget(activeCmd);
+                const automaticTarget = autoTargetForCommand?.(activeCmd);
+                const hasOffensiveAutoTarget = isOffensiveSingleTargetCommand(activeCmd) && Boolean(automaticTarget);
                 const defaultTarget = menuKind === 'social'
                     ? null
                     : isForcedDefaultCommand
@@ -122,9 +92,9 @@ export const useTacticalTargeting = ({
                     : acceptsTarget
                     ? menuKind === 'door-direction'
                     ? 'exit'
-                    : (usesChipPriority ? null : getRememberedCommandTarget(activeCmd))
+                    : (usesChipPriority || hasOffensiveAutoTarget ? null : getRememberedCommandTarget(activeCmd))
                     || (isCompatibleGlobalTarget(activeCmd, activeTarget) ? activeTarget : null)
-                    || autoTargetForCommand?.(activeCmd)
+                    || automaticTarget
                     || getDefaultCommandTarget(activeCmd)
                     : openOnHoldWithoutTarget ? BLANK_TARGET_VALUE : null;
                 setHasSelectedTarget(false);
@@ -215,17 +185,22 @@ export const useTacticalTargeting = ({
         if (commandVerb === 'look') return null;
         if (commandVerb === 'locate') return getDefaultCommandTarget(command);
         if (['assist', 'rescue'].includes(commandVerb)) return getDefaultCommandTarget(command);
+        const automaticTarget = autoTargetForCommand?.(command);
         if (usesChipPriorityOffensiveTarget(command)) {
             return (isCompatibleGlobalTarget(command, activeTarget) ? activeTarget : null)
-                || autoTargetForCommand?.(command)
+                || automaticTarget
                 || null;
+        }
+        if (isOffensiveSingleTargetCommand(command) && automaticTarget) {
+            return (isCompatibleGlobalTarget(command, activeTarget) ? activeTarget : null)
+                || automaticTarget;
         }
         const rememberedTarget = getRememberedCommandTarget(command);
         if (rememberedTarget) return rememberedTarget;
         if (commandVerb === 'weather') return getDefaultCommandTarget(command);
         if (kind === 'gear' || kind === 'inventory-gear' || kind === 'worn-gear' || kind === 'room-corpses' || kind === 'mounts' || kind === 'mage-spells' || kind === 'magic-keys' || kind === 'social' || kind === 'shop') return null;
         if (isCompatibleGlobalTarget(command, activeTarget)) return activeTarget;
-        return autoTargetForCommand?.(command) || null;
+        return automaticTarget || null;
     }, [activeTarget, autoTargetForCommand]);
 
     const updateCommandPreviewWithTarget = useCallback((baseCmd: string) => {

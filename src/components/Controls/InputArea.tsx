@@ -10,6 +10,7 @@ import { audioManager } from '../../services/audio/AudioManager';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { useCommandSuggestions } from '../../hooks/useCommandSuggestions';
+import { CommandArgumentText } from './CommandArgumentText';
 import { useWhoListRefresh } from '../../hooks/useWhoListRefresh';
 import { CommandSuggestionPopup } from './CommandSuggestionPopup';
 import { TargetChipPicker } from '../HUD/TargetChipPicker';
@@ -66,7 +67,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     const { ui, setUI, displayInventoryLines, displayEqLines } = useUI();
     const { viewport } = useBaseGame();
     const { stats } = useVitals();
-    const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode, accountState, env, popoverState, abilities = {}, characterClass = 'none' } = useGame() as any;
+    const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode, accountState, env, popoverState, abilities = {}, characterClass = 'none', characterName, practice } = useGame() as any;
     const isClassicMode = useSettingsStore(s => s.isClassicMode);
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
@@ -378,9 +379,10 @@ const InputArea: React.FC<InputAreaProps> = ({
     }, [setParley]);
 
     const chooseParleyTarget = useCallback((value: string) => {
+        if ((parley.target || '') !== value) triggerHaptic?.(15);
         setParley(current => ({ ...current, target: value || null }));
         setOpenParleyPicker(null);
-    }, [setParley]);
+    }, [parley.target, setParley, triggerHaptic]);
 
     const TARGETLESS_COMMANDS = ['say', 'narrate', 'shout', 'yell', 'sing', 'emote'];
 
@@ -389,6 +391,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         if (isSoundEnabled) playClickSound?.();
         triggerHaptic(20);
         setParley({ ...parley, active: false, mode: 'command' });
+        if (viewport.isMobile) inputRef.current?.blur();
     };
 
     const handleModeMenuToggle = (e: React.MouseEvent) => {
@@ -427,6 +430,8 @@ const InputArea: React.FC<InputAreaProps> = ({
         showSpellPopup,
         visibleCommandSuggestions,
         targetSuggestions,
+        commandArgumentChips,
+        commandArgumentCaretKey,
         selectedTargetSuggestion,
         spellSuggestions,
         popupStyle: commandPopupStyle,
@@ -435,10 +440,13 @@ const InputArea: React.FC<InputAreaProps> = ({
         setIsFocused: setIsCommandInputFocused,
         chooseCommandSuggestion,
         chooseTargetSuggestion,
+        chooseCommandArgumentSuggestion,
         chooseSpellSuggestion,
         toggleMagicKeyFavorite,
         clearMagicKey,
-        handleSuggestionKeyDown
+        handleSuggestionKeyDown,
+        handleCommandArgumentKeyDown,
+        clearCommandArgumentCaret
     } = useCommandSuggestions({
         input,
         setInput,
@@ -453,7 +461,9 @@ const InputArea: React.FC<InputAreaProps> = ({
         isMobile: viewport.isMobile,
         targetPickerRequestId,
         inventoryLines: displayInventoryLines,
-        wornLines: displayEqLines
+        wornLines: displayEqLines,
+        characterName: characterName || '',
+        practiceSkills: practice?.practiceData?.skills || []
     });
 
     // Keep command/login input focused on desktop during login, stage, or state transitions
@@ -718,6 +728,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                                     <button
                                         type="button"
                                         className="parley-clear-btn"
+                                        onMouseDown={e => e.preventDefault()}
                                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleParleyClear(); }}
                                     >
                                         ×
@@ -740,6 +751,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                                     <button
                                         type="button"
                                         className="parley-clear-btn"
+                                        onMouseDown={e => e.preventDefault()}
                                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleParleyClear(); }}
                                     >
                                         ×
@@ -770,7 +782,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                             </div>
                         )}
                         {commandTextParts && (
-                            <div className="command-input-highlight" aria-hidden="true">
+                            <div className="command-input-highlight" aria-hidden={commandArgumentChips.length === 0}>
                                 <span>{commandTextParts.leading}</span>
                                 <span className={commandTextParts.isValid ? 'command-input-token-valid' : 'command-input-token-plain'}>
                                     {commandTextParts.token}
@@ -778,14 +790,20 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 {!commandTextParts.suffix && commandTextParts.autocomplete && (
                                     <span className="command-input-autocomplete">{commandTextParts.autocomplete}</span>
                                 )}
-                                <span>{commandTextParts.suffix}</span>
+                                <CommandArgumentText
+                                    text={commandTextParts.suffix}
+                                    offset={commandTextParts.leading.length + commandTextParts.token.length}
+                                    chips={commandArgumentChips}
+                                    caretKey={commandArgumentCaretKey}
+                                    onChooseChip={chooseCommandArgumentSuggestion}
+                                />
                             </div>
                         )}
                         <textarea
                             ref={inputRef}
                             id="mud-input"
                             name="mud-input"
-                            className={`input-field${commandTextParts ? ' command-highlight-source' : ''}`}
+                            className={`input-field${commandTextParts ? ' command-highlight-source' : ''}${commandArgumentCaretKey ? ' command-argument-caret-hidden' : ''}`}
                             autoComplete="off"
                             autoCapitalize="none"
                             autoCorrect="off"
@@ -801,10 +819,12 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 target.style.height = 'auto';
                                 target.style.height = `${target.scrollHeight}px`;
                             }}
+                            onPointerDown={() => clearCommandArgumentCaret()}
                             onKeyDown={(e) => {
                                 if (handleSuggestionKeyDown(e)) {
                                     return;
                                 }
+                                if (handleCommandArgumentKeyDown(e)) return;
 
                                 const isNumpad = e.location === 3 || e.code.startsWith('Numpad');
 

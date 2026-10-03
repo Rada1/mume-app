@@ -27,7 +27,6 @@ import { useRoomStore } from '../../stores/useRoomStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { decodeCommandEntities } from '../../utils/commandTextUtils';
-import { getInlineGlowColor } from '../../utils/inlineActionModel';
 import { getMumeCommandMatch } from '../../utils/mumeCommandCatalog';
 import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { getRoomTerrainVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
@@ -226,13 +225,13 @@ const MessageItem = React.memo(({
 }) => {
     const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
     const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
+    const isImmersionTextAnimationsEnabled = useSettingsStore(s => s.isImmersionTextAnimationsEnabled);
     const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode || s.isClassicMode);
     const isClassicMode = useSettingsStore(s => s.isClassicMode);
     const theme = useSettingsStore(s => s.theme);
-    const roomColorSetting = useSettingsStore(s => s.roomColor);
     const { gameState, inlineCategories } = useBaseGame();
     const content = msg.html;
-    const accountRippleHtml = isImmersionMode && !isPerformanceMode && gameState === 'account' && (!msg.tokens || msg.tokens.length === 0)
+    const accountRippleHtml = isImmersionMode && isImmersionTextAnimationsEnabled && !isPerformanceMode && gameState === 'account' && (!msg.tokens || msg.tokens.length === 0)
         ? wrapHtmlWordsForRipple(sanitizeMumeHtml(content))
         : sanitizeMumeHtml(content);
     const isLoginNamePrompt = /\bby what name do you wish to be known\?/i.test(msg.textRaw || msg.textOnly || '');
@@ -254,7 +253,7 @@ const MessageItem = React.memo(({
     const entityCountPrompt = msg.type === 'game' ? parseEntityCountPrompt(msg.textOnly || msg.textRaw || '') : null;
     const [isRecent] = React.useState(() => Date.now() - msg.timestamp < 3500);
     const itemActionAnimation = getItemActionAnimation(msg.textOnly || msg.textRaw || '');
-    const isImpactRumble = isImmersionMode && !isPerformanceMode && isRecent && (msg.isHitImpact || msg.isDamageImpact);
+    const isImpactRumble = isImmersionMode && !isPerformanceMode && isRecent && (msg.isHitImpact || msg.isDamageImpact) && isImmersionTextAnimationsEnabled;
     const impactRowRef = React.useRef<HTMLDivElement>(null);
     const messageRootRef = React.useRef<HTMLDivElement>(null);
     // Virtualized rows are reused, so bind the animation to its message ID rather
@@ -268,46 +267,48 @@ const MessageItem = React.memo(({
     const isRedWeatherRippleActive = redWeatherRippleMessageId === msg.id;
     const isItemActionActive = itemActionMessageId === msg.id;
     // local state to handle the cleanup of the hit sheen animation
-    const [sheenActive, setSheenActive] = React.useState(!!(isImmersionMode && !isPerformanceMode && (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage)));
+    const [sheenActive, setSheenActive] = React.useState(!!(isImmersionMode && !isPerformanceMode && (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage) && isImmersionTextAnimationsEnabled));
 
     React.useEffect(() => {
-        if (isImmersionMode && !isPerformanceMode && (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage)) {
+        if (isImmersionMode && !isPerformanceMode && (msg.isHitImpact || msg.isDamageImpact || msg.isRipMessage) && isImmersionTextAnimationsEnabled) {
+            setSheenActive(true);
             const timer = setTimeout(() => {
                 setSheenActive(false);
             }, 2000);
             return () => clearTimeout(timer);
         }
-    }, [isImmersionMode, isPerformanceMode, msg.isHitImpact, msg.isDamageImpact, msg.isRipMessage]);
+        setSheenActive(false);
+    }, [isImmersionMode, isImmersionTextAnimationsEnabled, isPerformanceMode, msg.isHitImpact, msg.isDamageImpact, msg.isRipMessage]);
 
     // The parser tags magic XML lines, spell completions, and action confirmations. These
     // short-lived classes are deliberately keyed by message ID so a virtualized
     // row cannot replay an old effect when it is recycled for another message.
     React.useEffect(() => {
-        if (!isImmersionMode || isPerformanceMode || !msg.isMagicRipple || Date.now() - msg.timestamp > 3500) return;
+        if (!isImmersionMode || !isImmersionTextAnimationsEnabled || isPerformanceMode || !msg.isMagicRipple || Date.now() - msg.timestamp > 3500) return;
         setMagicRippleMessageId(msg.id);
         const timer = window.setTimeout(() => {
             setMagicRippleMessageId(activeId => activeId === msg.id ? null : activeId);
         }, 2000);
         return () => window.clearTimeout(timer);
-    }, [isImmersionMode, isPerformanceMode, msg.id, msg.isMagicRipple, msg.timestamp]);
+    }, [isImmersionMode, isImmersionTextAnimationsEnabled, isPerformanceMode, msg.id, msg.isMagicRipple, msg.timestamp]);
 
     React.useEffect(() => {
-        if (!isImmersionMode || isPerformanceMode || !isDarkWeatherGlow || Date.now() - msg.timestamp > 3500) return;
+        if (!isImmersionMode || !isImmersionTextAnimationsEnabled || isPerformanceMode || !isDarkWeatherGlow || Date.now() - msg.timestamp > 3500) return;
         setRedWeatherRippleMessageId(msg.id);
         const timer = window.setTimeout(() => {
             setRedWeatherRippleMessageId(activeId => activeId === msg.id ? null : activeId);
         }, 2000);
         return () => window.clearTimeout(timer);
-    }, [isImmersionMode, isPerformanceMode, isDarkWeatherGlow, msg.id, msg.timestamp]);
+    }, [isImmersionMode, isImmersionTextAnimationsEnabled, isPerformanceMode, isDarkWeatherGlow, msg.id, msg.timestamp]);
 
     React.useEffect(() => {
-        if (!isImmersionMode || isPerformanceMode || !itemActionAnimation || Date.now() - msg.timestamp > 3500) return;
+        if (!isImmersionMode || !isImmersionTextAnimationsEnabled || isPerformanceMode || !itemActionAnimation || Date.now() - msg.timestamp > 3500) return;
         setItemActionMessageId(msg.id);
         const timer = window.setTimeout(() => {
             setItemActionMessageId(activeId => activeId === msg.id ? null : activeId);
         }, 520);
         return () => window.clearTimeout(timer);
-    }, [isImmersionMode, isPerformanceMode, itemActionAnimation, msg.id, msg.timestamp]);
+    }, [isImmersionMode, isImmersionTextAnimationsEnabled, isPerformanceMode, itemActionAnimation, msg.id, msg.timestamp]);
 
     React.useEffect(() => {
         if (!isImpactRumble || !impactRowRef.current) return;
@@ -323,7 +324,7 @@ const MessageItem = React.memo(({
     }, [isImpactRumble]);
 
     React.useLayoutEffect(() => {
-        if (!isImmersionMode || isPerformanceMode || !msg.audioSheen || Date.now() - msg.timestamp > 1000 || !messageRootRef.current) return;
+        if (!isImmersionMode || !isImmersionTextAnimationsEnabled || isPerformanceMode || !msg.audioSheen || Date.now() - msg.timestamp > 1000 || !messageRootRef.current) return;
 
         // Server messages and visual rows are not always the same thing: a single incoming
         // line can wrap several times. Reset the sheen delay for every rendered row so each
@@ -338,7 +339,7 @@ const MessageItem = React.memo(({
             wordsPerVisualLine.set(visualLine, wordIndex + 1);
             word.style.setProperty('--sheen-word-delay', `${wordIndex * 20}ms`);
         });
-    }, [isImmersionMode, isPerformanceMode, msg.audioSheen, msg.id, msg.timestamp]);
+    }, [isImmersionMode, isImmersionTextAnimationsEnabled, isPerformanceMode, msg.audioSheen, msg.id, msg.timestamp]);
 
     React.useLayoutEffect(() => {
         // Rapid movement can batch several server lines before React paints. Keep
@@ -384,7 +385,7 @@ const MessageItem = React.memo(({
     const [isRoomJiggleActive, setIsRoomJiggleActive] = React.useState(false);
 
     React.useLayoutEffect(() => {
-        if (!isImmersionMode || isPerformanceMode || !msg.isRoomArrival || Date.now() - msg.timestamp > 4000 || playedRoomJiggleIds.has(msg.id)) return;
+        if (!isImmersionMode || !isImmersionTextAnimationsEnabled || isPerformanceMode || !msg.isRoomArrival || Date.now() - msg.timestamp > 4000 || playedRoomJiggleIds.has(msg.id)) return;
 
         if (playedRoomJiggleIds.size > 2000) {
             const iter = playedRoomJiggleIds.values();
@@ -399,7 +400,7 @@ const MessageItem = React.memo(({
             setIsRoomJiggleActive(false);
         }, 1600);
         return () => window.clearTimeout(timer);
-    }, [isImmersionMode, isPerformanceMode, msg.id, msg.isRoomArrival, msg.timestamp]);
+    }, [isImmersionMode, isImmersionTextAnimationsEnabled, isPerformanceMode, msg.id, msg.isRoomArrival, msg.timestamp]);
 
     const showTimestamp = isTimestampEnabled &&
         !msg.isRoomName &&
@@ -497,7 +498,7 @@ const MessageItem = React.memo(({
                 <div className="content-row">
                     <span className="message-content prompt-text">
                         {hasInlinePromptModes(msg.textOnly || msg.textRaw || '')
-                            ? <PromptInlineControls text={msg.textOnly || msg.textRaw || ''} />
+                            ? <PromptInlineControls text={msg.textOnly || msg.textRaw || ''} tokens={msg.tokens} />
                             : <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} highlightPromptVitals />}
                     </span>
                 </div>
@@ -576,27 +577,14 @@ const MessageItem = React.memo(({
                         <>
                             <div className="message-content hit-sheen-container">
                                 {msg.isRoomName ? (() => {
-                                    const rawZone = (msg.roomZone || useRoomStore.getState().roomZone)?.trim();
+                                    const rawZone = msg.isXmlRoomName
+                                        ? (msg.roomZone || useRoomStore.getState().roomZone)?.trim()
+                                        : undefined;
                                     const formatted = rawZone ? (rawZone.startsWith('(') && rawZone.endsWith(')') ? rawZone : `(${rawZone})`) : null;
-                                    const resolvedRoomColor = getInlineGlowColor('cat-room', inlineCategories, {
-                                        room: colors?.roomColor || roomColorSetting || undefined,
-                                    }, theme) || colors?.roomColor || roomColorSetting || '#22c55e';
+                                    const titleHtml = sanitizeMumeHtml(content.split(/<div class="room-desc-line">/i, 1)[0]);
                                     return (
-                                        <span
-                                            className="room-title-badge"
-                                            style={{
-                                                '--glow-color': resolvedRoomColor,
-                                                '--room-color': resolvedRoomColor,
-                                                color: resolvedRoomColor
-                                            } as React.CSSProperties}
-                                        >
-                                            <TokenRenderer
-                                                tokens={msg.tokens}
-                                                fallbackHtml={msg.tokens ? undefined : sanitizeMumeHtml(content)}
-                                                splitFirstWord={false}
-                                                disableRoomInline={true}
-                                                isRoomContentsLine={msg.isRoomContentsLine}
-                                            />
+                                        <span className="room-title-badge">
+                                            <span dangerouslySetInnerHTML={{ __html: titleHtml }} />
                                             {formatted && <span className="room-zone-name">{formatted}</span>}
                                         </span>
                                     );
@@ -755,6 +743,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
                         tokens: data.tokens,
                         timestamp: ts,
                         isRoomName: data.isRoomName,
+                        isXmlRoomName: data.isXmlRoomName,
+                        roomZone: data.roomZone,
                         isCombat: data.isCombat,
                         isComm: data.isComm,
                         isNarrate: data.isNarrate,
@@ -815,12 +805,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 list = base;
             }
         }
-
-        // The raw in-game prompt belongs at the bottom of the log. Retain only
-        // its latest value so historical prompts never accumulate in the scrollback.
-        const latestPrompt = [...list].reverse().find(m => m.type === 'prompt');
-        list = list.filter(m => m.type !== 'prompt');
-        if (latestPrompt) list.push(latestPrompt);
 
         return list.filter(message => !(message.type === 'game' && parseEntityCountPrompt(message.textOnly || message.textRaw || '')));
     }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime, isSpectateMode, activeView, spectateBuffer.isLive, spectateBuffer.displayCutoff, hidePrompt]);
@@ -1158,6 +1142,15 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 className={`message-log${inCombat ? ' combat-mode' : ''}${isSpectateMode ? ' spectate-mode' : ''}`}
                 ref={scrollContainerRef}
                 onScroll={handleScroll}
+                onMouseDownCapture={e => {
+                    const inputEl = document.querySelector('.input-field');
+                    if (viewport.isMobile && inputEl && document.activeElement === inputEl && (e.target as HTMLElement).closest?.('.inline-btn')) {
+                        // Keep the command input focused while tapping a log entity.
+                        // Preventing the compatibility mouse-down default avoids the
+                        // browser dismissing the mobile keyboard before the click.
+                        e.preventDefault();
+                    }
+                }}
                 onPointerDown={handlePointerDownInternal}
                 onPointerUp={handlePointerUpInternal}
                 onPointerCancel={handlePointerUpInternal}

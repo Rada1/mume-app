@@ -34,19 +34,19 @@ describe('Performance Mode door geometry', () => {
     expect(open).toHaveLength(DOOR_VERTEX_COUNT * 7);
     expect(Array.from(open)).not.toEqual(Array.from(closed));
     expect(Array.from(closed.slice(3, 7))).toEqual([0, 0, 0, 1]);
-    expect(closed[17 * 7 + 3]).toBeCloseTo(0xc9 / 255);
-    expect(closed[17 * 7 + 4]).toBeCloseTo(0xa8 / 255);
-    expect(closed[17 * 7 + 5]).toBeCloseTo(0x4c / 255);
+    expect(closed[17 * 7 + 3]).toBe(1);
+    expect(closed[17 * 7 + 4]).toBe(1);
+    expect(closed[17 * 7 + 5]).toBe(1);
     expect(closed[17 * 7 + 6]).toBe(1);
   });
 
-  it('renders doors outside the current room black and leaves current-room doors gold', () => {
+  it('renders doors outside the current room black and current-room doors white', () => {
     const localDoor = buildDoorVertices(0, 0, 0, 0, false);
     const remoteDoor = buildDoorVertices(0, 0, 0, 0, false, 'remote');
 
-    expect(localDoor[17 * 7 + 3]).toBeCloseTo(0xc9 / 255);
-    expect(localDoor[17 * 7 + 4]).toBeCloseTo(0xa8 / 255);
-    expect(localDoor[17 * 7 + 5]).toBeCloseTo(0x4c / 255);
+    expect(localDoor[17 * 7 + 3]).toBe(1);
+    expect(localDoor[17 * 7 + 4]).toBe(1);
+    expect(localDoor[17 * 7 + 5]).toBe(1);
     expect(localDoor[17 * 7 + 6]).toBe(1);
     expect(Array.from(remoteDoor.slice(17 * 7 + 3, 17 * 7 + 7))).toEqual([0, 0, 0, 1]);
   });

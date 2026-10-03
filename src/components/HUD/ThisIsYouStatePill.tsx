@@ -23,6 +23,8 @@ export interface ThisIsYouStatePillProps {
     inlineOptions?: boolean;
     disabled?: boolean;
     accentColor?: 'gold' | 'blue' | 'red' | 'purple';
+    confirmOptionValue?: string;
+    confirmMessage?: string;
 }
 
 export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
@@ -33,9 +35,12 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
     onInteract,
     inlineOptions = false,
     disabled = false,
-    accentColor = 'gold'
+    accentColor = 'gold',
+    confirmOptionValue,
+    confirmMessage
 }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [pendingConfirmationValue, setPendingConfirmationValue] = useState<string | null>(null);
     const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const popoverRef = useRef<HTMLDivElement>(null);
@@ -46,9 +51,28 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
     const selectInlineOption = (index: number) => {
         const option = inlineSliderOptions[index];
         if (!option || disabled) return;
-        onInteract?.();
-        onSelect(option);
+        selectOption(option);
     };
+    const selectOption = (option: StateOption) => {
+        if (disabled) return;
+        const requiresConfirmation = confirmOptionValue
+            && option.value.toLowerCase() === confirmOptionValue.toLowerCase()
+            && option.value.toLowerCase() !== value.toLowerCase();
+        onInteract?.();
+        if (requiresConfirmation && pendingConfirmationValue !== option.value) {
+            setPendingConfirmationValue(option.value);
+            return;
+        }
+        setPendingConfirmationValue(null);
+        onSelect(option);
+        if (!inlineOptions) setIsOpen(false);
+    };
+
+    useEffect(() => {
+        if (!pendingConfirmationValue) return;
+        const timeout = window.setTimeout(() => setPendingConfirmationValue(null), 4000);
+        return () => window.clearTimeout(timeout);
+    }, [pendingConfirmationValue]);
 
     useLayoutEffect(() => {
         if (!isOpen) return;
@@ -79,12 +103,14 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
             if (containerRef.current && !containerRef.current.contains(event.target as Node)
                 && !popoverRef.current?.contains(event.target as Node)) {
                 setIsOpen(false);
+                setPendingConfirmationValue(null);
             }
         };
 
         const handleEscape = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
                 setIsOpen(false);
+                setPendingConfirmationValue(null);
             }
         };
 
@@ -98,9 +124,9 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
 
     // --- Render Section ---
     return (
-        <div className="this-is-you-pill-wrapper" ref={containerRef}>
+        <div className={`this-is-you-pill-wrapper accent-${accentColor}`} ref={containerRef}>
             {inlineOptions ? (
-                <div className="this-is-you-state-column" role="group" aria-label={category}>
+                <div className={`this-is-you-state-column accent-${accentColor}`} role="group" aria-label={category}>
                     <div className="this-is-you-state-column-title">{category}</div>
                     <div className="this-is-you-inline-slider">
                         <div className="this-is-you-inline-slider-codes" aria-hidden="true">
@@ -124,14 +150,17 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
                             {[...inlineSliderOptions.keys()].reverse().map(index => {
                                 const option = inlineSliderOptions[index];
                                 const isActive = index === inlineCurrentIndex;
-                                return <button
-                                    key={option.value}
-                                    type="button"
-                                    className={`disposition-option${isActive ? ' active' : ''}`}
-                                    aria-pressed={isActive}
-                                    disabled={disabled}
-                                    onClick={() => selectInlineOption(index)}
-                                >{option.label.toUpperCase()}</button>;
+                                const isPending = pendingConfirmationValue === option.value;
+                                return <div className="this-is-you-option-anchor" key={option.value}>
+                                    <button
+                                        type="button"
+                                        className={`disposition-option${isActive ? ' active' : ''}${isPending ? ' is-confirmation-pending' : ''}`}
+                                        aria-pressed={isActive}
+                                        disabled={disabled}
+                                        onClick={() => selectOption(option)}
+                                    >{option.label.toUpperCase()}</button>
+                                    {isPending && confirmMessage && <div className="this-is-you-confirmation-note" role="alert">{confirmMessage}</div>}
+                                </div>;
                             })}
                         </div>
                     </div>
@@ -154,27 +183,26 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
             </button>
 
             {isOpen && createPortal(
-                <div ref={popoverRef} className="this-is-you-popover" role="listbox" aria-label={`Select ${category}`}
+                <div ref={popoverRef} className={`this-is-you-popover accent-${accentColor}`} role="listbox" aria-label={`Select ${category}`}
                     style={menuPosition ? { top: menuPosition.top, left: menuPosition.left } : { visibility: 'hidden' }}>
                     <div className="this-is-you-popover-header">{category}</div>
                     {options.map(option => {
                         const isSelected = option.label.toLowerCase() === value.toLowerCase();
+                        const isPending = pendingConfirmationValue === option.value;
                         return (
+                            <div className="this-is-you-option-anchor" key={option.value}>
                             <button
-                                key={option.value}
                                 type="button"
                                 role="option"
                                 aria-selected={isSelected}
-                                className={`this-is-you-popover-item${isSelected ? ' is-selected' : ''}`}
-                                onClick={() => {
-                                    onInteract?.();
-                                    onSelect(option);
-                                    setIsOpen(false);
-                                }}
+                                className={`this-is-you-popover-item${isSelected ? ' is-selected' : ''}${isPending ? ' is-confirmation-pending' : ''}`}
+                                onClick={() => selectOption(option)}
                             >
                                 <span>{option.label}</span>
                                 {isSelected && <span className="this-is-you-check" aria-hidden="true">✓</span>}
                             </button>
+                            {isPending && confirmMessage && <div className="this-is-you-confirmation-note" role="alert">{confirmMessage}</div>}
+                            </div>
                         );
                     })}
                 </div>, document.body

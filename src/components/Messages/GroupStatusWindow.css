@@ -1,0 +1,150 @@
+/**
+ * @file GroupStatusWindow.css
+ * @description Terminal styling for the docked group status panel.
+ */
+
+/* --- Layout Section --- */
+.group-status-panel {
+    width: var(--desktop-group-width, 30vw);
+    min-width: 320px;
+    max-width: 65vw;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 0;
+    border-left: 1px solid rgba(201, 168, 76, 0.28);
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--text-primary);
+    font-family: var(--font-mono, monospace);
+}
+
+.docked-panel.group-status-panel--map-overlay {
+    position: absolute;
+    inset: auto 0 34px;
+    z-index: 20 !important;
+    width: auto;
+    height: auto;
+    max-height: min(45%, 320px);
+    min-height: 0;
+    min-width: 0;
+    max-width: none;
+    border: 0;
+    border-top: 1px solid rgba(201, 168, 76, 0.4);
+    background: rgba(12, 15, 22, 0.9);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.docked-panel.group-status-panel--map-overlay .group-status-header {
+    padding: 5px 10px 3px;
+    font-size: 11px;
+}
+
+.app-container .docked-panel.group-status-panel.group-status-panel--map-overlay {
+    background: rgba(7, 11, 13, 0.72) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+}
+
+.app-container .docked-panel.group-status-panel.group-status-panel--map-overlay,
+.app-container .docked-panel.group-status-panel.group-status-panel--map-overlay * {
+    font-weight: 400 !important;
+}
+
+@media (max-width: 1024px) {
+    .app-container .docked-panel.group-status-panel--mobile-inline {
+        position: relative !important;
+        inset: auto !important;
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        max-width: none !important;
+        max-height: min(24dvh, 190px) !important;
+        flex: 0 1 auto;
+        margin: 0;
+        border: 0;
+        border-bottom: 1px solid rgba(201, 168, 76, 0.3);
+        border-radius: 0;
+        box-shadow: none;
+        background: rgba(12, 15, 22, 0.9) !important;
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+        pointer-events: auto;
+    }
+
+    .group-status-panel--mobile-inline .group-status-header {
+        padding: 4px 12px;
+    }
+
+    .group-status-panel--mobile-inline > div:last-child {
+        flex: 1 1 auto !important;
+        min-height: 0;
+        max-height: calc(min(24dvh, 190px) - 28px);
+    }
+}
+
+@media (min-width: 1025px) {
+    .app-container .docked-panel.group-status-panel--map-overlay {
+        position: absolute !important;
+        top: auto !important;
+        right: 0 !important;
+        bottom: 33px !important;
+        left: 0 !important;
+        width: auto !important;
+        height: auto !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        max-width: none !important;
+        max-height: min(45%, 320px) !important;
+    }
+}
+
+.group-status-header {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 14px 12px 10px;
+    color: var(--accent);
+    font-size: 13px;
+}
+
+.group-status-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dim);
+    font-size: 11px;
+}
+
+.group-status-header-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    color: var(--text-dim);
+    padding: 3px;
+    cursor: pointer;
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    .group-status-panel {
+        top: auto;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        width: auto;
+        height: min(42%, 260px);
+        min-width: 0;
+        max-width: none;
+    }
+}

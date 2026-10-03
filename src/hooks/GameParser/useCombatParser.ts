@@ -20,6 +20,7 @@ import { triggerKillPrompt } from '../../stores/useKillPromptStore';
 import { gmcpBus } from '../../events/gmcpBus';
 import { getNearbyCombatImpact } from './nearbyCombatAudio';
 import { useXpTickerParser } from './useXpTickerParser';
+import { stripAnsiControlSequences } from '../../utils/ansi';
 
 export interface CombatParserDeps {
     inCombatRef: React.RefObject<boolean>;
@@ -54,7 +55,8 @@ export interface CombatParserDeps {
 
 const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'recovered', 'shoot', 'shoots', 'blast', 'shatters', 'joins?', 'assists?', 'dodge', 'dodges', 'parry', 'parries', 'deflect', 'deflects', 'evade', 'evades', 'blocks?', 'avoids?', 'fails?', 'failed'].join('|');
 const COMBAT_REGEX = new RegExp(`\\b(${COMBAT_VERBS_STR})(?:es|s)?\\b`, 'i');
-const COMBAT_DAMAGE_SOUND_BY_VERB: Record<string, string> = { hit: 'hit2', stab: 'stab', backstab: 'stab', slash: 'slash', crush: 'crushpound', pound: 'crushpound', bash: 'bash', cleave: 'cleave', pierce: 'pierce', smite: 'smite', shoot: 'arrowhit', shoots: 'arrowhit' };
+const BACKSTAB_MESSAGE_REGEX = /\bmakes a strange sound,\s*as you place\b/i;
+const COMBAT_DAMAGE_SOUND_BY_VERB: Record<string, string> = { hit: 'hit2', stab: 'stab', backstab: 'backstab', slash: 'slash', crush: 'crushpound', pound: 'crushpound', bash: 'bash', cleave: 'cleave', pierce: 'pierce', smite: 'smite', shoot: 'arrowhit', shoots: 'arrowhit' };
 
 export function useCombatParser(deps: CombatParserDeps) {
     const {
@@ -70,6 +72,7 @@ export function useCombatParser(deps: CombatParserDeps) {
 
         // Strip leading spaces and asterisks (damage indicators in MUME)
         const cleanLower = lower.replace(/^[\s\*]+/, '').trim();
+        const isBackstabMessage = BACKSTAB_MESSAGE_REGEX.test(cleanLower);
         if (
             /\b(?:looms?\s+(?:overhead|above)|ready\s+to\s+\w+|\b(?:is|are)\s+(?:here|(?:standing|sitting|resting|sleeping|fighting|lying|hovering|floating|perched|waiting|lurking)\s+here))\b/i.test(cleanLower) ||
             /\b(?:practice sessions left|skill\s*\/\s*spell|difficulty\s+class)\b/i.test(cleanLower) ||
@@ -84,8 +87,8 @@ export function useCombatParser(deps: CombatParserDeps) {
         const hasXmlTag = !!cleanLine && /<[a-zA-Z_]+[ >]/i.test(cleanLine);
         const nearbyCombat = !hasCombatTag ? getNearbyCombatImpact(cleanLower, [characterName, spectateCharacterName]) : undefined;
         const nearbyCombatVerb = nearbyCombat?.verb;
-        if (hasXmlTag && !hasCombatTag && !isSpecificChargeOrShoot && !nearbyCombat) return { isMatch: false };
-        const isMatch = hasCombatTag || isSpecificChargeOrShoot || isPlayerAttemptAvoidedLine(cleanLower) || isPlayerFailedAttackLine(cleanLower) || isOpponentFailedAttackLine(cleanLower) || (!nearbyCombat && !/\bhit points?\b/i.test(cleanLower) && inCombatRef.current && (COMBAT_REGEX.test(cleanLower) || cleanLower.includes('dodge') || cleanLower.includes('parry') || cleanLower.includes('flee') || cleanLower.includes('fail')));
+        if (hasXmlTag && !hasCombatTag && !isSpecificChargeOrShoot && !isBackstabMessage && !nearbyCombat) return { isMatch: false };
+        const isMatch = isBackstabMessage || hasCombatTag || isSpecificChargeOrShoot || isPlayerAttemptAvoidedLine(cleanLower) || isPlayerFailedAttackLine(cleanLower) || isOpponentFailedAttackLine(cleanLower) || (!nearbyCombat && !/\bhit points?\b/i.test(cleanLower) && inCombatRef.current && (COMBAT_REGEX.test(cleanLower) || cleanLower.includes('dodge') || cleanLower.includes('parry') || cleanLower.includes('flee') || cleanLower.includes('fail')));
         
         if (!isMatch) return { isMatch: false, isNearbyCombatImpact: !!nearbyCombat, isDirectCombatImpact: !!nearbyCombat?.isDirect, verb: nearbyCombatVerb };
 
@@ -94,7 +97,7 @@ export function useCombatParser(deps: CombatParserDeps) {
         // Use regex with word boundaries for more robust matching regardless of punctuation
         const impactRegex = new RegExp(`\\b(${impactVerbs.join('|')})(?:es|s)?\\b`, 'i');
         // A combat line is an impact only if it matches an impact verb AND doesn't mention avoidance
-        const isImpact = impactRegex.test(cleanLower) && !/\b(miss|dodge|parry|evade|avoid|blocks?)\b/i.test(cleanLower);
+        const isImpact = (isBackstabMessage || impactRegex.test(cleanLower)) && !/\b(miss|dodge|parry|evade|avoid|blocks?)\b/i.test(cleanLower);
 
         // Determine side and target
         let side: 'player' | 'opponent' | 'groupmate' | undefined = undefined;
@@ -138,7 +141,7 @@ export function useCombatParser(deps: CombatParserDeps) {
         const modifier = modifiers.find(m => cleanLower.includes(m));
         
         const verbMatch = cleanLower.match(impactRegex);
-        const verb = verbMatch ? verbMatch[1].toLowerCase() : undefined;
+        const verb = isBackstabMessage ? 'backstab' : verbMatch ? verbMatch[1].toLowerCase() : undefined;
 
         const isMainActor = (side === 'player') || (side === 'groupmate' && !!spectateCharacterName && groupNameMatch.toLowerCase() === spectateCharacterName.toLowerCase());
 
@@ -147,7 +150,8 @@ export function useCombatParser(deps: CombatParserDeps) {
 
     // --- Logic Section: Combat Exit and Death ---
     const handleCombatExit = useCallback((lower: string, isSnoop: boolean = false, originalText?: string) => {
-        if (!isSnoop && /you are dead/i.test(lower)) {
+        const isDeathMessage = /^you are dead!$/i.test(lower.trim());
+        if (!isSnoop && isDeathMessage) {
             playEffect?.('death'); gmcpBus.emit('Game.PlayerDeath', undefined);
         }
 
@@ -160,8 +164,7 @@ export function useCombatParser(deps: CombatParserDeps) {
             if (deadName) triggerKillPrompt(deadName);
         }
 
-        const normalizedLower = lower
-            .replace(/\x1b\[[0-9;]*m/g, '')
+        const normalizedLower = stripAnsiControlSequences(lower)
             .replace(/^[\s>*]+/, '')
             .trim();
         const isFlee = /^you flee\b/i.test(normalizedLower);
@@ -174,7 +177,7 @@ export function useCombatParser(deps: CombatParserDeps) {
         const isDeath = /you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) || /\bis dead!\s*r\.?i\.?p/i.test(lower);
         const isCombatEnd = isDeath || isFlee || /\bflees\s/i.test(lower) || /you stop fighting/i.test(lower);
 
-        if (/you are dead/i.test(lower) && setDeathRoomId && mapperRef?.current) {
+        if (isDeathMessage && setDeathRoomId && mapperRef?.current) {
             const currentRoom = mapperRef.current.getCurrentRoom?.();
             if (currentRoom?.id) setDeathRoomId(currentRoom.id.toString());
         }
@@ -222,6 +225,7 @@ export function useCombatParser(deps: CombatParserDeps) {
             const hasDamageTag = cleanLine.includes('<damage>');
             const hasAvoidDamageTag = /<avoid_damage\b/i.test(cleanLine);
             const hasMissTag = /<miss\b/i.test(cleanLine);
+            const isBackstabMessage = BACKSTAB_MESSAGE_REGEX.test(lower.trim());
             const isPlayerAvoidedAttempt = isPlayerAttemptAvoidedLine(lower);
             const isPlayerFailedAttack = isPlayerFailedAttackLine(lower);
             const isOpponentFailedAttack = isOpponentFailedAttackLine(lower);
@@ -242,7 +246,7 @@ export function useCombatParser(deps: CombatParserDeps) {
                 else deps.playEffect?.('arrowhit');
             };
 
-            if (combatDamageSound && (hasHitTag || hasDamageTag) && !isPlayerShootHit) {
+            if (combatDamageSound && (hasHitTag || hasDamageTag || isBackstabMessage) && !isPlayerShootHit) {
                 if (isSnoop) {
                     deps.playSpectateNearbyCombatSound?.(combatDamageSound, spectateImpactOptions);
                 } else {

@@ -51,7 +51,11 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
             onRequestWhois();
         } else if (button.label === 'Look In') {
             const target = sanitizeGameTarget(popoverState.context || '');
-            executeCommand(`look in ${target}`, false, false);
+            const inputEl = document.querySelector('.input-field');
+            executeCommand(`look in ${target}`, false, false, false, false, {
+                shouldFocus: !!inputEl && document.activeElement === inputEl,
+                fromUi: true
+            });
             setPopoverState(null);
         } else if (button.label === 'Browse Shop...') {
             setPopoverState({ ...popoverState, type: 'shop-search' });
@@ -80,6 +84,10 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
                 data-menu-item="true"
                 data-is-menu={isMenuAction ? "true" : "false"}
                 onPointerDown={(e) => { e.stopPropagation(); }}
+                onMouseDown={e => {
+                    const inputEl = document.querySelector('.input-field');
+                    if (inputEl && document.activeElement === inputEl) e.preventDefault();
+                }}
                 onClick={handleClick}
                 style={{
                     display: 'inline-flex',
@@ -122,6 +130,10 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
             data-menu-item="true"
             data-is-menu={isMenuAction ? "true" : "false"}
             onPointerDown={(e) => { e.stopPropagation(); }}
+            onMouseDown={e => {
+                const inputEl = document.querySelector('.input-field');
+                if (inputEl && document.activeElement === inputEl) e.preventDefault();
+            }}
             onClick={handleClick}
             style={{
                 display: 'flex',

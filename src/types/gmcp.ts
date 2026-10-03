@@ -141,6 +141,8 @@ export interface GmcpOccupant {
     // Used to evict stale occupants on room change without wiping every entry,
     // which would race with Room.Chars.Add for followers entering the new room.
     _roomNum?: number | string | null;
+    /** Client-side order from the latest authoritative Room.Chars roster. */
+    _roomOrder?: number;
 }
 
 export interface GmcpRoomPlayers extends Array<string | GmcpOccupant> {}

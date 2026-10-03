@@ -14,6 +14,7 @@ import { getArchiveListExpectedCount, mergeArchiveEntries, parseArchiveList, par
 import { useShaperEntityStore } from '../../shaper/model/useShaperEntityStore';
 import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
 import { useUIStore } from '../../stores/useUIStore';
+import { useCorpseContentsStore } from '../../stores/useCorpseContentsStore';
 import { reconcileSelfEffectTimers } from '../../services/timers/reconcileEffectTimers';
 import { reconcileObjectSnapshot } from '../../objects/objectTargetModel';
 
@@ -84,6 +85,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         else if (/\d+\/\d+ hits, \d+\/\d+ mana, and \d+\/\d+ moves/i.test(lower)) type = 'score';
         else if (clean.match(/^.{0,5}Score for /)) type = 'score';
         else if (lower.startsWith('when you look inside') || lower.startsWith('when you look in ')) type = 'container';
+        else if (lower.startsWith('in the corpse of ')) type = 'examine';
         else if (/^message\s+\d+\s+on\s+((?!mailbox|mail).)+:?$/i.test(clean)) type = 'board_read';
         else if (/^bulletin board for .+:$/i.test(clean)) type = 'board_list';
         else if (/^bulletin board:$/i.test(clean)) type = 'board_list';
@@ -219,7 +221,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             lower.includes('players online') || lower.includes('players in the world') ||
             lower.includes('player distance') || lower.startsWith('players') ||
             lower.includes('visible players in your area') || lower.startsWith('distance') ||
-            lower.startsWith('when you look inside') || lower.includes('it is empty.') ||
+            lower.startsWith('when you look inside') || lower.startsWith('in the corpse of ') || lower.includes('it is empty.') ||
             lower.startsWith('in your') || cleanLine.toLowerCase().includes('<header>') ||
             lower.includes('matching mobiles') || lower.includes('matching objects') ||
             lower.includes('mobiles matching') || lower.includes('objects matching')) {
@@ -277,7 +279,9 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             prefix,
             tokens: finalTokens,
             isHeader,
-            isItem: !isHeader && (session.type === 'inventory' || session.type === 'equipment' || session.type === 'container'),
+            isItem: !isHeader &&
+                (session.type === 'inventory' || session.type === 'equipment' || session.type === 'container' ||
+                    (session.type === 'examine' && !/^nothing\.?$/i.test(text.trim()))),
         };
 
         // Synchronous update of the ref so it's available for the next line
@@ -343,6 +347,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     setAchievementLines(lines);
                     break;
                 case 'examine': {
+                    useCorpseContentsStore.getState().captureContents(session.metadata?.command || '', lines);
                     const store = useUIStore.getState();
                     const currentPopover = store.popoverState;
                     if (currentPopover?.isCapturingExamine) {

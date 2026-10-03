@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Direction, ExecuteCommand } from '../types';
+import { dispatchMapSwipeEdgeFeedback } from '../utils/mapSwipeFeedback';
 
 
 export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits: string[] = [], playClickSound?: () => void, target?: string) => {
@@ -62,6 +63,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             if (executeCommandRef.current && currentLockedDir) {
                 const cmd = dirMap[currentLockedDir] || currentLockedDir;
                 executeCommandRef.current(cmd);
+                dispatchMapSwipeEdgeFeedback(currentLockedDir);
                 lastSentDirRef.current = currentLockedDir;
                 setIsJoystickConsumed(true);
                 triggerHaptic(10);

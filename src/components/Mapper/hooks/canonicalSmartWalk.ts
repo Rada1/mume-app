@@ -7,10 +7,12 @@
 import type { MapperRoom } from '../mapperTypes';
 import { normalizeTerrain } from '../../../utils/terrainUtils';
 import { DIR_COUNT, EXIT_FLAG, TERRAIN, type MapData } from '../performance/webcockpit/model';
+import { isNoRideRoom } from './smartWalkRideRules';
 
 export interface CanonicalWalkOptions {
   revealAll?: boolean;
   exploredVnums?: Set<string>;
+  riding?: boolean;
 }
 
 interface CanonicalWalkIndex {
@@ -104,6 +106,19 @@ function traversable(
   const serverId = index.map.serverId[room]!;
   return options.exploredVnums.has(id) || (!!serverId && options.exploredVnums.has(String(serverId))) ||
     !!liveRoomFor(index, rooms, room);
+}
+
+function rideAllowed(
+  index: CanonicalWalkIndex,
+  rooms: Record<string, MapperRoom>,
+  room: number,
+  options: CanonicalWalkOptions
+): boolean {
+  if (!options.riding) return true;
+  const liveRoom = liveRoomFor(index, rooms, room);
+  const terrain = liveRoom?.terrain || TERRAIN[index.map.terrain[room]!];
+  const ridable = liveRoom?.ridable ?? index.map.ridable[room];
+  return !isNoRideRoom(terrain, liveRoom?.loadFlags, ridable);
 }
 
 function heuristic(index: CanonicalWalkIndex, room: number, end: number): number {
@@ -248,7 +263,7 @@ export function findCanonicalSmartWalkPath(
     const liveExits = liveExitsByDirection(index, rooms, current.room);
     for (let direction = 0; direction < DIR_COUNT; direction++) {
       for (const target of targetsForDirection(index, current.room, direction, liveExits)) {
-        if (closed[target] || !traversable(index, rooms, target, options)) continue;
+        if (closed[target] || !rideAllowed(index, rooms, target, options) || !traversable(index, rooms, target, options)) continue;
         const nextCost = current.cost + terrainCost(index, rooms, target);
         if (nextCost >= bestCost[target]!) continue;
         bestCost[target] = nextCost;

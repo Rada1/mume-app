@@ -5,7 +5,7 @@ import { useGearPanelStore } from '../stores/useGearPanelStore';
 import { useHelpStore } from '../stores/useHelpStore';
 import { useSettingsStore } from '../stores/useSettingsStore';
 
-type HeaderTab = 'commands' | 'gear' | 'chat' | 'help' | 'menu';
+type HeaderTab = 'commands' | 'gear' | 'chat' | 'group' | 'help' | 'menu';
 
 // --- Logic Section ---
 export function useMobileHeaderTabs(isMobile: boolean, menuOpen: boolean, setMenuOpen: (open: boolean) => void) {
@@ -17,6 +17,8 @@ export function useMobileHeaderTabs(isMobile: boolean, menuOpen: boolean, setMen
     const setIsGearPanelOpen = useGearPanelStore(state => state.setIsOpen);
     const showChatWindow = useSettingsStore(state => state.showChatWindow);
     const setShowChatWindow = useSettingsStore(state => state.setShowChatWindow);
+    const showGroupPanel = useSettingsStore(state => state.showGroupPanel);
+    const setShowGroupPanel = useSettingsStore(state => state.setShowGroupPanel);
     const isHelpOpen = useHelpStore(state => state.isOpen);
     const setIsHelpOpen = useHelpStore(state => state.setIsOpen);
     const helpData = useHelpStore(state => state.helpData);
@@ -25,6 +27,7 @@ export function useMobileHeaderTabs(isMobile: boolean, menuOpen: boolean, setMen
         const current = {
             commands: isCommandPanelOpen, gear: isGearPanelOpen,
             chat: showChatWindow,
+            group: showGroupPanel,
             help: isHelpOpen, menu: menuOpen,
         };
         const opening = !current[tab];
@@ -32,18 +35,20 @@ export function useMobileHeaderTabs(isMobile: boolean, menuOpen: boolean, setMen
             setIsMobileCommandPanelOpen(false);
             setIsGearPanelOpen(false);
             setShowChatWindow(false);
+            setShowGroupPanel(false);
             setIsHelpOpen(false);
             setMenuOpen(false);
         }
         const setters = {
             commands: setCommandPanelOpen, gear: setIsGearPanelOpen,
             chat: setShowChatWindow,
+            group: setShowGroupPanel,
             help: setIsHelpOpen, menu: setMenuOpen,
         };
         setters[tab](opening);
         return opening;
     };
 
-    return { isCommandPanelOpen, isGearPanelOpen, showChatWindow,
+    return { isCommandPanelOpen, isGearPanelOpen, showChatWindow, showGroupPanel,
         isHelpOpen, helpData, toggleHeaderTab };
 }

@@ -77,7 +77,10 @@ const tokenExecutesEntry = (token: string, entry: MumeCommandEntry): boolean => 
     return token.length >= entry.minimum.length && entry.full.startsWith(token);
 };
 
-export const getMumeCommandMatch = (input: string, limit = 8): MumeCommandMatch => {
+export const getMumeCommandMatch = (
+    input: string,
+    limit = 8
+): MumeCommandMatch => {
     const leadingTrimmed = input.trimStart();
     const tokenMatch = /^(\S+)([\s\S]*)$/.exec(leadingTrimmed);
     const token = tokenMatch?.[1].toLowerCase() ?? '';

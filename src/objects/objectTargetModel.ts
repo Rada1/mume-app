@@ -56,11 +56,36 @@ export const getObjectTraits = (source: string | DrawerLine | GmcpOccupant): str
 export const hasObjectTrait = (source: string | DrawerLine | GmcpOccupant, traitId: string): boolean =>
     getObjectTraits(source).includes(traitId);
 
-export const getDrawerObjectKeyword = (line: DrawerLine): string =>
-    (line.context || extractMumeKeyword(line.text)).toLowerCase().trim();
+export const getCorpseCommandKeyword = (label: string): string => {
+    const clean = label.replace(/\x1b\[[0-9;]*m/g, '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (/^(?:\d+\.)?[\w'-]+-corpse$/i.test(clean)) return clean.toLowerCase();
 
-export const getRoomObjectKeyword = (source: GmcpOccupant, fallbackLabel = ''): string =>
-    getOccupantCommandKeyword(source, fallbackLabel).toLowerCase().trim();
+    const bodyName = clean
+        .replace(/^(?:(?:the|a|an)\s+)?corpse(?:\s+of)?\s+/i, '')
+        .replace(/\s+corpse$/i, '')
+        .replace(/^(?:a|an|the)\s+/i, '')
+        .trim();
+    const bodyKeyword = extractMumeKeyword(bodyName).replace(/\s+/g, '-').toLowerCase();
+    return bodyKeyword && bodyKeyword !== 'corpse' ? `${bodyKeyword}-corpse` : 'corpse';
+};
+
+export const getDrawerObjectKeyword = (line: DrawerLine): string => {
+    const label = line.context || line.text;
+    return hasObjectTrait(line, 'trait-corpse')
+        ? getCorpseCommandKeyword(label)
+        : (line.context || extractMumeKeyword(line.text)).toLowerCase().trim();
+};
+
+export const getRoomObjectKeyword = (source: GmcpOccupant, fallbackLabel = ''): string => {
+    const label = source.short || source.shortdesc || source.name || source.keyword || fallbackLabel;
+    const explicitCorpseKeyword = source.keyword?.trim() || '';
+    if (hasObjectTrait(source, 'trait-corpse') && /^(?:\d+\.)?[\w'-]+-corpse$/i.test(explicitCorpseKeyword)) {
+        return explicitCorpseKeyword.toLowerCase();
+    }
+    return hasObjectTrait(source, 'trait-corpse')
+        ? getCorpseCommandKeyword(label)
+        : getOccupantCommandKeyword(source, fallbackLabel).toLowerCase().trim();
+};
 
 // --- Shared Target Projection ---
 

@@ -7,6 +7,7 @@ import React from 'react';
 import { ConnectionDetails } from './ConnectionDetails';
 import { AppearanceSettings } from './AppearanceSettings';
 import { ExperimentalSettings } from './ExperimentalSettings';
+import { LootSettings } from './LootSettings';
 
 interface GeneralSettingsProps {
     connectionUrl: string;
@@ -63,6 +64,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = (props) => {
                 isPerformanceMode={props.isPerformanceMode}
                 setIsPerformanceMode={props.setIsPerformanceMode}
             />
+
+            <LootSettings />
 
             <ExperimentalSettings
                 autoSaveSessions={props.autoSaveSessions}

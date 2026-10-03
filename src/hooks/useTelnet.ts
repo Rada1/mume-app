@@ -57,7 +57,7 @@ export function useTelnet(config: TelnetConfig) {
     const configRef = React.useRef(config);
     const bufferRef = React.useRef("");
     const lastProcessedPromptRef = React.useRef("");
-    const pendingTextLines = React.useRef<(string | { line: string, isPrompt: boolean })[]>([]);
+    const pendingTextLines = React.useRef<(string | { line: string, isPrompt: boolean; isRedrawPrompt?: boolean })[]>([]);
     const processingTimeout = React.useRef<any>(null);
     const tokenizationChainRef = React.useRef<Promise<void>>(Promise.resolve());
 
@@ -113,11 +113,12 @@ export function useTelnet(config: TelnetConfig) {
         bufferRef.current += text;
         
         const currentBuffer = bufferRef.current;
-        const normalized = currentBuffer.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        const redrawMarker = '\u0000';
+        const normalized = currentBuffer.replace(/\r\n/g, '\n').replace(/\r/g, `\n${redrawMarker}`);
         const rawLines = normalized.split('\n');
         let lastLine = rawLines.pop() || '';
 
-        const processedLines: (string | { line: string, isPrompt: boolean })[] = [];
+        const processedLines: (string | { line: string, isPrompt: boolean; isRedrawPrompt?: boolean })[] = [];
 
         const isPrompt = (line: string) => {
             const noAnsi = line.replace(/\x1b\[[0-9;]*m/g, '');
@@ -160,7 +161,7 @@ export function useTelnet(config: TelnetConfig) {
             .replace(/&amp;/gi, '&')
             .trim();
 
-        const handlePromptDetected = (line: string) => {
+        const handlePromptDetected = (line: string, isRedrawPrompt = false) => {
             let displayPrompt = line;
             if (line.includes('<')) {
                 // Strip XML tags and decode entities for the UI display/log prompt.
@@ -187,7 +188,7 @@ export function useTelnet(config: TelnetConfig) {
 
             // Every prompt is a meaningful output boundary. Even identical prompts
             // can represent a later command response during fast input bursts.
-            processedLines.push({ line: displayPrompt, isPrompt: true });
+            processedLines.push({ line: displayPrompt, isPrompt: true, isRedrawPrompt });
         };
 
         // Splits a physical line that contains an XML <prompt>...</prompt> tag
@@ -258,7 +259,9 @@ export function useTelnet(config: TelnetConfig) {
         };
 
         for (const rawLine of rawLines) {
-            const lineSegments = splitSnoopXmlBlocks(rawLine);
+            const isRedrawPrompt = rawLine.startsWith(redrawMarker);
+            const lineWithoutMarker = isRedrawPrompt ? rawLine.slice(redrawMarker.length) : rawLine;
+            const lineSegments = splitSnoopXmlBlocks(lineWithoutMarker);
             for (const line of lineSegments) {
                 const cleanForSnoopSegment = line.replace(/\x1b\[[0-9;]*m/g, '').trim();
                 if (snoopPrefixRegex.test(cleanForSnoopSegment)) {
@@ -287,15 +290,15 @@ export function useTelnet(config: TelnetConfig) {
 
             if (xmlSplit) {
                 if (xmlSplit.preText.length > 0) processedLines.push(xmlSplit.preText);
-                handlePromptDetected(xmlSplit.promptPart);
+                handlePromptDetected(xmlSplit.promptPart, isRedrawPrompt);
                 if (xmlSplit.postText.length > 0) processedLines.push(xmlSplit.postText);
             } else if (legacyPromptMatch) {
                 const preText = legacyPromptMatch[1];
                 const promptPart = legacyPromptMatch[2];
                 if (preText.length > 0) processedLines.push(preText);
-                handlePromptDetected(promptPart);
+                handlePromptDetected(promptPart, isRedrawPrompt);
             } else if (isPrompt(line)) {
-                handlePromptDetected(line);
+                handlePromptDetected(line, isRedrawPrompt);
             } else {
                 processedLines.push(line);
             }
@@ -304,19 +307,21 @@ export function useTelnet(config: TelnetConfig) {
 
         // Handle text remaining in buffer (the part after the last newline)
         // Snooped partial lines stay buffered for the next chunk — no prompt detection needed.
-        const lastLineClean = lastLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
+        const isLastLineRedraw = lastLine.startsWith(redrawMarker);
+        const lastLineText = isLastLineRedraw ? lastLine.slice(redrawMarker.length) : lastLine;
+        const lastLineClean = lastLineText.replace(/\x1b\[[0-9;]*m/g, '').trim();
         if (snoopBlockRef.current || /^<snoop[\s>]/.test(lastLineClean) || snoopPrefixRegex.test(lastLineClean)) {
             bufferRef.current = lastLine;
         } else {
-            const xmlSplitLast = splitXmlPrompt(lastLine);
-            const legacyPromptMatch = !xmlSplitLast ? lastLine.match(/^(.*?)((?:!\[.*?\]\s*>|(?:\d+H\s+\d+M\s+\d+V\s+>)|(?:^> ))\s*)$/) : null;
+            const xmlSplitLast = splitXmlPrompt(lastLineText);
+            const legacyPromptMatch = !xmlSplitLast ? lastLineText.match(/^(.*?)((?:!\[.*?\]\s*>|(?:\d+H\s+\d+M\s+\d+V\s+>)|(?:^> ))\s*)$/) : null;
 
-            if (isAccountLoginQuestion(lastLine)) {
-                processedLines.push(lastLine);
+            if (isAccountLoginQuestion(lastLineText)) {
+                processedLines.push(lastLineText);
                 bufferRef.current = '';
             } else if (xmlSplitLast) {
                 if (xmlSplitLast.preText.length > 0) processedLines.push(xmlSplitLast.preText);
-                handlePromptDetected(xmlSplitLast.promptPart);
+                handlePromptDetected(xmlSplitLast.promptPart, isLastLineRedraw);
                 // postText after the prompt may still be a partial line — keep it buffered so
                 // the next chunk can complete it instead of pushing a half-line into the log.
                 bufferRef.current = xmlSplitLast.postText;
@@ -324,13 +329,13 @@ export function useTelnet(config: TelnetConfig) {
                 const preText = legacyPromptMatch[1];
                 const promptPart = legacyPromptMatch[2];
                 if (preText.length > 0) processedLines.push(preText);
-                handlePromptDetected(promptPart);
+                handlePromptDetected(promptPart, isLastLineRedraw);
                 bufferRef.current = '';
-            } else if (isPrompt(lastLine)) {
-                handlePromptDetected(lastLine);
+            } else if (isPrompt(lastLineText)) {
+                handlePromptDetected(lastLineText, isLastLineRedraw);
                 bufferRef.current = '';
             } else {
-                bufferRef.current = lastLine;
+                bufferRef.current = lastLineText.length === 0 && isLastLineRedraw ? redrawMarker : lastLineText;
             }
         }
 
@@ -354,9 +359,11 @@ export function useTelnet(config: TelnetConfig) {
                         const uiStore = useUIStore.getState();
 
                         const onlinePlayers = (roomStore.whoList || []).map((entry: string) => entry.includes('|') ? entry.split('|')[1] : entry);
+                        const registeredPlayers = combatStore.bufferName ? [combatStore.bufferName] : [];
 
                         return {
                             target: vitalsStore.target,
+                            registeredPlayers,
                             currentOccupants: Object.values(roomStore.chars || {}),
                             roomNpcs: Object.values(roomStore.chars || {}).filter((c: any) => c.type === 'npc'),
                             activeGroupMembers: combatStore.groupMembers || [],
@@ -377,6 +384,9 @@ export function useTelnet(config: TelnetConfig) {
                         for (const entry of lines) {
                             if (entry.isPrompt) {
                                 (entry.tokens as any).isPrompt = true;
+                            }
+                            if (entry.isRedrawPrompt) {
+                                (entry.tokens as any).isRedrawPrompt = true;
                             }
                             configRef.current.processLine(entry.line, entry.tokens);
                         }

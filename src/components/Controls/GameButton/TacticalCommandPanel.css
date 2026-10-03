@@ -189,6 +189,15 @@
     text-shadow: none;
 }
 
+.unified-tactical-command-item.is-unlearned .unified-tactical-command-label {
+    opacity: 0.38;
+    filter: saturate(0.35);
+}
+
+.custom-btn.tactical-class-unlearned {
+    filter: grayscale(0.65) saturate(0.3);
+}
+
 .unified-tactical-command-icon {
     display: inline-flex;
     flex: 0 0 auto;

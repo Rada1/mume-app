@@ -10,7 +10,7 @@ import { Token, EntityToken, AnsiToken, TextToken, InlineCategoryConfig, GmcpOcc
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
 import { toCategoryId } from '../../utils/inlineActionModel';
 import { extractMumeKeyword } from '../../utils/gameUtils';
-import { ANSI_PALETTE, isAnsiGreenColor } from '../../utils/ansi';
+import { ANSI_PALETTE, isAnsiGreenColor, stripNonSgrAnsiSequences } from '../../utils/ansi';
 
 export interface TokenizerContext {
     target?: string | null;
@@ -94,7 +94,7 @@ export class Tokenizer {
             this.resetOccupantMatches();
         }
         const tokens: Token[] = [];
-        const textToScan = this.normalizeEscapedXmlDelimiters(textRaw);
+        const textToScan = this.normalizeEscapedXmlDelimiters(stripNonSgrAnsiSequences(textRaw));
         
         // Entity Tracking
         let activeEntity: {

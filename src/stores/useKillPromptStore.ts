@@ -1,35 +1,46 @@
 /**
  * @file useKillPromptStore.ts
- * @description Holds the most recent mob kill so the UI can offer a quick loot
- * prompt (a small card with a LOOT action) right after something dies.
+ * @description Tracks recently killed mobs so the room loot list can include their corpses.
  */
 
 import { create } from 'zustand';
+import { useRoomStore } from './useRoomStore';
 
 export interface KillPrompt {
     id: string;
     name: string;
     at: number;
+    roomNum: number;
 }
 
 interface KillPromptState {
-    prompt: KillPrompt | null;
-    showKill: (name: string) => void;
+    corpses: KillPrompt[];
+    showKill: (name: string, roomNum: number) => void;
     clearKill: () => void;
+    removeCorpse: (id: string) => void;
+    retainRoom: (roomNum: number) => void;
 }
 
 export const useKillPromptStore = create<KillPromptState>((set) => ({
-    prompt: null,
-    showKill: (name) => set({
-        prompt: {
+    corpses: [],
+    showKill: (name, roomNum) => set((state) => {
+        const corpse = {
             id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
             name,
-            at: Date.now()
-        }
+            at: Date.now(),
+            roomNum
+        };
+        return { corpses: [...state.corpses, corpse] };
     }),
-    clearKill: () => set({ prompt: null })
+    clearKill: () => set({ corpses: [] }),
+    removeCorpse: (id) => set(state => ({
+        corpses: state.corpses.filter(corpse => corpse.id !== id)
+    })),
+    retainRoom: (roomNum) => set(state => ({
+        corpses: state.corpses.filter(corpse => corpse.roomNum === roomNum)
+    }))
 }));
 
 // Module helper so non-React parser code can fire the prompt.
 export const triggerKillPrompt = (name: string) =>
-    useKillPromptStore.getState().showKill(name);
+    useKillPromptStore.getState().showKill(name, useRoomStore.getState().roomNum);

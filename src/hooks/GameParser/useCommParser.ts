@@ -27,6 +27,10 @@ const FALLBACK_COMM_COLORS: Record<string, string> = {
     group: 'var(--ansi-bright-cyan, #38bdf8)',
 };
 
+const stripStatusTags = (text: string): string => text
+    .replace(/<\/?status(?:\s+[^>]*)?>/gi, '')
+    .replace(/&lt;\/?status(?:\s+[^&]*?)?&gt;/gi, '');
+
 export function useCommParser(deps: CommParserDeps) {
     const parseComm = useCallback((line: string, _textOnly: string, _lower: string) => {
         let replyTarget: string | undefined;
@@ -195,6 +199,7 @@ export function useCommParser(deps: CommParserDeps) {
         };
 
         parseXmlComm();
+        if (commText) commText = stripStatusTags(commText);
 
         // Social/emote tags are game output, not conversations. Keep isSocial
         // for log grouping, but only real replyable channels become comm bubbles.

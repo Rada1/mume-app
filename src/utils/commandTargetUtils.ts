@@ -72,6 +72,7 @@ export type CommandTargetMenuKind =
     | 'worn-gear'
     | 'food'
     | 'drink'
+    | 'pour'
     | 'worn-weapons'
     | 'weather-options'
     | 'weather-scope'
@@ -120,6 +121,7 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
     if (verb === 'weather') return 'weather-scope';
     if (verb === 'eat') return 'food';
     if (verb === 'drink') return 'drink';
+    if (verb === 'pour') return 'pour';
     if (verb === 'fill') return 'lanterns';
     if (verb === 'protect') return 'room-allies-or-blank';
     if (verb === 'remove') return 'worn-gear';

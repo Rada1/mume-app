@@ -114,7 +114,7 @@ export const useButtonLogic = (deps: {
                     'xbox-a': 'thief', 'tactical-thief': 'thief'
                 };
                 const classKey = buttonToClass[b.id];
-                if (classKey && b.hideIfUnknown) {
+                if (classKey && b.hideIfUnknown && !b.id.startsWith('tactical-')) {
                     if (!characterName) return false;
 
                     const practicedClassSkill = practiceData?.skills.some(skill =>

@@ -392,10 +392,10 @@
     body.has-docked-panels .hud-clusters-absolute-layer,
     body.has-docked-panels .mobile-tactical-buttons-persistent,
     body.has-docked-panels .mobile-command-deck-persistent,
-    .app-container:has(.docked-panel) .mobile-map-panel,
-    .app-container:has(.docked-panel) .hud-clusters-absolute-layer,
-    .app-container:has(.docked-panel) .mobile-tactical-buttons-persistent,
-    .app-container:has(.docked-panel) .mobile-command-deck-persistent {
+    .app-container:has(.docked-panel:not(.group-status-panel--map-overlay):not(.group-status-panel--mobile-inline)) .mobile-map-panel,
+    .app-container:has(.docked-panel:not(.group-status-panel--map-overlay):not(.group-status-panel--mobile-inline)) .hud-clusters-absolute-layer,
+    .app-container:has(.docked-panel:not(.group-status-panel--map-overlay):not(.group-status-panel--mobile-inline)) .mobile-tactical-buttons-persistent,
+    .app-container:has(.docked-panel:not(.group-status-panel--map-overlay):not(.group-status-panel--mobile-inline)) .mobile-command-deck-persistent {
         opacity: 0 !important;
         pointer-events: none !important;
         visibility: hidden !important;
@@ -3072,6 +3072,10 @@
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
         border-top: 1px solid rgba(232, 176, 32, 0.14) !important;
+    }
+
+    .app-container.immersion-mode .action-box:has(.this-is-you-console:not(.is-mobile).is-minimized) {
+        border-top-width: 2px !important;
     }
 
     .light-mode .control-card-wrapper,

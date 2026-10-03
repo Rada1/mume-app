@@ -22,6 +22,7 @@ interface Props {
     commands: TacticalPaletteCommand[];
     activeCommand: string;
     getCommandTargetGlowColor?: (command: string) => string | null;
+    getCommandTextColor?: (command: string) => string | undefined;
     onPointerDown?: React.PointerEventHandler<HTMLElement>;
     onPointerMove?: React.PointerEventHandler<HTMLElement>;
     onPointerUp?: React.PointerEventHandler<HTMLElement>;
@@ -30,7 +31,7 @@ interface Props {
 }
 
 // --- UI Section ---
-export const TacticalCommandPalette: React.FC<Props> = ({ commands, activeCommand, swapSourceCommand, getCommandTargetGlowColor, ...pointerHandlers }) => {
+export const TacticalCommandPalette: React.FC<Props> = ({ commands, activeCommand, swapSourceCommand, getCommandTargetGlowColor, getCommandTextColor, ...pointerHandlers }) => {
     if (!commands.length) return null;
     return <div
         className="unified-tactical-command-palette"
@@ -53,7 +54,10 @@ export const TacticalCommandPalette: React.FC<Props> = ({ commands, activeComman
                     aria-disabled={!isLearned}
                     aria-label={item.label}
                 >
-                    <span className="unified-tactical-command-label">{presentation.label}</span>
+                    <span
+                        className="unified-tactical-command-label"
+                        style={{ color: getCommandTextColor?.(item.command) }}
+                    >{presentation.label}</span>
                 </div>;
             })}
         </div>

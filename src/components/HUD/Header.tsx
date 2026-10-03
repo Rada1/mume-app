@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, Store, DraftingCompass, MessageSquare, TerminalSquare, Shield } from 'lucide-react';
+import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, DraftingCompass, MessageSquare, TerminalSquare, Shield, UsersRound } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
 import { useModeStore } from '../../stores/useModeStore';
@@ -10,7 +10,6 @@ import { useArchiveStore } from '../../stores/useArchiveStore';
 import { useMobileHeaderTabs } from '../../hooks/useMobileHeaderTabs';
 import { useUIStore } from '../../stores/useUIStore';
 import { canAccessShaper } from '../../shaper/access/shaperAccess';
-import { getTraitsForName } from '../../utils/inlineActionModel';
 import { MobileHeaderTime } from './MobileHeaderTime';
 
 interface HeaderProps {
@@ -48,8 +47,6 @@ const Header: React.FC<HeaderProps> = () => {
     } = useUI();
 
     const selectedTarget = useUIStore(state => state.selectedTarget);
-    const setIsShopOpen = useUIStore(state => state.setIsShopOpen);
-    const setShopkeeperName = useUIStore(state => state.setShopkeeperName);
 
     const isReplayHUDMinimized = useSessionStore(state => state.isReplayHUDMinimized);
     const setIsReplayHUDMinimized = useSessionStore(state => state.setIsReplayHUDMinimized);
@@ -160,27 +157,6 @@ const Header: React.FC<HeaderProps> = () => {
         [currentRoomLoadFlags]
     );
 
-    const roomShopkeeper = React.useMemo(() => {
-        const npcs = Array.isArray(roomNpcs) ? roomNpcs : [];
-        return npcs.find((npc: any) => {
-            const name = String(npc?.name || npc?.short || npc?.shortdesc || '');
-            const registryEntity = npc?.id !== undefined
-                ? (entities?.[`roomchars:${npc.id}`] || entities?.[String(npc.id)])
-                : null;
-            if (registryEntity?.capabilities?.includes('shopkeeper')) return true;
-            const categoryText = [
-                npc?.type,
-                npc?.category,
-                ...(Array.isArray(npc?.labels) ? npc.labels : []),
-                ...(Array.isArray(npc?.flags) ? npc.flags : [])
-            ].join(' ').toLowerCase();
-            if (/\b(?:shopkeeper|dealer|merchant|keeper|smith|trader)\b/.test(categoryText)) return true;
-            return getTraitsForName(name).some(trait => trait.id === 'trait-shopkeeper');
-        }) || null;
-    }, [roomNpcs, entities]);
-
-    const hasShopkeeperInlineAction = !!roomShopkeeper;
-
     // Auto-focus the input when it appears
     useEffect(() => {
         if (isEnteringTarget && targetInputRef.current) {
@@ -199,7 +175,7 @@ const Header: React.FC<HeaderProps> = () => {
     const [isMenuOpen, setIsMenuOpen] = [ui.isMenuOpen, (val: boolean) => setUI(prev => ({ ...prev, isMenuOpen: val })) as any];
     const [isSetMenuOpen, setIsSetMenuOpen] = [ui.isSetMenuOpen, (val: boolean) => setUI(prev => ({ ...prev, isSetMenuOpen: val })) as any];
     const [menuView, setMenuView] = [ui.menuView, (val: 'main' | 'availableSets') => setUI(prev => ({ ...prev, menuView: val })) as any];
-    const { isCommandPanelOpen, isGearPanelOpen, showChatWindow,
+    const { isCommandPanelOpen, isGearPanelOpen, showChatWindow, showGroupPanel,
         isHelpOpen, helpData, toggleHeaderTab } = useMobileHeaderTabs(viewport.isMobile, isMenuOpen, setIsMenuOpen);
 
     const menuRef = useRef<HTMLDivElement>(null);
@@ -415,22 +391,6 @@ const Header: React.FC<HeaderProps> = () => {
                             </button>
                         )}
 
-                        {hasShopkeeperInlineAction && (
-                            <button
-                                className="menu-toggle-btn"
-                                onClick={() => {
-                                    setShopkeeperName(roomShopkeeper?.name || roomShopkeeper?.short || null);
-                                    setIsShopOpen(true);
-                                    executeCommand('list');
-                                    triggerHaptic?.(10);
-                                }}
-                                title="Shop"
-                                style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
-                            >
-                                <Store size={17} />
-                            </button>
-                        )}
-
                         <button
                             className={`menu-toggle-btn${isCommandPanelOpen ? ' active' : ''}`}
                             onClick={() => {
@@ -469,6 +429,20 @@ const Header: React.FC<HeaderProps> = () => {
                             style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
                         >
                             <MessageSquare size={17} />
+                        </button>
+
+                        <button
+                            className={`menu-toggle-btn${showGroupPanel ? ' active' : ''}`}
+                            onClick={() => {
+                                toggleHeaderTab('group');
+                                triggerHaptic?.(10);
+                            }}
+                            title="Toggle Group Status"
+                            aria-label="Toggle Group Status"
+                            aria-pressed={showGroupPanel}
+                            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
+                        >
+                            <UsersRound size={17} />
                         </button>
 
                         <button

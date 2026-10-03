@@ -40,6 +40,12 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
     const screenWakeLockStatus = useSettingsStore(s => s.screenWakeLockStatus);
     const isClassicMode = useSettingsStore(s => s.isClassicMode);
     const setIsClassicMode = useSettingsStore(s => s.setIsClassicMode);
+    const isImmersionTextAnimationsEnabled = useSettingsStore(s => s.isImmersionTextAnimationsEnabled);
+    const setIsImmersionTextAnimationsEnabled = useSettingsStore(s => s.setIsImmersionTextAnimationsEnabled);
+    const isImmersionWeatherEffectsEnabled = useSettingsStore(s => s.isImmersionWeatherEffectsEnabled);
+    const setIsImmersionWeatherEffectsEnabled = useSettingsStore(s => s.setIsImmersionWeatherEffectsEnabled);
+    const showCommandSuggestions = useSettingsStore(s => s.showCommandSuggestions);
+    const setShowCommandSuggestions = useSettingsStore(s => s.setShowCommandSuggestions);
 
     const screenWakeLockDescription = screenWakeLockStatus === 'insecure-context'
         ? 'Chrome supports this, but the app must be opened over HTTPS (localhost is also secure).'
@@ -76,10 +82,27 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                 {/* Immersion Mode */}
                 <ToggleRow
                     label="Immersion Mode"
-                    description="Enable lighting, weather, fog, embers, and scene backgrounds."
+                    description="Enable lighting, fog, embers, and scene backgrounds."
                     value={isImmersionMode}
                     onToggle={() => setIsImmersionMode(!isImmersionMode)}
                 />
+
+                {isImmersionMode && (
+                    <>
+                        <ToggleRow
+                            label="Immersion Weather Effects"
+                            description="Show clouds, rain, snow, and lightning in immersion mode. Off by default."
+                            value={isImmersionWeatherEffectsEnabled}
+                            onToggle={() => setIsImmersionWeatherEffectsEnabled(!isImmersionWeatherEffectsEnabled)}
+                        />
+                        <ToggleRow
+                            label="Immersion Text Animations"
+                            description="Animate text effects in the game log, including word waves, spell blooms, and room-arrival motion."
+                            value={isImmersionTextAnimationsEnabled}
+                            onToggle={() => setIsImmersionTextAnimationsEnabled(!isImmersionTextAnimationsEnabled)}
+                        />
+                    </>
+                )}
 
                 {/* Performance Mode */}
                 <ToggleRow
@@ -87,6 +110,13 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                     description="Disable blurs, shadows, animations, transitions, and weather for smoother performance."
                     value={isPerformanceMode}
                     onToggle={() => setIsPerformanceMode(!isPerformanceMode)}
+                />
+
+                <ToggleRow
+                    label="Command Suggestions"
+                    description="Show command, spell, and target suggestions while typing in the command bar. Off by default."
+                    value={showCommandSuggestions}
+                    onToggle={() => setShowCommandSuggestions(!showCommandSuggestions)}
                 />
 
                 {/* Main Font Family */}

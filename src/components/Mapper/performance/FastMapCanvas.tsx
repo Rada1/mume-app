@@ -15,10 +15,9 @@ import { clearFastMapMetrics, setFastMapMetrics } from './fastMapTelemetry';
 import { gmcpBus } from '../../../events/gmcpBus';
 import { useModeStore } from '../../../stores/useModeStore';
 import { DEFAULT_MAP_BACKGROUND, readMapBackground } from './mapBackground';
-import { applyDoorCommandToSnapshot, createDoorStateSnapshot, updateDoorStateSnapshot, type DoorStateSnapshot } from './doorStateAdapter';
+import { createDoorStateSnapshot, updateDoorStateSnapshot, type DoorStateSnapshot } from './doorStateAdapter';
 import { buildSearchOverlay } from './searchOverlayAdapter';
 import { FastMapGroupMemberSync } from './FastMapGroupMemberSync';
-import type { DoorCommandUpdate } from '../doorCommand';
 import { sendFastMapExploration, sendFastMapFrame } from './sendFastMapFrame';
 
 interface FastMapCanvasProps {
@@ -47,8 +46,8 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
   fallbackRef.current = props.onFallback;
   mapPropsRef.current = props.mapProps;
 
-  const sendLatestFrame = useCallback((doorOverride?: DoorCommandUpdate) => {
-    sendFastMapFrame(mapPropsRef.current, canvasRef.current, clientRef.current, backgroundRef.current, doorOverride);
+  const sendLatestFrame = useCallback(() => {
+    sendFastMapFrame(mapPropsRef.current, canvasRef.current, clientRef.current, backgroundRef.current);
   }, []);
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
@@ -125,22 +124,6 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
       unsubscribeRoom();
     };
   }, [activeView]);
-
-  useEffect(() => {
-    const onDoorCommand = (event: Event) => {
-      const update = (event as CustomEvent<DoorCommandUpdate>).detail;
-      if (!update) return;
-      const roomId = update.roomId ?? mapPropsRef.current.currentRoomId;
-      if (roomId && doorStateRef.current) {
-        const changes = applyDoorCommandToSnapshot(doorStateRef.current, roomId, update.direction, update.closed);
-        if (changes.length) clientRef.current?.setDoorStates(changes);
-      }
-      sendLatestFrame(update);
-    };
-
-    window.addEventListener('mume-door-command-sent', onDoorCommand);
-    return () => window.removeEventListener('mume-door-command-sent', onDoorCommand);
-  }, [sendLatestFrame]);
 
   useEffect(() => {
     const tryLoadMap = (): boolean => {
@@ -263,6 +246,7 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
     props.mapProps.renderVersion,
     props.mapProps.viewZ,
     props.mapProps.currentRoomId,
+    props.mapProps.mapBrightness,
     props.mapProps.walkTargetId,
     props.mapProps.autoCenter,
     cameraState.x,

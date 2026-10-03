@@ -8,7 +8,7 @@
 import { DIR_COUNT, type FastMapData } from './model';
 import { rgb, type RGBA } from './vendor/palette';
 
-const CONNECTION_COLOR = rgb(0xb3b3b3, 0.5);
+const CONNECTION_COLOR = rgb(0xffffff, 0.5);
 const CONNECTION_DASH_LENGTH = 0.12;
 const CONNECTION_DASH_GAP = 0.12;
 const OPPOSITE_DIR = [1, 0, 3, 2, 5, 4, 6] as const;

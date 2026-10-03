@@ -40,7 +40,8 @@
 
 .action-box.is-mobile .this-is-you-tier-identity {
     box-sizing: border-box;
-    height: 26px;
+    height: 44px;
+    min-height: 44px;
     margin-bottom: 0;
     padding: 0 4px;
 }
@@ -91,12 +92,55 @@
     overflow: visible !important;
 }
 
-/* Blur the map artwork itself while the expanded character panel overlays it.
-   The map is a sibling of the content layer, so the panel's glass backdrop
-   cannot reliably sample it on mobile browsers. */
-.app-container.is-mobile:has(.this-is-you-console:not(.is-minimized)) .mobile-map-panel .mapper-container {
-    filter: blur(18px) saturate(1.05);
-    transition: filter 150ms ease !important;
+/* Open the character console as a bottom-anchored mobile sheet. */
+.action-box.is-mobile .this-is-you-console:not(.is-minimized) {
+    position: fixed;
+    inset-inline: 0;
+    top: auto;
+    bottom: 0;
+    z-index: calc(var(--z-hud-interactive) + 20);
+    display: flex;
+    width: 100vw;
+    height: 75dvh;
+    max-height: 85dvh;
+    box-sizing: border-box;
+    flex-direction: column;
+    overflow: hidden;
+    padding: max(10px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+    border: 1px solid rgba(201, 168, 76, 0.28);
+    border-bottom: 0;
+    border-radius: 14px 14px 0 0;
+    background: rgba(10, 15, 21, 0.97);
+    backdrop-filter: blur(18px) saturate(1.05);
+    -webkit-backdrop-filter: blur(18px) saturate(1.05);
+    box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.48);
+}
+
+.action-box.is-mobile .this-is-you-console:not(.is-minimized) .this-is-you-tier-identity {
+    flex: 0 0 auto;
+}
+
+.action-box.is-mobile .this-is-you-console:not(.is-minimized) .this-is-you-body-wrapper {
+    position: relative;
+    inset: auto;
+    display: block;
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    max-height: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 14px 4px max(18px, env(safe-area-inset-bottom));
+    overscroll-behavior: contain;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.action-box.is-mobile .this-is-you-console:not(.is-minimized) .this-is-you-body-inner {
+    min-height: max-content;
+    overflow: visible;
 }
 
 .action-box .input-area {

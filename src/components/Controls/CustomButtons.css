@@ -66,10 +66,114 @@
     display: block;
 }
 
+.custom-btn.has-cardinal-command-dashes:not(.deck-category-button):not(.line-btn) .custom-btn-icon-node svg {
+    width: 15px !important;
+    height: 15px !important;
+}
+
+.custom-btn.has-cardinal-command-dashes:not(.deck-category-button):not(.line-btn) .button-icon {
+    max-width: 68%;
+    max-height: 68%;
+}
+
+.tactical-command-initial {
+    position: absolute;
+    z-index: 4;
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.42rem;
+    font-weight: 900;
+    line-height: 8px;
+    text-align: center;
+    text-shadow: 0 0 3px currentColor;
+    pointer-events: none;
+}
+
+.tactical-command-initial.is-north {
+    top: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tactical-command-initial.is-east {
+    top: 50%;
+    right: 3px;
+    transform: translateY(-50%);
+}
+
+.tactical-command-initial.is-south {
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tactical-command-initial.is-west {
+    top: 50%;
+    left: 3px;
+    transform: translateY(-50%);
+}
+
 .custom-btn:active .button-icon,
 .custom-btn.is-swiping .button-icon {
     filter: saturate(1.5) drop-shadow(0 0 10px var(--set-accent, #fff));
     opacity: 1;
+}
+
+/* Directional pulse shown briefly after short tactical and category swipes. */
+.custom-btn[data-short-swipe-feedback]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border-radius: inherit;
+    background: var(--set-accent, var(--accent));
+    opacity: 0;
+    pointer-events: none;
+    animation: short-swipe-edge-pulse 1s ease-out forwards;
+}
+
+.custom-btn[data-short-swipe-feedback='up']::after {
+    clip-path: polygon(0 0, 100% 0, 82% 25%, 18% 25%);
+}
+
+.custom-btn[data-short-swipe-feedback='down']::after {
+    clip-path: polygon(18% 75%, 82% 75%, 100% 100%, 0 100%);
+}
+
+.custom-btn[data-short-swipe-feedback='left']::after {
+    clip-path: polygon(0 0, 25% 18%, 25% 82%, 0 100%);
+}
+
+.custom-btn[data-short-swipe-feedback='right']::after {
+    clip-path: polygon(75% 18%, 100% 0, 100% 100%, 75% 82%);
+}
+
+.custom-btn[data-short-swipe-feedback='nw']::after {
+    clip-path: polygon(0 0, 48% 0, 0 48%);
+}
+
+.custom-btn[data-short-swipe-feedback='ne']::after {
+    clip-path: polygon(52% 0, 100% 0, 100% 48%);
+}
+
+.custom-btn[data-short-swipe-feedback='sw']::after {
+    clip-path: polygon(0 52%, 48% 100%, 0 100%);
+}
+
+.custom-btn[data-short-swipe-feedback='se']::after {
+    clip-path: polygon(52% 100%, 100% 52%, 100% 100%);
+}
+
+@keyframes short-swipe-edge-pulse {
+    0% { opacity: 0; }
+    12% { opacity: 0.9; }
+    55% { opacity: 0.55; }
+    100% { opacity: 0; }
 }
 
 .button-label {

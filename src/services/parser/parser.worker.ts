@@ -20,10 +20,12 @@ self.onmessage = (event: MessageEvent<ParserWorkerRequest>) => {
         const lines = chunkLines.map(entry => {
             const line = typeof entry === 'string' ? entry : entry.line;
             const isPrompt = typeof entry === 'string' ? false : entry.isPrompt;
+            const isRedrawPrompt = typeof entry === 'string' ? false : !!entry.isRedrawPrompt;
             tokenizer.reset('room');
             return {
                 line,
                 isPrompt,
+                isRedrawPrompt,
                 tokens: tokenizer.tokenize(line, context, undefined, true),
             };
         });

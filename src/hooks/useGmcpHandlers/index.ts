@@ -17,6 +17,7 @@ import { useGmcpVitals } from './useGmcpVitals';
 import { useGmcpOccupants } from './useGmcpOccupants';
 import { useGmcpGroup } from './useGmcpGroup';
 import { useArchiveStore } from '../../stores/useArchiveStore';
+import { useVitalsStore } from '../../stores/useVitalsStore';
 import type { MumeEditState } from '../../stores/useUIStore';
 import { normalizeCombatantName } from '../../utils/combatUtils';
 import { getMumeTimeFromEpoch, MUME_MONTHS } from '../../utils/mumeTimeUtils';
@@ -62,7 +63,7 @@ interface GmcpHandlersProps {
     setWhoList: React.Dispatch<React.SetStateAction<string[]>>;
     setWhereList: React.Dispatch<React.SetStateAction<import('../../types').WhereEntry[]>>;
     detectLighting?: (symbol: string | number) => void;
-    playMovementSound?: (isRiding: boolean) => void;
+    playMovementSound?: (isRiding: boolean, terrain?: string, isSneaking?: boolean) => void;
     playDoorSound?: (isOpen: boolean) => void;
     playerPositionRef?: React.RefObject<string>;
     setIsRiding?: (val: boolean) => void;
@@ -78,7 +79,7 @@ interface GmcpHandlersProps {
     sendGMCP?: (pkg: string, data?: any) => void;
     sendSilentCommand?: (cmd: string) => void;
     playAchievementSound?: () => void;
-    playEventMoveSound?: () => void;
+    playEventMoveSound?: (isRiding: boolean, isSneaking?: boolean) => void;
     playEffect?: (name: string, options?: { pitch?: number; volume?: number; skipJitter?: boolean }) => void;
     pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string; msg?: string } | null>;
     gameTime: import('../../types').MumeTime | null;
@@ -94,7 +95,6 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
 
     const { onRoomInfo, onRoomUpdateExits } = useGmcpRoom({
         ...props,
-        playerPositionRef: playerPositionRef as any,
         lastRoomChangeTimeRef,
         lastRoomNumRef,
         lastExitsRef
@@ -225,7 +225,10 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
             props.playAchievementSound?.();
         } else if (pkgLower === 'event.move' || pkgLower === 'event.moved') {
             if (pkgLower === 'event.moved') gmcpBus.emit('Event.Moved', data);
-            props.playEventMoveSound?.();
+            const vitals = useVitalsStore.getState();
+            const isRiding = vitals.isRiding || vitals.position === 'riding' || vitals.position === 'mounted';
+            const isSneaking = Boolean(vitals.sneak && vitals.sneak.toLowerCase() !== 'off');
+            props.playEventMoveSound?.(isRiding, isSneaking);
         } else if (pkgLower === 'event.darkness' || pkgLower === 'event.moon') {
             addEnvironmentEventMessage(pkgLower, data);
         } else if (pkgLower === 'event.sun') {

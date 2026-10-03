@@ -19,7 +19,8 @@ export const useSmartWalk = (
     addMessage?: (type: any, text: string) => void,
     revealAll?: boolean,
     exploredVnums?: Set<string>,
-    canonicalMap?: MapData | null
+    canonicalMap?: MapData | null,
+    isRiding = false
 ) => {
     const [isWalking, setIsWalking] = useState(false);
     const [walkTargetId, setWalkTargetId] = useState<string | null>(null);
@@ -50,15 +51,16 @@ export const useSmartWalk = (
         if (normStart === normEnd) return { dirs: [], ids: [startId] };
 
         const canonicalPath = canonicalMap
-            ? findCanonicalSmartWalkPath(canonicalMap, startId, endId, rooms, { revealAll, exploredVnums })
+            ? findCanonicalSmartWalkPath(canonicalMap, startId, endId, rooms, { revealAll, exploredVnums, riding: isRiding })
             : null;
         if (canonicalPath) return canonicalPath;
 
         return findSmartWalkPath(startId, endId, rooms, preloadedCoordsRef.current, {
             revealAll,
-            exploredVnums
+            exploredVnums,
+            riding: isRiding
         });
-    }, [canonicalMap, rooms, preloadedCoordsRef, revealAll, exploredVnums]);
+    }, [canonicalMap, rooms, preloadedCoordsRef, revealAll, exploredVnums, isRiding]);
 
     // --- Control Section ---
 
@@ -91,7 +93,7 @@ export const useSmartWalk = (
 
         let pathResult: { dirs: string[], ids: string[] } | null = null;
 
-        if (initialPath && initialPath.length > 1) {
+        if (!isRiding && initialPath && initialPath.length > 1) {
             const normPathStart = normalizeId(initialPath[0]);
             const normPathEnd = normalizeId(initialPath[initialPath.length - 1]);
             
@@ -130,7 +132,7 @@ export const useSmartWalk = (
             addMessage?.('system', 'No path found to that room.');
             stopWalking();
         }
-    }, [currentRoomId, isWalking, findPath, executeCommand, stopWalking, addMessage, rooms, preloadedCoordsRef, getDirectionToNextRoom]);
+    }, [currentRoomId, isWalking, findPath, executeCommand, stopWalking, addMessage, rooms, preloadedCoordsRef, getDirectionToNextRoom, isRiding]);
 
     useEffect(() => {
         if (isWalking && isHoldActiveRef.current && currentRoomId && currentRoomId !== lastRoomIdRef.current) {
@@ -158,7 +160,7 @@ export const useSmartWalk = (
                 }
             }
 
-            if (advancedPath && advancedPath.length > 1) {
+            if (!isRiding && advancedPath && advancedPath.length > 1) {
                 setWalkPath(advancedPath);
                 const nextRoomId = advancedPath[1];
                 const nextDir = getDirectionToNextRoom(currentRoomId, nextRoomId);

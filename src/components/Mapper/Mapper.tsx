@@ -25,6 +25,7 @@ import { useMapperTracing } from './hooks/useMapperTracing';
 import { TracingHUD } from './TracingHUD';
 import { useMapAssets } from './hooks/useMapAssets';
 import { MapSwipeWheelOverlay } from './MapSwipeWheelOverlay';
+import { MapDoorTapFeedback } from './MapDoorTapFeedback';
 import './Mapper.css';
 
 interface MapperProps {
@@ -73,7 +74,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         triggerHaptic, executeCommand, btn, joystick, playClickSound,
         setIsTrackpadModifierActive, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode,
         selectedObjectIds, inCombat, viewport, roomZone,
-        roomName, roomExits, currentTerrain, weather, characterName: gameCharacterName
+        roomName, roomExits, currentTerrain, weather, characterName: gameCharacterName, isRiding
     } = useGame();
     const { isLandscape } = viewport;
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
@@ -229,7 +230,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         addMessage,
         revealAll,
         exploredVnums,
-        isPerformanceMode ? performanceMapRef.current : null
+        isPerformanceMode ? performanceMapRef.current : null,
+        isRiding
     );
     const mode = ui.mapMode || 'play';
 
@@ -325,7 +327,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             backgroundColor: 'transparent', 
             touchAction: 'none',
             zIndex: infoRoomId ? 2900 : undefined,
-            '--map-canvas-brightness': mapBrightness / 100
         } as React.CSSProperties}>
             {isImmersionMode && !isMobile && (
                 <>
@@ -389,6 +390,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 enemyColor={displayEnemyColor}
                 objectColor={displayObjectColor}
                 targetColor={displayTargetColor}
+                mapBrightness={mapBrightness}
                 activeInlineEntityId={popoverState?.entityId || null}
                 selectedObjectIds={selectedObjectIds}
                 deathRoomId={deathRoomId}
@@ -466,6 +468,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                         : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
                 })()}
             />}
+            {!effectiveIsMinimized && <MapDoorTapFeedback />}
 
             {isTracingMode && !effectiveIsMinimized && (
                 <button

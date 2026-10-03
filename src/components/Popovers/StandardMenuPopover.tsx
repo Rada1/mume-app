@@ -423,7 +423,17 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     const CategoryIcon = !isSetManager ? resolveEntityCategoryIcon(categoryId, resolvedTraitIds) : null;
 
     return (
-        <div ref={menuRootRef} className={`standard-menu-popover${isCompactInline ? ' inline-action-compact' : ''}${isInlineMenu && !isCompactInline ? ' terminal-inline-popover' : ''}`} style={{ '--accent': themeColor || 'var(--accent)', '--set-accent': themeColor || 'var(--accent)' } as any}>
+        <div
+            ref={menuRootRef}
+            className={`standard-menu-popover${isCompactInline ? ' inline-action-compact' : ''}${isInlineMenu && !isCompactInline ? ' terminal-inline-popover' : ''}`}
+            onPointerDownCapture={event => {
+                const input = document.querySelector('.input-field');
+                const target = event.target;
+                const targetIsEditor = target instanceof Element && !!target.closest('input, textarea, select, [contenteditable="true"]');
+                if (input && document.activeElement === input && !targetIsEditor) event.preventDefault();
+            }}
+            style={{ '--accent': themeColor || 'var(--accent)', '--set-accent': themeColor || 'var(--accent)' } as any}
+        >
             {!isParleyType && !isAccountType && !isCompactInline && (
                 <div className="popover-header" onPointerDown={(e) => { e.stopPropagation(); }} style={{ cursor: !isSetManager && !isInlineMenu ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', marginBottom: '3px', paddingBottom: '3px', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'none' }} onClick={(event) => { if (event.target instanceof HTMLElement && event.target.closest('[data-keyword-editor="true"]')) return; if (!isInlineMenu && !isSetManager) { triggerHaptic?.(20); setPopoverState({ ...popoverState, setId: 'setmanager' }); } }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', flex: 1 }}>

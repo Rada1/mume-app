@@ -28,8 +28,9 @@ import { buildLiveRoomGpuMesh } from './liveRoomGpuMesh';
 import { drawColorGeometry, drawDoorGeometry, drawRoomCategory } from './roomGpuDrawing';
 import { drawLiveRoomMesh } from './liveRoomDrawing';
 import { drawPlayerMarker } from './playerMarkerDrawing';
+import { drawPlayerRoomTrail } from './playerTrailDrawing';
 
-const ROOM_UNIFORMS = ['uView', 'uNamed', 'uTex', 'uColor', 'uWhite'] as const;
+const ROOM_UNIFORMS = ['uView', 'uNamed', 'uTex', 'uColor', 'uWhite', 'uBrightness'] as const;
 const COLOR_UNIFORMS = ['uView', 'uColor'] as const;
 const ROOM_CATEGORIES: readonly Category[] = ['terrain', 'upDown', 'walls', 'dottedWalls'];
 const USED_TERRAIN_LAYERS = new Set(Array.from({ length: 96 }, (_, index) => index));
@@ -190,7 +191,7 @@ export class FastMapRenderer {
 
     for (const layer of this.layers) {
       if (isRoomMeshVisible(layer.mesh.bounds, layer.z, frame.view, cssWidth, cssHeight)) {
-        this.drawRoomCategories(layer);
+        this.drawRoomCategories(layer, frame.brightness);
         this.overlays.drawRoomFlags(layer.trails, this.textureArrays[TEX.A64], projection);
         drawDoorGeometry(gl, this.colorProgram, layer.doorMesh, layer.doorCount);
         this.overlays.drawRoomFlags(layer.flags, this.textureArrays[TEX.A128], projection);
@@ -198,7 +199,7 @@ export class FastMapRenderer {
       }
     }
     if (this.liveRoomMesh && this.liveRoom?.z === frame.view.layer) {
-      drawLiveRoomMesh(gl, this.roomProgram, this.colorProgram, this.textureArrays, this.cover, this.liveRoomMesh, this.overlays, projection);
+      drawLiveRoomMesh(gl, this.roomProgram, this.colorProgram, this.textureArrays, this.cover, this.liveRoomMesh, this.overlays, projection, frame.brightness);
     }
     this.overlays.drawLines(frame.view.layer, projection);
     this.overlays.drawExitArrows(frame.view.layer, projection);
@@ -206,7 +207,8 @@ export class FastMapRenderer {
     this.overlays.drawSearch(frame.view.layer, projection);
     this.overlays.drawGroupMembers(frame.view, frame.player);
     if (frame.player && Math.round(frame.player.z) === frame.view.layer) {
-      drawPlayerMarker(gl, this.roomProgram, this.playerVao, this.playerBuffer, this.textureArrays, frame.player, this.overlays.hasPrediction(frame.view.layer));
+      drawPlayerMarker(gl, this.roomProgram, this.playerVao, this.playerBuffer, this.textureArrays, frame.player);
+      drawPlayerRoomTrail(this.overlays, this.roomLayerByRoom, frame.player, this.liveRoom, this.liveRoomMesh, this.textureArrays[TEX.A64], projection);
     }
     this.overlays.drawLabels(frame.view.layer, frame.view.zoom, projection, this.width, this.height);
     gl.bindVertexArray(null);
@@ -250,12 +252,12 @@ export class FastMapRenderer {
     gl.uniform4fv(program.uniforms.get('uView') ?? null, view);
   }
 
-  private drawRoomCategories(layer: GpuLayer): void {
-    for (const category of ROOM_CATEGORIES) this.drawCategory(layer, category);
+  private drawRoomCategories(layer: GpuLayer, brightness: number): void {
+    for (const category of ROOM_CATEGORIES) this.drawCategory(layer, category, brightness);
   }
 
-  private drawCategory(layer: GpuLayer, category: Category): void {
-    drawRoomCategory(this.gl, this.roomProgram, this.textureArrays, layer, category, CATEGORY_TEX[category], category === 'terrain' || category === 'walls' || category === 'dottedWalls' ? FAST_MAP_TILE_TINT : WHITE);
+  private drawCategory(layer: GpuLayer, category: Category, brightness: number): void {
+    drawRoomCategory(this.gl, this.roomProgram, this.textureArrays, layer, category, CATEGORY_TEX[category], category === 'terrain' || category === 'walls' || category === 'dottedWalls' ? FAST_MAP_TILE_TINT : WHITE, brightness);
   }
 
   private updateLiveRoom(room: FastRoomOverlay | null, background: FastMapBackground): void {

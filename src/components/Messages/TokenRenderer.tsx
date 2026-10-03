@@ -166,11 +166,6 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             return (
                 <span
                     className="room-title-text"
-                    style={{
-                        '--glow-color': resolvedRoomColor,
-                        '--room-color': resolvedRoomColor,
-                        color: resolvedRoomColor
-                    } as React.CSSProperties}
                     dangerouslySetInnerHTML={{ __html: fallbackHtml }}
                 />
             );
@@ -322,12 +317,6 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             const isRoom = categoryAxes.family === 'room' || e.metadata?.kind === 'room';
             if (isRoom && disableRoomInline) {
                 const roomTextStyle: React.CSSProperties = { ...(e.metadata?.style || {}) };
-                const roomColor = e.metadata?.color || e.metadata?.glowColor || resolvedRoomColor;
-                if (roomColor) {
-                    roomTextStyle['--glow-color'] = roomColor;
-                    roomTextStyle['--room-color'] = roomColor;
-                    if (!roomTextStyle.color) roomTextStyle.color = roomColor;
-                }
                 return (
                     <span
                         key={idx}

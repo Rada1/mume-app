@@ -8,6 +8,7 @@ import { createPortal } from 'react-dom';
 import { ArrowLeftRight, X } from 'lucide-react';
 import { CustomButton, SwipeDirection } from '../../../types';
 import { getClassKeyFromSetId, getSkillPresentation } from '../../../utils/skillPresentation';
+import { getSwipeCommandTextColor } from '../../../utils/swipeCommandColors';
 import { TacticalCommandPalette, type TacticalPaletteCommand, type TacticalSwapCell } from './TacticalCommandPalette';
 import './ButtonSwipeOverlay.css';
 
@@ -25,6 +26,7 @@ interface ButtonSwipeOverlayProps {
     isMobile?: boolean;
     isTargetMenuVisible?: boolean;
     getCommandTargetGlowColor?: (command: string) => string | null;
+    getCommandLearnedState?: (command: string) => boolean | undefined;
     activeCommand?: string;
     targetMenu?: React.ReactNode;
     paletteCommands?: TacticalPaletteCommand[];
@@ -64,6 +66,13 @@ const colorToRgb = (colorVal: string | undefined, defaultVal: string) => {
     return !isNaN(r) && !isNaN(g) && !isNaN(b) ? `${r}, ${g}, ${b}` : defaultVal;
 };
 
+const getWheelSlotCommand = (button: CustomButton, direction: SwipeDirection): string => {
+    const swipeCommand = button.swipeCommands?.[direction]?.trim() || '';
+    if (swipeCommand) return swipeCommand;
+    if (button.longSwipeActionTypes?.[direction] === 'assign') return '';
+    return button.longSwipeCommands?.[direction]?.trim() || '';
+};
+
 export const toSwipeCenterActionLabel = (button: CustomButton): string => {
     const command = (button.command || '').trim();
     const normalized = command.toLowerCase();
@@ -80,14 +89,16 @@ export const toSwipeCenterActionLabel = (button: CustomButton): string => {
     return getSkillPresentation(command, command, getClassKeyFromSetId(button.setId)).label;
 };
 
-export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling, isPinned, swapSource = null, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, isTargetMenuVisible = false, getCommandTargetGlowColor, activeCommand, targetMenu, paletteCommands = [], onClose, onSwapCells, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel }) => {
+export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling, isPinned, swapSource = null, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, isTargetMenuVisible = false, getCommandTargetGlowColor, getCommandLearnedState, activeCommand, targetMenu, paletteCommands = [], onClose, onSwapCells, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel }) => {
     if (!isTargetMenuVisible || !targetMenu) return null;
 
     const wheelAccent = button.style.borderColor || button.style.backgroundColor || 'var(--set-accent, var(--accent))';
     const wheelAccentRgb = colorToRgb(wheelAccent, 'var(--set-accent-rgb, var(--accent-rgb))');
     const buttonClassKey = getClassKeyFromSetId(button.command) || getClassKeyFromSetId(button.setId);
     const centerCommand = button.command;
-    const centerTargetGlowColor = getCommandTargetGlowColor?.(centerCommand) ?? null;
+    const centerCommandTextColor = getSwipeCommandTextColor(centerCommand);
+    const centerIsLearned = getCommandLearnedState?.(centerCommand) !== false;
+    const centerTargetGlowColor = centerIsLearned ? getCommandTargetGlowColor?.(centerCommand) ?? null : null;
     const normalizedActiveCommand = activeCommand?.trim().toLowerCase() || '';
     const configuredDirection = Object.entries({ ...(button.longSwipeCommands || {}), ...(button.swipeCommands || {}) }).find(([, command]) => {
         const normalizedSwipeCommand = command?.trim().toLowerCase() || '';
@@ -110,7 +121,7 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
             onPointerCancel={isPinned ? onPinnedPointerCancel : undefined}
         >
             {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => {
-                const cmdVal = (button.swipeCommands?.[d as SwipeDirection] || button.longSwipeCommands?.[d as SwipeDirection] || '').trim();
+                const cmdVal = getWheelSlotCommand(button, d as SwipeDirection);
                 const isActive = displayDirection === d && Boolean(cmdVal);
                 return (
                     <div
@@ -121,15 +132,20 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                 );
             })}
             {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map(d => {
-                const cmdVal = (button.swipeCommands?.[d as SwipeDirection] || button.longSwipeCommands?.[d as SwipeDirection] || '').trim();
+                const cmdVal = getWheelSlotCommand(button, d as SwipeDirection);
                 const isActive = displayDirection === d;
-                const targetGlowColor = getCommandTargetGlowColor?.(cmdVal) ?? null;
+                const isLearned = getCommandLearnedState?.(cmdVal) !== false;
+                const targetGlowColor = isLearned ? getCommandTargetGlowColor?.(cmdVal) ?? null : null;
                 const presentation = getSkillPresentation(cmdVal, cmdVal, buttonClassKey);
+                const commandTextColor = getSwipeCommandTextColor(cmdVal);
                 return (
-                    <span key={`label-${d}`} className={`swipe-sq-label ${isActive ? 'active' : ''}${swapSource?.kind === 'wheel' && swapSource.direction === d ? ' is-swap-source' : ''}${cmdVal ? '' : ' is-empty'}`} data-dir={d} data-wheel-direction={d} data-wheel-command={cmdVal}>
+                    <span key={`label-${d}`} className={`swipe-sq-label ${isActive ? 'active' : ''}${!isLearned ? ' is-unlearned' : ''}${swapSource?.kind === 'wheel' && swapSource.direction === d ? ' is-swap-source' : ''}${cmdVal ? '' : ' is-empty'}`} data-dir={d} data-wheel-direction={d} data-wheel-command={cmdVal} data-wheel-learned={isLearned}>
                         <span
                             className={`swipe-action-card${targetGlowColor ? ' is-target-ready' : ''}${cmdVal ? '' : ' is-empty'}`}
-                            style={{ '--target-glow-color': targetGlowColor || undefined } as React.CSSProperties}
+                            style={{
+                                '--target-glow-color': targetGlowColor || undefined,
+                                '--wheel-command-text-color': commandTextColor,
+                            } as React.CSSProperties}
                         >
                             {cmdVal && <>
                                 <span className="swipe-action-text">{presentation.label}</span>
@@ -139,10 +155,14 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                 );
             })}
             <div
-                className={`swipe-center ${displayDirection === 'center' ? 'active' : ''}${centerTargetGlowColor ? ' is-target-ready' : ''}${swapSource?.kind === 'wheel' && swapSource.direction === 'center' ? ' is-swap-source' : ''}`}
-                style={{ '--target-glow-color': centerTargetGlowColor || undefined } as React.CSSProperties}
+                className={`swipe-center ${displayDirection === 'center' ? 'active' : ''}${!centerIsLearned ? ' is-unlearned' : ''}${centerTargetGlowColor ? ' is-target-ready' : ''}${swapSource?.kind === 'wheel' && swapSource.direction === 'center' ? ' is-swap-source' : ''}`}
+                style={{
+                    '--target-glow-color': centerTargetGlowColor || undefined,
+                    '--wheel-command-text-color': centerCommandTextColor,
+                } as React.CSSProperties}
                 data-wheel-direction="center"
                 data-wheel-command={centerCommand}
+                data-wheel-learned={centerIsLearned}
             >
                 {centerCommand.trim() && <span className="swipe-center-label">{toSwipeCenterActionLabel(button)}</span>}
             </div>
@@ -188,6 +208,7 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                             commands={paletteCommands}
                             activeCommand={activeCommand || ''}
                             getCommandTargetGlowColor={getCommandTargetGlowColor}
+                            getCommandTextColor={getSwipeCommandTextColor}
                             swapSourceCommand={swapSource?.kind === 'palette' ? swapSource.command : null}
                             onPointerDown={isPinned ? onPalettePointerDown : undefined}
                             onPointerMove={isPinned ? onPalettePointerMove : undefined}

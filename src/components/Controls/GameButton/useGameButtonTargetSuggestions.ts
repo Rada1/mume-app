@@ -22,8 +22,10 @@ import {
     appendNamedTargetSuggestions,
     prioritizeOffensiveRoomEntitySuggestions,
     getAssistTargetSuggestions,
+    getGiveRecipientSuggestions,
     getGroupTargetSuggestions,
     getDrinkTargetSuggestions,
+    getFluidContainerTargetSuggestions,
     getFoodTargetSuggestions,
     getFillTargetSuggestions,
     getGearTargetSuggestions,
@@ -66,6 +68,7 @@ const TARGET_MENU_TITLES: Record<CommandTargetMenuKind, string> = {
     'worn-gear': 'WORN ITEMS',
     food: 'FOOD',
     drink: 'DRINK',
+    pour: 'POUR INTO',
     'worn-weapons': 'WORN WEAPONS',
     lanterns: 'LANTERNS',
     'weather-options': 'WEATHER',
@@ -122,6 +125,7 @@ export const useGameButtonTargetSuggestions = (
         : targetKindOverride === 'status-panel' ? null
         : targetKindOverride === 'shop' ? 'shop'
         : targetKindOverride === 'lanterns' ? 'lanterns'
+        : targetKindOverride === 'pour' ? 'pour'
         : targetKindOverride === 'worn-weapons' || targetKindOverride === 'worn-sheaths' ? 'worn-weapons'
         : targetKindOverride === 'room-objects' || targetKindOverride === 'room-object-container' ? 'room'
         : 'gear'
@@ -190,6 +194,7 @@ export const useGameButtonTargetSuggestions = (
         if (resolvedKind === 'worn-gear') return getGearTargetSuggestions(displayEqLines, 'worn');
         if (resolvedKind === 'food') return getFoodTargetSuggestions(displayInventoryLines, roomObjects);
         if (resolvedKind === 'drink') return getDrinkTargetSuggestions(displayInventoryLines, displayEqLines);
+        if (resolvedKind === 'pour') return getFluidContainerTargetSuggestions(displayInventoryLines, displayEqLines);
         if (resolvedKind === 'worn-weapons') {
             const wornWeapons = displayEqLines.filter(line => hasObjectTrait(line, 'trait-weapon'));
             return getGearTargetSuggestions(wornWeapons, 'worn');
@@ -293,7 +298,7 @@ export const useGameButtonTargetSuggestions = (
                 { key: 'all-argument', label: 'All', value: 'all', meta: 'all' },
                 ...getInventoryAndWornTargetSuggestions(displayInventoryLines, displayEqLines)
             ],
-            second: getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName)
+            second: getGiveRecipientSuggestions(roomOccupants, characterName)
         };
         if (stagedTargetKind === 'inventory-container') return {
             first: [

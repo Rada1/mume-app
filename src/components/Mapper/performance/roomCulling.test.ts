@@ -68,7 +68,7 @@ describe('Fast map room chunks', () => {
     }
   });
 
-  it('keeps live-room doors gold while map doors are black', () => {
+  it('keeps live-room doors white while map doors are black', () => {
     const map = mapAt([{ x: 0, y: 0, z: 0 }]);
     map.exitFlags[0] = EXIT_FLAG.EXIT | EXIT_FLAG.DOOR;
     const remoteDoor = buildRoomMeshes(map)[0]!.doorVertices;
@@ -76,9 +76,9 @@ describe('Fast map room chunks', () => {
     const colorOffset = 17 * 7 + 3;
 
     expect(Array.from(remoteDoor.slice(colorOffset, colorOffset + 4))).toEqual([0, 0, 0, 1]);
-    expect(currentDoor[colorOffset]).toBeCloseTo(0xc9 / 255);
-    expect(currentDoor[colorOffset + 1]).toBeCloseTo(0xa8 / 255);
-    expect(currentDoor[colorOffset + 2]).toBeCloseTo(0x4c / 255);
+    expect(currentDoor[colorOffset]).toBe(1);
+    expect(currentDoor[colorOffset + 1]).toBe(1);
+    expect(currentDoor[colorOffset + 2]).toBe(1);
     expect(currentDoor[colorOffset + 3]).toBe(1);
   });
 

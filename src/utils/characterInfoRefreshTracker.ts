@@ -2,7 +2,7 @@
  * @file characterInfoRefreshTracker.ts
  * @description Tracks ordered responses from compact character info commands.
  */
-export type CharacterInfoRefreshField = 'citizenships' | 'age' | 'height' | 'warFame' | 'gold' | 'wimpy';
+export type CharacterInfoRefreshField = 'citizenships' | 'burden' | 'age' | 'height' | 'warFame' | 'gold' | 'wimpy';
 
 // --- Height response validation ---
 const HEIGHT_WORDS = [
@@ -70,6 +70,7 @@ export const consumeCharacterInfoRefreshLine = (content: string, now = Date.now(
     warFame: number;
     gold: number;
     wimpy: number;
+    burden: string;
 }> | null => {
     if (now > expiresAt) pendingFields = [];
     const field = pendingFields[0];
@@ -81,6 +82,17 @@ export const consumeCharacterInfoRefreshLine = (content: string, now = Date.now(
         if (!tokens.length || (!/^(?:none|no|nil)$/i.test(value) && !tokens.every(token => /^\p{Lu}[\p{L}'-]*$/u.test(token)))) return null;
         consumeField();
         return { citizenships: /^(?:none|no|nil)$/i.test(value) ? 0 : tokens.length };
+    }
+
+    if (field === 'burden') {
+        const labeledMatch = value.match(/^(?:burden|weight)\s*:?\s*(.+)$/i);
+        const burdenValue = (labeledMatch?.[1] ?? value).trim();
+        const exactNumeric = burdenValue.match(/^\d+(?:,\d{3})*(?:\.\d+)?\s*%?$/);
+        const exactStatus = burdenValue.match(/^(?:unencumbered|light|moderate|heavy|burdened|overburdened)$/i);
+        const burden = exactNumeric?.[0].replace(/\s+/g, '') ?? exactStatus?.[0];
+        if (!burden) return null;
+        consumeField();
+        return { burden };
     }
 
     if (field === 'height') {

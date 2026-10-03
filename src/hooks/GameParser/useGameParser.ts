@@ -45,6 +45,7 @@ import { changesCombatStatsFromSpell } from '../../utils/spellCombatStatUtils';
 import { parseShopVariant } from '../../utils/shopVariantParser';
 import { hasXmlTag } from '../../utils/xmlTagUtils';
 import { parseWhereScanPlayers } from '../../services/parser/whereScan';
+import { stripAnsiControlSequences, stripNonSgrAnsiSequences } from '../../utils/ansi';
 import {
     isSilentEquipmentCaptureResponseLine,
     type EquipmentCaptureProgress,
@@ -71,6 +72,15 @@ const extractXmlRoomTitle = (line: string): string | null => {
     return decodeTextEntities(rawTitle.replace(/<[^>]+>/g, '')).trim() || null;
 };
 
+const extractXmlRoomArea = (line: string): string | null => {
+    const decodedLine = decodeTextEntities(line);
+    const attrs = decodedLine.match(/<room\b([^>]*)>/i)?.[1];
+    if (!attrs) return null;
+    const rawArea = attrs.match(/\barea\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s/>]*))/i);
+    const area = rawArea?.[1] ?? rawArea?.[2] ?? rawArea?.[3];
+    return area ? decodeTextEntities(area).trim() || null : null;
+};
+
 const extractXmlTagText = (line: string, tagName: string): string | null => {
     const tagPattern = new RegExp(`<${tagName}\\b[^>]*>(.*?)<\\/${tagName}>`, 'i');
     const rawText = line.match(tagPattern)?.[1]?.trim();
@@ -92,7 +102,7 @@ const extractXmlRoomInfo = (line: string): { num: number; area?: string; terrain
     return { num, area, terrain };
 };
 
-const stripAnsiCodes = (text: string) => text.replace(/\x1b\[[0-9;]*m/g, '');
+const stripAnsiCodes = stripAnsiControlSequences;
 const SNOOP_PREFIX_REGEX = /^((?:\x1b\[[0-9;]*m|\s)*)(?:&amp;|&|mp;)[A-Za-z](?:\x1b\[[0-9;]*m)*(?:\s|$)/;
 const COMM_XML_OPEN_REGEX = /<(tell|say|narrate|shout|yell|song|sing|pray|whisper|social|emote)(?:\s+[^>]*)?>/i;
 
@@ -553,6 +563,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const tokens = Array.isArray(tokensOrOptions) ? tokensOrOptions : undefined;
         const options = !Array.isArray(tokensOrOptions) ? tokensOrOptions : undefined;
         const isPromptResolved = options?.isPrompt || (tokens as any)?.isPrompt;
+        const isRedrawPrompt = options?.isRedrawPrompt || (tokens as any)?.isRedrawPrompt;
 
         const cleanLine = line.replace(/\r/g, '');
 
@@ -598,7 +609,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 return;
             }
         }
-        
+
         // --- Help Response Capture ---
         // Intercept help headers, buffer help output until the next prompt, suppress from log, and show in a popup card
         const lowerLine = lineToParse.toLowerCase();
@@ -765,7 +776,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (isAccountPhase) {
             // Account text is raw terminal output. We trim leading/trailing whitespace
             // to ensure consistent alignment in the mobile log container.
-            const ansiStripped = lineToParse.replace(/\x1b\[[0-9;]*m/g, '');
+            const ansiStripped = stripAnsiCodes(lineToParse);
             let normalized = decodeTextEntities(ansiStripped.trimEnd());
 
             // --- Privacy: Strip the "Host" column from `list` output ---
@@ -805,9 +816,12 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             tokenizerContext = {
                 target: session.vitals.target,
                 buttons: deps.btn?.buttonsRef?.current || [],
-                registeredPlayers: Object.values(deps.entitiesRef.current || {})
-                    .filter(e => e.capabilities.includes(EntityCapability.Player))
-                    .map(p => p.name),
+                registeredPlayers: [...new Set([
+                    ...Object.values(deps.entitiesRef.current || {})
+                        .filter(e => e.capabilities.includes(EntityCapability.Player))
+                        .map(p => p.name),
+                    ...(deps.bufferName ? [deps.bufferName] : [])
+                ])],
                 currentOccupants: [
                     ...Object.values(useRoomStore.getState().chars || {}),
                     ...(Array.isArray(deps.roomPlayers) ? deps.roomPlayers : []),
@@ -902,7 +916,11 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const hasRoomObjectEntity = derivedTokens.some((token: any) => token.type === 'entity'
             && token.metadata?.kind === 'object'
             && token.metadata?.location === 'room');
-        const roomType = isSnoop ? null : room.parseRoomLine(textOnly, lineToParse, isSnoop, hasRoomObjectEntity);
+        const xmlRoomTitle = hasXmlTag(lineToParse, 'name')
+            ? extractXmlRoomTitle(decodeTextEntities(lineToParse))
+            : null;
+        const parsedRoomType = isSnoop ? null : room.parseRoomLine(textOnly, lineToParse, isSnoop, hasRoomObjectEntity);
+        const roomType = xmlRoomTitle ? 'room-name' : parsedRoomType;
         const isEffectivelyRoomDesc = isRoomDescription || roomType === 'room-description';
         const isRoomOutput = isRoom || isEffectivelyRoomDesc || roomType === 'room-name' ||
             lower.startsWith('exits:') || lower.startsWith('obvious exits');
@@ -1487,7 +1505,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 deps.playEffect?.(isSauronDarkWeather ? 'saurondark' : 'weather');
             }
             const mid = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            let lineToConvert = isAccountPhase ? lineToParse.trimEnd() : lineToParse;
+            let lineToConvert = stripNonSgrAnsiSequences(isAccountPhase ? lineToParse.trimEnd() : lineToParse);
             if (isAccountPhase) {
                 // Mirror the privacy redaction on the raw ANSI string so the
                 // rendered HTML also hides the Host column from `list` output.
@@ -1513,6 +1531,12 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                     : messageObj.tokens;
                 messageHtml = messageObj.html;
             }
+            if (!isAccountPhase && finalType === 'room-name') {
+                const titleSource = xmlRoomTitle
+                    ? decodeTextEntities(lineToParse).replace(/<[^>]*>/g, '')
+                    : lineToParse;
+                messageHtml = deps.ansiConvert.toHtml(titleSource);
+            }
 
             const tokenizeFresh = (text: string) => {
                 const freshTokenizer = Tokenizer.getInstance();
@@ -1532,7 +1556,15 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             }
             deps.addMessage(
                 finalType, textOnly, finalType === 'combat', mid, finalType === 'room-name',
-                { textOnly, lower, html: messageHtml, tokens: messageTokens },
+                {
+                    textOnly,
+                    lower,
+                    html: messageHtml,
+                    tokens: messageTokens,
+                    isXmlRoomName: finalType === 'room-name' && !!xmlRoomTitle,
+                    xmlRoomArea: extractXmlRoomArea(lineToParse),
+                    isRedrawPrompt: !!isRedrawPrompt
+                },
                 undefined, undefined, undefined, false, 
                 commResult.replyTarget, commResult.replyCommand, commResult.commSender, commResult.commAction, commResult.commText, commResult.commColor,
                 commResult.commSender ? tokenizeFresh(commResult.commSender) : undefined,
@@ -1586,7 +1618,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     }, [
         processTriggers, router, combat, room, account, stat, atmosphere, time, parseLogGmcp, actionTracker,
         deps.addMessage, deps.isNewbieMode, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target, deps.captureStage, deps.ansiConvert, deps.practiceHandler, capture, finalizeNearbyCapture,
-        automator.addToQueue, automator.stopSpectatingName, deps.roomPlayers, deps.roomNpcs, deps.roomItems
+        automator.addToQueue, automator.stopSpectatingName, deps.roomPlayers, deps.roomNpcs, deps.roomItems, deps.bufferName
     ]);
 
     return useMemo(() => ({

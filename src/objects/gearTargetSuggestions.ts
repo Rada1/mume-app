@@ -93,6 +93,20 @@ export const getDrinkTargetSuggestions = (
     ];
 };
 
+export const getFluidContainerTargetSuggestions = (
+    inventoryLines: DrawerLine[],
+    wornLines: DrawerLine[],
+    sourceTarget?: string | null
+): CommandTargetSuggestion[] => {
+    const containers = getDrinkTargetSuggestions(inventoryLines, wornLines)
+        .filter(suggestion => suggestion.meta !== 'source');
+    const source = containers.find(suggestion => suggestion.value === sourceTarget || suggestion.key === sourceTarget);
+    if (!source) return containers;
+    return containers.filter(suggestion => source.objectId && suggestion.objectId
+        ? suggestion.objectId !== source.objectId
+        : suggestion.value !== source.value);
+};
+
 export const getLanternTargetSuggestions = (
     inventoryLines: DrawerLine[],
     wornLines: DrawerLine[]

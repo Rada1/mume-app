@@ -7,10 +7,11 @@ import React from 'react';
 import { Trees, Sparkles, VenetianMask, Swords, Wand, DoorOpen, Eye } from 'lucide-react';
 import { useGame } from '../../../context/GameContext';
 import { useUIStore } from '../../../stores/useUIStore';
+import { getSwipeCommandTextColor } from '../../../utils/swipeCommandColors';
 import './LineCluster.css';
 
 // Neutral lucide icons per tactical button, matching the category controls.
-const TACTICAL_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
+const TACTICAL_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number; color?: string }>> = {
     'tactical-ranger': Trees,
     'tactical-cleric': Sparkles,
     'tactical-thief': VenetianMask,
@@ -67,7 +68,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
 
     const charmieButton = tacticalButtons.find(button => button.id === 'tactical-charmie');
     const sortedButtons = tacticalButtons.filter(button => button.id !== 'tactical-charmie').sort((a, b) => {
-        const order = ['tactical-ranger', 'tactical-cleric', 'tactical-thief', 'tactical-warrior', 'tactical-mage', 'tactical-doors', 'tactical-eye'];
+        const order = ['tactical-mage', 'tactical-cleric', 'tactical-ranger', 'tactical-warrior', 'tactical-thief', 'tactical-doors', 'tactical-eye'];
         return order.indexOf(a.id) - order.indexOf(b.id);
     });
 
@@ -82,7 +83,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
             button={button}
             className={className}
             variant={variant}
-            iconNode={IconCmp ? <IconCmp size={17} strokeWidth={2} /> : undefined}
+            iconNode={IconCmp ? <IconCmp size={17} strokeWidth={2} color={getSwipeCommandTextColor(button.command)} /> : undefined}
             useDefaultPositioning={false}
             isEditMode={isEditMode}
             isGridEnabled={isGridEnabled}

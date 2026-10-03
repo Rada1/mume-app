@@ -48,6 +48,7 @@ precision highp sampler2DArray;
 uniform sampler2DArray uTex;
 uniform vec4 uColor;
 uniform bool uWhite;
+uniform float uBrightness;
 in vec4 vColor;
 in vec3 vTc;
 flat in int vRoomState;
@@ -56,6 +57,7 @@ void main() {
   if (vRoomState == 0) discard;
   vec4 t = uWhite ? vec4(1.0) : texture(uTex, vTc);
   oColor = vColor * uColor * t;
+  oColor.rgb *= uBrightness;
   if (vRoomState == 2) oColor.rgb = vec3(dot(oColor.rgb, vec3(0.299, 0.587, 0.114)));
 }`;
 
