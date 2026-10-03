@@ -150,7 +150,7 @@ export function useCombatParser(deps: CombatParserDeps) {
 
     // --- Logic Section: Combat Exit and Death ---
     const handleCombatExit = useCallback((lower: string, isSnoop: boolean = false, originalText?: string) => {
-        const isDeathMessage = /^you are dead!$/i.test(lower.trim());
+        const isDeathMessage = /^you are dead!(?:\s+sorry\.\.\.)?$/i.test(lower.trim());
         if (!isSnoop && isDeathMessage) {
             playEffect?.('death'); gmcpBus.emit('Game.PlayerDeath', undefined);
         }

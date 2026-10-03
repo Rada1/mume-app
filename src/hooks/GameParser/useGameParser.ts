@@ -1296,6 +1296,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             lower.includes('arglebargle, glop-glyf') || 
             lower.startsWith("you don't have any") || 
             lower.includes('seems to be closed') ||
+            lower.includes('seems to be locked') ||
             lower.includes('seems to be too large') ||
             lower.includes('seems to be too small')
         )) {
