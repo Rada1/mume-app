@@ -47,6 +47,7 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
     const popoverRef = useRef<HTMLDivElement>(null);
     const inlineSliderOptions = category === 'Position' ? [...options].reverse() : options;
+    const popoverOptions = category.toLowerCase() === 'mood' ? [...options].reverse() : options;
     const inlineCurrentIndex = Math.max(0, inlineSliderOptions.findIndex(option =>
         option.value.toLowerCase() === value.toLowerCase()
     ));
@@ -188,7 +189,7 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
                 <div ref={popoverRef} className={`this-is-you-popover accent-${accentColor}`} data-state-category={category.toLowerCase()} data-mobile={isMobile || undefined} role="listbox" aria-label={`Select ${category}`}
                     style={menuPosition ? { top: menuPosition.top, left: menuPosition.left } : { visibility: 'hidden' }}>
                     <div className="this-is-you-popover-header">{category}</div>
-                    {options.map(option => {
+                    {popoverOptions.map(option => {
                         const isSelected = option.label.toLowerCase() === value.toLowerCase();
                         const isPending = pendingConfirmationValue === option.value;
                         return (

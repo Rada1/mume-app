@@ -20,6 +20,7 @@ interface Props {
     title?: string;
     showMeta?: boolean;
     selectOnPointerUp?: boolean;
+    largeOnMobile?: boolean;
     onChoose: (target: string) => void;
     onManualEntry?: () => void;
     onDismiss: () => void;
@@ -36,14 +37,14 @@ interface PickerPointerGesture {
 // --- Render Section ---
 export const TargetChipPicker: FC<Props> = ({
     isOpen, anchorRef, suggestions, commonTargets = [], currentTarget, title = 'Room entities', showMeta = true,
-    selectOnPointerUp = false, onChoose, onManualEntry, onDismiss
+    selectOnPointerUp = false, largeOnMobile = false, onChoose, onManualEntry, onDismiss
 }) => {
     const isClassicMode = useSettingsStore(state => state.isClassicMode);
     const pickerRef = useRef<HTMLDivElement>(null);
     const pointerStartsRef = useRef(new Map<number, { value: string; x: number; y: number }>());
     const scrollPointersRef = useRef(new Map<number, PickerPointerGesture>());
     const suppressedClickRef = useRef<{ x: number; y: number; time: number } | null>(null);
-    const [position, setPosition] = useState({ left: 12, top: 12, bottom: undefined as number | undefined, width: 240, maxHeight: 300 });
+    const [position, setPosition] = useState({ left: 12, top: 12, bottom: undefined as number | undefined, width: 240, maxHeight: 300, rowHeight: 34 });
 
     const trackPointerDown = (event: React.PointerEvent<HTMLButtonElement>, value: string) => {
         const list = event.currentTarget.closest<HTMLDivElement>('.docked-target-picker-list');
@@ -106,15 +107,24 @@ export const TargetChipPicker: FC<Props> = ({
             const anchor = anchorRef.current;
             if (!anchor) return;
             const rect = anchor.getBoundingClientRect();
-            const width = Math.min(commonTargets.length ? 420 : 260, window.innerWidth - 24);
+            const useLargeMobileLayout = largeOnMobile && window.matchMedia('(max-width: 768px)').matches;
+            const width = Math.min(useLargeMobileLayout ? 420 : commonTargets.length ? 420 : 260, window.innerWidth - 24);
             const availableAbove = rect.top - 12;
-            const fitsAbove = availableAbove >= 150;
+            const availableBelow = window.innerHeight - rect.bottom - 12;
+            const fitsAbove = useLargeMobileLayout
+                ? availableAbove >= availableBelow
+                : availableAbove >= 150;
+            const maxHeight = useLargeMobileLayout
+                ? Math.max(120, Math.min(window.innerHeight * 0.7, fitsAbove ? availableAbove : availableBelow))
+                : Math.max(120, Math.min(300, fitsAbove ? availableAbove : window.innerHeight - rect.bottom - 16));
+            const centeredLeft = useLargeMobileLayout ? rect.left + rect.width / 2 - width / 2 : rect.left;
             setPosition({
-                left: Math.max(12, Math.min(rect.left, window.innerWidth - width - 12)),
+                left: Math.max(12, Math.min(centeredLeft, window.innerWidth - width - 12)),
                 top: fitsAbove ? 12 : rect.bottom + 4,
                 bottom: fitsAbove ? window.innerHeight - rect.top + 4 : undefined,
                 width,
-                maxHeight: Math.max(120, Math.min(300, fitsAbove ? availableAbove : window.innerHeight - rect.bottom - 16)),
+                maxHeight,
+                rowHeight: useLargeMobileLayout ? 44 : 34,
             });
         };
         updatePosition();
@@ -124,7 +134,7 @@ export const TargetChipPicker: FC<Props> = ({
             window.removeEventListener('resize', updatePosition);
             window.removeEventListener('scroll', updatePosition, true);
         };
-    }, [anchorRef, commonTargets.length, isOpen]);
+    }, [anchorRef, commonTargets.length, isOpen, largeOnMobile]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -146,7 +156,7 @@ export const TargetChipPicker: FC<Props> = ({
     if (!isOpen || isClassicMode || typeof document === 'undefined') return null;
     const normalizedTarget = currentTarget?.trim().toLowerCase() ?? '';
     const largestColumnLength = Math.max(suggestions.length, commonTargets.length);
-    const rowsHeight = largestColumnLength > 0 ? largestColumnLength * 34 : 36;
+    const rowsHeight = largestColumnLength > 0 ? largestColumnLength * position.rowHeight : 36;
     const pickerHeight = Math.min(
         position.maxHeight,
         34 + (commonTargets.length ? 18 : 0) + rowsHeight + (onManualEntry ? 40 : 0)
@@ -155,7 +165,7 @@ export const TargetChipPicker: FC<Props> = ({
     return createPortal(
         <div
             ref={pickerRef}
-            className="docked-target-picker"
+            className={`docked-target-picker${largeOnMobile ? ' is-large-on-mobile' : ''}`}
             role="listbox"
             aria-label={title}
             style={{ left: position.left, top: position.bottom === undefined ? position.top : undefined, bottom: position.bottom, width: position.width, height: pickerHeight, maxHeight: position.maxHeight }}

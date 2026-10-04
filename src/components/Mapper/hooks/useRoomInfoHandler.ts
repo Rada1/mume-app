@@ -57,7 +57,10 @@ export const useRoomInfoHandler = ({
     const exploredSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
-        let gmcpId = data.num !== undefined ? data.num : (data.vnum !== undefined ? data.vnum : data.id);
+        // MUME can omit the room id entirely when the player cannot see. Treat that
+        // observation like VNUM 0 so queued direction, exits, and local map evidence
+        // can still resolve the room instead of dropping the update here.
+        let gmcpId = data.num ?? data.vnum ?? data.id ?? 0;
         const gmcpName = stripAnsi(data.name) || 'Unknown Room';
         const gmcpArea = data.area || data.zone || 'Unknown Zone';
         let targetId: string | null = null;
@@ -66,8 +69,6 @@ export const useRoomInfoHandler = ({
         let discoverySource: string | null = null;
         const isSpectateUpdate = data.spectating === true;
         const isTextRoomEvent = data.source === 'text';
-
-        if (gmcpId === undefined || gmcpId === null) return;
 
         const activeRoomId = currentRoomIdRef.current;
         // If we have a ghost/preMove, we should use the room we actually WERE in for distance checks

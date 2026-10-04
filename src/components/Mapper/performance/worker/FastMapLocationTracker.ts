@@ -1,6 +1,6 @@
 /**
- * @file Worker-owned MUME room tracking adapted from WebCockpit's MMapper locator.
- * Builds the lookup index once per map; game events only update navigation state.
+ * @file Reference-only MUME room tracking experiment adapted from WebCockpit.
+ * The active client resolves location in MapperContext; this duplicate worker locator is intentionally unused.
  */
 // --- Logic Section ---
 

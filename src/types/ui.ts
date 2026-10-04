@@ -34,13 +34,18 @@ export interface QuickButton {
 export type ActionType = 'command' | 'menu' | 'nav' | 'select-assign' | 'select-recipient' | 'select-container' | 'assign' | 'historical' | 'preload' | 'show' | 'modifier';
 export type ObjectDragRow = 'inventory' | 'worn' | 'room';
 
-export interface ObjectDragSource {
+export interface ObjectDragItem {
     row: ObjectDragRow;
     noun: string;
     label: string;
     itemId?: string;
     parentContainerNoun?: string;
     parentContainerId?: string;
+}
+
+export interface ObjectDragSource extends ObjectDragItem {
+    selectedItems?: ObjectDragItem[];
+    sourceLevelItemIds?: string[];
 }
 
 export type ObjectDropTarget =

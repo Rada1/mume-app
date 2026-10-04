@@ -38,8 +38,6 @@ export interface FastMapFrame {
   brightness: number;
 }
 
-export type FastMapGameEvent = { kind: 'moved' | 'room-info'; data: unknown };
-
 export type MainToFastMapWorker =
   | { type: 'init'; canvas: OffscreenCanvas; width: number; height: number; dpr: number; metrics: boolean; transparentBackground: boolean }
   | { type: 'load-map'; map: FastMapData }
@@ -51,8 +49,6 @@ export type MainToFastMapWorker =
   | { type: 'visit-room'; roomId: string }
   | { type: 'resize'; width: number; height: number; dpr: number }
   | { type: 'frame'; frame: FastMapFrame }
-  | { type: 'game-event'; event: FastMapGameEvent }
-  | { type: 'sync-room'; roomId: string | null }
   | { type: 'metrics'; enabled: boolean };
 
 export interface FastMapWorkerMetrics {
@@ -72,5 +68,4 @@ export type FastMapWorkerEvent =
   | { type: 'ready' }
   | { type: 'map-loaded'; roomCount: number; staticBuildMs: number; mapLoads: number }
   | { type: 'error'; stage: 'init' | 'map' | 'render'; message: string; stack?: string }
-  | { type: 'location'; roomId: string; matchedBy: 'id' | 'learned' | 'direction' | 'text' }
   | { type: 'metrics'; stats: FastMapWorkerMetrics };

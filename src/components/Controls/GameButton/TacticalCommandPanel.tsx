@@ -6,6 +6,8 @@ import { getRoomTargetSuggestions, getSelfTargetSuggestion, isTargetSuggestionMa
 import { BLANK_TARGET_VALUE, canCommandAcceptTarget, getDefaultCommandTarget, isOffensiveSingleTargetCommand, LOOK_IN_TARGET_VALUE } from '../../../utils/commandTargetUtils';
 import type { EntityColorMap } from '../../../utils/inlineActionModel';
 import { getTargetClassificationColor } from '../../../utils/targetClassificationColor';
+import { useCurrentRoomHasDoor } from '../../../hooks/useCurrentRoomHasDoor';
+import { isDoorPresenceSpellCommand } from '../../../utils/doorCommandUtils';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { useRoomStore } from '../../../stores/useRoomStore';
 import { ButtonSwipeOverlay } from './ButtonSwipeOverlay';
@@ -105,6 +107,7 @@ export const TacticalCommandPanel: React.FC<Props> = ({
     const theme = useSettingsStore(state => state.theme);
     const entityColors: EntityColorMap = { object: objectColor, player: playerColor, npc: npcColor, enemy: enemyColor, neutral: neutralColor };
     const roomChars = useRoomStore(state => state.chars);
+    const hasRoomDoor = useCurrentRoomHasDoor();
     const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
     const classificationSuggestions = useMemo(() => [
         getSelfTargetSuggestion(),
@@ -127,6 +130,7 @@ export const TacticalCommandPanel: React.FC<Props> = ({
                 : null;
         }
         if (!swipeCommand.trim() || !canCommandAcceptTarget(swipeCommand)) return null;
+        if (isDoorPresenceSpellCommand(swipeCommand) && !hasRoomDoor) return null;
         // Keep wheel target glows tied to each command's own default target.
         // The hovered command's pending selection is transient and must not
         // suppress the chip glow on other commands in the wheel.
@@ -157,7 +161,7 @@ export const TacticalCommandPanel: React.FC<Props> = ({
         const lockedTargetValue = activeTarget ? normalize(activeTarget) : '';
         if (!lockedTargetValue || lockedTargetValue !== chipValue) return '#f87171';
         return getTargetClassificationColor(selectedMeta, inlineCategories, entityColors, theme) || '#f87171';
-    }, [activeTarget, classificationSuggestions, entityColors, inlineCategories, suggestions, targetChipTarget, targeting.getEffectiveTarget, theme]);
+    }, [activeTarget, classificationSuggestions, entityColors, hasRoomDoor, inlineCategories, suggestions, targetChipTarget, targeting.getEffectiveTarget, theme]);
 
     const handleSelectTarget = (value: string, _keepOpenAfterFire = false) => {
         if (wheelReplacementMode) {

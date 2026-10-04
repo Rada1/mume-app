@@ -159,6 +159,10 @@
     line-height: 1;
 }
 
+.mobile-tactical-class-group {
+    display: contents;
+}
+
 @keyframes tactical-line-cascade-glow {
     0%, 100% {
         opacity: 0.22;
@@ -252,6 +256,11 @@
 .tactical-line-wrapper .line-btn.tactical-defense-ready .custom-btn-icon-node svg {
     color: var(--target-glow-color) !important;
     stroke: var(--target-glow-color) !important;
+}
+
+.tactical-line-wrapper .line-btn.tactical-doors .custom-btn-icon-node svg {
+    color: #f97316 !important;
+    stroke: #f97316 !important;
 }
 
 .tactical-line-wrapper .line-btn:not(.triggered):not(:active):not(.is-swiping) .button-icon,
@@ -353,12 +362,6 @@
     padding: 0 4px;
     z-index: 20;
     overflow: visible;
-}
-
-body:has(.this-is-you-console.is-mobile:not(.is-minimized)) .mobile-command-deck-persistent,
-body:has(.this-is-you-console.is-mobile:not(.is-minimized)) .mobile-tactical-buttons-persistent {
-    opacity: 0;
-    pointer-events: none;
 }
 
 .mobile-tactical-buttons-persistent .tactical-line-wrapper {

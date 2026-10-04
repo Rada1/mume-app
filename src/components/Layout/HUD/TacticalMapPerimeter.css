@@ -3,6 +3,8 @@
 /* --- Expanded Map Controls --- */
 .mobile-map-panel.map-expanded {
     --tactical-control-size: clamp(52px, 15vw, 62px);
+    --tactical-class-control-size: clamp(52px, 16vw, 66px);
+    --tactical-edge-inset: clamp(4px, 1.5vw, 8px);
 }
 
 .mobile-map-panel.map-expanded .mobile-map-command-overlay {
@@ -13,7 +15,13 @@
     height: 100%;
     transform: none;
     z-index: 2800;
-    display: block;
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+    align-items: center;
+    justify-items: center;
+    padding: var(--tactical-edge-inset) 0;
+    box-sizing: border-box;
     pointer-events: none;
 }
 
@@ -34,30 +42,15 @@
 }
 
 .mobile-map-panel.map-expanded .mobile-command-deck-persistent {
-    position: absolute;
-    top: 0;
-    left: clamp(18px, 5vw, 32px);
-    right: clamp(18px, 5vw, 32px);
-    width: auto;
-    height: var(--tactical-control-size);
-    transform: none;
-    z-index: 1;
+    display: contents !important;
 }
 
-/* Keep the category controls in a slim centered rail above the map. */
 .mobile-map-panel.map-expanded .mobile-command-deck-persistent .command-deck {
-    display: block !important;
-    width: 100%;
-    height: 100%;
+    display: contents !important;
 }
 
 .mobile-map-panel.map-expanded .mobile-command-deck-persistent .deck-tab-rail {
-    display: grid !important;
-    width: 100%;
-    height: 100%;
-    grid-template-columns: var(--tactical-control-size) repeat(3, minmax(0, 1fr)) var(--tactical-control-size);
-    grid-template-rows: minmax(0, 1fr);
-    gap: 0;
+    display: contents !important;
 }
 
 .mobile-map-panel.map-expanded .mobile-command-deck-persistent .deck-category-control {
@@ -72,73 +65,52 @@
     z-index: 2;
 }
 
-/* Center the five category controls together in the top rail. */
-.mobile-map-panel.map-expanded [data-id="deck-category-combat"] { grid-column: 1; }
-.mobile-map-panel.map-expanded [data-id="deck-category-social"] { grid-column: 2; }
-.mobile-map-panel.map-expanded [data-id="deck-category-utility"] { grid-column: 3; }
-.mobile-map-panel.map-expanded [data-id="deck-category-consume"] { grid-column: 4; }
-.mobile-map-panel.map-expanded [data-id="deck-category-mounts"] { grid-column: 5; }
-
-/* The six main tactical buttons sit as three-button stacks in the map corners.
-   The inset leaves finger travel for swipes toward the screen edges. */
 .mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent {
-    position: absolute;
-    top: calc(var(--tactical-control-size) + 14px);
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 2800;
-    display: block !important;
-    padding: 0 clamp(18px, 5vw, 32px);
-    pointer-events: none;
+    display: contents !important;
 }
 
 .mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .tactical-line-wrapper {
-    width: 100%;
-    height: 100%;
-    justify-content: flex-start;
-    pointer-events: none;
-    margin: 0;
+    display: contents !important;
 }
 
 .mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster {
-    display: grid !important;
-    width: 100% !important;
-    grid-template-columns: var(--tactical-control-size) minmax(0, 1fr) var(--tactical-control-size);
-    grid-template-rows: repeat(3, var(--tactical-control-size));
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px 0 !important;
-    padding: 0 !important;
-    margin: 0;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    pointer-events: none;
+    display: contents !important;
 }
 
 .mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-step {
-    display: flex !important;
-    width: var(--tactical-control-size);
-    height: var(--tactical-control-size);
-    min-width: var(--tactical-control-size);
+    display: contents !important;
+}
+
+.mobile-map-panel.map-expanded .mobile-tactical-class-group {
+    display: grid !important;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row;
     align-items: center;
-    justify-content: center;
+    justify-items: center;
+    align-self: stretch;
+    justify-self: center;
+    width: calc(100% - 4px);
+    height: 100%;
+    box-sizing: border-box;
+    border: 1px solid rgba(190, 195, 202, 0.48);
+    border-radius: 12px;
+    background: rgba(150, 158, 170, 0.045);
     pointer-events: none;
 }
 
-.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-step:nth-child(1) { grid-area: 1 / 1; }
-.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-step:nth-child(2) { grid-area: 2 / 1; }
-.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-step:nth-child(3) { grid-area: 3 / 1; }
-.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-step:nth-child(4) { grid-area: 1 / 3; }
-.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-step:nth-child(5) { grid-area: 2 / 3; }
-.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-step:nth-child(6) { grid-area: 3 / 3; }
-.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-step:nth-child(7) {
-    grid-area: 3 / 2;
-    justify-self: center;
-}
+/* One shared tactical grid places category, class, map, and movement buttons. */
+.mobile-map-panel.map-expanded [data-id="deck-category-combat"] { grid-area: 1 / 2; }
+.mobile-map-panel.map-expanded [data-id="deck-category-social"] { grid-area: 1 / 1; }
+.mobile-map-panel.map-expanded [data-id="tactical-doors"] { grid-area: 1 / 3; }
+.mobile-map-panel.map-expanded [data-id="deck-category-consume"] { grid-area: 1 / 4; }
+.mobile-map-panel.map-expanded [data-id="deck-category-mounts"] { grid-area: 1 / 5; }
+.mobile-map-panel.map-expanded .mobile-tactical-class-group-mage-cleric { grid-area: 2 / 1 / 4 / 2; }
+.mobile-map-panel.map-expanded .mobile-tactical-class-group-warrior-thief { grid-area: 2 / 5 / 4 / 6; }
+.mobile-map-panel.map-expanded [data-id="tactical-ranger"] { grid-area: 4 / 1; }
+.mobile-map-panel.map-expanded [data-id="map-action-flee"] { grid-area: 4 / 2; }
+.mobile-map-panel.map-expanded [data-id="tactical-eye"] { grid-area: 4 / 3; }
+.mobile-map-panel.map-expanded [data-id="map-action-hit"] { grid-area: 4 / 4; }
+.mobile-map-panel.map-expanded [data-id="deck-category-utility"] { grid-area: 4 / 5; }
 
 .mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .custom-btn {
     position: relative !important;
@@ -149,13 +121,6 @@
     min-height: var(--tactical-control-size) !important;
     border-radius: 12px !important;
     pointer-events: auto;
-}
-
-.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-step:nth-child(7) .custom-btn {
-    width: var(--tactical-control-size) !important;
-    height: var(--tactical-control-size) !important;
-    min-width: var(--tactical-control-size) !important;
-    min-height: var(--tactical-control-size) !important;
 }
 
 .mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .custom-btn-icon-node svg {
@@ -178,19 +143,19 @@
     max-width: 54px;
 }
 
-/* Center Look between Flee and Hit on the bottom row. */
-.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-step:nth-child(7) .button-label {
+/* Keep Look centered between Flee and Hit in the shared bottom row. */
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-btn.tactical-eye .button-label {
     font-size: 0.42rem !important;
     max-width: 54px;
 }
 
-/* The category rail and corner buttons stay interactive outside the map swipe wheel. */
+/* All map controls stay interactive outside the map swipe wheel. */
 .mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-step .custom-btn:active,
 .mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-step .custom-btn.is-swiping {
     z-index: 2;
 }
 
-/* Equal, labeled category buttons stay centered in the top rail. */
+/* Use identical button sizing and grid alignment for every map control. */
 .mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn {
     position: relative !important;
     inset: auto !important;
@@ -206,6 +171,21 @@
     border-radius: 0 !important;
     box-sizing: border-box;
     pointer-events: auto;
+}
+
+.mobile-map-panel.map-expanded .mobile-tactical-class-group .custom-btn {
+    width: var(--tactical-class-control-size) !important;
+    height: var(--tactical-class-control-size) !important;
+    min-width: var(--tactical-class-control-size) !important;
+    min-height: var(--tactical-class-control-size) !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.mobile-map-panel.map-expanded .mobile-tactical-class-group .custom-btn-icon-node svg {
+    width: 40px;
+    height: 40px;
 }
 
 .mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn-icon-node svg {
@@ -233,26 +213,7 @@ body:has(.mapper-container.map-swipe-wheel-open) .mobile-map-panel.map-expanded 
 }
 
 .mobile-map-panel.map-expanded .mobile-map-bottom-actions {
-    position: absolute;
-    top: calc(var(--tactical-control-size) + 14px + var(--tactical-control-size) + 8px + var(--tactical-control-size) + 8px);
-    left: clamp(18px, 5vw, 32px);
-    right: clamp(18px, 5vw, 32px);
-    height: var(--tactical-control-size);
-    z-index: 2800;
-    display: grid;
-    grid-template-columns: var(--tactical-control-size) repeat(3, minmax(0, 1fr)) var(--tactical-control-size);
-    grid-template-rows: minmax(0, 1fr);
-    pointer-events: none;
-}
-
-.mobile-map-panel.map-expanded .mobile-map-bottom-actions [data-id="map-action-hit"] {
-    grid-column: 4;
-    grid-row: 1;
-}
-
-.mobile-map-panel.map-expanded .mobile-map-bottom-actions [data-id="map-action-flee"] {
-    grid-column: 2;
-    grid-row: 1;
+    display: contents !important;
 }
 
 .mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn {
@@ -274,6 +235,14 @@ body:has(.mapper-container.map-swipe-wheel-open) .mobile-map-panel.map-expanded 
     color: rgba(255, 255, 255, 0.72) !important;
     box-sizing: border-box;
     pointer-events: auto;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions [data-id="map-action-hit"],
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions [data-id="map-action-flee"] {
+    top: -8px !important;
+    border: 1px solid rgba(190, 195, 202, 0.48) !important;
+    border-radius: 12px !important;
+    background: rgba(150, 158, 170, 0.045) !important;
 }
 
 .mobile-map-panel.map-expanded .mobile-map-bottom-actions .button-label {
@@ -325,10 +294,3 @@ body:has(.mapper-container.map-swipe-wheel-open) .mobile-map-panel.map-expanded 
     pointer-events: none !important;
 }
 
-/* Hide individual map buttons because expanded-map wrappers use display: contents. */
-body:has(.this-is-you-console.is-mobile:not(.is-minimized)) .mobile-map-panel .mobile-map-command-overlay .custom-btn,
-body:has(.this-is-you-console.is-mobile:not(.is-minimized)) .mobile-map-panel .mobile-tactical-buttons-persistent .custom-btn,
-body:has(.this-is-you-console.is-mobile:not(.is-minimized)) .mobile-map-panel .mobile-map-bottom-actions .custom-btn {
-    opacity: 0 !important;
-    pointer-events: none !important;
-}

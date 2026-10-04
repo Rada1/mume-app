@@ -1,0 +1,23 @@
+/** @file GearSelectionCheckbox.css — Shared gold checkbox styling for gear and loot lists. */
+
+/* --- Control Section --- */
+.gear-selection-control { display: inline-flex; flex: 0 0 36px; align-items: center; justify-content: center; gap: 4px; width: 36px; min-height: 36px; padding: 2px; border: 1px solid transparent; border-radius: 4px; background: transparent; color: var(--text-dim); font: inherit; cursor: pointer; }
+.gear-selection-control:hover { border-color: rgba(201,168,76,.36); background: rgba(201,168,76,.08); color: var(--accent); }
+.gear-selection-control:focus-visible { outline: 2px solid rgba(201,168,76,.7); outline-offset: 1px; }
+.gear-selection-box { position: relative; display: inline-block; flex: 0 0 17px; width: 17px; height: 17px; border: 1px solid rgba(201,168,76,.65); border-radius: 3px; background: color-mix(in srgb, var(--bg-app) 82%, var(--accent)); box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+.gear-selection-box::after { content: ''; position: absolute; display: none; }
+.gear-selection-control.is-checked .gear-selection-box { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 7px rgba(201,168,76,.28); }
+.gear-selection-control.is-checked .gear-selection-box::after { display: block; left: 5px; top: 1px; width: 4px; height: 8px; border: solid var(--bg-app); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.gear-selection-control.is-mixed .gear-selection-box { border-color: var(--accent); background: rgba(201,168,76,.18); }
+.gear-selection-control.is-mixed .gear-selection-box::after { display: block; left: 3px; top: 7px; width: 9px; height: 2px; border-radius: 2px; background: var(--accent); }
+.gear-selection-control:disabled { cursor: not-allowed; opacity: .3; }
+.gear-selection-control.is-large { flex: 0 0 auto; width: auto; min-width: 86px; padding: 0 6px; border-color: rgba(201,168,76,.28); background: rgba(201,168,76,.045); }
+.gear-selection-control.is-large .gear-selection-box { flex-basis: 21px; width: 21px; height: 21px; }
+.gear-selection-control.is-large.is-checked .gear-selection-box::after { left: 6px; top: 2px; width: 5px; height: 10px; }
+.gear-selection-control.is-large.is-mixed .gear-selection-box::after { left: 4px; top: 9px; width: 11px; }
+.gear-selection-label { color: inherit; font-size: 9px; font-weight: 700; letter-spacing: .025em; text-transform: uppercase; white-space: nowrap; }
+
+@media (max-width: 768px) {
+    .gear-selection-control { flex-basis: 44px; width: 44px; min-height: 44px; }
+    .gear-selection-control.is-large { flex-basis: auto; width: auto; min-width: 92px; }
+}

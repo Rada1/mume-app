@@ -1,6 +1,6 @@
 /** @file objectDragUtils.ts — Drop target and command rules for gear dragging. */
 
-import type { ObjectDragSource, ObjectDropTarget } from '../types';
+import type { ObjectDragItem, ObjectDragSource, ObjectDropTarget } from '../types';
 
 // --- Logic Section ---
 
@@ -42,6 +42,14 @@ const isSameRow = (source: ObjectDragSource, target: ObjectDropTarget): boolean 
 
 export const isValidObjectDragTarget = (source: ObjectDragSource, target: ObjectDropTarget | null): target is ObjectDropTarget => {
     if (!target) return false;
+    if (source.selectedItems?.length) {
+        return source.selectedItems.every(item => isValidSingleObjectDragTarget(item, target));
+    }
+    return isValidSingleObjectDragTarget(source, target);
+};
+
+const isValidSingleObjectDragTarget = (source: ObjectDragItem, target: ObjectDropTarget | null): target is ObjectDropTarget => {
+    if (!target) return false;
     if (target.type === 'container') return source.row === 'inventory'
         && !source.parentContainerNoun && source.itemId !== target.containerId;
     if (source.parentContainerNoun) return target.type === 'row' && target.row === 'inventory';
@@ -61,7 +69,7 @@ export const getValidObjectDropTarget = (source: ObjectDragSource, element: Elem
     return isValidObjectDragTarget(source, sectionTarget) ? sectionTarget : null;
 };
 
-export const getObjectDragCommand = (source: ObjectDragSource, target: ObjectDropTarget): string | null => {
+const getSingleObjectDragCommand = (source: ObjectDragItem, target: ObjectDropTarget): string | null => {
     if (target.type === 'container') return source.row === 'inventory' && !source.parentContainerNoun
         && source.itemId !== target.containerId ? `put ${source.noun} ${target.noun}` : null;
     if (source.parentContainerNoun) return target.type === 'row' && target.row === 'inventory'
@@ -75,4 +83,48 @@ export const getObjectDragCommand = (source: ObjectDragSource, target: ObjectDro
     if (source.row === 'inventory' && target.row === 'room') return `drop ${source.noun}`;
     if (source.row === 'room' && target.row === 'inventory') return `get ${source.noun}`;
     return null;
+};
+
+const isCompleteSourceLevel = (items: ObjectDragItem[], sourceLevelItemIds?: string[]): boolean => {
+    if (!sourceLevelItemIds?.length || items.length !== sourceLevelItemIds.length) return false;
+    const selectedIds = new Set(items.map(item => item.itemId).filter((id): id is string => Boolean(id)));
+    return selectedIds.size === sourceLevelItemIds.length && sourceLevelItemIds.every(id => selectedIds.has(id));
+};
+
+export const getObjectDragCommands = (source: ObjectDragSource, target: ObjectDropTarget): string[] | null => {
+    const items = source.selectedItems?.length ? source.selectedItems : [source];
+    if (!items.every(item => isValidSingleObjectDragTarget(item, target))) return null;
+
+    if (isCompleteSourceLevel(items, source.sourceLevelItemIds)) {
+        if (target.type === 'row' && target.row === 'inventory'
+            && items.every(item => item.row === 'room' && !item.parentContainerNoun)) return ['get all'];
+        if (target.type === 'row' && target.row === 'inventory'
+            && items.every(item => item.row === 'worn' && !item.parentContainerNoun)) return ['remove all'];
+        if (target.type === 'row' && target.row === 'room'
+            && items.every(item => item.row === 'inventory' && !item.parentContainerNoun)) return ['drop all'];
+        if (target.type === 'row' && target.row === 'worn' && !target.slot
+            && items.every(item => item.row === 'inventory' && !item.parentContainerNoun)) return ['wear all'];
+    }
+
+    if (target.type === 'row' && target.row === 'inventory' && items.every(item => item.parentContainerNoun)) {
+        const containerNoun = items[0]?.parentContainerNoun;
+        const containerId = items[0]?.parentContainerId;
+        const sameContainer = Boolean(containerNoun) && items.every(item =>
+            item.parentContainerNoun === containerNoun && item.parentContainerId === containerId);
+        if (sameContainer && isCompleteSourceLevel(items, source.sourceLevelItemIds)) return [`get all ${containerNoun}`];
+    }
+
+    if (target.type === 'container' && items.every(item => item.row === 'inventory' && !item.parentContainerNoun)
+        && isCompleteSourceLevel(items, source.sourceLevelItemIds)) {
+        return [`put all ${target.noun}`];
+    }
+
+    return items.map(item => getSingleObjectDragCommand(item, target)).filter((command): command is string => Boolean(command));
+};
+
+export const getObjectDragCommand = (source: ObjectDragSource, target: ObjectDropTarget): string | null => {
+    const commands = getObjectDragCommands(source, target);
+    if (!commands?.length) return null;
+    if (commands.length === 1) return commands[0]!;
+    return `move ${commands.length} items`;
 };

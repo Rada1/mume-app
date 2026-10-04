@@ -28,6 +28,11 @@
         border-top-color: transparent !important;
     }
 
+    /* The open This Is You panel replaces the divider above the map Find bar. */
+    .app-container:has(.this-is-you-console:not(.is-mobile):not(.is-minimized)) .map-filter-bar {
+        border-top-color: transparent !important;
+    }
+
     .app-container .map-filter-bar.collapsed {
         justify-content: center;
     }

@@ -1,13 +1,13 @@
 # Mapper (`src/components/Mapper/`)
 
 The map renderer and room locator are separate concerns. All modes use the
-worker-owned WebGL2 renderer for map drawing, with the existing Canvas2D renderer
-available as a fallback. Immersion and Performance Modes send raw MUME
-`Event.Moved` and `Room.Info` events to the map worker. The worker
-applies WebCockpit's server-ID, learned-ID, movement-direction, and
-name/description location order before updating the shared `MapperContext`
-position. It seeds from the current room once per map load; per-packet app
-guesses do not reset its tracking history.
+worker-owned WebGL2 renderer for map drawing. The legacy Canvas2D renderer remains
+in `MapCanvas.tsx` for reference, but the active client never mounts it, including
+when worker or WebGL setup fails. `MapperContext` is the single source of truth for
+player location. It consumes GMCP room updates, text-derived room observations, and
+XML movement confirmations, including the no-room-ID darkness path; the worker only
+receives resolved player coordinates and exploration state to render. Keep worker
+protocol and rendering details under `performance/`.
 
 ## Renderers
 
@@ -35,8 +35,8 @@ group-location list is sent when it changes. The fast renderer omits region art,
 non-group entity art, and exploration overlays.
 Immersion keeps its DOM-based atmospheric scene and surrounding UI while all
 modes share the worker-owned WebGL2 map renderer. If worker-owned WebGL2 cannot
-initialize or later fails, the canvas is remounted through the existing Canvas2D
-renderer.
+initialize or later fails, the map reports the error and remains unavailable; it
+does not switch to the retained Canvas2D implementation.
 
 Startup loads `public/nazgum-latest.mm2` by default with WebCockpit's
 version-aware reader (schemas 17–42, except 37). The old
@@ -44,8 +44,7 @@ version-aware reader (schemas 17–42, except 37). The old
 `.mm2` files use the same reader. The canonical model is retained alongside
 compatibility tuples. All modes pass canonical `.mm2` typed arrays to the worker;
 the JSON compatibility fallback uses the tuple adapter. Its CSR exit graph keeps
-multiple destinations on one direction, and the worker builds its room locator
-index once per map load. XML imports use the tuple adapter. Hit-testing still
+multiple destinations on one direction for rendering and path lookups. XML imports use the tuple adapter. Hit-testing still
 uses the shared tuple-based handler. Performance Mode's
 click-to-walk planner searches the canonical MM2 graph directly, retaining all
 destinations in multi-target exits, the `out` direction, and live closed exits. It falls

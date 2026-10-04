@@ -115,9 +115,9 @@ export const getClassPalette = (
     });
 };
 
-const WHEEL_FILL_ORDER: SwipeDirection[] = ['nw', 'up', 'ne', 'left', 'right', 'sw', 'down', 'se'];
+const WHEEL_FILL_ORDER: SwipeDirection[] = ['up', 'right', 'down', 'left', 'nw', 'ne', 'sw', 'se'];
 
-/** Fill empty directional cells from the remaining usable palette commands, top row to bottom row. */
+/** Fill empty cardinal cells first, then diagonals, leaving remaining commands in the palette below the wheel. */
 export const fillEmptyWheelCells = (
     button: CustomButton,
     commands: TacticalPaletteCommand[]

@@ -48,7 +48,6 @@ export interface MapCanvasProps {
     onPointerDown?: (e: React.PointerEvent) => void;
     onPointerMove?: (e: React.PointerEvent) => void;
     onPointerUp?: (e: React.PointerEvent) => void;
-    onPlayerRoom?: (id: string) => void;
     triggerRender?: () => void;
     unveilMap?: boolean;
     treatMapAsExplored?: boolean;
@@ -259,17 +258,14 @@ const LegacyMapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps 
 LegacyMapCanvas.displayName = 'LegacyMapCanvas';
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
-    const [workerFailed, setWorkerFailed] = React.useState(false);
-    const [workerFailureReason, setWorkerFailureReason] = React.useState<string | undefined>();
-
-    if (!workerFailed) {
-        return <FastMapCanvas ref={ref} mapProps={props} transparentBackground={props.isImmersionMode === true} onFallback={reason => {
-            console.error('[Mapper] WebGL renderer fell back to Canvas2D:', reason);
-            setWorkerFailureReason(reason);
-            setWorkerFailed(true);
-        }} />;
-    }
-    return <LegacyMapCanvas {...props} ref={ref} rendererFallbackReason={workerFailureReason} />;
+    return <FastMapCanvas
+        ref={ref}
+        mapProps={props}
+        transparentBackground={props.isImmersionMode === true}
+        onFallback={reason => {
+            console.error('[Mapper] WebGL renderer failed; Canvas2D fallback is disabled:', reason);
+        }}
+    />;
 }));
 
 MapCanvas.displayName = 'MapCanvas';

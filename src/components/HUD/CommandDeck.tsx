@@ -35,7 +35,6 @@ import type { CommandTargetSuggestion } from '../../utils/commandSuggestionUtils
 import './CommandDeck.css';
 
 const DECK_WHEEL_STORAGE_KEY = 'mud-deck-wheel-actions';
-const WHEEL_DIRECTIONS = ['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'] as const;
 type DeckWheelAssignments = Partial<Record<TabKey, Array<string | null>>>;
 
 const getWheelActionKey = (item: DeckItem): string => `${item.label.trim()}::${item.cmd.trim()}`;
@@ -51,6 +50,7 @@ const getWheelActionForCommand = (actions: DeckItem[], command: string): DeckIte
 };
 
 const WHEEL_DIRECTION_MAP: SwipeDirection[] = ['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'];
+const WHEEL_FILL_PRIORITY: SwipeDirection[] = ['up', 'right', 'down', 'left', 'nw', 'ne', 'sw', 'se'];
 
 const makeDeckItem = (item: DeckItem): DeckItem => ({
     ...item,
@@ -360,20 +360,24 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                     const defaults = DECK_ACTIONS[tab.key].map(makeDeckItem);
                     const categoryAvailableActions = defaults.filter(item => isDeckActionAvailable(item, race, subrace));
                     const savedKeys = deckWheelAssignments[tab.key];
+                    const defaultCenterAction = categoryAvailableActions[0];
+                    const defaultWheelActions = Object.fromEntries(
+                        WHEEL_FILL_PRIORITY.map((direction, index) => [direction, categoryAvailableActions[index + 1]])
+                    ) as Partial<Record<SwipeDirection, DeckItem>>;
+                    const defaultSpokeActions = WHEEL_DIRECTION_MAP.map(direction => defaultWheelActions[direction]);
                     const categoryActions = savedKeys?.length
                         ? Array.from({ length: 8 }, (_, index) => {
-                            if (index >= savedKeys.length) return defaults[index];
+                            if (index >= savedKeys.length) return defaultSpokeActions[index];
                             const key = savedKeys[index];
                             if (!key) return undefined;
                             const item = categoryAvailableActions.find(action => getWheelActionKey(action) === key);
-                            if (!item) return defaults[index];
+                            if (!item) return defaultSpokeActions[index];
                             return item;
                         })
-                        : defaults.slice(0, 8);
+                        : defaultSpokeActions;
                     const assignedSpokeKeys = new Set(categoryActions
                         .filter((item): item is DeckItem => item !== undefined && isDeckActionAvailable(item, race, subrace))
                         .map(item => getWheelActionKey(item)));
-                    const defaultCenterAction = categoryAvailableActions.find(item => !assignedSpokeKeys.has(getWheelActionKey(item)));
                     const savedCenterKey = savedKeys?.[8];
                     const savedCenterAction = savedCenterKey
                         ? categoryAvailableActions.find(item => getWheelActionKey(item) === savedCenterKey)
@@ -442,7 +446,7 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                     };
                     const getCurrentWheelKeys = (savedKeys?: Array<string | null>) => Array.from({ length: 9 }, (_, index) => {
                         if (savedKeys && index < savedKeys.length) return savedKeys[index];
-                        if (index < 8) return defaults[index] ? getWheelActionKey(defaults[index]) : null;
+                        if (index < 8) return defaultSpokeActions[index] ? getWheelActionKey(defaultSpokeActions[index]!) : null;
                         return defaultCenterAction ? getWheelActionKey(defaultCenterAction) : null;
                     });
                     const swapCategoryCells = (sourceIndex: number, destinationIndex: number, displayedCenterCommand: string): boolean | string => {

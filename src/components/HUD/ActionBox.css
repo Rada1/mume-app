@@ -50,77 +50,50 @@
     padding: 0 4px;
 }
 
-.action-box.is-mobile .this-is-you-console:not(.is-minimized) .this-is-you-body-wrapper {
-    padding: 10px 4px 8px;
-    background: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    border-bottom: 1px solid rgba(201, 168, 76, 0.2);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
-}
-
-.action-box.is-mobile .this-is-you-console:not(.is-minimized) {
-    background: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-}
-
-/* Parent opacity creates a backdrop root, preventing the expanded glass layers
-   from blurring the map and log behind them. */
-.action-box.is-mobile:has(.this-is-you-console:not(.is-minimized)) {
-    opacity: 1 !important;
-}
-
-.action-box.is-mobile .this-is-you-console:not(.is-minimized) .this-is-you-tier-identity {
-    background: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-}
-
-.this-is-you-expanded-glass {
-    background: rgba(10, 15, 21, 0.2);
-    backdrop-filter: blur(18px) saturate(1.05);
-    -webkit-backdrop-filter: blur(18px) saturate(1.05);
-    pointer-events: none;
-}
-
-.app-container.is-mobile .content-layer:has(.action-box.is-mobile .this-is-you-console:not(.is-minimized)) {
-    z-index: calc(var(--z-hud-interactive) + 1);
-}
-
-.app-container.is-mobile .desktop-center-column:has(.action-box.is-mobile .this-is-you-console:not(.is-minimized)) {
-    overflow: visible !important;
-}
-
-/* Open the character console as a bottom-anchored mobile sheet. */
-.action-box.is-mobile .this-is-you-console:not(.is-minimized) {
+/* Keep the open character console as a bottom sheet outside the log lane. */
+.this-is-you-console.is-mobile-sheet {
     position: fixed;
-    inset-inline: 0;
-    top: auto;
-    bottom: 0;
-    z-index: calc(var(--z-hud-interactive) + 20);
+    inset: auto 0 0;
+    z-index: 65001;
     display: flex;
     width: 100vw;
-    height: 75dvh;
-    max-height: 85dvh;
+    height: min(68dvh, 680px);
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 12px);
     box-sizing: border-box;
     flex-direction: column;
     overflow: hidden;
-    padding: max(10px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
-    border: 1px solid rgba(201, 168, 76, 0.28);
+    padding: 10px 12px max(12px, env(safe-area-inset-bottom));
+    border: 1px solid rgba(201, 168, 76, 0.25);
     border-bottom: 0;
-    border-radius: 14px 14px 0 0;
-    background: rgba(10, 15, 21, 0.97);
-    backdrop-filter: blur(18px) saturate(1.05);
-    -webkit-backdrop-filter: blur(18px) saturate(1.05);
-    box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.48);
+    border-radius: 16px 16px 0 0;
+    background: rgba(0, 0, 0, 0.01);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.28);
 }
 
-.action-box.is-mobile .this-is-you-console:not(.is-minimized) .this-is-you-tier-identity {
+.this-is-you-mobile-sheet-backdrop {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 65000;
+    width: 100vw;
+    height: min(68dvh, 680px);
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 12px);
+    border-radius: 16px 16px 0 0;
+    background: rgba(10, 15, 21, 0.01);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    pointer-events: none;
+}
+
+.this-is-you-console.is-mobile-sheet .this-is-you-tier-identity {
     flex: 0 0 auto;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
-.action-box.is-mobile .this-is-you-console:not(.is-minimized) .this-is-you-body-wrapper {
+.this-is-you-console.is-mobile-sheet .this-is-you-body-wrapper {
     position: relative;
     inset: auto;
     display: block;
@@ -138,7 +111,7 @@
     -webkit-overflow-scrolling: touch;
 }
 
-.action-box.is-mobile .this-is-you-console:not(.is-minimized) .this-is-you-body-inner {
+.this-is-you-console.is-mobile-sheet .this-is-you-body-inner {
     min-height: max-content;
     overflow: visible;
 }

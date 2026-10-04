@@ -30,7 +30,11 @@ tint. Region artwork and other entity art remain omitted.
 The framebuffer is kept at one device pixel per CSS pixel in Performance
 Mode. Immersion Mode uses the same WebGL2 map renderer with a transparent
 canvas, preserving its DOM-based atmospheric scene and surrounding UI beneath
-the map. Regular mode still uses the existing Canvas renderer.
+the map. All active map modes use WebGL2.
+Player room matching stays in `MapperContext`, which receives GMCP, text-derived
+room observations, and XML movement confirmations. The worker only renders the
+resolved player position and exploration state; it does not infer or overwrite
+the player's room.
 Queued, unconfirmed movement commands draw the same solid gold prespammed-path
 line and endpoint used by the regular renderer. The worker resolves the route
 against the canonical exit graph, selects a known first destination when
@@ -86,10 +90,10 @@ duplicate names; ambiguous matches are omitted. This overlay is temporary and
 shared across all three mapper modes, separate from persistent group positions.
 
 When workers, transferable canvases, or WebGL2 are missing, or worker setup,
-asset loading, shader compilation, or rendering fails, the component replaces
-the transferred canvas and falls back to the existing Canvas renderer. The
-worker is terminated when Immersion or Performance Mode ends or the renderer
-unmounts.
+asset loading, shader compilation, or rendering fails, the map reports the
+failure and remains unavailable. The Canvas2D implementation is retained in
+`MapCanvas.tsx` for reference, but the active client never mounts it as a
+fallback. The worker is terminated when the renderer unmounts.
 
 ## Telemetry
 

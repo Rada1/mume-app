@@ -247,8 +247,8 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         } else if (finalCmd === '__clear_target__' || button.command === '__clear_target__') {
             setTarget(null); addMessage('system', 'Target cleared.');
         } else if (finalCmd === '__parley__') {
-            const parleyTarget = context || target || '';
-            setParley({ active: true, command: parley.command || 'tell', target: parleyTarget, message: '' });
+            const parleyTarget = context || target || null;
+            setParley({ active: true, mode: 'parley', command: 'tell', target: parleyTarget, message: '' });
 
             // Focus keyboard
             setTimeout(() => {

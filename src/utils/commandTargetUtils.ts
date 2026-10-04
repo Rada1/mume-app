@@ -16,7 +16,7 @@ const TARGETED_VERBS = new Set([
     'charge', 'rescue', 'bandage', 'track', 'order', 'shoot',
     'hit', 'target', 'steal', 'envenom', 'examine', 'look',
     'open', 'close', 'lock', 'unlock', 'knock', 'ride', 'lead',
-    'disarm', 'tell', 'whisper', 'ask', 'group', 'protect', 'social', 'portal', 'teleport', 'remove'
+    'disarm', 'tell', 'whisper', 'ask', 'group', 'protect', 'social', 'portal', 'teleport', 'remove', 'butcher'
 ]);
 
 const SELF_TARGETED_SPELLS = new Set([
@@ -120,6 +120,7 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
     if (verb === 'buy') return 'shop';
     if (verb === 'weather') return 'weather-scope';
     if (verb === 'eat') return 'food';
+    if (verb === 'butcher') return 'room-corpses';
     if (verb === 'drink') return 'drink';
     if (verb === 'pour') return 'pour';
     if (verb === 'fill') return 'lanterns';
@@ -201,7 +202,7 @@ export const getDefaultCommandTarget = (command: string): string | null => {
         return explicitTarget?.[1]?.trim() || null;
     }
     if (/^look\s+in(?:\s|$)/i.test(command.trim())) return null;
-    if (verb === 'look' || verb === 'assist' || verb === 'locate') return BLANK_TARGET_VALUE;
+    if (verb === 'look' || verb === 'assist' || verb === 'locate' || verb === 'draw') return BLANK_TARGET_VALUE;
     if (verb === 'rescue') return BLANK_TARGET_VALUE;
 
     const kind = getCommandTargetMenuKind(command);

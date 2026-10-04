@@ -338,6 +338,29 @@
     background: rgba(201, 168, 76, 0.12);
 }
 
+@media (max-width: 768px) {
+    .docked-target-picker.is-large-on-mobile {
+        max-height: min(70dvh, 520px);
+        border-radius: 12px;
+        font-size: 13px;
+    }
+
+    .docked-target-picker.is-large-on-mobile .docked-target-picker-title {
+        padding: 11px 14px 9px;
+        font-size: 10px;
+    }
+
+    .docked-target-picker.is-large-on-mobile .docked-target-picker-item,
+    .docked-target-picker.is-large-on-mobile .docked-target-picker-manual {
+        min-height: 44px;
+        padding: 9px 12px;
+    }
+
+    .docked-target-picker.is-large-on-mobile .docked-target-picker-item small {
+        font-size: 9px;
+    }
+}
+
 .docked-input-form {
     flex: 1 1 0;
     min-width: 0;
@@ -626,6 +649,7 @@
     min-height: 34px;
     font-size: max(16px, var(--dynamic-log-size, 16px)) !important;
     line-height: 1.4 !important;
+    padding-block: max(0px, calc((34px - 1.4em) / 2)) !important;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     overflow: hidden !important;
@@ -637,4 +661,25 @@
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     font-size: max(16px, var(--dynamic-log-size, 16px));
+    padding-block: max(0px, calc((34px - 1.4em) / 2));
+    box-sizing: border-box;
+}
+
+/* --- Logic Section --- */
+.app-container.is-mobile .docked-input-field::placeholder {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.app-container.is-mobile .docked-target-badge:not(.docked-command-target-chip),
+.app-container.is-mobile .docked-send-btn,
+.app-container.is-mobile .docked-cancel-btn,
+.app-container.is-mobile .docked-repeat-btn {
+    align-self: center;
+    box-sizing: border-box;
+    height: 34px;
+    min-height: 34px;
 }

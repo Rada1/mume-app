@@ -6,7 +6,7 @@
  */
 
 // --- Logic Section ---
-import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useGame, useUI } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
@@ -16,6 +16,8 @@ import { useStatDeltas } from '../../hooks/useStatDeltas';
 import { useCharacterConditions } from '../../hooks/useCharacterConditions';
 import { useCharacterInfoRefresh } from '../../hooks/useCharacterInfoRefresh';
 import { useCharacterPanelVitalsRefresh } from '../../hooks/useCharacterPanelVitalsRefresh';
+import { useSwipeDownToMinimize } from '../../hooks/useSwipeDownToMinimize';
+import { useSwipeUpToExpand } from '../../hooks/useSwipeUpToExpand';
 import { getMovementModeActions } from '../../hooks/useMovementModeActions';
 import { ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
 import { useCharacterPanelStore } from '../../stores/useCharacterPanelStore';
@@ -54,12 +56,10 @@ const formatConditionTimeLeft = (milliseconds: number): string => {
 
 export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = false }) => {
     const isMinimized = useCharacterPanelStore(s => s.isMinimized);
+    const setIsMinimized = useCharacterPanelStore(s => s.setIsMinimized);
     const toggleMinimized = useCharacterPanelStore(s => s.toggleMinimized);
     const panelIsMinimized = alwaysExpanded ? false : isMinimized;
-    const consoleRef = useRef<HTMLElement | null>(null);
-    const bodyWrapperRef = useRef<HTMLDivElement | null>(null);
-    const [glassPortalHost, setGlassPortalHost] = useState<HTMLElement | null>(null);
-    const [expandedGlassBounds, setExpandedGlassBounds] = useState<React.CSSProperties | null>(null);
+    const [mobileSheetPortalHost, setMobileSheetPortalHost] = useState<HTMLElement | null>(null);
     const {
         characterInfo,
         characterName,
@@ -77,6 +77,17 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
         isSpectateMode
     } = useGame();
 
+    const isMobileSheet = Boolean(viewport?.isMobile && !alwaysExpanded && !panelIsMinimized);
+    const minimizeSwipe = useSwipeDownToMinimize(isMobileSheet, () => setIsMinimized(true));
+    const expandSwipe = useSwipeUpToExpand(
+        Boolean(viewport?.isMobile && !alwaysExpanded && panelIsMinimized),
+        () => setIsMinimized(false)
+    );
+
+    useLayoutEffect(() => {
+        setMobileSheetPortalHost(document.body);
+    }, []);
+
     const vitals = useActiveVitals();
     const { displayEqLines } = useUI();
     const activeTimers = useEffectTimerStore(state => state.timers);
@@ -92,46 +103,6 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
         return () => window.clearInterval(interval);
     }, []);
 
-    useLayoutEffect(() => {
-        setGlassPortalHost(document.querySelector<HTMLElement>('.content-layer'));
-    }, []);
-
-    useLayoutEffect(() => {
-        if (!viewport?.isMobile || panelIsMinimized) {
-            setExpandedGlassBounds(null);
-            return;
-        }
-
-        const updateBounds = () => {
-            const consoleRect = consoleRef.current?.getBoundingClientRect();
-            const bodyRect = bodyWrapperRef.current?.getBoundingClientRect();
-            if (!consoleRect || !bodyRect) return;
-
-            const left = Math.min(consoleRect.left, bodyRect.left);
-            const top = Math.min(consoleRect.top, bodyRect.top);
-            const right = Math.max(consoleRect.right, bodyRect.right);
-            const bottom = Math.max(consoleRect.bottom, bodyRect.bottom);
-            setExpandedGlassBounds(previous => previous
-                && previous.left === left
-                && previous.top === top
-                && previous.width === right - left
-                && previous.height === bottom - top
-                ? previous
-                : { position: 'fixed', left, top, width: right - left, height: bottom - top, zIndex: 6500 });
-        };
-
-        updateBounds();
-        const observer = new ResizeObserver(updateBounds);
-        if (consoleRef.current) observer.observe(consoleRef.current);
-        if (bodyWrapperRef.current) observer.observe(bodyWrapperRef.current);
-        window.addEventListener('resize', updateBounds);
-        window.addEventListener('scroll', updateBounds, true);
-        return () => {
-            observer.disconnect();
-            window.removeEventListener('resize', updateBounds);
-            window.removeEventListener('scroll', updateBounds, true);
-        };
-    }, [panelIsMinimized, viewport?.isMobile]);
     const refreshCharacterInfo = useCharacterInfoRefresh(
         characterInfo?.name || characterName || '', gameState === 'playing' && !isSpectateMode, executeCommand, !alwaysExpanded
     );
@@ -247,11 +218,16 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
     };
 
     // --- Render Section ---
-    return (
+    const consolePanel = (
         <section
-            ref={consoleRef}
-            className={`this-is-you-console${panelIsMinimized ? ' is-minimized' : ''}${viewport?.isMobile ? ' is-mobile' : ''}${alwaysExpanded ? ' is-always-expanded' : ''}`}
+            className={`this-is-you-console${panelIsMinimized ? ' is-minimized' : ''}${viewport?.isMobile ? ' is-mobile' : ''}${isMobileSheet ? ' is-mobile-sheet' : ''}${alwaysExpanded ? ' is-always-expanded' : ''}`}
             aria-label="Character Status Console"
+            onTouchStart={minimizeSwipe.onTouchStart}
+            onTouchEnd={minimizeSwipe.onTouchEnd}
+            onTouchCancel={minimizeSwipe.onTouchCancel}
+            onTouchStartCapture={expandSwipe.onTouchStart}
+            onTouchEndCapture={expandSwipe.onTouchEnd}
+            onTouchCancelCapture={expandSwipe.onTouchCancel}
         >
             {/* TIER 1: Identity, Full Bio Metrics & Progression */}
             <div
@@ -313,12 +289,12 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                 <strong>STATE</strong>
                 <ThisIsYouStatePill category="Position" accentColor="blue" value={currentPosition} options={POSITION_OPTIONS} isMobile={Boolean(viewport?.isMobile)} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('pos', opt)} />
                 <ThisIsYouStatePill category="Mood" accentColor="red" value={currentMood} options={MOOD_OPTIONS} isMobile={Boolean(viewport?.isMobile)} confirmOptionValue="berserk" confirmMessage="Berserk prevents fleeing. Tap Berserk again within 4 seconds to confirm." disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('mood', opt)} />
-                <ThisIsYouStatePill category="Cast" accentColor="purple" value={currentSpellSpeed} options={SPELL_SPEED_OPTIONS} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('speed', opt)} />
-                <ThisIsYouStatePill category="Alert" accentColor="gold" value={currentAlertness} options={ALERTNESS_OPTIONS} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('alert', opt)} />
+                <ThisIsYouStatePill category="Cast" accentColor="purple" value={currentSpellSpeed} options={SPELL_SPEED_OPTIONS} isMobile={Boolean(viewport?.isMobile)} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('speed', opt)} />
+                <ThisIsYouStatePill category="Alert" accentColor="gold" value={currentAlertness} options={ALERTNESS_OPTIONS} isMobile={Boolean(viewport?.isMobile)} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('alert', opt)} />
               </div>
             </div>
 
-            <div ref={bodyWrapperRef} className="this-is-you-body-wrapper">
+            <div className="this-is-you-body-wrapper">
               <div className="this-is-you-body-inner">
 
             {/* TIER 2: Vitals & Combat Capabilities (Attack, Dodge, Parry, Armor) */}
@@ -418,11 +394,18 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
             </div>
               </div>
             </div>
-            {viewport?.isMobile && !panelIsMinimized && glassPortalHost && expandedGlassBounds
-                ? createPortal(<div className="this-is-you-expanded-glass" aria-hidden="true" style={expandedGlassBounds} />, glassPortalHost)
-                : null}
         </section>
     );
+
+    return isMobileSheet && mobileSheetPortalHost
+        ? createPortal(
+            <>
+                <div className="this-is-you-mobile-sheet-backdrop" aria-hidden="true" />
+                {consolePanel}
+            </>,
+            mobileSheetPortalHost
+        )
+        : consolePanel;
 };
 
 export default ThisIsYouConsole;

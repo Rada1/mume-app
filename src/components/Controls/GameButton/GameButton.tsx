@@ -34,6 +34,10 @@ import { getTargetClassificationColor } from '../../../utils/targetClassificatio
 import type { EntityColorMap } from '../../../utils/inlineActionModel';
 import { useTacticalArgumentChipStore } from '../../../stores/useTacticalArgumentChipStore';
 import { getSwipeCommandTextColor } from '../../../utils/swipeCommandColors';
+import { useOffensiveCityActionConfirmation } from '../../../hooks/useOffensiveCityActionConfirmation';
+import { useSwipeLetterBlink } from './useSwipeLetterBlink';
+import { useCurrentRoomHasDoor } from '../../../hooks/useCurrentRoomHasDoor';
+import { isDoorPresenceSpellCommand } from '../../../utils/doorCommandUtils';
 
 // --- Logic Section ---
 const SHOW_ALLY_COMMAND_TARGET_GLOW = false;
@@ -43,6 +47,12 @@ const getCommandInitial = (command: string): string => command.trim()
     .trim()
     .charAt(0)
     .toUpperCase();
+const CARDINAL_SWIPE_DIRECTIONS: Record<string, SwipeDirection> = {
+    north: 'up',
+    east: 'right',
+    south: 'down',
+    west: 'left'
+};
 const CLASS_PICKER_SET_IDS: Record<PracticeClassKey, string> = {
     mage: 'magespelllist',
     cleric: 'clericspelllist',
@@ -192,6 +202,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
     requestContainerContents
 }) => {
     const [activeDir, setActiveDir] = React.useState<SwipeDirection | null>(null);
+    const feedbackDirection = useSwipeLetterBlink(activeDir);
+    const visualSwipeDirection = activeDir || feedbackDirection;
     const [isCancelling, setIsCancelling] = React.useState(false);
     const [isPanelPinned, setIsPanelPinned] = React.useState(false);
     const [swapSource, setSwapSource] = React.useState<TacticalSwapCell | null>(null);
@@ -201,10 +213,28 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const [rayParams, setRayParams] = React.useState<{ angle: number, length: number, opacity: number, color?: string }>({ angle: 0, length: 0, opacity: 0, color: 'var(--accent)' });
     const buttonRef = useRef<HTMLDivElement>(null);
     const { playClickSound, isSoundEnabled, initAudio, characterName, opponentId, opponentName, btn, practice, abilities = {}, setTarget, setParley } = useGame();
+    const hasRoomDoor = useCurrentRoomHasDoor();
     const tacticalArgumentOwnerId = useId();
     const setTacticalArguments = useTacticalArgumentChipStore(state => state.setArguments);
     const clearTacticalArguments = useTacticalArgumentChipStore(state => state.clearArguments);
+    const setAutomaticTarget = useAutomaticTargetStore(state => state.setTarget);
+    const inlineCategories = useSettingsStore(state => state.inlineCategories);
+    const objectColor = useSettingsStore(state => state.objectColor);
+    const playerColor = useSettingsStore(state => state.playerColor);
+    const npcColor = useSettingsStore(state => state.npcColor);
+    const enemyColor = useSettingsStore(state => state.enemyColor);
+    const neutralColor = useSettingsStore(state => state.neutralColor);
+    const theme = useSettingsStore(state => state.theme);
+    const roomChars = useRoomStore(state => state.chars);
+    const roomItemsById = useRoomStore(state => state.items);
+    const whoList = useRoomStore(state => state.whoList);
+    const roomNum = useRoomStore(state => state.roomNum);
+    const roomName = useRoomStore(state => state.roomName);
+    const roomDesc = useRoomStore(state => state.roomDesc);
+    const roomZone = useRoomStore(state => state.roomZone);
+    const confirmOffensiveCityAction = useOffensiveCityActionConfirmation(roomZone);
     const runButtonCommand = useCallback<ExecuteCommand>((command, ...options) => {
+        if (!confirmOffensiveCityAction(command)) return;
         if (onCommandAction?.(command)) return;
         const commandParts = command.trim().split(/\s+/).filter(Boolean);
         const channel = commandParts[0]?.toLowerCase() || '';
@@ -226,22 +256,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
         }
         useInputStore.getState().setInput('');
         executeCommand(command, ...options);
-    }, [button.id, executeCommand, onCommandAction, setParley]);
-    const setAutomaticTarget = useAutomaticTargetStore(state => state.setTarget);
-    const inlineCategories = useSettingsStore(state => state.inlineCategories);
-    const objectColor = useSettingsStore(state => state.objectColor);
-    const playerColor = useSettingsStore(state => state.playerColor);
-    const npcColor = useSettingsStore(state => state.npcColor);
-    const enemyColor = useSettingsStore(state => state.enemyColor);
-    const neutralColor = useSettingsStore(state => state.neutralColor);
-    const theme = useSettingsStore(state => state.theme);
-    const roomChars = useRoomStore(state => state.chars);
-    const roomItemsById = useRoomStore(state => state.items);
-    const whoList = useRoomStore(state => state.whoList);
-    const roomNum = useRoomStore(state => state.roomNum);
-    const roomName = useRoomStore(state => state.roomName);
-    const roomDesc = useRoomStore(state => state.roomDesc);
-    const roomZone = useRoomStore(state => state.roomZone);
+    }, [button.id, confirmOffensiveCityAction, executeCommand, onCommandAction, setParley]);
     const automaticTargetRoomKey = getRoomIdentityKey({ roomNum, roomName, roomZone, roomDesc });
     const automaticTarget = useAutomaticTargetForRoom(automaticTargetRoomKey);
     const autoTargetChipDisabled = isAutoTargetChipDisabledZone(roomZone);
@@ -597,7 +612,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
         tacticalTargeting.isTargetColumnOpen,
         tacticalTargeting.pendingTarget
     ]);
-    const isTargetReady = Boolean(effectiveTarget && targetSuggestions?.some(suggestion => isTargetSuggestionMatch(suggestion, effectiveTarget)));
+    const doorSpellUnavailable = isDoorPresenceSpellCommand(wheelButton.command) && !hasRoomDoor;
+    const isTargetReady = Boolean(!doorSpellUnavailable && effectiveTarget && targetSuggestions?.some(suggestion => isTargetSuggestionMatch(suggestion, effectiveTarget)));
     const normalizeTarget = (value: string | null | undefined) => value?.replace(/[*']/g, '').trim().toLowerCase() || '';
     const isAutoTargetReady = Boolean(!autoTargetChipDisabled && isTargetReady && !target && wheelTargetChipTarget && effectiveTarget
         && normalizeTarget(wheelTargetChipTarget) === normalizeTarget(effectiveTarget));
@@ -618,9 +634,13 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const hasCenterTarget = Boolean(centerDefaultTarget && centerDefaultTarget !== BLANK_TARGET_VALUE);
     const isCenterOffensive = Boolean(hasCenterTarget && isOffensiveSingleTargetCommand(wheelButton.command));
     const entityColors: EntityColorMap = { object: objectColor, player: playerColor, npc: npcColor, enemy: enemyColor, neutral: neutralColor };
-    const centerTargetGlowColor = SHOW_ALLY_COMMAND_TARGET_GLOW && isCenterTargetAlly
-        ? getTargetClassificationColor('ally', inlineCategories, entityColors, theme) || '#61c290'
-        : isCenterOffensive ? '#f87171' : null;
+    const centerCommandIconColor = button.id === 'tactical-doors'
+        ? '#f97316'
+        : getSwipeCommandTextColor(wheelButton.command);
+    const centerTargetGlowColor = centerCommandIconColor
+        || (SHOW_ALLY_COMMAND_TARGET_GLOW && isCenterTargetAlly
+            ? getTargetClassificationColor('ally', inlineCategories, entityColors, theme) || '#61c290'
+            : isCenterOffensive ? '#f87171' : null);
     const showTargetReadyGlow = isTargetReady && (!isCenterTargetAlly || SHOW_ALLY_COMMAND_TARGET_GLOW);
     const stagedColumns = targetMenu.stagedTargetKind && !wheelReplacementMode ? [
         {
@@ -1205,7 +1225,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
             {cardinalSwipeCommands.map(({ direction, command }) => (
                 <span
                     key={direction}
-                    className={`tactical-command-initial is-${direction}`}
+                    className={`tactical-command-initial is-${direction}${visualSwipeDirection === CARDINAL_SWIPE_DIRECTIONS[direction] ? ' is-blinking' : ''}`}
                     style={{ color: getSwipeCommandTextColor(command) || '#b0a080' }}
                     aria-hidden="true"
                 >{getCommandInitial(command)}</span>

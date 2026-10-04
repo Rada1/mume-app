@@ -17,6 +17,7 @@
 .gear-section { display: flex; flex: 1 1 0; min-height: 0; flex-direction: column; overflow: hidden; }
 .gear-section.is-collapsed { flex: 0 0 auto; }
 .gear-section-heading { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; color: var(--text-primary); border-bottom: 1px solid rgba(201,168,76,.16); }
+.gear-section-tools { display: inline-flex; align-items: center; gap: 5px; }
 .gear-section-heading.is-drop-target { background: rgba(201,168,76,.08); border-bottom-color: rgba(201,168,76,.65); }
 .gear-section-toggle { display: inline-flex; align-items: center; gap: 5px; padding: 7px 0; border: 0; background: transparent; color: inherit; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .gear-section-toggle:hover { color: var(--accent); }
@@ -30,8 +31,9 @@
 .gear-item-row.is-selected .gear-item-select { background: transparent !important; background-color: transparent !important; }
 .gear-item-row.is-drop-target { background: rgba(201,168,76,.16); outline: 1px dashed rgba(201,168,76,.65); outline-offset: -1px; }
 .gear-item-row > .gear-item-select { display: flex !important; align-items: center; }
+.gear-item-row > .gear-selection-control { align-self: center; }
 .gear-item-select { flex: 1; min-width: 0; gap: 8px; padding: 3px 0; border: 0; background: transparent; text-align: left; font: inherit; font-size: var(--dynamic-log-size, 16px); cursor: pointer; }
-.gear-item-row.has-container-toggle > .gear-item-select { flex: 0 1 auto; }
+.gear-item-row.has-container-toggle > .gear-item-select { flex: 1 1 auto; }
 .gear-item-row.has-container-toggle > .gear-container-toggle { flex: 0 0 24px; }
 .object-chip-dragging .gear-item-select { cursor: grabbing; }
 .gear-slot { flex: 0 0 68px; color: var(--text-dim); font-size: 9px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -45,10 +47,15 @@
 .light-mode .gear-condition-indicator { background: color-mix(in srgb, var(--item-state-color, var(--text-dim)) 68%, #000); }
 .gear-container-toggle { flex: 0 0 24px; align-self: center; }
 .gear-container-contents { margin: 2px 0 5px 12px; padding-left: 12px; border-left: 1px solid rgba(201,168,76,.4); }
+.gear-container-level-heading { display: flex; align-items: center; justify-content: space-between; min-height: 24px; color: var(--text-dim); font-size: 9px; letter-spacing: .04em; text-transform: uppercase; }
 .gear-item-row.is-nested .gear-item-select { padding-left: 0; }
 .gear-actions { flex: 0 0 auto; padding: 9px 12px 12px; border-top: 1px solid rgba(201,168,76,.22); }
 .gear-actions-label { display: block; color: var(--accent); font-size: 11px; margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gear-actions-label-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.gear-selection-clear { flex: 0 0 auto; padding: 2px 5px; border: 0; background: transparent; color: var(--text-dim); font: inherit; font-size: 10px; cursor: pointer; }
+.gear-selection-clear:hover { color: var(--accent); }
 .gear-action-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.gear-selection-destinations { margin-top: 7px; max-height: 18vh; overflow-y: auto; }
 .gear-action-buttons button { padding: 5px 9px; border: 1px solid rgba(201,168,76,.35); border-radius: 3px; background: rgba(201,168,76,.07); color: var(--accent); font: inherit; font-size: 11px; cursor: pointer; }
 .gear-action-buttons button:hover { background: rgba(201,168,76,.16); }
 .gear-give-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; color: var(--accent); font-size: 11px; font-weight: 700; }
@@ -68,6 +75,7 @@
     .gear-actions { padding: 10px 12px max(18px, env(safe-area-inset-bottom)); }
     .gear-action-buttons { display: flex; flex-wrap: nowrap; gap: 6px; }
     .gear-action-buttons button { flex: 1 1 0; min-width: 0; min-height: 42px; padding: 7px 8px; font-size: 12px; }
+    .gear-selection-destinations button { flex: 0 0 auto; max-width: 60vw; }
     .gear-give-back { min-height: 44px; padding: 6px 10px; }
     .gear-recipient-list { max-height: 30dvh; gap: 8px; }
     .gear-recipient-list button { min-height: 48px; padding: 8px 12px; font-size: 13px; }

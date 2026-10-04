@@ -54,8 +54,8 @@
     gap: 0;
 }
 
-.tactical-target-direction-button.is-axis-direction small {
-    font-size: 7px;
+.tactical-target-direction-button small {
+    font-size: 9px;
     line-height: 1;
     text-transform: uppercase;
 }

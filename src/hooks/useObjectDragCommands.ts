@@ -6,9 +6,9 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import type { ObjectDragSource, ObjectDropTarget, ExecuteCommand } from '../types';
 import { useUIStore } from '../stores/useUIStore';
-import { getObjectDragCommand, getValidObjectDropTarget } from '../utils/objectDragUtils';
+import { getObjectDragCommand, getObjectDragCommands, getValidObjectDropTarget } from '../utils/objectDragUtils';
 
-export { getObjectDragCommand, getObjectDropTarget, getValidObjectDropTarget, isValidObjectDragTarget } from '../utils/objectDragUtils';
+export { getObjectDragCommand, getObjectDragCommands, getObjectDropTarget, getValidObjectDropTarget, isValidObjectDragTarget } from '../utils/objectDragUtils';
 
 const LONG_PRESS_MS = 360;
 const MOVE_TOLERANCE_PX = 8;
@@ -162,10 +162,10 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
             event.preventDefault();
             const target = getValidObjectDropTarget(pending.source, document.elementFromPoint(event.clientX, event.clientY));
             if (target) {
-                const command = getObjectDragCommand(pending.source, target);
-                if (command) {
+                const commands = getObjectDragCommands(pending.source, target);
+                if (commands?.length) {
                     triggerHaptic?.(35);
-                    executeCommand(command, false, false, false, false, { fromUi: true });
+                    executeCommand(commands.join('; '), false, false, false, false, { fromUi: true });
                     onDropRef.current?.(pending.source, target);
                 }
             }

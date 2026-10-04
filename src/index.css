@@ -146,8 +146,7 @@
     .kb-open .hud-clusters-absolute-layer,
     .kb-open .custom-buttons-layer,
     .kb-open .joystick-cluster,
-    .kb-open .xbox-cluster,
-    .kb-open .reset-zoom-fab {
+    .kb-open .xbox-cluster {
         display: none !important;
     }
 

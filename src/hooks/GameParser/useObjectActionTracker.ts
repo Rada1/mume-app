@@ -3,12 +3,13 @@
  * @description Applies confirmed object movement messages to room, gear, and container snapshots.
  */
 
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type { DrawerLine, GmcpOccupant } from '../../types';
 import { extractMumeKeyword } from '../../utils/keywordUtils';
 import { isItemContainer } from '../../utils/gameUtils';
 import { findObjectOccurrence, getDrawerObjectKeyword, getRoomObjectKeyword, hasObjectTrait } from '../../objects/objectTargetModel';
 import { findDrawerItemOccurrence, usePendingObjectCommand } from './usePendingObjectCommand';
+import { stripResultTail, trackRemoveAction } from './objectRemoveTracker';
 
 export interface ObjectActionTrackerDeps {
     capture: import('../../types/capture').CaptureController;
@@ -44,12 +45,6 @@ const inferWearSlot = (itemText: string): string => {
     return '<worn on body>';
 };
 
-const stripResultTail = (itemText: string): string => itemText
-    .replace(/\s*,\s*(?:ready|prepared|poised|held|gripped)\b.*$/i, '')
-    .replace(/\s+on your\b.*$/i, '')
-    .replace(/[.!]+$/g, '')
-    .trim();
-
 const addEquipmentLine = (item: DrawerLine, slotPrefix: string, setEqLines: ObjectActionTrackerDeps['setEqLines']) => {
     setEqLines(previous => {
         const objectId = item.stableId || item.entityId || item.id;
@@ -76,6 +71,10 @@ const isMoney = (text: string): boolean =>
 
 export const useObjectActionTracker = (deps: ObjectActionTrackerDeps) => {
     const { getArguments, clear } = usePendingObjectCommand();
+    const inventoryLinesRef = useRef(deps.inventoryLines || []);
+    const eqLinesRef = useRef(deps.eqLines || []);
+    useEffect(() => { inventoryLinesRef.current = deps.inventoryLines || []; }, [deps.inventoryLines]);
+    useEffect(() => { eqLinesRef.current = deps.eqLines || []; }, [deps.eqLines]);
 
     const findContainerId = useCallback((selector: string | undefined): string | null => {
         if (!selector) return null;
@@ -106,6 +105,24 @@ export const useObjectActionTracker = (deps: ObjectActionTrackerDeps) => {
             }
         };
 
+        const produceMatch = textOnly.match(/^You produce\s+(.+?)\.?$/i);
+        if (produceMatch) {
+            const taggedObject = cleanLine.match(/^You produce\s+<object\b[^>]*>(.*?)<\/object>\.?$/i)?.[1];
+            const itemText = (taggedObject || produceMatch[1])
+                .replace(/<[^>]*>/g, '')
+                .replace(/[.!]+$/g, '')
+                .trim();
+            if (!itemText) return false;
+
+            const id = Math.random().toString(36).substring(7);
+            deps.registerEntity?.(id, itemText, 'carried', 'cat-inventory-object');
+            deps.setInventoryLines(previous => [...previous, {
+                id, stableId: id, entityId: id, text: itemText, html: deps.ansiConvert.toHtml(itemText),
+                isItem: true, cmd: 'inventorylist', context: deps.extractNoun(itemText)
+            }]);
+            clear(); deps.onGet?.(); return true;
+        }
+
         const wearMatch = textOnly.match(/^You (?:wear|put on|fasten|sling|slip|tie|buckle|don|drape|loop|attach|wrap) (.*?)\.$/i)
             || textOnly.match(/^You put (.*?) on your .+ finger\.$/i)
             || textOnly.match(/^You put (.*?) over your shoulder\.$/i);
@@ -118,14 +135,7 @@ export const useObjectActionTracker = (deps: ObjectActionTrackerDeps) => {
         const removeMatch = cleanLine.match(/You (remove|stop using) (.*?)\./i);
         if (removeMatch) {
             const selector = getArguments(['remove'])[0] || null;
-            const lines = deps.eqLines || [];
-            const index = findDrawerItemOccurrence(lines, removeMatch[2], selector);
-            if (index >= 0) {
-                const item = lines[index];
-                const objectId = item.stableId || item.entityId || item.id;
-                deps.setInventoryLines(previous => [...previous, { ...item, cmd: 'inventorylist' }]);
-                deps.setEqLines(previous => previous.filter(line => (line.stableId || line.entityId || line.id) !== objectId));
-            }
+            trackRemoveAction(removeMatch[2], selector, inventoryLinesRef, eqLinesRef, deps.setInventoryLines, deps.setEqLines);
             clear(); deps.onRemove?.(); return true;
         }
 

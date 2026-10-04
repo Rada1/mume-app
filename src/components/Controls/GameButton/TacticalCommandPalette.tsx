@@ -42,7 +42,11 @@ export const TacticalCommandPalette: React.FC<Props> = ({ commands, activeComman
             {commands.map(item => {
                 const presentation = getSkillPresentation(item.command, item.label);
                 const isLearned = item.isLearned !== false;
-                const targetGlowColor = isLearned ? getCommandTargetGlowColor?.(item.command) ?? null : null;
+                const commandTextColor = getCommandTextColor?.(item.command);
+                const targetAvailableColor = isLearned ? getCommandTargetGlowColor?.(item.command) ?? null : null;
+                const targetGlowColor = targetAvailableColor
+                    ? commandTextColor || targetAvailableColor
+                    : null;
                 return <div
                     key={item.key}
                     className={`unified-tactical-command-item${activeCommand.trim().toLowerCase() === item.command.trim().toLowerCase() ? ' is-active' : ''}${swapSourceCommand?.trim().toLowerCase() === item.command.trim().toLowerCase() ? ' is-swap-source' : ''}${!isLearned ? ' is-unlearned' : ''}${targetGlowColor ? ' is-target-ready' : ''}`}
@@ -56,7 +60,7 @@ export const TacticalCommandPalette: React.FC<Props> = ({ commands, activeComman
                 >
                     <span
                         className="unified-tactical-command-label"
-                        style={{ color: getCommandTextColor?.(item.command) }}
+                        style={{ color: commandTextColor }}
                     >{presentation.label}</span>
                 </div>;
             })}

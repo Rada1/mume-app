@@ -98,7 +98,10 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
     const centerCommand = button.command;
     const centerCommandTextColor = getSwipeCommandTextColor(centerCommand);
     const centerIsLearned = getCommandLearnedState?.(centerCommand) !== false;
-    const centerTargetGlowColor = centerIsLearned ? getCommandTargetGlowColor?.(centerCommand) ?? null : null;
+    const centerTargetAvailableColor = centerIsLearned ? getCommandTargetGlowColor?.(centerCommand) ?? null : null;
+    const centerTargetGlowColor = centerTargetAvailableColor
+        ? centerCommandTextColor || centerTargetAvailableColor
+        : null;
     const normalizedActiveCommand = activeCommand?.trim().toLowerCase() || '';
     const configuredDirection = Object.entries({ ...(button.longSwipeCommands || {}), ...(button.swipeCommands || {}) }).find(([, command]) => {
         const normalizedSwipeCommand = command?.trim().toLowerCase() || '';
@@ -135,9 +138,12 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                 const cmdVal = getWheelSlotCommand(button, d as SwipeDirection);
                 const isActive = displayDirection === d;
                 const isLearned = getCommandLearnedState?.(cmdVal) !== false;
-                const targetGlowColor = isLearned ? getCommandTargetGlowColor?.(cmdVal) ?? null : null;
+                const targetAvailableColor = isLearned ? getCommandTargetGlowColor?.(cmdVal) ?? null : null;
                 const presentation = getSkillPresentation(cmdVal, cmdVal, buttonClassKey);
                 const commandTextColor = getSwipeCommandTextColor(cmdVal);
+                const targetGlowColor = targetAvailableColor
+                    ? commandTextColor || targetAvailableColor
+                    : null;
                 return (
                     <span key={`label-${d}`} className={`swipe-sq-label ${isActive ? 'active' : ''}${!isLearned ? ' is-unlearned' : ''}${swapSource?.kind === 'wheel' && swapSource.direction === d ? ' is-swap-source' : ''}${cmdVal ? '' : ' is-empty'}`} data-dir={d} data-wheel-direction={d} data-wheel-command={cmdVal} data-wheel-learned={isLearned}>
                         <span

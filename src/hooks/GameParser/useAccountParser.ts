@@ -6,12 +6,12 @@
 
 import { useCallback, useRef } from 'react';
 import { gmcpBus } from '../../events/gmcpBus';
-import { CharacterEntry } from '../../types';
 import { useUIStore } from '../../stores/useUIStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { escapeHtml, sanitizeMumeHtml } from '../../utils/securityUtils';
 import { ansiConvert } from '../../utils/ansi';
 import { appendCreationContextAnsiLine, appendCreationContextLine } from '../../utils/accountCreationContext';
+import { parseAccountCharacterRow } from './accountCharacterListParser';
 
 // --- Logic Section: Types ---
 
@@ -166,36 +166,14 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
 
             // 3. Detect Character Entries (to populate characters array in state)
             const isSelectStage = accountStageRef.current === 'account-menu';
-            const charMatch = trimmedLine.match(/^\s*(\d+)\)\s+([a-zA-Z]+)\s+(\d+)\s+([a-zA-Z\-]+)\s+(.*?)\s+(Yesterday|Today|[\d\w\s]+ago|Never)\s+(.*)$/i);
-            if (isSelectStage && charMatch) {
-                const [_, index, name, level, race, sublevel, logon, rent] = charMatch;
-                const newChar: CharacterEntry = { index: parseInt(index), name, level: parseInt(level), race, sublevel, logon, rent, area: '', rawLine: cleanLine };
-                setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
+            const character = isSelectStage ? parseAccountCharacterRow(cleanLine) : null;
+            if (character) {
+                setAccountState(prev => ({
+                    ...prev,
+                    characters: prev.characters.some(c => c.name.toLowerCase() === character.name.toLowerCase())
+                        ? prev.characters : [...prev.characters, character]
+                }));
                 return true;
-            }
-
-            const logonRegex = /(\d+\s+(?:days?|yrs?|wks?|weeks?|months?|mths?|hours?|hrs?|mins?|secs?|ago|years?)|Yesterday|Today|Never|\bnew\b|\bPlaying\b|\bno link\b|\bRetired\b|\bDead\b)/i;
-            const logonMatchLine = trimmedLine.match(logonRegex);
-            if (isSelectStage && logonMatchLine && logonMatchLine.index !== undefined && logonMatchLine.index > 20) {
-                const cleanName = trimmedLine.split(/\s+/)[0];
-                const exclusions = ['play', 'create', 'new', 'time', 'list', 'move', 'password', 'add', 'info', 'practice', 'link', 'lag', 'help', 'menu', 'quit', 'where'];
-                const lowerName = cleanName.toLowerCase();
-                
-                if (/^[a-zA-Z\u00C0-\u00FF\-]{2,15}$/.test(cleanName) && !exclusions.includes(lowerName)) {
-                    const name = cleanName;
-                    const newChar: CharacterEntry = {
-                        name,
-                        race: cleanLine.substring(14, 18).trim(),
-                        sublevel: cleanLine.substring(18, 22).trim(),
-                        level: (logonMatchLine.index > 22) ? cleanLine.substring(22, logonMatchLine.index).trim() : '',
-                        logon: logonMatchLine[1].trim(),
-                        area: trimmedLine.substring(logonMatchLine.index + logonMatchLine[0].length).trim().split(/\s+/)[0] || '',
-                        rent: trimmedLine.substring(logonMatchLine.index + logonMatchLine[0].length).trim().split(/\s+/)[1] || '',
-                        rawLine: cleanLine,
-                    };
-                    setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
-                    return true;
-                }
             }
 
             // Suppress every other line during silent listing from both screen logging and side-effects
@@ -703,54 +681,22 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
 
         // 3. Detect Character Entries
         const isSelectStage = accountStageRef.current === 'account-menu';
-        const charMatch = trimmedLine.match(/^\s*(\d+)\)\s+([a-zA-Z]+)\s+(\d+)\s+([a-zA-Z\-]+)\s+(.*?)\s+(Yesterday|Today|[\d\w\s]+ago|Never)\s+(.*)$/i);
-        if (isSelectStage && charMatch) {
-            const [_, index, name, level, race, sublevel, logon, rent] = charMatch;
-            const newChar: CharacterEntry = { index: parseInt(index), name, level: parseInt(level), race, sublevel, logon, rent, area: '', rawLine: cleanLine };
-            setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
+        const character = isSelectStage ? parseAccountCharacterRow(cleanLine) : null;
+        if (character) {
+            setAccountState(prev => ({
+                ...prev,
+                characters: prev.characters.some(c => c.name.toLowerCase() === character.name.toLowerCase())
+                    ? prev.characters : [...prev.characters, character]
+            }));
             setGameState('account');
 
             if (!shouldSuppress) {
                 const lineHtml = sanitizeMumeHtml(
-                    `<span class="inline-btn account-char-name" data-context="${escapeHtml(name)}">${ansiConvert.toHtml(line)}</span>`
+                    `<span class="inline-btn account-char-name" data-context="${escapeHtml(character.name)}">${ansiConvert.toHtml(line)}</span>`
                 );
                 addMessage?.('account-character-list', cleanLine, false, undefined, false, { textOnly: cleanLine, lower: cleanLine.toLowerCase(), html: lineHtml });
             }
             return true;
-        }
-
-        // Account Menu Format
-        const logonRegex = /(\d+\s+(?:days?|yrs?|wks?|weeks?|months?|mths?|hours?|hrs?|mins?|secs?|ago|years?)|Yesterday|Today|Never|\bnew\b|\bPlaying\b|\bno link\b|\bRetired\b|\bDead\b)/i;
-        const logonMatchLine = trimmedLine.match(logonRegex);
-        
-        if (isSelectStage && logonMatchLine && logonMatchLine.index !== undefined && logonMatchLine.index > 20) {
-            const cleanName = trimmedLine.split(/\s+/)[0];
-            const exclusions = ['play', 'create', 'new', 'time', 'list', 'move', 'password', 'add', 'info', 'practice', 'link', 'lag', 'help', 'menu', 'quit', 'where'];
-            const lowerName = cleanName.toLowerCase();
-            
-            if (/^[a-zA-Z\u00C0-\u00FF\-]{2,15}$/.test(cleanName) && !exclusions.includes(lowerName)) {
-                const name = cleanName;
-                const newChar: CharacterEntry = {
-                    name,
-                    race: cleanLine.substring(14, 18).trim(),
-                    sublevel: cleanLine.substring(18, 22).trim(),
-                    level: (logonMatchLine.index > 22) ? cleanLine.substring(22, logonMatchLine.index).trim() : '',
-                    logon: logonMatchLine[1].trim(),
-                    area: trimmedLine.substring(logonMatchLine.index + logonMatchLine[0].length).trim().split(/\s+/)[0] || '',
-                    rent: trimmedLine.substring(logonMatchLine.index + logonMatchLine[0].length).trim().split(/\s+/)[1] || '',
-                    rawLine: cleanLine,
-                };
-                setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
-                setGameState('account');
-
-                if (!shouldSuppress) {
-                    const lineHtml = sanitizeMumeHtml(
-                        `<span class="inline-btn account-char-name" data-context="${escapeHtml(name)}">${ansiConvert.toHtml(line)}</span>`
-                    );
-                    addMessage?.('account-character-list', cleanLine, false, undefined, false, { textOnly: cleanLine, lower: cleanLine.toLowerCase(), html: lineHtml });
-                }
-                return true;
-            }
         }
 
         // Host Remnants

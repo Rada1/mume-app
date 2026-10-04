@@ -118,6 +118,32 @@
     transform: translateY(-50%);
 }
 
+.tactical-command-initial.is-blinking {
+    animation: tactical-command-initial-blink 420ms steps(2, end) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tactical-command-initial.is-blinking {
+        animation: none;
+        opacity: 1;
+        filter: brightness(1.5);
+        text-shadow: 0 0 7px currentColor, 0 0 13px currentColor;
+    }
+}
+
+@keyframes tactical-command-initial-blink {
+    0%, 100% {
+        opacity: 1;
+        filter: brightness(1.5);
+        text-shadow: 0 0 7px currentColor, 0 0 13px currentColor;
+    }
+    50% {
+        opacity: 0.15;
+        filter: brightness(0.8);
+        text-shadow: 0 0 1px currentColor;
+    }
+}
+
 .custom-btn:active .button-icon,
 .custom-btn.is-swiping .button-icon {
     filter: saturate(1.5) drop-shadow(0 0 10px var(--set-accent, #fff));
@@ -345,46 +371,6 @@
 .edit-mode-active .exit-design-mode-fab {
     z-index: 205;
     animation: pulse-blue 2s infinite;
-}
-
-.reset-zoom-fab {
-    position: absolute;
-    top: 60px;
-    right: 15px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.4);
-    color: var(--accent);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    cursor: pointer;
-    pointer-events: auto;
-    z-index: calc(var(--z-hud-interactive, 7000) + 10);
-    animation: fadeInScale 0.3s ease-out;
-    transition: transform 0.2s, background 0.2s;
-}
-
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.reset-zoom-fab:active {
-    transform: scale(0.9);
-    background: rgba(var(--accent-rgb, 74, 144, 226), 0.2);
 }
 
 /* Diamond Button Variant */

@@ -544,3 +544,182 @@
         flex-wrap: wrap;
     }
 }
+
+/* Improve mobile readability and separate vitals from combat ratings. */
+.this-is-you-console.is-mobile .this-is-you-tier-vitals {
+    row-gap: 10px;
+}
+
+.this-is-you-console.is-mobile .this-is-you-vitals-cluster {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.this-is-you-console.is-mobile .this-is-you-vitals-group .this-is-you-cell-header .label {
+    font-size: 0.66rem;
+}
+
+.this-is-you-console.is-mobile .this-is-you-vitals-group .this-is-you-cell-val {
+    font-size: 0.66rem;
+}
+
+.this-is-you-console.is-mobile .this-is-you-wimpy-badge {
+    font-size: 0.66rem;
+}
+
+.this-is-you-console.is-mobile .this-is-you-combat-heading {
+    font-size: 0.66rem;
+}
+
+.this-is-you-console.is-mobile .this-is-you-vitals-group::before {
+    font-size: 0.66rem;
+}
+
+.this-is-you-console.is-mobile .this-is-you-tier-modes::before {
+    font-size: 0.66rem;
+}
+
+.this-is-you-console.is-mobile .this-is-you-capabilities-row {
+    font-size: 0.66rem;
+}
+
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span,
+.this-is-you-console.is-mobile .this-is-you-capability-label,
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span strong {
+    font-size: 0.66rem;
+}
+
+.this-is-you-console.is-mobile .this-is-you-buffs-row,
+.this-is-you-console.is-mobile .this-is-you-buff-badge {
+    font-size: 0.66rem;
+}
+
+.this-is-you-console.is-mobile .this-is-you-buff-time {
+    font-size: 0.66rem;
+}
+
+.this-is-you-console.is-mobile .this-is-you-delta {
+    font-size: 0.66rem;
+}
+
+/* Use the desktop side-by-side vitals and combat columns on mobile. */
+.this-is-you-console.is-mobile .this-is-you-tier-vitals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "vitals combat";
+    column-gap: 12px;
+    row-gap: 0;
+    align-items: start;
+}
+
+.this-is-you-console.is-mobile .this-is-you-vitals-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.this-is-you-console.is-mobile .this-is-you-vitals-group::before {
+    flex: 0 0 auto;
+}
+
+.this-is-you-console.is-mobile .this-is-you-telemetry-cell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 0;
+}
+
+.this-is-you-console.is-mobile .this-is-you-cell-header {
+    display: contents;
+}
+
+.this-is-you-console.is-mobile .this-is-you-cell-header .label {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+}
+
+.this-is-you-console.is-mobile .this-is-you-cell-val {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: start;
+}
+
+.this-is-you-console.is-mobile .this-is-you-health-cell {
+    grid-template-columns: minmax(0, 1fr) max-content max-content;
+}
+
+.this-is-you-console.is-mobile .this-is-you-health-header .label {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+}
+
+.this-is-you-console.is-mobile .this-is-you-health-cell .this-is-you-cell-val {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: start;
+}
+
+.this-is-you-console.is-mobile .this-is-you-health-header .this-is-you-wimpy-badge {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: start;
+}
+
+.this-is-you-console.is-mobile .this-is-you-combat-slot {
+    grid-area: combat;
+    margin: 0;
+}
+
+/* Keep both summary columns anchored to the same left edge. */
+.this-is-you-console.is-mobile .this-is-you-tier-vitals,
+.this-is-you-console.is-mobile .this-is-you-vitals-cluster,
+.this-is-you-console.is-mobile .this-is-you-combat-slot {
+    text-align: left;
+}
+
+/* Keep combat labels and values in separate, vertical mini-columns. */
+.this-is-you-console.is-mobile .this-is-you-capabilities-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content max-content;
+    grid-template-rows: repeat(4, auto);
+    column-gap: 6px;
+    row-gap: 3px;
+}
+
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span {
+    display: contents;
+}
+
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span .this-is-you-capability-label {
+    grid-column: 1;
+    text-align: left;
+}
+
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span strong,
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span .this-is-you-delta {
+    grid-column: 2;
+    justify-self: start;
+    text-align: left;
+}
+
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span .this-is-you-delta {
+    grid-column: 3;
+}
+
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span:nth-child(1) .this-is-you-capability-label,
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span:nth-child(1) strong,
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span:nth-child(1) .this-is-you-delta { grid-row: 1; }
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span:nth-child(2) .this-is-you-capability-label,
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span:nth-child(2) strong,
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span:nth-child(2) .this-is-you-delta { grid-row: 2; }
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span:nth-child(3) .this-is-you-capability-label,
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span:nth-child(3) strong,
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span:nth-child(3) .this-is-you-delta { grid-row: 3; }
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span:nth-child(4) .this-is-you-capability-label,
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span:nth-child(4) strong,
+.this-is-you-console.is-mobile .this-is-you-capabilities-row > span:nth-child(4) .this-is-you-delta { grid-row: 4; }
+
+.this-is-you-console.is-mobile .this-is-you-capabilities-row .this-is-you-delta {
+    align-self: start;
+}

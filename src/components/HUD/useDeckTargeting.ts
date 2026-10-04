@@ -5,7 +5,7 @@
 
 // --- Logic Section ---
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import { canCommandAcceptTarget, getCommandTargetMenuKind, getDefaultCommandTarget } from '../../utils/commandTargetUtils';
+import { BLANK_TARGET_VALUE, canCommandAcceptTarget, getCommandTargetMenuKind, getDefaultCommandTarget } from '../../utils/commandTargetUtils';
 import { getAutoRoomTarget, getCombatRoomTarget, type CombatTargetIdentity } from '../../utils/commandAutoTarget';
 import {
     getRememberedCommandTarget,
@@ -23,6 +23,7 @@ import {
     getMountTargetSuggestions,
     getGiveRecipientSuggestions,
     getRoomTargetSuggestions,
+    getRoomCorpseTargetSuggestions,
     getSelfTargetSuggestion,
     getSelfAndRoomAlliesTargetSuggestions,
     getSelfAndRoomTargetSuggestions,
@@ -41,9 +42,14 @@ import type { DrawerLine, GmcpOccupant } from '../../types';
 
 export type DeckTargetKind =
     | 'room-objects'
+    | 'room-corpses'
     | 'inventory'
     | 'inventory-weapons'
+    | 'worn-mixing-tools'
+    | 'inventory-meat'
     | 'inventory-and-worn'
+    | 'throwables'
+    | 'scrolls'
     | 'worn'
     | 'worn-sheaths'
     | 'worn-weapons'
@@ -295,6 +301,33 @@ export const useDeckTargeting = ({
         if (activeItem.targetKind === 'shop') {
             return shopItems.map(item => ({ key: `shop-item-${item.num}`, label: item.name, value: String(item.num), meta: 'shop-item' }));
         }
+        if (activeItem.targetKind === 'room-corpses') return getRoomCorpseTargetSuggestions(roomItems);
+        if (activeItem.targetKind === 'throwables') {
+            const throwable = (line: DrawerLine) => hasObjectTrait(line, 'trait-throwable');
+            const inventoryThrowables = inventoryLines.filter(line => throwable(line) && /twisted rock fragment/i.test(`${line.text} ${line.context || ''}`));
+            const wornThrowables = wornLines.filter(line => throwable(line)
+                && /(?:twisted rock fragment|glass flask)/i.test(`${line.text} ${line.context || ''}`));
+            return getInventoryAndWornTargetSuggestions(inventoryThrowables, wornThrowables);
+        }
+        if (activeItem.targetKind === 'scrolls') {
+            return getGearTargetSuggestions(
+                inventoryLines.filter(line => hasObjectTrait(line, 'trait-reciteable')),
+                'inventory'
+            );
+        }
+        if (activeItem.targetKind === 'worn-mixing-tools') {
+            return getGearTargetSuggestions(
+                wornLines.filter(line => line.isItem && /(?:\bkit\b|\bfragment smelling bag\b)/i.test(`${line.text} ${line.context || ''}`)),
+                'worn'
+            );
+        }
+        if (activeItem.targetKind === 'inventory-meat') {
+            return getGearTargetSuggestions(
+                inventoryLines.filter(line => hasObjectTrait(line, 'trait-food')
+                    && /\b(?:meat|mutton)\b/i.test(`${line.text} ${line.context || ''}`)),
+                'inventory'
+            );
+        }
         if (!activeItem.targetKind) {
             const commandKind = getCommandTargetMenuKind(activeItem.cmd);
             if (commandKind === 'self-only') return [getSelfTargetSuggestion()];
@@ -348,7 +381,10 @@ export const useDeckTargeting = ({
         if (activeItem.targetKind === 'worn') return getGearTargetSuggestions(wornLines, 'worn');
         if (activeItem.targetKind === 'worn-sheaths') {
             const sheaths = wornLines.filter(line => hasObjectTrait(line, 'trait-sheath'));
-            return getGearTargetSuggestions(sheaths, 'worn');
+            return [
+                { key: 'draw-no-target', label: 'No target', value: BLANK_TARGET_VALUE, meta: 'blank' },
+                ...getGearTargetSuggestions(sheaths, 'worn')
+            ];
         }
         if (activeItem.targetKind === 'worn-weapons') {
             const weapons = wornLines.filter(line => hasObjectTrait(line, 'trait-weapon'));
@@ -371,12 +407,17 @@ export const useDeckTargeting = ({
         : isSecondArgumentStage && activeItem?.targetKind === 'inventory-container' ? 'PUT INTO'
         : isSecondArgumentStage && activeItem?.targetKind === 'room-object-container' ? 'GET FROM'
         : activeItem?.targetKind === 'room-objects' || activeItem?.targetKind === 'room-object-container' ? 'ROOM ITEMS'
+        : activeItem?.targetKind === 'room-corpses' ? 'CORPSES'
         : activeItem?.targetKind === 'worn' ? 'WORN ITEMS'
         : activeItem?.targetKind === 'worn-sheaths' ? 'WORN SHEATHS'
         : activeItem?.targetKind === 'worn-weapons' ? 'WORN WEAPONS'
         : activeItem?.targetKind === 'inventory-weapons' ? 'INVENTORY WEAPONS'
+        : activeItem?.targetKind === 'worn-mixing-tools' ? 'MIXING TOOLS'
+        : activeItem?.targetKind === 'inventory-meat' ? 'MEAT'
         : activeItem?.targetKind === 'lanterns' ? 'LANTERNS'
         : activeItem?.targetKind === 'inventory-and-worn' ? 'INVENTORY AND WORN'
+        : activeItem?.targetKind === 'throwables' ? 'THROWABLES'
+        : activeItem?.targetKind === 'scrolls' ? 'SCROLLS'
         : activeItem?.targetKind === 'mounts' ? 'MOUNTS'
         : activeItem?.targetKind === 'group' ? 'GROUP'
         : activeItem?.targetKind === 'shop' ? 'SHOP'
@@ -637,10 +678,12 @@ export const useDeckTargeting = ({
                     pendingTargetRef.current = targetValue;
                     return;
                 }
-                const command = (itemToFire.targetKind === 'social' || itemToFire.cmd.trim() === 'social')
+                const command = targetValue === BLANK_TARGET_VALUE
+                    ? itemToFire.cmd.trim()
+                    : (itemToFire.targetKind === 'social' || itemToFire.cmd.trim() === 'social')
                         ? (target ? `${targetValue} ${target}`.trim() : targetValue)
                         : `${itemToFire.cmd}${targetValue}`.trim();
-                if (itemToFire.targetKind === 'mounts') {
+                if (itemToFire.targetKind === 'mounts' && targetValue !== BLANK_TARGET_VALUE) {
                     rememberCommandTarget(itemToFire.cmd, targetValue);
                 }
                 setPendingTarget(targetValue);
@@ -687,10 +730,12 @@ export const useDeckTargeting = ({
             return;
         }
 
-        const command = item.targetKind === 'social' || item.cmd.trim() === 'social'
+        const command = selected === BLANK_TARGET_VALUE
+            ? item.cmd.trim()
+            : item.targetKind === 'social' || item.cmd.trim() === 'social'
             ? (target ? `${selected} ${target}`.trim() : selected)
             : `${item.cmd}${selected}`.trim();
-        rememberCommandTarget(item.cmd, selected);
+        if (selected !== BLANK_TARGET_VALUE) rememberCommandTarget(item.cmd, selected);
         flashPressed(item.label);
         triggerHaptic?.(15);
         executeCommand(command);

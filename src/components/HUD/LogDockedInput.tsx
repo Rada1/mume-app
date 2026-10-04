@@ -397,12 +397,10 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         if (event.currentTarget instanceof HTMLTextAreaElement) resizeTextarea(event.currentTarget);
     }, [resizeTextarea, setInput]);
 
-    const handleInputPointerDown = useCallback((event: React.PointerEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputPointerDown = useCallback(() => {
+        // Clear inline argument caret state while leaving native text caret placement intact.
         clearCommandArgumentCaret();
-        if (!viewport?.isMobile) return;
-        event.preventDefault();
-        focusCommandInput();
-    }, [clearCommandArgumentCaret, focusCommandInput, viewport?.isMobile]);
+    }, [clearCommandArgumentCaret]);
 
     const handleInputFocus = useCallback(() => {
         if (blurTimeoutRef.current) {
@@ -579,7 +577,10 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                 <div
                     ref={commandInputWrapRef}
                     className="docked-input-wrap"
-                    onClick={focusCommandInput}
+                    onClick={event => {
+                        // Focusing the field again after a mobile tap can move its caret to the end.
+                        if (event.target !== inputRef.current) focusCommandInput();
+                    }}
                 >
                     {(commandTextParts || (commandPreview && !input) || showTacticalArgumentChips) && (
                         <div className="docked-input-highlight" aria-hidden={!(commandPreview && !input) && !showTacticalArgumentChips && commandArgumentChips.length === 0}>
@@ -672,6 +673,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                 currentTarget={parley.command}
                 title="Communication channel"
                 showMeta={false}
+                largeOnMobile
                 onChoose={chooseParleyChannel}
                 onDismiss={() => setOpenParleyPicker(null)}
             />
@@ -681,6 +683,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                 suggestions={parleyTargetSuggestions}
                 currentTarget={parley.target}
                 title="Communication target"
+                largeOnMobile
                 onChoose={chooseParleyTarget}
                 onDismiss={() => setOpenParleyPicker(null)}
             />

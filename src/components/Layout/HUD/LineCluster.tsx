@@ -73,6 +73,12 @@ export const LineCluster: React.FC<LineClusterProps> = ({
         const order = ['tactical-mage', 'tactical-cleric', 'tactical-ranger', 'tactical-warrior', 'tactical-thief', 'tactical-doors', 'tactical-eye'];
         return order.indexOf(a.id) - order.indexOf(b.id);
     });
+    const buttonSteps = sortedButtons.map((button, index) => ({ button, index }));
+    const mageClericSteps = buttonSteps.filter(({ button }) => button.id === 'tactical-mage' || button.id === 'tactical-cleric');
+    const rangerSteps = buttonSteps.filter(({ button }) => button.id === 'tactical-ranger');
+    const warriorThiefSteps = buttonSteps.filter(({ button }) => button.id === 'tactical-warrior' || button.id === 'tactical-thief');
+    const groupedButtonIds = new Set(['tactical-mage', 'tactical-cleric', 'tactical-warrior', 'tactical-thief']);
+    const remainingSteps = buttonSteps.filter(({ button }) => !groupedButtonIds.has(button.id) && button.id !== 'tactical-ranger');
 
     // Check if we should be hidden (redundant with Layer but safe)
     if (isMobile && !isLandscape && viewport.isKeyboardOpen && !isEditMode) return null;
@@ -115,6 +121,16 @@ export const LineCluster: React.FC<LineClusterProps> = ({
         );
     };
 
+    const renderStep = ({ button, index }: typeof buttonSteps[number]) => (
+        <div
+            key={button.id}
+            className="line-cluster-step"
+            style={{ '--cascade-delay': `${index * 0.12}s` } as React.CSSProperties}
+        >
+            {renderButton(button, 'default', `line-btn ${button.id}`)}
+        </div>
+    );
+
     return (
         <div className={`tactical-line-wrapper${selectedTarget ? ' is-targeting' : ''}`}>
             {charmieButton && (
@@ -123,15 +139,14 @@ export const LineCluster: React.FC<LineClusterProps> = ({
                 </div>
             )}
             <div className="line-cluster">
-                {sortedButtons.map((button, index) => (
-                    <div
-                        key={button.id}
-                        className="line-cluster-step"
-                        style={{ '--cascade-delay': `${index * 0.12}s` } as React.CSSProperties}
-                    >
-                        {renderButton(button, 'default', `line-btn ${button.id}`)}
-                    </div>
-                ))}
+                <div className="mobile-tactical-class-group mobile-tactical-class-group-mage-cleric">
+                    {mageClericSteps.map(renderStep)}
+                </div>
+                {rangerSteps.map(renderStep)}
+                <div className="mobile-tactical-class-group mobile-tactical-class-group-warrior-thief">
+                    {warriorThiefSteps.map(renderStep)}
+                </div>
+                {remainingSteps.map(renderStep)}
             </div>
         </div>
     );

@@ -119,6 +119,7 @@ export const useMountCargoActions = ({ executeCommand, inventoryLines }: MountCa
             if (!valuableTargets.length) return 'No valuable items found on this corpse.';
 
             let transferred = 0;
+            let lootedCoins = false;
             const removedByKeyword = new Map<string, number>();
             for (const item of valuableTargets) {
                 const corpseOrdinal = item.ordinal - (removedByKeyword.get(item.keyword) || 0);
@@ -126,6 +127,10 @@ export const useMountCargoActions = ({ executeCommand, inventoryLines }: MountCa
                 const getLines = await sendAndWait(`get ${corpseSelector} ${corpseTarget}`, startRoom);
                 if (!hasGotItem(getLines)) return `Stopped at ${item.label}; remaining loot stayed on the corpse.`;
                 removedByKeyword.set(item.keyword, (removedByKeyword.get(item.keyword) || 0) + 1);
+                if (item.isCurrency) {
+                    lootedCoins = true;
+                    continue;
+                }
                 const inventorySelector = makeItemSelector(item.keyword, (baseline.get(item.keyword) || 0) + 1);
                 const giveLines = await sendAndWait(`give ${inventorySelector} ${mountTarget}`, startRoom);
                 if (!hasGivenItem(giveLines)) {
@@ -136,6 +141,8 @@ export const useMountCargoActions = ({ executeCommand, inventoryLines }: MountCa
                 }
                 transferred += 1;
             }
+            if (lootedCoins && transferred === 0) return 'Looted coins; no other valuable items to give to the mount.';
+            if (lootedCoins) return `Looted coins and gave ${transferred} valuable ${transferred === 1 ? 'item' : 'items'} to the mount.`;
             return `Gave ${transferred} valuable ${transferred === 1 ? 'item' : 'items'} to the mount.`;
         });
     }, [examineContents, refreshInventory, runAction, sendAndWait]);

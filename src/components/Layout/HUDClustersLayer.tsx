@@ -3,7 +3,7 @@ import { GameButton } from "../Controls/GameButton/GameButton";
 import { DpadCluster } from "../Mapper/DpadCluster";
 
 import React, { useState, useEffect } from 'react';
-import { Plus, X, RotateCcw, Grid } from 'lucide-react';
+import { Plus, X, Grid } from 'lucide-react';
 import { MapperCluster } from './HUD/MapperCluster';
 import { GridOverlay } from '../Grid/GridOverlay';
 import { StatsCluster } from './HUD/StatsCluster';
@@ -35,26 +35,13 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
     const { characterName, btn, joystick, mapperRef, triggerHaptic, executeCommand, handleButtonClick, viewport, showControls, showLegacyButtons, gameState, sessionMode } = useGame();
     const { target, stats, activePrompt } = useVitals();
     const { setPopoverState } = useUI();
-    const { isMobile, isLandscape, logFontSize, resetLogFontSize, isKeyboardOpen } = viewport;
+    const { isMobile, isLandscape, isKeyboardOpen } = viewport;
 
     const effectiveShowControls = showControls && (!isMobile || !isKeyboardOpen || btn.isEditMode);
     const isReplaying = sessionMode === 'replay';
 
     return (
         <>
-            {isMobile && logFontSize !== 1.0 && (
-                <div
-                    className="reset-zoom-fab"
-                    onClick={() => {
-                        triggerHaptic(25);
-                        resetLogFontSize();
-                    }}
-                    title="Reset Font Size"
-                >
-                    <RotateCcw size={20} />
-                </div>
-            )}
-
             <GridOverlay isEditMode={btn.isEditMode} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} />
 
             {(isMobile && (gameState !== 'disconnected' || isReplaying)) && (

@@ -1,6 +1,6 @@
 /**
- * @file Fast-mode room locator adapted from WebCockpit's MMapper tracker.
- * Uses server IDs first, then directed exits, then room name and description.
+ * @file Reference-only room locator adapted from WebCockpit's MMapper tracker.
+ * The active client resolves location in MapperContext so it can include text/XML fallback data.
  */
 // --- Logic Section ---
 

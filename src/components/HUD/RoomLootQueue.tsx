@@ -99,6 +99,8 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     const hasRentService = roomFlags.includes('RENT');
     const hasGuildService = roomFlags.includes('GUILD') || Boolean(getGuildClassFromFlags(roomFlags));
     const [isOpen, setIsOpen] = React.useState(false);
+    const lootTriggerRef = React.useRef<HTMLButtonElement | null>(null);
+    const [mobilePanelPosition, setMobilePanelPosition] = React.useState({ top: 0, right: 8 });
     const [handledRoomItems, setHandledRoomItems] = React.useState<Set<string>>(() => new Set());
     const [dismissedGroundLootIds, setDismissedGroundLootIds] = React.useState<Set<string>>(() => new Set());
     const [recipientTarget, setRecipientTarget] = React.useState('mount');
@@ -171,9 +173,25 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
         clearContents();
     }, [clearContents, roomNum, retainRoom]);
 
+    const updateMobilePanelPosition = () => {
+        const rect = lootTriggerRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        setMobilePanelPosition({
+            top: rect.bottom + 8,
+            right: Math.max(8, window.innerWidth - rect.right)
+        });
+    };
+
     const openQueue = () => {
+        updateMobilePanelPosition();
         setIsOpen(true);
     };
+
+    React.useEffect(() => {
+        if (!isMobile || !isOpen) return;
+        window.addEventListener('resize', updateMobilePanelPosition);
+        return () => window.removeEventListener('resize', updateMobilePanelPosition);
+    }, [isMobile, isOpen]);
 
     const lootCorpse = (corpse: LootTarget) => {
         const target = corpse.commandTarget.trim();
@@ -294,7 +312,7 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
                 <GraduationCap size={14} /><span>Skills</span>
             </button>}
             {lootSourceCount > 0 && <div className="room-loot-trigger-wrap">
-                <button className="room-loot-trigger" type="button" onClick={openQueue}
+                <button ref={lootTriggerRef} className="room-loot-trigger" type="button" onClick={openQueue}
                     aria-label={`Open loot list, ${lootSourceCount} available loot sources`}>
                     <span>Loot</span><span className="room-loot-count">{lootSourceCount}</span>
                 </button>
@@ -302,9 +320,10 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
             </div>}
 
             {isMobile && isOpen && createPortal(
-                <div className="room-loot-overlay is-mobile">
-                    <button className="room-loot-backdrop" type="button" aria-label="Close loot list"
-                        onClick={() => setIsOpen(false)} />
+                <div className="room-loot-overlay is-mobile" style={{
+                    '--room-loot-panel-top': `${mobilePanelPosition.top}px`,
+                    '--room-loot-panel-right': `${mobilePanelPosition.right}px`
+                } as React.CSSProperties}>
                     {lootPanel}
                 </div>,
                 document.body

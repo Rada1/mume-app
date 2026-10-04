@@ -12,6 +12,7 @@ export interface ValuableLootTarget {
     keyword: string;
     label: string;
     ordinal: number;
+    isCurrency?: boolean;
 }
 
 const hasObjectToken = (tokens: Token[] | undefined): boolean => (tokens || []).some(token =>
@@ -27,7 +28,7 @@ const isLikelyCargoLine = (line: DrawerLine): boolean => {
 };
 
 const isCurrencyLine = (line: DrawerLine): boolean =>
-    /\b(?:\d+\s*)?(?:gold|silver|copper)\s+coins?\b|\b(?:lauren|celeb|busc)\b/i.test(line.text);
+    /\b(?:\d[\d,]*\s*)?(?:gold\s+coins?|silver\s+(?:coins?|pennies?)|copper\s+(?:coins?|pennies?))\b|\b(?:lauren|celeb|busc)\b/i.test(line.text);
 
 export const getCargoItemGroups = (lines: DrawerLine[] | undefined): CargoItemGroup[] => {
     const groups = new Map<string, CargoItemGroup>();
@@ -51,8 +52,17 @@ const isValuableLootLine = (line: DrawerLine): boolean => {
 export const getValuableLootTargets = (lines: DrawerLine[] | undefined): ValuableLootTarget[] => {
     const seen = new Map<string, number>();
     const targets: ValuableLootTarget[] = [];
+    let includesCoins = false;
     (lines || []).forEach(line => {
-        if (!line.isItem || line.isHeader || isCurrencyLine(line) || !isLikelyCargoLine(line)) return;
+        if (line.isHeader) return;
+        if (isCurrencyLine(line)) {
+            if (!includesCoins) {
+                targets.push({ keyword: 'coins', ordinal: 1, label: 'coins', isCurrency: true });
+                includesCoins = true;
+            }
+            return;
+        }
+        if (!line.isItem || !isLikelyCargoLine(line)) return;
         const keyword = getDrawerObjectKeyword(line);
         if (!keyword) return;
         const ordinal = (seen.get(keyword) || 0) + 1;

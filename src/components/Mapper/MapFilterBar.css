@@ -133,8 +133,9 @@
     height: 22px;
     box-sizing: border-box;
     padding: 2px 7px;
-    border: 1px solid rgba(201, 168, 76, 0.24);
-    border-radius: 4px;
+    border: 0;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.38);
+    border-radius: 0;
     outline: none;
     background: rgba(0, 0, 0, 0.18);
     color: #d4cdb8;
@@ -144,7 +145,7 @@
 }
 
 .map-filter-search-input:focus {
-    border-color: rgba(240, 203, 103, 0.62);
+    border-bottom-color: rgba(240, 203, 103, 0.78);
     background: rgba(0, 0, 0, 0.3);
 }
 

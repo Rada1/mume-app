@@ -4,7 +4,7 @@
 // --- Logic Section ---
 
 import type { AdaptedFastMap } from './mapAdapter';
-import type { FastMapFrame, FastMapGameEvent, FastMapSearchOverlay, FastMapWorkerEvent, MainToFastMapWorker } from './protocol';
+import type { FastMapFrame, FastMapSearchOverlay, FastMapWorkerEvent, MainToFastMapWorker } from './protocol';
 import type { FastMapGroupMember, FastMapTextLabel } from './model';
 import { UpdateCoalescer } from './updateCoalescer';
 
@@ -118,14 +118,6 @@ export class FastMapWorkerClient {
 
   update(frame: FastMapFrame): void {
     this.updates.push(frame);
-  }
-
-  sendGameEvent(event: FastMapGameEvent): void {
-    this.post({ type: 'game-event', event });
-  }
-
-  syncRoom(roomId: string | null): void {
-    this.post({ type: 'sync-room', roomId });
   }
 
   setMetricsEnabled(enabled: boolean): void {

@@ -337,37 +337,37 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     isMobile={isMobile}
                                 />
                             </div>
-                        </div>
 
-                        <MapActionButtons
-                            isGridEnabled={btn.isGridEnabled}
-                            gridSize={btn.gridSize}
-                            dragState={dragState}
-                            handleDragStart={handleDragStart}
-                            handleButtonClick={handleButtonClick}
-                            wasDraggingRef={wasDraggingRef}
-                            triggerHaptic={triggerHaptic}
-                            setPopoverState={setPopoverState}
-                            setEditButton={button => {
-                                btn.setEditingButtonId(button.id);
-                                if (!btn.selectedButtonIds.has(button.id)) btn.setSelectedIds(new Set([button.id]));
-                            }}
-                            activePrompt={activePrompt}
-                            executeCommand={executeCommand}
-                            setCommandPreview={setCommandPreview}
-                            setHeldButton={setHeldButton}
-                            heldButton={heldButton}
-                            joystick={{
-                                isActive: joystick.joystickActive,
-                                currentDir: joystick.currentDir,
-                                isTargetModifierActive: joystick.isTargetModifierActive,
-                                setIsJoystickConsumed: joystick.setIsJoystickConsumed
-                            }}
-                            target={target}
-                            setActiveSet={btn.setActiveSet}
-                            setButtons={btn.setButtons}
-                            isMobile={isMobile}
-                        />
+                            <MapActionButtons
+                                isGridEnabled={btn.isGridEnabled}
+                                gridSize={btn.gridSize}
+                                dragState={dragState}
+                                handleDragStart={handleDragStart}
+                                handleButtonClick={handleButtonClick}
+                                wasDraggingRef={wasDraggingRef}
+                                triggerHaptic={triggerHaptic}
+                                setPopoverState={setPopoverState}
+                                setEditButton={button => {
+                                    btn.setEditingButtonId(button.id);
+                                    if (!btn.selectedButtonIds.has(button.id)) btn.setSelectedIds(new Set([button.id]));
+                                }}
+                                activePrompt={activePrompt}
+                                executeCommand={executeCommand}
+                                setCommandPreview={setCommandPreview}
+                                setHeldButton={setHeldButton}
+                                heldButton={heldButton}
+                                joystick={{
+                                    isActive: joystick.joystickActive,
+                                    currentDir: joystick.currentDir,
+                                    isTargetModifierActive: joystick.isTargetModifierActive,
+                                    setIsJoystickConsumed: joystick.setIsJoystickConsumed
+                                }}
+                                target={target}
+                                setActiveSet={btn.setActiveSet}
+                                setButtons={btn.setButtons}
+                                isMobile={isMobile}
+                            />
+                        </div>
 
                         <Mapper
                             ref={mapperRef}

@@ -12,8 +12,6 @@ import { adaptMumeMap } from './mapAdapter';
 import { adaptWebCockpitMap } from './adaptWebCockpitMap';
 import { labelsFrom } from './canvasDataAdapters';
 import { clearFastMapMetrics, setFastMapMetrics } from './fastMapTelemetry';
-import { gmcpBus } from '../../../events/gmcpBus';
-import { useModeStore } from '../../../stores/useModeStore';
 import { DEFAULT_MAP_BACKGROUND, readMapBackground } from './mapBackground';
 import { createDoorStateSnapshot, updateDoorStateSnapshot, type DoorStateSnapshot } from './doorStateAdapter';
 import { buildSearchOverlay } from './searchOverlayAdapter';
@@ -29,7 +27,6 @@ interface FastMapCanvasProps {
 type CameraState = Parameters<typeof snapPixelCamera>[0];
 
 export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCanvasProps>((props, forwardedRef) => {
-  const activeView = useModeStore(state => state.activeView);
   const [workerReady, setWorkerReady] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
   const internalRef = useRef<HTMLCanvasElement>(null);
@@ -73,11 +70,6 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
             if (event.type === 'ready') setWorkerReady(true);
             if (event.type === 'map-loaded') setMapLoaded(true);
             if (event.type === 'metrics') setFastMapMetrics(event.stats);
-            if (event.type === 'location') {
-              const id = event.roomId.startsWith('m_') ? event.roomId : `m_${event.roomId}`;
-              clientRef.current?.visitRoom(id);
-              mapPropsRef.current.onPlayerRoom?.(id);
-            }
           }, reason => fallbackRef.current(reason), props.transparentBackground);
         } catch (error) {
           fallbackRef.current(error instanceof Error ? error.message : String(error));
@@ -108,24 +100,6 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
   }, [canvasRef, props.mapProps.isDarkMode, sendLatestFrame]);
 
   useEffect(() => {
-    const unsubscribeMoved = gmcpBus.on('Event.Moved', data => {
-      const spectating = typeof data === 'object' && data !== null && 'spectating' in data
-        ? (data as { spectating?: unknown }).spectating === true
-        : false;
-      if (spectating !== (activeView === 'target')) return;
-      clientRef.current?.sendGameEvent({ kind: 'moved', data });
-    });
-    const unsubscribeRoom = gmcpBus.on('Room.Info', data => {
-      if ((data.spectating === true) !== (activeView === 'target')) return;
-      clientRef.current?.sendGameEvent({ kind: 'room-info', data });
-    });
-    return () => {
-      unsubscribeMoved();
-      unsubscribeRoom();
-    };
-  }, [activeView]);
-
-  useEffect(() => {
     const tryLoadMap = (): boolean => {
       const source = props.mapProps.preloadedCoordsRef.current as Readonly<Record<string, readonly unknown[]>>;
       const canonical = props.mapProps.performanceMapRef?.current ?? null;
@@ -153,7 +127,6 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
         adapted.map.doorOpen?.set(doors.open);
         doorStateRef.current = doors;
         setMapLoaded(false);
-        clientRef.current?.syncRoom(props.mapProps.currentRoomId);
         clientRef.current?.loadMap(adapted);
         sendFastMapExploration(props.mapProps, clientRef.current);
         clientRef.current?.setLabels([...labelsFrom(labels, { fontSizeScale: 1.8, markerStyle: true, excludeIdPrefix: canonical ? 'mm2_' : undefined }), ...labelsFrom(regionLabels)]);

@@ -16,7 +16,7 @@ const CLASS_BUTTON_IDS: Record<string, string> = {
     thief: 'tactical-thief'
 };
 
-const SWIPE_DIRECTIONS: SwipeDirection[] = ['nw', 'up', 'ne', 'left', 'right', 'sw', 'down', 'se'];
+const SWIPE_DIRECTIONS: SwipeDirection[] = ['up', 'right', 'down', 'left', 'nw', 'ne', 'sw', 'se'];
 
 const COMMAND_OVERRIDES: Record<string, string> = {
     missile: 'shoot'

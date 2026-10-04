@@ -11,9 +11,9 @@ const SWIPE_COMMAND_TEXT_COLORS: Record<string, string> = {
     ride: 'var(--ansi-bright-green, #44ff70)',
     narrate: 'var(--ansi-bright-yellow, #f5f749)',
     yell: 'var(--ansi-bright-magenta, #c084fc)',
-    say: 'var(--ansi-bright-green, #44ff70)',
-    tell: 'var(--ansi-bright-cyan, #38bdf8)',
-    gtell: 'var(--ansi-bright-cyan, #38bdf8)',
+    say: 'var(--ansi-bright-cyan, #38bdf8)',
+    tell: 'var(--ansi-bright-green, #44ff70)',
+    gtell: 'var(--ansi-bright-green, #44ff70)',
     gsay: 'var(--ansi-bright-cyan, #38bdf8)',
     protect: 'var(--ansi-bright-cyan, #38bdf8)',
     rescue: 'var(--ansi-bright-cyan, #38bdf8)',
@@ -69,13 +69,17 @@ const RED_SWIPE_SPELLS = [
     'burning hands', 'chill touch', 'magic missile', 'colour spray', 'call lightning', 'curse', 'poison', 'hold', 'black breath', 'ventriloquate', 'earthquake', 'silence', 'fear'
 ];
 const WHITE_SWIPE_COMMANDS = ['locate', 'locate life', 'watch room', 'scry', 'scout', 'look', 'examine', 'track', 'search', 'consider', 'watch', 'reveal', 'where', 'flush'];
-const GOLD_SWIPE_COMMANDS = ['create food', 'create water', 'create light', 'block door', 'break door'];
+const GOLD_SWIPE_COMMANDS = ['create food', 'create water', 'create light'];
+const ORANGE_SWIPE_COMMANDS = ['block door', 'break door'];
 const GREEN_SWIPE_COMMANDS = ['teleport', 'word of recall', 'portal', 'transfer', 'summon', 'flee', 'escape'];
 
 export const getSwipeCommandTextColor = (command: string): string | undefined => {
     const normalizedCommand = command.trim().toLowerCase();
     const spell = normalizedCommand.match(/^(?:cast|c|commune)\s+['"]([^'"]+)['"]/i)?.[1]
         || normalizedCommand.replace(/^(?:cast|c|commune)\s+/i, '').replace(/^['"]/, '').replace(/['"](?=\s|$)/g, '');
+    if (ORANGE_SWIPE_COMMANDS.some(name => spell === name || spell.startsWith(`${name} `))) {
+        return '#f97316';
+    }
     if (GOLD_SWIPE_COMMANDS.some(name => spell === name || spell.startsWith(`${name} `))) {
         return '#ffd700';
     }
@@ -96,4 +100,9 @@ export const getSwipeCommandTextColor = (command: string): string | undefined =>
     }
     const verb = normalizedCommand.split(/\s+/)[0];
     return SWIPE_COMMAND_TEXT_COLORS[verb];
+};
+
+export const isRedCodedSwipeCommand = (command: string): boolean => {
+    const color = getSwipeCommandTextColor(command)?.toLowerCase() || '';
+    return color.includes('red') || /#(?:f87171|ef4444|ff0000)\b/.test(color);
 };

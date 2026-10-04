@@ -939,6 +939,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                 currentTarget={parley.command}
                 title="Communication channel"
                 showMeta={false}
+                largeOnMobile
                 onChoose={chooseParleyChannel}
                 onDismiss={() => setOpenParleyPicker(null)}
             />
@@ -948,6 +949,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                 suggestions={parleyTargetSuggestions}
                 currentTarget={parley.target}
                 title="Communication target"
+                largeOnMobile
                 onChoose={chooseParleyTarget}
                 onDismiss={() => setOpenParleyPicker(null)}
             />

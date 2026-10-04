@@ -14,13 +14,16 @@ export const ObjectDragOverlay: React.FC = () => {
     if (!dragState || typeof document === 'undefined') return null;
 
     const command = dragState.target ? getObjectDragCommand(dragState.source, dragState.target) : null;
-    const label = command || `move ${dragState.source.label}`;
+    const sourceLabel = dragState.source.selectedItems?.length
+        ? `${dragState.source.selectedItems.length} items`
+        : dragState.source.label;
+    const label = command || `move ${sourceLabel}`;
 
     return createPortal(
         <div
             className={`object-drag-overlay${command ? ' is-valid' : ''}`}
         >
-            <span className="object-drag-chip">{dragState.source.label}</span>
+            <span className="object-drag-chip">{sourceLabel}</span>
             <span className="object-drag-command">{label}</span>
         </div>,
         document.body

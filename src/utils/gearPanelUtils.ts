@@ -1,29 +1,12 @@
 /** @file gearPanelUtils.ts — Turn captured MUME equipment lines into terminal rows. */
-import type { DrawerLine, GmcpOccupant } from '../types';
+import type { DrawerLine, GearRecipient, GearRow, GmcpOccupant } from '../types';
 import { extractMumeKeyword, isItemContainer } from './gameUtils';
 import { getRoomObjectKeyword } from '../objects/objectTargetModel';
 import { getOccupantCommandKeyword } from './occupantKeywordUtils';
 import { normalizeOccupantType } from '../services/classification/normalizeOccupantType';
 
 const ROOM_CHARACTER_TYPES = new Set(['ally', 'enemy', 'neutral', 'npc', 'mount', 'player', 'character', 'self', 'you', 'mob', 'mobile']);
-
-export interface GearRow {
-    line: DrawerLine;
-    slot: string;
-    slotLabel: string;
-    article: string;
-    name: string;
-    condition: string;
-    noun: string;
-    isContainer: boolean;
-}
-
-export interface GearRecipient {
-    id: string;
-    label: string;
-    noun: string;
-    kind: 'player' | 'npc';
-}
+export type { GearRecipient, GearRow } from '../types';
 
 const MUME_DEFAULT_EQUIPMENT_ORDER = 'WSHbcahlfnwF-qB';
 const WORN_PREFIX_ORDER: Readonly<Record<string, string>> = {

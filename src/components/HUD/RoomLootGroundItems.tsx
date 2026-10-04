@@ -1,6 +1,7 @@
 /** @file RoomLootGroundItems.tsx — Selection and transfer controls for likely ground loot. */
 import React from 'react';
 import { X } from 'lucide-react';
+import { GearSelectionCheckbox } from '../GearSelectionCheckbox';
 import type { GroundLootCandidate } from '../../hooks/useRoomLootCandidates';
 import './RoomLootGroundItems.css';
 
@@ -54,10 +55,11 @@ export const RoomLootGroundItems: React.FC<RoomLootGroundItemsProps> = ({
             <div className="room-loot-ground-list">
                 {items.map(item => (
                     <div className="room-loot-ground-row" key={item.id}>
-                        <label>
-                            <input type="checkbox" checked={selectedIds.has(item.id)} onChange={() => toggleSelected(item.id)} />
+                        <div className="room-loot-ground-item">
+                            <GearSelectionCheckbox checked={selectedIds.has(item.id)} label={`Select ${item.label}`}
+                                onChange={() => toggleSelected(item.id)} />
                             <span>{item.label}</span>
-                        </label>
+                        </div>
                         <button type="button" onClick={() => executeCommand(`get ${item.commandTarget}`)}>Get</button>
                         <button className="room-loot-ground-dismiss" type="button" aria-label={`Hide ${item.label}`}
                             onClick={() => onDismiss(item.id)}><X size={14} /></button>

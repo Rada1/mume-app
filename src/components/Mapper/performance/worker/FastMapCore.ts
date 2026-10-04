@@ -6,7 +6,6 @@
 import { FastMapRenderer } from '../FastMapRenderer';
 import type { FastMapFrame, FastMapSearchOverlay, FastMapWorkerEvent, FastMapWorkerMetrics, MainToFastMapWorker } from '../protocol';
 import type { FastMapData, FastMapGroupMember, FastMapTextLabel } from '../model';
-import { FastMapLocationTracker } from './FastMapLocationTracker';
 
 export interface FastMapRendererApi {
   readonly buildMs: number;
@@ -47,9 +46,6 @@ export class FastMapCore {
   private sampleStart = performance.now();
   private mapLoads = 0;
   private staticBuildMs = 0;
-  private locationTracker: FastMapLocationTracker | null = null;
-  private pendingGameEvents: Array<{ kind: 'moved' | 'room-info'; data: unknown }> = [];
-  private pendingRoomId: string | null = null;
   private exploredRoomIds = new Set<string>();
   private revealAllRooms = false;
 
@@ -84,11 +80,6 @@ export class FastMapCore {
           if (!this.renderer) return;
           this.renderer.setMap(message.map);
           this.renderer.setExploredRooms?.([...this.exploredRoomIds], this.revealAllRooms);
-          this.locationTracker = new FastMapLocationTracker();
-          this.locationTracker.setMap(message.map);
-          this.locationTracker.seedRoom(this.pendingRoomId);
-          for (const event of this.pendingGameEvents) this.applyGameEvent(event.kind, event.data);
-          this.pendingGameEvents = [];
           this.mapLoads++;
           this.staticBuildMs = this.renderer.buildMs;
           this.host.post({ type: 'map-loaded', roomCount: this.renderer.mapRoomCount, staticBuildMs: this.staticBuildMs, mapLoads: this.mapLoads });
@@ -130,17 +121,6 @@ export class FastMapCore {
           if (this.metricsEnabled) this.updates++;
           this.requestRender();
           return;
-        case 'game-event':
-          if (this.locationTracker) this.applyGameEvent(message.event.kind, message.event.data);
-          else {
-            this.pendingGameEvents.push(message.event);
-            if (this.pendingGameEvents.length > 32) this.pendingGameEvents.shift();
-          }
-          return;
-        case 'sync-room':
-          this.pendingRoomId = message.roomId;
-          this.locationTracker?.seedRoom(message.roomId);
-          return;
         case 'metrics':
           this.metricsEnabled = message.enabled;
           if (this.metricsEnabled) this.startMetrics();
@@ -160,17 +140,6 @@ export class FastMapCore {
     this.stopMetrics();
     this.renderer?.dispose();
     this.renderer = null;
-    this.locationTracker = null;
-    this.pendingGameEvents = [];
-  }
-
-  private applyGameEvent(kind: 'moved' | 'room-info', data: unknown): void {
-    const result = this.locationTracker?.apply(kind, data);
-    if (result?.roomId && result.matchedBy !== 'none') {
-      this.exploredRoomIds.add(result.roomId);
-      this.renderer?.visitRoom?.(result.roomId);
-      this.host.post({ type: 'location', roomId: result.roomId, matchedBy: result.matchedBy });
-    }
   }
 
   private requestRender(): void {

@@ -44,12 +44,12 @@ const HorseHeadIcon: React.FC<{ size?: number; strokeWidth?: number }> = ({ size
 export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
     combat: [
         { label: 'Use', cmd: 'use ', targetKind: 'inventory' },
-        { label: 'Smoke', cmd: 'smoke ', targetKind: 'inventory' },
+        { label: 'Smoke', cmd: 'smoke ', targetKind: 'inventory-and-worn' },
         { label: 'Quaff', cmd: 'quaff ', targetKind: 'inventory' },
         { label: 'Draw', cmd: 'draw ', targetKind: 'worn-sheaths' },
         { label: 'Sheath', cmd: 'sheath ', targetKind: 'worn-weapons' },
-        { label: 'Throw', cmd: 'throw ', targetKind: 'inventory' },
-        { label: 'Recite', cmd: 'recite ', targetKind: 'inventory' },
+        { label: 'Throw', cmd: 'throw ', targetKind: 'throwables' },
+        { label: 'Recite', cmd: 'recite ', targetKind: 'scrolls' },
         { label: 'Wield', cmd: 'wield ', targetKind: 'inventory-weapons' },
     ],
     social: [
@@ -94,9 +94,9 @@ export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
         { label: 'Eat', cmd: 'eat ', targetKind: 'inventory' },
         { label: 'Drink', cmd: 'drink ', targetKind: 'inventory' },
         { label: 'Pour', cmd: 'pour ', needsTarget: true, targetKind: 'pour' },
-        { label: 'Butcher', cmd: 'butcher' },
-        { label: 'Cook', cmd: 'cook' },
-        { label: 'Mix', cmd: 'mix' },
+        { label: 'Butcher', cmd: 'butcher ', targetKind: 'room-corpses' },
+        { label: 'Cook', cmd: 'cook ', targetKind: 'inventory-meat' },
+        { label: 'Mix', cmd: 'mix ', targetKind: 'worn-mixing-tools' },
         { label: 'Crush', cmd: 'crush' },
         { label: 'Forage', cmd: 'forage', requirement: { raceOrSubrace: ['beorning', 'bear'] } },
         { label: 'Drain', cmd: 'drain', requirement: { raceOrSubrace: ['orc', 'troll'] } },

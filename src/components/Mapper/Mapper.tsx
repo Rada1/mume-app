@@ -342,7 +342,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 rooms={rooms}
                 markers={markers}
                 currentRoomId={currentRoomId}
-                onPlayerRoom={context.setCurrentRoomId}
                 selectedRoomIds={selectedRoomIds}
                 selectedMarkerId={selectedMarkerId}
                 camera={cameraRef}

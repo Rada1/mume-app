@@ -7,6 +7,7 @@ import './TacticalDirectionPad.css';
 interface DirectionOption {
     value: string;
     label: string;
+    initial: string;
     arrow: string;
     row: number;
     column: number;
@@ -14,21 +15,21 @@ interface DirectionOption {
 }
 
 const DIRECTION_OPTIONS: DirectionOption[] = [
-    { value: 'up', label: 'Up', arrow: '↑', row: 1, column: 1, axis: true },
-    { value: 'n', label: 'North', arrow: '↑', row: 1, column: 2 },
-    { value: 'w', label: 'West', arrow: '←', row: 2, column: 1 },
-    { value: 'e', label: 'East', arrow: '→', row: 2, column: 3 },
-    { value: 's', label: 'South', arrow: '↓', row: 3, column: 2 },
-    { value: 'down', label: 'Down', arrow: '↓', row: 3, column: 3, axis: true }
+    { value: 'up', label: 'Up', initial: 'U', arrow: '↑', row: 1, column: 1, axis: true },
+    { value: 'n', label: 'North', initial: 'N', arrow: '↑', row: 1, column: 2 },
+    { value: 'w', label: 'West', initial: 'W', arrow: '←', row: 2, column: 1 },
+    { value: 'e', label: 'East', initial: 'E', arrow: '→', row: 2, column: 3 },
+    { value: 's', label: 'South', initial: 'S', arrow: '↓', row: 3, column: 2 },
+    { value: 'down', label: 'Down', initial: 'D', arrow: '↓', row: 3, column: 3, axis: true }
 ];
 
 const MOVEMENT_WHEEL_OPTIONS: DirectionOption[] = [
-    { value: 'u', label: 'Up', arrow: '↑', row: 1, column: 1, axis: true },
-    { value: 'n', label: 'North', arrow: '↑', row: 1, column: 2 },
-    { value: 'w', label: 'West', arrow: '←', row: 2, column: 1 },
-    { value: 'e', label: 'East', arrow: '→', row: 2, column: 3 },
-    { value: 's', label: 'South', arrow: '↓', row: 3, column: 2 },
-    { value: 'd', label: 'Down', arrow: '↓', row: 3, column: 3, axis: true }
+    { value: 'u', label: 'Up', initial: 'U', arrow: '↑', row: 1, column: 1, axis: true },
+    { value: 'n', label: 'North', initial: 'N', arrow: '↑', row: 1, column: 2 },
+    { value: 'w', label: 'West', initial: 'W', arrow: '←', row: 2, column: 1 },
+    { value: 'e', label: 'East', initial: 'E', arrow: '→', row: 2, column: 3 },
+    { value: 's', label: 'South', initial: 'S', arrow: '↓', row: 3, column: 2 },
+    { value: 'd', label: 'Down', initial: 'D', arrow: '↓', row: 3, column: 3, axis: true }
 ];
 
 interface Props {
@@ -47,7 +48,7 @@ export const TacticalDirectionPad: React.FC<Props> = ({ layout, selectedDirectio
             aria-label={layout === 'wheel' ? 'Choose movement direction' : 'Choose direction'}
         >
             <div className="tactical-target-direction-compass">
-                {directions.map(({ value, label, arrow, row, column, axis }) => (
+                {directions.map(({ value, label, initial, arrow, row, column, axis }) => (
                     <button
                         key={value}
                         type="button"
@@ -66,7 +67,7 @@ export const TacticalDirectionPad: React.FC<Props> = ({ layout, selectedDirectio
                             event.stopPropagation();
                             if (event.detail === 0) onSelectDirection(value);
                         }}
-                    >{axis ? <><span>{arrow}</span><small>{label}</small></> : arrow}</button>
+                    ><span>{arrow}</span><small>{initial}</small></button>
                 ))}
             </div>
         </section>
