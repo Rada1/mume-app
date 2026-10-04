@@ -34,6 +34,7 @@ import { getGroupSelectionSuggestions } from '../../utils/groupTargetSuggestions
 import { useVitals } from '../../context/GameContext';
 import { hasObjectTrait } from '../../objects/objectTargetModel';
 import { useRoomStore } from '../../stores/useRoomStore';
+import { useRoomDrinkWater } from '../../hooks/useRoomDrinkWater';
 import { useUIStore } from '../../stores/useUIStore';
 import { useWhoListRefresh } from '../../hooks/useWhoListRefresh';
 import type { DrawerLine, GmcpOccupant } from '../../types';
@@ -151,6 +152,7 @@ export const useDeckTargeting = ({
     roomZone,
     combatOpponent
 }: UseDeckTargetingProps): UseDeckTargetingReturn => {
+    const roomWaterAvailable = useRoomDrinkWater();
     const [isTargetMenuOpen, setIsTargetMenuOpen] = useState(false);
     const [isTargetMenuHeld, setIsTargetMenuHeld] = useState(false);
     const [activeItem, setActiveItem] = useState<DeckItem | null>(null);
@@ -359,10 +361,10 @@ export const useDeckTargeting = ({
         if (activeItem.targetKind === 'inventory-and-worn') return getInventoryAndWornTargetSuggestions(inventoryLines, wornLines);
         if (activeItem.targetKind === 'inventory-container') return [ALL_ARGUMENT_SUGGESTION, ...getGearTargetSuggestions(inventoryLines, 'inventory')];
         if (activeItem.targetKind === 'inventory-recipient') return getInventoryAndWornTargetSuggestions(inventoryLines, wornLines);
-        if (activeItem.cmd.trim().toLowerCase() === 'drink') return getDrinkTargetSuggestions(inventoryLines, wornLines);
+        if (activeItem.cmd.trim().toLowerCase() === 'drink') return getDrinkTargetSuggestions(inventoryLines, wornLines, roomWaterAvailable);
         const inventoryTargets = getGearTargetSuggestions(inventoryLines, 'inventory');
         return inventoryTargets;
-    }, [activeItem, activeVerb, isWhoTarget, isSocialTarget, isSecondArgumentStage, roomOccupants, roomItems, characterName, wornLines, inventoryLines, whoList, groupMembers, shopItems]);
+    }, [activeItem, activeVerb, isWhoTarget, isSocialTarget, isSecondArgumentStage, roomOccupants, roomItems, characterName, wornLines, inventoryLines, whoList, groupMembers, shopItems, roomWaterAvailable]);
     const targetMenuTitle = isSecondArgumentStage && activeItem?.targetKind === 'pour' ? 'POUR INTO'
         : isStagedTargetMenu ? 'SELECT ARGUMENTS' : isWhoTarget ? 'WHO LIST' : isSocialTarget ? 'SOCIAL COMMANDS'
         : isSecondArgumentStage && activeItem?.targetKind === 'inventory-recipient' ? 'RECIPIENTS'

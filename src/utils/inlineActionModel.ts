@@ -214,6 +214,9 @@ export const getInlineGlowColor = (
 
     if (canonicalId === 'cat-ally' && entityColors.player) return themeColor(entityColors.player);
 
+    // Mounts have a dedicated gold identity instead of inheriting the generic NPC color.
+    if (canonicalId === 'cat-mount' && category?.color) return themeColor(category.color);
+
     // 2. User's global kind-level setting (enemyColor, npcColor, objectColor, etc.)
     const entityKind: EntityKind | undefined = CATEGORY_KIND_MAP[canonicalId] ?? trait?.kind ?? undefined;
     if (entityKind) {

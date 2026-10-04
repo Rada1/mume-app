@@ -8,6 +8,7 @@ import { useState, useMemo, useCallback, useEffect, useRef, RefObject, CSSProper
 import { getMumeCommandMatch, replaceMumeCommandToken, MumeCommandEntry, MumeCommandMatch } from '../utils/mumeCommandCatalog';
 import { getCastSpellFragment, getCastSpellSuggestions, replaceCastSpellArgument, SpellSuggestion } from '../utils/spellSuggestionUtils';
 import { useRoomStore } from '../stores/useRoomStore';
+import { useRoomDrinkWater } from './useRoomDrinkWater';
 import { useInputStore } from '../stores/useInputStore';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { useUIStore } from '../stores/useUIStore';
@@ -87,6 +88,7 @@ export const useCommandSuggestions = ({
 
     const chars = useRoomStore(s => s.chars);
     const roomItems = useRoomStore(s => s.items);
+    const roomWaterAvailable = useRoomDrinkWater();
     const whoList = useRoomStore(s => s.whoList);
     const shopItems = useUIStore(s => s.shopItems);
     const teleportTargets = useSettingsStore(s => s.teleportTargets);
@@ -183,9 +185,10 @@ export const useCommandSuggestions = ({
             practiceSkills,
             teleportTargets,
             whoList,
-            shopItems
+            shopItems,
+            roomWaterAvailable
         });
-    }, [abilities, characterName, chars, commandTextParts, commandToken, hasCommandArgumentSpace, inventoryLines, keyedSpellInput, practiceSkills, roomItems, shopItems, teleportTargets, whoList, wornLines]);
+    }, [abilities, characterName, chars, commandTextParts, commandToken, hasCommandArgumentSpace, inventoryLines, keyedSpellInput, practiceSkills, roomItems, roomWaterAvailable, shopItems, teleportTargets, whoList, wornLines]);
 
     const targetSuggestions = useMemo<CommandTargetSuggestion[]>(() => {
         const isStagedCommand = /^(give|put|get)$/.test(commandTokenKey)

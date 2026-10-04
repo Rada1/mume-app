@@ -48,6 +48,10 @@
 .command-guide-results-heading span { margin-left: auto; color: #aa9f8a; font-size: 11px; }
 .command-guide-show-all { flex: 0 0 auto; margin: 0 12px 8px; padding: 10px; border: 1px solid rgba(201, 168, 76, 0.35); background: rgba(201, 168, 76, 0.07); color: #ddbd69; font: inherit; font-size: 12px; cursor: pointer; }
 .command-guide-show-all:hover { background: rgba(201, 168, 76, 0.14); }
+.command-guide-class-tabs { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; overflow-x: auto; padding: 4px 12px 8px; border-bottom: 1px solid rgba(201, 168, 76, 0.16); scrollbar-width: thin; }
+.command-guide-class-tab { flex: 0 0 auto; min-height: 34px; padding: 5px 10px; border: 1px solid transparent; border-radius: 3px; background: transparent; color: #b0a48d; font: inherit; font-size: 12px; text-transform: capitalize; cursor: pointer; }
+.command-guide-class-tab:hover, .command-guide-class-tab:focus-visible { border-color: rgba(201, 168, 76, 0.25); color: #e0d5bd; outline: 0; }
+.command-guide-class-tab.is-active { border-color: rgba(201, 168, 76, 0.42); background: rgba(201, 168, 76, 0.1); color: #ddbd69; font-weight: 700; }
 
 .command-guide-navigation {
     display: flex;
@@ -97,4 +101,6 @@
 .light-mode .command-guide-entry-main code, .light-mode .command-guide-entry-meta,
 .light-mode .command-guide-goal small, .light-mode .command-guide-finder-toggle small,
 .light-mode .command-guide-start > p, .light-mode .command-guide-count { color: #6d6251; }
+.light-mode .command-guide-class-tab { color: #6d6251; }
+.light-mode .command-guide-class-tab.is-active { color: #8a6811; }
 .light-mode .command-guide-start h2, .light-mode .command-guide-goal strong, .light-mode .command-guide-results-heading strong { color: #403a30; }

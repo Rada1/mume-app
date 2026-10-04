@@ -82,15 +82,16 @@ export const getFoodTargetSuggestions = (
 
 export const getDrinkTargetSuggestions = (
     inventoryLines: DrawerLine[],
-    wornLines: DrawerLine[]
+    wornLines: DrawerLine[],
+    roomWaterAvailable = false
 ): CommandTargetSuggestion[] => {
     const fluidContainers = (lines: DrawerLine[]) => lines.filter(line =>
         line.isItem && !line.isHeader && (hasObjectTrait(line, 'trait-fluid-container') || isFluidContainer(`${line.text} ${line.rawText || ''} ${line.context || ''}`))
     );
-    return [
-        ...getInventoryAndWornTargetSuggestions(fluidContainers(inventoryLines), fluidContainers(wornLines)),
-        { key: 'drink-water', label: 'Water', value: 'water', meta: 'source' }
-    ];
+    const containers = getInventoryAndWornTargetSuggestions(fluidContainers(inventoryLines), fluidContainers(wornLines));
+    return roomWaterAvailable
+        ? [{ key: 'drink-water', label: 'Water', value: 'water', meta: 'source' }, ...containers]
+        : containers;
 };
 
 export const getFluidContainerTargetSuggestions = (

@@ -1,4 +1,8 @@
-/* Message Log and Input Area Styles */
+/* @file MessageLog.css
+ * @description Visual styles for the game message log and its input surfaces.
+ */
+
+/* --- Logic Section --- */
 
 .message-log-container {
     flex: 1;
@@ -107,16 +111,56 @@
 
 /* Keep recent events visible while the main virtualized log is in scrollback. */
 .message-log-layout.reading-history > .message-log {
-    flex: 0 0 87.5%;
+    flex: 1 1 0;
+}
+
+.message-log-live-resizer {
+    flex: 0 0 12px;
+    position: relative;
+    z-index: 3;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    background-image: linear-gradient(color-mix(in srgb, currentColor 18%, transparent), color-mix(in srgb, currentColor 18%, transparent));
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+    cursor: row-resize;
+    touch-action: none;
+    outline: none;
+}
+
+.message-log-live-resizer::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30px;
+    height: 3px;
+    border-radius: 2px;
+    background: color-mix(in srgb, currentColor 42%, transparent);
+    transform: translate(-50%, -50%);
+    transition: background-color 120ms ease, width 120ms ease;
+}
+
+.message-log-live-resizer:hover::after,
+.message-log-live-resizer:focus-visible::after,
+.message-log-live-resizer.is-resizing::after {
+    width: 42px;
+    background: var(--accent, #c8a64e);
+}
+
+.message-log-live-resizer:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--accent, #c8a64e) 65%, transparent);
+    outline-offset: -2px;
 }
 
 .message-log-live-pane {
     display: flex;
-    flex: 1 1 12.5%;
+    flex: 0 0 12.5%;
     min-height: 0;
     flex-direction: column;
     position: relative;
-    border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
     background: transparent;
 }
 
@@ -3409,6 +3453,11 @@ span.inline-btn {
     opacity: 0.75 !important;
 }
 
+/* Keep movement confirmations static when immersion text effects are enabled. */
+.immersion-mode .message.movement .message-content .log-text-word {
+    animation: none !important;
+}
+
 /* Successful inventory actions are useful confirmation, but should remain
    visually quieter than narrative or combat output. */
 .message[data-subdued-action="true"] .message-content {
@@ -3651,10 +3700,7 @@ span.inline-btn {
 .app-container.is-mobile.immersion-mode .message-log .room-name-inline,
 .app-container.is-mobile.immersion-mode .message-log .message-content .inline-btn,
 .app-container.is-mobile.immersion-mode .message-log .comm-action,
-.app-container.is-mobile.immersion-mode .message-log .custom-prompt-container .prompt-entity-inline,
-.app-container.is-mobile.immersion-mode .message-log .message.room-jiggle-active .room-title-badge,
-.app-container.is-mobile.immersion-mode .message-log .message.room-jiggle-active .room-desc-line,
-.app-container.is-mobile.immersion-mode .message-log .message.room-jiggle-active .content-row {
+.app-container.is-mobile.immersion-mode .message-log .custom-prompt-container .prompt-entity-inline {
     animation: none !important;
 }
 
@@ -3662,45 +3708,6 @@ span.inline-btn {
 .app-container.is-mobile.immersion-mode .message-log .damage-sheen-overlay,
 .app-container.is-mobile.immersion-mode .message-log .rip-sheen-overlay {
     display: none !important;
-}
-
-/* ==========================================================================
-   Room Arrival Line-by-Line Jiggle Animation (Bottom-to-Top)
-   ========================================================================== */
-.immersion-mode .message.room-jiggle-active .room-title-badge {
-    display: inline-block;
-    transform-origin: left center;
-    animation: room-line-jiggle 280ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
-    animation-delay: var(--room-line-delay, 0ms);
-}
-
-.immersion-mode .message.room-jiggle-active .room-desc-line {
-    transform-origin: left center;
-    animation: room-line-jiggle 280ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
-    animation-delay: var(--room-line-delay, 35ms);
-}
-
-.immersion-mode .message.room-jiggle-active:not(.is-room-name) .content-row {
-    transform-origin: left center;
-    animation: room-line-jiggle 280ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
-    animation-delay: var(--room-line-delay, 0ms);
-}
-
-@keyframes room-line-jiggle {
-    0% { transform: translate3d(0, 0, 0); }
-    18% { transform: translate3d(-3px, 0, 0) rotate(-0.25deg); }
-    38% { transform: translate3d(2.5px, 0, 0) rotate(0.2deg); }
-    58% { transform: translate3d(-1.2px, 0, 0) rotate(-0.08deg); }
-    78% { transform: translate3d(0.6px, 0, 0) rotate(0.04deg); }
-    100% { transform: translate3d(0, 0, 0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .immersion-mode .message.room-jiggle-active .room-title-badge,
-    .immersion-mode .message.room-jiggle-active .room-desc-line,
-    .immersion-mode .message.room-jiggle-active:not(.is-room-name) .content-row {
-        animation: none !important;
-    }
 }
 
 /* --- Inline entity hover and deliberate selection --- */

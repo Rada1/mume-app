@@ -1035,12 +1035,13 @@
 .app-container.is-mobile .message-log-container {
     pointer-events: auto !important;
     z-index: 5000; /* Below gutter (7000) but accessible when gutter has pointer-events: none */
-    touch-action: manipulation !important;
+    /* Reserve horizontal drags for the app's swipe gestures. */
+    touch-action: pan-y pinch-zoom !important;
 }
 
 .app-container.is-mobile .message-log {
     pointer-events: auto !important;
-    touch-action: manipulation !important;
+    touch-action: pan-y pinch-zoom !important;
 }
 
 

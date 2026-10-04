@@ -26,7 +26,7 @@ import type { PracticeClassKey } from '../../../utils/practiceClassCatalog';
 import { getRoomTargetSuggestions, isTargetSuggestionMatch, MUME_SOCIAL_COMMANDS, prioritizeTargetSuggestion, type CommandTargetSuggestion } from '../../../utils/commandSuggestionUtils';
 import type { WheelReplacementMode } from './TacticalCommandPanel';
 import type { DeckTargetKind } from '../../HUD/useDeckTargeting';
-import { assignPinnedWheelCell, swapPinnedWheelCells } from './pinnedWheelAssignments';
+import { assignPinnedWheelCell, normalizePinnedWheelCommands, swapPinnedWheelCells } from './pinnedWheelAssignments';
 import type { TacticalPaletteCommand, TacticalSwapCell } from './TacticalCommandPalette';
 import { fillEmptyWheelCells, getClassCommandLearnedState, getClassPalette } from './tacticalCommandPaletteUtils';
 import { BLANK_TARGET_VALUE, LOOK_IN_TARGET_VALUE, canCommandAcceptTarget, getDefaultCommandTarget, isOffensiveSingleTargetCommand, usesChipPriorityOffensiveTarget } from '../../../utils/commandTargetUtils';
@@ -118,6 +118,7 @@ export interface GameButtonProps {
     setEditButton: (button: CustomButton) => void;
     activePrompt: string | null;
     executeCommand: ExecuteCommand;
+    onCommandAction?: (command: string) => boolean;
     setCommandPreview: (cmd: string | null) => void;
     setHeldButton: React.Dispatch<React.SetStateAction<{ id: string, baseCommand: string, modifiers: string[], commandPrefixes?: string[], dx?: number, dy?: number, didFire?: boolean, lastTargetFireAt?: number, initialX?: number, initialY?: number } | null>>;
     heldButton: { id: string, baseCommand: string, modifiers: string[], commandPrefixes?: string[], dx?: number, dy?: number, didFire?: boolean, lastTargetFireAt?: number, initialX?: number, initialY?: number } | null;
@@ -162,6 +163,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     setPopoverState,
     setEditButton,
     executeCommand,
+    onCommandAction,
     setCommandPreview,
     setHeldButton,
     heldButton,
@@ -203,6 +205,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const setTacticalArguments = useTacticalArgumentChipStore(state => state.setArguments);
     const clearTacticalArguments = useTacticalArgumentChipStore(state => state.clearArguments);
     const runButtonCommand = useCallback<ExecuteCommand>((command, ...options) => {
+        if (onCommandAction?.(command)) return;
         const commandParts = command.trim().split(/\s+/).filter(Boolean);
         const channel = commandParts[0]?.toLowerCase() || '';
         if (MUME_SOCIAL_COMMANDS.includes(channel)) lastSocialCommandByButton.set(button.id, channel);
@@ -223,7 +226,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
         }
         useInputStore.getState().setInput('');
         executeCommand(command, ...options);
-    }, [button.id, executeCommand, setParley]);
+    }, [button.id, executeCommand, onCommandAction, setParley]);
     const setAutomaticTarget = useAutomaticTargetStore(state => state.setTarget);
     const inlineCategories = useSettingsStore(state => state.inlineCategories);
     const objectColor = useSettingsStore(state => state.objectColor);
@@ -293,14 +296,15 @@ export const GameButton: React.FC<GameButtonProps> = ({
         || assignedClassCommands.some(command => getCommandLearnedState(command) === true);
     const isTacticalClassUnlearned = Boolean(tacticalClassKey && !hasLearnedClassCommand);
     const wheelButton = useMemo(() => {
-        if (button.id !== 'tactical-mage') return fillEmptyWheelCells(button, paletteCommands);
+        const normalizedButton = normalizePinnedWheelCommands(button);
+        if (button.id !== 'tactical-mage') return fillEmptyWheelCells(normalizedButton, paletteCommands);
         const missile = paletteCommands.find(item => /^cast\s+'magic missile'$/i.test(item.command.trim()));
-        const shouldChooseLearnedCenter = !button.command.trim()
+        const shouldChooseLearnedCenter = !normalizedButton.command.trim()
             || (isLegacyMageMissileDefault && missile?.isLearned === false);
         const centerCommand = shouldChooseLearnedCenter
             ? paletteCommands.find(item => item.isLearned !== false)?.command || ''
-            : button.command;
-        return fillEmptyWheelCells({ ...button, command: centerCommand }, paletteCommands);
+            : normalizedButton.command;
+        return fillEmptyWheelCells({ ...normalizedButton, command: centerCommand }, paletteCommands);
     }, [button, isLegacyMageMissileDefault, paletteCommands]);
     const wheelPaletteCommands = useMemo(() => {
         const assigned = new Set([

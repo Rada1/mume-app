@@ -357,6 +357,13 @@
     height: 100%;
 }
 
+.app-container:not(.is-mobile) .docked-input-field {
+    height: 1.4em;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    white-space: pre;
+}
+
 .docked-input-highlight {
     position: absolute;
     inset: 0;
@@ -429,6 +436,7 @@
 }
 
 .docked-input-field {
+    display: block;
     width: 100%;
     background: transparent !important;
     border: none !important;
@@ -440,6 +448,7 @@
     padding: 0 !important;
     margin: 0 !important;
     box-shadow: none !important;
+    resize: none;
 }
 
 .docked-input-field.command-highlight-source {
@@ -601,7 +610,31 @@
 }
 
 .app-container.is-mobile .docked-input-form,
-.app-container.is-mobile .docked-input-wrap,
-.app-container.is-mobile .docked-input-field {
+.app-container.is-mobile .docked-input-wrap {
     min-height: 34px;
+}
+
+.app-container.is-mobile .docked-input-form,
+.app-container.is-mobile .docked-input-wrap {
+    align-items: stretch;
+    height: auto;
+}
+
+.app-container.is-mobile .docked-input-field {
+    align-self: stretch;
+    height: auto;
+    min-height: 34px;
+    font-size: max(16px, var(--dynamic-log-size, 16px)) !important;
+    line-height: 1.4 !important;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    overflow: hidden !important;
+}
+
+.app-container.is-mobile .docked-input-highlight {
+    display: block;
+    overflow: visible;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: max(16px, var(--dynamic-log-size, 16px));
 }

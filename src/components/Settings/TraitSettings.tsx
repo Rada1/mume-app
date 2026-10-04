@@ -17,6 +17,7 @@ interface TraitSettingsProps {
 const TraitSettings: React.FC<TraitSettingsProps> = ({ customTraits: rawCustomTraits, setCustomTraits }) => {
     const customTraits = Array.isArray(rawCustomTraits) ? rawCustomTraits : [];
     const [newTraitName, setNewTraitName] = React.useState('');
+    const [addingCommandToTrait, setAddingCommandToTrait] = React.useState<string | null>(null);
     const { rawButtons } = useButtonStore();
 
     // --- Derived Data ---
@@ -27,6 +28,7 @@ const TraitSettings: React.FC<TraitSettingsProps> = ({ customTraits: rawCustomTr
         const customById = new Map(traitConfigs.map(config => [inlineConfigToTrait(config).id, config]));
         const mergedDefaults = DEFAULT_TRAIT_CONFIGS.map(defaultTrait => ({
             ...defaultTrait,
+            ...(customById.has(defaultTrait.id) ? inlineConfigToTrait(customById.get(defaultTrait.id)!) : {}),
             keywords: customById.get(defaultTrait.id)?.keywords || defaultTrait.keywords
         }));
         const customOnly = traitConfigs
@@ -61,6 +63,18 @@ const TraitSettings: React.FC<TraitSettingsProps> = ({ customTraits: rawCustomTr
             ...trait,
             keywords: (trait.keywords || []).filter(k => k.toLowerCase() !== keyword.toLowerCase())
         });
+    };
+
+    const handleAddButton = (trait: TraitConfig, buttonId: string) => {
+        if (!buttonId || trait.buttonIds.includes(buttonId)) return;
+        upsertTraitOverride({ ...trait, buttonIds: [...trait.buttonIds, buttonId] });
+        setAddingCommandToTrait(null);
+    };
+
+    const handleRemoveButton = (trait: TraitConfig, buttonId: string) => {
+        const defaultTrait = DEFAULT_TRAIT_CONFIGS.find(candidate => candidate.id === trait.id);
+        if (defaultTrait?.buttonIds.includes(buttonId)) return;
+        upsertTraitOverride({ ...trait, buttonIds: trait.buttonIds.filter(id => id !== buttonId) });
     };
 
     const handleAddTrait = () => {
@@ -115,9 +129,6 @@ const TraitSettings: React.FC<TraitSettingsProps> = ({ customTraits: rawCustomTr
                 {visibleTraits.map(trait => {
                     const isDefaultTrait = defaultIds.has(trait.id);
                     const hasCustomOverride = customTraits.some(c => isTraitConfigRecord(c) && inlineConfigToTrait(c).id === trait.id);
-                    const buttonLabels = trait.buttonIds
-                        .map(buttonId => buttonLabelById.get(buttonId) || buttonId.replace(/^btn-/, ''))
-                        .join(', ');
 
                     return (
                         <div
@@ -152,10 +163,63 @@ const TraitSettings: React.FC<TraitSettingsProps> = ({ customTraits: rawCustomTr
                             </div>
 
                             <div style={{ marginBottom: '12px' }}>
-                                <label style={{ fontSize: '0.7rem', opacity: 0.6, display: 'block', marginBottom: '4px' }}>Buttons Provided By This Trait</label>
-                                <div style={{ fontSize: '0.78rem', opacity: buttonLabels ? 0.9 : 0.35, lineHeight: 1.35 }}>
-                                    {buttonLabels || 'No buttons assigned yet'}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                                    <label style={{ fontSize: '0.7rem', opacity: 0.6 }}>Buttons Provided By This Trait</label>
+                                    <button
+                                        type="button"
+                                        aria-label={`Add command to ${trait.label}`}
+                                        title={`Add command to ${trait.label}`}
+                                        onClick={() => setAddingCommandToTrait(current => current === trait.id ? null : trait.id)}
+                                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', padding: 0, border: '1px solid rgba(255,255,255,0.18)', borderRadius: '4px', background: 'rgba(255,255,255,0.06)', color: 'var(--accent)', cursor: 'pointer' }}
+                                    >
+                                        <Plus size={13} />
+                                    </button>
                                 </div>
+                                {trait.buttonIds.length === 0 ? (
+                                    <div style={{ fontSize: '0.78rem', opacity: 0.35, lineHeight: 1.35 }}>No buttons assigned yet</div>
+                                ) : (
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                                        {trait.buttonIds.map(buttonId => {
+                                            const button = rawButtons.find(candidate => candidate.id === buttonId);
+                                            const isBuiltInButton = DEFAULT_TRAIT_CONFIGS.find(candidate => candidate.id === trait.id)?.buttonIds.includes(buttonId) || false;
+                                            const label = buttonLabelById.get(buttonId) || buttonId.replace(/^btn-/, '');
+                                            return (
+                                                <span key={buttonId} title={button?.command || label} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '2px 6px', borderRadius: '4px', background: 'rgba(255,255,255,0.08)', fontSize: '0.75rem', lineHeight: 1.3 }}>
+                                                    {label}
+                                                    {!isBuiltInButton && (
+                                                        <button
+                                                            type="button"
+                                                            aria-label={`Remove ${label} from ${trait.label}`}
+                                                            title={`Remove ${label}`}
+                                                            onClick={() => handleRemoveButton(trait, buttonId)}
+                                                            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '14px', height: '14px', padding: 0, border: 'none', borderRadius: '3px', background: 'rgba(0,0,0,0.25)', color: 'var(--text-dim)', cursor: 'pointer' }}
+                                                        >
+                                                            <Trash2 size={10} />
+                                                        </button>
+                                                    )}
+                                                </span>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                                {addingCommandToTrait === trait.id && (
+                                    <select
+                                        autoFocus
+                                        aria-label={`Choose a command for ${trait.label}`}
+                                        value=""
+                                        onChange={event => handleAddButton(trait, event.target.value)}
+                                        onBlur={() => setAddingCommandToTrait(null)}
+                                        style={{ marginTop: '7px', maxWidth: '100%', padding: '5px 7px', borderRadius: '4px', border: '1px solid var(--border-modal)', background: 'var(--bg-modal)', color: 'var(--text-primary)' }}
+                                    >
+                                        <option value="">Select a command to add…</option>
+                                        {rawButtons
+                                            .filter(button => button.command.trim() && button.actionType !== 'menu' && !trait.buttonIds.includes(button.id))
+                                            .sort((a, b) => a.label.localeCompare(b.label))
+                                            .map(button => (
+                                                <option key={button.id} value={button.id}>{button.label} — {button.command}</option>
+                                            ))}
+                                    </select>
+                                )}
                             </div>
 
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>

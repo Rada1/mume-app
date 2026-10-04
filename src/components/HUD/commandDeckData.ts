@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {
-    Box, MessageSquare,
+    Backpack, Box, MessageSquare,
     Sword, HeartPulse, Footprints, Target, ScrollText,
     Eye, Tent, BedDouble, PackagePlus, PackageMinus, PackageOpen,
     Utensils, CupSoda, Shirt, Handshake, Cigarette,
@@ -60,7 +60,8 @@ export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
     ],
     utility: [
         { label: 'Score', cmd: 'score' }, { label: 'Inventory', cmd: 'inventory' },
-        { label: 'Equipment', cmd: 'equipment' }, { label: 'Time', cmd: 'time' },
+        { label: 'Equipment', cmd: 'equipment' }, { label: 'Gear', cmd: 'gear' },
+        { label: 'Time', cmd: 'time' },
         { label: 'Weather', cmd: 'weather' }, { label: 'Info', cmd: 'info' },
         { label: 'Group', cmd: 'group', needsTarget: true, targetKind: 'group' },
         { label: 'Status', cmd: 'stat' },
@@ -119,6 +120,7 @@ export const DECK_TABS: { key: TabKey; label: string; icon: React.ComponentType<
 ];
 
 export const DECK_LABEL_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
+    Gear: Backpack,
     Kill: Sword, Flee: Footprints, Consider: Target, Assist: HeartPulse,
     Watch: Eye, Camp: Tent, 'Camp Rent': BedDouble,
     Get: PackagePlus, Put: PackageOpen, Drop: PackageMinus, Eat: Utensils, Drink: CupSoda,

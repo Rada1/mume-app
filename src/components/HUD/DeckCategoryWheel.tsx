@@ -22,11 +22,12 @@ interface DeckCategoryWheelProps {
     availableActions: DeckItem[];
     onSwapCells: (sourceIndex: number, destinationIndex: number, centerCommand: string) => boolean | string;
     onAssignAction: (directionIndex: number, action: DeckItem) => boolean;
+    highlightIcon?: boolean;
 }
 
 // --- UI Section ---
 export const DeckCategoryWheel: React.FC<DeckCategoryWheelProps> = ({
-    label, icon: Icon, button, gameButtonProps, availableActions, onSwapCells, onAssignAction
+    label, icon: Icon, button, gameButtonProps, availableActions, onSwapCells, onAssignAction, highlightIcon = false
 }) => {
     const [swapPickerDirection, setSwapPickerDirection] = useState<number | null>(null);
     const [swapPickerSourceCommand, setSwapPickerSourceCommand] = useState('');
@@ -97,7 +98,7 @@ export const DeckCategoryWheel: React.FC<DeckCategoryWheelProps> = ({
         }
     };
 
-    return <div className="deck-category-control">
+    return <div className={`deck-category-control${highlightIcon ? ' has-action-targets' : ''}`}>
         <GameButton
             {...gameButtonProps}
             button={button}

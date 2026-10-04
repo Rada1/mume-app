@@ -269,7 +269,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
             });
             seenCommandsSize = actionButtons.length;
             const manipulationButtons = actionButtons.filter(button =>
-                !isInformationButton(button) || /^whois(?:\s|$)/i.test(button.command)
+                !isInformationButton(button) || /^(?:whois|examine)(?:\s|$)/i.test(button.command)
             );
             return (
                 <div className="inline-action-groups" aria-label="Available actions">
@@ -467,8 +467,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                             )}
                             {isInlineMenu && !isCompactInline && canObserve && (
                                 <div className="terminal-inspect-actions" aria-label="Inspection commands">
-                                    <button type="button" className="terminal-inspect-row" onPointerDown={event => event.stopPropagation()} onClick={() => requestInspection('look')}><span>look</span><span>/look {targetContext}</span></button>
-                                    <button type="button" className="terminal-inspect-row" onPointerDown={event => event.stopPropagation()} onClick={() => requestInspection('consider')}><span>consider</span><span>/con {targetContext}</span></button>
+                                    <button type="button" className="terminal-inspect-row" onPointerDown={event => event.stopPropagation()} onClick={() => requestInspection('look')}><span>look</span><span>&lt;look {targetContext}&gt;</span></button>
+                                    <button type="button" className="terminal-inspect-row" onPointerDown={event => event.stopPropagation()} onClick={() => requestInspection('consider')}><span>consider</span><span>&lt;con {targetContext}&gt;</span></button>
                                 </div>
                             )}
                             {!isCompactInline && (!isInlineMenu || popoverState.isCapturingWhois || popoverState.capturedWhoisLines !== undefined || popoverState.isCapturingExamine || popoverState.isCapturingConsider || popoverState.capturedExamineLines !== undefined || popoverState.capturedConsiderLines !== undefined) && (

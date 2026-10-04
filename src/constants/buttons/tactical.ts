@@ -59,7 +59,7 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
         actionType: "command",
         display: "floating",
         hideIfUnknown: true,
-        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: "rgba(21, 128, 61, 0.8)", borderColor: "#22c55e", color: "#22c55e", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: "rgba(8, 145, 178, 0.8)", borderColor: "#06b6d4", color: "#06b6d4", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
         position: { x: 0, y: 0, w: 90, h: 40 },
         isVisible: true,
         trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
@@ -127,7 +127,7 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
         display: "floating",
         hideIfUnknown: false,
         isVisible: true,
-        style: { x: 475, y: 0, w: 90, h: 40, backgroundColor: "rgba(8, 145, 178, 0.8)", borderColor: "#06b6d4", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
+        style: { x: 475, y: 0, w: 90, h: 40, backgroundColor: "rgba(249, 115, 22, 0.16)", borderColor: "#f97316", color: "#f97316", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
         position: { x: 475, y: 0, w: 90, h: 40 },
         swipeCommands: DOOR_SWIPE_COMMANDS,
         trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }

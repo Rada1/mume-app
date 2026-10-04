@@ -69,14 +69,11 @@ export const getClassPalette = (
         const prerequisite = normalized === 'protect' ? 'rescue' : normalized === 'recover' ? 'missile' : '';
         return Boolean(prerequisite && (learnedNames.has(prerequisite) || (abilities[prerequisite] || 0) > 0));
     };
-    const assignedDirections = new Set([
-        ...Object.keys(button.swipeCommands || {}),
-        ...Object.keys(button.longSwipeCommands || {})
-    ]);
-    const assignedCommands = [button.command, ...Array.from(assignedDirections).map(direction => {
-        const dir = direction as SwipeDirection;
-        return button.swipeCommands?.[dir] || button.longSwipeCommands?.[dir] || '';
-    })];
+    const assignedCommands = [
+        button.command,
+        ...Object.values(button.swipeCommands || {}),
+        ...Object.values(button.longSwipeCommands || {})
+    ];
     const assignedAbilities = new Set(assignedCommands.flatMap(command => abilityAliases(getButtonAbilityName(command))));
 
     const learnedCommands = classAbilities.map((name): TacticalPaletteCommand => {

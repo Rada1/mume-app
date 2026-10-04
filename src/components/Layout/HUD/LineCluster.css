@@ -219,6 +219,28 @@
     line-height: 0;
 }
 
+.tactical-line-wrapper .line-btn.tactical-doors.has-room-door .custom-btn-icon-node {
+    position: relative;
+    isolation: isolate;
+}
+
+.tactical-line-wrapper .line-btn.tactical-doors.has-room-door .custom-btn-icon-node::before {
+    content: '';
+    position: absolute;
+    inset: -9px;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(249, 115, 22, 0.5) 0%, rgba(249, 115, 22, 0.22) 38%, transparent 74%);
+    filter: blur(2px);
+    pointer-events: none;
+}
+
+.tactical-line-wrapper .line-btn.tactical-doors.has-room-door .custom-btn-icon-node svg {
+    color: #f97316 !important;
+    stroke: #f97316 !important;
+    filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.9));
+}
+
 .tactical-line-wrapper .line-btn:not(.target-ready) .custom-btn-icon-node svg {
     color: #b0a080;
 }

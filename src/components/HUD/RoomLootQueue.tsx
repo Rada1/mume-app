@@ -212,6 +212,56 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
         else setSkillsOpen(true);
         triggerHaptic?.(10);
     };
+    const lootPanel = <section className="room-loot-panel" role="dialog" aria-modal={isMobile || undefined} aria-label="Loot in this room">
+        <header className="room-loot-panel-header">
+            <div>
+                <strong>Loot in this room</strong>
+                <span>{lootSummary}</span>
+            </div>
+            <button type="button" onClick={() => setIsOpen(false)} aria-label="Close loot list"><X size={17} /></button>
+        </header>
+        <label className="room-loot-recipient">
+            <span>Give selected to</span>
+            <select value={selectedRecipientTarget} onChange={event => setRecipientTarget(event.target.value)}>
+                {!detectedMountSuggestions.length && <option value="mount">My mount</option>}
+                {detectedMountSuggestions.map(mount => <option key={mount.key} value={mount.value}>{mount.label}</option>)}
+            </select>
+        </label>
+        <div className="room-loot-list">
+            {roomCorpses.map(corpse => (
+                <div className="room-loot-row" key={corpse.id}>
+                    <div className="room-loot-row-heading">
+                        <span>{corpse.label}</span>
+                        <div className="room-loot-row-actions">
+                            <button type="button" onClick={() => lootCorpse(corpse)}>Get all</button>
+                            {mountSuggestions.length > 0 && <button type="button" disabled={cargoBusy}
+                                onClick={() => lootValuables(corpse.containerId, corpse.commandTarget, selectedRecipientTarget)}>
+                                <Coins size={12} /> Valuables → {recipientLabel}
+                            </button>}
+                        </div>
+                    </div>
+                    <RoomLootCorpseContents
+                        corpseId={corpse.containerId}
+                        corpseLabel={corpse.label}
+                        corpseTarget={corpse.commandTarget}
+                        contents={corpseContents[corpse.containerId]}
+                        recipientTarget={selectedRecipientTarget}
+                        recipientLabel={recipientLabel}
+                        onLookInside={() => examineCorpse(corpse)}
+                        executeCommand={command => executeCommand(command)}
+                    />
+                </div>
+            ))}
+            <RoomLootGroundItems
+                items={groundLootItems}
+                recipientTarget={selectedRecipientTarget}
+                recipientLabel={recipientLabel}
+                executeCommand={command => executeCommand(command)}
+                onDismiss={id => setDismissedGroundLootIds(current => new Set(current).add(id))}
+            />
+        </div>
+        <p className="room-loot-help">Actions use creature-specific corpse keywords; duplicate bodies use ordinals.</p>
+    </section>;
 
     return (
         <div className={`room-loot-root${isMobile ? ' is-mobile' : ''}`}>
@@ -243,65 +293,19 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
                 aria-label="Open skills panel at this guild">
                 <GraduationCap size={14} /><span>Skills</span>
             </button>}
-            {lootSourceCount > 0 && <button className="room-loot-trigger" type="button" onClick={openQueue}
-                aria-label={`Open loot list, ${lootSourceCount} available loot sources`}>
-                <span>Loot</span><span className="room-loot-count">{lootSourceCount}</span>
-            </button>}
+            {lootSourceCount > 0 && <div className="room-loot-trigger-wrap">
+                <button className="room-loot-trigger" type="button" onClick={openQueue}
+                    aria-label={`Open loot list, ${lootSourceCount} available loot sources`}>
+                    <span>Loot</span><span className="room-loot-count">{lootSourceCount}</span>
+                </button>
+                {!isMobile && isOpen && <div className="room-loot-desktop-popover">{lootPanel}</div>}
+            </div>}
 
-            {isOpen && createPortal(
-                <div className={`room-loot-overlay${isMobile ? ' is-mobile' : ''}`}>
+            {isMobile && isOpen && createPortal(
+                <div className="room-loot-overlay is-mobile">
                     <button className="room-loot-backdrop" type="button" aria-label="Close loot list"
                         onClick={() => setIsOpen(false)} />
-                    <section className="room-loot-panel" role="dialog" aria-modal="true" aria-label="Loot in this room">
-                        <header className="room-loot-panel-header">
-                            <div>
-                                <strong>Loot in this room</strong>
-                                <span>{lootSummary}</span>
-                            </div>
-                            <button type="button" onClick={() => setIsOpen(false)} aria-label="Close loot list"><X size={17} /></button>
-                        </header>
-                        <label className="room-loot-recipient">
-                            <span>Give selected to</span>
-                            <select value={selectedRecipientTarget} onChange={event => setRecipientTarget(event.target.value)}>
-                                {!detectedMountSuggestions.length && <option value="mount">My mount</option>}
-                                {detectedMountSuggestions.map(mount => <option key={mount.key} value={mount.value}>{mount.label}</option>)}
-                            </select>
-                        </label>
-                        <div className="room-loot-list">
-                            {roomCorpses.map(corpse => (
-                                <div className="room-loot-row" key={corpse.id}>
-                                    <div className="room-loot-row-heading">
-                                        <span>{corpse.label}</span>
-                                        <div className="room-loot-row-actions">
-                                            <button type="button" onClick={() => lootCorpse(corpse)}>Get all</button>
-                                            {mountSuggestions.length > 0 && <button type="button" disabled={cargoBusy}
-                                                onClick={() => lootValuables(corpse.containerId, corpse.commandTarget, selectedRecipientTarget)}>
-                                                <Coins size={12} /> Valuables → {recipientLabel}
-                                            </button>}
-                                        </div>
-                                    </div>
-                                    <RoomLootCorpseContents
-                                        corpseId={corpse.id}
-                                        corpseLabel={corpse.label}
-                                        corpseTarget={corpse.commandTarget}
-                                        contents={corpseContents[corpse.containerId]}
-                                        recipientTarget={selectedRecipientTarget}
-                                        recipientLabel={recipientLabel}
-                                        onLookInside={() => examineCorpse(corpse)}
-                                        executeCommand={command => executeCommand(command)}
-                                    />
-                                </div>
-                            ))}
-                            <RoomLootGroundItems
-                                items={groundLootItems}
-                                recipientTarget={selectedRecipientTarget}
-                                recipientLabel={recipientLabel}
-                                executeCommand={command => executeCommand(command)}
-                                onDismiss={id => setDismissedGroundLootIds(current => new Set(current).add(id))}
-                            />
-                        </div>
-                        <p className="room-loot-help">Actions use creature-specific corpse keywords; duplicate bodies use ordinals.</p>
-                    </section>
+                    {lootPanel}
                 </div>,
                 document.body
             )}

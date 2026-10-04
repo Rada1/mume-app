@@ -4,8 +4,11 @@
  */
 
 import React, { useCallback, useEffect, useRef } from 'react';
-import { ObjectDragSource, ObjectDropTarget, ExecuteCommand } from '../types';
+import type { ObjectDragSource, ObjectDropTarget, ExecuteCommand } from '../types';
 import { useUIStore } from '../stores/useUIStore';
+import { getObjectDragCommand, getValidObjectDropTarget } from '../utils/objectDragUtils';
+
+export { getObjectDragCommand, getObjectDropTarget, getValidObjectDropTarget, isValidObjectDragTarget } from '../utils/objectDragUtils';
 
 const LONG_PRESS_MS = 360;
 const MOVE_TOLERANCE_PX = 8;
@@ -26,6 +29,7 @@ interface PendingDrag {
     targetKey: string;
     dragOnMove: boolean;
     touchDragOnMove: boolean;
+    touchDragOnHorizontalMove: boolean;
 }
 
 interface UseObjectDragCommandsProps {
@@ -33,47 +37,9 @@ interface UseObjectDragCommandsProps {
     triggerHaptic?: (ms: number) => void;
     mouseDragOnMove?: boolean;
     touchDragOnMove?: boolean;
+    touchDragOnHorizontalMove?: boolean;
     onDrop?: (source: ObjectDragSource, target: ObjectDropTarget) => void;
 }
-
-export const getObjectDropTarget = (el: Element | null): ObjectDropTarget | null => {
-    const node = el as HTMLElement | null;
-    const containerEl = node?.closest<HTMLElement>('[data-object-drop-container]');
-    const rowEl = node?.closest<HTMLElement>('[data-object-drop-row]');
-    const entityEl = node?.closest<HTMLElement>('[data-object-drop-entity]');
-
-    if (containerEl) {
-        const noun = containerEl.dataset.objectDropNoun;
-        const containerId = containerEl.dataset.objectDropContainer;
-        if (noun && containerId) return {
-            type: 'container', containerId, noun,
-            label: containerEl.dataset.objectDropLabel || noun
-        };
-    }
-
-    if (entityEl) {
-        const noun = entityEl.dataset.objectDropNoun;
-        const entityId = entityEl.dataset.objectDropEntity;
-        if (!noun || !entityId) return null;
-        return {
-            type: 'entity',
-            entityId,
-            noun,
-            label: entityEl.dataset.objectDropLabel || noun
-        };
-    }
-
-    const row = rowEl?.dataset.objectDropRow;
-    if (row === 'inventory' || row === 'worn' || row === 'room') {
-        return { type: 'row', row, slot: rowEl.dataset.objectDropSlot };
-    }
-
-    return null;
-};
-
-const isSameRow = (source: ObjectDragSource, target: ObjectDropTarget): boolean => (
-    target.type === 'row' && source.row === target.row
-);
 
 const getTargetKey = (target: ObjectDropTarget | null): string => {
     if (!target) return '';
@@ -82,46 +48,7 @@ const getTargetKey = (target: ObjectDropTarget | null): string => {
     return `row:${target.row}:${target.slot || ''}`;
 };
 
-export const isValidObjectDragTarget = (source: ObjectDragSource, target: ObjectDropTarget | null): target is ObjectDropTarget => {
-    if (!target) return false;
-    if (target.type === 'container') return source.row === 'inventory'
-        && !source.parentContainerNoun && source.itemId !== target.containerId;
-    if (source.parentContainerNoun) return target.type === 'row' && target.row === 'inventory';
-    if (isSameRow(source, target)) return false;
-    if (target.type === 'entity') return source.row === 'inventory';
-    if (source.row === 'inventory') return target.row === 'worn' || target.row === 'room';
-    if (source.row === 'worn') return target.row === 'inventory';
-    if (source.row === 'room') return target.row === 'inventory';
-    return false;
-};
-
-export const getValidObjectDropTarget = (source: ObjectDragSource, element: Element | null): ObjectDropTarget | null => {
-    const target = getObjectDropTarget(element);
-    if (isValidObjectDragTarget(source, target)) return target;
-    const section = element?.closest('[data-object-drop-row]') ?? null;
-    const sectionTarget = getObjectDropTarget(section);
-    return isValidObjectDragTarget(source, sectionTarget) ? sectionTarget : null;
-};
-
-const buildDropCommand = (source: ObjectDragSource, target: ObjectDropTarget): string | null => {
-    if (target.type === 'container') return source.row === 'inventory' && !source.parentContainerNoun
-        && source.itemId !== target.containerId ? `put ${source.noun} ${target.noun}` : null;
-    if (source.parentContainerNoun) return target.type === 'row' && target.row === 'inventory'
-        ? `get ${source.noun} ${source.parentContainerNoun}` : null;
-    if (target.type === 'entity') return `give ${source.noun} ${target.noun}`;
-    if (source.row === 'inventory' && target.row === 'worn' && target.slot === 'wielded') {
-        return `wield ${source.noun}`;
-    }
-    if (source.row === 'inventory' && target.row === 'worn') return `wear ${source.noun}`;
-    if (source.row === 'worn' && target.row === 'inventory') return `remove ${source.noun}`;
-    if (source.row === 'inventory' && target.row === 'room') return `drop ${source.noun}`;
-    if (source.row === 'room' && target.row === 'inventory') return `get ${source.noun}`;
-    return null;
-};
-
-export const getObjectDragCommand = buildDropCommand;
-
-export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDragOnMove = false, touchDragOnMove = false, onDrop }: UseObjectDragCommandsProps) => {
+export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDragOnMove = false, touchDragOnMove = false, touchDragOnHorizontalMove = true, onDrop }: UseObjectDragCommandsProps) => {
     const pendingRef = useRef<PendingDrag | null>(null);
     const onDropRef = useRef(onDrop);
     onDropRef.current = onDrop;
@@ -148,7 +75,8 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
         document.documentElement.style.setProperty('--object-drag-x', `${pending.lastX}px`);
         document.documentElement.style.setProperty('--object-drag-y', `${pending.lastY}px`);
 
-        const validTarget = getValidObjectDropTarget(pending.source, document.elementFromPoint(pending.lastX, pending.lastY));
+        const pointerElement = document.elementFromPoint(pending.lastX, pending.lastY);
+        const validTarget = getValidObjectDropTarget(pending.source, pointerElement);
         const targetKey = getTargetKey(validTarget);
 
         if (targetKey !== pending.targetKey) {
@@ -159,6 +87,18 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
                 y: pending.lastY,
                 target: validTarget
             });
+        }
+
+        const scrollElement = pointerElement?.closest<HTMLElement>('.gear-section-body') ?? pending.scrollElement;
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const maxScroll = scrollElement ? scrollElement.scrollHeight - scrollElement.clientHeight : 0;
+        const edgeSize = Math.min(76, Math.max(48, viewportHeight * 0.08));
+        const distanceFromBottom = viewportHeight - pending.lastY;
+        if (scrollElement && maxScroll > 1 && distanceFromBottom < edgeSize && scrollElement.scrollTop < maxScroll) {
+            const proximity = Math.max(0, Math.min(1, (edgeSize - distanceFromBottom) / edgeSize));
+            const step = Math.min(20, 5 + proximity * 14);
+            scrollElement.scrollTop = Math.min(maxScroll, scrollElement.scrollTop + step);
+            pending.frame = requestAnimationFrame(updateDragFrame);
         }
     }, [setObjectDragState]);
 
@@ -181,6 +121,11 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
             event.preventDefault();
             pending.scrollElement.scrollTop += pending.lastY - event.clientY;
             pending.lastY = event.clientY;
+            return;
+        }
+        if (!pending.active && pending.touchDragOnMove && !pending.touchDragOnHorizontalMove &&
+            Math.abs(dx) > MOVE_TOLERANCE_PX && Math.abs(dx) > Math.abs(dy) * 1.2) {
+            clearPending(false);
             return;
         }
         if (!pending.active && Math.hypot(dx, dy) > MOVE_TOLERANCE_PX) {
@@ -217,7 +162,7 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
             event.preventDefault();
             const target = getValidObjectDropTarget(pending.source, document.elementFromPoint(event.clientX, event.clientY));
             if (target) {
-                const command = buildDropCommand(pending.source, target);
+                const command = getObjectDragCommand(pending.source, target);
                 if (command) {
                     triggerHaptic?.(35);
                     executeCommand(command, false, false, false, false, { fromUi: true });
@@ -285,15 +230,15 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
             timer,
             active: false,
             scrolling: false,
-            scrollElement: touchDragOnMove && event.pointerType === 'touch'
-                ? event.currentTarget.closest<HTMLElement>('.gear-panel-body') : null,
+            scrollElement: event.currentTarget.closest<HTMLElement>('.gear-section-body'),
             lastX: startX,
             lastY: startY,
             frame: null,
             targetKey: '',
             dragOnMove: (mouseDragOnMove && event.pointerType === 'mouse') ||
                 (touchDragOnMove && event.pointerType === 'touch'),
-            touchDragOnMove: touchDragOnMove && event.pointerType === 'touch'
+            touchDragOnMove: touchDragOnMove && event.pointerType === 'touch',
+            touchDragOnHorizontalMove: touchDragOnHorizontalMove && event.pointerType === 'touch'
         };
-    }, [clearPending, mouseDragOnMove, setObjectDragState, touchDragOnMove, triggerHaptic]);
+    }, [clearPending, mouseDragOnMove, setObjectDragState, touchDragOnHorizontalMove, touchDragOnMove, triggerHaptic]);
 };

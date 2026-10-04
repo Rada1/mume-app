@@ -51,12 +51,43 @@ const writeBinding = (button: CustomButton, cell: WheelCell, binding: CellBindin
     };
 };
 
+const WHEEL_CELLS: WheelCell[] = ['center', 'up', 'ne', 'right', 'se', 'down', 'sw', 'left', 'nw'];
+const normalizeCommand = (command: string): string => command.trim().toLowerCase().replace(/\s+/g, ' ');
+
+export const normalizePinnedWheelCommands = (button: CustomButton): CustomButton => {
+    const seen = new Set<string>();
+    return WHEEL_CELLS.reduce((current, cell) => {
+        const binding = readBinding(current, cell);
+        const command = normalizeCommand(binding.command || '');
+        const longCommand = normalizeCommand(binding.longCommand || '');
+        let changed = false;
+
+        if (command && seen.has(command)) {
+            binding.command = '';
+            binding.actionType = undefined;
+            changed = true;
+        } else if (command) {
+            seen.add(command);
+        }
+
+        if (longCommand && seen.has(longCommand)) {
+            binding.longCommand = '';
+            binding.longActionType = undefined;
+            changed = true;
+        } else if (longCommand) {
+            seen.add(longCommand);
+        }
+
+        return changed ? writeBinding(current, cell, binding) : current;
+    }, button);
+};
+
 // --- Public API ---
 export const swapPinnedWheelCells = (button: CustomButton, source: WheelCell, destination: WheelCell): CustomButton => {
     if (source === destination) return button;
     const sourceBinding = readBinding(button, source);
     const destinationBinding = readBinding(button, destination);
-    return writeBinding(writeBinding(button, source, destinationBinding), destination, sourceBinding);
+    return normalizePinnedWheelCommands(writeBinding(writeBinding(button, source, destinationBinding), destination, sourceBinding));
 };
 
 export const assignPinnedWheelCell = (
@@ -65,4 +96,24 @@ export const assignPinnedWheelCell = (
     command: string,
     actionType: ActionType | undefined,
     setId?: string
-): CustomButton => writeBinding(button, destination, { command, actionType, setId });
+): CustomButton => {
+    const normalizedCommand = normalizeCommand(command);
+    const source = WHEEL_CELLS.find(cell => {
+        if (cell === destination) return false;
+        const binding = readBinding(button, cell);
+        return normalizeCommand(binding.command || '') === normalizedCommand
+            || normalizeCommand(binding.longCommand || '') === normalizedCommand;
+    });
+
+    if (source) {
+        const sourceBinding = readBinding(button, source);
+        const destinationBinding = readBinding(button, destination);
+        return normalizePinnedWheelCommands(writeBinding(
+            writeBinding(button, source, destinationBinding),
+            destination,
+            sourceBinding
+        ));
+    }
+
+    return normalizePinnedWheelCommands(writeBinding(button, destination, { command, actionType, setId }));
+};

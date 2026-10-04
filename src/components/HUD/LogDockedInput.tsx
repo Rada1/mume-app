@@ -25,6 +25,7 @@ import { useCommandSuggestions } from '../../hooks/useCommandSuggestions';
 import { CommandArgumentText } from '../Controls/CommandArgumentText';
 import { useRotatingCommandSuggestion } from '../../hooks/useRotatingCommandSuggestion';
 import { useWhoListRefresh } from '../../hooks/useWhoListRefresh';
+import { useAutoGrowTextarea } from '../../hooks/useAutoGrowTextarea';
 import { CommandSuggestionPopup } from '../Controls/CommandSuggestionPopup';
 import { TargetChipPicker } from './TargetChipPicker';
 import { TacticalArgumentChips } from './TacticalArgumentChips';
@@ -134,7 +135,15 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const setLoginName = useSettingsStore(s => s.setLoginName);
     const setLoginPassword = useSettingsStore(s => s.setLoginPassword);
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+    const { textareaRef, resizeTextarea } = useAutoGrowTextarea(
+        input,
+        Boolean(viewport?.isMobile) && !isPasswordMode,
+    );
+    const setInputElementRef = useCallback((element: HTMLInputElement | HTMLTextAreaElement | null) => {
+        inputRef.current = element;
+        textareaRef.current = element instanceof HTMLTextAreaElement ? element : null;
+    }, [textareaRef]);
     const parleyCommandRef = useRef<HTMLButtonElement>(null);
     const parleyTargetRef = useRef<HTMLButtonElement>(null);
     const targetInputRef = useRef<HTMLInputElement>(null);
@@ -361,15 +370,16 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         focusCommandInput
     ]);
 
-    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (handleSuggestionKeyDown(e)) {
             return;
         }
         if (handleCommandArgumentKeyDown(e)) return;
 
         if (e.key === 'Enter') {
-            // Let the form's onSubmit handle form submission to avoid double-execution
-            return;
+            if (e.shiftKey && viewport?.isMobile && !isPasswordMode) return;
+            e.preventDefault();
+            handleSubmit();
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
             useInputStore.getState().navigateHistory('up');
@@ -380,7 +390,35 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
             e.preventDefault();
             setInput('');
         }
-    }, [handleCommandArgumentKeyDown, handleSuggestionKeyDown, handleSubmit, setInput]);
+    }, [handleCommandArgumentKeyDown, handleSuggestionKeyDown, handleSubmit, isPasswordMode, setInput, viewport?.isMobile]);
+
+    const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setInput(event.currentTarget.value);
+        if (event.currentTarget instanceof HTMLTextAreaElement) resizeTextarea(event.currentTarget);
+    }, [resizeTextarea, setInput]);
+
+    const handleInputPointerDown = useCallback((event: React.PointerEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        clearCommandArgumentCaret();
+        if (!viewport?.isMobile) return;
+        event.preventDefault();
+        focusCommandInput();
+    }, [clearCommandArgumentCaret, focusCommandInput, viewport?.isMobile]);
+
+    const handleInputFocus = useCallback(() => {
+        if (blurTimeoutRef.current) {
+            clearTimeout(blurTimeoutRef.current);
+            blurTimeoutRef.current = null;
+        }
+        setIsFocused(true);
+    }, [setIsFocused]);
+
+    const handleInputBlur = useCallback(() => {
+        if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
+        blurTimeoutRef.current = setTimeout(() => {
+            setIsFocused(false);
+            blurTimeoutRef.current = null;
+        }, 150);
+    }, [setIsFocused]);
 
     const placeholder = isPasswordMode
         ? 'Enter password...'
@@ -577,40 +615,43 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                             )}
                         </div>
                     )}
-                    <input
-                        ref={inputRef}
-                        id="mud-input"
-                        type={isPasswordMode ? 'password' : 'text'}
-                        className={`docked-input-field input-field account-input-trigger${commandTextParts || (commandPreview && !input) || showTacticalArgumentChips ? ' command-highlight-source' : ''}${commandArgumentCaretKey ? ' command-argument-caret-hidden' : ''}`}
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        onPointerDown={event => {
-                            clearCommandArgumentCaret();
-                            if (!viewport?.isMobile) return;
-                            event.preventDefault();
-                            focusCommandInput();
-                        }}
-                        onFocus={() => {
-                            if (blurTimeoutRef.current) {
-                                clearTimeout(blurTimeoutRef.current);
-                                blurTimeoutRef.current = null;
-                            }
-                            setIsFocused(true);
-                        }}
-                        onBlur={() => {
-                            if (blurTimeoutRef.current) {
-                                clearTimeout(blurTimeoutRef.current);
-                            }
-                            blurTimeoutRef.current = setTimeout(() => {
-                                setIsFocused(false);
-                                blurTimeoutRef.current = null;
-                            }, 150);
-                        }}
-                        placeholder={(commandPreview && !input) || showTacticalArgumentChips ? '' : placeholder}
-                        autoComplete="off"
-                        spellCheck="false"
-                    />
+                    {isPasswordMode ? (
+                        <input
+                            ref={setInputElementRef}
+                            id="mud-input"
+                            name="mud-input"
+                            type="password"
+                            className={`docked-input-field input-field account-input-trigger${commandTextParts || (commandPreview && !input) || showTacticalArgumentChips ? ' command-highlight-source' : ''}${commandArgumentCaretKey ? ' command-argument-caret-hidden' : ''}`}
+                            value={input}
+                            onChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
+                            onPointerDown={handleInputPointerDown}
+                            onFocus={handleInputFocus}
+                            onBlur={handleInputBlur}
+                            placeholder={(commandPreview && !input) || showTacticalArgumentChips ? '' : placeholder}
+                            autoComplete="off"
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            spellCheck="false"
+                        />
+                    ) : (
+                        <textarea
+                            ref={setInputElementRef}
+                            id="mud-input"
+                            name="mud-input"
+                            className={`docked-input-field input-field account-input-trigger${commandTextParts || (commandPreview && !input) || showTacticalArgumentChips ? ' command-highlight-source' : ''}${commandArgumentCaretKey ? ' command-argument-caret-hidden' : ''}`}
+                            value={input}
+                            rows={1}
+                            onChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
+                            onPointerDown={handleInputPointerDown}
+                            onFocus={handleInputFocus}
+                            onBlur={handleInputBlur}
+                            placeholder={(commandPreview && !input) || showTacticalArgumentChips ? '' : placeholder}
+                            autoComplete="off"
+                            spellCheck="false"
+                        />
+                    )}
                 </div>
             </form>
 

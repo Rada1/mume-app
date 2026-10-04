@@ -143,3 +143,26 @@
     opacity: 0.4;
     cursor: default;
 }
+
+@media (min-width: 1025px) {
+    .quick-button-bar {
+        align-items: flex-end;
+    }
+
+    .quick-chip-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .quick-chip {
+        min-width: 42px;
+        padding: 6px 8px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .quick-chip-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

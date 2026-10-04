@@ -49,17 +49,11 @@ describe('MessageLog animations in Immersion Mode', () => {
     const hookPath = path.resolve(__dirname, '../../hooks/useMessageLog.ts');
     const hookContent = fs.readFileSync(hookPath, 'utf8');
 
-    it('restores line-by-line upward ripple animation for movement in immersion mode', () => {
-        // CSS rules for upward ripple animation
-        expect(cssContent).toContain('.immersion-mode .message.room-jiggle-active .room-title-badge');
-        expect(cssContent).toContain('.immersion-mode .message.room-jiggle-active .room-desc-line');
-        expect(cssContent).toContain('.immersion-mode .message.room-jiggle-active:not(.is-room-name) .content-row');
-        expect(cssContent).toContain('@keyframes room-line-jiggle');
-
-        // TSX wiring in MessageLog.tsx
-        expect(tsxContent).toContain('playedRoomJiggleIds');
-        expect(tsxContent).toContain('isRoomJiggleActive');
-        expect(tsxContent).toContain('${isImmersionMode && isRoomJiggleActive ? \' room-jiggle-active\' : \'\'}');
+    it('keeps movement confirmations and room arrivals static in immersion mode', () => {
+        expect(cssContent).toContain('.immersion-mode .message.movement .message-content .log-text-word');
+        expect(cssContent).not.toContain('room-jiggle-active');
+        expect(cssContent).not.toContain('@keyframes room-line-jiggle');
+        expect(tsxContent).not.toContain('isRoomJiggleActive');
         expect(tsxContent).toContain('extractRoomDescription(msg.html, msg.roomContentCount ?? 0)');
         expect(tsxContent).toContain('\'--room-line-delay\': `${(msg.roomLineIndex ?? (batchOffset || 0)) * 35}ms`');
 

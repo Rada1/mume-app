@@ -21,6 +21,7 @@ export interface ThisIsYouStatePillProps {
     onSelect: (option: StateOption) => void;
     onInteract?: () => void;
     inlineOptions?: boolean;
+    isMobile?: boolean;
     disabled?: boolean;
     accentColor?: 'gold' | 'blue' | 'red' | 'purple';
     confirmOptionValue?: string;
@@ -34,6 +35,7 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
     onSelect,
     onInteract,
     inlineOptions = false,
+    isMobile = false,
     disabled = false,
     accentColor = 'gold',
     confirmOptionValue,
@@ -183,7 +185,7 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
             </button>
 
             {isOpen && createPortal(
-                <div ref={popoverRef} className={`this-is-you-popover accent-${accentColor}`} role="listbox" aria-label={`Select ${category}`}
+                <div ref={popoverRef} className={`this-is-you-popover accent-${accentColor}`} data-state-category={category.toLowerCase()} data-mobile={isMobile || undefined} role="listbox" aria-label={`Select ${category}`}
                     style={menuPosition ? { top: menuPosition.top, left: menuPosition.left } : { visibility: 'hidden' }}>
                     <div className="this-is-you-popover-header">{category}</div>
                     {options.map(option => {

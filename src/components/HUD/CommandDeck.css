@@ -119,6 +119,65 @@
     flex-shrink: 0;
 }
 
+.command-deck [data-id="deck-category-mounts"] {
+    color: #22c55e !important;
+}
+
+.command-deck [data-id="deck-category-mounts"] svg {
+    color: #22c55e !important;
+    stroke: #22c55e !important;
+}
+
+.command-deck [data-id="deck-category-utility"] {
+    color: #fff !important;
+}
+
+.command-deck [data-id="deck-category-utility"] svg {
+    color: #fff !important;
+    stroke: #fff !important;
+}
+
+.command-deck [data-id="deck-category-consume"] {
+    color: #c9a84c !important;
+    background: rgba(201, 168, 76, 0.16) !important;
+}
+
+.command-deck [data-id="deck-category-consume"] svg {
+    color: #c9a84c !important;
+    stroke: #c9a84c !important;
+}
+
+.deck-tab.has-action-targets svg,
+.deck-category-control.has-action-targets .deck-category-button svg {
+    filter: drop-shadow(0 0 4px rgba(230, 170, 74, 0.95));
+    animation: actionTargetIconGlow 1.8s ease-in-out infinite alternate;
+}
+
+.deck-tab.has-action-targets[data-id="deck-category-mounts"] svg,
+.deck-category-control.has-action-targets .deck-category-button[data-id="deck-category-mounts"] svg {
+    filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.95));
+    animation: mountTargetIconGlow 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes actionTargetIconGlow {
+    from { filter: drop-shadow(0 0 2px rgba(230, 170, 74, 0.58)); }
+    to { filter: drop-shadow(0 0 6px rgba(255, 190, 92, 1)); }
+}
+
+@keyframes mountTargetIconGlow {
+    from { filter: drop-shadow(0 0 2px rgba(34, 197, 94, 0.58)); }
+    to { filter: drop-shadow(0 0 6px rgba(34, 197, 94, 1)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .deck-tab.has-action-targets svg,
+    .deck-category-control.has-action-targets .deck-category-button svg,
+    .deck-tab.has-action-targets[data-id="deck-category-mounts"] svg,
+    .deck-category-control.has-action-targets .deck-category-button[data-id="deck-category-mounts"] svg {
+        animation: none;
+    }
+}
+
 /* Category action wheels use the same fixed mobile dock and skin as tactical wheels. */
 .deck-category-swipe-overlay {
     position: fixed;

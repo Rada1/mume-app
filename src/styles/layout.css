@@ -388,6 +388,10 @@
 
 /* Suppress mobile HUD buttons, command deck, and tactical bar when docked panels are open */
 @media (max-width: 1024px) {
+    .message-log-container {
+        touch-action: pan-y;
+    }
+
     body.has-docked-panels .mobile-map-panel,
     body.has-docked-panels .hud-clusters-absolute-layer,
     body.has-docked-panels .mobile-tactical-buttons-persistent,

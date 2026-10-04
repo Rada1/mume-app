@@ -107,7 +107,7 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
                 } as any}
             >
                 <span style={{ pointerEvents: 'none' }}>{label}</span>
-                {terminal && <span className="terminal-action-command">/{button.command.replace(/%n/g, popoverState.context || '').replace(/%p/g, popoverState.parentNoun || '')}</span>}
+                {terminal && <span className="terminal-action-command">&lt;{button.command.replace(/%n/g, popoverState.context || '').replace(/%p/g, popoverState.parentNoun || '')}&gt;</span>}
                 {!terminal && showFavorite && <span
                     onClick={(e) => toggleFavorite(e, button.command)}
                     style={{

@@ -39,6 +39,25 @@
 
 .map-swipe-edge-indicator[data-direction='n'] { clip-path: polygon(35% 0, 65% 0, 65% 4px, 35% 4px); }
 .map-swipe-edge-indicator[data-direction='s'] { clip-path: polygon(35% calc(100% - 4px), 65% calc(100% - 4px), 65% 100%, 35% 100%); }
+.map-swipe-edge-indicator[data-direction='n'],
+.map-swipe-edge-indicator[data-direction='s'] {
+    clip-path: none;
+    background: transparent;
+    filter: none;
+}
+.map-swipe-edge-indicator[data-direction='n']::after,
+.map-swipe-edge-indicator[data-direction='s']::after {
+    content: '';
+    position: absolute;
+    left: 35%;
+    width: 30%;
+    height: 6px;
+    border-radius: 4px;
+    background: var(--accent, #d4aa00);
+    box-shadow: 0 0 8px 2px var(--accent, #d4aa00);
+}
+.map-swipe-edge-indicator[data-direction='n']::after { top: 8px; }
+.map-swipe-edge-indicator[data-direction='s']::after { bottom: 8px; }
 .map-swipe-edge-indicator[data-direction='w'],
 .map-swipe-edge-indicator[data-direction='e'] {
     clip-path: none;
@@ -64,6 +83,27 @@
 .map-swipe-edge-indicator[data-direction='ne'] { clip-path: polygon(72% 0, 100% 0, 100% 28%, calc(100% - 4px) 28%, calc(100% - 4px) 4px, 72% 4px); }
 .map-swipe-edge-indicator[data-direction='sw'] { clip-path: polygon(0 72%, 4px 72%, 4px calc(100% - 4px), 28% calc(100% - 4px), 28% 100%, 0 100%); }
 .map-swipe-edge-indicator[data-direction='se'] { clip-path: polygon(72% 100%, 100% 100%, 100% 72%, calc(100% - 4px) 72%, calc(100% - 4px) calc(100% - 4px), 72% calc(100% - 4px)); }
+.map-swipe-edge-indicator[data-direction='nw'],
+.map-swipe-edge-indicator[data-direction='se'] {
+    clip-path: none;
+    background: transparent;
+    filter: none;
+}
+.map-swipe-edge-indicator[data-direction='nw']::after,
+.map-swipe-edge-indicator[data-direction='se']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(var(--accent, #d4aa00) 0 0) left top / 28% 6px no-repeat,
+        linear-gradient(var(--accent, #d4aa00) 0 0) left top / 6px 28% no-repeat;
+    filter: drop-shadow(0 0 6px var(--accent, #d4aa00)) drop-shadow(0 0 3px var(--accent, #d4aa00));
+}
+.map-swipe-edge-indicator[data-direction='se']::after {
+    background:
+        linear-gradient(var(--accent, #d4aa00) 0 0) right bottom / 28% 6px no-repeat,
+        linear-gradient(var(--accent, #d4aa00) 0 0) right bottom / 6px 28% no-repeat;
+}
 
 @keyframes map-swipe-edge-blink {
     0%, 100% { opacity: 0; }

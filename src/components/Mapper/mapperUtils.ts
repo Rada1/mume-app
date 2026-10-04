@@ -2,6 +2,7 @@
 
 // --- Logic Section ---
 export const GRID_SIZE = 50;
+export const DEFAULT_MOBILE_MAP_ZOOM = 0.75;
 
 // Strips ANSI/VT100 escape sequences (e.g. "\x1b[32m...\x1b[0m") from a string.
 // MUME room names sometimes arrive with embedded color codes; we never want the

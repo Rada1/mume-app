@@ -6,6 +6,8 @@ import { useGame } from '../../context/GameContext';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import { useInputStore } from '../../stores/useInputStore';
 import { buildCommandGuideEntries, type GuideCategory, type GuideEntry } from './commandGuideData';
+import { CLASS_KEYS } from './rightActionData';
+import type { PracticeClassKey } from '../../utils/practiceClassCatalog';
 import { MovementPad } from './MovementPad';
 import './CommandGuidePanel.css';
 
@@ -39,6 +41,10 @@ export const CommandGuidePanel: React.FC = () => {
     const requestTargetPicker = useInputStore(state => state.requestTargetPicker);
     const [query, setQuery] = useState('');
     const [view, setView] = useState<GuideView>('Start');
+    const [selectedSkillClass, setSelectedSkillClass] = useState<PracticeClassKey>(() => {
+        const classKey = (characterClass || '').toLowerCase();
+        return (CLASS_KEYS as string[]).includes(classKey) ? classKey as PracticeClassKey : 'warrior';
+    });
     const [showAll, setShowAll] = useState(false);
     const [isFinderOpen, setIsFinderOpen] = useState(false);
 
@@ -54,27 +60,26 @@ export const CommandGuidePanel: React.FC = () => {
         const inView = (entry: GuideEntry): boolean => view !== 'Start' && (view === 'All' || entry.category === view);
         const ignoredWords = new Set(['a', 'an', 'the', 'to', 'for', 'of', 'with', 'me', 'my', 'i', 'want', 'need', 'do', 'how', 'can']);
         const queryTerms = normalizedQuery.split(/\s+/).filter(term => term && !ignoredWords.has(term));
-        const matches = ENTRIES.filter(entry => (normalizedQuery
-            ? queryTerms.every(term => entry.searchText.includes(term))
-            : inView(entry)));
+        const matches = ENTRIES.filter(entry => {
+            if (view === 'Skills & spells' && entry.abilityClass !== selectedSkillClass) return false;
+            return normalizedQuery
+                ? queryTerms.every(term => entry.searchText.includes(term))
+                : inView(entry);
+        });
         if (normalizedQuery || view === 'All' || showAll) return matches;
         if (view === 'Start') return [];
-        if (view === 'Skills & spells') {
-            const currentClass = characterClass === 'none' ? null : characterClass;
-            const known = matches.filter(entry => entry.abilityClass && (abilities[entry.name.toLowerCase()] || 0) > 0 && !entry.isPassive);
-            const classSkills = currentClass ? matches.filter(entry => entry.abilityClass === currentClass && !entry.isPassive) : [];
-            const preferred = known.length ? known : classSkills;
-            return preferred.length ? preferred.slice(0, 8) : matches.filter(entry => !entry.isPassive).slice(0, 8);
-        }
+        if (view === 'Skills & spells') return matches;
         const featuredNames = new Set(FEATURED_COMMANDS[view]);
         return matches.filter(entry => featuredNames.has(entry.name.toLowerCase())).slice(0, 12);
-    }, [abilities, characterClass, query, showAll, view]);
+    }, [query, selectedSkillClass, showAll, view]);
 
-    const categoryCount = view === 'All' ? ENTRIES.length : view === 'Start' ? 0 : ENTRIES.filter(entry => entry.category === view).length;
+    const categoryCount = view === 'All' ? ENTRIES.length : view === 'Start' ? 0 : ENTRIES.filter(entry => (
+        entry.category === view && (view !== 'Skills & spells' || entry.abilityClass === selectedSkillClass)
+    )).length;
 
     const stage = (entry: GuideEntry) => {
         if (entry.isPassive) return;
-        const command = entry.command.replace(/\s*<target>$/, ' ');
+        const command = entry.command.replace(/(?:\s+<target(?:\s+\d+)?>)+\s*$/i, ' ');
         setInput(command);
         if (entry.needsTarget) requestTargetPicker();
         window.setTimeout(() => document.getElementById('mud-input')?.focus(), 50);
@@ -108,10 +113,6 @@ export const CommandGuidePanel: React.FC = () => {
             <button type="button" className="command-guide-browse-all" onClick={() => { setView('All'); setShowAll(true); }}>Browse the full command reference</button>
         </div>}
 
-        <div className="command-guide-navigation" role="region" aria-label="Movement Controls">
-            <MovementPad />
-        </div>
-
         <div className={`command-guide-finder${isFinderOpen ? ' is-open' : ''}`}>
             <button type="button" className="command-guide-finder-toggle" aria-expanded={isFinderOpen} onClick={() => {
                 setIsFinderOpen(open => !open);
@@ -130,7 +131,16 @@ export const CommandGuidePanel: React.FC = () => {
         {(query || view !== 'Start') && <div className="command-guide-results-heading">
             <button type="button" onClick={() => { setQuery(''); setView('Start'); setShowAll(false); }}>‹ Choose another goal</button>
             <strong>{query ? 'Search results' : view}</strong>
-            {!query && view !== 'All' && !showAll && <span>Showing suggested entries</span>}
+            {!query && view !== 'All' && view !== 'Skills & spells' && !showAll && <span>Showing suggested entries</span>}
+        </div>}
+
+        {view === 'Skills & spells' && <div className="command-guide-class-tabs" role="tablist" aria-label="Skill classes">
+            {CLASS_KEYS.map(classKey => <button key={classKey} type="button" role="tab"
+                aria-selected={selectedSkillClass === classKey}
+                className={`command-guide-class-tab${selectedSkillClass === classKey ? ' is-active' : ''}`}
+                onClick={() => { setSelectedSkillClass(classKey); setShowAll(false); }}>
+                {selectedSkillClass === classKey ? `[ ${classKey} ]` : classKey}
+            </button>)}
         </div>}
 
         {(query || view !== 'Start') && <div className="command-guide-results" role="region" aria-label="Command reference results">
@@ -161,5 +171,9 @@ export const CommandGuidePanel: React.FC = () => {
         {query && <p className="command-guide-hint">Select an entry to put it in the command bar. Add a target or arguments, then send.</p>}
         {!query && view !== 'Start' && view !== 'All' && !showAll && categoryCount > results.length && <button type="button" className="command-guide-show-all" onClick={() => setShowAll(true)}>Show all {categoryCount} entries</button>}
         {!query && view === 'All' && <p className="command-guide-hint">Select an entry to put it in the command bar. Add a target or arguments, then send.</p>}
+
+        <div className="command-guide-navigation" role="region" aria-label="Movement Controls">
+            <MovementPad />
+        </div>
     </aside>;
 };

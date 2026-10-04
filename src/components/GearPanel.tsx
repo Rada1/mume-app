@@ -12,6 +12,7 @@ import { useUIStore } from '../stores/useUIStore';
 import { toGearRow, visibleContainerLine, type GearRow } from '../utils/gearPanelUtils';
 import { classifyItemTier } from '../utils/itemTier';
 import { getShopRoomLabel } from '../utils/shopRoomUtils';
+import { useMobileGearSwipe } from '../hooks/useMobileGearSwipe';
 import { useMapper } from '../context/MapperContext';
 import type { DrawerLine } from '../types';
 import { ShopPanel } from './Shop/ShopPanel';
@@ -27,6 +28,7 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
     const mapper = useMapper();
     const inlineSettings = useSettingsStore();
     const gear = useGearPanel();
+    const gearSwipe = useMobileGearSwipe(gear.viewport.isMobile, gear.triggerHaptic);
     const dragState = useUIStore(state => state.objectDragState);
     const isShopOpen = useUIStore(state => state.isShopOpen);
     const setIsShopOpen = useUIStore(state => state.setIsShopOpen);
@@ -42,12 +44,13 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
         triggerHaptic: gear.triggerHaptic,
         mouseDragOnMove: true,
         touchDragOnMove: true,
+        touchDragOnHorizontalMove: false,
         onDrop: (source, target) => {
             const containerId = target.type === 'container' ? target.containerId : source.parentContainerId;
             if (containerId) gear.refreshContainer(containerId);
         },
     });
-    const [expanded, setExpanded] = useState({ worn: true, carried: true, room: false });
+    const [expanded, setExpanded] = useState({ worn: true, carried: true, room: true });
     const [selected, setSelected] = useState<SelectedGear | null>(null);
     const [showRecipients, setShowRecipients] = useState(false);
     const [activeView, setActiveView] = useState<'gear' | 'shop'>('gear');
@@ -73,7 +76,7 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
         const isExpanded = gear.expandedContainers.has(row.line.id);
         const contents = gear.containerContents[row.line.id]?.filter(visibleContainerLine) ?? [];
         return <React.Fragment key={id}>
-            <div className={`gear-item-row${selected?.id === id ? ' is-selected' : ''}${nested ? ' is-nested' : ''}${dragState?.target?.type === 'container' && dragState.target.containerId === row.line.id ? ' is-drop-target' : ''}`}
+            <div className={`gear-item-row${selected?.id === id ? ' is-selected' : ''}${nested ? ' is-nested' : ''}${row.isContainer ? ' has-container-toggle' : ''}${dragState?.target?.type === 'container' && dragState.target.containerId === row.line.id ? ' is-drop-target' : ''}`}
                 data-object-drop-container={row.isContainer ? row.line.id : undefined}
                 data-object-drop-noun={row.isContainer ? row.noun : undefined}
                 data-object-drop-label={row.isContainer ? row.name : undefined}>
@@ -128,7 +131,7 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
             : section === 'room' ? gear.roomItemLines : gear.displayInventoryLines;
         const sectionName = section === 'worn' ? 'worn' : section === 'room' ? 'nearby' : 'inventory';
         const dropRow = section === 'carried' ? 'inventory' : section;
-        return <section className="gear-section" key={section}>
+        return <section className={`gear-section${expanded[section] ? '' : ' is-collapsed'}`} key={section}>
             <div className={`gear-section-heading${dragState?.target?.type === 'row' && dragState.target.row === dropRow ? ' is-drop-target' : ''}`}
                 data-object-drop-row={dropRow}>
                 <button className="gear-section-toggle" type="button"
@@ -154,8 +157,17 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
         gear.executeCommand(command);
         gear.triggerHaptic?.(10);
     };
+    const isCarriedWeapon = selected?.section === 'carried'
+        && getObjectTraits(selected.row.line).includes('trait-weapon');
 
-    return <aside className="docked-panel gear-panel" style={style} aria-label="Gear and shop panel">
+    return <aside className="docked-panel gear-panel" style={style} aria-label="Gear and shop panel"
+        onPointerDown={gearSwipe.onGearPointerDown}
+        onPointerUp={gearSwipe.onGearPointerUp}
+        onPointerCancel={gearSwipe.onPointerCancel}
+        onTouchStartCapture={gearSwipe.onGearTouchStartCapture}
+        onTouchEndCapture={gearSwipe.onGearTouchEndCapture}
+        onTouchCancelCapture={gearSwipe.onTouchCancel}
+        onClickCapture={gearSwipe.onClickCapture}>
         {!gear.viewport.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-gear-width" minWidth={18} maxWidth={60} />}
         <header className="gear-panel-header">
             <div className="gear-panel-tabs" role="tablist" aria-label="Panel">
@@ -192,14 +204,27 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
                     <span>give {selected.row.name} to…</span>
                 </div>
                 {gear.recipients.length ? <div className="gear-recipient-list">
-                    {gear.recipients.map(recipient => <button key={recipient.id} type="button"
-                        onClick={() => {
-                            runAction(`give ${selected.row.noun} ${recipient.noun}`);
-                            setShowRecipients(false);
-                            setSelected(null);
-                        }}>
-                        <span>{recipient.label}</span><small>{recipient.kind}</small>
-                    </button>)}
+                    {gear.recipients.map(recipient => {
+                        const recipientColor = getInlineGlowColor(
+                            recipient.kind === 'player' ? 'cat-ally' : 'cat-npc',
+                            inlineSettings.inlineCategories,
+                            {
+                                player: inlineSettings.playerColor,
+                                ally: inlineSettings.playerColor,
+                                npc: inlineSettings.npcColor,
+                            },
+                            inlineSettings.theme
+                        );
+                        return <button key={recipient.id} type="button"
+                            onClick={() => {
+                                runAction(`give ${selected.row.noun} ${recipient.noun}`);
+                                setShowRecipients(false);
+                                setSelected(null);
+                            }}>
+                            <span style={recipientColor ? { color: recipientColor } : undefined}>{recipient.label}</span>
+                            <small>{recipient.kind}</small>
+                        </button>;
+                    })}
                 </div> : <span className="gear-empty">No eligible room entities.</span>}
             </> : <>
                 <span className="gear-actions-label">&gt; {selected.row.name}</span>
@@ -218,8 +243,8 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
                         ? <button type="button" onClick={() => runAction(selected.parentNoun
                             ? `get ${selected.row.noun} ${selected.parentNoun}` : `get ${selected.row.noun}`)}>get</button>
                         : <>
-                            <button type="button" onClick={() => runAction(`${selected.section === 'worn' ? 'remove' : 'wear'} ${selected.row.noun}`)}>
-                                {selected.section === 'worn' ? 'remove' : 'wear'}
+                            <button type="button" onClick={() => runAction(`${selected.section === 'worn' ? 'remove' : isCarriedWeapon ? 'wield' : 'wear'} ${selected.row.noun}`)}>
+                                {selected.section === 'worn' ? 'remove' : isCarriedWeapon ? 'wield' : 'wear'}
                             </button>
                             {selected.section === 'carried' && !selected.parentNoun && <>
                                 {isShopRoom && <>

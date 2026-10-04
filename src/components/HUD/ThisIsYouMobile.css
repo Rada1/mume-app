@@ -121,9 +121,33 @@
 }
 
 .this-is-you-console.is-mobile .this-is-you-health-header {
-    width: 100%;
-    justify-content: space-between;
-    gap: 1px;
+    display: contents;
+}
+
+.this-is-you-console.is-mobile .this-is-you-health-cell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    column-gap: 2px;
+    row-gap: 1px;
+}
+
+.this-is-you-console.is-mobile .this-is-you-health-header .label {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: center;
+}
+
+.this-is-you-console.is-mobile .this-is-you-health-cell .this-is-you-cell-val {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: center;
+}
+
+.this-is-you-console.is-mobile .this-is-you-health-header .this-is-you-wimpy-badge {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
 }
 
 .this-is-you-console.is-mobile .this-is-you-cell-header .label,
@@ -395,6 +419,36 @@
         justify-content: center;
         gap: 2px;
         white-space: nowrap;
+    }
+
+    .this-is-you-console .this-is-you-health-header {
+        display: contents;
+    }
+
+    .this-is-you-console .this-is-you-health-cell {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: auto auto;
+        column-gap: 2px;
+        row-gap: 1px;
+    }
+
+    .this-is-you-console .this-is-you-health-header .label {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        justify-self: center;
+    }
+
+    .this-is-you-console .this-is-you-health-cell .this-is-you-cell-val {
+        grid-column: 1;
+        grid-row: 2;
+        justify-self: center;
+    }
+
+    .this-is-you-console .this-is-you-health-header .this-is-you-wimpy-badge {
+        grid-column: 2;
+        grid-row: 2;
+        justify-self: end;
     }
 
     .this-is-you-console .this-is-you-cell-header .label,

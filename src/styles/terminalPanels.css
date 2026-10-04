@@ -58,9 +58,29 @@
         padding-right: 0 !important;
     }
 
+    .app-container .content-layer.has-docked-panels {
+        max-width: none !important;
+        margin: 0 !important;
+    }
+
     .app-container .desktop-center-column {
         max-width: none !important;
         margin-right: 0 !important;
+    }
+
+    .app-container .content-layer.has-docked-panels .desktop-center-column {
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Fill the lane up to the docked panel unless the player has resized the log. */
+    .app-container .content-layer.has-docked-panels .message-log-container {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: var(--desktop-log-width, none) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
 
     .app-container .docked-panel {

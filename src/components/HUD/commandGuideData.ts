@@ -28,7 +28,7 @@ const GROUPS: Record<GuideCategory, Set<string>> = {
     'Other': new Set()
 };
 
-const TARGET_COMMANDS = new Set(['kill', 'attack', 'consider', 'assist', 'get', 'give', 'put', 'tell', 'ask', 'follow', 'rescue', 'protect', 'shoot', 'sell', 'buy', 'wear', 'remove', 'wield', 'hold', 'open', 'close', 'lock', 'unlock', 'examine', 'look']);
+const TARGET_COMMANDS = new Set(['kill', 'attack', 'consider', 'assist', 'get', 'drop', 'give', 'put', 'tell', 'whisper', 'group', 'ask', 'follow', 'rescue', 'protect', 'shoot', 'sell', 'buy', 'wear', 'remove', 'wield', 'hold', 'open', 'close', 'lock', 'unlock', 'examine', 'look']);
 const INTENT_TERMS: Record<string, string> = {
     look: 'see room surroundings what is around me inspect place',
     exits: 'find exit door direction way out leave room',
@@ -107,7 +107,9 @@ export const buildCommandGuideEntries = (): GuideEntry[] => {
         const name = entry.full;
         const category = (Object.keys(GROUPS) as GuideCategory[]).find(group => GROUPS[group].has(name)) || 'Other';
         const needsTarget = TARGET_COMMANDS.has(name);
-        const command = `${name}${needsTarget ? ' <target>' : ''}`;
+        const command = name === 'give' || name === 'put'
+            ? `${name} <target 1> <target 2>`
+            : `${name}${needsTarget ? ' <target>' : ''}`;
         return {
             id: `command:${name}`, name: labelFor(name), command, category,
             needsTarget, detail: category === 'Other' ? 'MUME command' : `${category} command`,

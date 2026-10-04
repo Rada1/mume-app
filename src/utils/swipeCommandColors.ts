@@ -6,25 +6,25 @@
 // --- Logic Section ---
 const SWIPE_COMMAND_TEXT_COLORS: Record<string, string> = {
     camp: '#ffd700',
-    climb: 'var(--ansi-bright-cyan, #38bdf8)',
-    swim: 'var(--ansi-bright-cyan, #38bdf8)',
-    ride: 'var(--ansi-bright-cyan, #38bdf8)',
+    climb: 'var(--ansi-bright-green, #44ff70)',
+    swim: 'var(--ansi-bright-green, #44ff70)',
+    ride: 'var(--ansi-bright-green, #44ff70)',
     narrate: 'var(--ansi-bright-yellow, #f5f749)',
     yell: 'var(--ansi-bright-magenta, #c084fc)',
-    say: 'var(--ansi-bright-cyan, #38bdf8)',
-    tell: 'var(--ansi-bright-green, #44ff70)',
-    gtell: 'var(--ansi-bright-green, #44ff70)',
-    gsay: 'var(--ansi-bright-green, #44ff70)',
-    protect: 'var(--ansi-bright-green, #44ff70)',
-    rescue: 'var(--ansi-bright-green, #44ff70)',
-    bandage: 'var(--ansi-bright-green, #44ff70)',
+    say: 'var(--ansi-bright-green, #44ff70)',
+    tell: 'var(--ansi-bright-cyan, #38bdf8)',
+    gtell: 'var(--ansi-bright-cyan, #38bdf8)',
+    gsay: 'var(--ansi-bright-cyan, #38bdf8)',
+    protect: 'var(--ansi-bright-cyan, #38bdf8)',
+    rescue: 'var(--ansi-bright-cyan, #38bdf8)',
+    bandage: 'var(--ansi-bright-cyan, #38bdf8)',
     hide: 'var(--ansi-bright-magenta, #c084fc)',
     sneak: 'var(--ansi-bright-magenta, #c084fc)',
     envenom: 'var(--ansi-bright-magenta, #c084fc)',
     open: '#ffd700',
-    lead: 'var(--ansi-bright-cyan, #38bdf8)',
-    abandon: 'var(--ansi-bright-cyan, #38bdf8)',
-    dismount: 'var(--ansi-bright-cyan, #38bdf8)',
+    lead: 'var(--ansi-bright-green, #44ff70)',
+    abandon: 'var(--ansi-bright-green, #44ff70)',
+    dismount: 'var(--ansi-bright-green, #44ff70)',
     close: '#ffd700',
     lock: '#ffd700',
     unlock: '#ffd700',
@@ -63,14 +63,14 @@ const PURPLE_SWIPE_SPELLS = [
     'shield', 'armour', 'bless', 'sanctuary', 'shroud', 'enchant', 'breath of briskness',
     'detect magic', 'strength', 'sense life', 'detect invisible', 'detect invisibility', 'detect evil', 'detect poison', 'night vision', 'store', 'protection from evil'
 ];
-const GREEN_SWIPE_SPELLS = ['heal', 'cure serious', 'cure light', 'cure critic', 'cure disease', 'cure blindness', 'remove poison', 'remove curse', 'energy drain'];
+const CYAN_SWIPE_SPELLS = ['heal', 'cure serious', 'cure light', 'cure critic', 'cure disease', 'cure blindness', 'remove poison', 'remove curse', 'energy drain'];
 const RED_SWIPE_SPELLS = [
     'dispel evil', 'harm', 'smother', 'blindness', 'lightning bolt', 'fireball',
     'burning hands', 'chill touch', 'magic missile', 'colour spray', 'call lightning', 'curse', 'poison', 'hold', 'black breath', 'ventriloquate', 'earthquake', 'silence', 'fear'
 ];
 const WHITE_SWIPE_COMMANDS = ['locate', 'locate life', 'watch room', 'scry', 'scout', 'look', 'examine', 'track', 'search', 'consider', 'watch', 'reveal', 'where', 'flush'];
 const GOLD_SWIPE_COMMANDS = ['create food', 'create water', 'create light', 'block door', 'break door'];
-const CYAN_SWIPE_COMMANDS = ['teleport', 'word of recall', 'portal', 'transfer', 'summon', 'flee', 'escape'];
+const GREEN_SWIPE_COMMANDS = ['teleport', 'word of recall', 'portal', 'transfer', 'summon', 'flee', 'escape'];
 
 export const getSwipeCommandTextColor = (command: string): string | undefined => {
     const normalizedCommand = command.trim().toLowerCase();
@@ -79,8 +79,8 @@ export const getSwipeCommandTextColor = (command: string): string | undefined =>
     if (GOLD_SWIPE_COMMANDS.some(name => spell === name || spell.startsWith(`${name} `))) {
         return '#ffd700';
     }
-    if (GREEN_SWIPE_SPELLS.some(name => spell === name || spell.startsWith(`${name} `))) {
-        return 'var(--ansi-bright-green, #44ff70)';
+    if (CYAN_SWIPE_SPELLS.some(name => spell === name || spell.startsWith(`${name} `))) {
+        return 'var(--ansi-bright-cyan, #38bdf8)';
     }
     if (RED_SWIPE_SPELLS.some(name => spell === name || spell.startsWith(`${name} `))) {
         return 'var(--ansi-bright-red, #f87171)';
@@ -91,8 +91,8 @@ export const getSwipeCommandTextColor = (command: string): string | undefined =>
     if (WHITE_SWIPE_COMMANDS.some(name => spell === name || spell.startsWith(`${name} `))) {
         return '#f8fafc';
     }
-    if (CYAN_SWIPE_COMMANDS.some(name => spell === name || spell.startsWith(`${name} `))) {
-        return 'var(--ansi-bright-cyan, #38bdf8)';
+    if (GREEN_SWIPE_COMMANDS.some(name => spell === name || spell.startsWith(`${name} `))) {
+        return 'var(--ansi-bright-green, #44ff70)';
     }
     const verb = normalizedCommand.split(/\s+/)[0];
     return SWIPE_COMMAND_TEXT_COLORS[verb];

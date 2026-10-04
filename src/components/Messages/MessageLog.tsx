@@ -32,6 +32,7 @@ import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { getRoomTerrainVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 import { formatMovementArrow, getMovementDirectionLabel, normalizeMovementDirection } from '../../utils/movementDirections';
 import { RunnerIcon } from '../HUD/PromptBox';
+import { useLiveLogPaneResize } from '../../hooks/useLiveLogPaneResize';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -52,7 +53,6 @@ const getItemActionAnimation = (text: string): ItemActionAnimation | null => {
 };
 
 const playedFocusRevealIds = new Set<string>();
-const playedRoomJiggleIds = new Set<string>();
 
 // Account output intentionally bypasses the entity tokenizer to preserve terminal
 // formatting. Wrap only its visible HTML text nodes so the login screen can still
@@ -382,26 +382,6 @@ const MessageItem = React.memo(({
         }, 50);
     }, [msg.replyCommand, msg.replyTarget, setParley, triggerHaptic, playClickSound]);
 
-    const [isRoomJiggleActive, setIsRoomJiggleActive] = React.useState(false);
-
-    React.useLayoutEffect(() => {
-        if (!isImmersionMode || !isImmersionTextAnimationsEnabled || isPerformanceMode || !msg.isRoomArrival || Date.now() - msg.timestamp > 4000 || playedRoomJiggleIds.has(msg.id)) return;
-
-        if (playedRoomJiggleIds.size > 2000) {
-            const iter = playedRoomJiggleIds.values();
-            for (let i = 0; i < 500; i++) {
-                const val = iter.next().value;
-                if (val) playedRoomJiggleIds.delete(val);
-            }
-        }
-        playedRoomJiggleIds.add(msg.id);
-        setIsRoomJiggleActive(true);
-        const timer = window.setTimeout(() => {
-            setIsRoomJiggleActive(false);
-        }, 1600);
-        return () => window.clearTimeout(timer);
-    }, [isImmersionMode, isImmersionTextAnimationsEnabled, isPerformanceMode, msg.id, msg.isRoomArrival, msg.timestamp]);
-
     const showTimestamp = isTimestampEnabled && msg.type !== 'gmcp-event';
     const timestampEl = showTimestamp ? (
         <span className="message-timestamp">{formatTimestamp(msg.timestamp)}</span>
@@ -434,7 +414,7 @@ const MessageItem = React.memo(({
         <div
             ref={messageRootRef}
             data-subdued-action={msg.isSubduedAction || undefined}
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${isLoginNamePrompt ? ' login-name-prompt' : ''}${isStatAffectLine ? ' stat-affect-line' : ''}${regenSlowTooltip ? ' regen-slow-notice' : ''}${!isPerformanceMode && isImmersionMode && msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}${!isPerformanceMode && isFocusRevealActive ? ' focus-reveal-active' : ''}${!isPerformanceMode && isMagicRippleActive ? ' magic-ripple-active' : ''}${!isPerformanceMode && isRedWeatherRippleActive ? ' red-weather-ripple-active' : ''}${!isPerformanceMode && isItemActionActive && itemActionAnimation ? ` item-action-${itemActionAnimation}` : ''}${!isPerformanceMode && isImmersionMode && isRoomJiggleActive ? ' room-jiggle-active' : ''}`}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${isLoginNamePrompt ? ' login-name-prompt' : ''}${isStatAffectLine ? ' stat-affect-line' : ''}${regenSlowTooltip ? ' regen-slow-notice' : ''}${!isPerformanceMode && isImmersionMode && msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}${!isPerformanceMode && isFocusRevealActive ? ' focus-reveal-active' : ''}${!isPerformanceMode && isMagicRippleActive ? ' magic-ripple-active' : ''}${!isPerformanceMode && isRedWeatherRippleActive ? ' red-weather-ripple-active' : ''}${!isPerformanceMode && isItemActionActive && itemActionAnimation ? ` item-action-${itemActionAnimation}` : ''}`}
             data-regeneration-tooltip={regenSlowTooltip}
             title={regenSlowTooltip}
             style={{ 
@@ -830,6 +810,16 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const isUserScrollingRef = React.useRef(false);
     const [isReadingHistory, setIsReadingHistory] = React.useState(false);
     const liveLogRef = useRef<HTMLDivElement>(null);
+    const {
+        layoutRef,
+        paneHeightPercent,
+        isResizing: isResizingLivePane,
+        onPointerDown: onLivePaneResizePointerDown,
+        onPointerMove: onLivePaneResizePointerMove,
+        onPointerUp: onLivePaneResizePointerUp,
+        onPointerCancel: onLivePaneResizePointerCancel,
+        onKeyDown: onLivePaneResizeKeyDown,
+    } = useLiveLogPaneResize();
     const userScrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const lastScrollTopRef = useRef(0);
 
@@ -1085,7 +1075,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
         if (isReadingHistory && liveLogRef.current) {
             liveLogRef.current.scrollTop = liveLogRef.current.scrollHeight;
         }
-    }, [isReadingHistory, displayMessages]);
+    }, [isReadingHistory, displayMessages, paneHeightPercent]);
 
     // The live eighth is a readout. Wheel input anywhere in the split log
     // should move history, while live output stays pinned to its newest line.
@@ -1130,7 +1120,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const virtualItems = virtualizer.getVirtualItems();
 
     return (
-        <div className={`message-log-layout${isReadingHistory ? ' reading-history' : ''}`} style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
+        <div ref={layoutRef} className={`message-log-layout${isReadingHistory ? ' reading-history' : ''}`} style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
             <div
                 className={`message-log${inCombat ? ' combat-mode' : ''}${isSpectateMode ? ' spectate-mode' : ''}`}
                 ref={scrollContainerRef}
@@ -1210,33 +1200,55 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: '4px', flexShrink: 0 }} />
             </div>
             {isReadingHistory && (
-                <div className="message-log-live-pane">
-                    <div className="message-log-live-heading">
-                        <button type="button" onClick={returnToLive} aria-label="Return to latest log output">Back to live ↓</button>
+                <>
+                    <div
+                        className={`message-log-live-resizer${isResizingLivePane ? ' is-resizing' : ''}`}
+                        role="separator"
+                        aria-label="Resize latest log output panel"
+                        aria-orientation="horizontal"
+                        aria-valuemin={10}
+                        aria-valuemax={65}
+                        aria-valuenow={Math.round(paneHeightPercent)}
+                        aria-valuetext={`${Math.round(paneHeightPercent)}% of log height`}
+                        tabIndex={0}
+                        onPointerDown={onLivePaneResizePointerDown}
+                        onPointerMove={onLivePaneResizePointerMove}
+                        onPointerUp={onLivePaneResizePointerUp}
+                        onPointerCancel={onLivePaneResizePointerCancel}
+                        onKeyDown={onLivePaneResizeKeyDown}
+                    />
+                    <div className="message-log-live-pane" style={{ flex: `0 0 ${paneHeightPercent}%` }}>
+                        <div className="message-log-live-heading">
+                            <button type="button" onClick={returnToLive} aria-label="Return to latest log output">Back to live ↓</button>
+                        </div>
+                        <div
+                            className="message-log message-log-live-content"
+                            ref={liveLogRef}
+                            aria-label="Latest game events"
+                        >
+                            {displayMessages.slice(-30).map((msg, index) => (
+                                <MessageItem
+                                    key={msg.id}
+                                    msg={msg}
+                                    inCombat={inCombat}
+                                    scrollToBottom={returnToLive}
+                                    executeCommand={executeCommand}
+                                    setParley={setParley}
+                                    triggerHaptic={triggerHaptic}
+                                    playClickSound={playClickSound}
+                                    isTimestampEnabled={isTimestampEnabled}
+                                    isNewbieMode={isNewbieMode}
+                                    viewport={viewport}
+                                    isTextRevealEnabled={isTextRevealEnabled}
+                                    isAwaitingResponse={msg.type === 'user' && msg.id === awaitingResponseUserId}
+                                    batchOffset={0}
+                                    colors={colors}
+                                    lineIndex={displayMessages.length - Math.min(30, displayMessages.length) + index}
+                                />
+                            ))}
+                        </div>
                     </div>
-                    <div className="message-log message-log-live-content" ref={liveLogRef} aria-label="Latest game events">
-                        {displayMessages.slice(-30).map((msg, index) => (
-                            <MessageItem
-                                key={msg.id}
-                                msg={msg}
-                                inCombat={inCombat}
-                                scrollToBottom={returnToLive}
-                                executeCommand={executeCommand}
-                                setParley={setParley}
-                                triggerHaptic={triggerHaptic}
-                                playClickSound={playClickSound}
-                                isTimestampEnabled={isTimestampEnabled}
-                                isNewbieMode={isNewbieMode}
-                                viewport={viewport}
-                                isTextRevealEnabled={isTextRevealEnabled}
-                                isAwaitingResponse={msg.type === 'user' && msg.id === awaitingResponseUserId}
-                                batchOffset={0}
-                                colors={colors}
-                                lineIndex={displayMessages.length - Math.min(30, displayMessages.length) + index}
-                            />
-                        ))}
-                    </div>
-                </div>
+                </>
             )}
         </div>
     );

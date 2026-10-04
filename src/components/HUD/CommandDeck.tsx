@@ -26,7 +26,11 @@ import type { GameButtonProps } from '../Controls/GameButton/GameButton';
 import { DECK_ACTIONS, DECK_TABS, DECK_LABEL_ICONS, DEFAULT_DECK_ICON, isDeckActionAvailable, type TabKey } from './commandDeckData';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { getAutoRoomTarget, getCombatRoomTarget, getViableRoomCharacterTargets } from '../../utils/commandAutoTarget';
-import type { CustomButton, DrawerLine, SwipeDirection } from '../../types';
+import { getFoodTargetSuggestions, getMountTargetSuggestions } from '../../utils/commandSuggestionUtils';
+import { useRoomDrinkWater } from '../../hooks/useRoomDrinkWater';
+import { useMobileHeaderTabs } from '../../hooks/useMobileHeaderTabs';
+import { useUIStore } from '../../stores/useUIStore';
+import type { CustomButton, DrawerLine, ExecuteCommand, SwipeDirection } from '../../types';
 import type { CommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 import './CommandDeck.css';
 
@@ -68,7 +72,7 @@ interface CommandDeckProps {
 
 export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
     const game = useGame() as {
-        executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
+        executeCommand: ExecuteCommand;
         triggerHaptic?: (ms: number) => void;
         setTarget: (target: string | null) => void;
         characterName?: string;
@@ -85,14 +89,32 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
         containerContents?: Record<string, DrawerLine[]>;
     };
     const { executeCommand, triggerHaptic, setTarget, characterName, opponentId, opponentName, viewport, parser, containerContents } = game;
+    const isMenuOpen = useUIStore(state => state.isMenuOpen);
+    const setUI = useUIStore(state => state.setUI);
+    const setMenuOpen = useCallback((open: boolean) => {
+        setUI(state => ({ ...state, isMenuOpen: open }));
+    }, [setUI]);
+    const { isGearPanelOpen, toggleHeaderTab } = useMobileHeaderTabs(
+        viewport?.isMobile ?? false,
+        isMenuOpen,
+        setMenuOpen
+    );
     const combatOpponent = useMemo(() => ({ id: opponentId ?? null, name: opponentName ?? null }), [opponentId, opponentName]);
     const { target } = useActiveVitals() as { target: string | null };
     const { characterInfo } = useVitals();
     const race = characterInfo.race || '';
     const subrace = characterInfo.subrace || '';
     const roomChars = useRoomStore(state => state.chars);
+    const roomItems = useRoomStore(state => state.items);
     const roomZone = useRoomStore(state => state.roomZone);
     const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
+    const roomObjects = useMemo(() => Object.values(roomItems), [roomItems]);
+    const hasRoomMount = useMemo(() => getMountTargetSuggestions(roomOccupants).length > 1, [roomOccupants]);
+    const roomWaterAvailable = useRoomDrinkWater();
+    const hasRoomConsumeTarget = useMemo(
+        () => roomWaterAvailable || getFoodTargetSuggestions([], roomObjects).length > 0,
+        [roomObjects, roomWaterAvailable]
+    );
     const { displayInventoryLines, displayEqLines, setPopoverState } = useUI();
     const setInput = useInputStore(s => s.setInput);
     const requestTargetPicker = useInputStore(s => s.requestTargetPicker);
@@ -148,6 +170,14 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
         pressTimerRef.current = window.setTimeout(() => setPressedLabel(null), 140);
     }, []);
 
+    const handlePanelCommand = useCallback((command: string): boolean => {
+        if (command.trim().toLowerCase() !== 'gear') return false;
+        if (!isGearPanelOpen) toggleHeaderTab('gear');
+        flashPressed('Gear');
+        triggerHaptic?.(15);
+        return true;
+    }, [flashPressed, isGearPanelOpen, toggleHeaderTab, triggerHaptic]);
+
     const items = useMemo<DeckItem[]>(() => (
         (activeTab ? DECK_ACTIONS[activeTab].filter(item => isDeckActionAvailable(item, race, subrace)) : []).map(item => ({
             label: item.label,
@@ -179,6 +209,7 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
     }, [flashPressed]);
 
     const fire = (item: DeckItem) => {
+        if (handlePanelCommand(item.cmd)) return;
         if (item.targetKind === 'mounts') {
             const rememberedMount = getRememberedCommandTarget(item.cmd);
             if (rememberedMount) {
@@ -382,13 +413,16 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                         isSelected: false,
                         dragState: tactical?.dragState ?? null,
                         handleDragStart: tactical?.handleDragStart ?? (() => undefined),
-                        handleButtonClick: game.handleButtonClick,
+                        handleButtonClick: (clickedButton, event) => {
+                            if (!handlePanelCommand(clickedButton.command)) game.handleButtonClick(clickedButton, event);
+                        },
                         wasDraggingRef,
                         triggerHaptic: triggerHaptic || (() => undefined),
                         setPopoverState,
                         setEditButton: () => undefined,
                         activePrompt: null,
                         executeCommand,
+                        onCommandAction: handlePanelCommand,
                         setCommandPreview,
                         setHeldButton,
                         heldButton,
@@ -455,13 +489,15 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                                 availableActions={categoryAvailableActions}
                                 onSwapCells={swapCategoryCells}
                                 onAssignAction={assignCategoryAction}
+                                highlightIcon={tab.key === 'mounts' ? hasRoomMount : tab.key === 'consume' && hasRoomConsumeTarget}
                             />
                             : <button
                                 key={tab.key}
                                 type="button"
                                 role="tab"
                                 aria-selected={activeTab === tab.key}
-                                className="deck-tab"
+                                className={`deck-tab${tab.key === 'mounts' && hasRoomMount || tab.key === 'consume' && hasRoomConsumeTarget ? ' has-action-targets' : ''}`}
+                                data-id={`deck-category-${tab.key}`}
                                 onClick={() => selectTab(tab.key)}
                             >
                                 <Icon size={13} strokeWidth={2.2} />

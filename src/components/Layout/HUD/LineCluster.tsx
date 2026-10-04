@@ -6,6 +6,7 @@
 import React from 'react';
 import { Trees, Sparkles, VenetianMask, Swords, Wand, DoorOpen, Eye } from 'lucide-react';
 import { useGame } from '../../../context/GameContext';
+import { useCurrentRoomHasDoor } from '../../../hooks/useCurrentRoomHasDoor';
 import { useUIStore } from '../../../stores/useUIStore';
 import { getSwipeCommandTextColor } from '../../../utils/swipeCommandColors';
 import './LineCluster.css';
@@ -62,6 +63,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
     const { viewport } = useGame();
     const selectedTarget = useUIStore(state => state.selectedTarget);
     const { isLandscape } = viewport;
+    const hasRoomDoor = useCurrentRoomHasDoor();
 
     // Pull the 6 tactical buttons by their setId
     const tacticalButtons = buttons.filter(b => b.setId === 'Tactical');
@@ -77,11 +79,14 @@ export const LineCluster: React.FC<LineClusterProps> = ({
 
     const renderButton = (button: any, variant: 'default' | 'diamond', className: string) => {
         const IconCmp = TACTICAL_ICONS[button.id];
+        const buttonClassName = button.id === 'tactical-doors' && hasRoomDoor
+            ? `${className} has-room-door`
+            : className;
         return (
         <GameButton
             key={button.id}
             button={button}
-            className={className}
+            className={buttonClassName}
             variant={variant}
             iconNode={IconCmp ? <IconCmp size={17} strokeWidth={2} color={getSwipeCommandTextColor(button.command)} /> : undefined}
             useDefaultPositioning={false}

@@ -1,6 +1,6 @@
 /**
  * @file useLoginWimpySetup.ts
- * @description Sets the player's wimpy threshold to half max HP after login.
+ * @description Sets the player's wimpy threshold to a quarter of max HP after login.
  */
 
 // --- Logic Section ---
@@ -42,7 +42,7 @@ export const useLoginWimpySetup = (executeCommand: ExecuteCommand): void => {
             const maxHp = getMaxHp(data);
             if (maxHp === null) return;
 
-            const wimpy = Math.round(maxHp / 2);
+            const wimpy = Math.round(maxHp / 4);
             sentForLogin = true;
             waitingForVitals = false;
             useVitalsStore.getState().setVitals({ wimpy });

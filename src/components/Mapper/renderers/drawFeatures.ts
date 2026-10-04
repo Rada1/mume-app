@@ -1223,7 +1223,7 @@ export const drawFeatures = (
                 const zoneName = localRoom?.zone || rData[9] || '';
                 const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
                 const currentWallColor = zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR;
-                const currentDoorColor = getClientThemeColor('--mume-wiki-link-color', isDarkMode ? '#c9a84c' : '#8b6b10');
+                const currentDoorColor = '#f97316';
 
                 // Calculate fade-in for newly explored rooms (skip for active room)
                 let exploredAlphaMul = 1.0;
@@ -1579,7 +1579,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
         const zoneName = room.zone || '';
         const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
         const currentWallColor = zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR;
-        const currentDoorColor = getClientThemeColor('--mume-wiki-link-color', isDarkMode ? '#c9a84c' : '#8b6b10');
+        const currentDoorColor = '#f97316';
 
         // Local Connections
         if (room.exits) {
@@ -1705,7 +1705,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
             const zoneName = room.zone || '';
             const zoneVis = getZoneVisuals(zoneName, isDarkMode, rCtx.zoneFilters);
             const currentWallColor = zoneVis.wallColor || rCtx.mapTileVisuals?.wallColor || WALL_COLOR;
-            const currentDoorColor = getClientThemeColor('--mume-wiki-link-color', isDarkMode ? '#c9a84c' : '#8b6b10');
+            const currentDoorColor = '#f97316';
             for (const d of ['n', 's', 'e', 'w']) {
                 const rId = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;
                 const wEx = preloaded[rId]?.[4]?.[d];

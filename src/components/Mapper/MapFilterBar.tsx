@@ -6,7 +6,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { useMapper } from '../../context/useMapper';
-import { useInputStore } from '../../stores/useInputStore';
 import {
     CATEGORIES,
     CategoryId,
@@ -64,6 +63,7 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
     const [activeButtonEl, setActiveButtonEl] = useState<HTMLElement | null>(null);
     const [dropupLeft, setDropupLeft] = useState<number | null>(null);
     const barRef = useRef<HTMLDivElement>(null);
+    const searchInputRef = useRef<HTMLInputElement>(null);
 
     const activeCategory = getCategoryForFilter(activeMapFilter);
     const activeFilterLabel = getLabelForFilter(activeMapFilter);
@@ -132,8 +132,7 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
 
     const handleStartSearch = () => {
         triggerHaptic?.(10);
-        useInputStore.getState().setInput('/find ');
-        document.getElementById('mud-input')?.focus();
+        searchInputRef.current?.focus();
     };
 
     const activeCatObj = expandedCategory ? CATEGORIES.find(c => c.id === expandedCategory) : null;
@@ -173,19 +172,26 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
                     type="button"
                     className="map-filter-search-btn"
                     onClick={handleStartSearch}
-                    title="Search the map in the command bar"
-                    aria-label="Search map with command bar"
+                    title="Focus map search"
+                    aria-label="Focus map search"
                 >
                     <span className="map-filter-prompt" aria-hidden="true">&gt;</span>
                     <Search size={11} aria-hidden="true" />
                     <span className="map-filter-prompt-label">FIND</span>
                 </button>
 
-                {mapSearchQuery.trim() && (
-                    <span className="map-filter-search-value" title={`Map search: ${mapSearchQuery}`}>
-                        {mapSearchQuery}
-                    </span>
-                )}
+                <input
+                    ref={searchInputRef}
+                    type="search"
+                    className="map-filter-search-input"
+                    value={mapSearchQuery}
+                    onChange={event => setMapSearchQuery(event.target.value)}
+                    onKeyDown={event => {
+                        if (event.key === 'Escape') setMapSearchQuery('');
+                    }}
+                    placeholder="Type what you're looking for…"
+                    aria-label="Find rooms on the map"
+                />
 
                 {activeFilterLabel && (
                     <div className="map-filter-active-pill" title={`Active filter: ${activeFilterLabel}`}>

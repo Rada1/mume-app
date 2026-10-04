@@ -301,6 +301,23 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
               </div>
             </div>
 
+            <div className="this-is-you-minimized-summary" aria-label="Combat and state summary">
+              <div className="this-is-you-minimized-summary-group" aria-label="Combat">
+                <strong>COMBAT</strong>
+                <span>Off <b>{vitals.ob ?? '—'}</b></span>
+                <span>Parry <b>{vitals.pb ?? '—'}</b></span>
+                <span>Dodge <b>{vitals.db ?? '—'}</b></span>
+                <span>Armor <b>{vitals.armour ?? '—'}</b></span>
+              </div>
+              <div className="this-is-you-minimized-summary-group" aria-label="State">
+                <strong>STATE</strong>
+                <ThisIsYouStatePill category="Position" accentColor="blue" value={currentPosition} options={POSITION_OPTIONS} isMobile={Boolean(viewport?.isMobile)} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('pos', opt)} />
+                <ThisIsYouStatePill category="Mood" accentColor="red" value={currentMood} options={MOOD_OPTIONS} isMobile={Boolean(viewport?.isMobile)} confirmOptionValue="berserk" confirmMessage="Berserk prevents fleeing. Tap Berserk again within 4 seconds to confirm." disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('mood', opt)} />
+                <ThisIsYouStatePill category="Cast" accentColor="purple" value={currentSpellSpeed} options={SPELL_SPEED_OPTIONS} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('speed', opt)} />
+                <ThisIsYouStatePill category="Alert" accentColor="gold" value={currentAlertness} options={ALERTNESS_OPTIONS} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('alert', opt)} />
+              </div>
+            </div>
+
             <div ref={bodyWrapperRef} className="this-is-you-body-wrapper">
               <div className="this-is-you-body-inner">
 
@@ -332,6 +349,7 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                   value={currentPosition}
                   options={POSITION_OPTIONS}
                   inlineOptions={Boolean(viewport?.isMobile)}
+                  isMobile={Boolean(viewport?.isMobile)}
                   disabled={isSpectateMode}
                   onInteract={() => triggerHaptic(15)}
                   onSelect={opt => handleStateSelect('pos', opt)}
@@ -344,6 +362,7 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                   confirmOptionValue="berserk"
                   confirmMessage="Berserk prevents fleeing. Tap Berserk again within 4 seconds to confirm."
                   inlineOptions={Boolean(viewport?.isMobile)}
+                  isMobile={Boolean(viewport?.isMobile)}
                   disabled={isSpectateMode}
                   onInteract={() => triggerHaptic(15)}
                   onSelect={opt => handleStateSelect('mood', opt)}

@@ -20,7 +20,7 @@ import { useMapperController } from './useMapperController';
 import { useSmartWalk } from './hooks/useSmartWalk';
 import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
 import { DpadCluster } from './DpadCluster';
-import { GRID_SIZE } from './mapperUtils';
+import { DEFAULT_MOBILE_MAP_ZOOM, GRID_SIZE } from './mapperUtils';
 import { useMapperTracing } from './hooks/useMapperTracing';
 import { TracingHUD } from './TracingHUD';
 import { useMapAssets } from './hooks/useMapAssets';
@@ -61,7 +61,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const wallBumpAnimationRef = useRef<Animation | null>(null);
-    const cameraRef = useRef({ x: 0, y: 0, zoom: 1 });
+    const cameraRef = useRef({ x: 0, y: 0, zoom: isMobile ? DEFAULT_MOBILE_MAP_ZOOM : 1 });
     const cardRef = useRef<HTMLDivElement>(null);
     const imagesRef = useRef<Record<string, HTMLImageElement>>({});
     const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode || state.isClassicMode);

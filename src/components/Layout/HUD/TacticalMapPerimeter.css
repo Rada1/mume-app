@@ -313,7 +313,7 @@ body:has(.mapper-container.map-swipe-wheel-open) .mobile-map-panel.map-expanded 
 
 .mobile-map-panel.map-expanded .mobile-map-bottom-actions [data-id="map-action-flee"] .button-label,
 .mobile-map-panel.map-expanded .mobile-map-bottom-actions [data-id="map-action-flee"]:hover .button-label {
-    color: var(--ansi-bright-cyan, #38bdf8) !important;
+    color: var(--ansi-bright-green, #44ff70) !important;
 }
 
 .mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn-icon-node svg {

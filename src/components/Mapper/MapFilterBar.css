@@ -127,15 +127,34 @@
     color: inherit;
 }
 
-.map-filter-search-value {
-    flex: 0 1 auto;
+.map-filter-search-input {
+    flex: 1 1 110px;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    height: 22px;
+    box-sizing: border-box;
+    padding: 2px 7px;
+    border: 1px solid rgba(201, 168, 76, 0.24);
+    border-radius: 4px;
+    outline: none;
+    background: rgba(0, 0, 0, 0.18);
     color: #d4cdb8;
-    font-size: 10.5px;
-    line-height: 1;
+    font: inherit;
+    font-size: 10px;
+    line-height: 1.2;
+}
+
+.map-filter-search-input:focus {
+    border-color: rgba(240, 203, 103, 0.62);
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.map-filter-search-input::placeholder {
+    color: #8a7a5e;
+    opacity: 0.8;
+}
+
+.map-filter-search-input::-webkit-search-cancel-button {
+    cursor: pointer;
 }
 
 .map-filter-search-btn svg {

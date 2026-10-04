@@ -57,6 +57,7 @@ export interface CommandTargetSuggestionContext {
     teleportTargets?: TeleportTarget[];
     whoList?: string[];
     shopItems?: ShopItem[];
+    roomWaterAvailable?: boolean;
 }
 
 export interface ResolvedCommandTargetSuggestions {
@@ -169,7 +170,8 @@ const getMenuSuggestions = (
     practiceSkills: PracticeSkill[],
     teleportTargets: TeleportTarget[],
     whoList: string[],
-    shopItems: ShopItem[]
+    shopItems: ShopItem[],
+    roomWaterAvailable: boolean
 ): CommandTargetSuggestion[] | null => {
     const isEatCommand = /^eat\b/i.test(command.trim());
     if (kind === 'shop') return shopItems.map(item => ({
@@ -186,7 +188,7 @@ const getMenuSuggestions = (
     if (kind === 'gear') return getInventoryAndWornTargetSuggestions(inventoryLines, wornLines);
     if (kind === 'inventory-gear') return getGearTargetSuggestions(inventoryLines, 'inventory');
     if (kind === 'worn-gear') return getGearTargetSuggestions(wornLines, 'worn');
-    if (kind === 'drink') return getDrinkTargetSuggestions(inventoryLines, wornLines);
+    if (kind === 'drink') return getDrinkTargetSuggestions(inventoryLines, wornLines, roomWaterAvailable);
     if (kind === 'pour') return getFluidContainerTargetSuggestions(inventoryLines, wornLines);
     if (kind === 'worn-weapons') return getGearTargetSuggestions(
         wornLines.filter(line => hasObjectTrait(line, 'trait-weapon')), 'worn'
@@ -280,7 +282,8 @@ export const resolveCommandTargetSuggestions = (context: CommandTargetSuggestion
         context.practiceSkills || [],
         context.teleportTargets || [],
         context.whoList || [],
-        context.shopItems || []
+        context.shopItems || [],
+        context.roomWaterAvailable || false
     );
     const fallbackKind = /^(get|take|pick)$/.test(context.command.trim().split(/\s+/, 1)[0].toLowerCase())
         ? 'objects'

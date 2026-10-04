@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 import { useGame, useUI } from '../../../context/GameContext';
 import { useVitals } from '../../../context/GameContext';
 import { useRoomStore } from '../../../stores/useRoomStore';
+import { useRoomDrinkWater } from '../../../hooks/useRoomDrinkWater';
 import { useUIStore } from '../../../stores/useUIStore';
 import {
     BLANK_TARGET_VALUE,
@@ -113,6 +114,7 @@ export const useGameButtonTargetSuggestions = (
     const { groupMembers } = useVitals();
     const roomChars = useRoomStore(state => state.chars);
     const roomItems = useRoomStore(state => state.items);
+    const roomWaterAvailable = useRoomDrinkWater();
     const whoList = useRoomStore(state => state.whoList);
     const shopItems = useUIStore(state => state.shopItems);
     const kind = getCommandTargetMenuKind(command);
@@ -155,7 +157,7 @@ export const useGameButtonTargetSuggestions = (
             return getGearTargetSuggestions(weapons, 'inventory');
         }
         if (targetKindOverride === 'inventory') {
-            if (/^drink\b/i.test(command.trim())) return getDrinkTargetSuggestions(displayInventoryLines, displayEqLines);
+            if (/^drink\b/i.test(command.trim())) return getDrinkTargetSuggestions(displayInventoryLines, displayEqLines, roomWaterAvailable);
             return getGearTargetSuggestions(displayInventoryLines, 'inventory');
         }
         if (targetKindOverride === 'inventory-and-worn') return getInventoryAndWornTargetSuggestions(displayInventoryLines, displayEqLines);
@@ -193,7 +195,7 @@ export const useGameButtonTargetSuggestions = (
         if (resolvedKind === 'inventory-gear') return getGearTargetSuggestions(displayInventoryLines, 'inventory');
         if (resolvedKind === 'worn-gear') return getGearTargetSuggestions(displayEqLines, 'worn');
         if (resolvedKind === 'food') return getFoodTargetSuggestions(displayInventoryLines, roomObjects);
-        if (resolvedKind === 'drink') return getDrinkTargetSuggestions(displayInventoryLines, displayEqLines);
+        if (resolvedKind === 'drink') return getDrinkTargetSuggestions(displayInventoryLines, displayEqLines, roomWaterAvailable);
         if (resolvedKind === 'pour') return getFluidContainerTargetSuggestions(displayInventoryLines, displayEqLines);
         if (resolvedKind === 'worn-weapons') {
             const wornWeapons = displayEqLines.filter(line => hasObjectTrait(line, 'trait-weapon'));
@@ -282,7 +284,7 @@ export const useGameButtonTargetSuggestions = (
         return undefined;
     }, [
         command, kind, resolvedKind, targetKindOverride, isEatCommand, roomObjects, displayInventoryLines, displayEqLines, roomOccupants,
-        characterName, practice.practiceData?.skills, abilities, teleportTargets, whoList, groupMembers, shopItems
+        characterName, practice.practiceData?.skills, abilities, teleportTargets, whoList, groupMembers, shopItems, roomWaterAvailable
     ]);
 
     const stagedArguments = useMemo(() => {

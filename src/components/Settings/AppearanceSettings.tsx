@@ -35,6 +35,8 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
     isPerformanceMode,
     setIsPerformanceMode,
 }) => {
+    const uiMode = useSettingsStore(s => s.uiMode);
+    const setUiMode = useSettingsStore(s => s.setUiMode);
     const keepScreenAwake = useSettingsStore(s => s.keepScreenAwake);
     const setKeepScreenAwake = useSettingsStore(s => s.setKeepScreenAwake);
     const screenWakeLockStatus = useSettingsStore(s => s.screenWakeLockStatus);
@@ -63,6 +65,31 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
 
     return (
         <>
+            <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                    <div>
+                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Adjust View</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Choose automatic, desktop, portrait, or landscape layout.</div>
+                    </div>
+                    <div role="group" aria-label="Adjust view" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        {(['auto', 'desktop', 'portrait', 'landscape'] as const).map(mode => (
+                            <button
+                                key={mode}
+                                type="button"
+                                aria-pressed={uiMode === mode}
+                                onClick={() => setUiMode(mode)}
+                                style={{
+                                    padding: '4px 10px', borderRadius: '18px', border: 'none', cursor: 'pointer',
+                                    backgroundColor: uiMode === mode ? 'var(--accent)' : 'transparent',
+                                    color: uiMode === mode ? '#000' : 'var(--text-primary)',
+                                    fontSize: '0.7rem', fontWeight: 'bold', textTransform: 'capitalize', margin: '2px'
+                                }}
+                            >{mode}</button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
             {/* Appearance */}
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Appearance</label>

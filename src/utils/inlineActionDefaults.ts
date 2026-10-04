@@ -13,7 +13,7 @@ export const DEFAULT_CATEGORY_CONFIGS: CategoryConfig[] = [
     { id: 'cat-neutral', label: 'Neutral', color: '#61c290', isGmcpCategory: true, legacyIds: ['inline-neutral', 'neutral'], defaultTraitIds: ['trait-social', 'trait-identify', 'trait-examine', 'trait-consider', 'trait-observable'] },
     { id: 'cat-ally-remote', label: 'Remote Ally', color: '#61c290', isLocationCategory: true, legacyIds: ['inline-ally-remote', 'ally-remote'], defaultTraitIds: ['trait-identify', 'trait-converse'] },
     { id: 'cat-npc', label: 'NPC', color: '#ababab', isGmcpCategory: true, legacyIds: ['inline-npc', 'npc'], defaultTraitIds: ['trait-group', 'trait-examine', 'trait-consider', 'trait-observable'] },
-    { id: 'cat-mount', label: 'Mount', color: '#a8794f', isGmcpCategory: true, legacyIds: ['inline-mounts', 'mount', 'mounts'], defaultTraitIds: ['trait-mount'] },
+    { id: 'cat-mount', label: 'Mount', color: '#ffd700', isGmcpCategory: true, legacyIds: ['inline-mounts', 'mount', 'mounts'], defaultTraitIds: ['trait-mount'] },
     { id: 'cat-room-object', label: 'Room Object', color: '#ababab', isLocationCategory: true, legacyIds: ['inline-in-room-obj', 'object-room', 'obj-room'], defaultTraitIds: ['trait-room-object', 'trait-observable'] },
     { id: 'cat-inventory-object', label: 'Inventory Object', color: '#ababab', isLocationCategory: true, legacyIds: ['inline-inventory', 'inventory', 'obj-char'], defaultTraitIds: ['trait-inventory-object', 'trait-observable', 'trait-consider'] },
     { id: 'cat-worn-object', label: 'Worn Object', color: '#ababab', isLocationCategory: true, legacyIds: ['inline-worn', 'worn', 'obj-worn'], defaultTraitIds: ['trait-worn-object', 'trait-observable', 'trait-consider'] },

@@ -41,6 +41,7 @@ import { StickyRoomHeader } from './StickyRoomHeader';
 import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { getRoomTerrainVisualKey, getZoneVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
+import { useMobileGearSwipe } from '../../hooks/useMobileGearSwipe';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -119,6 +120,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const setIsMobileSkillsPanelOpen = useCommandPanelStore(s => s.setIsMobileOpen);
     const isShopOpen = useUIStore(s => s.isShopOpen);
     const isGearPanelOpen = useGearPanelStore(s => s.isOpen);
+    const gearSwipe = useMobileGearSwipe(viewport.isMobile && gameState !== 'account', triggerHaptic);
     const isHelpOpen = useHelpStore(s => s.isOpen);
     const isArchiveOpen = useArchiveStore(s => s.isOpen);
 
@@ -528,6 +530,22 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     <div
                         className={`message-log-container${isTacticalTargetingActive ? ' tactical-targeting-active' : ''}${isImmersionMode ? ` log-terrain-${getRoomTerrainVisualKey(roomCardTerrain)} log-lighting-${lighting} log-weather-${weather} log-zone-${zoneKey} log-lore-${zoneVisualKey}` : ''}`}
                         ref={logContainerRef}
+                        onPointerDown={event => {
+                            handleLogPointerDown(event);
+                            gearSwipe.onLogPointerDown(event);
+                        }}
+                        onPointerUp={event => {
+                            handleLogPointerUp(event);
+                            gearSwipe.onLogPointerUp(event);
+                        }}
+                        onPointerCancel={event => {
+                            handleLogPointerUp(event);
+                            gearSwipe.onPointerCancel();
+                        }}
+                        onTouchStartCapture={gearSwipe.onLogTouchStartCapture}
+                        onTouchEndCapture={gearSwipe.onLogTouchEndCapture}
+                        onTouchCancelCapture={gearSwipe.onTouchCancel}
+                        onClickCapture={gearSwipe.onClickCapture}
                         style={{
                             flex: 1,
                             position: 'relative',
