@@ -3,8 +3,9 @@
  * @description Shared projections for room objects, characters, and allies.
  */
 
-import type { GmcpOccupant } from '../types';
+import type { GmcpOccupant, GroupMember } from '../types';
 import { BLANK_TARGET_VALUE } from '../utils/commandTargetUtils';
+import { isItemContainer } from '../utils/gameUtils';
 import { getOccupantCommandKeyword } from '../utils/occupantKeywordUtils';
 import { normalizeOccupantType } from '../services/classification/normalizeOccupantType';
 import { createObjectTargetEntries, getRoomObjectCandidates, hasObjectTrait } from './objectTargetModel';
@@ -33,12 +34,21 @@ export const getRoomTargetSuggestions = (
     selfName = ''
 ): CommandTargetSuggestion[] => {
     const roomSources = kind === 'objects' ? objects : characters;
+    const hasVisibleRoomOrder = kind !== 'objects'
+        && roomSources.some(source => typeof source !== 'string' && source._visibleRoomOrder !== undefined);
     const hasRoomOrder = kind !== 'objects'
         && roomSources.some(source => typeof source !== 'string' && source._roomOrder !== undefined);
-    const sources = hasRoomOrder
+    const sources = hasVisibleRoomOrder || hasRoomOrder
         ? roomSources
-            .map((source, index) => ({ source, index, order: typeof source === 'string' ? undefined : source._roomOrder }))
-            .sort((left, right) => (left.order ?? Number.POSITIVE_INFINITY) - (right.order ?? Number.POSITIVE_INFINITY) || left.index - right.index)
+            .map((source, index) => ({
+                source,
+                index,
+                visibleOrder: typeof source === 'string' ? undefined : source._visibleRoomOrder,
+                rosterOrder: typeof source === 'string' ? undefined : source._roomOrder
+            }))
+            .sort((left, right) => (hasVisibleRoomOrder
+                ? (left.visibleOrder ?? Infinity) - (right.visibleOrder ?? Infinity)
+                : 0) || (left.rosterOrder ?? Infinity) - (right.rosterOrder ?? Infinity) || left.index - right.index)
             .map(entry => entry.source)
         : roomSources;
     if (kind === 'objects') {
@@ -143,11 +153,41 @@ export const getGroupTargetSuggestions = (
 
 export const getRescueTargetSuggestions = (
     characters: Array<string | GmcpOccupant>,
-    selfName = ''
-): CommandTargetSuggestion[] => [
-    makeCommandTargetSuggestion('Blank Target', BLANK_TARGET_VALUE, 'source'),
-    ...getRoomTargetSuggestions(characters, [], 'allies', selfName)
-];
+    selfName = '',
+    groupMembers: GroupMember[] = []
+): CommandTargetSuggestion[] => {
+    const combatMembers = groupMembers.filter(member => member.fighting === true
+        || /fight/i.test(member.position || ''));
+    const isCombatGroupmate = (source: string | GmcpOccupant): boolean => {
+        if (typeof source === 'string') return false;
+        const occupantNames = [source.name, source.short, source.shortdesc, source.keyword]
+            .map(value => (value || '').trim().toLowerCase())
+            .filter(Boolean);
+        const occupantId = source.id == null ? null : String(source.id);
+        return combatMembers.some(member => {
+            if (occupantId && String(member.id) === occupantId) return true;
+            return [member.name, member.label]
+                .some(value => value && occupantNames.includes(value.trim().toLowerCase()));
+        });
+    };
+    const combatSuggestionKeys = new Set(characters.flatMap((source, index) => {
+        if (!isCombatGroupmate(source)) return [];
+        const occupant: GmcpOccupant = typeof source === 'string' ? { name: source } : source;
+        const label = occupant.short || occupant.shortdesc || occupant.name || occupant.keyword || '';
+        const value = getOccupantCommandKeyword(occupant, label);
+        return value ? [`${occupant.id ?? index}-${value}`] : [];
+    }));
+    const allies = getRoomTargetSuggestions(characters, [], 'allies', selfName)
+        .map((suggestion, index) => ({ suggestion, index }))
+        .sort((left, right) => Number(combatSuggestionKeys.has(right.suggestion.key))
+            - Number(combatSuggestionKeys.has(left.suggestion.key)) || left.index - right.index)
+        .map(entry => entry.suggestion);
+
+    return [
+        ...allies,
+        makeCommandTargetSuggestion('Blank Target', BLANK_TARGET_VALUE, 'source')
+    ];
+};
 
 // --- Room Object Menu Helpers ---
 
@@ -157,6 +197,26 @@ export const getRoomObjectTargetsWithExit = (
     ...getRoomTargetSuggestions([], roomObjects, 'objects'),
     makeCommandTargetSuggestion('Exit', 'exit', 'exit')
 ];
+
+export const getRoomContainerTargetSuggestions = (
+    roomObjects: Array<string | GmcpOccupant>,
+    includeExit = false
+): CommandTargetSuggestion[] => {
+    const containers = getRoomTargetSuggestions([], roomObjects.filter(source => {
+        const label = typeof source === 'string'
+            ? source
+            : source.short || source.shortdesc || source.name || source.keyword || '';
+        if (typeof source !== 'string') {
+            const occupantType = normalizeOccupantType(source)?.toLowerCase();
+            if (['npc', 'enemy', 'ally', 'neutral', 'you', 'self', 'player', 'pc'].includes(occupantType || '')) return false;
+        }
+        return Boolean(label && (hasObjectTrait(source, 'trait-container') || isItemContainer(label)));
+    }), 'objects');
+
+    return includeExit
+        ? [...containers, makeCommandTargetSuggestion('Exit', 'exit', 'exit')]
+        : containers;
+};
 
 export const getRoomCorpseTargetSuggestions = (
     roomObjects: Array<string | GmcpOccupant>

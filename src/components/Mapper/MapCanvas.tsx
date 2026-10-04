@@ -1,13 +1,7 @@
-/** @file Renders the map with the selected legacy or worker-backed canvas. */
-import React, { useRef, useCallback, useEffect, useMemo, forwardRef } from 'react';
-import { useMapperRenderer } from './useMapperRenderer';
-import { useMapAnimation } from './useMapAnimation';
+/** @file Renders the map with the worker-backed WebGL canvas. */
+import React, { forwardRef } from 'react';
 import { CompactMapExit, MapperPrediction } from './mapperTypes';
 import type { MoveAnimState } from './playerMoveAnimator';
-import { gmcpBus } from '../../events/gmcpBus';
-import type { CombatPulse } from './renderers/rendererUtils';
-import { useSettingsStore } from '../../stores/useSettingsStore';
-import { useVitalsStore } from '../../stores/useVitalsStore';
 import { FastMapCanvas } from './performance/FastMapCanvas';
 import type { MapData } from './performance/webcockpit/model';
 import type { GroupMember } from '../../types';
@@ -22,7 +16,6 @@ export interface MapCanvasProps {
     isDarkMode: boolean;
     isMobile: boolean;
     isLandscape?: boolean;
-    imagesRef: React.MutableRefObject<Record<string, HTMLImageElement>>;
     characterName: string | null;
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>;
     moveAnimRef?: React.MutableRefObject<MoveAnimState>;
@@ -91,171 +84,6 @@ export interface MapCanvasProps {
     matchedRoomIds?: Set<string>;
     hoveredSearchRoomId?: string | null;
 }
-
-const LegacyMapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps & { rendererFallbackReason?: string }>((props, ref) => {
-    const internalRef = useRef<HTMLCanvasElement>(null);
-    const canvasRef = (ref as React.RefObject<HTMLCanvasElement>) || internalRef;
-    const combatPulsesRef = useRef<CombatPulse[]>([]);
-
-    const getDPR = useCallback(() => Math.min(props.isMobile ? 1.5 : 2.5, window.devicePixelRatio || 1), [props.isMobile]);
-
-    const {
-        rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
-        camera, isDarkMode, isMobile, isLandscape, imagesRef, characterName,
-        playerPosRef, moveAnimRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
-        preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
-        unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
-        baseMapExitsRef, triggerRender, clientPredictionsRef, entitiesRef, serverIdIndexRef,
-        inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
-        activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
-        activeMapFilter, mapSearchQuery, mapTileOpacity, lighting, isImmersionMode,
-        regionLabels, selectedRegionLabelId, joystickActive,
-        closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds, hoveredSearchRoomId
-    } = props;
-
-    const zoneFilters = useSettingsStore(state => state.zoneFilters);
-    const mapTileVisuals = useSettingsStore(state => state.mapTileVisuals);
-    const weather = useVitalsStore(state => state.weather);
-
-    // Zone filters are drawn directly onto elements in the canvas rather than using CSS filters
-
-    const { drawMap, filterFitRef } = useMapperRenderer({
-        rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
-        cameraRef: camera, isDarkMode, isMobile, imagesRef, characterName,
-        playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
-        preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
-        unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
-        baseMapExitsRef, triggerRender, clientPredictionsRef, entitiesRef, serverIdIndexRef,
-        inlineCategories, playerColor, npcColor, enemyColor, objectColor, targetColor,
-        activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
-        activeMapFilter, mapSearchQuery, combatPulsesRef, zoneFilters,
-        closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds, hoveredSearchRoomId,
-        mapTileVisuals,
-        mapTileOpacity,
-        mapBrightness: props.mapBrightness,
-        lighting,
-        isImmersionMode,
-        weather,
-        regionLabels,
-        selectedRegionLabelId,
-        joystickActive
-    });
-
-    const drawMapRef = useRef(drawMap);
-    useEffect(() => {
-        drawMapRef.current = drawMap;
-    });
-
-    useEffect(() => gmcpBus.on('Game.CombatPulse', pulse => {
-        const cutoff = pulse.time - 1200;
-        combatPulsesRef.current = [
-            ...combatPulsesRef.current.filter(entry => entry.time >= cutoff),
-            pulse
-        ].slice(-6);
-        triggerRender?.();
-    }), [triggerRender]);
-
-    useMapAnimation({
-        drawMap,
-        rooms: props.rooms,
-        markers: props.markers,
-        currentRoomId: props.currentRoomId,
-        isDragging: props.isDragging,
-        isDraggingRef: props.isDraggingRef,
-        renderVersion: props.renderVersion,
-        canvasRef,
-        camera: props.camera,
-        playerPosRef: props.playerPosRef,
-        moveAnimRef: props.moveAnimRef,
-        playerTrailRef: props.playerTrailRef,
-        getDPR,
-        marquee: props.marquee,
-        autoCenter: props.autoCenter,
-        stableRoomsRef: props.stableRoomsRef,
-        stableRoomIdRef: props.stableRoomIdRef,
-        stableMarkersRef: props.stableMarkersRef,
-        firstExploredAtRef,
-        preloadedCoordsRef: props.preloadedCoordsRef,
-        preMoveRef,
-        walkTargetId: props.walkTargetId,
-        walkPath: props.walkPath,
-        activeMapFilter: props.activeMapFilter,
-        mapSearchQuery: props.mapSearchQuery,
-        hasFilterRoute: !!(props.closestRoomId && props.filterPathIds && props.filterPathIds.length > 1),
-        entitiesRef,
-        isMobile,
-        isLandscape,
-        filterFitRef
-    });
-
-    useEffect(() => {
-        const cvs = canvasRef.current;
-        const parent = cvs?.parentElement;
-        if (!cvs || !parent) return;
-
-        let animationFrameId: number | null = null;
-
-        const handleResize = () => {
-            const width = Math.round(parent.clientWidth);
-            const height = Math.round(parent.clientHeight);
-            if (width === 0 || height === 0) return;
-            
-            const dpr = getDPR();
-            const nextWidth = Math.round(width * dpr);
-            const nextHeight = Math.round(height * dpr);
-            const widthDelta = Math.abs(cvs.width - nextWidth);
-            const heightDelta = Math.abs(cvs.height - nextHeight);
-            if (widthDelta === 0 && heightDelta === 0) return;
-            if (cvs.width > 0 && cvs.height > 0 && widthDelta < 2 && heightDelta < 2) return;
-
-            cvs.width = nextWidth;
-            cvs.height = nextHeight;
-            const ctx = cvs.getContext('2d', { alpha: true });
-            if (ctx) drawMapRef.current(ctx, dpr, width, height, null);
-            props.triggerRender?.();
-        };
-
-        const ro = new ResizeObserver(() => {
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-            animationFrameId = requestAnimationFrame(handleResize);
-        });
-        ro.observe(parent);
-        handleResize(); // Initial call
-
-        return () => {
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-            ro.disconnect();
-        };
-    }, [getDPR, canvasRef, props.triggerRender]);
-
-    return (
-        <canvas
-            ref={canvasRef}
-            className="map-canvas"
-            data-map-renderer="canvas2d"
-            data-performance-fallback={props.rendererFallbackReason}
-            style={{
-                width: '100%',
-                height: '100%',
-                display: 'block',
-                touchAction: 'none',
-                cursor: props.isDragging ? 'grabbing' : hoveredSearchRoomId ? 'pointer' : 'crosshair'
-            }}
-            onMouseDown={props.onMouseDown}
-            onMouseMove={props.onMouseMove}
-            onMouseUp={props.onMouseUp}
-            onPointerDown={props.onPointerDown}
-            onPointerMove={props.onPointerMove}
-            onPointerUp={props.onPointerUp}
-        />
-    );
-}));
-
-LegacyMapCanvas.displayName = 'LegacyMapCanvas';
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
     return <FastMapCanvas

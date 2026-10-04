@@ -268,17 +268,13 @@ export const RoomChipRows: React.FC<RoomChipRowsProps> = ({ variant = 'summary' 
                 entityId: chip.entityId,
                 accentColor: getChipAccentColor(chip.kind),
                 menuDisplay: 'list',
-                preferSide: 'top',
-                isCapturingExamine: shouldLook,
-                isCapturingConsider: shouldConsider,
-                capturedExamineLines: undefined,
-                capturedConsiderLines: undefined
+                preferSide: 'top'
             });
 
-            if (shouldLook) executeCommand(`look ${chip.context}`, true, true, false, false, { shouldFocus: false, fromUi: true });
+            if (shouldLook) executeCommand(`look ${chip.context}`, false, false, false, false, { shouldFocus: false, fromUi: true });
             if (shouldConsider) {
                 setTimeout(() => {
-                    executeCommand(`con ${chip.context}`, true, true, false, false, { shouldFocus: false, fromUi: true });
+                    executeCommand(`con ${chip.context}`, false, false, false, false, { shouldFocus: false, fromUi: true });
                 }, CONSIDER_DELAY_MS);
             }
             return;

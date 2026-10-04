@@ -10,13 +10,14 @@ import { useMapData } from '../components/Mapper/hooks/useMapData';
 import { useMapPersistence } from '../components/Mapper/hooks/useMapPersistence';
 import { useMapActions } from '../components/Mapper/hooks/useMapActions';
 import { useMapGmcphandlers } from '../components/Mapper/hooks/useMapGmcphandlers';
+import { useScoutObservationTracking } from '../components/Mapper/hooks/useScoutObservationTracking';
 import { getExitTargetId, checkRoomFilter, findClosestMatchingRoomPath } from '../components/Mapper/mapperUtils';
 import { getLearnedServerIds } from '../components/Mapper/learnedServerIds';
 import {
     createMoveAnimState, settle,
     type MoveAnimState, type Vec3
 } from '../components/Mapper/playerMoveAnimator';
-import { MapperPrediction, MapperRoom, MapperMarker, RegionLabel } from '../components/Mapper/mapperTypes';
+import { MapperPrediction, MapperRoom, MapperMarker, RegionLabel, type GmcpRoomInfo } from '../components/Mapper/mapperTypes';
 import { useRegionLabels } from '../components/Mapper/hooks/useRegionLabels';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { useModeStore } from '../stores/useModeStore';
@@ -108,6 +109,7 @@ export const MapperContext = createContext<MapperContextType | undefined>(undefi
 
 export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { characterName, executeCommand, showDebugEchoes, isSpectateMode } = useGame();
+    const isScoutObservationRef = useScoutObservationTracking();
     const { addMessage } = useLog();
     const { deathRoomId, setDeathRoomId } = useVitals();
 
@@ -371,6 +373,11 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const discoverySourceRef = useRef<string | null>(null);
     const firstExploredAtRef = useRef<Record<string, number>>({});
     const snoopedGroupSelfIdRef = useRef<string | null>(null);
+    // Scout packets can update Room.Info and Group.mapid after the visible reply.
+    // Keep those observed IDs blocked until a real movement report arrives.
+    const scoutedServerRoomNumRef = useRef<string | null>(null);
+    const scoutedMapRoomIdRef = useRef<string | null>(null);
+    const scoutedGroupMapIdRef = useRef<string | null>(null);
 
     // Master Map Loading
     const hasLoadedRef = useRef(false);
@@ -694,7 +701,31 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     useEffect(() => {
         if (typeof window === 'undefined') return;
         
-        const onInfo    = (e: any) => masterHandlers.handleRoomInfo(e.detail);
+        const onInfo = (event: Event) => {
+            const detail = (event as CustomEvent<GmcpRoomInfo>).detail;
+            const scouting = detail?.scouting === true
+                || (activeView === 'self' && detail?.spectating !== true && isScoutObservationRef.current);
+            if (activeView === 'self' && detail?.spectating !== true) {
+                const reportedRoomNum = detail?.num ?? detail?.id ?? detail?.vnum;
+                if (reportedRoomNum && Number(reportedRoomNum) > 0) {
+                    if (scouting) {
+                        const roomKey = String(reportedRoomNum);
+                        const vnum = serverIdIndexRef.current[roomKey]
+                            || (preloadedCoordsRef.current[roomKey] ? roomKey : null);
+                        scoutedServerRoomNumRef.current = roomKey;
+                        scoutedMapRoomIdRef.current = vnum ? `m_${vnum}` : null;
+                    } else {
+                        scoutedServerRoomNumRef.current = null;
+                        scoutedMapRoomIdRef.current = null;
+                        scoutedGroupMapIdRef.current = null;
+                    }
+                }
+            }
+            masterHandlers.handleRoomInfo({
+                ...detail,
+                scouting
+            });
+        };
         const onExits   = (e: any) => masterHandlers.handleUpdateExits(e.detail);
         const onTerrain = (e: any) => masterHandlers.handleTerrain(e.detail);
         const onPush    = (e: any) => {
@@ -743,7 +774,16 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
             onPre({ detail: { dir } });
         };
-        const onConfirm = (e: any) => handleMoveConfirmed(e);
+        const onConfirm = (e: CustomEvent<{ source?: string }>) => {
+            if (isScoutObservationRef.current && e.detail?.source !== 'xml') return;
+            if (e.detail?.source === 'xml') {
+                isScoutObservationRef.current = false;
+                scoutedServerRoomNumRef.current = null;
+                scoutedMapRoomIdRef.current = null;
+                scoutedGroupMapIdRef.current = null;
+            }
+            handleMoveConfirmed(e);
+        };
         const onFail    = ()       => handleMoveFailure();
         // Append a sent move's direction to the prespammed-path queue (capped). The
         // line is rebuilt from the live map graph each frame, so we keep dirs only.
@@ -773,22 +813,37 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             window.removeEventListener('mume-mapper-move-failed', onFail);
             window.removeEventListener('mume-mapper-push-pre-move', onPre);
         };
-    }, [masterHandlers, pushPendingMove, handleMoveConfirmed, handleMoveFailure, triggerRender]);
+    }, [masterHandlers, pushPendingMove, handleMoveConfirmed, handleMoveFailure, triggerRender, activeView, isScoutObservationRef, serverIdIndexRef, preloadedCoordsRef]);
+
+    useEffect(() => gmcpBus.on('Event.Moved', () => {
+        // A physical move can happen during scouting at a one-way exit.
+        isScoutObservationRef.current = false;
+        scoutedServerRoomNumRef.current = null;
+        scoutedMapRoomIdRef.current = null;
+        scoutedGroupMapIdRef.current = null;
+    }), [isScoutObservationRef]);
 
     const applyActiveMapId = useCallback((mapid: string | number, isSnooped: boolean) => {
         const shouldApply = (isSnooped && activeView === 'target') || (!isSnooped && activeView === 'self');
         if (!shouldApply || mapid === undefined || mapid === null) return;
 
         const mapKey = String(mapid);
+        if (!isSnooped && isScoutObservationRef.current) {
+            scoutedGroupMapIdRef.current = mapKey;
+            return;
+        }
         const vnum = serverIdIndexRef.current?.[mapKey] || (preloadedCoordsRef.current[mapKey] ? mapKey : null);
         if (!vnum) return;
 
         const nextRoomId = `m_${vnum}`;
+        if (!isSnooped && (mapKey === scoutedServerRoomNumRef.current
+            || mapKey === scoutedGroupMapIdRef.current
+            || nextRoomId === scoutedMapRoomIdRef.current)) return;
         if (currentRoomIdRef.current === nextRoomId) return;
 
         setCurrentRoomId(nextRoomId);
         triggerRender();
-    }, [activeView, currentRoomIdRef, preloadedCoordsRef, serverIdIndexRef, setCurrentRoomId, triggerRender]);
+    }, [activeView, currentRoomIdRef, preloadedCoordsRef, serverIdIndexRef, setCurrentRoomId, triggerRender, isScoutObservationRef]);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -929,13 +984,15 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     useEffect(() => {
         const activeRoomNum = activeView === 'target' ? spectateRoomNum : roomNum;
-        if (activeRoomNum && activeRoomNum !== 0) {
+        const localScoutIsActive = activeView === 'self' && isScoutObservationRef.current;
+        const isScoutedRoom = activeView === 'self' && String(activeRoomNum) === scoutedServerRoomNumRef.current;
+        if (!localScoutIsActive && !isScoutedRoom && activeRoomNum && activeRoomNum !== 0) {
             const vnum = serverIdIndexRef.current?.[String(activeRoomNum)];
             if (vnum) {
                 setCurrentRoomId(`m_${vnum}`); // This now updates both state and ref
             }
         }
-    }, [roomNum, spectateRoomNum, activeView, setCurrentRoomId]);
+    }, [roomNum, spectateRoomNum, activeView, setCurrentRoomId, isScoutObservationRef]);
     return <MapperContext.Provider value={value}>{children}</MapperContext.Provider>;
 };
 

@@ -16,12 +16,13 @@ import { getShopRoomLabel } from '../utils/shopRoomUtils';
 import { useMobileGearSwipe } from '../hooks/useMobileGearSwipe';
 import { useMapper } from '../context/MapperContext';
 import type { DrawerLine, GearRow, GearSelectionAction, GearSelectionItem } from '../types';
-import { ShopPanel } from './Shop/ShopPanel';
 import { GearContainerContents } from './GearContainerContents';
 import { GearSelectionCheckbox } from './GearSelectionCheckbox';
 import { GearSelectionActions } from './GearSelectionActions';
 import { getGearSelectionCommands, getGearScopeKey, toObjectDragItem } from '../utils/gearSelectionUtils';
 import './GearPanel.css';
+
+const ShopPanel = React.lazy(() => import('./Shop/ShopPanel').then(module => ({ default: module.ShopPanel })));
 
 interface GearPanelProps { style?: React.CSSProperties }
 type Section = 'worn' | 'carried' | 'room';
@@ -226,7 +227,11 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
             <button type="button" onClick={() => { setIsShopOpen(false); setIsOpen(false); }} title="Close panel"
                 aria-label="Close panel"><X size={15} /></button>
         </header>
-        {isShopOpen && <ShopPanel embedded hidden={activeView !== 'shop'} />}
+        {isShopOpen && (
+            <React.Suspense fallback={null}>
+                <ShopPanel embedded hidden={activeView !== 'shop'} />
+            </React.Suspense>
+        )}
         {(activeView !== 'shop' || !isShopOpen) && <>
                 <div className="gear-panel-body">{renderSection('worn')}{renderSection('carried')}{renderSection('room')}</div>
                 {gearSelection.selection ? <GearSelectionActions key={gearSelection.selection.scopeKey} selection={gearSelection.selection}

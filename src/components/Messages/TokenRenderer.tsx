@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Token, EntityToken, AnsiToken, TextToken } from '../../types';
-import { useTokenHighlight, useBaseGame, useUI } from '../../context/GameContext';
+import { useTokenHighlight, useUI } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useShallow } from 'zustand/react/shallow';
 import { getInlineGlowColor } from '../../utils/inlineActionModel';
@@ -95,7 +95,14 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
     highlightPromptVitals = false,
     metadata: propMetadata
 }) => {
-    const { target, opponentId, opponentName } = useTokenHighlight();
+    const {
+        target,
+        opponentId,
+        opponentName,
+        inlineCategories,
+        selectedObjectIds,
+        inCombat,
+    } = useTokenHighlight();
     const settings = useSettingsStore(useShallow(s => ({
         playerColor: s.playerColor,
         enemyColor: s.enemyColor,
@@ -107,7 +114,6 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
         isTextRevealEnabled: s.isTextRevealEnabled,
         isClassicMode: s.isClassicMode,
     })));
-    const { inlineCategories, selectedObjectIds, inCombat } = useBaseGame();
     const { popoverState } = useUI();
 
     const resolvedRoomColor = useMemo(() => {

@@ -233,17 +233,13 @@ export const useButtonGestures = ({
             updateRay(0, 0, 0, button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
             el.style.setProperty('--cancel-opacity', '0');
             el.style.setProperty('--cancel-scale', '0');
-            const wheelCell = isPanelPinned
-                ? (e.target as HTMLElement).closest('[data-wheel-direction]') as HTMLElement | null
-                : null;
+            const wheelCell = (e.target as HTMLElement).closest('[data-wheel-direction]') as HTMLElement | null;
             const wheelDirection = wheelCell?.dataset.wheelDirection as SwipeDirection | 'center' | undefined;
-            const wheelCommand = wheelCell?.dataset.wheelCommand?.trim();
-            const paletteCell = isPanelPinned
-                ? (e.target as HTMLElement).closest('[data-palette-command]') as HTMLElement | null
-                : null;
-            const paletteCommand = paletteCell?.dataset.paletteLearned === 'false'
-                ? undefined
-                : paletteCell?.dataset.paletteCommand?.trim();
+            const wheelCommand = wheelCell?.dataset.wheelCommand?.trim() || '';
+            const wheelIsLearned = wheelCell?.dataset.wheelLearned !== 'false';
+            const paletteCell = (e.target as HTMLElement).closest('[data-palette-command]') as HTMLElement | null;
+            const paletteCommand = paletteCell?.dataset.paletteCommand?.trim();
+            const paletteIsLearned = paletteCell?.dataset.paletteLearned !== 'false';
             panelHoverCellRef && (panelHoverCellRef.current = wheelDirection
                 ? { kind: 'wheel', direction: wheelDirection }
                 : paletteCommand && paletteCell
@@ -254,11 +250,12 @@ export const useButtonGestures = ({
                         setId: paletteCell.dataset.paletteSetId || ''
                     }
                     : null);
-            if (wheelDirection && wheelCommand) {
+            if (wheelDirection) {
                 lastActiveDirRef.current = wheelDirection;
                 setActiveDir(wheelDirection as SwipeDirection);
                 currentCommandRef.current = wheelCommand;
-                tacticalTargeting?.startHoldTimer(wheelCommand);
+                if (wheelCommand && wheelIsLearned) tacticalTargeting?.startHoldTimer(wheelCommand);
+                if (!wheelIsLearned || !wheelCommand) setCommandPreview(wheelCommand || null);
                 if (isPanelPinned) {
                     el._panelWheelDragSource = null;
                     el._panelWheelDragTimer = window.setTimeout(() => {
@@ -273,8 +270,10 @@ export const useButtonGestures = ({
                 el._panelPaletteCandidate = paletteCommand;
                 el._panelPaletteIsScrolling = false;
                 currentCommandRef.current = paletteCommand;
+                lastActiveDirRef.current = null;
+                setActiveDir(null);
                 setCommandPreview(paletteCommand);
-                if (!swapSourceRef?.current) {
+                if (paletteIsLearned && isPanelPinned && !swapSourceRef?.current) {
                     el._panelPaletteDragTimer = window.setTimeout(() => {
                         if (swapSourceRef?.current) return;
                         el._panelPaletteDragSource = { command: paletteCommand, actionType: paletteActionType, setId: paletteSetId };
@@ -307,11 +306,19 @@ export const useButtonGestures = ({
         const paletteCell = hit?.closest('[data-palette-command]') as HTMLElement | null | undefined;
         const wheelCell = hit?.closest('[data-wheel-direction]') as HTMLElement | null | undefined;
         if (paletteCell?.dataset.paletteLearned === 'false') {
-            panelHoverCellRef && (panelHoverCellRef.current = null);
-            currentCommandRef.current = button.command;
-            lastActiveDirRef.current = null;
-            setActiveDir(null);
-            setCommandPreview(null);
+            const command = paletteCell.dataset.paletteCommand?.trim() || '';
+            panelHoverCellRef && (panelHoverCellRef.current = command ? {
+                kind: 'palette',
+                command,
+                actionType: (paletteCell.dataset.paletteActionType || 'command') as ActionType,
+                setId: paletteCell.dataset.paletteSetId || ''
+            } : null);
+            if (command && !el._panelPaletteDragSource) {
+                currentCommandRef.current = command;
+                lastActiveDirRef.current = null;
+                setActiveDir(null);
+                setCommandPreview(command);
+            }
             return;
         }
         if (paletteCell?.dataset.paletteCommand?.trim()) {
@@ -326,8 +333,6 @@ export const useButtonGestures = ({
                 kind: 'wheel',
                 direction: wheelCell.dataset.wheelDirection as SwipeDirection | 'center'
             });
-        } else {
-            panelHoverCellRef && (panelHoverCellRef.current = null);
         }
         if (paletteCell && !el._panelPaletteDragSource) {
             const command = paletteCell.dataset.paletteCommand?.trim() || '';
@@ -339,26 +344,20 @@ export const useButtonGestures = ({
             }
             return;
         }
+        if (wheelCell?.dataset.wheelDirection) {
+            const direction = wheelCell.dataset.wheelDirection as SwipeDirection | 'center';
+            const command = wheelCell.dataset.wheelCommand?.trim() || '';
+            if (el._panelPaletteDragSource || (isPanelPinned && el._panelWheelDragSource)) return;
 
-        const wheel = document.querySelector<HTMLElement>('.unified-tactical-wheel .swipe-wheel-container');
-        const rect = wheel?.getBoundingClientRect();
-        if (!rect || x < rect.left || x > rect.right || y < rect.top || y > rect.bottom || !rect.width || !rect.height) return;
+            lastActiveDirRef.current = direction;
+            setActiveDir(direction as SwipeDirection);
+            currentCommandRef.current = command;
+            setCommandPreview(command
+                ? tacticalTargeting?.resolveCommandWithTarget(command) || command
+                : null);
+            return;
+        }
 
-        const column = Math.min(2, Math.floor(((x - rect.left) / rect.width) * 3));
-        const row = Math.min(2, Math.floor(((y - rect.top) / rect.height) * 3));
-        const directions: Array<Array<SwipeDirection | 'center'>> = [
-            ['nw', 'up', 'ne'], ['left', 'center', 'right'], ['sw', 'down', 'se']
-        ];
-        const direction = directions[row][column];
-        const command = direction === 'center'
-            ? button.command
-            : button.swipeCommands?.[direction] || button.longSwipeCommands?.[direction] || '';
-        if (el._panelPaletteDragSource || (isPanelPinned && el._panelWheelDragSource)) return;
-
-        lastActiveDirRef.current = direction;
-        setActiveDir(direction as SwipeDirection);
-        currentCommandRef.current = command;
-        setCommandPreview(command.trim() ? tacticalTargeting?.resolveCommandWithTarget(command) || command : null);
     }, [button, isPanelPinned, panelHoverCellRef, swapSourceRef, setActiveDir, setCommandPreview, tacticalTargeting]);
 
     // --- Gesture Recording & Feedback ---
@@ -469,11 +468,13 @@ export const useButtonGestures = ({
                 if (el._panelPaletteDragTimer) window.clearTimeout(el._panelPaletteDragTimer);
                 el._panelPaletteDragTimer = null;
                 el._panelPaletteCandidate = null;
-                panelHoverCellRef && (panelHoverCellRef.current = null);
-                currentCommandRef.current = button.command;
-                lastActiveDirRef.current = null;
-                setActiveDir(null);
-                setCommandPreview(null);
+                const command = paletteCell.dataset.paletteCommand?.trim() || '';
+                if (command && !el._panelPaletteDragSource) {
+                    currentCommandRef.current = command;
+                    lastActiveDirRef.current = null;
+                    setActiveDir(null);
+                    setCommandPreview(command);
+                }
                 return;
             }
             const paletteCommand = paletteCell?.dataset.paletteCommand?.trim() || '';
@@ -558,25 +559,10 @@ export const useButtonGestures = ({
         }
 
         if (tacticalTargeting?.isTargetColumnOpen) {
-            const wheel = document.querySelector<HTMLElement>('.unified-tactical-wheel .swipe-wheel-container');
-            const wheelRect = wheel?.getBoundingClientRect();
-            const isOverWheel = Boolean(wheelRect
-                && e.clientX >= wheelRect.left && e.clientX <= wheelRect.right
-                && e.clientY >= wheelRect.top && e.clientY <= wheelRect.bottom
-                && wheelRect.width > 0 && wheelRect.height > 0);
-            if (!isOverWheel || !wheelRect) return;
-
-            const column = Math.min(2, Math.floor(((e.clientX - wheelRect.left) / wheelRect.width) * 3));
-            const row = Math.min(2, Math.floor(((e.clientY - wheelRect.top) / wheelRect.height) * 3));
-            const wheelDirections: Array<Array<SwipeDirection | 'center'>> = [
-                ['nw', 'up', 'ne'],
-                ['left', 'center', 'right'],
-                ['sw', 'down', 'se']
-            ];
-            const direction = wheelDirections[row][column];
-            const swipeCommand = direction === 'center'
-                ? button.command
-                : button.swipeCommands?.[direction] || button.longSwipeCommands?.[direction] || '';
+            const wheelCell = pointerHit?.closest('[data-wheel-direction]') as HTMLElement | null | undefined;
+            if (!wheelCell?.dataset.wheelDirection) return;
+            const direction = wheelCell.dataset.wheelDirection as SwipeDirection | 'center';
+            const swipeCommand = wheelCell.dataset.wheelCommand?.trim() || '';
 
             if (el._panelPaletteDragSource) {
                 lastActiveDirRef.current = direction;
@@ -590,10 +576,9 @@ export const useButtonGestures = ({
                 return;
             }
 
-            // Once the decision panel is open, select by the visible cell under
-            // the pointer, including empty cells that can be rebound. The
-            // pointer capture still belongs to the original button, so map its
-            // screen coordinates onto the visible 3x3 grid.
+            // Resolve the actual rendered cell under the pointer. The panel can
+            // scroll while a finger stays down, so a static grid calculation
+            // can select a different cell from the one visibly under it.
             if (lastActiveDirRef.current !== direction) {
                 lastActiveDirRef.current = direction;
             }
@@ -799,8 +784,12 @@ export const useButtonGestures = ({
         el._panelAutoScrollPoint = null;
         el._panelPaletteIsScrolling = false;
         el._panelPaletteCandidate = null;
-        if (tacticalTargeting?.isTargetColumnOpen
-            && releaseHit?.closest('[data-palette-learned="false"]')) {
+        const releasedPaletteCell = releaseHit?.closest('[data-palette-command]') as HTMLElement | null | undefined;
+        if (tacticalTargeting?.isTargetColumnOpen && releasedPaletteCell) triggerHaptic(35);
+        const releasedUnavailableCell = releaseHit?.closest(
+            '[data-palette-learned="false"], [data-wheel-direction][data-wheel-learned="false"], [data-wheel-direction][data-wheel-command=""]'
+        );
+        if (tacticalTargeting?.isTargetColumnOpen && releasedUnavailableCell) {
             el._panelPaletteDragSource = null;
             panelHoverCellRef && (panelHoverCellRef.current = null);
             if (swapSourceRef) swapSourceRef.current = null;
@@ -875,10 +864,10 @@ export const useButtonGestures = ({
             return;
         }
 
-        const releasedPaletteCell = releaseHit?.closest('[data-palette-command][data-palette-learned="true"]') as HTMLElement | null | undefined;
-        const paletteCommand = releasedPaletteCell?.dataset.paletteCommand?.trim();
+        const releasedLearnedPaletteCell = releaseHit?.closest('[data-palette-command][data-palette-learned="true"]') as HTMLElement | null | undefined;
+        const paletteCommand = releasedLearnedPaletteCell?.dataset.paletteCommand?.trim();
         if (tacticalTargeting?.isTargetColumnOpen && paletteCommand) {
-            const actionType = (releasedPaletteCell?.dataset.paletteActionType || 'command') as import('../../../types').ActionType;
+            const actionType = (releasedLearnedPaletteCell?.dataset.paletteActionType || 'command') as import('../../../types').ActionType;
             currentCommandRef.current = paletteCommand;
             const effectiveTarget = tacticalTargeting.getEffectiveTarget(paletteCommand);
             if (canCommandAcceptTarget(paletteCommand) && !effectiveTarget) {

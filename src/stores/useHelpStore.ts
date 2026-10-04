@@ -4,6 +4,7 @@
  */
 
 import { create } from 'zustand';
+import { useActiveDockedPanelStore } from './useActiveDockedPanelStore';
 
 // --- Types Section ---
 
@@ -38,7 +39,12 @@ export const useHelpStore = create<HelpStoreState>((set, get) => ({
     historyIndex: -1,
     isLoading: false,
 
-    setIsOpen: (isOpen: boolean) => set({ isOpen }),
+    setIsOpen: (isOpen: boolean) => {
+        set({ isOpen });
+        const activeStore = useActiveDockedPanelStore.getState();
+        if (isOpen) activeStore.setActivePanel('help');
+        else if (activeStore.activePanel === 'help') activeStore.setActivePanel(null);
+    },
 
     setHelpData: (topic: string, data: string) => {
         const { history, historyIndex } = get();
@@ -57,6 +63,7 @@ export const useHelpStore = create<HelpStoreState>((set, get) => ({
             isLoading: false,
             isOpen: true
         });
+        useActiveDockedPanelStore.getState().setActivePanel('help');
     },
 
     setIsLoading: (isLoading: boolean) => set({ isLoading }),

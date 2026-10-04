@@ -4,6 +4,7 @@
  */
 
 import { create } from 'zustand';
+import { useActiveDockedPanelStore } from './useActiveDockedPanelStore';
 
 export type ArchiveView = 'board' | 'board-threads' | 'mail-inbox' | 'mail-sent' | 'book';
 export type ArchiveSource = 'board' | 'mail' | 'book';
@@ -99,7 +100,12 @@ export const useArchiveStore = create<ArchiveStoreState>((set, get) => ({
     compose: emptyCompose,
     pendingEditorContext: null,
 
-    setIsOpen: (isOpen) => set({ isOpen }),
+    setIsOpen: (isOpen) => {
+        set({ isOpen });
+        const activeStore = useActiveDockedPanelStore.getState();
+        if (isOpen) activeStore.setActivePanel('archive');
+        else if (activeStore.activePanel === 'archive') activeStore.setActivePanel(null);
+    },
     setPanelMode: (panelMode) => set({ panelMode }),
     setActiveView: (activeView) => set({ activeView, activeDetail: null }),
     setEntries: (view, entries) => set(state => ({
@@ -115,13 +121,17 @@ export const useArchiveStore = create<ArchiveStoreState>((set, get) => ({
         set({ pendingEditorContext: null });
         return context;
     },
-    clearArchive: () => set({
-        entriesByView: emptyEntries,
-        activeDetail: null,
-        isOpen: false,
-        isLoadingList: false,
-        isLoadingDetail: false,
-        compose: emptyCompose,
-        pendingEditorContext: null
-    })
+    clearArchive: () => {
+        set({
+            entriesByView: emptyEntries,
+            activeDetail: null,
+            isOpen: false,
+            isLoadingList: false,
+            isLoadingDetail: false,
+            compose: emptyCompose,
+            pendingEditorContext: null
+        });
+        const activeStore = useActiveDockedPanelStore.getState();
+        if (activeStore.activePanel === 'archive') activeStore.setActivePanel(null);
+    }
 }));

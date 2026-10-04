@@ -14,7 +14,7 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { useAutomaticTargetForRoom, useAutomaticTargetStore } from '../../stores/useAutomaticTargetStore';
 import { getRoomIdentityKey } from '../../utils/roomIdentityUtils';
-import { getAutoRoomTarget, getCombatRoomTarget, isAutoTargetChipDisabledZone } from '../../utils/commandAutoTarget';
+import { getAutoRoomTarget, isAutoTargetChipDisabledZone } from '../../utils/commandAutoTarget';
 import { getRoomTargetSuggestions, makeCommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 import { CHAT_PARLEY_CHANNELS, getChatChannelSuggestions, getChatChannelColor, getChatTargetSuggestions } from '../../utils/chatWindowUtils';
 import { getTargetClassificationColor } from '../../utils/targetClassificationColor';
@@ -75,8 +75,6 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         triggerHaptic,
         characterName,
         whoList,
-        opponentId,
-        opponentName
     } = useGame();
     const { target, characterInfo } = useActiveVitals();
     const setAutomaticTarget = useAutomaticTargetStore(state => state.setTarget);
@@ -104,11 +102,8 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const commonPvpTargets = useMemo(() => commonPvpTargetNames.map(name =>
         makeCommandTargetSuggestion(`*${name}*`, `*${name}*`, 'player')
     ), [isEvilRace]);
-    const combatOpponent = { id: opponentId, name: opponentName };
     const displayedTarget = target || (!autoTargetChipDisabled
-        ? getCombatRoomTarget('hit', roomOccupants, characterName || '', combatOpponent)
-            || automaticTarget
-            || getAutoRoomTarget('hit', roomOccupants, characterName || '', roomZone, combatOpponent)
+        ? automaticTarget || getAutoRoomTarget('hit', roomOccupants, characterName || '', roomZone)
         : null);
     useEffect(() => {
         if (target || gameState !== 'playing') setAutomaticTarget(null);

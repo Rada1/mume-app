@@ -21,7 +21,7 @@ import PracticeSkillCard from '../Practice/PracticeSkillCard';
 import PracticeHeaderCard from '../Practice/PracticeHeaderCard';
 import PracticeClassHeaderCard from '../Practice/PracticeClassHeaderCard';
 import PracticeColumnHeaderCard from '../Practice/PracticeColumnHeaderCard';
-import { useBaseGame, useLog, useUI } from '../../context/GameContext';
+import { useMessageLogPlayback, useMessageLogRender, useMessageLogShell } from '../../context/GameContext';
 import { useMessageStore } from '../../stores/useMessageStore';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { useModeStore } from '../../stores/useModeStore';
@@ -51,8 +51,6 @@ const getItemActionAnimation = (text: string): ItemActionAnimation | null => {
     if (/^you\s+(?:(?:\w+\s+){0,3})?(?:remove|stop using)\b/i.test(text)) return 'remove';
     return null;
 };
-
-const playedFocusRevealIds = new Set<string>();
 
 // Account output intentionally bypasses the entity tokenizer to preserve terminal
 // formatting. Wrap only its visible HTML text nodes so the login screen can still
@@ -229,7 +227,7 @@ const MessageItem = React.memo(({
     const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode || s.isClassicMode);
     const isClassicMode = useSettingsStore(s => s.isClassicMode);
     const theme = useSettingsStore(s => s.theme);
-    const { gameState, inlineCategories } = useBaseGame();
+    const { gameState, inlineCategories } = useMessageLogRender();
     const content = msg.html;
     const accountRippleHtml = isImmersionMode && isImmersionTextAnimationsEnabled && !isPerformanceMode && gameState === 'account' && (!msg.tokens || msg.tokens.length === 0)
         ? wrapHtmlWordsForRipple(sanitizeMumeHtml(content))
@@ -256,10 +254,6 @@ const MessageItem = React.memo(({
     const isImpactRumble = isImmersionMode && !isPerformanceMode && isRecent && (msg.isHitImpact || msg.isDamageImpact) && isImmersionTextAnimationsEnabled;
     const impactRowRef = React.useRef<HTMLDivElement>(null);
     const messageRootRef = React.useRef<HTMLDivElement>(null);
-    // Virtualized rows are reused, so bind the animation to its message ID rather
-    // than leaving a boolean active for whichever message occupies the row next.
-    const [focusRevealMessageId, setFocusRevealMessageId] = React.useState<string | null>(null);
-    const isFocusRevealActive = !isImmersionMode && focusRevealMessageId === msg.id;
     const [magicRippleMessageId, setMagicRippleMessageId] = React.useState<string | null>(null);
     const [redWeatherRippleMessageId, setRedWeatherRippleMessageId] = React.useState<string | null>(null);
     const [itemActionMessageId, setItemActionMessageId] = React.useState<string | null>(null);
@@ -341,19 +335,6 @@ const MessageItem = React.memo(({
         });
     }, [isImmersionMode, isImmersionTextAnimationsEnabled, isPerformanceMode, msg.audioSheen, msg.id, msg.timestamp]);
 
-    React.useLayoutEffect(() => {
-        // Rapid movement can batch several server lines before React paints. Keep
-        // the reveal eligible through that short burst instead of dropping it.
-        if (isImmersionMode || isPerformanceMode || !msg.isFocusReveal || Date.now() - msg.timestamp > 4000 || playedFocusRevealIds.has(msg.id)) return;
-
-        playedFocusRevealIds.add(msg.id);
-        setFocusRevealMessageId(msg.id);
-        const timer = window.setTimeout(() => {
-            setFocusRevealMessageId(activeId => activeId === msg.id ? null : activeId);
-        }, 1000);
-        return () => window.clearTimeout(timer);
-    }, [isImmersionMode, isPerformanceMode, msg.id, msg.isFocusReveal, msg.timestamp]);
-
     const triggerParley = useCallback((e: React.MouseEvent) => {
         if (!setParley || !triggerHaptic || !playClickSound) return;
         // If an inner inline-btn was clicked, let handleLogClick handle it instead
@@ -414,7 +395,7 @@ const MessageItem = React.memo(({
         <div
             ref={messageRootRef}
             data-subdued-action={msg.isSubduedAction || undefined}
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${isLoginNamePrompt ? ' login-name-prompt' : ''}${isStatAffectLine ? ' stat-affect-line' : ''}${regenSlowTooltip ? ' regen-slow-notice' : ''}${!isPerformanceMode && isImmersionMode && msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}${!isPerformanceMode && isFocusRevealActive ? ' focus-reveal-active' : ''}${!isPerformanceMode && isMagicRippleActive ? ' magic-ripple-active' : ''}${!isPerformanceMode && isRedWeatherRippleActive ? ' red-weather-ripple-active' : ''}${!isPerformanceMode && isItemActionActive && itemActionAnimation ? ` item-action-${itemActionAnimation}` : ''}`}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${entityCountPrompt ? ' entity-prompt' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isRoomContentsLine ? ' room-contents-line' : ''}${msg.isRoomContentsStart ? ' room-contents-start' : ''}${msg.isRoomBlockStart && msg.terrain ? ` room-terrain-${getRoomTerrainVisualKey(msg.terrain)}` : ''}${msg.isCombatBlockStart ? ' combat-block-start' : ''}${msg.isCommBlockStart ? ' comm-block-start' : ''}${msg.isSocialBlockStart ? ' social-block-start' : ''}${msg.isWeatherBlockStart ? ' weather-block-start' : ''}${msg.isMovementBlockStart ? ' movement-block-start' : ''}${msg.isStatusBlockStart ? ' status-block-start' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}${msg.isWelcomeBlock ? ' welcome-block' : ''}${msg.isWelcomeTitle ? ' welcome-title' : ''}${isLoginNamePrompt ? ' login-name-prompt' : ''}${isStatAffectLine ? ' stat-affect-line' : ''}${regenSlowTooltip ? ' regen-slow-notice' : ''}${!isPerformanceMode && isImmersionMode && msg.audioSheen && Date.now() - msg.timestamp < 1000 ? ' audio-sheen-active' : ''}${!isPerformanceMode && isMagicRippleActive ? ' magic-ripple-active' : ''}${!isPerformanceMode && isRedWeatherRippleActive ? ' red-weather-ripple-active' : ''}${!isPerformanceMode && isItemActionActive && itemActionAnimation ? ` item-action-${itemActionAnimation}` : ''}`}
             data-regeneration-tooltip={regenSlowTooltip}
             title={regenSlowTooltip}
             style={{ 
@@ -629,15 +610,14 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragEnd,
     onWheel
 }) => {
-    const { 
-        inCombat, inCombatRef, roomName, viewport, executeCommand, setParley,
-        triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled,
-        isNewbieMode, showSpectatePromptInLog, sessionMode,
-        accountState
-    } = useBaseGame() as any;
+    const {
+        inCombat, viewport, executeCommand, setParley, triggerHaptic,
+        playClickSound, isTimestampEnabled, isNewbieMode,
+        showSpectatePromptInLog, sessionMode, accountState
+    } = useMessageLogShell();
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const activeView = useModeStore(s => s.activeView);
-    const { ui, replayer, spectateBuffer } = useUI() as any;
+    const { isShaperOpen, replayer, spectateBuffer } = useMessageLogPlayback();
     const userMessages = useMessageStore(s => s.user);
     const spectateMessages = useMessageStore(s => s.spectate);
     const messages = (isSpectateMode && activeView === 'target') ? spectateMessages : userMessages;
@@ -1021,10 +1001,10 @@ const MessageLog: React.FC<MessageLogProps> = ({
         rangeExtractor,
     });
 
-    const wasShaperOpenRef = useRef(!!ui.isShaperOpen);
+    const wasShaperOpenRef = useRef(isShaperOpen);
     useEffect(() => {
         const wasOpen = wasShaperOpenRef.current;
-        const isOpen = !!ui.isShaperOpen;
+        const isOpen = isShaperOpen;
         wasShaperOpenRef.current = isOpen;
         if (!wasOpen || isOpen) return;
 
@@ -1039,7 +1019,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             resyncLogLayout();
             requestAnimationFrame(resyncLogLayout);
         });
-    }, [ui.isShaperOpen, virtualizer, viewport]);
+    }, [isShaperOpen, virtualizer, viewport]);
 
     const lastScrollCallRef = React.useRef(0);
     const lastMessagesRef = React.useRef(messages);

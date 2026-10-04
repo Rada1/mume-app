@@ -13,7 +13,7 @@ import {
     hasObjectTrait,
     type ObjectLocation
 } from './objectTargetModel';
-import { getRoomTargetSuggestions } from './roomTargetSuggestions';
+import { getRoomContainerTargetSuggestions, getRoomTargetSuggestions } from './roomTargetSuggestions';
 import type { CommandTargetSuggestion } from './targetSuggestionTypes';
 
 // --- Gear Target Selectors ---
@@ -160,20 +160,15 @@ export const getContainerTargetSuggestions = (
     inventoryLines: DrawerLine[],
     wornLines: DrawerLine[]
 ): CommandTargetSuggestion[] => {
-    const roomTargets = roomItems.flatMap((source, index) => {
-        const item: GmcpOccupant = typeof source === 'string' ? { name: source } : source;
-        const label = item.short || item.shortdesc || item.name || item.keyword || '';
-        if (!label || (!hasObjectTrait(item, 'trait-container') && !isItemContainer(label))) return [];
-        const suggestion = getRoomTargetSuggestions([], [item], 'objects')[0];
-        if (!suggestion) return [];
-        const containerId = item.id !== undefined ? String(item.id) : `room-container-${index}-${suggestion.value}`;
-        return [{
+    const roomTargets = getRoomContainerTargetSuggestions(roomItems).map((suggestion, index) => {
+        const containerId = suggestion.objectId || `room-container-${index}-${suggestion.value}`;
+        return {
             ...suggestion,
-            key: suggestion.objectId || `room-${containerId}-${suggestion.value}`,
+            key: suggestion.objectId || `room-container-${index}-${suggestion.value}`,
             meta: 'room',
             containerId,
             containerCommand: `look in ${suggestion.value}`
-        }];
+        };
     });
 
     const gearTargets = (lines: DrawerLine[], kind: 'inventory' | 'worn') => lines.flatMap((line, index) => {

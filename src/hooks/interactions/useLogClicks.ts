@@ -245,16 +245,11 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         // them, so identify via "whois" instead.
         const isRemoteCharacter = categoryAxes.isCharacter && categoryAxes.location === 'none';
         const getInspectState = () => {
-            const shouldLook = isTargetableInline && action === 'menu' && categoryAxes.isTargetable && (categoryAxes.isObject || categoryAxes.isCharacter) && !isRemoteCharacter;
             const shouldWhois = isTargetableInline && action === 'menu' && categoryAxes.isTargetable && isRemoteCharacter;
             return {
-                // Inspection is deliberately player-initiated from the card.
-                // Opening an entity menu must not emit hidden look/con commands.
-                hasInspectionCard: shouldLook || shouldWhois,
-                isCapturingExamine: false,
-                isCapturingConsider: false,
-                capturedExamineLines: undefined,
-                capturedConsiderLines: undefined,
+                // Look and consider are explicit commands that print into the log.
+                // Only remote allies need captured inspection details.
+                hasInspectionCard: shouldWhois,
                 isCapturingWhois: false,
                 capturedWhoisLines: undefined,
                   whoisTarget: undefined,

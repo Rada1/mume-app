@@ -14,7 +14,7 @@ import { useUI } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
 import { doesCommandMatchDeckItem } from '../../utils/commandFeedbackUtils';
-import { getRememberedCommandTarget, isCompatibleGlobalTarget, rememberCommandTarget } from '../../utils/commandTargetMemory';
+import { getRememberedCommandTarget, isCompatibleGlobalTarget } from '../../utils/commandTargetMemory';
 import { useDeckTargeting, DeckItem } from './useDeckTargeting';
 import { TacticalTargetBar } from '../Controls/GameButton/TacticalTargetBar';
 import { RightPanelTargetBar } from './RightPanelTargetBar';
@@ -25,7 +25,7 @@ import { ShopTargetMenu } from '../Shop/ShopTargetMenu';
 import type { GameButtonProps } from '../Controls/GameButton/GameButton';
 import { DECK_ACTIONS, DECK_TABS, DECK_LABEL_ICONS, DEFAULT_DECK_ICON, isDeckActionAvailable, type TabKey } from './commandDeckData';
 import { useRoomStore } from '../../stores/useRoomStore';
-import { getAutoRoomTarget, getCombatRoomTarget, getViableRoomCharacterTargets } from '../../utils/commandAutoTarget';
+import { getAutoRoomTarget, getViableRoomCharacterTargets } from '../../utils/commandAutoTarget';
 import { getFoodTargetSuggestions, getMountTargetSuggestions } from '../../utils/commandSuggestionUtils';
 import { useRoomDrinkWater } from '../../hooks/useRoomDrinkWater';
 import { useMobileHeaderTabs } from '../../hooks/useMobileHeaderTabs';
@@ -76,8 +76,6 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
         triggerHaptic?: (ms: number) => void;
         setTarget: (target: string | null) => void;
         characterName?: string;
-        opponentId?: string | number | null;
-        opponentName?: string | null;
         viewport?: { isMobile: boolean };
         btn: { setActiveSet: (setId: string) => void; setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>> };
         handleButtonClick: (button: CustomButton, event: React.MouseEvent | React.PointerEvent) => void;
@@ -88,7 +86,7 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
         };
         containerContents?: Record<string, DrawerLine[]>;
     };
-    const { executeCommand, triggerHaptic, setTarget, characterName, opponentId, opponentName, viewport, parser, containerContents } = game;
+    const { executeCommand, triggerHaptic, setTarget, characterName, viewport, parser, containerContents } = game;
     const isMenuOpen = useUIStore(state => state.isMenuOpen);
     const setUI = useUIStore(state => state.setUI);
     const setMenuOpen = useCallback((open: boolean) => {
@@ -99,9 +97,8 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
         isMenuOpen,
         setMenuOpen
     );
-    const combatOpponent = useMemo(() => ({ id: opponentId ?? null, name: opponentName ?? null }), [opponentId, opponentName]);
     const { target } = useActiveVitals() as { target: string | null };
-    const { characterInfo } = useVitals();
+    const { characterInfo, groupMembers } = useVitals();
     const race = characterInfo.race || '';
     const subrace = characterInfo.subrace || '';
     const roomChars = useRoomStore(state => state.chars);
@@ -227,9 +224,8 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
             return;
         }
         const effectiveTarget = (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
-            || getCombatRoomTarget(item.cmd, roomOccupants, characterName || '', combatOpponent)
             || getRememberedCommandTarget(item.cmd)
-            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone, combatOpponent);
+            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone, groupMembers);
         if (item.needsTarget && !effectiveTarget) {
             // No target selected — make it obvious one is required rather than
             // silently priming the input (which read as "nothing happened").
@@ -248,9 +244,6 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
         }
         flashPressed(item.label);
         triggerHaptic?.(15);
-        if (item.needsTarget && effectiveTarget) {
-            rememberCommandTarget(item.cmd, effectiveTarget);
-        }
         executeCommand(item.needsTarget && effectiveTarget ? `${item.cmd}${effectiveTarget}`.trim() : item.cmd.trim());
     };
 
@@ -273,7 +266,6 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
         requestContainerContents,
         characterName,
         roomZone,
-        combatOpponent,
     });
 
     // The visible number badges are command-line shortcuts, not instant-cast
@@ -334,15 +326,13 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
 
     const getWheelTargetReady = (item: DeckItem): boolean => {
         if (!item.needsTarget || item.targetKind) return false;
-        const chipTarget = target || getCombatRoomTarget('hit', roomOccupants, characterName || '', combatOpponent)
-            || getAutoRoomTarget('hit', roomOccupants, characterName || '', roomZone, combatOpponent);
+        const chipTarget = target || getAutoRoomTarget('hit', roomOccupants, characterName || '', roomZone, groupMembers);
         if (!chipTarget) return false;
-        const viableTargets = getViableRoomCharacterTargets(item.cmd, roomOccupants, characterName || '', combatOpponent);
+        const viableTargets = getViableRoomCharacterTargets(item.cmd, roomOccupants, characterName || '', groupMembers);
         if (!viableTargets.some(value => value.toLowerCase() === chipTarget.toLowerCase())) return false;
         const commandTarget = (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
-            || getCombatRoomTarget(item.cmd, roomOccupants, characterName || '', combatOpponent)
             || getRememberedCommandTarget(item.cmd)
-            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone, combatOpponent);
+            || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone, groupMembers);
         return commandTarget?.toLowerCase() === chipTarget.toLowerCase();
     };
 
@@ -518,11 +508,10 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                         const hotkey = i < 9 ? String(i + 1) : i === 9 ? '0' : null;
                         const itemTarget = item.needsTarget && !item.targetKind
                             ? (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
-                                || getCombatRoomTarget(item.cmd, roomOccupants, characterName || '', combatOpponent)
                                 || getRememberedCommandTarget(item.cmd)
-                                || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone, combatOpponent)
+                                || getAutoRoomTarget(item.cmd, roomOccupants, characterName || '', roomZone, groupMembers)
                             : null;
-                        const viableTargets = getViableRoomCharacterTargets(item.cmd, roomOccupants, characterName || '', combatOpponent);
+                        const viableTargets = getViableRoomCharacterTargets(item.cmd, roomOccupants, characterName || '', groupMembers);
                         const targetReady = Boolean(itemTarget && viableTargets.some(value => value.toLowerCase() === itemTarget.toLowerCase()));
                         return (
                             <button

@@ -1,0 +1,34 @@
+/* @file Trait separators for inline entity action popovers. */
+
+/* --- Trait group separators --- */
+.terminal-inline-popover .inline-action-groups {
+    padding-top: 0 !important;
+    border-top: 0 !important;
+}
+
+.terminal-inline-popover .inline-action-group + .inline-action-group {
+    margin-top: 2px !important;
+}
+
+.terminal-inline-popover .inline-action-group-label {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 5px 0 !important;
+    color: rgba(201, 168, 76, 0.58);
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-transform: lowercase;
+}
+
+.terminal-inline-popover .inline-action-group-label::before,
+.terminal-inline-popover .inline-action-group-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(201, 168, 76, 0.16);
+}

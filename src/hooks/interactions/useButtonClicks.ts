@@ -35,9 +35,6 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             return;
         }
 
-        const isExamine = button.id.includes('examine') || button.command.startsWith('examine');
-        const isConsider = button.id.includes('consider') || button.command.startsWith('consider');
-        
         // --- Redirect Guildmaster Practice to Drawer ---
         if (button.id === 'btn-guildmaster-practice') {
             handleTabClick('character');
@@ -47,17 +44,8 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         }
 
         const targetEl = (e.currentTarget as HTMLElement);
-        if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'select-container'].includes(button.actionType || '') && !isExamine && !isConsider) {
+        if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'select-container'].includes(button.actionType || '')) {
             setPopoverState(null);
-        }
-        if ((isExamine || isConsider) && popoverState) {
-            setPopoverState({
-                ...popoverState,
-                isCapturingExamine: isExamine ? true : popoverState.isCapturingExamine,
-                isCapturingConsider: isConsider ? true : popoverState.isCapturingConsider,
-                capturedExamineLines: isExamine ? undefined : popoverState.capturedExamineLines,
-                capturedConsiderLines: isConsider ? undefined : popoverState.capturedConsiderLines,
-            });
         }
         if (targetEl?.classList) { 
             targetEl.classList.remove('btn-glow-active'); 
@@ -294,15 +282,14 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             }
 
             // EXPLICITLY pass shouldFocus: false to avoid unintentional keyboard pop on mobile
-            const isSilentCapture = isExamine || isConsider;
             setInput('');
             setCommandPreview(finalCmd);
             executeCommand(
                 finalCmd,
-                isSilentCapture ? true : false,
-                isSilentCapture ? true : false,
                 false,
-                isSilentCapture ? true : false,
+                false,
+                false,
+                false,
                 { shouldFocus: preserveInputFocus, fromUi: true }
             );
 

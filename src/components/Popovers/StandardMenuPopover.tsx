@@ -189,20 +189,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
 
     const requestInspection = (kind: 'look' | 'consider') => {
         if (!targetContext) return;
-        const isLook = kind === 'look';
-        setIsChoosingCategory(false);
-        setPopoverState(current => current ? ({
-            ...current,
-            isChoosingCategory: false,
-            hasInspectionCard: true,
-            isCapturingExamine: isLook,
-            isCapturingConsider: !isLook,
-            capturedExamineLines: isLook ? undefined : current.capturedExamineLines,
-            capturedConsiderLines: isLook ? current.capturedConsiderLines : undefined,
-            isCapturingWhois: false,
-            capturedWhoisLines: undefined,
-        }) : null);
-        executeCommand(`${isLook ? 'look' : 'con'} ${targetContext}`, true, true, false, false, { shouldFocus: false, fromUi: true });
+        setPopoverState(null);
+        executeCommand(`${kind === 'look' ? 'look' : 'con'} ${targetContext}`, false, false, false, false, { shouldFocus: false, fromUi: true });
     };
 
     const requestWhois = () => {
@@ -255,10 +243,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
             );
         }
 
-        // The full card deliberately keeps the action area flat. Traits still
-        // decide which actions are valid, but repeating every trait name as a
-        // separate visual section makes a small inspect card feel needlessly
-        // form-like.
+        // Inline entity actions are grouped by the traits that provide them.
         if (isInlineMenu) {
             const actionButtons = buttons.filter(button => {
                 if (seenCommands.has(button.command)) return false;
@@ -271,18 +256,44 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
             const manipulationButtons = actionButtons.filter(button =>
                 !isInformationButton(button) || /^(?:whois|examine)(?:\s|$)/i.test(button.command)
             );
+            const groupedCommands = new Set<string>();
+            const lookTraitKey = sectionDefs.some(section => section.key === 'trait-examine')
+                ? 'trait-examine'
+                : 'trait-observable';
+            const actionGroups = sectionDefs.map(section => {
+                const sectionButtons = manipulationButtons.filter(button =>
+                    section.buttonIds.includes(button.id) && !groupedCommands.has(button.command)
+                );
+                sectionButtons.forEach(button => groupedCommands.add(button.command));
+                const inspectionCommands: Array<'look' | 'consider'> = [];
+                if (canObserve && targetContext && section.key === lookTraitKey) inspectionCommands.push('look');
+                if (canObserve && targetContext && section.key === 'trait-consider') inspectionCommands.push('consider');
+                return { section, buttons: sectionButtons, inspectionCommands };
+            }).filter(group => group.buttons.length > 0 || group.inspectionCommands.length > 0);
             return (
                 <div className="inline-action-groups" aria-label="Available actions">
-                    {manipulationButtons.length > 0 && (
-                        <div className="inline-action-group is-manipulation">
-                            <span className="inline-action-group-label">Actions</span>
+                    {actionGroups.map(({ section, buttons: sectionButtons, inspectionCommands }) => (
+                        <div className="inline-action-group is-trait-group" key={section.key}>
+                            <span className="inline-action-group-label">{section.label}</span>
                             <div className="inline-action-list">
-                                {manipulationButtons.map(button => (
+                                {inspectionCommands.map(kind => (
+                                    <button
+                                        key={`inspect-${kind}`}
+                                        type="button"
+                                        className="terminal-inspect-row"
+                                        onPointerDown={event => event.stopPropagation()}
+                                        onClick={() => requestInspection(kind)}
+                                    >
+                                        <span>{kind}</span>
+                                        <span>&lt;{kind === 'look' ? 'look' : 'con'} {targetContext}&gt;</span>
+                                    </button>
+                                ))}
+                                {sectionButtons.map(button => (
                                     <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} compact terminal glowDelay="0s" />
                                 ))}
                             </div>
                         </div>
-                    )}
+                    ))}
                 </div>
             );
         }
@@ -464,12 +475,6 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                         <>
                             {!isTacticalSet && popoverState.assignSourceId && (
                                 <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} style={{ borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => { const setName = safeSetId; const dir = popoverState.assignSwipeDir; setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: setName }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: 'menu' } } : { ...b, command: setName, label: setName, actionType: 'menu' }) : b)); setPopoverState(null); addMessage('system', `Assigned sub-menu '${setName}'${dir ? ` to swipe ${dir}` : ''}.`); }}>Assign {safeSetId.toUpperCase()} as Menu</div>
-                            )}
-                            {isInlineMenu && !isCompactInline && canObserve && (
-                                <div className="terminal-inspect-actions" aria-label="Inspection commands">
-                                    <button type="button" className="terminal-inspect-row" onPointerDown={event => event.stopPropagation()} onClick={() => requestInspection('look')}><span>look</span><span>&lt;look {targetContext}&gt;</span></button>
-                                    <button type="button" className="terminal-inspect-row" onPointerDown={event => event.stopPropagation()} onClick={() => requestInspection('consider')}><span>consider</span><span>&lt;con {targetContext}&gt;</span></button>
-                                </div>
                             )}
                             {!isCompactInline && (!isInlineMenu || popoverState.isCapturingWhois || popoverState.capturedWhoisLines !== undefined || popoverState.isCapturingExamine || popoverState.isCapturingConsider || popoverState.capturedExamineLines !== undefined || popoverState.capturedConsiderLines !== undefined) && (
                                 <CapturedDetailsCard

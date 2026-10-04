@@ -194,6 +194,19 @@ const firstString = (...values: unknown[]): string | null => {
     return null;
 };
 
+const getWaitingCondition = (data: GmcpCharVitals): boolean | undefined => {
+    if (typeof data.waiting === 'boolean') return data.waiting;
+
+    const conditions = data.conditions;
+    if (Array.isArray(conditions)) {
+        return conditions.some(condition => condition.trim().toLowerCase() === 'waiting');
+    }
+    if (conditions && typeof conditions === 'object') {
+        return typeof conditions.waiting === 'boolean' ? conditions.waiting : undefined;
+    }
+    return undefined;
+};
+
 /**
  * Creates the vitals actions for a Zustand store.
  * @param set The Zustand set function
@@ -319,6 +332,11 @@ export const createVitalsActions = (set: any, get: any) => ({
 
             if (data.wimpy !== undefined) {
                 updates.wimpy = data.wimpy;
+            }
+
+            const waiting = getWaitingCondition(data);
+            if (typeof waiting === 'boolean') {
+                updates.conditions = { ...state.conditions, waiting };
             }
 
             // Strict clearing signal: if opponent is null/empty, we ARE NOT fighting

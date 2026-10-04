@@ -54,15 +54,59 @@ export const VitalsContext = createContext<VitalsContextType | undefined>(undefi
 export const LogContext = createContext<LogContextType | undefined>(undefined);
 export const UIContext = createContext<UIContextType | undefined>(undefined);
 
-// Narrow context for inline-token highlighting. Carries ONLY the slow-changing fields
-// that every visible log token subscribes to (target + current opponent). Kept separate
-// from VitalsContext — which rebuilds on every prompt (HP/mana) — so that TokenRenderer,
-// rendered hundreds of times across the log, does NOT re-render on each combat tick.
-// Sourced from the same mode-resolved vitals object, so spectate/replay still work.
+// Narrow render contexts keep visible log rows and tokens out of unrelated GameContext
+// updates. In particular, TokenRenderer is mounted many times across the virtual log.
+export type MessageLogShellValue = Pick<GameContextType,
+    | 'inCombat'
+    | 'viewport'
+    | 'executeCommand'
+    | 'setParley'
+    | 'triggerHaptic'
+    | 'playClickSound'
+    | 'isTimestampEnabled'
+    | 'isNewbieMode'
+    | 'showSpectatePromptInLog'
+    | 'sessionMode'
+    | 'accountState'
+>;
+export const MessageLogShellContext = createContext<MessageLogShellValue | undefined>(undefined);
+export const useMessageLogShell = (): MessageLogShellValue => {
+    const context = useContext(MessageLogShellContext);
+    if (!context) throw new Error('useMessageLogShell must be used within a GameProvider');
+    return context;
+};
+
+export interface MessageLogRenderValue {
+    gameState: GameContextType['gameState'];
+    inlineCategories: GameContextType['inlineCategories'];
+}
+export const MessageLogRenderContext = createContext<MessageLogRenderValue | undefined>(undefined);
+export const useMessageLogRender = (): MessageLogRenderValue => {
+    const context = useContext(MessageLogRenderContext);
+    if (!context) throw new Error('useMessageLogRender must be used within a GameProvider');
+    return context;
+};
+
+export interface MessageLogPlaybackValue {
+    replayer: UIContextType['replayer'];
+    spectateBuffer: UIContextType['spectateBuffer'];
+    isShaperOpen: boolean;
+}
+export const MessageLogPlaybackContext = createContext<MessageLogPlaybackValue | undefined>(undefined);
+export const useMessageLogPlayback = (): MessageLogPlaybackValue => {
+    const context = useContext(MessageLogPlaybackContext);
+    if (!context) throw new Error('useMessageLogPlayback must be used within a GameProvider');
+    return context;
+};
+
+// Sourced from the mode-resolved state so spectate/replay highlighting still works.
 export interface TokenHighlightValue {
     target: string | null;
     opponentId: number | null;
     opponentName: string | null;
+    inlineCategories: GameContextType['inlineCategories'];
+    selectedObjectIds: Set<string>;
+    inCombat: boolean;
 }
 export const TokenHighlightContext = createContext<TokenHighlightValue | undefined>(undefined);
 export const useTokenHighlight = (): TokenHighlightValue => {
@@ -201,7 +245,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     }, [s.userSession.log, s.spectateSession.log, s.bumpActivity, mode.isSpectating]);
 
-    const { addSystemMessage, flushMessages, clearLog } = activeLog;
+    const { addSystemMessage, clearLog } = activeLog;
     const addMessage = routedAddMessage; // Use the router for the parser
 
     // 5. Networking
@@ -381,6 +425,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         processLine: (line, tokens) => {
             return parserRef.current?.processLine(line, tokens) ?? null;
         },
+        // A single Telnet chunk can route lines to either session log (for example,
+        // when snooped output is mixed with the player's own output).
         getGameState: () => gameStateRef.current,
         recordEntry: (type, data) => s.userSession.recorder.recordEntry(type, data),
         setPrompt: v.setActivePrompt,
@@ -1024,7 +1070,39 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         target: v.target,
         opponentId: v.opponentId,
         opponentName: v.opponentName,
-    }), [v.target, v.opponentId, v.opponentName]);
+        inlineCategories: s.inlineCategories,
+        selectedObjectIds: s.selectedObjectIds,
+        inCombat: s.inCombat,
+    }), [v.target, v.opponentId, v.opponentName, s.inlineCategories, s.selectedObjectIds, s.inCombat]);
+
+    const messageLogRenderValue = useMemo<MessageLogRenderValue>(() => ({
+        gameState: s.gameState,
+        inlineCategories: s.inlineCategories,
+    }), [s.gameState, s.inlineCategories]);
+
+    const messageLogPlaybackValue = useMemo<MessageLogPlaybackValue>(() => ({
+        replayer,
+        spectateBuffer,
+        isShaperOpen: Boolean(ui.isShaperOpen),
+    }), [replayer, spectateBuffer, ui.isShaperOpen]);
+
+    const messageLogShellValue = useMemo<MessageLogShellValue>(() => ({
+        inCombat: s.inCombat,
+        viewport,
+        executeCommand: controller.executeCommand,
+        setParley: s.setParley,
+        triggerHaptic,
+        playClickSound,
+        isTimestampEnabled: settingsStore.isTimestampEnabled,
+        isNewbieMode: s.isNewbieMode,
+        showSpectatePromptInLog: settingsStore.showSpectatePromptInLog,
+        sessionMode,
+        accountState: s.accountState,
+    }), [
+        s.inCombat, viewport, controller.executeCommand, s.setParley,
+        triggerHaptic, playClickSound, settingsStore.isTimestampEnabled,
+        s.isNewbieMode, settingsStore.showSpectatePromptInLog, sessionMode, s.accountState
+    ]);
 
     const value: GameContextType = useMemo(() => ({
         ...s,
@@ -1092,15 +1170,21 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     return (
         <GameContext.Provider value={value}>
-            <VitalsContext.Provider value={v as any}>
-                <TokenHighlightContext.Provider value={tokenHighlightValue}>
-                    <UIContext.Provider value={uiValue}>
-                        <LogContext.Provider value={logValue}>
-                            {children}
-                        </LogContext.Provider>
-                    </UIContext.Provider>
-                </TokenHighlightContext.Provider>
-            </VitalsContext.Provider>
+            <MessageLogShellContext.Provider value={messageLogShellValue}>
+                <MessageLogRenderContext.Provider value={messageLogRenderValue}>
+                    <MessageLogPlaybackContext.Provider value={messageLogPlaybackValue}>
+                        <VitalsContext.Provider value={v as any}>
+                            <TokenHighlightContext.Provider value={tokenHighlightValue}>
+                                <UIContext.Provider value={uiValue}>
+                                    <LogContext.Provider value={logValue}>
+                                        {children}
+                                    </LogContext.Provider>
+                                </UIContext.Provider>
+                            </TokenHighlightContext.Provider>
+                        </VitalsContext.Provider>
+                    </MessageLogPlaybackContext.Provider>
+                </MessageLogRenderContext.Provider>
+            </MessageLogShellContext.Provider>
         </GameContext.Provider>
     );
 };

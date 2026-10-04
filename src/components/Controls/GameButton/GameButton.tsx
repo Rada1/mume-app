@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useMemo, useCallback, useState, useId } from 
 import { CustomButton, DrawerLine, PopoverState, ExecuteCommand, SwipeDirection, TacticalArgumentChip } from '../../../types';
 
 import { getButtonCommand } from '../../../utils/buttonUtils';
-import { useGame } from '../../../context/GameContext';
+import { useGame, useVitals } from '../../../context/GameContext';
 import { useInputStore } from '../../../stores/useInputStore';
 import { useButtonGestures } from './useButtonGestures';
 import { ButtonLabel } from './ButtonLabel';
@@ -20,7 +20,7 @@ import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { useAutomaticTargetForRoom, useAutomaticTargetStore } from '../../../stores/useAutomaticTargetStore';
 import { getRoomIdentityKey } from '../../../utils/roomIdentityUtils';
 import { useWhoListRefresh } from '../../../hooks/useWhoListRefresh';
-import { getAutoRoomTarget, getCombatRoomTarget, isAutoTargetChipDisabledZone } from '../../../utils/commandAutoTarget';
+import { getAutoRoomTarget, isAutoTargetChipDisabledZone } from '../../../utils/commandAutoTarget';
 import { getClassKeyFromSetId, getSkillPresentation } from '../../../utils/skillPresentation';
 import type { PracticeClassKey } from '../../../utils/practiceClassCatalog';
 import { getRoomTargetSuggestions, isTargetSuggestionMatch, MUME_SOCIAL_COMMANDS, prioritizeTargetSuggestion, type CommandTargetSuggestion } from '../../../utils/commandSuggestionUtils';
@@ -212,7 +212,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const [wheelPos, setWheelPos] = React.useState({ x: 0, y: 0 });
     const [rayParams, setRayParams] = React.useState<{ angle: number, length: number, opacity: number, color?: string }>({ angle: 0, length: 0, opacity: 0, color: 'var(--accent)' });
     const buttonRef = useRef<HTMLDivElement>(null);
-    const { playClickSound, isSoundEnabled, initAudio, characterName, opponentId, opponentName, btn, practice, abilities = {}, setTarget, setParley } = useGame();
+    const { playClickSound, isSoundEnabled, initAudio, characterName, btn, practice, abilities = {}, setTarget, setParley } = useGame();
+    const { groupMembers } = useVitals();
     const hasRoomDoor = useCurrentRoomHasDoor();
     const tacticalArgumentOwnerId = useId();
     const setTacticalArguments = useTacticalArgumentChipStore(state => state.setArguments);
@@ -261,7 +262,6 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const automaticTarget = useAutomaticTargetForRoom(automaticTargetRoomKey);
     const autoTargetChipDisabled = isAutoTargetChipDisabledZone(roomZone);
     const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
-    const combatOpponent = useMemo(() => ({ id: opponentId, name: opponentName }), [opponentId, opponentName]);
     const roomItems = useMemo(() => Object.values(roomItemsById), [roomItemsById]);
     const roomEntityTargets = useMemo(() => new Set([
         ...getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName || ''),
@@ -354,8 +354,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
     });
 
     const tacticalTargeting = useTacticalTargeting({
-        activeTarget: target || (!autoTargetChipDisabled ? getCombatRoomTarget(button.command, roomOccupants, characterName || '', combatOpponent) || automaticTarget : null),
-        autoTargetForCommand: command => getAutoRoomTarget(command, roomOccupants, characterName || '', roomZone, combatOpponent),
+        activeTarget: target || (!autoTargetChipDisabled ? automaticTarget : null),
+        autoTargetForCommand: command => getAutoRoomTarget(command, roomOccupants, characterName || '', roomZone, groupMembers),
         isMobile,
         openOnHoldWithoutTarget: openDecisionPanelOnHold ?? isMobile,
         setCommandPreview,
@@ -470,13 +470,13 @@ export const GameButton: React.FC<GameButtonProps> = ({
     });
 
     const targetCommand = tacticalTargeting.isTargetColumnOpen || heldButton?.id === button.id
-        ? gestures.currentCommandRef?.current || wheelButton.command
+        ? gestures.currentCommandRef?.current ?? wheelButton.command
         : wheelButton.command;
     const targetChipTarget = target || (!autoTargetChipDisabled
-        ? (!autoTargetChipDisabled ? getCombatRoomTarget(targetCommand, roomOccupants, characterName || '', combatOpponent) || automaticTarget || getAutoRoomTarget(targetCommand, roomOccupants, characterName || '', roomZone, combatOpponent) : null)
+        ? automaticTarget || getAutoRoomTarget(targetCommand, roomOccupants, characterName || '', roomZone, groupMembers)
         : null);
     const wheelTargetChipTarget = target || (!autoTargetChipDisabled
-        ? (!autoTargetChipDisabled ? getCombatRoomTarget(wheelButton.command, roomOccupants, characterName || '', combatOpponent) || automaticTarget || getAutoRoomTarget(wheelButton.command, roomOccupants, characterName || '', roomZone, combatOpponent) : null)
+        ? automaticTarget || getAutoRoomTarget(wheelButton.command, roomOccupants, characterName || '', roomZone, groupMembers)
         : null);
     const commandKey = (targetCommand || '').trim().toLowerCase().split(/\s+/)[0];
     const targetMenu = useGameButtonTargetSuggestions(
@@ -523,6 +523,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
         ? 'wheel'
         : targetMenu.kind !== 'look-containers' && /^(?:look|examine)(?:\s|$)/i.test(targetCommand.trim())
         ? 'below'
+        : targetMenu.kind === 'pick' && hasRoomDoor ? 'side'
         : targetMenu.kind === 'door-direction' || tacticalTargeting.pendingTarget?.toLowerCase() === 'exit' ? 'side' : null;
     const effectiveTarget = tacticalTargeting.getEffectiveTarget(targetCommand);
     const targetSuggestions = targetMenu.kind
@@ -619,9 +620,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
         && normalizeTarget(wheelTargetChipTarget) === normalizeTarget(effectiveTarget));
     const centerDefaultTarget = target
         || getDefaultCommandTarget(wheelButton.command)
-        || getCombatRoomTarget(wheelButton.command, roomOccupants, characterName || '', combatOpponent)
         || (!autoTargetChipDisabled ? automaticTarget : null)
-        || getAutoRoomTarget(wheelButton.command, roomOccupants, characterName || '', roomZone, combatOpponent)
+        || getAutoRoomTarget(wheelButton.command, roomOccupants, characterName || '', roomZone, groupMembers)
         || tacticalTargeting.getEffectiveTarget(wheelButton.command, true);
     const centerTargetMeta = targetMenu.suggestions?.find(suggestion => isTargetSuggestionMatch(suggestion, centerDefaultTarget || ''))?.meta;
     const isCenterTargetAlly = Boolean(centerDefaultTarget && (

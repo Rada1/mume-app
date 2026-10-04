@@ -4,9 +4,10 @@
  * This slice is used by both the main useRoomStore and the useSpectateRoomStore.
  */
 
-import { GmcpRoomInfo, GmcpUpdateExits, GmcpOccupant, WhereEntry } from '../../types';
+import { GmcpRoomInfo, GmcpUpdateExits, GmcpOccupant, VisibleRoomSubject, WhereEntry } from '../../types';
 import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
+import { applyVisibleRoomOrder } from '../../hooks/roomVisibleOrder';
 import { mergeGmcpExitUpdate, normalizeExitMap } from '../../utils/gmcpExitUtils';
 import type { GmcpExitMap } from '../../utils/gmcpExitUtils';
 
@@ -18,6 +19,7 @@ export interface RoomState {
     exits: string[];
     rawExits: Record<string, any>;
     chars: Record<number, GmcpOccupant>;
+    visibleRoomSubjects: VisibleRoomSubject[];
     items: GmcpOccupant[];
     roomNum: number;
     mapId?: number;
@@ -30,6 +32,7 @@ export interface RoomState {
     updateChar: (data: any) => void;
     removeChar: (data: any) => void;
     setChars: (chars: Record<number, GmcpOccupant> | ((prev: Record<number, GmcpOccupant>) => Record<number, GmcpOccupant>)) => void;
+    setVisibleRoomSubjects: (subjects: VisibleRoomSubject[], roomNum: number) => void;
     setWhoList: (list: string[] | ((prev: string[]) => string[])) => void;
     setWhereList: (list: WhereEntry[] | ((prev: WhereEntry[]) => WhereEntry[])) => void;
     setRoomInfo: (info: Partial<{ roomName: string; roomDesc: string; roomZone: string; terrain: string; roomNum: number; mapId?: number }>) => void;
@@ -45,7 +48,7 @@ export interface RoomState {
     applyItemsUpdate: (data: GmcpOccupant[]) => void;
 }
 
-export const initialRoomState: Pick<RoomState, 'roomName' | 'roomDesc' | 'roomZone' | 'terrain' | 'exits' | 'rawExits' | 'chars' | 'items' | 'roomNum' | 'mapId' | 'whoList' | 'whereList'> = {
+export const initialRoomState: Pick<RoomState, 'roomName' | 'roomDesc' | 'roomZone' | 'terrain' | 'exits' | 'rawExits' | 'chars' | 'visibleRoomSubjects' | 'items' | 'roomNum' | 'mapId' | 'whoList' | 'whereList'> = {
     roomName: '',
     roomDesc: '',
     roomZone: '',
@@ -53,6 +56,7 @@ export const initialRoomState: Pick<RoomState, 'roomName' | 'roomDesc' | 'roomZo
     exits: [],
     rawExits: {},
     chars: {},
+    visibleRoomSubjects: [],
     items: [],
     roomNum: 0,
     mapId: undefined,
@@ -137,6 +141,7 @@ export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, 
                 mapId: data.id !== undefined && data.id !== null ? data.id : state.mapId,
                 // SMARTER: Only clear occupants if it's a physical room change
                 chars: isNewPhysicalRoom ? {} : state.chars,
+                visibleRoomSubjects: isNewPhysicalRoom ? [] : state.visibleRoomSubjects,
                 items: isNewPhysicalRoom ? [] : state.items,
                 // Exits often come in the same packet. Normalize keys to short canonical
                 // form so the joystick/renderer (which assume 'n'/'s'/'e'/'w') agree.
@@ -166,8 +171,16 @@ export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, 
 
         set((state: RoomState) => {
             const newChars = { ...state.chars };
-            newChars[id] = parsed;
-            return { chars: newChars };
+            const existing = newChars[id];
+            const nextRoomOrder = Object.values(newChars).reduce(
+                (maximum, occupant) => Math.max(maximum, occupant._roomOrder ?? -1), -1
+            ) + 1;
+            newChars[id] = {
+                ...existing,
+                ...parsed,
+                _roomOrder: existing?._roomOrder ?? parsed._roomOrder ?? nextRoomOrder
+            };
+            return { chars: applyVisibleRoomOrder(newChars, state.visibleRoomSubjects) };
         });
     },
 
@@ -186,7 +199,7 @@ export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, 
             } else {
                 newChars[id] = parsed;
             }
-            return { chars: newChars };
+            return { chars: applyVisibleRoomOrder(newChars, state.visibleRoomSubjects) };
         });
     },
 
@@ -227,7 +240,15 @@ export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, 
         set((state: RoomState) => ({ terrain: typeof terrain === 'function' ? terrain(state.terrain) : terrain })),
 
     setChars: (chars: Record<number, GmcpOccupant> | ((prev: Record<number, GmcpOccupant>) => Record<number, GmcpOccupant>)) =>
-        set((state: RoomState) => ({ chars: typeof chars === 'function' ? chars(state.chars) : chars })),
+        set((state: RoomState) => ({
+            chars: applyVisibleRoomOrder(typeof chars === 'function' ? chars(state.chars) : chars, state.visibleRoomSubjects)
+        })),
+
+    setVisibleRoomSubjects: (subjects: VisibleRoomSubject[], roomNum: number) =>
+        set((state: RoomState) => roomNum === state.roomNum ? {
+            visibleRoomSubjects: subjects,
+            chars: applyVisibleRoomOrder(state.chars, subjects)
+        } : state),
 
     setItems: (items: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) =>
         set((state: RoomState) => ({ items: typeof items === 'function' ? items(state.items) : (Array.isArray(items) ? items : state.items) })),

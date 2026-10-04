@@ -69,6 +69,7 @@ export const useRoomInfoHandler = ({
         let discoverySource: string | null = null;
         const isSpectateUpdate = data.spectating === true;
         const isTextRoomEvent = data.source === 'text';
+        const isScoutObservation = data.scouting === true && !isSpectateUpdate;
 
         const activeRoomId = currentRoomIdRef.current;
         // If we have a ghost/preMove, we should use the room we actually WERE in for distance checks
@@ -133,7 +134,7 @@ export const useRoomInfoHandler = ({
         // If ID didn't change, it's usually a refresh (look) UNLESS we are in a VNUM 0 area 
         // where multiple rooms might share the same "0" ID.
         const hasPendingMove = !isSpectateUpdate && pendingMovesRef.current.length > 0;
-        const isLikelyMove = !isSpectateUpdate && (idChanged || (hasPendingMove && isVnumZero));
+        const isLikelyMove = !isSpectateUpdate && !isScoutObservation && (idChanged || (hasPendingMove && isVnumZero));
 
         if (isLikelyMove) {
             // Early queue peek: what direction are we trying to move?
@@ -358,6 +359,26 @@ export const useRoomInfoHandler = ({
                 }
             }
         }
+
+        // A scout reports another room's details without moving the character. Resolve
+        // known rooms so their map data can still be refreshed, but never dead-reckon
+        // an unidentified observation from the player's current coordinates.
+        if (isScoutObservation) {
+            if (isVnumZero) return;
+
+            const scoutRoomId = String(gmcpId);
+            const mappedVnum = serverIdIndexRef.current[scoutRoomId]
+                || (preloadedCoordsRef.current[scoutRoomId] ? scoutRoomId : null);
+            if (mappedVnum) {
+                matchedInternalId = mappedVnum;
+                ghostData = preloadedCoordsRef.current[mappedVnum] || null;
+                discoverySource = 'SCOUT_OBSERVATION';
+            } else {
+                targetId = Object.keys(roomsRef.current).find(key =>
+                    String(roomsRef.current[key].gmcpId) === scoutRoomId
+                ) || null;
+            }
+        }
         
         // For spectate updates, we always jump directly to the matched internal ID if found
         if (isSpectateUpdate && !isVnumZero) {
@@ -474,6 +495,7 @@ export const useRoomInfoHandler = ({
         // already exists in the preloaded base map. Creating a fresh room here is exactly
         // what stamped phantom rooms — and full-wall boxes — on top of the Nazgûm map.
         // Bail and leave the player where they are; only map edit mode may map new rooms.
+        if (!targetId && isScoutObservation) return;
         if (!targetId && !mapEditMode) {
             onRoomInfoProcessed?.(null);
             return;
@@ -737,7 +759,8 @@ export const useRoomInfoHandler = ({
         }
 
         // Update the current room ID state if it changed
-        const isUpdateForActiveView = (isSpectateUpdate && activeView === 'target') || (!isSpectateUpdate && activeView === 'self');
+        const isUpdateForActiveView = !isScoutObservation
+            && ((isSpectateUpdate && activeView === 'target') || (!isSpectateUpdate && activeView === 'self'));
         const roomChanged = isUpdateForActiveView && targetId !== activeRoomId;
         
         if (roomChanged) {
@@ -761,7 +784,7 @@ export const useRoomInfoHandler = ({
         }
 
         // Clear the pre-move that was set by handleMoveConfirmed
-        if (!isSpectateUpdate) {
+        if (!isSpectateUpdate && !isScoutObservation) {
             onRoomInfoProcessed?.(targetId);
         }
 

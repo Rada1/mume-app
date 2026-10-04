@@ -8,6 +8,7 @@ import { useGame, useUI } from '../../../context/GameContext';
 import { useVitals } from '../../../context/GameContext';
 import { useRoomStore } from '../../../stores/useRoomStore';
 import { useRoomDrinkWater } from '../../../hooks/useRoomDrinkWater';
+import { useCurrentRoomHasDoor } from '../../../hooks/useCurrentRoomHasDoor';
 import { useUIStore } from '../../../stores/useUIStore';
 import {
     BLANK_TARGET_VALUE,
@@ -39,7 +40,7 @@ import {
     getMountTargetSuggestions,
     getRoomTargetSuggestions,
     getRescueTargetSuggestions,
-    getRoomObjectTargetsWithExit,
+    getRoomContainerTargetSuggestions,
     getSelfAndRoomAlliesTargetSuggestions,
     getSelfAndRoomTargetSuggestions,
     getSocialTargetSuggestions,
@@ -79,7 +80,7 @@ const TARGET_MENU_TITLES: Record<CommandTargetMenuKind, string> = {
     'mage-spells': 'MAGE SPELLS',
     'magic-keys': 'MAGIC KEYS',
     bash: 'TARGETS',
-    pick: 'TARGETS',
+    pick: 'CONTAINERS',
     who: 'WHO LIST',
     'who-or-blank': 'WHO LIST',
     'blank-only': 'TARGETS',
@@ -115,6 +116,7 @@ export const useGameButtonTargetSuggestions = (
     const roomChars = useRoomStore(state => state.chars);
     const roomItems = useRoomStore(state => state.items);
     const roomWaterAvailable = useRoomDrinkWater();
+    const hasRoomDoor = useCurrentRoomHasDoor();
     const whoList = useRoomStore(state => state.whoList);
     const shopItems = useUIStore(state => state.shopItems);
     const kind = getCommandTargetMenuKind(command);
@@ -235,7 +237,7 @@ export const useGameButtonTargetSuggestions = (
             getSelfTargetSuggestion(),
             ...getGearTargetSuggestions(displayInventoryLines, 'inventory')
         ];
-        if (resolvedKind === 'pick') return getRoomObjectTargetsWithExit(roomObjects);
+        if (resolvedKind === 'pick') return getRoomContainerTargetSuggestions(roomObjects, hasRoomDoor);
         if (resolvedKind === 'door-direction') return [
             { key: 'door-exit', label: 'Exit', value: 'exit', meta: 'exit' }
         ];
@@ -250,7 +252,7 @@ export const useGameButtonTargetSuggestions = (
             const commandVerb = command.trim().split(/\s+/, 1)[0].toLowerCase();
             if (commandVerb === 'group') return getGroupTargetSuggestions(roomOccupants, characterName);
             if (commandVerb === 'assist') return getAssistTargetSuggestions(roomOccupants, characterName);
-            if (commandVerb === 'rescue') return getRescueTargetSuggestions(roomOccupants, characterName);
+            if (commandVerb === 'rescue') return getRescueTargetSuggestions(roomOccupants, characterName, groupMembers);
             if (resolvedKind === 'bash') return appendNamedTargetSuggestions(eligibleRoomTargets, [{ label: 'Exit', value: 'exit', meta: 'exit' }]);
             if (resolvedKind === 'room-spell-with-extras') return appendNamedTargetSuggestions(prioritizedRoomTargets, [
                 { label: 'Web', value: 'web', meta: 'object' },
@@ -284,7 +286,8 @@ export const useGameButtonTargetSuggestions = (
         return undefined;
     }, [
         command, kind, resolvedKind, targetKindOverride, isEatCommand, roomObjects, displayInventoryLines, displayEqLines, roomOccupants,
-        characterName, practice.practiceData?.skills, abilities, teleportTargets, whoList, groupMembers, shopItems, roomWaterAvailable
+        characterName, practice.practiceData?.skills, abilities, teleportTargets, whoList, groupMembers, shopItems, roomWaterAvailable,
+        hasRoomDoor
     ]);
 
     const stagedArguments = useMemo(() => {
@@ -357,10 +360,13 @@ export const useGameButtonTargetSuggestions = (
         return { first: [], second: [] };
     }, [stagedTargetKind, roomOccupants, roomObjects, displayInventoryLines, displayEqLines, characterName,
         containerContents, selectedSecondArgument, loadingContainerId]);
+    const defaultTarget = /^rescue(?:\s|$)/i.test(command.trim())
+        ? suggestions?.find(suggestion => suggestion.value !== BLANK_TARGET_VALUE)?.value ?? BLANK_TARGET_VALUE
+        : getDefaultCommandTarget(command);
 
     return {
         kind: resolvedKind,
-        defaultTarget: getDefaultCommandTarget(command),
+        defaultTarget,
         suggestions,
         title: targetKindOverride === 'status-panel' ? 'THIS IS YOU'
             : targetKindOverride === 'group' ? 'GROUP'
@@ -368,7 +374,9 @@ export const useGameButtonTargetSuggestions = (
             : targetKindOverride === 'inventory-weapons' ? 'INVENTORY WEAPONS'
             : stagedTargetKind === 'look-container' ? 'LOOK'
             : stagedTargetKind === 'examine-targets' ? 'EXAMINE'
-            : stagedTargetKind ? 'SELECT ARGUMENTS' : resolvedKind ? TARGET_MENU_TITLES[resolvedKind] : 'TARGETS',
+            : stagedTargetKind ? 'SELECT ARGUMENTS'
+            : resolvedKind === 'pick' && hasRoomDoor ? 'CONTAINERS / EXIT'
+            : resolvedKind ? TARGET_MENU_TITLES[resolvedKind] : 'TARGETS',
         stagedTargetKind,
         firstArgumentSuggestions: stagedArguments.first,
         secondArgumentSuggestions: stagedArguments.second,

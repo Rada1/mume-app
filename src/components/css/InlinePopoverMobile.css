@@ -1,0 +1,34 @@
+/* @file Mobile-only touch target sizing for inline action popovers. */
+
+/* --- Mobile action touch targets --- */
+@media (max-width: 720px) {
+    .terminal-inline-popover .terminal-inspect-row {
+        box-sizing: border-box;
+        min-height: 44px;
+        padding: 8px 0;
+        align-items: center;
+        font-size: 0.85rem;
+    }
+
+    .terminal-inline-popover .inline-action-list .terminal-action-row {
+        box-sizing: border-box;
+        min-height: 44px !important;
+        padding: 8px 0 !important;
+        font-size: 0.82rem !important;
+    }
+
+    .terminal-inline-popover .terminal-inline-target-action {
+        box-sizing: border-box;
+        min-height: 44px;
+        padding: 8px 0 !important;
+        align-items: center;
+        font-size: 0.85rem !important;
+    }
+
+    .popover-menu:has(.inline-action-compact) .inline-action-compact .popover-action-chip {
+        box-sizing: border-box;
+        min-height: 44px;
+        padding: 10px 12px !important;
+        font-size: 0.85rem !important;
+    }
+}

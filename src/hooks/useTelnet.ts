@@ -58,7 +58,7 @@ export function useTelnet(config: TelnetConfig) {
     const bufferRef = React.useRef("");
     const lastProcessedPromptRef = React.useRef("");
     const pendingTextLines = React.useRef<(string | { line: string, isPrompt: boolean; isRedrawPrompt?: boolean })[]>([]);
-    const processingTimeout = React.useRef<any>(null);
+    const processingQueuedRef = React.useRef(false);
     const tokenizationChainRef = React.useRef<Promise<void>>(Promise.resolve());
 
     const snoopBlockRef = React.useRef<{ symbol: string; type: string } | null>(null);
@@ -342,9 +342,12 @@ export function useTelnet(config: TelnetConfig) {
         if (processedLines.length > 0) {
             pendingTextLines.current.push(...processedLines);
             
-            if (!processingTimeout.current) {
-                processingTimeout.current = requestAnimationFrame(() => {
-                    processingTimeout.current = null;
+            if (!processingQueuedRef.current) {
+                // Let all text callbacks from this socket event join the same chunk,
+                // then start tokenizing without waiting for the next paint frame.
+                processingQueuedRef.current = true;
+                queueMicrotask(() => {
+                    processingQueuedRef.current = false;
                     const chunk = [...pendingTextLines.current];
                     pendingTextLines.current = [];
 
@@ -380,8 +383,10 @@ export function useTelnet(config: TelnetConfig) {
                         };
                     };
 
-                    const processTokenizedLines = (lines: TokenizedLine[]) => {
-                        for (const entry of lines) {
+                    const processTokenizedLines = async (lines: TokenizedLine[]) => {
+                        let sliceStartedAt = performance.now();
+                        for (let i = 0; i < lines.length; i++) {
+                            const entry = lines[i];
                             if (entry.isPrompt) {
                                 (entry.tokens as any).isPrompt = true;
                             }
@@ -389,6 +394,13 @@ export function useTelnet(config: TelnetConfig) {
                                 (entry.tokens as any).isRedrawPrompt = true;
                             }
                             configRef.current.processLine(entry.line, entry.tokens);
+
+                            // A very large worker result must give the browser a chance
+                            // to paint the lines already queued in the log on mobile.
+                            if (i % 8 === 7 && document.visibilityState !== 'hidden' && performance.now() - sliceStartedAt > 8) {
+                                await new Promise<void>(resolve => window.setTimeout(resolve, 0));
+                                sliceStartedAt = performance.now();
+                            }
                         }
                     };
 
@@ -406,7 +418,7 @@ export function useTelnet(config: TelnetConfig) {
                         const context = buildTokenizerContext();
                         try {
                             const tokenized = await parserWorkerClient.tokenize(chunk, context);
-                            processTokenizedLines(tokenized);
+                            await processTokenizedLines(tokenized);
                         } catch (_) {
                             PipelineOrchestrator.ingestChunk(
                                 chunk,
@@ -414,6 +426,8 @@ export function useTelnet(config: TelnetConfig) {
                                 (line, tokens) => configRef.current.processLine(line, tokens)
                             );
                         }
+                        // addMessage schedules one log commit for the next paint,
+                        // combining socket chunks that finish in the same frame.
                     };
 
                     tokenizationChainRef.current = tokenizationChainRef.current.then(runProcessing, runProcessing);

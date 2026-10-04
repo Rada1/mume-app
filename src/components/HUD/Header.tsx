@@ -7,6 +7,7 @@ import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useSessionStore } from '../../stores/useSessionStore';
 import { useArchiveStore } from '../../stores/useArchiveStore';
+import { useActiveDockedPanelStore } from '../../stores/useActiveDockedPanelStore';
 import { useMobileHeaderTabs } from '../../hooks/useMobileHeaderTabs';
 import { useUIStore } from '../../stores/useUIStore';
 import { canAccessShaper } from '../../shaper/access/shaperAccess';
@@ -51,6 +52,8 @@ const Header: React.FC<HeaderProps> = () => {
     const isReplayHUDMinimized = useSessionStore(state => state.isReplayHUDMinimized);
     const setIsReplayHUDMinimized = useSessionStore(state => state.setIsReplayHUDMinimized);
     const openArchive = useArchiveStore(state => state.setIsOpen);
+    const isArchivePanelOpen = useArchiveStore(state => state.isOpen);
+    const activeDockedPanel = useActiveDockedPanelStore(state => state.activePanel);
     const setArchiveView = useArchiveStore(state => state.setActiveView);
     const setArchivePanelMode = useArchiveStore(state => state.setPanelMode);
     const showDeveloperTools = useSettingsStore(state => state.showDeveloperTools ?? false);
@@ -376,7 +379,7 @@ const Header: React.FC<HeaderProps> = () => {
                     <>
                         {hasMailLoadFlag && (
                             <button
-                                className="menu-toggle-btn"
+                                className={`menu-toggle-btn${isArchivePanelOpen && activeDockedPanel === 'archive' ? ' active' : ''}`}
                                 onClick={() => {
                                     setArchivePanelMode('mail');
                                     setArchiveView('mail-inbox');
@@ -385,6 +388,8 @@ const Header: React.FC<HeaderProps> = () => {
                                     triggerHaptic?.(10);
                                 }}
                                 title="Mailbox"
+                                aria-label="Mailbox"
+                                aria-pressed={isArchivePanelOpen && activeDockedPanel === 'archive'}
                                 style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
                             >
                                 <Mail size={17} />
@@ -440,6 +445,8 @@ const Header: React.FC<HeaderProps> = () => {
                                 triggerHaptic?.(10);
                             }}
                             title="Toggle Chat Panel"
+                            aria-label="Chat panel"
+                            aria-pressed={showChatWindow}
                             style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
                         >
                             <MessageSquare size={17} />

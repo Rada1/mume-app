@@ -126,7 +126,7 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
     if (verb === 'fill') return 'lanterns';
     if (verb === 'protect') return 'room-allies-or-blank';
     if (verb === 'remove') return 'worn-gear';
-    if (['wear', 'wield', 'hold', 'drop', 'sell', 'value', 'mend', 'read', 'quaff', 'recite', 'use', 'throw'].includes(verb)) return 'inventory-gear';
+    if (['wear', 'wield', 'hold', 'drop', 'sell', 'value', 'mend', 'read', 'quaff', 'recite', 'use', 'throw', 'load'].includes(verb)) return 'inventory-gear';
     if (/^locate\s+life(?:\s|$)/i.test(trimmed)) return 'who-or-blank';
     if (verb === 'locate') return 'blank-only';
     if (['open', 'close', 'lock', 'unlock', 'knock'].includes(verb)) return 'containers';
@@ -135,6 +135,7 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
     if (verb === 'bash') return 'bash';
     if (verb === 'scout') return /%n\s*\|\s*exit/i.test(trimmed) ? 'door-direction' : 'movement-wheel';
     if (verb === 'pick') return 'pick';
+    if (['summon', 'transfer'].includes(verb)) return 'who';
     if (['portal', 'teleport', 'scry'].includes(verb) || verb === 'watch') return 'magic-keys';
     if (['tell', 'whisper', 'ask'].includes(verb)) return 'who';
     if (verb === 'social') return 'social';
@@ -143,6 +144,7 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
     const spell = getSpellName(trimmed);
         if (spell) {
         if (NO_ARGUMENT_SPELLS.has(spell)) return null;
+        if (['summon', 'transfer'].includes(spell)) return 'who';
         if (spell === 'block door' || spell === 'break door') return 'door-direction';
         if (spell === 'raise dead') return 'room-corpses';
         if (spell === 'enchant') return 'gear';
@@ -202,6 +204,7 @@ export const getDefaultCommandTarget = (command: string): string | null => {
         return explicitTarget?.[1]?.trim() || null;
     }
     if (/^look\s+in(?:\s|$)/i.test(command.trim())) return null;
+    if (verb === 'load') return 'bolt';
     if (verb === 'look' || verb === 'assist' || verb === 'locate' || verb === 'draw') return BLANK_TARGET_VALUE;
     if (verb === 'rescue') return BLANK_TARGET_VALUE;
 

@@ -132,6 +132,11 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         // --- Send bytes ASAP; GMCP remains authoritative for mapper door state. ---
         if (status === 'connected') {
             if (typeof window !== 'undefined') {
+                if (!isSystem && /^scout(?:\s|$)/i.test(finalCmd.trim())) {
+                    window.dispatchEvent(new CustomEvent('mume-mapper-scout-state', {
+                        detail: { active: true }
+                    }));
+                }
                 telnet.sendCommand(finalCmd);
                 window.dispatchEvent(new CustomEvent('mume-command-sent', { detail: { cmd: finalCmd, silent, isSystem } }));
             } else {

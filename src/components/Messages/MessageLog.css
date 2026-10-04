@@ -2079,27 +2079,6 @@
     }
 }
 
-/* A quick focus pull for responses to look/examine. It resolves as one block,
-   leaving the normal word-by-word arrival sheen independent. */
-@keyframes focus-reveal {
-    0% {
-        filter: blur(1.35px);
-        opacity: 0.82;
-    }
-    65% {
-        filter: blur(0.18px);
-        opacity: 0.98;
-    }
-    100% {
-        filter: blur(0);
-        opacity: 1;
-    }
-}
-
-.message.focus-reveal-active .message-content {
-    animation: focus-reveal 1000ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
-}
-
 .message.audio-sheen-active .log-text-word,
 .message.audio-sheen-active .message-content .inline-btn,
 .message.audio-sheen-active .comm-bubble .inline-btn,
@@ -3681,7 +3660,6 @@ span.inline-btn {
 
 /* ==========================================================================
    When Immersion Mode is disabled, turn off decorative log text animations.
-   Focus-reveal is reserved for standard mode and is gated in MessageLog.tsx.
    ========================================================================== */
 .app-container:not(.immersion-mode) .message-log .log-text-word,
 .app-container:not(.immersion-mode) .message-log .log-char,

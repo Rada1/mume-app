@@ -5,6 +5,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { useActiveDockedPanelStore } from './useActiveDockedPanelStore';
 import { UiMode, TeleportTarget, InlineCategoryConfig, ZoneMusicMapping, CategoryOverride, CustomTraitConfig } from '../types';
 import { COLOR_ALLY, COLOR_ENEMY, COLOR_NEUTRAL, COLOR_NPC, COLOR_OBJ, COLOR_ROOM, canonicalizeCategoryId } from '../utils/categorizationUtils';
 import { getKindForCategory, getTraitConfig, toCategoryId, toTraitId } from '../utils/inlineActionModel';
@@ -411,7 +412,12 @@ export const useSettingsStore = create<SettingsState>()(
             setShowDeveloperTools: (showDeveloperTools) => set({ showDeveloperTools }),
             setShowSpectatePromptInLog: (showSpectatePromptInLog) => set({ showSpectatePromptInLog }),
             setUseMobileAccountPanels: (useMobileAccountPanels) => set({ useMobileAccountPanels }),
-            setShowChatWindow: (showChatWindow) => set({ showChatWindow }),
+            setShowChatWindow: (showChatWindow) => {
+                set({ showChatWindow });
+                const activeStore = useActiveDockedPanelStore.getState();
+                if (showChatWindow) activeStore.setActivePanel('chat');
+                else if (activeStore.activePanel === 'chat') activeStore.setActivePanel(null);
+            },
             setShowGroupPanel: (showGroupPanel) => set({ showGroupPanel }),
             setShowCommandSuggestions: (showCommandSuggestions) => set({ showCommandSuggestions }),
             setShowControls: (showControls) => set({ showControls }),

@@ -343,15 +343,9 @@ export default defineConfig(({ mode }) => {
           ],
         },
         workbox: {
-          // Cache application shell and assets
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,webp,jpeg}'],
-          // Exclude very large terrain images from precache (cached at runtime below)
-          globIgnores: [
-            '**/assets/map/m_peaks/**',
-            '**/assets/map/hills/**',
-            '**/assets/Pictures/middle_earth.png',
-          ],
-          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB limit for background JPEG
+          // Precache the app shell; raster assets are cached on first use below.
+          globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
+          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
           // Don't cache API/WebSocket calls
           navigateFallback: 'index.html',
           navigateFallbackDenylist: [/^\/api/, /^\/ws/],

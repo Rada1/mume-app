@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createPortal } from 'react-dom';
 
@@ -15,6 +15,8 @@ import './components/Controls/Landscape.css';
 import './components/Drawers/Drawers.css';
 import './components/Modals/Modals.css';
 import './components/css/Popovers.css';
+import './components/css/InlinePopoverMobile.css';
+import './components/css/InlinePopoverTraitGroups.css';
 import './components/css/HelpGuides.css';
 import './components/css/PremiumSwitch.css';
 import './styles/effects.css';
@@ -42,10 +44,8 @@ import { toThemeLinkedColor } from './utils/themeLinkedColors';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { canAccessShaper } from './shaper/access/shaperAccess';
-import { ShaperAccessDialog } from './shaper/components/ShaperAccessDialog';
 import './styles/terminalPanels.css';
 import './components/HUD/MapTerminalDock.css';
-import { ShaperWorkspace } from './shaper/components/ShaperWorkspace';
 import { cleanupDevServiceWorkers } from './utils/devServiceWorkerCleanup';
 import { useZoneThemeSync } from './hooks/useZoneThemeSync';
 import { useImmersionDamagePulse } from './hooks/useImmersionDamagePulse';
@@ -58,6 +58,9 @@ import './styles/classicModeLayout.css';
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
 import { useEffectTimerStore } from './stores/useEffectTimerStore';
 import { useVitalsStore } from './stores/useVitalsStore';
+
+const ShaperWorkspace = lazy(() => import('./shaper/components/ShaperWorkspace').then(module => ({ default: module.ShaperWorkspace })));
+const ShaperAccessDialog = lazy(() => import('./shaper/components/ShaperAccessDialog').then(module => ({ default: module.ShaperAccessDialog })));
 
 cleanupDevServiceWorkers();
 
@@ -406,27 +409,31 @@ const MudClient = () => {
 
             {typeof document !== 'undefined' && ui.isShaperOpen && canAccessShaper() && createPortal(
                 <ErrorBoundary name="Shaper Workspace">
-                    <ShaperWorkspace
-                        onClose={() => setUI(prev => ({ ...prev, isShaperOpen: false }))}
-                        onSendCommand={(cmd: string) => executeCommand(cmd)}
-                        isConnected={status === 'connected'}
-                        isEditorOpen={mumeEditState.isOpen}
-                        onSaveEditor={handleSaveMumeEdit}
-                    />
+                    <Suspense fallback={null}>
+                        <ShaperWorkspace
+                            onClose={() => setUI(prev => ({ ...prev, isShaperOpen: false }))}
+                            onSendCommand={(cmd: string) => executeCommand(cmd)}
+                            isConnected={status === 'connected'}
+                            isEditorOpen={mumeEditState.isOpen}
+                            onSaveEditor={handleSaveMumeEdit}
+                        />
+                    </Suspense>
                 </ErrorBoundary>,
                 document.body
             )}
 
             {typeof document !== 'undefined' && ui.isShaperAccessOpen && createPortal(
                 <ErrorBoundary name="Shaper Access">
-                    <ShaperAccessDialog
-                        onClose={() => setUI(prev => ({ ...prev, isShaperAccessOpen: false }))}
-                        onGranted={() => setUI(prev => ({
-                            ...prev,
-                            isShaperAccessOpen: false,
-                            isShaperOpen: true
-                        }))}
-                    />
+                    <Suspense fallback={null}>
+                        <ShaperAccessDialog
+                            onClose={() => setUI(prev => ({ ...prev, isShaperAccessOpen: false }))}
+                            onGranted={() => setUI(prev => ({
+                                ...prev,
+                                isShaperAccessOpen: false,
+                                isShaperOpen: true
+                            }))}
+                        />
+                    </Suspense>
                 </ErrorBoundary>,
                 document.body
             )}

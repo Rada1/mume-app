@@ -3,9 +3,6 @@ import Header from '../HUD/Header';
 import MessageLog from '../Messages/MessageLog';
 import ChatWindow from '../Messages/ChatTranscriptWindow';
 import GearPanel from '../GearPanel';
-import HelpPanel from '../Help/HelpPanel';
-import { MumeEditor } from '../Utility/MumeEditor';
-import { MumeArchive } from '../Utility/MumeArchive';
 import { LogDockedInput } from '../HUD/LogDockedInput';
 import InputArea from '../Controls/InputArea';
 import { RightActionPanel } from '../HUD/RightActionPanel';
@@ -18,7 +15,7 @@ import { useHelpStore } from '../../stores/useHelpStore';
 import { useArchiveStore } from '../../stores/useArchiveStore';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import { useGearPanelStore } from '../../stores/useGearPanelStore';
-import { DockedPanelId, computeDockedPanelStyle, getDockedWidth } from '../../utils/dockedPanelUtils';
+import { getDockedWidth } from '../../utils/dockedPanelUtils';
 import { LineCluster } from './HUD/LineCluster';
 import ActionBox from '../HUD/ActionBox';
 import { CharacterCard } from '../HUD/CharacterCard';
@@ -26,7 +23,6 @@ import { useCharacterCardStore } from '../../stores/useCharacterCardStore';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import { TokenRenderer } from '../Messages/TokenRenderer';
-import { ShopPanel } from '../Shop/ShopPanel';
 import { TimerExpiryToast } from '../Timers/TimerExpiryToast';
 import { RoomLootQueue } from '../HUD/RoomLootQueue';
 import { QuickButtonBar } from '../HUD/QuickButtonBar';
@@ -42,6 +38,12 @@ import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { getRoomTerrainVisualKey, getZoneVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 import { useMobileGearSwipe } from '../../hooks/useMobileGearSwipe';
+import { useDockedPanelLayout } from '../../hooks/useDockedPanelLayout';
+
+const HelpPanel = React.lazy(() => import('../Help/HelpPanel'));
+const MumeEditor = React.lazy(() => import('../Utility/MumeEditor'));
+const MumeArchive = React.lazy(() => import('../Utility/MumeArchive').then(module => ({ default: module.MumeArchive })));
+const ShopPanel = React.lazy(() => import('../Shop/ShopPanel').then(module => ({ default: module.ShopPanel })));
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -132,22 +134,12 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         mumeEditState.context?.kind !== 'self-whois'
     );
 
-    const activeDockedPanels = React.useMemo(() => {
-        if (gameState === 'account') return isCommandPanelOpen ? ['commands'] as readonly DockedPanelId[] : [] as readonly DockedPanelId[];
-        const list: DockedPanelId[] = [];
-        if (isEditorOpen) list.push('editor');
-        if (isArchiveOpen) list.push('archive');
-        if (isShopOpen && !isGearPanelOpen) list.push('shop');
-        if (isGearPanelOpen) list.push('gear');
-        if (isHelpOpen) list.push('help');
-        if (showChatWindow) list.push('chat');
-        if (isCommandPanelOpen || isSkillsPanelOpen) list.push('commands');
-        return list;
-    }, [gameState, showChatWindow, isShopOpen, isGearPanelOpen, isHelpOpen, isArchiveOpen, isEditorOpen, isCommandPanelOpen, isSkillsPanelOpen, viewport.isMobile]);
-    const hasDockedPanels = activeDockedPanels.length > 0;
-    const hasMobileHeaderPanel = viewport.isMobile && activeDockedPanels.some(panel =>
-        panel === 'commands' || panel === 'gear' || panel === 'help' || panel === 'chat'
+    const { activeDockedPanels, hasMobileHeaderPanel, getPanelStyle } = useDockedPanelLayout(
+        viewport.isMobile,
+        gameState,
+        isEditorOpen
     );
+    const hasDockedPanels = activeDockedPanels.length > 0;
 
     React.useEffect(() => {
         if (gameState === 'account' && !viewport.isMobile) setIsCommandPanelOpen(true);
@@ -614,7 +606,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     )}
                 </div>
                 {(isCommandPanelOpen || isSkillsPanelOpen) && (
-                    <aside className="docked-panel command-docked-panel" style={computeDockedPanelStyle('commands', activeDockedPanels, viewport.isMobile)} aria-label={isSkillsPanelOpen ? 'Skills and Practice panel' : 'Command Guide panel'}>
+                    <aside className="docked-panel command-docked-panel" style={getPanelStyle('commands')} aria-label={isSkillsPanelOpen ? 'Skills and Practice panel' : 'Command Guide panel'}>
                         {!viewport.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" minWidth={14} maxWidth={50} />}
                         {gameState === 'account' ? <MobileAccountExperience /> : isSkillsPanelOpen
                             ? <RightActionPanel skillsOnly onClose={() => viewport.isMobile ? setIsMobileSkillsPanelOpen(false) : setIsSkillsPanelOpen(false)} />
@@ -622,24 +614,32 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     </aside>
                 )}
                 {isGearPanelOpen && gameState !== 'account' && (
-                    <GearPanel style={computeDockedPanelStyle('gear', activeDockedPanels, viewport.isMobile)} />
+                    <GearPanel style={getPanelStyle('gear')} />
                 )}
                 {showChatWindow && (
                     <ChatWindow
-                        style={computeDockedPanelStyle('chat', activeDockedPanels, viewport.isMobile)}
+                        style={getPanelStyle('chat')}
                     />
                 )}
                 {isShopOpen && !isGearPanelOpen && gameState !== 'account' && (
-                    <ShopPanel style={computeDockedPanelStyle('shop', activeDockedPanels, viewport.isMobile)} />
+                    <React.Suspense fallback={null}>
+                        <ShopPanel style={getPanelStyle('shop')} />
+                    </React.Suspense>
                 )}
                 {isHelpOpen && gameState !== 'account' && (
-                    <HelpPanel style={computeDockedPanelStyle('help', activeDockedPanels, viewport.isMobile)} />
+                    <React.Suspense fallback={null}>
+                        <HelpPanel style={getPanelStyle('help')} />
+                    </React.Suspense>
                 )}
                 {isArchiveOpen && gameState !== 'account' && (
-                    <MumeArchive style={computeDockedPanelStyle('archive', activeDockedPanels, viewport.isMobile)} />
+                    <React.Suspense fallback={null}>
+                        <MumeArchive style={getPanelStyle('archive')} />
+                    </React.Suspense>
                 )}
                 {isEditorOpen && gameState !== 'account' && (
-                    <MumeEditor style={computeDockedPanelStyle('editor', activeDockedPanels, viewport.isMobile)} />
+                    <React.Suspense fallback={null}>
+                        <MumeEditor style={getPanelStyle('editor')} />
+                    </React.Suspense>
                 )}
             </div>
 

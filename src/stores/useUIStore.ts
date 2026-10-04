@@ -6,6 +6,8 @@
 import { create } from 'zustand';
 import { PopoverState, DrawerType, ObjectDragState, QuickButton } from '../types';
 import type { ArchiveEditorContext } from './useArchiveStore';
+import { useActiveDockedPanelStore } from './useActiveDockedPanelStore';
+import { useGearPanelStore } from './useGearPanelStore';
 
 export interface SelectedTargetInfo {
     id: string;
@@ -134,7 +136,11 @@ const defaultMumeEditState: MumeEditState = {
 
 const isDesktopViewport = () => typeof window !== 'undefined' && window.innerWidth >= 1024;
 
-export const useUIStore = create<UIState>((set) => ({
+const isDockedEditorState = (state: MumeEditState) => state.isOpen && ![
+    'archive-reply', 'archive-compose', 'self-description', 'self-whois'
+].includes(state.context?.kind ?? '');
+
+export const useUIStore = create<UIState>((set, get) => ({
     drawer: isDesktopViewport() ? 'account' : 'none',
     isDrawerPeeking: false,
     mapExpanded: typeof window !== 'undefined' ? isDesktopViewport() : true,
@@ -171,7 +177,12 @@ export const useUIStore = create<UIState>((set) => ({
     })),
 
     isShopOpen: false,
-    setIsShopOpen: (open) => set({ isShopOpen: open }),
+    setIsShopOpen: (open) => {
+        set({ isShopOpen: open });
+        const activeStore = useActiveDockedPanelStore.getState();
+        if (open) activeStore.setActivePanel(useGearPanelStore.getState().isOpen ? 'gear' : 'shop');
+        else if (activeStore.activePanel === 'shop') activeStore.setActivePanel(null);
+    },
     shopItems: [],
     setShopItems: (items) => set({ shopItems: items }),
     shopVariantRequest: null,
@@ -208,9 +219,13 @@ export const useUIStore = create<UIState>((set) => ({
     setPopoverState: (update) => set((state) => ({
         popoverState: typeof update === 'function' ? update(state.popoverState) : update
     })),
-    setMumeEditState: (updater) => set((state) => ({ 
-        mumeEditState: typeof updater === 'function' ? updater(state.mumeEditState) : updater 
-    })),
+    setMumeEditState: (updater) => {
+        const nextState = typeof updater === 'function' ? updater(get().mumeEditState) : updater;
+        set({ mumeEditState: nextState });
+        const activeStore = useActiveDockedPanelStore.getState();
+        if (isDockedEditorState(nextState)) activeStore.setActivePanel('editor');
+        else if (activeStore.activePanel === 'editor') activeStore.setActivePanel(null);
+    },
     setIsNewbieMode: (mode) => set({ isNewbieMode: mode }),
     setIsSettingsOpen: (open) => set({ isSettingsOpen: open }),
     setIsLibraryOpen: (open) => set({ isLibraryOpen: open }),

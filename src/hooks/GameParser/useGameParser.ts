@@ -312,6 +312,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const pendingHelpInterestRef = useRef(false);
     const pendingCommXmlRef = useRef<{ tag: string; line: string; isSnoop: boolean } | null>(null);
     const textMapperStateRef = useRef(createTextMapperState());
+    const scoutStopPendingRef = useRef(false);
     const finalizeNearbyCapture = useCallback(() => {
         if (!nearbyCaptureRef.current.active) return;
         const capture = nearbyCaptureRef.current;
@@ -714,6 +715,17 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         if (!isSnoop) {
+            const plainScoutLine = stripAnsiControlSequences(lineToParse).replace(/<[^>]*>/g, ' ').trim();
+            if (typeof window !== 'undefined' && /^you quietly scout\b/i.test(plainScoutLine)) {
+                window.dispatchEvent(new CustomEvent('mume-mapper-scout-state', { detail: { active: true, response: true } }));
+            } else if (/^you stop scouting\b/i.test(plainScoutLine)) {
+                scoutStopPendingRef.current = true;
+                setStats((previous: { conditions?: Record<string, boolean> }) => ({
+                    ...previous,
+                    conditions: { ...previous.conditions, waiting: false }
+                }));
+            }
+
             const xmlMoveDir = extractXmlMovementDir(lineToParse);
             if (xmlMoveDir !== null && typeof window !== 'undefined') {
                 window.dispatchEvent(new CustomEvent('mume-mapper-move-confirmed', {
@@ -737,6 +749,16 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             const event = textMapperResult.event;
             if (event && typeof window !== 'undefined') {
                 window.dispatchEvent(new CustomEvent('mume-gmcp-room-info', { detail: event }));
+            }
+            if (isEndPromptLine && scoutStopPendingRef.current) {
+                scoutStopPendingRef.current = false;
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('mume-mapper-scout-state', { detail: { active: false } }));
+                }
+                setStats((previous: { conditions?: Record<string, boolean> }) => ({
+                    ...previous,
+                    conditions: { ...previous.conditions, waiting: false }
+                }));
             }
         }
 

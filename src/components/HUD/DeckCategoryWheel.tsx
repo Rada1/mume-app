@@ -97,7 +97,6 @@ export const DeckCategoryWheel: React.FC<DeckCategoryWheelProps> = ({
             setSwapPickerDirection(null);
         }
     };
-
     return <div className={`deck-category-control${highlightIcon ? ' has-action-targets' : ''}`}>
         <GameButton
             {...gameButtonProps}

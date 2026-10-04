@@ -141,6 +141,7 @@ export interface GmcpRoomInfo {
     room_quest_flags?: string[];
     spectating?: boolean;
     source?: 'gmcp' | 'text';
+    scouting?: boolean;
 }
 
 export interface LabelVector {

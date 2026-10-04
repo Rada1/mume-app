@@ -143,6 +143,14 @@ export interface GmcpOccupant {
     _roomNum?: number | string | null;
     /** Client-side order from the latest authoritative Room.Chars roster. */
     _roomOrder?: number;
+    /** Order observed in the latest visible room description. */
+    _visibleRoomOrder?: number;
+}
+
+export interface VisibleRoomSubject {
+    id: string | null;
+    label: string;
+    line: string;
 }
 
 export interface GmcpRoomPlayers extends Array<string | GmcpOccupant> {}

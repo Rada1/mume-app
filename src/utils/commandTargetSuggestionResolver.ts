@@ -29,7 +29,7 @@ import {
     getMountTargetSuggestions,
     getRescueTargetSuggestions,
     getRoomCorpseTargetSuggestions,
-    getRoomObjectTargetsWithExit,
+    getRoomContainerTargetSuggestions,
     getRoomTargetSuggestions,
     getSelfAndRoomAlliesTargetSuggestions,
     getSelfAndRoomTargetSuggestions,
@@ -217,7 +217,7 @@ const getMenuSuggestions = (
     ];
     if (kind === 'self-only') return [getSelfTargetSuggestion()];
     if (kind === 'self-inventory') return [getSelfTargetSuggestion(), ...getGearTargetSuggestions(inventoryLines, 'inventory')];
-    if (kind === 'pick') return getRoomObjectTargetsWithExit(roomObjects);
+    if (kind === 'pick') return getRoomContainerTargetSuggestions(roomObjects);
     if (kind === 'door-direction') return [{ key: 'door-exit', label: 'Exit', value: 'exit', meta: 'exit' }];
     if (kind === 'room-spell' || kind === 'room-spell-with-extras' || kind === 'bash' || kind === 'room') {
         const verb = command.trim().split(/\s+/, 1)[0].toLowerCase();

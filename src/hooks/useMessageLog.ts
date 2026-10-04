@@ -12,6 +12,8 @@ import { normalizeMovementDirection, MovementDirection } from '../utils/movement
 import { matchSpellCompletion } from '../constants/spellCompletionMessages';
 import { foldRoomEntityStatus } from '../utils/roomEntityStatus';
 import { isChatMessage } from '../utils/chatWindowUtils';
+import { useVisibleRoomOrder } from './useVisibleRoomOrder';
+import { LogFlushScheduler } from './logFlushScheduler';
 
 // ---------------------------------------------------------------------------
 // Regex constants
@@ -105,6 +107,7 @@ export function useMessageLog(
     isSpectateSession?: boolean
 ) {
     const messageLimit = isSpectateSession ? SPECTATE_LOG_MESSAGE_LIMIT : USER_LOG_MESSAGE_LIMIT;
+    const observeRoomLine = useVisibleRoomOrder(isSpectateSession);
     const setMessages = isSpectateSession
         ? useMessageStore.getState().setSpectateMessages
         : useMessageStore.getState().setUserMessages;
@@ -113,7 +116,11 @@ export function useMessageLog(
         : useMessageStore.getState().clearUserMessages;
     const lastMessageRef = useRef<Message | null>(null);
     const messageBufferRef = useRef<Message[]>([]);
-    const flushTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const flushMessagesRef = useRef<() => void>(() => undefined);
+    const flushSchedulerRef = useRef<LogFlushScheduler | null>(null);
+    if (flushSchedulerRef.current === null) {
+        flushSchedulerRef.current = new LogFlushScheduler(() => flushMessagesRef.current());
+    }
     // Tracks every mid that has been committed to the buffer or state. Used for
     // deduplication instead of `messages.some(...)` which captures a stale closure.
     const addedMidSetRef = useRef<Set<string>>(new Set());
@@ -123,7 +130,6 @@ export function useMessageLog(
     // animate the room output it produces. The direction is consumed by the
     // next room title, so ordinary `look` output remains still.
     const pendingRoomArrivalRef = useRef<{ direction: MovementDirection; timestamp: number } | null>(null);
-    const pendingFocusRevealUntilRef = useRef(0);
 
     // Resource gains (XP/TP) arrive via GMCP, sometimes just *before* the combat line
     // that earned them. We queue them and attach to the next action line that flushes;
@@ -196,6 +202,7 @@ export function useMessageLog(
     }, []);
 
     const flushMessages = useCallback(() => {
+        flushSchedulerRef.current?.cancel();
         if (messageBufferRef.current.length === 0) return;
 
         batchIdRef.current += 1;
@@ -343,8 +350,18 @@ export function useMessageLog(
             }
             return nextMessages;
         });
-        flushTimeoutRef.current = null;
     }, [messageLimit]);
+    flushMessagesRef.current = flushMessages;
+
+    useEffect(() => {
+        const onVisibilityChange = () => flushSchedulerRef.current?.onVisibilityChange();
+        document.addEventListener('visibilitychange', onVisibilityChange);
+        if (messageBufferRef.current.length > 0) flushSchedulerRef.current?.schedule();
+        return () => {
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+            flushSchedulerRef.current?.cancel();
+        };
+    }, []);
 
     const addMessage = useCallback((
         type: MessageType,
@@ -551,9 +568,7 @@ export function useMessageLog(
                     html: buffer[lastRoomIdx].html + `<div class="room-desc-line">${descHtml}</div>`,
                 };
                 lastMessageRef.current = buffer[lastRoomIdx];
-                if (!flushTimeoutRef.current) {
-                    flushTimeoutRef.current = requestAnimationFrame(flushMessages) as unknown as NodeJS.Timeout;
-                }
+                flushSchedulerRef.current?.schedule();
             } else {
                 // Case 2: Room name has already been flushed to the messages state
                 setMessages(prev => {
@@ -695,32 +710,13 @@ export function useMessageLog(
         }
 
         const receivedAt = Date.now();
-        // Arm focus only after the command echo has actually entered the log. Listening
-        // to the outbound socket event made the animation run before the server's prose
-        // existed, where it could be interrupted by the arriving response.
         const echoedCommand = currentTextOnly.trim().replace(/^.*>\s*/, '');
-        const isFocusCommand = finalType === 'user' &&
-            /^(?:l|look|ex|exa|exam|examine)(?:\s|$)/i.test(echoedCommand);
         const isMovementCommand = finalType === 'user' && !!normalizeMovementDirection(echoedCommand);
         if (finalType === 'user') {
-            // Keep this generous enough to survive a burst of queued commands
-            // and their interleaved server prompts.
-            pendingFocusRevealUntilRef.current = (isFocusCommand || isMovementCommand) ? receivedAt + 4000 : 0;
             if (isMovementCommand) {
                 const dir = normalizeMovementDirection(echoedCommand);
                 if (dir) pendingRoomArrivalRef.current = { direction: dir, timestamp: receivedAt };
             }
-        }
-
-        const isFocusReveal = finalType !== 'user' &&
-            (pendingFocusRevealUntilRef.current > receivedAt || finalType === 'movement' || !!roomArrivalDirection) &&
-            (finalType === 'game' || finalType === 'movement' || finalType === 'room-name' || finalType === 'room-description') &&
-            !isEmpty;
-        // A prompt can belong to an earlier command while a newer look/move is
-        // already in flight. Only expiry clears the reveal; otherwise prompt
-        // ordering can make the next room or examine text miss its fade-in.
-        if (pendingFocusRevealUntilRef.current <= receivedAt) {
-            pendingFocusRevealUntilRef.current = 0;
         }
 
         // Every incoming game line gets the same one-shot text cue. This keeps
@@ -773,7 +769,6 @@ export function useMessageLog(
             isSnoopInput: providedIsSnoopInput,
             isRipMessage: providedIsRipMessage,
             audioSheen: shouldApplyAudioSheen,
-            isFocusReveal,
             isMagicRipple,
             resourceGain,
             promptHPStatus,
@@ -803,10 +798,7 @@ export function useMessageLog(
             // user command immediately. This ensures consistent ordering: lingering server
             // output always precedes the new user command, and future server responses
             // (which haven't arrived yet) will be batched and rendered below it.
-            if (flushTimeoutRef.current) {
-                cancelAnimationFrame(flushTimeoutRef.current as unknown as number);
-                flushTimeoutRef.current = null;
-            }
+            flushSchedulerRef.current?.cancel();
             const drained = messageBufferRef.current.splice(0);
 
             // Deduplicate: if an ID is provided, ensure it's not already in the log
@@ -831,6 +823,12 @@ export function useMessageLog(
             // addedMidSetRef is always current (no stale closure), unlike messages state.
             if (mid) {
                 if (addedMidSetRef.current.has(mid)) return;
+            }
+
+            // A room card can only group one room's contents. Close the previous
+            // card before another room title enters this paint's shared buffer.
+            if (msg.isRoomName && messageBufferRef.current.some(buffered => buffered.isRoomName)) {
+                flushMessages();
             }
 
             // A lone carriage return from the server marks a prompt redraw.
@@ -881,23 +879,19 @@ export function useMessageLog(
             }
             if (mid) addedMidSetRef.current.add(mid);
             messageBufferRef.current.push(msg);
+            observeRoomLine(msg);
 
-            if (!flushTimeoutRef.current) {
-                // Adaptive delay instead of a fixed 50ms, relying on requestAnimationFrame
-                // to give the browser time to paint, but processing sooner.
-                flushTimeoutRef.current = requestAnimationFrame(flushMessages) as unknown as NodeJS.Timeout;
-            }
+            // One commit per paint keeps a burst of socket chunks from repainting
+            // and measuring the log repeatedly before the screen can show them.
+            flushSchedulerRef.current?.schedule();
         }
-    }, [inCombatRef, setMessages, flushMessages, roomContext, isAccountModeRef, playCommMessageSound, messageLimit]);
+    }, [inCombatRef, setMessages, flushMessages, roomContext, isAccountModeRef, playCommMessageSound, messageLimit, observeRoomLine]);
 
     const clearLog = useCallback(() => {
         messageBufferRef.current = [];
         addedMidSetRef.current.clear();
         lastMessageRef.current = null;
-        if (flushTimeoutRef.current) {
-            cancelAnimationFrame(flushTimeoutRef.current as unknown as number);
-            flushTimeoutRef.current = null;
-        }
+        flushSchedulerRef.current?.cancel();
         clearStoreMessages();
     }, [clearStoreMessages]);
 

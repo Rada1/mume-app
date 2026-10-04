@@ -4,6 +4,7 @@
  */
 
 export type DockedPanelId = 'commands' | 'chat' | 'group' | 'shop' | 'gear' | 'help' | 'archive' | 'editor';
+export type DockedPanelTab = Exclude<DockedPanelId, 'group'> | 'skills';
 
 export const DOCKED_PANEL_ORDER: readonly DockedPanelId[] = [
     'editor', 'archive', 'shop', 'gear', 'help', 'chat', 'group', 'commands'

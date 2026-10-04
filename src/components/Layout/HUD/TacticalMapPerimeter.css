@@ -4,6 +4,7 @@
 .mobile-map-panel.map-expanded {
     --tactical-control-size: clamp(52px, 15vw, 62px);
     --tactical-class-control-size: clamp(52px, 16vw, 66px);
+    --tactical-bottom-action-size: clamp(60px, 20vw, 88px);
     --tactical-edge-inset: clamp(4px, 1.5vw, 8px);
 }
 
@@ -219,10 +220,10 @@ body:has(.mapper-container.map-swipe-wheel-open) .mobile-map-panel.map-expanded 
 .mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn {
     position: relative !important;
     inset: auto !important;
-    width: var(--tactical-control-size) !important;
-    height: var(--tactical-control-size) !important;
-    min-width: var(--tactical-control-size) !important;
-    min-height: var(--tactical-control-size) !important;
+    width: var(--tactical-bottom-action-size) !important;
+    height: var(--tactical-bottom-action-size) !important;
+    min-width: var(--tactical-bottom-action-size) !important;
+    min-height: var(--tactical-bottom-action-size) !important;
     justify-self: center;
     align-self: center;
     margin: 0 !important;
@@ -247,8 +248,9 @@ body:has(.mapper-container.map-swipe-wheel-open) .mobile-map-panel.map-expanded 
 
 .mobile-map-panel.map-expanded .mobile-map-bottom-actions .button-label {
     max-width: 90%;
-    font-size: clamp(0.9rem, 3.5vw, 1rem) !important;
+    font-size: clamp(1.05rem, 4.5vw, 1.3rem) !important;
     font-weight: 900 !important;
+    -webkit-text-stroke: 0.45px currentColor;
     letter-spacing: 0.04em;
     line-height: 1;
     color: #b0a080 !important;

@@ -12,12 +12,14 @@ import { useRoomDrinkWater } from './useRoomDrinkWater';
 import { useInputStore } from '../stores/useInputStore';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { useUIStore } from '../stores/useUIStore';
+import { useVitals } from '../context/GameContext';
 import { DrawerLine, GameState } from '../types/game';
 import type { PracticeSkill } from '../types';
 import {
     CommandTargetSuggestion,
     CommandTextParts,
-    getMagicKeyTargetSuggestions
+    getMagicKeyTargetSuggestions,
+    getRescueTargetSuggestions
 } from '../utils/commandSuggestionUtils';
 import { BLANK_TARGET_VALUE, getCommandTargetMenuKind } from '../utils/commandTargetUtils';
 import { getMagicKeyId, parseKeyedSpellCommand } from '../utils/magicKeyUtils';
@@ -87,6 +89,7 @@ export const useCommandSuggestions = ({
     const commandArgumentChipId = useRef(0);
 
     const chars = useRoomStore(s => s.chars);
+    const { groupMembers } = useVitals();
     const roomItems = useRoomStore(s => s.items);
     const roomWaterAvailable = useRoomDrinkWater();
     const whoList = useRoomStore(s => s.whoList);
@@ -172,6 +175,13 @@ export const useCommandSuggestions = ({
         if (!hasCommandArgumentSpace || !commandTextParts) return { suggestions: [], fragment: '', argumentIndex: 0 };
 
         const command = `${commandToken}${commandTextParts?.suffix || ''}`.trim();
+        if (/^rescue(?:\s|$)/i.test(command)) {
+            return {
+                suggestions: getRescueTargetSuggestions(Object.values(chars || {}), characterName, groupMembers),
+                fragment: commandTextParts?.suffix.trim().split(/\s+/, 1)[0] || '',
+                argumentIndex: 0
+            };
+        }
         return resolveCommandTargetSuggestions({
             command,
             argumentText: commandTextParts?.suffix || '',
@@ -188,7 +198,7 @@ export const useCommandSuggestions = ({
             shopItems,
             roomWaterAvailable
         });
-    }, [abilities, characterName, chars, commandTextParts, commandToken, hasCommandArgumentSpace, inventoryLines, keyedSpellInput, practiceSkills, roomItems, roomWaterAvailable, shopItems, teleportTargets, whoList, wornLines]);
+    }, [abilities, characterName, chars, commandTextParts, commandToken, groupMembers, hasCommandArgumentSpace, inventoryLines, keyedSpellInput, practiceSkills, roomItems, roomWaterAvailable, shopItems, teleportTargets, whoList, wornLines]);
 
     const targetSuggestions = useMemo<CommandTargetSuggestion[]>(() => {
         const isStagedCommand = /^(give|put|get)$/.test(commandTokenKey)

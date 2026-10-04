@@ -5,6 +5,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { useActiveDockedPanelStore } from './useActiveDockedPanelStore';
 
 export type CommandPanelTab = 'combat' | 'skills' | 'utility';
 
@@ -30,10 +31,30 @@ export const useCommandPanelStore = create<CommandPanelState>()(
             isMobileOpen: false,
             isMobileGuideOpen: false,
             requestedTab: null,
-            setIsOpen: isOpen => set({ isOpen, ...(isOpen ? { isSkillsOpen: false } : {}) }),
-            setIsSkillsOpen: isSkillsOpen => set({ isSkillsOpen, ...(isSkillsOpen ? { isOpen: false } : {}) }),
-            setIsMobileOpen: isMobileOpen => set({ isMobileOpen, ...(isMobileOpen ? { isMobileGuideOpen: false } : {}) }),
-            setIsMobileGuideOpen: isMobileGuideOpen => set({ isMobileGuideOpen, ...(isMobileGuideOpen ? { isMobileOpen: false } : {}) }),
+            setIsOpen: isOpen => {
+                set({ isOpen, ...(isOpen ? { isSkillsOpen: false } : {}) });
+                const activeStore = useActiveDockedPanelStore.getState();
+                if (isOpen) activeStore.setActivePanel('commands');
+                else if (activeStore.activePanel === 'commands') activeStore.setActivePanel(null);
+            },
+            setIsSkillsOpen: isSkillsOpen => {
+                set({ isSkillsOpen, ...(isSkillsOpen ? { isOpen: false } : {}) });
+                const activeStore = useActiveDockedPanelStore.getState();
+                if (isSkillsOpen) activeStore.setActivePanel('skills');
+                else if (activeStore.activePanel === 'skills') activeStore.setActivePanel(null);
+            },
+            setIsMobileOpen: isMobileOpen => {
+                set({ isMobileOpen, ...(isMobileOpen ? { isMobileGuideOpen: false } : {}) });
+                const activeStore = useActiveDockedPanelStore.getState();
+                if (isMobileOpen) activeStore.setActivePanel('skills');
+                else if (activeStore.activePanel === 'skills') activeStore.setActivePanel(null);
+            },
+            setIsMobileGuideOpen: isMobileGuideOpen => {
+                set({ isMobileGuideOpen, ...(isMobileGuideOpen ? { isMobileOpen: false } : {}) });
+                const activeStore = useActiveDockedPanelStore.getState();
+                if (isMobileGuideOpen) activeStore.setActivePanel('commands');
+                else if (activeStore.activePanel === 'commands') activeStore.setActivePanel(null);
+            },
             requestTab: requestedTab => set({ requestedTab }),
             clearRequestedTab: () => set({ requestedTab: null }),
         }),

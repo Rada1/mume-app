@@ -117,10 +117,9 @@ export const TacticalCommandPanel: React.FC<Props> = ({
         const currentCommand = currentCommandRef.current || button.command;
         if (currentCommand.trim().toLowerCase() === 'look' && targetValue === LOOK_IN_TARGET_VALUE) return;
         if (targetValue && !wheelReplacementMode && !columns?.length) {
-            onTargetSelected?.(targetValue);
-            targeting.handleSelectTarget(targetValue, currentCommand, false);
+            targeting.handleSelectTarget(targetValue, currentCommand, false, false);
         }
-    }, [button.command, currentCommandRef, onTargetSelected, targeting, wheelReplacementMode, columns]);
+    }, [button.command, currentCommandRef, targeting, wheelReplacementMode, columns]);
     const getCommandTargetGlowColor = useCallback((swipeCommand: string) => {
         // Retain the caster-targeted buff highlight behind a feature flag for
         // possible later use; ally command highlighting is currently disabled.

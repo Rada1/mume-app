@@ -24,11 +24,10 @@ describe('MessageLog animations in Immersion Mode', () => {
         expect(logCharBlock![1]).not.toContain('animation:');
     });
 
-    it('keeps focus-reveal out of immersion mode in TSX', () => {
-        expect(cssContent).toContain('.message.focus-reveal-active .message-content');
-        expect(tsxContent).toContain('const isFocusRevealActive = !isImmersionMode && focusRevealMessageId === msg.id;');
-        expect(tsxContent).toContain('if (isImmersionMode || isPerformanceMode || !msg.isFocusReveal || Date.now() - msg.timestamp > 4000 || playedFocusRevealIds.has(msg.id)) return;');
-        expect(tsxContent).toContain('${isFocusRevealActive ? \' focus-reveal-active\' : \'\'}');
+    it('does not apply the standard-mode focus reveal', () => {
+        expect(cssContent).not.toContain('focus-reveal');
+        expect(tsxContent).not.toContain('focusRevealMessageId');
+        expect(tsxContent).not.toContain('focus-reveal-active');
     });
 
     it('scopes account undulation wave and tier breathe to immersion-mode', () => {

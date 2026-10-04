@@ -23,7 +23,6 @@ import { DpadCluster } from './DpadCluster';
 import { DEFAULT_MOBILE_MAP_ZOOM, GRID_SIZE } from './mapperUtils';
 import { useMapperTracing } from './hooks/useMapperTracing';
 import { TracingHUD } from './TracingHUD';
-import { useMapAssets } from './hooks/useMapAssets';
 import { MapSwipeWheelOverlay } from './MapSwipeWheelOverlay';
 import { MapDoorTapFeedback } from './MapDoorTapFeedback';
 import './Mapper.css';
@@ -63,10 +62,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const wallBumpAnimationRef = useRef<Animation | null>(null);
     const cameraRef = useRef({ x: 0, y: 0, zoom: isMobile ? DEFAULT_MOBILE_MAP_ZOOM : 1 });
     const cardRef = useRef<HTMLDivElement>(null);
-    const imagesRef = useRef<Record<string, HTMLImageElement>>({});
     const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode || state.isClassicMode);
     const isCharacterPanelMinimized = useCharacterPanelStore(state => state.isMinimized);
-    useMapAssets(imagesRef, !isPerformanceMode);
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number, startTime?: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
 
@@ -348,7 +345,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 isDarkMode={isDarkMode}
                 isMobile={isMobile}
                 isLandscape={isLandscape}
-                imagesRef={imagesRef}
                 characterName={characterName ?? null}
                 playerPosRef={playerPosRef}
                 moveAnimRef={moveAnimRef}

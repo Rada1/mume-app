@@ -1,7 +1,5 @@
 import React from 'react';
-import SettingsModal from '../Modals/SettingsModal';
 import EditButtonModal from '../Modals/EditButtonModal';
-import SetManagerModal from '../Modals/SetManagerModal';
 import { PopoverManager } from '../Popovers/PopoverManager';
 import { DrawerManager } from '../Drawers/DrawerManager';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
@@ -11,6 +9,9 @@ import { extractMumeKeyword } from '../../utils/gameUtils';
 
 
 import { useSettingsStore } from '../../stores/useSettingsStore';
+
+const SettingsModal = React.lazy(() => import('../Modals/SettingsModal'));
+const SetManagerModal = React.lazy(() => import('../Modals/SetManagerModal'));
 
 interface ModalsLayerProps {
     isLoading: boolean;
@@ -160,8 +161,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
     return (
         <>
             {isSettingsOpen && (
-
-
+                <React.Suspense fallback={null}>
                 <SettingsModal
                     connectionUrl={connectionUrl}
                     setConnectionUrl={setConnectionUrl}
@@ -198,6 +198,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     createButton={btn.createButton}
                     setIsSetManagerOpen={setIsSetManagerOpen}
                 />
+                </React.Suspense>
             )}
 
             {btn.editingButtonId && (() => {
@@ -233,6 +234,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
             )}
 
             {ui.setManagerOpen && (
+                <React.Suspense fallback={null}>
                 <SetManagerModal
                     buttons={btn.rawButtons}
                     availableSets={btn.availableSets}
@@ -263,6 +265,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     inlineCategories={inlineCategories}
                     setInlineCategories={setInlineCategories}
                 />
+                </React.Suspense>
             )}
 
             <PopoverManager

@@ -13,7 +13,7 @@ import { normalizeOccupantType } from '../services/classification/normalizeOccup
 import { makeCommandTargetSuggestion, type CommandTargetSuggestion } from '../objects/targetSuggestionTypes';
 import {
     getAssistTargetSuggestions, getGiveRecipientSuggestions, getGroupTargetSuggestions, getRescueTargetSuggestions,
-    getRoomCorpseTargetSuggestions, getRoomObjectTargetsWithExit, getRoomTargetSuggestions
+    getRoomContainerTargetSuggestions, getRoomCorpseTargetSuggestions, getRoomObjectTargetsWithExit, getRoomTargetSuggestions
 } from '../objects/roomTargetSuggestions';
 import {
     getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions, getFluidContainerTargetSuggestions,
@@ -25,7 +25,7 @@ export { makeCommandTargetSuggestion };
 export type { CommandTargetSuggestion };
 export {
     getAssistTargetSuggestions, getGiveRecipientSuggestions, getGroupTargetSuggestions, getRescueTargetSuggestions,
-    getRoomCorpseTargetSuggestions, getRoomObjectTargetsWithExit, getRoomTargetSuggestions
+    getRoomContainerTargetSuggestions, getRoomCorpseTargetSuggestions, getRoomObjectTargetsWithExit, getRoomTargetSuggestions
 };
 export {
     getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions, getFluidContainerTargetSuggestions,
