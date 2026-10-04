@@ -185,6 +185,10 @@
 
 /* Desktop layout — log and drawer widths driven by CSS vars for user resizing */
 @media (min-width: 1025px) {
+    :root {
+        --desktop-map-width: calc((100vw - clamp(600px, 38vw, 1000px)) / 2 - 2vw);
+    }
+
     .content-layer {
         max-width: var(--desktop-log-width, clamp(600px, 38vw, 1000px));
     }

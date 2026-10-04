@@ -35,6 +35,7 @@ export class FastMapCore {
   private renderer: FastMapRendererApi | null = null;
   private latestFrame: FastMapFrame | null = null;
   private scheduled = false;
+  private animationTimer: ReturnType<typeof setTimeout> | null = null;
   private metricsEnabled = false;
   private metricsTimer: ReturnType<typeof setInterval> | null = null;
   private renderedFrames = 0;
@@ -138,6 +139,8 @@ export class FastMapCore {
 
   dispose(): void {
     this.stopMetrics();
+    if (this.animationTimer !== null) clearTimeout(this.animationTimer);
+    this.animationTimer = null;
     this.renderer?.dispose();
     this.renderer = null;
   }
@@ -156,7 +159,7 @@ export class FastMapCore {
       const start = performance.now();
       try {
         this.renderer.render(frame);
-        if (this.renderer.needsAnimation) this.requestRender();
+        if (this.renderer.needsAnimation) this.scheduleAnimationFrame();
         if (this.metricsEnabled) {
           if (this.lastRenderedAt > 0) this.renderIntervals.push(start - this.lastRenderedAt);
           this.lastRenderedAt = start;
@@ -167,6 +170,14 @@ export class FastMapCore {
         this.host.post({ type: 'error', stage: 'render', message: error instanceof Error ? error.message : String(error) });
       }
     });
+  }
+
+  private scheduleAnimationFrame(): void {
+    if (this.animationTimer !== null) return;
+    this.animationTimer = setTimeout(() => {
+      this.animationTimer = null;
+      if (this.renderer?.needsAnimation) this.requestRender();
+    }, 16);
   }
 
   private startMetrics(): void {

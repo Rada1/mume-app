@@ -117,12 +117,13 @@ export function buildExitConnectionGeometry(map: FastMapData, roomStates?: Uint8
   const arrowFloors = new Map<number, number[]>();
   const seenTwoWay = new Set<string>();
   for (let room = 0; room < map.roomCount; room++) {
+    if (roomStates && roomStates[room] !== ROOM_VISITED) continue;
     for (let slot = room * DIR_COUNT; slot < room * DIR_COUNT + DIR_COUNT; slot++) {
       const dir = slot % DIR_COUNT;
       for (let edge = map.exitTargetStarts[slot]!; edge < map.exitTargetStarts[slot + 1]!; edge++) {
         const target = map.exitTargets[edge]!;
         if (target === room || target >= map.roomCount) continue;
-        if (roomStates && (roomStates[room] !== ROOM_VISITED || roomStates[target] !== ROOM_VISITED)) continue;
+        if (roomStates && roomStates[target] !== ROOM_VISITED) continue;
         const targetDir = OPPOSITE_DIR[dir]!;
         const reverseSlot = target * DIR_COUNT + targetDir;
         let twoWay = false;
