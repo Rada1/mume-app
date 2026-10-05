@@ -1,6 +1,6 @@
 /** @file pinnedWheelAssignments.ts — Reassigns commands between pinned wheel cells. */
 
-import type { ActionType, CustomButton, SwipeDirection } from '../../../types';
+import type { ActionType, CustomButton, CustomSwipeCellMetadata, SwipeDirection } from '../../../types';
 
 // --- Logic Section ---
 type WheelCell = SwipeDirection | 'center';
@@ -11,6 +11,7 @@ interface CellBinding {
     longCommand?: string;
     longActionType?: ActionType;
     setId?: string;
+    customCell?: CustomSwipeCellMetadata;
 }
 
 const readBinding = (button: CustomButton, cell: WheelCell): CellBinding => cell === 'center'
@@ -26,7 +27,8 @@ const readBinding = (button: CustomButton, cell: WheelCell): CellBinding => cell
         actionType: button.swipeActionTypes?.[cell],
         longCommand: button.longSwipeCommands?.[cell] || '',
         longActionType: button.longSwipeActionTypes?.[cell],
-        setId: button.rebindSets?.[cell]
+        setId: button.rebindSets?.[cell],
+        customCell: button.customSwipeCells?.[cell]
     };
 
 const writeBinding = (button: CustomButton, cell: WheelCell, binding: CellBinding): CustomButton => {
@@ -41,13 +43,17 @@ const writeBinding = (button: CustomButton, cell: WheelCell, binding: CellBindin
         };
     }
 
+    const customSwipeCells = { ...(button.customSwipeCells || {}) };
+    if (binding.customCell) customSwipeCells[cell] = binding.customCell;
+    else delete customSwipeCells[cell];
     return {
         ...button,
         swipeCommands: { ...(button.swipeCommands || {}), [cell]: binding.command },
         longSwipeCommands: { ...(button.longSwipeCommands || {}), [cell]: binding.longCommand || '' },
         swipeActionTypes: { ...(button.swipeActionTypes || {}), [cell]: binding.actionType },
         longSwipeActionTypes: { ...(button.longSwipeActionTypes || {}), [cell]: binding.longActionType },
-        rebindSets: { ...(button.rebindSets || {}), [cell]: binding.setId || '' }
+        rebindSets: { ...(button.rebindSets || {}), [cell]: binding.setId || '' },
+        customSwipeCells
     };
 };
 

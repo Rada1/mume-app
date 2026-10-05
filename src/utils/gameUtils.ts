@@ -133,6 +133,7 @@ export const isItemContainer = (text: string): boolean => {
  */
 export const isFluidContainer = (text: string): boolean => {
     const cleanRaw = text.replace(/\x1b\[[0-9;]*m/g, '').toLowerCase();
+    if (/\b(?:helm|helmet)\b/i.test(cleanRaw)) return false;
     const fluidKeywords = /\b(?:skin|flask|cup|flagon|goblet|jag|bottle|jug|barrel|keg|vial|waterskin|pitcher|mug|stein|pot|bowl|bucket|pail|calabash|gourd|firebreather|tincture|pint|bladder)\b/i;
     return fluidKeywords.test(cleanRaw);
 };

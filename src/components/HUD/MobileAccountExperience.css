@@ -216,6 +216,10 @@
     box-shadow: inset 3px 0 var(--account-gold);
 }
 
+.mobile-account-character-no-link {
+    color: var(--ansi-bright-cyan, #55ffff) !important;
+}
+
 .mobile-account-character-actions {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

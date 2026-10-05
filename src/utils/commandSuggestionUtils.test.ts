@@ -219,7 +219,7 @@ describe('commandSuggestionUtils', () => {
             expect(suggestions.at(-1)).toMatchObject({ value: 'exit', meta: 'exit' });
         });
 
-        it('lists inventory and worn objects for Enchant', () => {
+        it('lists inventory and worn objects in shared gear suggestions', () => {
             const suggestions = getInventoryAndWornTargetSuggestions(
                 [{ id: 'inv-ring', text: 'a silver ring', html: 'a silver ring', isItem: true }],
                 [{ id: 'worn-sword', text: 'a long sword', html: 'a long sword', isItem: true }]

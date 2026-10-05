@@ -11,6 +11,7 @@ import { ButtonLabel } from './ButtonLabel';
 import { CircularVitals } from './CircularVitals';
 import { useTacticalTargeting } from './useTacticalTargeting';
 import { TacticalCommandPanel } from './TacticalCommandPanel';
+import { useSwipeWheelCellDialogStore } from '../../../stores/useSwipeWheelCellDialogStore';
 import { ThisIsYouConsole } from '../../HUD/ThisIsYouConsole';
 import { ShopTargetMenu } from '../../Shop/ShopTargetMenu';
 import { RightActionPanel } from '../../HUD/RightActionPanel';
@@ -33,7 +34,8 @@ import { BLANK_TARGET_VALUE, LOOK_IN_TARGET_VALUE, canCommandAcceptTarget, getDe
 import { getTargetClassificationColor } from '../../../utils/targetClassificationColor';
 import type { EntityColorMap } from '../../../utils/inlineActionModel';
 import { useTacticalArgumentChipStore } from '../../../stores/useTacticalArgumentChipStore';
-import { getSwipeCommandTextColor } from '../../../utils/swipeCommandColors';
+import { getButtonSwipeCommandTextColor } from '../../../utils/swipeCommandColors';
+import { assignCustomSwipeCell, getCustomCellRestoreMetadata, removeCustomSwipeCell } from './customSwipeCellUtils';
 import { useOffensiveCityActionConfirmation } from '../../../hooks/useOffensiveCityActionConfirmation';
 import { useSwipeLetterBlink } from './useSwipeLetterBlink';
 import { useCurrentRoomHasDoor } from '../../../hooks/useCurrentRoomHasDoor';
@@ -50,11 +52,15 @@ const getCommandInitial = (command: string): string => command.trim()
     .trim()
     .charAt(0)
     .toUpperCase();
-const CARDINAL_SWIPE_DIRECTIONS: Record<string, SwipeDirection> = {
+const COMMAND_SWIPE_DIRECTIONS: Record<string, SwipeDirection> = {
     north: 'up',
+    northeast: 'ne',
     east: 'right',
+    southeast: 'se',
     south: 'down',
-    west: 'left'
+    southwest: 'sw',
+    west: 'left',
+    northwest: 'nw'
 };
 const CLASS_PICKER_SET_IDS: Record<PracticeClassKey, string> = {
     mage: 'magespelllist',
@@ -153,6 +159,8 @@ export interface GameButtonProps {
     onSwapWheel?: (activeDir: import('../../../types').SwipeDirection | 'center' | null, centerCommand?: string) => void;
     onMovePinnedCells?: (source: SwipeDirection | 'center', destination: SwipeDirection | 'center', centerCommand: string) => boolean | string | void;
     onAssignPinnedCommand?: (command: string, actionType: import('../../../types').ActionType, destination: SwipeDirection | 'center', setId?: string) => string | void;
+    onCreateCustomSwipeCell?: (label: string, command: string) => string | null | undefined;
+    onDeleteCustomSwipeAction?: (command: string, direction?: SwipeDirection) => boolean;
     commandPalette?: TacticalPaletteCommand[];
     onTap?: () => void;
     openDecisionPanelOnHold?: boolean;
@@ -196,6 +204,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
     onSwapWheel,
     onMovePinnedCells,
     onAssignPinnedCommand,
+    onCreateCustomSwipeCell: onCreateCustomSwipeCellProp,
+    onDeleteCustomSwipeAction: onDeleteCustomSwipeActionProp,
     commandPalette,
     onTap,
     openDecisionPanelOnHold,
@@ -221,6 +231,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const visualSwipeDirection = isTacticalMapButton ? null : activeDir || feedbackDirection;
     const [isCancelling, setIsCancelling] = React.useState(false);
     const [isPanelPinned, setIsPanelPinned] = React.useState(false);
+    const [isDeletingCustomCell, setIsDeletingCustomCell] = React.useState(false);
+    const [isSwapMode, setIsSwapMode] = React.useState(false);
+    const [hoveredPanelTool, setHoveredPanelTool] = React.useState<'add' | 'delete' | 'swap' | null>(null);
+    const openCustomCellDialog = useSwipeWheelCellDialogStore(state => state.openDialog);
+    const endHeldGestureForDialogRef = useRef<() => void>(() => undefined);
     const [swapSource, setSwapSource] = React.useState<TacticalSwapCell | null>(null);
     const swapSourceRef = useRef<TacticalSwapCell | null>(null);
     const panelHoverCellRef = useRef<TacticalSwapCell | null>(null);
@@ -241,6 +256,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const enemyColor = useSettingsStore(state => state.enemyColor);
     const neutralColor = useSettingsStore(state => state.neutralColor);
     const theme = useSettingsStore(state => state.theme);
+    const showMapSwipeDirectionLetters = useSettingsStore(state => state.showMapSwipeDirectionLetters);
     const roomChars = useRoomStore(state => state.chars);
     const roomItemsById = useRoomStore(state => state.items);
     const whoList = useRoomStore(state => state.whoList);
@@ -310,9 +326,17 @@ export const GameButton: React.FC<GameButtonProps> = ({
         const source = commandPalette || (classPaletteSetId && classPaletteKey
             ? getClassPalette(classPaletteKey, classPaletteSetId, practice?.practiceData, abilities, paletteButton, availableButtons)
             : []);
+        const customCellCommands: TacticalPaletteCommand[] = (button.customSwipeActions || []).map((action, index) => ({
+            key: `custom-swipe-cell-${index}-${action.command}`,
+            label: action.label,
+            command: action.command,
+            actionType: 'command',
+            isCustomCell: true,
+        }));
+        const sourceWithCustomCells = [...source, ...customCellCommands];
         const withWarriorProtect = button.id === 'tactical-warrior' && hasLearnedRescue
-            ? [...source, { key: 'tactical-warrior-protect', label: 'Protect', command: 'protect', actionType: 'command' as const, setId: 'warriorskilllist' }]
-            : source;
+            ? [...sourceWithCustomCells, { key: 'tactical-warrior-protect', label: 'Protect', command: 'protect', actionType: 'command' as const, setId: 'warriorskilllist' }]
+            : sourceWithCustomCells;
         const seen = new Set<string>();
         const uniqueCommands = withWarriorProtect.filter(item => {
             const key = item.command.trim().toLowerCase();
@@ -321,19 +345,18 @@ export const GameButton: React.FC<GameButtonProps> = ({
             return true;
         });
         const orderedCommands = [
-            ...uniqueCommands.filter(item => item.isLearned !== false),
-            ...uniqueCommands.filter(item => item.isLearned === false)
+            ...uniqueCommands.filter(item => !item.isCustomCell && item.isLearned !== false),
+            ...uniqueCommands.filter(item => !item.isCustomCell && item.isLearned === false)
         ];
-        return button.id === 'tactical-ranger'
-            ? [...orderedCommands, {
+        const rangerCommand = button.id === 'tactical-ranger' ? [{
                 key: 'tactical-ranger-command-followers',
                 label: 'Command',
                 command: FOLLOWERS_COMMAND_PREFIX,
                 actionType: 'modifier' as const,
                 setId: 'rangerskilllist',
                 isLearned: true
-            }]
-            : orderedCommands;
+            }] : [];
+        return [...orderedCommands, ...rangerCommand, ...uniqueCommands.filter(item => item.isCustomCell)];
     }, [abilities, availableButtons, button, classPaletteKey, classPaletteSetId, commandPalette, hasLearnedRescue, paletteButton, practice?.practiceData]);
     const assignedClassCommands = [
         button.command,
@@ -345,14 +368,15 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const isTacticalClassUnlearned = Boolean(tacticalClassKey && !hasLearnedClassCommand);
     const wheelButton = useMemo(() => {
         const normalizedButton = normalizePinnedWheelCommands(button);
-        if (button.id !== 'tactical-mage') return fillEmptyWheelCells(normalizedButton, paletteCommands);
+        const defaultPaletteCommands = paletteCommands.filter(item => !item.isCustomCell);
+        if (button.id !== 'tactical-mage') return fillEmptyWheelCells(normalizedButton, defaultPaletteCommands);
         const missile = paletteCommands.find(item => /^cast\s+'magic missile'$/i.test(item.command.trim()));
         const shouldChooseLearnedCenter = !normalizedButton.command.trim()
             || (isLegacyMageMissileDefault && missile?.isLearned === false);
         const centerCommand = shouldChooseLearnedCenter
-            ? paletteCommands.find(item => item.isLearned !== false)?.command || ''
+            ? defaultPaletteCommands.find(item => item.isLearned !== false)?.command || ''
             : normalizedButton.command;
-        return fillEmptyWheelCells({ ...normalizedButton, command: centerCommand }, paletteCommands);
+        return fillEmptyWheelCells({ ...normalizedButton, command: centerCommand }, defaultPaletteCommands);
     }, [button, isLegacyMageMissileDefault, paletteCommands]);
     const wheelPaletteCommands = useMemo(() => {
         const assigned = new Set([
@@ -362,6 +386,53 @@ export const GameButton: React.FC<GameButtonProps> = ({
         ].map(command => command.trim().toLowerCase()).filter(Boolean));
         return paletteCommands.filter(item => !assigned.has(item.command.trim().toLowerCase()));
     }, [paletteCommands, wheelButton]);
+    const createCustomSwipeCell = useCallback((label: string, command: string): string | null | undefined => {
+        if (onCreateCustomSwipeCellProp) return onCreateCustomSwipeCellProp(label, command);
+        const normalizedCommand = command.trim().toLowerCase().replace(/\s+/g, ' ');
+        const assignedCommands = [
+            wheelButton.command,
+            ...Object.values(wheelButton.swipeCommands || {}),
+            ...Object.values(wheelButton.longSwipeCommands || {}),
+            ...paletteCommands.map(item => item.command),
+        ]
+            .map(value => value.trim().toLowerCase().replace(/\s+/g, ' '));
+        if (assignedCommands.includes(normalizedCommand)) return 'That command is already in this action list.';
+        setButtons(previous => previous.map(candidate => candidate.id === button.id
+            ? { ...candidate, customSwipeActions: [...(candidate.customSwipeActions || []), { label, command }] }
+            : candidate));
+        triggerHaptic(25);
+        return null;
+    }, [button.id, onCreateCustomSwipeCellProp, paletteCommands, setButtons, triggerHaptic, wheelButton]);
+    const deleteCustomSwipeAction = useCallback((command: string, direction?: SwipeDirection): boolean => {
+        if (onDeleteCustomSwipeActionProp) return onDeleteCustomSwipeActionProp(command, direction);
+        const normalizedCommand = command.trim().toLowerCase().replace(/\s+/g, ' ');
+        const hasCustomAction = button.customSwipeActions?.some(action => action.command.trim().toLowerCase().replace(/\s+/g, ' ') === normalizedCommand);
+        const hasCustomWheelCell = Object.entries(button.customSwipeCells || {}).some(([cellDirection, metadata]) => {
+            const cellCommand = button.swipeCommands?.[cellDirection as SwipeDirection] || button.longSwipeCommands?.[cellDirection as SwipeDirection] || '';
+            return (!direction || direction === cellDirection)
+                && metadata?.label
+                && cellCommand.trim().toLowerCase().replace(/\s+/g, ' ') === normalizedCommand;
+        });
+        if (!hasCustomAction && !hasCustomWheelCell) return false;
+        setButtons(previous => previous.map(candidate => {
+            if (candidate.id !== button.id) return candidate;
+            let next = candidate;
+            Object.entries(candidate.customSwipeCells || {}).forEach(([cellDirection, metadata]) => {
+                const candidateDirection = cellDirection as SwipeDirection;
+                const cellCommand = candidate.swipeCommands?.[candidateDirection] || candidate.longSwipeCommands?.[candidateDirection] || '';
+                if ((!direction || direction === candidateDirection) && metadata?.label
+                    && cellCommand.trim().toLowerCase().replace(/\s+/g, ' ') === normalizedCommand) {
+                    next = removeCustomSwipeCell(next, candidateDirection);
+                }
+            });
+            return {
+                ...next,
+                customSwipeActions: (next.customSwipeActions || []).filter(action => action.command.trim().toLowerCase().replace(/\s+/g, ' ') !== normalizedCommand),
+            };
+        }));
+        triggerHaptic(25);
+        return true;
+    }, [button, onDeleteCustomSwipeActionProp, setButtons, triggerHaptic]);
     const [inlineAssignment, setInlineAssignment] = React.useState<{
         direction: import('../../../types').SwipeDirection | 'center' | null;
         setId: string;
@@ -415,6 +486,9 @@ export const GameButton: React.FC<GameButtonProps> = ({
     useEffect(() => {
         if (!tacticalTargeting.isTargetColumnOpen) {
             setIsPanelPinned(false);
+            setIsDeletingCustomCell(false);
+            setIsSwapMode(false);
+            setHoveredPanelTool(null);
             setSwapSource(null);
             swapSourceRef.current = null;
             panelHoverCellRef.current = null;
@@ -439,6 +513,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
         setActiveDir(null);
         setIsCancelling(false);
         setIsPanelPinned(false);
+        setIsDeletingCustomCell(false);
+        setIsSwapMode(false);
         setSwapSource(null);
         swapSourceRef.current = null;
         setRayParams({ angle: 0, length: 0, opacity: 0, color: 'var(--accent)' });
@@ -450,6 +526,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
         handleSwapRef.current(direction);
     }, []);
     const movePinnedWheelCell = React.useCallback((source: SwipeDirection | 'center', destination: SwipeDirection | 'center') => {
+        if ((source === 'center' && destination !== 'center' && wheelButton.customSwipeCells?.[destination])
+            || (destination === 'center' && source !== 'center' && wheelButton.customSwipeCells?.[source])) return;
         if (onMovePinnedCells) {
             const result = onMovePinnedCells(source, destination, wheelButton.command);
             if (result === false) return;
@@ -466,18 +544,66 @@ export const GameButton: React.FC<GameButtonProps> = ({
     }, [button.id, onMovePinnedCells, setButtons, triggerHaptic, wheelButton]);
     const assignPinnedCommand = React.useCallback((command: string, actionType: import('../../../types').ActionType, destination: SwipeDirection | 'center', setId?: string) => {
         const normalized = command.trim().toLowerCase();
+        const customPaletteAction = button.customSwipeActions?.find(action => action.command.trim().toLowerCase() === normalized);
         const isUnlearned = paletteCommands.some(item => item.command.trim().toLowerCase() === normalized && item.isLearned === false)
             || availableButtons.some(candidate => candidate.command.trim().toLowerCase() === normalized && candidate.isDimmed);
-        if (isUnlearned) return;
+        if (isUnlearned || (customPaletteAction && destination === 'center')) return;
         if (onAssignPinnedCommand) {
             onAssignPinnedCommand(command, actionType, destination, setId);
         } else {
-            setButtons(previous => previous.map(existing => existing.id === button.id
-                ? assignPinnedWheelCell(withVisibleWheelLayout(existing, wheelButton), destination, command, actionType, setId || classPaletteSetId || undefined)
-                : existing));
+            const isAlreadyAssigned = [wheelButton.command, ...Object.values(wheelButton.swipeCommands || {}), ...Object.values(wheelButton.longSwipeCommands || {})]
+                .some(value => value.trim().toLowerCase() === normalized);
+            setButtons(previous => previous.map(existing => {
+                if (existing.id !== button.id) return existing;
+                let next = assignPinnedWheelCell(withVisibleWheelLayout(existing, wheelButton), destination, command, actionType, setId || classPaletteSetId || undefined);
+                if (customPaletteAction && destination !== 'center' && !isAlreadyAssigned) {
+                    const metadata = getCustomCellRestoreMetadata(wheelButton, destination, customPaletteAction.label);
+                    next = assignCustomSwipeCell(next, destination, command, metadata);
+                }
+                return next;
+            }));
         }
         triggerHaptic(30);
-    }, [availableButtons, button.id, classPaletteSetId, onAssignPinnedCommand, paletteCommands, setButtons, triggerHaptic]);
+    }, [availableButtons, button, classPaletteSetId, onAssignPinnedCommand, paletteCommands, setButtons, triggerHaptic, wheelButton]);
+
+    const startCreatingCustomCell = useCallback(() => {
+        setIsPanelPinned(true);
+        setIsDeletingCustomCell(false);
+        setIsSwapMode(false);
+        setSwapSource(null);
+        swapSourceRef.current = null;
+        endHeldGestureForDialogRef.current();
+        openCustomCellDialog(createCustomSwipeCell);
+    }, [createCustomSwipeCell, openCustomCellDialog]);
+    const setCustomCellDeleteMode = useCallback((active: boolean) => {
+        setIsDeletingCustomCell(active);
+        setIsSwapMode(false);
+        setSwapSource(null);
+        swapSourceRef.current = null;
+        if (active) setIsPanelPinned(true);
+    }, []);
+    const activateSwapMode = useCallback(() => {
+        const nextMode = !isSwapMode;
+        setIsSwapMode(nextMode);
+        setIsDeletingCustomCell(false);
+        setSwapSource(null);
+        swapSourceRef.current = null;
+        panelHoverCellRef.current = null;
+        setActiveDir(null);
+        setCommandPreview(null);
+        setHoveredPanelTool(null);
+        if (nextMode) setIsPanelPinned(true);
+        triggerHaptic(20);
+    }, [isSwapMode, setActiveDir, setCommandPreview, triggerHaptic]);
+    const handlePanelToolAtRelease = useCallback((tool: 'add' | 'delete' | 'swap') => {
+        if (tool === 'swap') {
+            activateSwapMode();
+            return;
+        }
+        triggerHaptic(20);
+        if (tool === 'add') startCreatingCustomCell();
+        else setCustomCellDeleteMode(!isDeletingCustomCell);
+    }, [activateSwapMode, isDeletingCustomCell, setCustomCellDeleteMode, startCreatingCustomCell, triggerHaptic]);
 
     const gestures = useButtonGestures({
         button: wheelButton, isEditMode, handleDragStart, wasDraggingRef, triggerHaptic, setHeldButton, heldButton,
@@ -498,9 +624,13 @@ export const GameButton: React.FC<GameButtonProps> = ({
         isPanelPinned,
         onMovePinnedCell: movePinnedWheelCell,
         onAssignPinnedCommand: assignPinnedCommand,
+        onPanelToolAtRelease: handlePanelToolAtRelease,
+        onPanelToolHoverChange: setHoveredPanelTool,
         panelHoverCellRef,
         swapSourceRef
     });
+    const { endHeldGestureForDialog, ...gestureHandlers } = gestures;
+    endHeldGestureForDialogRef.current = endHeldGestureForDialog;
 
     const targetCommand = tacticalTargeting.isTargetColumnOpen || heldButton?.id === button.id
         ? gestures.currentCommandRef?.current ?? wheelButton.command
@@ -672,7 +802,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const entityColors: EntityColorMap = { object: objectColor, player: playerColor, npc: npcColor, enemy: enemyColor, neutral: neutralColor };
     const centerCommandIconColor = button.id === 'tactical-doors'
         ? '#f97316'
-        : getSwipeCommandTextColor(wheelButton.command);
+        : getButtonSwipeCommandTextColor(button, wheelButton.command);
     const centerTargetGlowColor = centerCommandIconColor
         || (SHOW_ALLY_COMMAND_TARGET_GLOW && isCenterTargetAlly
             ? getTargetClassificationColor('ally', inlineCategories, entityColors, theme) || '#61c290'
@@ -681,6 +811,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const stagedColumns = targetMenu.stagedTargetKind && !wheelReplacementMode ? [
         {
             title: targetMenu.stagedTargetKind === 'social' ? 'Social'
+                : targetMenu.stagedTargetKind === 'pour' ? 'Room'
                 : targetMenu.stagedTargetKind === 'room-object-container' ? 'Item'
                 : targetMenu.stagedTargetKind === 'look-container' ? 'Target'
                 : targetMenu.stagedTargetKind === 'examine-targets' ? 'Characters' : 'Object',
@@ -695,7 +826,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     : 'No first argument available'
         },
         {
-            title: targetMenu.stagedTargetKind === 'social' ? 'Room Target' : targetMenu.stagedTargetKind === 'inventory-recipient' ? 'Recipient'
+            title: targetMenu.stagedTargetKind === 'pour' ? 'Inventory'
+                : targetMenu.stagedTargetKind === 'social' ? 'Room Target' : targetMenu.stagedTargetKind === 'inventory-recipient' ? 'Recipient'
                 : targetMenu.stagedTargetKind === 'inventory-container' || targetMenu.stagedTargetKind === 'look-container' ? 'Container'
                 : targetMenu.stagedTargetKind === 'examine-targets' ? 'Room Objects' : 'Get From',
             suggestions: targetMenu.secondArgumentSuggestions,
@@ -1070,15 +1202,24 @@ export const GameButton: React.FC<GameButtonProps> = ({
         setInlineAssignment, onSwapWheel, gestures.currentCommandRef, isWheelReplacementModeRef, isRebindingGestureRef]);
     handleSwapRef.current = handleSwap;
 
-    const handlePanelCellSwap = React.useCallback(() => {
-        const hoveredCell = panelHoverCellRef.current;
+    const handlePanelCellSwap = React.useCallback((hoveredCell: TacticalSwapCell) => {
         const selectedSource = swapSourceRef.current;
-        if (!hoveredCell) return;
 
         if (!selectedSource) {
             swapSourceRef.current = { ...hoveredCell };
             setSwapSource({ ...hoveredCell });
             triggerHaptic(25);
+            return;
+        }
+
+        const isSameCell = selectedSource.kind === hoveredCell.kind
+            && (selectedSource.kind === 'wheel'
+                ? selectedSource.direction === (hoveredCell.kind === 'wheel' ? hoveredCell.direction : null)
+                : selectedSource.command.trim().toLowerCase() === (hoveredCell.kind === 'palette' ? hoveredCell.command.trim().toLowerCase() : ''));
+        if (isSameCell) {
+            swapSourceRef.current = null;
+            setSwapSource(null);
+            setIsSwapMode(false);
             return;
         }
 
@@ -1109,7 +1250,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
         swapSourceRef.current = null;
         setSwapSource(null);
-    }, [assignPinnedCommand, button, gestures.currentCommandRef, movePinnedWheelCell, panelHoverCellRef, setCommandPreview, tacticalTargeting, triggerHaptic]);
+        setIsSwapMode(false);
+    }, [assignPinnedCommand, button, gestures.currentCommandRef, movePinnedWheelCell, setCommandPreview, tacticalTargeting, triggerHaptic]);
 
     React.useEffect(() => {
         if (buttonRef.current && needsCircularVitals) {
@@ -1135,12 +1277,16 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const isBorderlessActionButton = button.setId.toLowerCase() === 'tactical'
         || button.id.startsWith('tactical-')
         || className.includes('deck-category-button');
-    const cardinalSwipeCommands = button.setId.toLowerCase() === 'tactical' || button.id.startsWith('tactical-')
+    const swipeCommandInitials = showMapSwipeDirectionLetters && (button.setId.toLowerCase() === 'tactical' || button.id.startsWith('tactical-'))
         ? [
             { direction: 'north', command: (wheelButton.swipeCommands?.up || wheelButton.longSwipeCommands?.up || '').trim() },
+            { direction: 'northeast', command: (wheelButton.swipeCommands?.ne || wheelButton.longSwipeCommands?.ne || '').trim() },
             { direction: 'east', command: (wheelButton.swipeCommands?.right || wheelButton.longSwipeCommands?.right || '').trim() },
+            { direction: 'southeast', command: (wheelButton.swipeCommands?.se || wheelButton.longSwipeCommands?.se || '').trim() },
             { direction: 'south', command: (wheelButton.swipeCommands?.down || wheelButton.longSwipeCommands?.down || '').trim() },
-            { direction: 'west', command: (wheelButton.swipeCommands?.left || wheelButton.longSwipeCommands?.left || '').trim() }
+            { direction: 'southwest', command: (wheelButton.swipeCommands?.sw || wheelButton.longSwipeCommands?.sw || '').trim() },
+            { direction: 'west', command: (wheelButton.swipeCommands?.left || wheelButton.longSwipeCommands?.left || '').trim() },
+            { direction: 'northwest', command: (wheelButton.swipeCommands?.nw || wheelButton.longSwipeCommands?.nw || '').trim() }
         ].filter(item => Boolean(item.command) && getCommandLearnedState(item.command) !== false)
         : [];
 
@@ -1157,7 +1303,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     return (
         <div
             ref={buttonRef}
-            className={`custom-btn ${isFloating ? 'floating' : ''} ${isEditMode ? 'edit-mode' : ''} ${isSelected ? 'selected' : ''} ${showTargetReadyGlow ? 'target-ready' : ''} ${isAutoTargetReady ? 'auto-target-ready' : ''} ${SHOW_ALLY_COMMAND_TARGET_GLOW && isCenterTargetAlly ? 'tactical-defense-ready' : ''} ${isCenterOffensive ? 'tactical-offense-ready' : ''} ${isTacticalClassUnlearned ? 'tactical-class-unlearned' : ''} ${isCommandPrefixPending ? 'tactical-command-prefix-pending' : ''} ${isCommandPrefixPending && button.id === 'tactical-ranger' ? 'tactical-command-prefix-source' : ''} ${button.trigger?.enabled && button.isVisible ? 'triggered' : ''} ${activeDir ? 'is-swiping' : ''} ${cardinalSwipeCommands.length ? 'has-cardinal-command-dashes' : ''} ${variant === 'diamond' ? 'is-diamond' : ''} ${className}`}
+            className={`custom-btn ${isFloating ? 'floating' : ''} ${isEditMode ? 'edit-mode' : ''} ${isSelected ? 'selected' : ''} ${showTargetReadyGlow ? 'target-ready' : ''} ${isAutoTargetReady ? 'auto-target-ready' : ''} ${SHOW_ALLY_COMMAND_TARGET_GLOW && isCenterTargetAlly ? 'tactical-defense-ready' : ''} ${isCenterOffensive ? 'tactical-offense-ready' : ''} ${isTacticalClassUnlearned ? 'tactical-class-unlearned' : ''} ${isCommandPrefixPending ? 'tactical-command-prefix-pending' : ''} ${isCommandPrefixPending && button.id === 'tactical-ranger' ? 'tactical-command-prefix-source' : ''} ${button.trigger?.enabled && button.isVisible ? 'triggered' : ''} ${activeDir ? 'is-swiping' : ''} ${swipeCommandInitials.length ? 'has-swipe-command-initials' : ''} ${variant === 'diamond' ? 'is-diamond' : ''} ${className}`}
             data-id={button.id}
             data-variant={variant}
             role="button"
@@ -1189,7 +1335,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 zIndex: activeDir ? 60000 : (isSelected ? 1001 : (isFloating ? 1000 : 100)),
                 overflow: 'visible'
             } as any}
-            {...gestures}
+            {...gestureHandlers}
         >
             {isCommandPrefixPending && button.id === 'tactical-ranger' && (
                 <span className="tactical-command-prefix-indicator" role="status">ORDER FOLLOWERS</span>
@@ -1204,7 +1350,15 @@ export const GameButton: React.FC<GameButtonProps> = ({
             {needsCircularVitals && <CircularVitals hpRatio={hpRatio} manaRatio={manaRatio} moveRatio={moveRatio} w={renderParams.w} h={renderParams.h} borderRadius={renderParams.radius} isOuter={true} />}
             <TacticalCommandPanel
                 button={wheelButton} activeDir={activeDir} isCancelling={isCancelling}
-                swapSource={swapSource} onSwapCells={handlePanelCellSwap}
+                swapSource={swapSource} isSwapMode={isSwapMode}
+                onSelectSwapCell={handlePanelCellSwap}
+                onSwapCells={activateSwapMode}
+                onStartCreatingCustomSwipeCell={startCreatingCustomCell}
+                onDeleteCustomSwipeAction={deleteCustomSwipeAction}
+                onSwipeToolTap={() => triggerHaptic(20)}
+                isDeletingCustomCell={isDeletingCustomCell}
+                hoveredPanelTool={hoveredPanelTool}
+                onDeleteModeChange={setCustomCellDeleteMode}
                 isPinned={isPanelPinned} onClose={cancelDecisionPanel}
                 paletteCommands={wheelPaletteCommands}
                 getCommandLearnedState={getCommandLearnedState}
@@ -1262,11 +1416,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 onToggleTargetLock={toggleTargetLock}
                 onTargetSelected={updateAutomaticTarget}
             />
-            {cardinalSwipeCommands.map(({ direction, command }) => (
+            {swipeCommandInitials.map(({ direction, command }) => (
                 <span
                     key={direction}
-                    className={`tactical-command-initial is-${direction}${visualSwipeDirection === CARDINAL_SWIPE_DIRECTIONS[direction] ? ' is-blinking' : ''}`}
-                    style={{ color: getSwipeCommandTextColor(command) || '#b0a080' }}
+                    className={`tactical-command-initial is-${direction}${visualSwipeDirection === COMMAND_SWIPE_DIRECTIONS[direction] ? ' is-blinking' : ''}`}
+                    style={{ color: getButtonSwipeCommandTextColor(button, command) || '#b0a080' }}
                     aria-hidden="true"
                 >{getCommandInitial(command)}</span>
             ))}

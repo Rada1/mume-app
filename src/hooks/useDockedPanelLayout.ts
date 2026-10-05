@@ -75,9 +75,5 @@ export function useDockedPanelLayout(isMobile: boolean, gameState: string, isEdi
         return computeDockedPanelStyle(panelId, activeDockedPanels, isMobile);
     }, [activeDockedPanels, isMobile]);
 
-    const hasMobileHeaderPanel = isMobile && activeDockedPanels.some(panel =>
-        panel === 'commands' || panel === 'gear' || panel === 'help' || panel === 'chat'
-    );
-
-    return { activeDockedPanels, hasMobileHeaderPanel, getPanelStyle };
+    return { activeDockedPanels, getPanelStyle };
 }

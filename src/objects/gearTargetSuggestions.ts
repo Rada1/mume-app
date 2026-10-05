@@ -123,7 +123,8 @@ export const getDrinkTargetSuggestions = (
     roomWaterAvailable = false
 ): CommandTargetSuggestion[] => {
     const fluidContainers = (lines: DrawerLine[]) => lines.filter(line =>
-        line.isItem && !line.isHeader && (hasObjectTrait(line, 'trait-fluid-container') || isFluidContainer(`${line.text} ${line.rawText || ''} ${line.context || ''}`))
+        line.isItem && !line.isHeader && !hasObjectTrait(line, 'trait-armour')
+        && (hasObjectTrait(line, 'trait-fluid-container') || isFluidContainer(`${line.text} ${line.rawText || ''} ${line.context || ''}`))
     );
     const containers = getInventoryAndWornTargetSuggestions(fluidContainers(inventoryLines), fluidContainers(wornLines));
     return roomWaterAvailable

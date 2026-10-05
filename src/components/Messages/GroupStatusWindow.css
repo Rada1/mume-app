@@ -66,6 +66,13 @@
     font-weight: 400 !important;
 }
 
+.app-container .docked-panel.group-status-panel.group-status-panel--blurred,
+.app-container .docked-panel.group-status-panel.group-status-panel--map-overlay.group-status-panel--blurred {
+    background: rgba(33, 27, 22, 0.18) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
+
 @media (max-width: 1024px) {
     .app-container .docked-panel.group-status-panel--mobile-inline {
         position: relative !important;

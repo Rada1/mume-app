@@ -54,6 +54,16 @@
     gap: 0;
 }
 
+.tactical-target-direction-button:disabled,
+.tactical-target-direction-button:disabled:hover,
+.tactical-target-direction-button:disabled:active {
+    border-color: transparent;
+    background: transparent;
+    color: #94a3b8;
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
 .tactical-target-direction-button small {
     font-size: 9px;
     line-height: 1;

@@ -38,6 +38,7 @@ export const useTacticalTargeting = ({
     const [pendingDirection, setPendingDirection] = useState<string | null>(null);
     const [hasSelectedTarget, setHasSelectedTarget] = useState(false);
     const [hasManuallySelectedTarget, setHasManuallySelectedTarget] = useState(false);
+    const hasSelectedTargetRef = useRef(false);
 
     const isTargetColumnOpenRef = useRef(false);
     isTargetColumnOpenRef.current = isTargetColumnOpen;
@@ -98,6 +99,7 @@ export const useTacticalTargeting = ({
                     || getDefaultCommandTarget(activeCmd)
                     : openOnHoldWithoutTarget ? BLANK_TARGET_VALUE : null;
                 setHasSelectedTarget(false);
+                hasSelectedTargetRef.current = false;
                 setHasManuallySelectedTarget(false);
                 pendingTargetRef.current = defaultTarget;
                 setPendingTarget(defaultTarget);
@@ -122,6 +124,7 @@ export const useTacticalTargeting = ({
         setPendingTarget(null);
         setPendingDirection(null);
         setHasSelectedTarget(false);
+        hasSelectedTargetRef.current = false;
         setHasManuallySelectedTarget(false);
         setIsTargetMenuHeld(false);
         setIsTargetColumnOpen(true);
@@ -130,6 +133,7 @@ export const useTacticalTargeting = ({
 
     const handleSelectTarget = useCallback((targetVal: string | null, currentCmd: string, shouldTriggerHaptic = true, isManualSelection = true) => {
         if (getCommandTargetMenuKind(currentCmd) === 'door-direction' && targetVal?.toLowerCase() !== 'exit') return;
+        hasSelectedTargetRef.current = Boolean(targetVal);
         setHasSelectedTarget(Boolean(targetVal));
         setHasManuallySelectedTarget(isManualSelection);
         if (pendingTargetRef.current === targetVal) {
@@ -244,6 +248,7 @@ export const useTacticalTargeting = ({
         setIsTargetMenuHeld(false);
         setPendingTarget(null);
         setHasSelectedTarget(false);
+        hasSelectedTargetRef.current = false;
         setHasManuallySelectedTarget(false);
         pendingTargetRef.current = null;
         setPendingDirection(null);
@@ -257,6 +262,7 @@ export const useTacticalTargeting = ({
         setPendingTarget(null);
         setPendingDirection(null);
         setHasSelectedTarget(false);
+        hasSelectedTargetRef.current = false;
         setHasManuallySelectedTarget(false);
         setCommandPreview(null);
     }, [setCommandPreview]);
@@ -276,6 +282,7 @@ export const useTacticalTargeting = ({
         pendingTarget,
         pendingDirection,
         hasSelectedTarget,
+        hasSelectedTargetRef,
         hasManuallySelectedTarget,
         pendingTargetRef,
         startHoldTimer,

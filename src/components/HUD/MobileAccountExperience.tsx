@@ -35,8 +35,16 @@ const lineForAction = (state: AccountState, action: AccountAction): string[] => 
     return [];
 };
 
-const characterLine = (entry: CharacterEntry): string => entry.rawLine
-    || [entry.name, entry.race, entry.sublevel, entry.level, entry.logon, entry.area, entry.rent].filter(Boolean).join('  ');
+const characterLine = (entry: CharacterEntry): React.ReactNode => {
+    const line = entry.rawLine
+        || [entry.name, entry.race, entry.sublevel, entry.level, entry.logon, entry.area, entry.rent].filter(Boolean).join('  ');
+    if (entry.logon.trim().toLowerCase() !== 'no link') return line;
+
+    const statusStart = line.toLowerCase().indexOf(entry.logon.toLowerCase());
+    if (statusStart < 0) return line;
+    const statusEnd = statusStart + entry.logon.length;
+    return <>{line.slice(0, statusStart)}<span className="mobile-account-character-no-link">{line.slice(statusStart, statusEnd)}</span>{line.slice(statusEnd)}</>;
+};
 
 export const MobileAccountExperience: FC = () => {
     const {
@@ -217,6 +225,15 @@ export const MobileAccountExperience: FC = () => {
             <section className="mobile-account-body">
                 {showCreation ? (
                     <div className={`mobile-account-create${accountState.stage === 'stat-editing' ? ' is-stat-editing' : ''}`}>
+                        {isAccountConfirmation && (
+                            <div className="mobile-account-create-context" aria-label="Welcome to MUME account information">
+                                <AccountAnsiLine line="Welcome to MUME!" className="mobile-account-context-line" />
+                                <AccountAnsiLine line="" className="mobile-account-context-line" />
+                                <AccountAnsiLine line="Your first step here is to create an ACCOUNT." className="mobile-account-context-line" />
+                                <AccountAnsiLine line="" className="mobile-account-context-line" />
+                                <AccountAnsiLine line="MUME characters are organized into accounts. You can only have one account, and it cannot be shared with other players. You can create as many characters as you like, but they must all belong to this account." className="mobile-account-context-line" />
+                            </div>
+                        )}
                         {(accountState.creationPrompt?.sectionTitle || creationContextWithStats) && (
                             <div className="mobile-account-create-context" aria-label="Creation context">
                                 {accountState.creationPrompt?.sectionTitle && (
@@ -235,6 +252,9 @@ export const MobileAccountExperience: FC = () => {
                                 line={accountState.creationPrompt.titleAnsi ?? accountState.creationPrompt.title}
                                 className="mobile-account-create-prompt"
                             />
+                        )}
+                        {isAccountConfirmation && accountState.currentPrompt && (
+                            <AccountAnsiLine line={accountState.currentPrompt} className="mobile-account-create-prompt" />
                         )}
                         {accountState.stage === 'account-menu' && activeTab === 'create' ? (
                             <div className="mobile-account-empty">Waiting for creation prompt…</div>

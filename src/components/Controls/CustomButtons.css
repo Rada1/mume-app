@@ -66,12 +66,12 @@
     display: block;
 }
 
-.custom-btn.has-cardinal-command-dashes:not(.deck-category-button):not(.line-btn) .custom-btn-icon-node svg {
+.custom-btn.has-swipe-command-initials:not(.deck-category-button):not(.line-btn) .custom-btn-icon-node svg {
     width: 15px !important;
     height: 15px !important;
 }
 
-.custom-btn.has-cardinal-command-dashes:not(.deck-category-button):not(.line-btn) .button-icon {
+.custom-btn.has-swipe-command-initials:not(.deck-category-button):not(.line-btn) .button-icon {
     max-width: 68%;
     max-height: 68%;
 }
@@ -116,6 +116,26 @@
     top: 50%;
     left: 3px;
     transform: translateY(-50%);
+}
+
+.tactical-command-initial.is-northeast {
+    top: 3px;
+    right: 3px;
+}
+
+.tactical-command-initial.is-southeast {
+    right: 3px;
+    bottom: 3px;
+}
+
+.tactical-command-initial.is-southwest {
+    bottom: 3px;
+    left: 3px;
+}
+
+.tactical-command-initial.is-northwest {
+    top: 3px;
+    left: 3px;
 }
 
 .tactical-command-initial.is-blinking {

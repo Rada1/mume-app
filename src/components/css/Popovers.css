@@ -692,6 +692,32 @@
     margin: 4px 8px;
 }
 
+@media (max-width: 768px) {
+    .header-dropdown-menu--terminal {
+        box-sizing: border-box;
+        width: min(280px, calc(100vw - 24px));
+        max-height: min(80dvh, 640px) !important;
+        padding: 10px;
+        gap: 4px;
+    }
+
+    .header-dropdown-menu--terminal .dropdown-item {
+        min-height: 52px;
+        padding: 12px 14px;
+        gap: 14px;
+        font-size: 0.9rem;
+    }
+
+    .header-dropdown-menu--terminal .dropdown-item > div:first-child {
+        width: 24px !important;
+    }
+
+    .header-dropdown-menu--terminal .dropdown-item svg {
+        width: 22px;
+        height: 22px;
+    }
+}
+
 /* Popover state lock-outs - removed broad viewport lock-out to allow map interactions while menu is open */
 body.has-popover .xbox-cluster,
 body.has-popover .joystick-container,

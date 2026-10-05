@@ -17,11 +17,14 @@ import './GroupStatusWindow.css';
 const GroupStatusWindow: React.FC<{ style?: React.CSSProperties; mapOverlay?: boolean }> = ({ style, mapOverlay = false }) => {
     const { viewport } = useGame();
     const { groupMembers } = useActiveCombat();
+    const usePanelBlur = useSettingsStore(state => state.useTacticalPanelBlur);
+    const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode);
     const setShowGroupPanel = useSettingsStore(state => state.setShowGroupPanel);
+    const isPanelBlurred = usePanelBlur && !isPerformanceMode;
     const members = groupMembers || [];
 
     return (
-        <aside className={`docked-panel group-status-panel${mapOverlay ? ' group-status-panel--map-overlay' : ''}${viewport?.isMobile && !mapOverlay ? ' group-status-panel--mobile-inline' : ''}`} style={style} aria-label="Group status">
+        <aside className={`docked-panel group-status-panel${mapOverlay ? ' group-status-panel--map-overlay' : ''}${viewport?.isMobile && !mapOverlay ? ' group-status-panel--mobile-inline' : ''}${isPanelBlurred ? ' group-status-panel--blurred' : ''}`} style={style} aria-label="Group status">
             {!viewport?.isMobile && !mapOverlay && <DrawerResizeHandle handleType="left" widthVar="--desktop-group-width" minWidth={20} maxWidth={60} />}
             <header className="group-status-header">
                 <span><span aria-hidden="true">&gt; </span>group</span>

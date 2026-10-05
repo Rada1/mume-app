@@ -52,6 +52,7 @@ import {
     type CommandTargetSuggestion
 } from '../../../utils/commandSuggestionUtils';
 import { hasObjectTrait } from '../../../objects/objectTargetModel';
+import { isFluidContainer } from '../../../utils/gameUtils';
 import type { DrawerLine } from '../../../types';
 import type { DeckTargetKind } from '../../HUD/useDeckTargeting';
 import { getGroupSelectionSuggestions, getNonGroupmateRoomTargetSuggestions } from '../../../utils/groupTargetSuggestions';
@@ -72,6 +73,7 @@ const TARGET_MENU_TITLES: Record<CommandTargetMenuKind, string> = {
     gear: 'ITEMS',
     'inventory-gear': 'INVENTORY',
     'inventory-meat': 'MEAT',
+    'herbal-kit': 'KIT',
     'worn-gear': 'WORN ITEMS',
     food: 'FOOD',
     drink: 'DRINK',
@@ -102,7 +104,7 @@ export interface GameButtonTargetSuggestions {
     defaultTarget: string | null;
     suggestions: CommandTargetSuggestion[] | undefined;
     title: string;
-    stagedTargetKind: 'social' | 'inventory-recipient' | 'inventory-container' | 'room-object-container' | 'look-container' | 'examine-targets' | null;
+    stagedTargetKind: 'social' | 'inventory-recipient' | 'inventory-container' | 'room-object-container' | 'look-container' | 'examine-targets' | 'pour' | null;
     firstArgumentSuggestions: CommandTargetSuggestion[];
     secondArgumentSuggestions: CommandTargetSuggestion[];
     showsStatusPanel: boolean;
@@ -130,7 +132,9 @@ export const useGameButtonTargetSuggestions = (
     const kind = getCommandTargetMenuKind(command);
     const isButcherCommand = /^butcher(?:\s|$)/i.test(command.trim());
     const isEatCommand = /^eat\b/i.test(command.trim());
-    const overrideKind: CommandTargetMenuKind | null = isButcherCommand ? 'room-corpses' : isEatCommand ? 'food' : targetKindOverride
+    const isMixCommand = /^mix(?:\s|$)/i.test(command.trim());
+    const overrideKind: CommandTargetMenuKind | null = isMixCommand ? 'herbal-kit'
+        : isButcherCommand ? 'room-corpses' : isEatCommand ? 'food' : targetKindOverride
         ? targetKindOverride === 'mounts' ? 'mounts'
         : targetKindOverride === 'who' ? 'who'
         : targetKindOverride === 'social' ? 'social'
@@ -150,7 +154,8 @@ export const useGameButtonTargetSuggestions = (
     const resolvedKind = overrideKind || kind;
     const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
     const roomObjects = useMemo(() => Object.values(roomItems), [roomItems]);
-    const stagedTargetKind = /^look(?:\s+%n)?$/i.test(command.trim()) ? 'look-container'
+    const stagedTargetKind = /^pour(?:\s+%n)?$/i.test(command.trim()) ? 'pour'
+        : /^look(?:\s+%n)?$/i.test(command.trim()) ? 'look-container'
         : /^examine(?:\s+%n)?$/i.test(command.trim()) ? 'examine-targets'
             : targetKindOverride === 'social' || (!targetKindOverride && resolvedKind === 'social') ? 'social'
                 : targetKindOverride === 'inventory-recipient' || targetKindOverride === 'inventory-container'
@@ -213,6 +218,7 @@ export const useGameButtonTargetSuggestions = (
         }
         if (resolvedKind === 'inventory-gear') return getGearTargetSuggestions(displayInventoryLines, 'inventory');
         if (resolvedKind === 'inventory-meat') return getMeatTargetSuggestions(displayInventoryLines);
+        if (resolvedKind === 'herbal-kit') return [{ key: 'herbal-kit', label: 'Kit', value: 'kit', meta: 'gear' }];
         if (resolvedKind === 'worn-gear') return getGearTargetSuggestions(displayEqLines, 'worn');
         if (resolvedKind === 'food') return getFoodTargetSuggestions(displayInventoryLines, roomObjects);
         if (resolvedKind === 'drink') return getDrinkTargetSuggestions(displayInventoryLines, displayEqLines, roomWaterAvailable);
@@ -308,7 +314,7 @@ export const useGameButtonTargetSuggestions = (
         if (resolvedKind === 'social') return getSocialTargetSuggestions();
         return undefined;
     }, [
-        command, kind, resolvedKind, targetKindOverride, isEatCommand, roomObjects, displayInventoryLines, displayEqLines, roomOccupants,
+        command, kind, resolvedKind, targetKindOverride, isEatCommand, isMixCommand, roomObjects, displayInventoryLines, displayEqLines, roomOccupants,
         characterName, practice.practiceData?.skills, abilities, teleportTargets, whoList, groupMembers, shopItems, roomWaterAvailable,
         hasRoomDoor
     ]);
@@ -320,6 +326,17 @@ export const useGameButtonTargetSuggestions = (
                 { key: 'social-no-target', label: 'Blank Target', value: '__blank_target__', meta: 'source' },
                 ...getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName)
             ]
+        };
+        if (stagedTargetKind === 'pour') return {
+            first: [
+                { key: 'pour-room-water', label: 'Water', value: 'water', meta: 'source' },
+                ...getRoomTargetSuggestions([], roomObjects, 'objects').filter(suggestion => (
+                    !suggestion.objectTraits?.includes('trait-armour')
+                    && (suggestion.objectTraits?.includes('trait-fluid-container')
+                        || isFluidContainer(`${suggestion.label} ${suggestion.value}`))
+                ))
+            ],
+            second: getFluidContainerTargetSuggestions(displayInventoryLines, displayEqLines)
         };
         if (stagedTargetKind === 'inventory-recipient') return {
             first: [
@@ -395,6 +412,7 @@ export const useGameButtonTargetSuggestions = (
             : targetKindOverride === 'group' ? 'GROUP'
             : targetKindOverride === 'shop' ? 'SHOP'
             : targetKindOverride === 'inventory-weapons' ? 'INVENTORY WEAPONS'
+            : stagedTargetKind === 'pour' ? 'POUR'
             : stagedTargetKind === 'look-container' ? 'LOOK'
             : stagedTargetKind === 'examine-targets' ? 'EXAMINE'
             : stagedTargetKind ? 'SELECT ARGUMENTS'

@@ -1328,6 +1328,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if ((!isSnoop || deps.isSpectateMode) && (
             lower.includes('alas, you cannot go that way') || 
             lower.trim() === 'you cannot ride there.' ||
+            lower.includes('you feel too relaxed to do that') ||
             /your mount refuses to follow(?:er)? your orders/.test(lower) ||
             lower.includes('arglebargle, glop-glyf') || 
             lower.startsWith("you don't have any") || 

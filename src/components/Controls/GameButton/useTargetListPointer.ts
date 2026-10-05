@@ -187,7 +187,9 @@ export const useTargetListPointer = (isOpen: boolean, onHoverTarget?: (value: st
             if (!drag) return;
             clearSettleTimer(event.pointerId);
             dragRef.current.delete(event.pointerId);
-            updateListScrollState(drag.list);
+            // The command's pointer-up handler still needs to see that this
+            // gesture scrolled, so clear the flag after release is dispatched.
+            queueMicrotask(() => updateListScrollState(drag.list));
         };
 
         window.addEventListener('pointermove', handleHeldPointerMove, true);

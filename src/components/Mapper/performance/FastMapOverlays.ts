@@ -23,6 +23,7 @@ import { drawRoomSpriteFlags } from './roomSpriteDrawing';
 import { ROOM_VISITED } from './roomExploration';
 import { declutterDoorLabels } from './doorLabelLayout';
 import { buildPredictionOverlayGeometry } from './predictionOverlayGeometry';
+import { DeathMarkerOverlay } from './deathMarkerOverlay';
 
 const SPRITE_UNIFORMS = ['uView', 'uTex', 'uColor'] as const;
 const COLOR_UNIFORMS = ['uView', 'uColor'] as const;
@@ -39,6 +40,7 @@ export class FastMapOverlays {
   private readonly groupMesh: GpuColorMesh;
   private readonly searchMesh: GpuColorMesh;
   private readonly text: TextOverlayRenderer;
+  private readonly deathMarker: DeathMarkerOverlay;
   private lineRanges = new Map<number, { first: number; count: number }>();
   private arrowRanges = new Map<number, { first: number; count: number }>();
   private predictionRanges = new Map<number, { first: number; count: number }>();
@@ -64,8 +66,8 @@ export class FastMapOverlays {
     this.groupMesh = createColorMesh(gl);
     this.searchMesh = createColorMesh(gl);
     this.text = new TextOverlayRenderer(gl);
+    this.deathMarker = new DeathMarkerOverlay(gl);
   }
-
   setMap(map: FastMapData, roomStates?: Uint8Array): void {
     this.map = map;
     this.roomStates = roomStates ?? new Uint8Array(map.roomCount);
@@ -251,12 +253,13 @@ export class FastMapOverlays {
     gl.bindVertexArray(this.searchMesh.vao);
     gl.drawArrays(gl.TRIANGLES, range.first, range.count);
   }
-
   drawGroupMembers(
     view: import('./protocol').FastMapView,
     player: { x: number; y: number; z: number } | null,
+    width: number,
+    height: number,
   ): void {
-    const vertices = buildGroupMemberGeometry(this.groupMembers, view, player);
+    const vertices = buildGroupMemberGeometry(this.groupMembers, view, player, width, height);
     if (vertices.length === 0) return;
     const gl = this.gl;
     gl.bindVertexArray(this.groupMesh.vao);
@@ -265,7 +268,7 @@ export class FastMapOverlays {
     gl.bindVertexArray(null);
     drawColorGeometry(gl, this.lineProgram, this.groupMesh, vertices.length / 7);
   }
-
+  drawDeathMarker(room: { x: number; y: number; z: number } | null | undefined, view: import('./protocol').FastMapView, width: number, height: number, now: number): void { this.deathMarker.draw(room, view, width, height, now); }
   drawLabels(floor: number, zoom: number, view: Float32Array, width: number, height: number, pixelRatio = 1): void {
     if (zoom < 0.4) return;
     const bucket = Math.floor(zoom * 10) / 10 * pixelRatio;
@@ -292,5 +295,6 @@ export class FastMapOverlays {
     gl.deleteProgram(this.spriteProgram.program);
     gl.deleteProgram(this.lineProgram.program);
     this.text.dispose();
+    this.deathMarker.dispose();
   }
 }

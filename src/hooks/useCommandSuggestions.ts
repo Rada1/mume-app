@@ -413,20 +413,22 @@ export const useCommandSuggestions = ({
         setTeleportTargets(current => current.filter(target => getMagicKeyId(target) !== key));
     }, [setTeleportTargets]);
 
+    const suggestionInputActive = isFocused || isMobile;
+
     const showCommandPopup = shouldSuggest &&
         !hasCommandArgumentSpace &&
-        isFocused &&
+        suggestionInputActive &&
         mumeCommandMatch.suggestions.length > 0 &&
         input.trim().length > 0;
 
     const showTargetPopup = shouldSuggest &&
-        (keyedSpellInput ? isFocused : hasCommandArgumentSpace && !isSpellCastInput && (isFocused || isTargetPickerForced)) &&
+        (keyedSpellInput ? suggestionInputActive : hasCommandArgumentSpace && !isSpellCastInput && (suggestionInputActive || isTargetPickerForced)) &&
         targetSuggestions.length > 0;
 
     const showSpellPopup = shouldSuggest &&
         hasCommandArgumentSpace &&
         isSpellCastInput &&
-        isFocused &&
+        suggestionInputActive &&
         spellSuggestions.length > 0;
 
     const showCompletionPopup = showCommandPopup || showTargetPopup || showSpellPopup;

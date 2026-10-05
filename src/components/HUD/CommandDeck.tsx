@@ -30,12 +30,17 @@ import { getFoodTargetSuggestions, getMountTargetSuggestions } from '../../utils
 import { useRoomDrinkWater } from '../../hooks/useRoomDrinkWater';
 import { useMobileHeaderTabs } from '../../hooks/useMobileHeaderTabs';
 import { useUIStore } from '../../stores/useUIStore';
-import type { CustomButton, DrawerLine, ExecuteCommand, SwipeDirection } from '../../types';
+import type { CustomButton, CustomSwipeCellMetadata, DrawerLine, ExecuteCommand, SwipeDirection } from '../../types';
 import type { CommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 import './CommandDeck.css';
 
 const DECK_WHEEL_STORAGE_KEY = 'mud-deck-wheel-actions';
+const DECK_CUSTOM_ACTIONS_STORAGE_KEY = 'mud-deck-wheel-custom-actions';
+const DECK_CUSTOM_ASSIGNMENTS_STORAGE_KEY = 'mud-deck-wheel-custom-assignments';
 type DeckWheelAssignments = Partial<Record<TabKey, Array<string | null>>>;
+interface StoredDeckCustomAction { label: string; cmd: string }
+type DeckWheelCustomActions = Partial<Record<TabKey, StoredDeckCustomAction[]>>;
+type DeckWheelCustomAssignments = Partial<Record<TabKey, Partial<Record<SwipeDirection, string | null>>>>;
 
 const getWheelActionKey = (item: DeckItem): string => `${item.label.trim()}::${item.cmd.trim()}`;
 
@@ -61,6 +66,24 @@ const readDeckWheelAssignments = (): DeckWheelAssignments => {
     try {
         const stored = localStorage.getItem(DECK_WHEEL_STORAGE_KEY);
         return stored ? JSON.parse(stored) as DeckWheelAssignments : {};
+    } catch {
+        return {};
+    }
+};
+
+const readDeckWheelCustomActions = (): DeckWheelCustomActions => {
+    try {
+        const stored = localStorage.getItem(DECK_CUSTOM_ACTIONS_STORAGE_KEY);
+        return stored ? JSON.parse(stored) as DeckWheelCustomActions : {};
+    } catch {
+        return {};
+    }
+};
+
+const readDeckWheelCustomAssignments = (): DeckWheelCustomAssignments => {
+    try {
+        const stored = localStorage.getItem(DECK_CUSTOM_ASSIGNMENTS_STORAGE_KEY);
+        return stored ? JSON.parse(stored) as DeckWheelCustomAssignments : {};
     } catch {
         return {};
     }
@@ -130,10 +153,20 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
         return isKnownTab && (viewport?.isMobile || !isMobileOnlyTab) ? (saved as TabKey) : 'combat';
     });
     const [deckWheelAssignments, setDeckWheelAssignments] = useState<DeckWheelAssignments>(readDeckWheelAssignments);
+    const [deckWheelCustomActions, setDeckWheelCustomActions] = useState<DeckWheelCustomActions>(readDeckWheelCustomActions);
+    const [deckWheelCustomAssignments, setDeckWheelCustomAssignments] = useState<DeckWheelCustomAssignments>(readDeckWheelCustomAssignments);
 
     useEffect(() => {
         localStorage.setItem(DECK_WHEEL_STORAGE_KEY, JSON.stringify(deckWheelAssignments));
     }, [deckWheelAssignments]);
+
+    useEffect(() => {
+        localStorage.setItem(DECK_CUSTOM_ACTIONS_STORAGE_KEY, JSON.stringify(deckWheelCustomActions));
+    }, [deckWheelCustomActions]);
+
+    useEffect(() => {
+        localStorage.setItem(DECK_CUSTOM_ASSIGNMENTS_STORAGE_KEY, JSON.stringify(deckWheelCustomAssignments));
+    }, [deckWheelCustomAssignments]);
 
     const deckWheelCatalog = useMemo(() => Object.values(DECK_ACTIONS).flatMap(category => category.map(makeDeckItem)), []);
 
@@ -348,11 +381,20 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                 {DECK_TABS.filter(tab => viewport?.isMobile || (tab.key !== 'personal' && tab.key !== 'consume')).map(tab => {
                     const Icon = tab.icon;
                     const defaults = DECK_ACTIONS[tab.key].map(makeDeckItem);
-                    const categoryAvailableActions = defaults.filter(item => isDeckActionAvailable(item, race, subrace));
+                    const customDeckActions: DeckItem[] = (deckWheelCustomActions[tab.key] || []).map(action => ({
+                        label: action.label,
+                        cmd: action.cmd,
+                        needsTarget: false,
+                    }));
+                    const defaultAvailableActions = defaults.filter(item => isDeckActionAvailable(item, race, subrace));
+                    const categoryAvailableActions = [
+                        ...defaultAvailableActions,
+                        ...customDeckActions,
+                    ];
                     const savedKeys = deckWheelAssignments[tab.key];
-                    const defaultCenterAction = categoryAvailableActions[0];
+                    const defaultCenterAction = defaultAvailableActions[0];
                     const defaultWheelActions = Object.fromEntries(
-                        WHEEL_FILL_PRIORITY.map((direction, index) => [direction, categoryAvailableActions[index + 1]])
+                        WHEEL_FILL_PRIORITY.map((direction, index) => [direction, defaultAvailableActions[index + 1]])
                     ) as Partial<Record<SwipeDirection, DeckItem>>;
                     const defaultSpokeActions = WHEEL_DIRECTION_MAP.map(direction => defaultWheelActions[direction]);
                     const categoryActions = savedKeys?.length
@@ -378,6 +420,13 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                     const wheelActions = categoryActions.map(item => item && isDeckActionAvailable(item, race, subrace)
                         ? { ...item, targetReady: getWheelTargetReady(item) }
                         : undefined);
+                    const customActionKeys = new Set(customDeckActions.map(getWheelActionKey));
+                    const customSwipeCells = Object.fromEntries(WHEEL_DIRECTION_MAP.flatMap((direction, index) => {
+                        const action = wheelActions[index];
+                        const restoreActionKey = deckWheelCustomAssignments[tab.key]?.[direction];
+                        if (!action || !customActionKeys.has(getWheelActionKey(action)) || restoreActionKey === undefined) return [];
+                        return [[direction, { label: action.label, restoreActionKey }]];
+                    })) as Partial<Record<SwipeDirection, CustomSwipeCellMetadata>>;
                     const targetKindByCommand = Object.fromEntries(
                         [
                             ...deckWheelCatalog.filter(item => item.targetKind),
@@ -399,6 +448,8 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                         },
                         position: { x: 0, y: 0, w: 38, h: 38 },
                         swipeCommands: Object.fromEntries(WHEEL_DIRECTION_MAP.map((direction, index) => [direction, wheelActions[index]?.cmd || ''])) as Partial<Record<SwipeDirection, string>>,
+                        customSwipeActions: customDeckActions.map(action => ({ label: action.label, command: action.cmd })),
+                        customSwipeCells,
                     };
                     const categoryGameButtonProps: Omit<GameButtonProps, 'button' | 'className' | 'useDefaultPositioning' | 'iconNode' | 'ariaLabel' | 'onSwapWheel'> = {
                         isEditMode: tactical?.isEditMode ?? false,
@@ -442,6 +493,13 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                     const swapCategoryCells = (sourceIndex: number, destinationIndex: number, displayedCenterCommand: string): boolean | string => {
                         if (sourceIndex < 0 || sourceIndex > 8 || destinationIndex < 0 || destinationIndex > 8 || sourceIndex === destinationIndex) return false;
                         const currentKeys = getCurrentWheelKeys(deckWheelAssignments[tab.key]);
+                        const customAssignments = deckWheelCustomAssignments[tab.key] || {};
+                        const sourceDirection = sourceIndex < 8 ? WHEEL_DIRECTION_MAP[sourceIndex] : null;
+                        const destinationDirection = destinationIndex < 8 ? WHEEL_DIRECTION_MAP[destinationIndex] : null;
+                        const sourceCustom = sourceDirection ? customAssignments[sourceDirection] : undefined;
+                        const destinationCustom = destinationDirection ? customAssignments[destinationDirection] : undefined;
+                        if ((sourceIndex === 8 && destinationCustom !== undefined)
+                            || (destinationIndex === 8 && sourceCustom !== undefined)) return false;
                         const displayedCenterAction = getWheelActionForCommand(categoryAvailableActions, displayedCenterCommand);
                         if ((sourceIndex === 8 || destinationIndex === 8) && displayedCenterAction) {
                             currentKeys[8] = getWheelActionKey(displayedCenterAction);
@@ -451,6 +509,16 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                         setDeckWheelAssignments(previous => {
                             return { ...previous, [tab.key]: currentKeys };
                         });
+                        if (sourceDirection && destinationDirection) {
+                            setDeckWheelCustomAssignments(previous => {
+                                const next = { ...(previous[tab.key] || {}) };
+                                delete next[sourceDirection];
+                                delete next[destinationDirection];
+                                if (sourceCustom !== undefined) next[destinationDirection] = sourceCustom;
+                                if (destinationCustom !== undefined) next[sourceDirection] = destinationCustom;
+                                return { ...previous, [tab.key]: next };
+                            });
+                        }
                         if (sourceIndex === 8 || destinationIndex === 8) {
                             return categoryAvailableActions.find(action => getWheelActionKey(action) === currentKeys[8])?.cmd || '';
                         }
@@ -461,15 +529,82 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                         const currentKeys = getCurrentWheelKeys(deckWheelAssignments[tab.key]);
                         const replacementKey = getWheelActionKey(replacement);
                         const sourceIndex = currentKeys.indexOf(replacementKey);
+                        const isCustomAction = customActionKeys.has(replacementKey);
+                        if (directionIndex === 8 && isCustomAction) return false;
                         if (currentKeys[directionIndex] === replacementKey && (sourceIndex < 0 || sourceIndex === directionIndex)) return false;
+                        const destinationKey = currentKeys[directionIndex] || null;
+                        const customAssignments = deckWheelCustomAssignments[tab.key] || {};
+                        if (destinationKey && customActionKeys.has(destinationKey) && sourceIndex < 0) return false;
+                        if ((sourceIndex === 8 && directionIndex < 8 && customAssignments[WHEEL_DIRECTION_MAP[directionIndex]] !== undefined)
+                            || (directionIndex === 8 && sourceIndex < 8 && customAssignments[WHEEL_DIRECTION_MAP[sourceIndex]] !== undefined)) return false;
                         setDeckWheelAssignments(previous => {
                             const nextKeys = getCurrentWheelKeys(previous[tab.key]);
                             const currentSourceIndex = nextKeys.indexOf(replacementKey);
-                            const destinationKey = nextKeys[directionIndex] || null;
-                            if (currentSourceIndex >= 0 && currentSourceIndex !== directionIndex) nextKeys[currentSourceIndex] = destinationKey;
+                            const displacedKey = nextKeys[directionIndex] || null;
+                            if (currentSourceIndex >= 0 && currentSourceIndex !== directionIndex) nextKeys[currentSourceIndex] = displacedKey;
                             nextKeys[directionIndex] = replacementKey;
                             return { ...previous, [tab.key]: nextKeys };
                         });
+                        if (directionIndex < 8) {
+                            setDeckWheelCustomAssignments(previous => {
+                                const next = { ...(previous[tab.key] || {}) };
+                                const destinationDirection = WHEEL_DIRECTION_MAP[directionIndex];
+                                const sourceDirection = sourceIndex >= 0 && sourceIndex < 8 ? WHEEL_DIRECTION_MAP[sourceIndex] : null;
+                                if (sourceDirection && sourceDirection !== destinationDirection) {
+                                    const sourceBackup = next[sourceDirection];
+                                    const destinationBackup = next[destinationDirection];
+                                    delete next[sourceDirection];
+                                    if (destinationBackup !== undefined) next[sourceDirection] = destinationBackup;
+                                    else delete next[sourceDirection];
+                                    if (sourceBackup !== undefined) next[destinationDirection] = sourceBackup;
+                                    else delete next[destinationDirection];
+                                } else if (isCustomAction && sourceIndex < 0) {
+                                    next[destinationDirection] = destinationKey;
+                                } else if (!isCustomAction) {
+                                    delete next[destinationDirection];
+                                }
+                                return { ...previous, [tab.key]: next };
+                            });
+                        }
+                        return true;
+                    };
+                    const createCategoryCustomCell = (label: string, command: string): string | null => {
+                        const normalizedCommand = command.trim().toLowerCase().replace(/\s+/g, ' ');
+                        const duplicate = categoryAvailableActions.some(action => action.cmd.trim().toLowerCase().replace(/\s+/g, ' ') === normalizedCommand);
+                        if (duplicate) return 'That command is already in this action list.';
+                        setDeckWheelCustomActions(previous => ({
+                            ...previous,
+                            [tab.key]: [...(previous[tab.key] || []), { label, cmd: command }],
+                        }));
+                        return null;
+                    };
+                    const deleteCategoryCustomCell = (command: string, direction?: SwipeDirection): boolean => {
+                        const normalizedCommand = command.trim().toLowerCase().replace(/\s+/g, ' ');
+                        const customAction = customDeckActions.find(action => action.cmd.trim().toLowerCase().replace(/\s+/g, ' ') === normalizedCommand);
+                        if (!customAction) return false;
+                        const customKey = getWheelActionKey(customAction);
+                        const currentKeys = getCurrentWheelKeys(deckWheelAssignments[tab.key]);
+                        const customAssignments = deckWheelCustomAssignments[tab.key] || {};
+                        const restoredDirections: SwipeDirection[] = [];
+                        if (direction) {
+                            const requestedIndex = WHEEL_DIRECTION_MAP.indexOf(direction);
+                            if (requestedIndex < 0 || currentKeys[requestedIndex] !== customKey) return false;
+                        }
+                        WHEEL_DIRECTION_MAP.forEach((cellDirection, index) => {
+                            if (currentKeys[index] !== customKey) return;
+                            currentKeys[index] = customAssignments[cellDirection] ?? null;
+                            restoredDirections.push(cellDirection);
+                        });
+                        setDeckWheelAssignments(previous => ({ ...previous, [tab.key]: currentKeys }));
+                        setDeckWheelCustomAssignments(previous => {
+                            const next = { ...(previous[tab.key] || {}) };
+                            restoredDirections.forEach(cellDirection => delete next[cellDirection]);
+                            return { ...previous, [tab.key]: next };
+                        });
+                        setDeckWheelCustomActions(previous => ({
+                            ...previous,
+                            [tab.key]: (previous[tab.key] || []).filter(action => action.cmd.trim().toLowerCase().replace(/\s+/g, ' ') !== normalizedCommand),
+                        }));
                         return true;
                     };
                     return (
@@ -483,6 +618,8 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                                 availableActions={categoryAvailableActions}
                                 onSwapCells={swapCategoryCells}
                                 onAssignAction={assignCategoryAction}
+                                onCreateCustomSwipeCell={createCategoryCustomCell}
+                                onDeleteCustomSwipeAction={deleteCategoryCustomCell}
                                 highlightIcon={tab.key === 'mounts' ? hasRoomMount : tab.key === 'consume' && hasRoomConsumeTarget}
                             />
                             : <button

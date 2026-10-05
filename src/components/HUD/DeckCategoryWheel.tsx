@@ -10,7 +10,7 @@ import { GameButton, type GameButtonProps } from '../Controls/GameButton/GameBut
 import type { WheelReplacementMode } from '../Controls/GameButton/TacticalCommandPanel';
 import type { TacticalPaletteCommand } from '../Controls/GameButton/TacticalCommandPalette';
 import type { DeckItem } from './useDeckTargeting';
-import { getSwipeCommandTextColor } from '../../utils/swipeCommandColors';
+import { getButtonSwipeCommandTextColor } from '../../utils/swipeCommandColors';
 
 const DIRECTIONS: SwipeDirection[] = ['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'];
 
@@ -22,12 +22,15 @@ interface DeckCategoryWheelProps {
     availableActions: DeckItem[];
     onSwapCells: (sourceIndex: number, destinationIndex: number, centerCommand: string) => boolean | string;
     onAssignAction: (directionIndex: number, action: DeckItem) => boolean;
+    onCreateCustomSwipeCell?: (label: string, command: string) => string | null | undefined;
+    onDeleteCustomSwipeAction?: (command: string, direction?: SwipeDirection) => boolean;
     highlightIcon?: boolean;
 }
 
 // --- UI Section ---
 export const DeckCategoryWheel: React.FC<DeckCategoryWheelProps> = ({
-    label, icon: Icon, button, gameButtonProps, availableActions, onSwapCells, onAssignAction, highlightIcon = false
+    label, icon: Icon, button, gameButtonProps, availableActions, onSwapCells, onAssignAction,
+    onCreateCustomSwipeCell, onDeleteCustomSwipeAction, highlightIcon = false
 }) => {
     const [swapPickerDirection, setSwapPickerDirection] = useState<number | null>(null);
     const [swapPickerSourceCommand, setSwapPickerSourceCommand] = useState('');
@@ -36,6 +39,7 @@ export const DeckCategoryWheel: React.FC<DeckCategoryWheelProps> = ({
         ...Object.values(button.swipeCommands || {}),
         ...Object.values(button.longSwipeCommands || {})
     ].map(command => command.trim().toLowerCase()).filter(Boolean));
+    const customCommands = new Set((button.customSwipeActions || []).map(action => action.command.trim().toLowerCase()));
     const extendedActions = availableActions.filter(action => !wheelCommands.has(action.cmd.trim().toLowerCase()));
 
     const openSwapPicker = (direction: SwipeDirection | 'center' | null, centerCommand?: string) => {
@@ -103,16 +107,19 @@ export const DeckCategoryWheel: React.FC<DeckCategoryWheelProps> = ({
             button={button}
             className="deck-tab deck-category-button"
             useDefaultPositioning={false}
-            iconNode={<Icon size={17} strokeWidth={2.2} color={getSwipeCommandTextColor(button.command)} />}
+            iconNode={<Icon size={17} strokeWidth={2.2} color={getButtonSwipeCommandTextColor(button, button.command)} />}
             ariaLabel={`${label} actions`}
             onSwapWheel={openSwapPicker}
             onMovePinnedCells={moveWheelCommand}
             onAssignPinnedCommand={assignWheelCommand}
+            onCreateCustomSwipeCell={onCreateCustomSwipeCell}
+            onDeleteCustomSwipeAction={onDeleteCustomSwipeAction}
             commandPalette={extendedActions.map((action, index): TacticalPaletteCommand => ({
                 key: `${action.label}:${action.cmd}:${index}`,
                 label: action.label,
                 command: action.cmd,
-                actionType: 'command'
+                actionType: 'command',
+                isCustomCell: customCommands.has(action.cmd.trim().toLowerCase())
             }))}
             wheelReplacementMode={wheelReplacementMode}
             openDecisionPanelOnHold

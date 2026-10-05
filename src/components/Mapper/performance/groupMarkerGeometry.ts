@@ -129,6 +129,8 @@ export function buildGroupMemberGeometry(
   members: readonly FastMapGroupMember[],
   view: FastMapView,
   player: { x: number; y: number; z: number } | null = null,
+  width = 0,
+  height = 0,
 ): Float32Array {
   const output: number[] = [];
   const layouts = markerLayouts(members);
@@ -149,6 +151,44 @@ export function buildGroupMemberGeometry(
       member.color,
       occupiedSlots * GROUP_MEMBER_ROTATION_STEP,
     );
+  }
+
+  if (width > 0 && height > 0) {
+    const drawOffscreenArrow = (x: number, y: number, z: number, color: number) => {
+      if (z !== view.layer) return;
+      const perspective = Math.max(1, 60 - 7 * z);
+      const pixelsPerRoom = (5280 * view.zoom) / (2 * perspective);
+      const targetX = width / 2 + (x + 0.5 - view.x) * pixelsPerRoom;
+      const targetY = height / 2 - (y + 0.5 - view.y) * pixelsPerRoom;
+      const dx = targetX - width / 2;
+      const dy = targetY - height / 2;
+      if (targetX >= 18 && targetX <= width - 18 && targetY >= 18 && targetY <= height - 18) return;
+      const length = Math.hypot(dx, dy);
+      if (length < 0.001) return;
+      const ux = dx / length;
+      const uy = dy / length;
+      const edgeScale = Math.min((width / 2 - 18) / Math.abs(ux || 1e-9), (height / 2 - 18) / Math.abs(uy || 1e-9));
+      const px = width / 2 + ux * edgeScale;
+      const py = height / 2 + uy * edgeScale;
+      const pxToWorld = (sx: number, sy: number): readonly [number, number] => [
+        view.x + (sx - width / 2) / pixelsPerRoom,
+        view.y - (sy - height / 2) / pixelsPerRoom,
+      ];
+      const tip = pxToWorld(px + ux * 8, py + uy * 8);
+      const halfWidth = 5;
+      const left = pxToWorld(px - ux * 2 - uy * halfWidth, py - uy * 2 + ux * halfWidth);
+      const right = pxToWorld(px - ux * 2 + uy * halfWidth, py - uy * 2 - ux * halfWidth);
+      const tailLeft = pxToWorld(px - ux * 7 - uy * 2, py - uy * 7 + ux * 2);
+      const tailRight = pxToWorld(px - ux * 7 + uy * 2, py - uy * 7 - ux * 2);
+      const zRoom = view.layer;
+      // MMapper's screen-space arrows sit just inside the viewport and point toward the room.
+      appendTriangle(output, [...tip, zRoom], [...left, zRoom], [...tailLeft, zRoom], color, 0.92);
+      appendTriangle(output, [...tip, zRoom], [...tailLeft, zRoom], [...tailRight, zRoom], color, 0.92);
+      appendTriangle(output, [...tip, zRoom], [...tailRight, zRoom], [...right, zRoom], color, 0.92);
+      appendTriangle(output, [...tip, zRoom], [...right, zRoom], [...left, zRoom], color, 0.92);
+    };
+    for (const member of members) drawOffscreenArrow(member.x, member.y, member.z, member.color);
+    if (player) drawOffscreenArrow(player.x, player.y, player.z, 0xffffff);
   }
 
   return Float32Array.from(output);

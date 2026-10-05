@@ -74,6 +74,8 @@ interface SettingsState {
     isImmersionTextAnimationsEnabled: boolean;
     isClassicMode: boolean;
     isPerformanceMode: boolean;
+    useTacticalPanelBlur: boolean;
+    hasCustomTacticalPanelBlur: boolean;
     keepScreenAwake: boolean;
     screenWakeLockStatus: 'disabled' | 'active' | 'paused' | 'insecure-context' | 'unsupported' | 'unavailable';
     accentColor: string;
@@ -130,6 +132,7 @@ interface SettingsState {
     showTerrainTiles: boolean;
     useLegacyMapArt: boolean;
     hideMapHeaderFooter: boolean;
+    showMapSwipeDirectionLetters: boolean;
     mapDrawerOpacity: number;
     mapBrightness: number;
     characterDrawerOpacity: number;
@@ -152,6 +155,7 @@ interface SettingsState {
     setIsImmersionTextAnimationsEnabled: (val: boolean) => void;
     setIsClassicMode: (val: boolean) => void;
     setIsPerformanceMode: (val: boolean) => void;
+    setUseTacticalPanelBlur: (val: boolean) => void;
     setKeepScreenAwake: (val: boolean) => void;
     setScreenWakeLockStatus: (val: SettingsState['screenWakeLockStatus']) => void;
     setAccentColor: (val: string) => void;
@@ -209,6 +213,7 @@ interface SettingsState {
     setShowTerrainTiles: (val: boolean) => void;
     setUseLegacyMapArt: (val: boolean) => void;
     setHideMapHeaderFooter: (val: boolean) => void;
+    setShowMapSwipeDirectionLetters: (val: boolean) => void;
     setMapDrawerOpacity: (val: number) => void;
     setMapBrightness: (val: number) => void;
     setMapTileVisuals: (val: Partial<MapTileVisualAdjustments>) => void;
@@ -301,6 +306,8 @@ export const useSettingsStore = create<SettingsState>()(
             isImmersionTextAnimationsEnabled: false,
             isClassicMode: false,
             isPerformanceMode: false,
+            useTacticalPanelBlur: isDesktopViewport(),
+            hasCustomTacticalPanelBlur: false,
             keepScreenAwake: false,
             screenWakeLockStatus: 'disabled',
             accentColor: '#d4aa00',
@@ -361,6 +368,7 @@ export const useSettingsStore = create<SettingsState>()(
             showTerrainTiles: true,
             useLegacyMapArt: true,
             hideMapHeaderFooter: false,
+            showMapSwipeDirectionLetters: true,
             mapDrawerOpacity: 1.0,
             mapBrightness: 50,
             characterDrawerOpacity: 1.0,
@@ -390,6 +398,7 @@ export const useSettingsStore = create<SettingsState>()(
             setIsImmersionTextAnimationsEnabled: (isImmersionTextAnimationsEnabled) => set({ isImmersionTextAnimationsEnabled }),
             setIsClassicMode: (isClassicMode) => set({ isClassicMode }),
             setIsPerformanceMode: (isPerformanceMode) => set({ isPerformanceMode }),
+            setUseTacticalPanelBlur: (useTacticalPanelBlur) => set({ useTacticalPanelBlur, hasCustomTacticalPanelBlur: true }),
             setKeepScreenAwake: (keepScreenAwake) => set({ keepScreenAwake }),
             setScreenWakeLockStatus: (screenWakeLockStatus) => set({ screenWakeLockStatus }),
             setAccentColor: (accentColor) => set({ accentColor }),
@@ -484,6 +493,7 @@ export const useSettingsStore = create<SettingsState>()(
             setShowTerrainTiles: (showTerrainTiles) => set({ showTerrainTiles }),
             setUseLegacyMapArt: (useLegacyMapArt) => set({ useLegacyMapArt }),
             setHideMapHeaderFooter: (hideMapHeaderFooter) => set({ hideMapHeaderFooter }),
+            setShowMapSwipeDirectionLetters: (showMapSwipeDirectionLetters) => set({ showMapSwipeDirectionLetters }),
             setMapDrawerOpacity: (mapDrawerOpacity) => set({ mapDrawerOpacity }),
             setMapBrightness: (mapBrightness) => set({ mapBrightness: Math.max(50, Math.min(100, mapBrightness)) }),
             setCharacterDrawerOpacity: (characterDrawerOpacity) => set({ characterDrawerOpacity }),
@@ -810,6 +820,12 @@ export const useSettingsStore = create<SettingsState>()(
             },
             merge: (persistedState: any, currentState) => {
                 const merged = { ...currentState, ...(persistedState || {}) } as SettingsState;
+                const persistedBlurChoice = persistedState?.hasCustomTacticalPanelBlur === true ||
+                    (persistedState?.hasCustomTacticalPanelBlur === undefined && persistedState?.useTacticalPanelBlur === true);
+                merged.hasCustomTacticalPanelBlur = persistedBlurChoice;
+                merged.useTacticalPanelBlur = persistedBlurChoice
+                    ? Boolean(persistedState?.useTacticalPanelBlur)
+                    : isDesktopViewport();
                 merged.zoneMusic = (merged.zoneMusic || [])
                     .filter(mapping => {
                         const zone = mapping.zone.trim().toLowerCase().replace(/^the\s+/, '');
@@ -845,6 +861,7 @@ export const useSettingsStore = create<SettingsState>()(
                 merged.showBackgroundImage = merged.showBackgroundImage ?? true;
                 merged.useLegacyMapArt = merged.useLegacyMapArt ?? true;
                 merged.hideMapHeaderFooter = merged.hideMapHeaderFooter ?? false;
+                merged.showMapSwipeDirectionLetters = merged.showMapSwipeDirectionLetters ?? true;
                 merged.showChatWindow = merged.showChatWindow ?? false;
                 merged.showGroupPanel = merged.showGroupPanel ?? false;
                 merged.showCommandSuggestions = merged.showCommandSuggestions ?? true;

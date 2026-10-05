@@ -36,10 +36,11 @@ interface Props {
     layout: 'below' | 'side' | 'wheel';
     selectedDirection: string | null;
     onSelectDirection: (direction: string) => void;
+    availableDoorDirections?: string[];
 }
 
 // --- UI Section ---
-export const TacticalDirectionPad: React.FC<Props> = ({ layout, selectedDirection, onSelectDirection }) => {
+export const TacticalDirectionPad: React.FC<Props> = ({ layout, selectedDirection, onSelectDirection, availableDoorDirections }) => {
     const directions = layout === 'wheel' ? MOVEMENT_WHEEL_OPTIONS : DIRECTION_OPTIONS;
 
     return (
@@ -48,27 +49,36 @@ export const TacticalDirectionPad: React.FC<Props> = ({ layout, selectedDirectio
             aria-label={layout === 'wheel' ? 'Choose movement direction' : 'Choose direction'}
         >
             <div className="tactical-target-direction-compass">
-                {directions.map(({ value, label, initial, arrow, row, column, axis }) => (
-                    <button
-                        key={value}
-                        type="button"
-                        className={`tactical-target-direction-button${axis ? ' is-axis-direction' : ''}${layout === 'wheel' ? ' is-movement-direction' : ''}${selectedDirection === value ? ' is-selected' : ''}`}
-                        style={{ gridRow: row, gridColumn: column }}
-                        aria-label={label}
-                        aria-pressed={selectedDirection === value}
-                        data-direction-value={value}
-                        onPointerDown={event => event.stopPropagation()}
-                        onPointerUp={event => {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            onSelectDirection(value);
-                        }}
-                        onClick={event => {
-                            event.stopPropagation();
-                            if (event.detail === 0) onSelectDirection(value);
-                        }}
-                    ><span>{arrow}</span><small>{initial}</small></button>
-                ))}
+                {directions.map(({ value, label, initial, arrow, row, column, axis }) => {
+                    const exitDirection = value === 'up' || value === 'u' ? 'u'
+                        : value === 'down' || value === 'd' ? 'd'
+                            : value;
+                    const unavailableDoor = availableDoorDirections !== undefined
+                        && !availableDoorDirections.includes(exitDirection);
+                    return (
+                        <button
+                            key={value}
+                            type="button"
+                            className={`tactical-target-direction-button${axis ? ' is-axis-direction' : ''}${layout === 'wheel' ? ' is-movement-direction' : ''}${selectedDirection === value ? ' is-selected' : ''}`}
+                            style={{ gridRow: row, gridColumn: column }}
+                            aria-label={unavailableDoor ? `${label}, no door in this direction` : label}
+                            aria-pressed={selectedDirection === value}
+                            data-direction-value={value}
+                            disabled={unavailableDoor}
+                            title={unavailableDoor ? 'No door in this direction' : undefined}
+                            onPointerDown={event => event.stopPropagation()}
+                            onPointerUp={event => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                onSelectDirection(value);
+                            }}
+                            onClick={event => {
+                                event.stopPropagation();
+                                if (event.detail === 0) onSelectDirection(value);
+                            }}
+                        ><span>{arrow}</span><small>{initial}</small></button>
+                    );
+                })}
             </div>
         </section>
     );

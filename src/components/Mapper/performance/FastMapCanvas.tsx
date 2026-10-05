@@ -220,6 +220,7 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
     props.mapProps.renderVersion,
     props.mapProps.viewZ,
     props.mapProps.currentRoomId,
+    props.mapProps.deathRoomId,
     props.mapProps.mapBrightness,
     props.mapProps.walkTargetId,
     props.mapProps.autoCenter,

@@ -7,10 +7,11 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowLeftRight, X } from 'lucide-react';
 import { CustomButton, SwipeDirection } from '../../../types';
-import { getClassKeyFromSetId, getSkillPresentation } from '../../../utils/skillPresentation';
-import { getSwipeCommandTextColor } from '../../../utils/swipeCommandColors';
-import { FOLLOWERS_COMMAND_PREFIX } from '../../../stores/useTacticalCommandPrefixStore';
+import { useSettingsStore } from '../../../stores/useSettingsStore';
+import { getButtonSwipeCommandTextColor } from '../../../utils/swipeCommandColors';
 import { TacticalCommandPalette, type TacticalPaletteCommand, type TacticalSwapCell } from './TacticalCommandPalette';
+import { SwipeWheelCellControls } from './SwipeWheelCellControls';
+import { SwipeWheelGrid } from './SwipeWheelGrid';
 import './ButtonSwipeOverlay.css';
 
 interface ButtonSwipeOverlayProps {
@@ -19,6 +20,9 @@ interface ButtonSwipeOverlayProps {
     isCancelling: boolean;
     isPinned: boolean;
     swapSource?: TacticalSwapCell | null;
+    isSwapMode?: boolean;
+    onSelectSwapCell?: (cell: TacticalSwapCell) => void;
+    hoveredPanelTool?: 'add' | 'delete' | 'swap' | null;
     isChoosingRebindSlot: boolean;
     rebindDirection: SwipeDirection | 'center' | null;
     onSelectRebindSlot: (direction: SwipeDirection | 'center') => void;
@@ -32,6 +36,11 @@ interface ButtonSwipeOverlayProps {
     pendingCommandPrefix?: string | null;
     targetMenu?: React.ReactNode;
     paletteCommands?: TacticalPaletteCommand[];
+    onStartCreatingCustomSwipeCell?: () => void;
+    onDeleteCustomSwipeAction?: (command: string, direction?: SwipeDirection) => boolean;
+    isDeletingCustomCell?: boolean;
+    onDeleteModeChange?: (active: boolean) => void;
+    onSwipeToolTap?: () => void;
     onClose: () => void;
     onSwapCells?: () => void;
     onPinnedPointerDown?: React.PointerEventHandler<HTMLElement>;
@@ -44,12 +53,6 @@ interface ButtonSwipeOverlayProps {
     onPalettePointerCancel?: React.PointerEventHandler<HTMLElement>;
     hidePreviewWheel?: boolean;
 }
-
-const REBIND_GRID_CELLS: Array<Array<SwipeDirection | 'center'>> = [
-    ['nw', 'up', 'ne'],
-    ['left', 'center', 'right'],
-    ['sw', 'down', 'se']
-];
 
 const colorToRgb = (colorVal: string | undefined, defaultVal: string) => {
     if (!colorVal || colorVal.startsWith('var(')) return defaultVal;
@@ -68,43 +71,15 @@ const colorToRgb = (colorVal: string | undefined, defaultVal: string) => {
     return !isNaN(r) && !isNaN(g) && !isNaN(b) ? `${r}, ${g}, ${b}` : defaultVal;
 };
 
-const getWheelSlotCommand = (button: CustomButton, direction: SwipeDirection): string => {
-    const swipeCommand = button.swipeCommands?.[direction]?.trim() || '';
-    if (swipeCommand) return swipeCommand;
-    if (button.longSwipeActionTypes?.[direction] === 'assign') return '';
-    return button.longSwipeCommands?.[direction]?.trim() || '';
-};
-
-export const toSwipeCenterActionLabel = (button: CustomButton): string => {
-    const command = (button.command || '').trim();
-    const normalized = command.toLowerCase();
-    if (!command) return button.label || '';
-    if (normalized === FOLLOWERS_COMMAND_PREFIX) return 'Command';
-
-    if (button.actionType === 'menu') {
-        const menuLabel = normalized.endsWith('spelllist') ? 'spells'
-            : normalized.endsWith('skilllist') ? 'skills'
-            : normalized.endsWith(' list') ? normalized.replace(/\s+list$/, '')
-            : normalized.replace(/list$/, '') || command;
-        return getSkillPresentation(menuLabel, menuLabel, getClassKeyFromSetId(button.setId)).label;
-    }
-
-    return getSkillPresentation(command, command, getClassKeyFromSetId(button.setId)).label;
-};
-
-export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling, isPinned, swapSource = null, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, isTargetMenuVisible = false, getCommandTargetGlowColor, getCommandLearnedState, activeCommand, pendingCommandPrefix, targetMenu, paletteCommands = [], onClose, onSwapCells, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel }) => {
+export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling, isPinned, swapSource = null, isSwapMode = false, onSelectSwapCell, hoveredPanelTool = null, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, isTargetMenuVisible = false, getCommandTargetGlowColor, getCommandLearnedState, activeCommand, pendingCommandPrefix, targetMenu, paletteCommands = [], onStartCreatingCustomSwipeCell, onDeleteCustomSwipeAction, isDeletingCustomCell = false, onDeleteModeChange, onSwipeToolTap, onClose, onSwapCells, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel }) => {
+    const swapTapPointerRef = React.useRef<number | null>(null);
+    const useTacticalPanelBlur = useSettingsStore(state => state.useTacticalPanelBlur);
+    const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode);
     if (!isTargetMenuVisible || !targetMenu) return null;
 
     const wheelAccent = button.style.borderColor || button.style.backgroundColor || 'var(--set-accent, var(--accent))';
     const wheelAccentRgb = colorToRgb(wheelAccent, 'var(--set-accent-rgb, var(--accent-rgb))');
-    const buttonClassKey = getClassKeyFromSetId(button.command) || getClassKeyFromSetId(button.setId);
     const centerCommand = button.command;
-    const centerCommandTextColor = getSwipeCommandTextColor(centerCommand);
-    const centerIsLearned = getCommandLearnedState?.(centerCommand) !== false;
-    const centerTargetAvailableColor = centerIsLearned ? getCommandTargetGlowColor?.(centerCommand) ?? null : null;
-    const centerTargetGlowColor = centerTargetAvailableColor
-        ? centerCommandTextColor || centerTargetAvailableColor
-        : null;
     const normalizedActiveCommand = activeCommand?.trim().toLowerCase() || '';
     const configuredDirection = Object.entries({ ...(button.longSwipeCommands || {}), ...(button.swipeCommands || {}) }).find(([, command]) => {
         const normalizedSwipeCommand = command?.trim().toLowerCase() || '';
@@ -115,84 +90,40 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
         normalizedActiveCommand === normalizedCenterCommand
         || normalizedActiveCommand.startsWith(`${normalizedCenterCommand} `)
     ));
-    const displayDirection = isChoosingRebindSlot
-        ? rebindDirection
-        : rebindDirection || activeDir || (isCenterCommand ? 'center' : configuredDirection || null);
-    const wheelContent = (
-        <div
-            className="swipe-wheel-container"
-            onPointerDown={isPinned ? onPinnedPointerDown : undefined}
-            onPointerMove={isPinned ? onPinnedPointerMove : undefined}
-            onPointerUp={isPinned ? onPinnedPointerUp : undefined}
-            onPointerCancel={isPinned ? onPinnedPointerCancel : undefined}
-        >
-            {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => {
-                const cmdVal = getWheelSlotCommand(button, d as SwipeDirection);
-                const isActive = displayDirection === d && Boolean(cmdVal);
-                return (
-                    <div
-                        key={d}
-                        className={`swipe-slice ${isActive ? 'active' : ''}`}
-                        style={{ transform: `rotate(${i * 45}deg)`, opacity: 1, pointerEvents: 'auto' }}
-                    ><div className="slice-separator" /></div>
-                );
-            })}
-            {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map(d => {
-                const cmdVal = getWheelSlotCommand(button, d as SwipeDirection);
-                const isActive = displayDirection === d;
-                const isLearned = getCommandLearnedState?.(cmdVal) !== false;
-                const targetAvailableColor = isLearned ? getCommandTargetGlowColor?.(cmdVal) ?? null : null;
-                const isPrefixAction = cmdVal.trim().toLowerCase() === FOLLOWERS_COMMAND_PREFIX;
-                const presentation = isPrefixAction ? { label: 'Command' } : getSkillPresentation(cmdVal, cmdVal, buttonClassKey);
-                const commandTextColor = isPrefixAction ? '#facc15' : getSwipeCommandTextColor(cmdVal);
-                const targetGlowColor = targetAvailableColor
-                    ? commandTextColor || targetAvailableColor
-                    : null;
-                return (
-                    <span key={`label-${d}`} className={`swipe-sq-label ${isActive ? 'active' : ''}${!isLearned ? ' is-unlearned' : ''}${isPrefixAction ? ' is-command-prefix' : ''}${swapSource?.kind === 'wheel' && swapSource.direction === d ? ' is-swap-source' : ''}${cmdVal ? '' : ' is-empty'}`} data-dir={d} data-wheel-direction={d} data-wheel-command={cmdVal} data-wheel-learned={isLearned}>
-                        <span
-                            className={`swipe-action-card${targetGlowColor ? ' is-target-ready' : ''}${cmdVal ? '' : ' is-empty'}`}
-                            style={{
-                                '--target-glow-color': targetGlowColor || undefined,
-                                '--wheel-command-text-color': commandTextColor,
-                            } as React.CSSProperties}
-                        >
-                            {cmdVal && <>
-                                <span className="swipe-action-text">{presentation.label}</span>
-                            </>}
-                        </span>
-                    </span>
-                );
-            })}
-            <div
-                className={`swipe-center ${displayDirection === 'center' ? 'active' : ''}${!centerIsLearned ? ' is-unlearned' : ''}${centerTargetGlowColor ? ' is-target-ready' : ''}${swapSource?.kind === 'wheel' && swapSource.direction === 'center' ? ' is-swap-source' : ''}`}
-                style={{
-                    '--target-glow-color': centerTargetGlowColor || undefined,
-                    '--wheel-command-text-color': centerCommandTextColor,
-                } as React.CSSProperties}
-                data-wheel-direction="center"
-                data-wheel-command={centerCommand}
-                data-wheel-learned={centerIsLearned}
-            >
-                {centerCommand.trim() && <span className="swipe-center-label">{toSwipeCenterActionLabel(button)}</span>}
-            </div>
-            {isChoosingRebindSlot && <div className="unified-tactical-rebind-grid" aria-label="Choose wheel slot to rebind">
-                {REBIND_GRID_CELLS.flat().map(direction => (
-                    <button
-                        key={direction}
-                        type="button"
-                        className={rebindDirection === direction ? 'is-selected' : ''}
-                        aria-label={`Choose ${direction === 'center' ? 'center' : direction} slot`}
-                        onPointerDown={event => event.stopPropagation()}
-                        onClick={event => {
-                            event.stopPropagation();
-                            onSelectRebindSlot(direction);
-                        }}
-                    />
-                ))}
-            </div>}
-        </div>
-    );
+    const displayDirection = isSwapMode || hoveredPanelTool || isCancelling
+        ? null
+        : isChoosingRebindSlot
+            ? rebindDirection
+            : rebindDirection || activeDir || (isCenterCommand ? 'center' : configuredDirection || null);
+    const wheelGrid = <SwipeWheelGrid
+        button={button}
+        displayDirection={displayDirection}
+        swapSource={swapSource}
+        isSwapMode={isSwapMode}
+        isDeletingCustomCell={isDeletingCustomCell}
+        isChoosingRebindSlot={isChoosingRebindSlot}
+        rebindDirection={rebindDirection}
+        isPinned={isPinned}
+        onPinnedPointerDown={onPinnedPointerDown}
+        onPinnedPointerMove={onPinnedPointerMove}
+        onPinnedPointerUp={onPinnedPointerUp}
+        onPinnedPointerCancel={onPinnedPointerCancel}
+        getCommandTargetGlowColor={getCommandTargetGlowColor}
+        getCommandLearnedState={getCommandLearnedState}
+        onDeleteCustomSwipeAction={onDeleteCustomSwipeAction}
+        onDeleteComplete={() => onDeleteModeChange?.(false)}
+        onSelectSwapCell={cell => onSelectSwapCell?.(cell)}
+        onSelectRebindSlot={onSelectRebindSlot}
+    />;
+    const wheelContent = onStartCreatingCustomSwipeCell && onDeleteCustomSwipeAction
+        ? <SwipeWheelCellControls
+            isDeleteMode={isDeletingCustomCell}
+            onDeleteModeChange={active => onDeleteModeChange?.(active)}
+            onStartCreatingCell={onStartCreatingCustomSwipeCell}
+            onToolTap={() => onSwipeToolTap?.()}
+            hoveredPanelTool={hoveredPanelTool}
+        >{wheelGrid}</SwipeWheelCellControls>
+        : wheelGrid;
     return createPortal(
         <div style={{
             position: 'fixed',
@@ -203,7 +134,7 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
             '--set-accent-rgb': wheelAccentRgb
         } as React.CSSProperties}>
             <div
-                className="unified-tactical-surface"
+                className={`unified-tactical-surface${useTacticalPanelBlur && !isPerformanceMode ? ' has-blurred-background' : ''}`}
                 onPointerDown={event => event.stopPropagation()}
                 onPointerUp={event => event.stopPropagation()}
                 onPointerCancel={event => event.stopPropagation()}
@@ -219,7 +150,13 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                             commands={paletteCommands}
                             activeCommand={activeCommand || ''}
                             getCommandTargetGlowColor={getCommandTargetGlowColor}
-                            getCommandTextColor={getSwipeCommandTextColor}
+                            getCommandTextColor={command => getButtonSwipeCommandTextColor(button, command)}
+                            isDeletingCustomCell={isDeletingCustomCell}
+                            isSwapMode={isSwapMode}
+                            onSelectSwapCell={onSelectSwapCell}
+                            onDeleteCustomCell={command => {
+                                if (onDeleteCustomSwipeAction?.(command)) onDeleteModeChange?.(false);
+                            }}
                             swapSourceCommand={swapSource?.kind === 'palette' ? swapSource.command : null}
                             onPointerDown={isPinned ? onPalettePointerDown : undefined}
                             onPointerMove={isPinned ? onPalettePointerMove : undefined}
@@ -235,14 +172,23 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                     >
                         <button
                             type="button"
-                            className={`unified-tactical-panel-action is-swap${swapSource ? ' is-active' : ''}`}
-                            aria-label={swapSource ? 'Tap to swap the selected cell with the cell under the held finger' : 'Tap to select the cell under the held finger for swapping'}
-                            title={swapSource ? 'Swap with selected cell' : 'Select cell to swap'}
-                            aria-pressed={Boolean(swapSource)}
-                            onPointerDown={event => event.stopPropagation()}
+                            className={`unified-tactical-panel-action is-swap${isSwapMode || swapSource ? ' is-active' : ''}${hoveredPanelTool === 'swap' ? ' is-pointer-selected' : ''}`}
+                            data-panel-tool="swap"
+                            aria-label={isSwapMode ? 'Cancel swap mode' : 'Select two cells to swap'}
+                            title={isSwapMode ? 'Tap another cell to swap, or tap again to cancel' : 'Tap to choose two cells to swap'}
+                            aria-pressed={isSwapMode}
+                            onPointerDown={event => {
+                                event.stopPropagation();
+                                swapTapPointerRef.current = event.pointerId;
+                            }}
                             onPointerUp={event => {
                                 event.stopPropagation();
-                                if (!event.isPrimary || event.pointerType === 'mouse') onSwapCells?.();
+                                if (swapTapPointerRef.current === event.pointerId) onSwapCells?.();
+                                swapTapPointerRef.current = null;
+                            }}
+                            onPointerCancel={event => {
+                                event.stopPropagation();
+                                if (swapTapPointerRef.current === event.pointerId) swapTapPointerRef.current = null;
                             }}
                             onClick={event => {
                                 event.stopPropagation();

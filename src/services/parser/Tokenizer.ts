@@ -400,7 +400,7 @@ export class Tokenizer {
 
         if (!isCacheValid) {
             this.cachedOccupants = [...occupants];
-            const validTypes = new Set(['ally', 'enemy', 'neutral', 'npc']);
+            const validTypes = new Set(['ally', 'enemy', 'neutral', 'npc', 'mount']);
             this.cachedCandidates = occupants
                 .filter(o => o.type && validTypes.has(o.type.toLowerCase()))
                 .flatMap(o => this.getOccupantPatterns(o).map(pattern => ({ occupant: o, pattern })))
@@ -440,13 +440,13 @@ export class Tokenizer {
 
             const gmcpType = candidate.occupant.type!.toLowerCase();
             const commandTarget = this.getOccupantCommandTarget(candidate.occupant, content, occupants);
-            const isNpc = gmcpType === 'npc';
+            const isNpc = gmcpType === 'npc' || gmcpType === 'mount';
             out.push({
                 type: 'entity',
                 content,
                 entityId: String(candidate.occupant.id ?? `auto-${content.toLowerCase().replace(/[^a-z0-9]/g, '-')}`),
                 metadata: {
-                    kind: gmcpType === 'npc' ? 'npc' : gmcpType === 'enemy' ? 'enemy' : gmcpType === 'neutral' ? 'neutral' : gmcpType === 'ally' ? 'ally' : 'player',
+                    kind: gmcpType === 'npc' || gmcpType === 'mount' ? 'npc' : gmcpType === 'enemy' ? 'enemy' : gmcpType === 'neutral' ? 'neutral' : gmcpType === 'ally' ? 'ally' : 'player',
                     isNpc,
                     category: toCategoryId(gmcpType) || 'cat-npc',
                     context: commandTarget,

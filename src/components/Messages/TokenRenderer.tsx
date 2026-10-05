@@ -1,7 +1,10 @@
+/** @file TokenRenderer.tsx — Renders parsed game text and inline entity highlights. */
+
 import React, { useMemo } from 'react';
 import { Token, EntityToken, AnsiToken, TextToken } from '../../types';
-import { useTokenHighlight, useUI } from '../../context/GameContext';
+import { useTokenHighlight } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { useUIStore } from '../../stores/useUIStore';
 import { useShallow } from 'zustand/react/shallow';
 import { getInlineGlowColor } from '../../utils/inlineActionModel';
 import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
@@ -114,7 +117,10 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
         isTextRevealEnabled: s.isTextRevealEnabled,
         isClassicMode: s.isClassicMode,
     })));
-    const { popoverState } = useUI();
+    const popoverEntityId = useUIStore(state => state.popoverState?.entityId ?? null);
+    const popoverSelection = useMemo(() => popoverEntityId
+        ? new Set([popoverEntityId])
+        : null, [popoverEntityId]);
 
     const resolvedRoomColor = useMemo(() => {
         return getInlineGlowColor('cat-room', inlineCategories, {
@@ -354,9 +360,8 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
 
             const selectedId = props['data-id'];
             if (selectedId) {
-                if (popoverState?.entityId) {
-                    const popoverSet = new Set<string>([popoverState.entityId]);
-                    if (isObjectSelected(popoverSet, selectedId, props['data-category'])) {
+                if (popoverSelection) {
+                    if (isObjectSelected(popoverSelection, selectedId, props['data-category'])) {
                         props.className = `${props.className} menu-active`.trim();
                     }
                 }

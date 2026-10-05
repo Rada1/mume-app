@@ -33,6 +33,7 @@ export interface FastMapSearchOverlay {
 export interface FastMapFrame {
   view: FastMapView;
   player: { x: number; y: number; z: number } | null;
+  deathRoom?: { x: number; y: number; z: number } | null;
   liveRoom: FastRoomOverlay | null;
   prediction: FastMapPrediction | null;
   background: FastMapBackground;

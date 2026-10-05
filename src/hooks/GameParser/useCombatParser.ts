@@ -55,7 +55,9 @@ export interface CombatParserDeps {
 
 const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'recovered', 'shoot', 'shoots', 'blast', 'shatters', 'joins?', 'assists?', 'dodge', 'dodges', 'parry', 'parries', 'deflect', 'deflects', 'evade', 'evades', 'blocks?', 'avoids?', 'fails?', 'failed'].join('|');
 const COMBAT_REGEX = new RegExp(`\\b(${COMBAT_VERBS_STR})(?:es|s)?\\b`, 'i');
-const BACKSTAB_MESSAGE_REGEX = /\bmakes a strange sound\b.*?\bas you place\b.*?\bin (?:its|his|her|their) back\b/i;
+// The server can wrap the special backstab sentence across lines. Match through
+// either variable names and the target's pronoun without assuming one line.
+const BACKSTAB_MESSAGE_REGEX = /\bmakes a strange sound\b[\s\S]*?\bas you place\b[\s\S]*?\bin (?:its|his|her|their) back\b/i;
 const COMBAT_DAMAGE_SOUND_BY_VERB: Record<string, string> = { hit: 'hit2', stab: 'stab', backstab: 'backstab', slash: 'slash', crush: 'crushpound', pound: 'crushpound', bash: 'bash', cleave: 'cleave', pierce: 'pierce', smite: 'smite', shoot: 'arrowhit', shoots: 'arrowhit' };
 
 export function useCombatParser(deps: CombatParserDeps) {

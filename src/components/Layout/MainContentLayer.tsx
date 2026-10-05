@@ -39,6 +39,7 @@ import { useActiveVitals } from '../../stores/useActiveGameState';
 import { getRoomTerrainVisualKey, getZoneVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 import { useMobileGearSwipe } from '../../hooks/useMobileGearSwipe';
 import { useDockedPanelLayout } from '../../hooks/useDockedPanelLayout';
+import { SwipeWheelCellDialogHost } from '../Controls/GameButton/SwipeWheelCellDialog';
 
 const HelpPanel = React.lazy(() => import('../Help/HelpPanel'));
 const MumeEditor = React.lazy(() => import('../Utility/MumeEditor'));
@@ -110,6 +111,8 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const isCharacterCardOpen = useCharacterCardStore(s => s.isOpen);
 
     const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
+    const useTacticalPanelBlur = useSettingsStore(s => s.useTacticalPanelBlur);
+    const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
     const useMobileAccountPanels = useSettingsStore(s => s.useMobileAccountPanels ?? true);
     const manualBgImage = useSettingsStore(s => s.bgImage);
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
@@ -132,12 +135,13 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         mumeEditState.context?.kind !== 'self-whois'
     );
 
-    const { activeDockedPanels, hasMobileHeaderPanel, getPanelStyle } = useDockedPanelLayout(
+    const { activeDockedPanels, getPanelStyle } = useDockedPanelLayout(
         viewport.isMobile,
         gameState,
         isEditorOpen
     );
     const hasDockedPanels = activeDockedPanels.length > 0;
+    const shouldBlurDockedPanels = hasDockedPanels && useTacticalPanelBlur && !isPerformanceMode;
 
     React.useEffect(() => {
         if (gameState === 'account' && !viewport.isMobile) setIsCommandPanelOpen(true);
@@ -403,7 +407,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     return (
         <div
-            className={`content-layer view-mode-${activeView}${hasDockedPanels ? ' has-docked-panels' : ''}`}
+            className={`content-layer view-mode-${activeView}${hasDockedPanels ? ' has-docked-panels has-docked-panel-surface' : ''}${shouldBlurDockedPanels ? ' docked-panels-blurred' : ''}`}
             style={{
                 '--terminal-pane-width': activeDockedPanels.length
                     ? 'clamp(150px, 15vw, 280px)'
@@ -413,7 +417,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     : '0px'
             } as React.CSSProperties}
         >
-            {hasMobileHeaderPanel && <div className="mobile-header-panel-blur-backdrop" aria-hidden="true" />}
             {!viewport.isMobile && isImmersionMode && (
                 <div
                     style={{
@@ -637,6 +640,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             </div>
 
             <AccountTargetBar />
+            <SwipeWheelCellDialogHost />
 
             {isMobile ? (
                 /* Mobile Layout: InputArea in control-card-wrapper */

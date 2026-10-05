@@ -21,6 +21,7 @@ import { useSwipeUpToExpand } from '../../hooks/useSwipeUpToExpand';
 import { getMovementModeActions } from '../../hooks/useMovementModeActions';
 import { ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
 import { useCharacterPanelStore } from '../../stores/useCharacterPanelStore';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import { ThisIsYouVitalsTier } from './ThisIsYouVitalsTier';
 import { StatDelta } from './StatDelta';
 import { TerminalProgression } from './TerminalProgression';
@@ -81,6 +82,9 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
     } = useGame();
 
     const isMobileSheet = Boolean(viewport?.isMobile && !alwaysExpanded && !panelIsMinimized);
+    const usePanelBlur = useSettingsStore(state => state.useTacticalPanelBlur);
+    const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode);
+    const isPanelBlurred = Boolean(usePanelBlur && !isPerformanceMode);
     const minimizeSwipe = useSwipeDownToMinimize(isMobileSheet, () => setIsMinimized(true));
     const expandSwipe = useSwipeUpToExpand(
         Boolean(viewport?.isMobile && !alwaysExpanded && panelIsMinimized),
@@ -237,7 +241,7 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
     const consolePanel = (
         <section
             ref={consoleRef}
-            className={`this-is-you-console${panelIsMinimized ? ' is-minimized' : ''}${viewport?.isMobile ? ' is-mobile' : ''}${isMobileSheet ? ' is-mobile-sheet' : ''}${alwaysExpanded ? ' is-always-expanded' : ''}`}
+            className={`this-is-you-console${panelIsMinimized ? ' is-minimized' : ''}${viewport?.isMobile ? ' is-mobile' : ''}${isMobileSheet ? ' is-mobile-sheet' : ''}${isPanelBlurred ? ' has-blurred-background' : ''}${alwaysExpanded ? ' is-always-expanded' : ''}`}
             aria-label="Character Status Console"
             onTouchStart={minimizeSwipe.onTouchStart}
             onTouchEnd={minimizeSwipe.onTouchEnd}
@@ -422,10 +426,7 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                 style={{ height: `${mobileSheetPlaceholderHeightRef.current}px` }}
             />
             {createPortal(
-                <>
-                    <div className="this-is-you-mobile-sheet-backdrop" aria-hidden="true" />
-                    {consolePanel}
-                </>,
+                consolePanel,
                 mobileSheetPortalHost
             )}
         </>

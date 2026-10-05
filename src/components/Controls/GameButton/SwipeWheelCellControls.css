@@ -1,0 +1,134 @@
+/* @file SwipeWheelCellControls.css — Controls sit outside the 3x3 wheel grid. */
+
+.swipe-wheel-with-tools {
+    position: relative;
+    z-index: 20;
+    display: grid;
+    flex: 0 0 auto;
+    width: min(100%, calc(var(--decision-wheel-size, 280px) + 102px));
+    height: var(--decision-wheel-size, 280px);
+    grid-template-columns: 46px minmax(0, var(--decision-wheel-size, 280px)) 46px;
+    align-items: center;
+    justify-content: center;
+    column-gap: 5px;
+    pointer-events: auto;
+}
+
+.swipe-wheel-with-tools > .swipe-wheel-container {
+    width: var(--decision-wheel-size, 280px);
+    height: var(--decision-wheel-size, 280px);
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.swipe-wheel-side-tools {
+    display: flex;
+    width: 46px;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+}
+
+.swipe-wheel-tool-button {
+    display: grid;
+    width: 46px;
+    height: 60px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: rgba(244, 239, 222, 0.92);
+    box-shadow: none;
+    cursor: pointer;
+    touch-action: manipulation;
+    pointer-events: auto;
+}
+
+.swipe-wheel-tool-button.is-add { color: #9be2ad; }
+.swipe-wheel-tool-button.is-remove { color: #f0a0a0; }
+.swipe-wheel-tool-button:hover,
+.swipe-wheel-tool-button.is-pointer-selected {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 0 1px currentColor, 0 0 14px color-mix(in srgb, currentColor 22%, transparent);
+}
+.swipe-wheel-tool-button.is-add.is-pointer-selected { background: rgba(34, 105, 56, 0.42); }
+.swipe-wheel-tool-button.is-remove.is-pointer-selected { background: rgba(127, 29, 29, 0.48); }
+.swipe-wheel-tool-button:focus-visible { outline: 2px solid currentColor; outline-offset: -3px; }
+.swipe-wheel-tool-button.is-active {
+    background: rgba(127, 29, 29, 0.42);
+    box-shadow: 0 0 14px rgba(248, 113, 113, 0.26);
+}
+
+.swipe-cell-dialog-backdrop {
+    position: fixed;
+    z-index: 60010;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.48);
+    pointer-events: auto;
+}
+
+.swipe-cell-dialog {
+    display: flex;
+    width: min(320px, 100%);
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid color-mix(in srgb, var(--set-accent, var(--accent)) 55%, transparent);
+    border-radius: 12px;
+    background: rgba(18, 22, 30, 0.98);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.58);
+    color: #f1ecdc;
+    pointer-events: auto;
+}
+
+.swipe-cell-dialog h2 {
+    margin: 0;
+    color: var(--set-accent, var(--accent));
+    font: 700 15px/1.25 var(--font-mono, monospace);
+}
+
+.swipe-cell-dialog label { display: grid; gap: 5px; font-size: 12px; }
+.swipe-cell-dialog input {
+    min-width: 0;
+    height: 38px;
+    box-sizing: border-box;
+    padding: 0 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 7px;
+    outline: none;
+    background: rgba(3, 6, 12, 0.84);
+    color: #fff;
+    font: 13px/1.2 var(--font-mono, monospace);
+}
+
+.swipe-cell-dialog input:focus { border-color: var(--set-accent, var(--accent)); }
+.swipe-cell-dialog-error { margin: -4px 0 0; color: #fca5a5; font-size: 12px; }
+.swipe-cell-dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.swipe-cell-dialog-actions button {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #eee8d7;
+    font: 600 12px/1 var(--font-mono, monospace);
+    cursor: pointer;
+}
+.swipe-cell-dialog-actions button[type="submit"] {
+    border-color: color-mix(in srgb, var(--set-accent, var(--accent)) 60%, transparent);
+    background: color-mix(in srgb, var(--set-accent, var(--accent)) 22%, transparent);
+}
+
+@media (max-width: 360px) {
+    .swipe-wheel-with-tools {
+        width: min(100%, calc(var(--decision-wheel-size, 280px) + 102px));
+        grid-template-columns: 46px minmax(0, var(--decision-wheel-size, 280px)) 46px;
+        column-gap: 5px;
+    }
+    .swipe-wheel-side-tools { width: 46px; }
+    .swipe-wheel-tool-button { width: 46px; height: 60px; }
+}

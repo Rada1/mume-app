@@ -52,6 +52,8 @@ const MapSettings: React.FC = () => {
     const {
         showDebugEchoes,
         setShowDebugEchoes,
+        showMapSwipeDirectionLetters,
+        setShowMapSwipeDirectionLetters,
         mapBrightness,
         setMapBrightness,
     } = useSettingsStore();
@@ -101,6 +103,22 @@ const MapSettings: React.FC = () => {
                         />
                         <span style={{ minWidth: '42px', textAlign: 'right', color: 'var(--text-primary)', fontSize: '0.75rem' }}>{mapBrightness}%</span>
                     </div>
+                </div>
+
+                <div style={rowStyle}>
+                    <div>
+                        <label className="setting-label" style={{ margin: 0 }}>Show Swipe Direction Letters</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Show command letters around map buttons for each swipe direction.</div>
+                    </div>
+                    <button
+                        className={`setting-toggle ${showMapSwipeDirectionLetters ? 'active' : ''}`}
+                        aria-label="Show Swipe Direction Letters"
+                        aria-pressed={showMapSwipeDirectionLetters}
+                        onClick={() => setShowMapSwipeDirectionLetters(!showMapSwipeDirectionLetters)}
+                        style={toggleStyle(showMapSwipeDirectionLetters)}
+                    >
+                        <div style={knobStyle(showMapSwipeDirectionLetters)} />
+                    </button>
                 </div>
 
                 <div style={rowStyle}>

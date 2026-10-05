@@ -193,6 +193,10 @@ const getMenuSuggestions = (
         .filter(suggestion => suggestion.meta !== 'exit');
     if (kind === 'gear') return getInventoryAndWornTargetSuggestions(inventoryLines, wornLines);
     if (kind === 'inventory-gear') return getGearTargetSuggestions(inventoryLines, 'inventory');
+    if (kind === 'inventory-weapons') return getGearTargetSuggestions(
+        inventoryLines.filter(line => hasObjectTrait(line, 'trait-weapon')),
+        'inventory'
+    );
     if (kind === 'inventory-meat') return getMeatTargetSuggestions(inventoryLines);
     if (kind === 'worn-gear') return getGearTargetSuggestions(wornLines, 'worn');
     if (kind === 'drink') return getDrinkTargetSuggestions(inventoryLines, wornLines, roomWaterAvailable);

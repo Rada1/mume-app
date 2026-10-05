@@ -127,6 +127,21 @@ export interface ButtonSetSettings {
     themeColor?: string;
 }
 
+export interface CustomSwipeCellMetadata {
+    label: string;
+    restoreCommand?: string;
+    restoreActionType?: ActionType;
+    restoreLongCommand?: string;
+    restoreLongActionType?: ActionType;
+    restoreSetId?: string;
+    restoreActionKey?: string | null;
+}
+
+export interface CustomSwipeAction {
+    label: string;
+    command: string;
+}
+
 export interface CustomButton {
     id: string;
     setId: string; // "nav", "combat", "misc", or category ID like "object-weapon"
@@ -177,6 +192,8 @@ export interface CustomButton {
     // Gesture support
     swipeCommands?: Partial<Record<SwipeDirection, string>>;
     swipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
+    customSwipeActions?: CustomSwipeAction[];
+    customSwipeCells?: Partial<Record<SwipeDirection, CustomSwipeCellMetadata>>;
     
     // Long-press support
     longCommand?: string;
@@ -210,3 +227,12 @@ export interface CustomButton {
 }
 
 export type DrawerType = 'none' | 'account' | 'character' | 'equipment' | 'status';
+
+// --- Swipe Wheel Dialog ---
+export type CreateSwipeWheelCell = (label: string, command: string) => string | null | undefined;
+
+export interface SwipeWheelCellDialogState {
+    onCreateCell: CreateSwipeWheelCell | null;
+    openDialog: (onCreateCell: CreateSwipeWheelCell) => void;
+    closeDialog: () => void;
+}

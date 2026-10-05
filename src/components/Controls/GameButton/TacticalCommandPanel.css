@@ -1,7 +1,7 @@
 /* @file TacticalCommandPanel.css — Full-log command and target decision surface. */
 
 .unified-tactical-surface {
-    --decision-panel-tint: transparent;
+    --decision-panel-tint: #211b16;
     --decision-panel-blur: none;
     position: fixed;
     z-index: 60001;
@@ -21,6 +21,11 @@
     overflow: hidden;
 }
 
+.unified-tactical-surface.has-blurred-background {
+    --decision-panel-tint: rgba(33, 27, 22, 0.18);
+    --decision-panel-blur: blur(8px);
+}
+
 /* --- Target Selection Section --- */
 .unified-tactical-targets {
     position: absolute;
@@ -32,10 +37,9 @@
     height: var(--message-log-action-area-height, var(--message-log-height, 100dvh));
     min-width: 0;
     min-height: 0;
-    /* Match the glass blur used by the docked Gear panel while target picking. */
-    background: rgba(12, 15, 22, 0.01);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: var(--decision-panel-tint);
+    backdrop-filter: var(--decision-panel-blur);
+    -webkit-backdrop-filter: var(--decision-panel-blur);
     pointer-events: auto;
     overflow: hidden;
 }
@@ -53,9 +57,9 @@
     justify-items: center;
     gap: 4px;
     padding: 0 8px;
-    background: var(--decision-panel-tint);
-    backdrop-filter: var(--decision-panel-blur);
-    -webkit-backdrop-filter: var(--decision-panel-blur);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     pointer-events: auto;
 }
 
@@ -95,6 +99,11 @@
     box-shadow: inset 0 0 0 1px rgba(var(--set-accent-rgb, 224, 189, 63), 0.72), 0 0 18px rgba(var(--set-accent-rgb, 224, 189, 63), 0.2);
 }
 
+.unified-tactical-panel-action.is-pointer-selected {
+    background: rgba(var(--set-accent-rgb, 224, 189, 63), 0.2);
+    box-shadow: inset 0 0 0 1px rgba(var(--set-accent-rgb, 224, 189, 63), 0.72), 0 0 18px rgba(var(--set-accent-rgb, 224, 189, 63), 0.2);
+}
+
 .unified-tactical-wheel {
     position: absolute;
     top: var(--tactical-map-top, 0px);
@@ -117,13 +126,11 @@
     flex-direction: column;
     gap: 0;
     overflow: hidden;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
 }
 
 .unified-tactical-panel-scroll {
     container-type: size;
-    --decision-wheel-size: min(100cqh, 100cqw);
+    --decision-wheel-size: min(100cqh, max(0px, calc(100cqw - 102px)));
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
@@ -137,10 +144,17 @@
     touch-action: none;
 }
 
-.unified-tactical-panel-scroll > .swipe-wheel-container {
+.unified-tactical-panel-scroll > .swipe-wheel-with-tools {
     flex: 0 0 auto;
     height: var(--decision-wheel-size);
-    width: auto;
+    width: min(100%, calc(var(--decision-wheel-size) + 102px));
+    max-height: none;
+}
+
+.unified-tactical-panel-scroll > .swipe-wheel-with-tools > .swipe-wheel-container {
+    flex: 0 0 auto;
+    height: var(--decision-wheel-size);
+    width: var(--decision-wheel-size);
     max-height: none;
     aspect-ratio: 1 / 1;
 }
@@ -236,6 +250,16 @@
     background: rgba(59, 130, 246, 0.32);
     box-shadow: inset 0 0 0 3px rgba(96, 165, 250, 0.98), 0 0 24px rgba(59, 130, 246, 0.65);
     color: #eff6ff;
+}
+
+.unified-tactical-command-item.is-custom-cell { box-shadow: inset 0 0 0 1px rgba(155, 226, 173, 0.28); }
+.unified-tactical-command-item.is-swap-mode { cursor: pointer; }
+.unified-tactical-command-item.is-swap-mode:hover { background: color-mix(in srgb, var(--set-accent, var(--accent)) 18%, transparent); }
+.unified-tactical-command-item.is-delete-mode:not(.is-custom-cell) { opacity: 0.35; }
+.unified-tactical-command-item.is-delete-mode.is-custom-cell {
+    background: rgba(127, 29, 29, 0.3);
+    box-shadow: inset 0 0 0 2px rgba(248, 113, 113, 0.84);
+    cursor: pointer;
 }
 
 .unified-tactical-surface .tactical-target-bar.is-embedded {
@@ -423,14 +447,6 @@
     .unified-tactical-targets { pointer-events: auto; }
     .unified-tactical-wheel { pointer-events: none; }
     .unified-tactical-surface .tactical-target-bar-item { min-height: 44px; }
-}
-
-@media (max-width: 768px), (max-width: 1024px) and (orientation: portrait) {
-    .unified-tactical-targets {
-        /* Mobile Gear panel uses an 8px blur after the shared docked-panel glass layer. */
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-    }
 }
 
 @media (max-width: 360px) {

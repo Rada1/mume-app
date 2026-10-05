@@ -12,6 +12,23 @@ import { createFastMapPrediction } from './predictionPath';
 import type { FastMapBackground } from './mapBackground';
 import type { FastMapFrame } from './protocol';
 
+function deathRoomPosition(mapProps: MapCanvasProps): { x: number; y: number; z: number } | null {
+  const deathRoomId = mapProps.deathRoomId?.trim();
+  if (!deathRoomId) return null;
+  const id = deathRoomId.replace(/^(?:m_|r_)/i, '');
+  const room = mapProps.rooms[`m_${id}`]
+    || mapProps.rooms[deathRoomId]
+    || mapProps.stableRoomsRef.current[`m_${id}`]
+    || mapProps.stableRoomsRef.current[deathRoomId]
+    || Object.values(mapProps.rooms).find(candidate => String(candidate?.gmcpId ?? '') === id);
+  if (room && Number.isFinite(Number(room.x)) && Number.isFinite(Number(room.y))) {
+    return { x: Number(room.x), y: -Number(room.y), z: Number(room.z) || 0 };
+  }
+  const tuple = mapProps.preloadedCoordsRef.current[id] ?? mapProps.preloadedCoordsRef.current[deathRoomId];
+  if (!tuple || !Number.isFinite(Number(tuple[0])) || !Number.isFinite(Number(tuple[1]))) return null;
+  return { x: Number(tuple[0]), y: -Number(tuple[1]), z: Number(tuple[2]) || 0 };
+}
+
 export function sendFastMapFrame(
   mapProps: MapCanvasProps,
   canvas: HTMLCanvasElement | null,
@@ -49,6 +66,7 @@ export function sendFastMapFrame(
   const frame: FastMapFrame = {
     view: { ...toFastMapView({ x: camera.x, y: camera.y, zoom: appZoom }, width, height, layer) },
     player: player ? { x: player.x, y: -player.y, z: player.z } : null,
+    deathRoom: deathRoomPosition(mapProps),
     liveRoom,
     prediction: createFastMapPrediction(mapProps.currentRoomId, predictions, mapProps.preMoveRef?.current ?? null, plannedTargetId),
     background,

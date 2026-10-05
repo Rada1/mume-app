@@ -25,6 +25,7 @@ export interface UseTacticalTargetingReturn {
     pendingTarget: string | null;
     pendingDirection: string | null;
     hasSelectedTarget: boolean;
+    hasSelectedTargetRef: RefObject<boolean>;
     hasManuallySelectedTarget: boolean;
     pendingTargetRef: RefObject<string | null>;
     startHoldTimer: (cmd: string) => void;

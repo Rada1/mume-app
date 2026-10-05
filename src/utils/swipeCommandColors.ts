@@ -4,6 +4,8 @@
  */
 
 // --- Logic Section ---
+import type { CustomButton } from '../types';
+
 const SWIPE_COMMAND_TEXT_COLORS: Record<string, string> = {
     camp: '#ffd700',
     climb: 'var(--ansi-bright-green, #44ff70)',
@@ -107,6 +109,14 @@ export const getSwipeCommandTextColor = (command: string): string | undefined =>
     const verb = spell.split(/\s+/)[0];
     return SWIPE_COMMAND_TEXT_COLORS[verb];
 };
+
+/** The Utility deck button keeps every command label white, independent of command type. */
+export const getButtonSwipeCommandTextColor = (
+    button: Pick<CustomButton, 'id' | 'setId'>,
+    command: string
+): string | undefined => button.id === 'deck-category-utility'
+    ? '#ffffff'
+    : getSwipeCommandTextColor(command);
 
 export const isRedCodedSwipeCommand = (command: string): boolean => {
     const color = getSwipeCommandTextColor(command)?.toLowerCase() || '';

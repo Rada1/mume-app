@@ -3,10 +3,10 @@
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import type { CustomButton, ExecuteCommand, SwipeDirection } from '../../../types';
 import { getRoomTargetSuggestions, getSelfTargetSuggestion, isTargetSuggestionMatch, type CommandTargetSuggestion } from '../../../utils/commandSuggestionUtils';
-import { BLANK_TARGET_VALUE, canCommandAcceptTarget, getDefaultCommandTarget, isOffensiveSingleTargetCommand, LOOK_IN_TARGET_VALUE } from '../../../utils/commandTargetUtils';
+import { BLANK_TARGET_VALUE, canCommandAcceptTarget, getCommandTargetMenuKind, getDefaultCommandTarget, isOffensiveSingleTargetCommand, LOOK_IN_TARGET_VALUE } from '../../../utils/commandTargetUtils';
 import type { EntityColorMap } from '../../../utils/inlineActionModel';
 import { getTargetClassificationColor } from '../../../utils/targetClassificationColor';
-import { useCurrentRoomHasDoor } from '../../../hooks/useCurrentRoomHasDoor';
+import { useCurrentRoomDoorDirections, useCurrentRoomHasDoor } from '../../../hooks/useCurrentRoomHasDoor';
 import { isDoorPresenceSpellCommand } from '../../../utils/doorCommandUtils';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { useRoomStore } from '../../../stores/useRoomStore';
@@ -44,6 +44,9 @@ interface Props {
     isCancelling: boolean;
     isPinned: boolean;
     swapSource?: TacticalSwapCell | null;
+    isSwapMode?: boolean;
+    onSelectSwapCell?: (cell: TacticalSwapCell) => void;
+    hoveredPanelTool?: 'add' | 'delete' | 'swap' | null;
     onSwapCells?: () => void;
     onClose: () => void;
     buttonRect?: DOMRect;
@@ -72,6 +75,11 @@ interface Props {
     onPinnedPointerUp?: React.PointerEventHandler<HTMLElement>;
     onPinnedPointerCancel?: React.PointerEventHandler<HTMLElement>;
     paletteCommands?: TacticalPaletteCommand[];
+    onStartCreatingCustomSwipeCell?: () => void;
+    onDeleteCustomSwipeAction?: (command: string, direction?: SwipeDirection) => boolean;
+    isDeletingCustomCell?: boolean;
+    onDeleteModeChange?: (active: boolean) => void;
+    onSwipeToolTap?: () => void;
     getCommandLearnedState?: (command: string) => boolean | undefined;
     onPalettePointerDown?: React.PointerEventHandler<HTMLElement>;
     onPalettePointerMove?: React.PointerEventHandler<HTMLElement>;
@@ -88,10 +96,10 @@ interface Props {
 }
 
 export const TacticalCommandPanel: React.FC<Props> = ({
-    button, activeDir, isCancelling, isPinned, swapSource, onSwapCells, onClose, buttonRect, rayParams, isMobile,
+    button, activeDir, isCancelling, isPinned, swapSource, isSwapMode, onSelectSwapCell, hoveredPanelTool, onSwapCells, onClose, buttonRect, rayParams, isMobile,
     isTargetMenuOpen, isTargetMenuHeld, command, pendingCommandPrefix, currentCommandRef, activeTarget, targetChipTarget,
     selectedTarget, selectedDirection, directionPadMode, suggestions, title,
-    characterName, targeting, executeCommand, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, paletteCommands, getCommandLearnedState, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel, hidePreviewWheel,
+    characterName, targeting, executeCommand, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, paletteCommands, onStartCreatingCustomSwipeCell, onDeleteCustomSwipeAction, isDeletingCustomCell, onDeleteModeChange, onSwipeToolTap, getCommandLearnedState, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel, hidePreviewWheel,
     wheelReplacementMode, columns, onSelectColumnTarget, onToggleTargetLock, onTargetSelected, customContent, customContentInteractive
 }) => {
     const inlineCategories = useSettingsStore(state => state.inlineCategories);
@@ -104,6 +112,14 @@ export const TacticalCommandPanel: React.FC<Props> = ({
     const entityColors: EntityColorMap = { object: objectColor, player: playerColor, npc: npcColor, enemy: enemyColor, neutral: neutralColor };
     const roomChars = useRoomStore(state => state.chars);
     const hasRoomDoor = useCurrentRoomHasDoor();
+    const roomDoorDirections = useCurrentRoomDoorDirections();
+    const panelCommand = currentCommandRef.current || command || button.command;
+    const panelCommandMenuKind = getCommandTargetMenuKind(panelCommand);
+    const availableDoorDirections = panelCommandMenuKind === 'containers'
+        || panelCommandMenuKind === 'pick'
+        || panelCommandMenuKind === 'door-direction'
+        ? roomDoorDirections
+        : undefined;
     const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
     const classificationSuggestions = useMemo(() => [
         getSelfTargetSuggestion(),
@@ -202,6 +218,7 @@ export const TacticalCommandPanel: React.FC<Props> = ({
         onSelectTarget={handleSelectTarget}
         onSelectDirection={handleSelectDirection}
         directionPadMode={wheelReplacementMode ? null : directionPadMode}
+        availableDoorDirections={availableDoorDirections}
         selectedDirection={selectedDirection}
         roomOccupants={[]}
         roomItems={[]}
@@ -231,6 +248,9 @@ export const TacticalCommandPanel: React.FC<Props> = ({
         isCancelling={isCancelling}
         isPinned={isPinned}
         swapSource={swapSource}
+        isSwapMode={isSwapMode}
+        onSelectSwapCell={onSelectSwapCell}
+        hoveredPanelTool={hoveredPanelTool}
         onSwapCells={onSwapCells}
         onClose={onClose}
         buttonRect={buttonRect}
@@ -239,6 +259,11 @@ export const TacticalCommandPanel: React.FC<Props> = ({
         isTargetMenuVisible={isTargetMenuOpen}
         getCommandTargetGlowColor={getCommandTargetGlowColor}
         getCommandLearnedState={getCommandLearnedState}
+        onStartCreatingCustomSwipeCell={onStartCreatingCustomSwipeCell}
+        onDeleteCustomSwipeAction={onDeleteCustomSwipeAction}
+        isDeletingCustomCell={isDeletingCustomCell}
+        onDeleteModeChange={onDeleteModeChange}
+        onSwipeToolTap={onSwipeToolTap}
         targetMenu={targetMenu}
         paletteCommands={paletteCommands}
         onPinnedPointerDown={onPinnedPointerDown}

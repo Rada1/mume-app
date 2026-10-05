@@ -223,6 +223,9 @@ export const getRoomContainerTargetSuggestions = (
             const occupantType = normalizeOccupantType(source)?.toLowerCase();
             if (['npc', 'enemy', 'ally', 'neutral', 'you', 'self', 'player', 'pc'].includes(occupantType || '')) return false;
         }
+        // Mount names such as "sturdy pack horse" contain container keywords,
+        // but mounts are room characters and must never be offered as containers.
+        if (hasObjectTrait(source, 'trait-mount')) return false;
         return Boolean(label && (hasObjectTrait(source, 'trait-container') || isItemContainer(label)));
     }), 'objects');
 

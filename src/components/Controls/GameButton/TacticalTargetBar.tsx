@@ -46,6 +46,7 @@ export interface TacticalTargetBarProps {
     fireOnTargetTap?: boolean;
     onFireModeChange?: (fireOnTargetTap: boolean) => void;
     directionPadMode?: 'below' | 'side' | 'wheel' | null;
+    availableDoorDirections?: string[];
     selectedDirection?: string | null;
     onSelectDirection?: (direction: string, keepOpenAfterFire?: boolean) => void;
     embedded?: boolean;
@@ -78,6 +79,7 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
     fireOnTargetTap = true,
     onFireModeChange,
     directionPadMode = null,
+    availableDoorDirections,
     selectedDirection = null,
     onSelectDirection,
     embedded = false,
@@ -231,6 +233,7 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
                     <TacticalDirectionPad
                         layout="wheel"
                         selectedDirection={selectedDirection}
+                        availableDoorDirections={availableDoorDirections}
                         onSelectDirection={direction => onSelectDirection?.(direction, keepOpenAfterFire)}
                     />
                 ) : directionPadMode === 'side' ? (
@@ -251,6 +254,7 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
                         <TacticalDirectionPad
                             layout="side"
                             selectedDirection={selectedDirection}
+                            availableDoorDirections={availableDoorDirections}
                             onSelectDirection={direction => onSelectDirection?.(direction, keepOpenAfterFire)}
                         />
                     </div>
@@ -272,6 +276,7 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
                         <TacticalDirectionPad
                             layout="below"
                             selectedDirection={selectedDirection}
+                            availableDoorDirections={availableDoorDirections}
                             onSelectDirection={direction => onSelectDirection?.(direction, keepOpenAfterFire)}
                         />
                     </div>
@@ -303,6 +308,7 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
                                     <TacticalDirectionPad
                                         layout="below"
                                         selectedDirection={selectedDirection}
+                                        availableDoorDirections={availableDoorDirections}
                                         onSelectDirection={direction => onSelectDirection?.(direction, keepOpenAfterFire)}
                                     />
                                 </div>

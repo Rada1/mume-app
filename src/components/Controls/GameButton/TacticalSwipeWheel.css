@@ -109,6 +109,16 @@
     color: #eff6ff;
 }
 
+.unified-tactical-wheel .swipe-sq-label.is-delete-mode:not(.is-custom-cell) { opacity: 0.35; }
+.unified-tactical-wheel .swipe-sq-label.is-delete-mode.is-custom-cell { cursor: pointer; }
+.unified-tactical-wheel .swipe-sq-label.is-swap-mode:not(.is-empty) { cursor: pointer; }
+.unified-tactical-wheel .swipe-sq-label.is-swap-mode:hover .swipe-action-card,
+.unified-tactical-wheel .swipe-center.is-swap-mode:hover { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--set-accent, var(--accent)) 70%, white); }
+.unified-tactical-wheel .swipe-sq-label.is-delete-mode.is-custom-cell .swipe-action-card {
+    background: rgba(127, 29, 29, 0.26);
+    box-shadow: inset 0 0 0 2px rgba(248, 113, 113, 0.84);
+}
+
 .unified-tactical-wheel .swipe-action-card {
     width: 100%;
     height: 100%;
@@ -176,5 +186,27 @@
     text-shadow:
         0 0 6px var(--target-glow-color, rgba(248, 113, 113, 0.9)),
         0 0 12px color-mix(in srgb, var(--target-glow-color, #ef4444) 65%, transparent);
+}
+
+/* Touch browsers can keep :hover latched after a finger lifts. In swap mode,
+   only the chosen source cell should stay highlighted between taps. */
+@media (hover: none), (pointer: coarse) {
+    .unified-tactical-wheel .swipe-center:hover:not(.active):not(.is-swap-source),
+    .unified-tactical-wheel .swipe-sq-label:hover:not(.active):not(.is-swap-source) .swipe-action-card {
+        transform: none;
+        background: transparent;
+        box-shadow: none;
+        color: inherit;
+        text-shadow: none;
+    }
+    .unified-tactical-wheel .swipe-center.is-swap-mode:hover:not(.is-swap-source),
+    .unified-tactical-wheel .swipe-sq-label.is-swap-mode:hover:not(.is-swap-source) .swipe-action-card {
+        box-shadow: none;
+    }
+    .unified-tactical-wheel .swipe-sq-label:hover:not(.active) .swipe-action-card.is-target-ready {
+        background: transparent;
+        box-shadow: none;
+        text-shadow: none;
+    }
 }
 

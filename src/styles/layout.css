@@ -312,31 +312,35 @@
     }
 }
 
-@media (max-width: 768px), (max-width: 1024px) and (orientation: portrait) {
-    .mobile-header-panel-blur-backdrop {
-        position: fixed;
-        z-index: 65000;
-        inset: 0;
-        /* A near-zero alpha forces a real backdrop surface on mobile browsers
-           while keeping the background visually untinted. */
-        background: rgba(0, 0, 0, 0.01);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        pointer-events: none;
-    }
+/* Apply the Blur Panels preference to docked header panels on every viewport. */
+.app-container .content-layer.has-docked-panel-surface:not(.docked-panels-blurred) .docked-panel,
+.app-container .content-layer.has-docked-panel-surface:not(.docked-panels-blurred) .gear-shop-panel {
+    background: #211b16 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
 
-    /* Keep every tab panel's own stacking context above the full-screen blur. */
+.app-container .content-layer.docked-panels-blurred .docked-panel {
+    background: rgba(33, 27, 22, 0.18) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.app-container .content-layer.docked-panels-blurred .gear-panel > .gear-shop-panel {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+@media (max-width: 768px), (max-width: 1024px) and (orientation: portrait) {
+    /* Keep docked surfaces above nearby mobile controls. */
     .app-container .docked-panel {
         z-index: 65001 !important;
-        background: transparent !important;
-        backdrop-filter: blur(14px) !important;
-        -webkit-backdrop-filter: blur(14px) !important;
     }
 
-    /* The log is rendered inside the same scroll lane as the docked panels, so
-       blur that underlay directly as well as using the glass backdrop layer. */
-    .content-layer.has-docked-panels .desktop-center-column {
-        filter: blur(8px);
+    .app-container .gear-panel > .gear-shop-panel .chat-window-header,
+    .app-container .gear-panel > .gear-shop-panel .shop-panel-tab-bar {
+        background: transparent;
     }
 
     .app-container .command-docked-panel,
@@ -354,9 +358,6 @@
         border: 0 !important;
         border-radius: 0 !important;
         box-shadow: none !important;
-        background: transparent !important;
-        backdrop-filter: blur(8px) !important;
-        -webkit-backdrop-filter: blur(8px) !important;
     }
 
     .app-container .right-panel-close,
@@ -412,10 +413,6 @@
 
 .content-layer>* {
     pointer-events: auto;
-}
-
-.content-layer > .mobile-header-panel-blur-backdrop {
-    pointer-events: none;
 }
 
 @media (max-width: 600px) {

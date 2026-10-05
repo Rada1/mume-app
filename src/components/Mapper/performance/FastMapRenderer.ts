@@ -59,6 +59,7 @@ export class FastMapRenderer {
   private liveRoom: FastRoomOverlay | null = null;
   private liveRoomMesh: GpuRoomMesh | null = null;
   private liveRoomKey = '';
+  private deathRoom: FastMapFrame['deathRoom'] = null;
   private width = 1;
   private height = 1;
   private dpr = 1;
@@ -68,7 +69,7 @@ export class FastMapRenderer {
     return this.map?.roomCount ?? 0;
   }
 
-  get needsAnimation(): boolean { return this.roomFlagFlash.isActive; }
+  get needsAnimation(): boolean { return this.roomFlagFlash.isActive || this.deathRoom != null; }
 
   constructor(private readonly canvas: OffscreenCanvas, private readonly transparentBackground = false) {
     const gl = canvas.getContext('webgl2', { alpha: transparentBackground, antialias: false, depth: false, stencil: false, powerPreference: 'high-performance' });
@@ -172,6 +173,7 @@ export class FastMapRenderer {
   render(frame: FastMapFrame): void {
     if (this.gl.isContextLost()) throw new Error('The worker WebGL2 context was lost.');
     this.roomFlagFlash.update(this.gl, this.roomLayerByRoom, room => this.exploration.getRoomState(room));
+    this.deathRoom = frame.deathRoom ?? null;
     const background = frame.background;
     this.updateLiveRoom(frame.liveRoom, background);
     this.updatePrediction(frame.prediction);
@@ -208,11 +210,12 @@ export class FastMapRenderer {
     this.overlays.drawExitArrows(frame.view.layer, projection);
     this.overlays.drawPrediction(frame.view.layer, projection);
     this.overlays.drawSearch(frame.view.layer, projection);
-    this.overlays.drawGroupMembers(frame.view, frame.player);
+    this.overlays.drawGroupMembers(frame.view, frame.player, cssWidth, cssHeight);
     if (frame.player && Math.round(frame.player.z) === frame.view.layer) {
       drawPlayerMarker(gl, this.roomProgram, this.playerVao, this.playerBuffer, this.textureArrays, frame.player);
       drawPlayerRoomTrail(this.overlays, this.roomLayerByRoom, frame.player, this.liveRoom, this.liveRoomMesh, this.textureArrays[TEX.A64], projection);
     }
+    this.overlays.drawDeathMarker(frame.deathRoom, frame.view, cssWidth, cssHeight, performance.now());
     this.overlays.drawLabels(frame.view.layer, frame.view.zoom, projection, this.width, this.height, this.dpr);
     gl.bindVertexArray(null);
   }

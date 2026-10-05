@@ -28,7 +28,7 @@ const SELF_TARGETED_SPELLS = new Set([
 const NO_ARGUMENT_SPELLS = new Set([
     'armour', 'shield', 'create food', 'sense life', 'detect magic', 'detect evil',
     'detect invisible', 'detect invisibility', 'word of recall', 'call familiar',
-    'locate', 'magic blast', 'protection from evil', 'fear', 'breath of briskness'
+    'locate', 'magic blast', 'protection from evil', 'fear', 'breath of briskness', 'earthquake'
 ]);
 
 const SELF_ONLY_SPELLS = new Set([
@@ -39,10 +39,10 @@ const ROOM_TARGETED_SPELLS = new Set([
     'magic missile', 'ventriloquate', 'smother', 'chill touch', 'burning hands',
     'shocking grasp', 'lightning bolt', 'dispel evil', 'harm', 'colour spray',
     'fireball', 'call lightning', 'charm', 'sleep', 'silence', 'hold', 'curse',
-    'blindness', 'energy drain', 'earthquake', 'dispel magic', 'darkness'
+    'blindness', 'energy drain', 'dispel magic', 'darkness'
 ]);
 
-const NON_SINGLE_TARGET_ROOM_SPELLS = new Set(['earthquake', 'darkness', 'ventriloquate']);
+const NON_SINGLE_TARGET_ROOM_SPELLS = new Set(['darkness', 'ventriloquate']);
 const CHIP_PRIORITY_OFFENSIVE_SPELLS = new Set([
     'dispel evil', 'harm', 'lightning bolt', 'burning hands', 'magic missile',
     'chill touch', 'charm', 'shocking grasp', 'fireball', 'colour spray'
@@ -69,7 +69,9 @@ export type CommandTargetMenuKind =
     | 'look-containers'
     | 'gear'
     | 'inventory-gear'
+    | 'inventory-weapons'
     | 'inventory-meat'
+    | 'herbal-kit'
     | 'worn-gear'
     | 'food'
     | 'drink'
@@ -125,6 +127,7 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
     if (verb === 'weather') return 'weather-scope';
     if (verb === 'eat') return 'food';
     if (verb === 'cook') return 'inventory-meat';
+    if (verb === 'mix') return 'herbal-kit';
     if (verb === 'butcher') return 'room-corpses';
     if (verb === 'drink') return 'drink';
     if (verb === 'quaff') return 'fluid-containers';
@@ -156,7 +159,7 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
         if (['summon', 'transfer'].includes(spell)) return 'who';
         if (spell === 'block door' || spell === 'break door') return 'door-direction';
         if (spell === 'raise dead') return 'room-corpses';
-        if (spell === 'enchant') return 'gear';
+        if (spell === 'enchant') return 'inventory-weapons';
         if (spell === 'identify') return 'gear';
         if (spell === 'create light') return 'lanterns';
         if (spell === 'control weather') return 'weather-options';
@@ -218,6 +221,7 @@ export const getDefaultCommandTarget = (command: string): string | null => {
     if (verb === 'rescue') return BLANK_TARGET_VALUE;
 
     const kind = getCommandTargetMenuKind(command);
+    if (kind === 'herbal-kit') return 'kit';
     if (kind === 'self-room' || kind === 'self-allies' || kind === 'self-only') return 'self';
     if (kind === 'self-inventory') return 'self';
     if (kind === 'mounts') return 'mount';

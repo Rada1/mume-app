@@ -98,7 +98,7 @@ export const AUDIO_MANIFEST = {
             'central anduin': { url: '/assets/Sounds/ZoneSounds/Central Anduin2.mp3', volume: 0.8 },
             'central anduin vale': { url: '/assets/Sounds/ZoneSounds/Central Anduin2.mp3', volume: 0.8 },
             'dol guldur': { url: '/assets/Sounds/ZoneSounds/Dolguldur.mp3', volume: 0.8 },
-            'swanfleet': { url: '/assets/Sounds/ZoneSounds/MidgeWater.mp3', volume: 0.8 },
+            'swanfleet': { url: '/assets/Sounds/ZoneSounds/swantfleet.mp3', volume: 0.8 },
             'isengard': { url: '/assets/Sounds/ZoneSounds/Isengard.mp3', volume: 0.8 },
             'southern mirkwood': { url: '/assets/Sounds/ZoneSounds/SouthernMirkwood.mp3', volume: 0.8 },
             'old forest road': { url: '/assets/Sounds/ZoneSounds/TheOldForestRoad.mp3', volume: 0.8 },
