@@ -16,7 +16,7 @@
 //
 // Payload: u32 rooms, u32 marks, Coordinate selected, rooms × Room,
 // marks × Infomark. Strings are QString: u32 byte length (0xFFFFFFFF =
-// null) then UTF-16BE. Contents and notes are skipped by length.
+// null) then UTF-16BE. Contents are skipped by length; notes are retained for the room info card.
 //
 // Older schemas are converted to the current MapData exactly as MMapper
 // 26.06.0 does on load (ported from src/mapstorage/mapstorage.cpp

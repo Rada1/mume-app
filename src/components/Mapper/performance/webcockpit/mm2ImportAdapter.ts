@@ -60,7 +60,7 @@ export function mapDataToLegacyImport(map: MapData, floorHeight = 1): LegacyMapI
       map.align[room]!,
       map.portable[room]!,
       map.ridable[room]!,
-      '',
+      map.notes?.[room] ?? '',
       '',
       map.descs[room]!,
     ];

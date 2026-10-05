@@ -46,6 +46,7 @@ export function parseMm2Payload(u: Uint8Array, version = MM2_VERSION): MapData {
   const loadFlags = new Uint32Array(rooms);
   const names: string[] = new Array<string>(rooms);
   const descs: string[] = new Array<string>(rooms);
+  const notes: string[] = new Array<string>(rooms);
   const areas: string[] = new Array<string>(rooms);
   const exitFlags = new Uint16Array(slots);
   const doorFlags = new Uint16Array(slots);
@@ -65,7 +66,7 @@ export function parseMm2Payload(u: Uint8Array, version = MM2_VERSION): MapData {
     reader.skipStr(); // contents
     extId[r] = reader.u32();
     serverId[r] = hasServerId ? reader.u32() : 0;
-    reader.skipStr(); // note
+    notes[r] = reader.str();
     const t = reader.u8();
     let death = false;
     if (deathTerrain && t === DEATH_TERRAIN) {
@@ -255,6 +256,7 @@ export function parseMm2Payload(u: Uint8Array, version = MM2_VERSION): MapData {
     loadFlags,
     names,
     descs,
+    notes,
     areas,
     exitFlags,
     doorFlags,

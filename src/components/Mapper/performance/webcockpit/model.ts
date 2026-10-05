@@ -158,6 +158,8 @@ export interface MapData {
   loadFlags: Uint32Array;
   names: string[];
   descs: string[];
+  /** User-authored room notes. */
+  notes?: string[];
   /** Area name ("" for most rooms). */
   areas: string[];
 
