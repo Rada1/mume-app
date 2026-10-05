@@ -20,6 +20,7 @@ interface MapperContextMenuProps {
     onWalkEnd?: () => void;
     mode?: 'edit' | 'play';
     isDarkMode: boolean;
+    isMobile?: boolean;
 }
 
 // --- Component ---
@@ -34,20 +35,24 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
     onAddRoom,
     onSyncLocation,
     onWalkStart,
-    mode = 'edit'
-}) => (
+    mode = 'edit',
+    isMobile = false
+}) => {
+    const menu = (
     <>
         <div
             className="mapper-context-menu-backdrop"
             aria-hidden="true"
+            data-mobile={isMobile || undefined}
             onPointerDown={onClose}
         />
         <div
             className="mapper-context-menu"
             role="menu"
+            data-mobile={isMobile || undefined}
             style={{
-                top: `clamp(8px, ${y}px, calc(100% - 194px))`,
-                left: `clamp(8px, ${x}px, calc(100% - 176px))`,
+                top: `clamp(8px, ${y}px, calc(100% - ${mode === 'edit' ? 194 : 116}px))`,
+                left: `clamp(8px, ${x}px, calc(100% - ${isMobile ? 216 : 176}px))`,
                 maxHeight: 'calc(100% - 16px)'
             }}
         >
@@ -124,4 +129,7 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
             )}
         </div>
     </>
-);
+    );
+
+    return menu;
+};

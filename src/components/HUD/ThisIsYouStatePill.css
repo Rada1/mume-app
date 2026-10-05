@@ -108,6 +108,23 @@
     text-align: left;
 }
 
+.this-is-you-popover[data-compact="true"] {
+    width: 190px;
+    padding: 5px;
+    gap: 2px;
+}
+
+.this-is-you-popover[data-compact="true"] .this-is-you-popover-header {
+    padding: 5px 8px;
+    font-size: 0.66rem;
+}
+
+.this-is-you-popover[data-compact="true"] .this-is-you-popover-item {
+    min-height: 36px;
+    padding: 8px 10px;
+    font-size: 0.82rem;
+}
+
 .this-is-you-popover-item:hover {
     background: color-mix(in srgb, var(--state-accent, #c9a84c) 20%, transparent);
     color: var(--state-accent, #f0cb67);

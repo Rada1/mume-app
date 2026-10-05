@@ -65,6 +65,12 @@
         pointer-events: none !important;
     }
 
+    body:has(.app-container.is-mobile.kb-open) .mapper-room-info-panel,
+    body:has(.app-container.is-mobile.kb-open) .mapper-context-menu[data-mobile="true"],
+    body:has(.app-container.is-mobile.kb-open) .mapper-context-menu-backdrop[data-mobile="true"] {
+        display: none !important;
+    }
+
     .app-container.is-mobile.kb-open .mobile-map-panel .map-canvas {
         mask-image: none !important;
         -webkit-mask-image: none !important;

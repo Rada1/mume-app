@@ -12,12 +12,12 @@ import { registerOccupantTap } from './occupantAnimStore';
 import { audioManager } from '../../services/audio/AudioManager';
 import { dispatchMapSwipeEdgeFeedback } from '../../utils/mapSwipeFeedback';
 import {
-    getMapSwipeWheelCell,
     getMapSwipeWheelGestureCell,
     getMapSwipeWheelGestureCommand,
     type MapSwipeWheelPoint,
     type MapSwipeWheelPosition
 } from './mapSwipeWheelUtils';
+import { applyTacticalCommandPrefix } from '../../stores/useTacticalCommandPrefixStore';
 
 const MAP_SWIPE_REPEAT_COMMANDS = new Set(['north', 'south', 'east', 'west', 'up', 'down']);
 
@@ -88,6 +88,7 @@ export interface InteractionDeps {
     onRoomClick?: (roomId: string) => void;
     selectMapSearchResult?: (roomId: string) => void;
     mode: 'play' | 'edit';
+    isMobile?: boolean;
     currentRoomId: string | null;
     isDesignMode: boolean;
     isMinimized: boolean;
@@ -216,6 +217,10 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
     const depsRef = useRef(deps);
     useEffect(() => { depsRef.current = deps; }, [deps]);
 
+    const executeMapUiCommand = useCallback<ExecuteCommand>((command, ...options) => {
+        depsRef.current.executeCommand(applyTacticalCommandPrefix(command), ...options);
+    }, []);
+
     const mapSwipeRepeatTimerRef = useRef<number | null>(null);
     const mapSwipeRepeatCommandRef = useRef<string | null>(null);
     const mapSwipeRepeatFiredRef = useRef(false);
@@ -245,12 +250,12 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             const activeCommand = mapSwipeRepeatCommandRef.current;
             if (!activeCommand) return;
             mapSwipeRepeatFiredRef.current = true;
-            depsRef.current.executeCommand(activeCommand, false, false, false, false, { fromUi: true });
+            executeMapUiCommand(activeCommand, false, false, false, false, { fromUi: true });
             depsRef.current.playClickSound?.();
             depsRef.current.triggerHaptic(10);
             window.dispatchEvent(new CustomEvent('mume-mapper-center-on-player'));
         }, 300);
-    }, [clearMapSwipeRepeat]);
+    }, [clearMapSwipeRepeat, executeMapUiCommand]);
 
     useEffect(() => () => clearMapSwipeRepeat(), [clearMapSwipeRepeat]);
 
@@ -298,13 +303,13 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         const context = sanitizeGameTarget(rawContext) || rawContext;
         if (!context) return false;
 
-        depsRef.current.executeCommand(`look ${context}`, false, false, false, false, { fromUi: true });
+        executeMapUiCommand(`look ${context}`, false, false, false, false, { fromUi: true });
         targetEl.classList.add('pressed');
         setTimeout(() => targetEl.classList.remove('pressed'), 350);
         resetMapLookGestureState();
         depsRef.current.playClickSound?.();
         return true;
-    }, [resetMapLookGestureState]);
+    }, [executeMapUiCommand, resetMapLookGestureState]);
 
     const fireMapLongPressAtPointer = useCallback((e: PointerEvent) => {
         const activeHeld = depsRef.current.heldButtonRef?.current || depsRef.current.heldButton;
@@ -724,8 +729,8 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
         const onUp = (e: PointerEvent) => {
             e.stopPropagation();
-            const { mode, joystick, executeCommand, triggerHaptic, stopWalking, setInfoRoomId, setSelectedRoomIds, setIsDragging, setRooms } = depsRef.current;
-            const executeMapJoystickCommand = (command: string) => executeCommand(
+            const { mode, joystick, triggerHaptic, stopWalking, setInfoRoomId, setSelectedRoomIds, setIsDragging, setRooms } = depsRef.current;
+            const executeMapJoystickCommand = (command: string) => executeMapUiCommand(
                 command === 'flee' ? 'look' : command,
                 false,
                 false,
@@ -772,7 +777,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     && mapSwipeRepeatFiredRef.current);
                 clearMapSwipeRepeat();
                 if (command && !alreadyRepeated) {
-                    executeCommand(command, false, false, false, false, { fromUi: true });
+                    executeMapUiCommand(command, false, false, false, false, { fromUi: true });
                     depsRef.current.playClickSound?.();
                     triggerHaptic(10);
                 }
@@ -792,37 +797,6 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 return;
             }
 
-            const origin = mapSwipeOriginRef.current;
-            const isCenterCellTap = mode === 'play'
-                && lastMapPointerTypeRef.current === 'touch'
-                && !wasLongPress
-                && !hasDraggedRef.current
-                && origin !== null
-                && getMapSwipeWheelCell(origin, getMapSwipeBounds()) === 'center';
-            const centerTapWorld = isCenterCellTap
-                ? hitTestRef.current.screenToWorld(e.clientX, e.clientY)
-                : null;
-            const centerTapExit = centerTapWorld
-                ? hitTestRef.current.getExitAt?.(centerTapWorld.x, centerTapWorld.y)
-                : null;
-            if (isCenterCellTap && !centerTapExit) {
-                activePointersRef.current.delete(e.pointerId);
-                try { currentCanvas().releasePointerCapture(e.pointerId); } catch(err) {}
-                executeCommand('look', false, false, false, false, { fromUi: true });
-                depsRef.current.playClickSound?.();
-                triggerHaptic(10);
-                joystick?.handleJoystickCancel?.(e as any);
-                depsRef.current.setIsTrackpadModifierActive?.(false);
-                mapSwipeOriginRef.current = null;
-                isDraggingInternalRef.current = false;
-                dragTypeRef.current = null;
-                setIsDragging(false);
-                setMarqueeStart(null);
-                setMarqueeEnd(null);
-                activePointersRef.current.clear();
-                lastPointersRef.current = [];
-                return;
-            }
             contextMenuTriggeredRef.current = false;
             mapLookActivatedRef.current = false;
             comboFiredRef.current = false;
@@ -1011,7 +985,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                 }
                             }
 
-                            depsRef.current.executeCommand(`${finalAction} exit ${finalDirName}`, false, false, false, false, { fromUi: true });
+                            executeMapUiCommand(`${finalAction} exit ${finalDirName}`, false, false, false, false, { fromUi: true });
                             const feedbackPoint = getDoorScreenPosition(
                                 exitHit.roomId,
                                 exitHit.direction,
@@ -1113,6 +1087,34 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                 return;
                             }
                         }
+
+                        if (clickedRoomId && depsRef.current.isMobile && mode === 'play') {
+                            const containerRect = depsRef.current.canvasRef.current?.parentElement?.getBoundingClientRect();
+                            const localX = containerRect ? e.clientX - containerRect.left : e.clientX;
+                            const localY = containerRect ? e.clientY - containerRect.top : e.clientY;
+                            const menuWidth = Math.min(200, (containerRect?.width || window.innerWidth) - 16);
+                            const menuHeight = 112;
+                            const maxX = Math.max(8, (containerRect?.width || window.innerWidth) - menuWidth - 8);
+                            const maxY = Math.max(8, (containerRect?.height || window.innerHeight) - menuHeight - 8);
+
+                            depsRef.current.setContextMenu({
+                                x: Math.min(Math.max(localX, 8), maxX),
+                                y: Math.min(Math.max(localY, 8), maxY),
+                                wx: Math.round(world.x / GRID_SIZE),
+                                wy: Math.round(world.y / GRID_SIZE),
+                                roomId: clickedRoomId
+                            });
+                            if (joystick?.handleJoystickCancel) joystick.handleJoystickCancel(e as any);
+                            depsRef.current.setIsTrackpadModifierActive?.(false);
+                            isDraggingInternalRef.current = false;
+                            dragTypeRef.current = null;
+                            setIsDragging(false);
+                            setMarqueeStart(null);
+                            setMarqueeEnd(null);
+                            depsRef.current.playClickSound?.();
+                            depsRef.current.triggerHaptic(40);
+                            return;
+                        }
                     }
 
                     if (!exitHit && !didHandleMapLongPressRelease && !isMapLongPress && dragTypeRef.current === 'joystick') {
@@ -1172,11 +1174,11 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                                 type: result.actionType === 'select-recipient' ? 'give-recipient-select' : undefined
                                             });
                                         } else {
-                                            depsRef.current.executeCommand(result.cmd, false, false, false, false, { fromUi: true });
+                                            executeMapUiCommand(result.cmd, false, false, false, false, { fromUi: true });
                                             depsRef.current.playClickSound?.();
                                         }
                                     } else if (comboDir) {
-                                        depsRef.current.executeCommand(result.cmd, false, false, false, false, { fromUi: true });
+                                        executeMapUiCommand(result.cmd, false, false, false, false, { fromUi: true });
                                         depsRef.current.playClickSound?.();
                                     }
                                     depsRef.current.setHeldButton?.((prev: any) => prev ? { ...prev, lastTargetFireAt: Date.now() } : null);
@@ -1221,7 +1223,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     const latestHeld = depsRef.current.heldButtonRef?.current || depsRef.current.heldButton;
                     if (!didHandleMapLongPressRelease && !latestHeld?.didFire) {
                         const cmd = depsRef.current.target ? `look ${depsRef.current.target}` : 'look';
-                        depsRef.current.executeCommand(cmd, false, false, false, false, { fromUi: true });
+                        executeMapUiCommand(cmd, false, false, false, false, { fromUi: true });
                         depsRef.current.playClickSound?.();
                     }
                     resetMapLookGestureState();
@@ -1381,7 +1383,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             eventRoot.removeEventListener('contextmenu', onCanvasContextMenu);
             // DO NOT clear activePointersRef or isDraggingInternal here if it's just a re-render
         };
-    }, [canvasRef, clearMapSwipeRepeat, updateMapSwipeRepeat]); // Stable effect
+    }, [canvasRef, clearMapSwipeRepeat, executeMapUiCommand, updateMapSwipeRepeat]); // Stable effect
 
     const outputMarquee = useMemo(() => ({ start: marqueeStart, end: marqueeEnd }), [marqueeStart, marqueeEnd]);
 

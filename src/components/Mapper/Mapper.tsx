@@ -260,6 +260,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         selectedRoomIds, setSelectedRoomIds,
         selectedMarkerId, setSelectedMarkerId,
         cameraRef, mode, currentRoomId,
+        isMobile,
         isDesignMode: props.isDesignMode || false,
         isMinimized: effectiveIsMinimized,
         setAutoCenter, setContextMenu,
@@ -340,6 +341,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 markers={markers}
                 currentRoomId={currentRoomId}
                 selectedRoomIds={selectedRoomIds}
+                contextMenuRoomId={localContextMenu?.roomId ?? infoRoomId}
                 selectedMarkerId={selectedMarkerId}
                 camera={cameraRef}
                 isDarkMode={isDarkMode}
@@ -494,6 +496,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                     x={localContextMenu.x}
                     y={localContextMenu.y}
                     roomId={localContextMenu.roomId}
+                    isMobile={isMobile}
                     onClose={() => setLocalContextMenu(null)}
                     onDelete={() => { if (localContextMenu.roomId) handleDeleteRoom(localContextMenu.roomId); setLocalContextMenu(null); triggerRender(); }}
                     onInfo={() => { setInfoRoomId(localContextMenu.roomId); setLocalContextMenu(null); }}
@@ -519,6 +522,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                     isMmapperMap={performanceMapRef.current !== null}
                     setViewZ={setViewZ}
                     isDarkMode={isDarkMode}
+                    isMobile={isMobile}
                     onWalkStart={(rid) => { startWalking(rid); }}
                     stopWalking={stopWalking}
                     walkTargetId={walkTargetId}

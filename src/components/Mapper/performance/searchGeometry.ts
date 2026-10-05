@@ -94,6 +94,22 @@ export function buildSearchGeometry(overlay: FastMapSearchOverlay): SearchFloorG
     appendDisk(vertices, overlay.target, 0.055, overlay.color, 1, 12);
   }
 
+  if (overlay.selectedRoom) {
+    const { x, y, z } = overlay.selectedRoom;
+    const nw = { x: x - 0.5, y: y - 0.5, z };
+    const ne = { x: x + 0.5, y: y - 0.5, z };
+    const se = { x: x + 0.5, y: y + 0.5, z };
+    const sw = { x: x - 0.5, y: y + 0.5, z };
+    const selectionColor: Color = [1, 0.8, 0.25];
+    const vertices = floorVertices(z);
+    appendTriangle(vertices, nw, ne, se, selectionColor, 0.16);
+    appendTriangle(vertices, nw, se, sw, selectionColor, 0.16);
+    appendSegment(vertices, nw, ne, selectionColor);
+    appendSegment(vertices, ne, se, selectionColor);
+    appendSegment(vertices, se, sw, selectionColor);
+    appendSegment(vertices, sw, nw, selectionColor);
+  }
+
   if (overlay.hovered) appendRing(floorVertices(overlay.hovered.z), overlay.hovered, 0.4, 0.04, [1, 1, 1], 1);
   return [...floors].map(([floor, vertices]) => ({ floor, vertices: Float32Array.from(vertices) }));
 }

@@ -27,6 +27,7 @@ import {
     getGiveRecipientSuggestions,
     getGroupTargetSuggestions,
     getDrinkTargetSuggestions,
+    getDrawTargetSuggestions,
     getFluidContainerTargetSuggestions,
     getFoodTargetSuggestions,
     getFillTargetSuggestions,
@@ -72,6 +73,7 @@ const TARGET_MENU_TITLES: Record<CommandTargetMenuKind, string> = {
     drink: 'DRINK',
     pour: 'POUR INTO',
     'worn-weapons': 'WORN WEAPONS',
+    'draw-gear': 'DRAW',
     lanterns: 'LANTERNS',
     'weather-options': 'WEATHER',
     'weather-scope': 'WEATHER',
@@ -131,6 +133,7 @@ export const useGameButtonTargetSuggestions = (
         : targetKindOverride === 'shop' ? 'shop'
         : targetKindOverride === 'lanterns' ? 'lanterns'
         : targetKindOverride === 'pour' ? 'pour'
+        : targetKindOverride === 'draw-targets' ? 'draw-gear'
         : targetKindOverride === 'worn-weapons' || targetKindOverride === 'worn-sheaths' ? 'worn-weapons'
         : targetKindOverride === 'room-objects' || targetKindOverride === 'room-object-container' ? 'room'
         : 'gear'
@@ -147,6 +150,9 @@ export const useGameButtonTargetSuggestions = (
     const suggestions = useMemo((): CommandTargetSuggestion[] | undefined => {
         if (targetKindOverride === 'group') return getGroupSelectionSuggestions(groupMembers, roomOccupants, roomObjects, characterName);
         if (targetKindOverride === 'status-panel') return [];
+        if (targetKindOverride === 'draw-targets' || resolvedKind === 'draw-gear') {
+            return getDrawTargetSuggestions(displayInventoryLines, displayEqLines);
+        }
         if (targetKindOverride === 'shop' || resolvedKind === 'shop') return shopItems.map(item => ({
             key: `shop-item-${item.num}`,
             label: item.name,

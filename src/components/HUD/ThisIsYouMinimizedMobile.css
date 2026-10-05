@@ -1,0 +1,46 @@
+/** @file ThisIsYouMinimizedMobile.css — Mobile minimized status summary layout. */
+
+/* --- Minimized Summary Section --- */
+.this-is-you-console.is-mobile.is-minimized .this-is-you-minimized-summary {
+    min-height: 52px;
+    box-sizing: border-box;
+    align-items: stretch;
+    gap: 8px;
+    padding: 4px 6px;
+}
+
+.this-is-you-console.is-mobile.is-minimized .this-is-you-minimized-summary-group {
+    min-height: 44px;
+    align-items: center;
+}
+
+.this-is-you-console.is-mobile.is-minimized .this-is-you-minimized-summary-group[aria-label="State"] {
+    order: -1;
+    padding-left: 0;
+    border-left: 0;
+}
+
+.this-is-you-console.is-mobile.is-minimized .this-is-you-minimized-summary-group[aria-label="Combat"] {
+    order: 0;
+    padding-left: 12px;
+    border-left: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.this-is-you-console.is-mobile.is-minimized .this-is-you-minimized-summary-group[aria-label="State"] .this-is-you-pill-wrapper {
+    display: inline-flex;
+    align-items: stretch;
+    height: 44px;
+}
+
+.this-is-you-console.is-mobile.is-minimized .this-is-you-minimized-summary-group[aria-label="State"] .this-is-you-pill {
+    height: 44px;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 4px 8px;
+    gap: 5px;
+    font-size: 0.66rem;
+}
+
+.this-is-you-console.is-mobile.is-minimized .this-is-you-minimized-summary-group[aria-label="State"] .this-is-you-pill-category {
+    font-size: 0.6rem;
+}

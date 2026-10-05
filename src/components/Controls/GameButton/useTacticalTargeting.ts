@@ -145,7 +145,7 @@ export const useTacticalTargeting = ({
         if (targetVal && shouldTriggerHaptic) triggerHaptic?.(15);
         if (currentCmd) {
             const preview = targetVal === BLANK_TARGET_VALUE
-                ? currentCmd.trim()
+                ? applyTargetToCommand(currentCmd, BLANK_TARGET_VALUE)
                 : isSocialMenu
                 ? `${targetVal || ''}${targetVal && activeTarget ? ` ${activeTarget}` : ''}`.trim()
                 : applyTargetToCommand(currentCmd, targetVal);
@@ -204,7 +204,7 @@ export const useTacticalTargeting = ({
         const rememberedTarget = getRememberedCommandTarget(command);
         if (rememberedTarget) return rememberedTarget;
         if (commandVerb === 'weather') return getDefaultCommandTarget(command);
-        if (kind === 'gear' || kind === 'inventory-gear' || kind === 'worn-gear' || kind === 'room-corpses' || kind === 'mounts' || kind === 'mage-spells' || kind === 'magic-keys' || kind === 'social' || kind === 'shop') return null;
+        if (kind === 'gear' || kind === 'inventory-gear' || kind === 'worn-gear' || kind === 'draw-gear' || kind === 'room-corpses' || kind === 'mounts' || kind === 'mage-spells' || kind === 'magic-keys' || kind === 'social' || kind === 'shop') return null;
         if (isCompatibleGlobalTarget(command, activeTarget)) return activeTarget;
         return automaticTarget || null;
     }, [activeTarget, autoTargetForCommand, hasManuallySelectedTarget]);
@@ -220,7 +220,7 @@ export const useTacticalTargeting = ({
     const resolveCommandWithTarget = useCallback((baseCmd: string): string => {
         const direction = pendingDirectionRef.current;
         const target = pendingTargetRef.current;
-        if (target === BLANK_TARGET_VALUE) return baseCmd.trim();
+        if (target === BLANK_TARGET_VALUE) return applyTargetToCommand(baseCmd, BLANK_TARGET_VALUE);
         if (getCommandTargetMenuKind(baseCmd) === 'social') {
             return target
                 ? `${target}${activeTarget ? ` ${activeTarget}` : ''}`.trim()

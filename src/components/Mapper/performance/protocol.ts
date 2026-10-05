@@ -25,6 +25,7 @@ export interface FastMapSearchOverlay {
   matches: FastMapSearchPoint[];
   path: Array<FastMapSearchPoint | null>;
   target: FastMapSearchPoint | null;
+  selectedRoom: FastMapSearchPoint | null;
   hovered: FastMapSearchPoint | null;
   color: readonly [number, number, number];
 }

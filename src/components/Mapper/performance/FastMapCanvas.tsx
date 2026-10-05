@@ -206,13 +206,14 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
       mapSearchQuery: props.mapProps.mapSearchQuery,
       matchedRoomIds: props.mapProps.matchedRoomIds,
       closestRoomId: props.mapProps.closestRoomId,
+      selectedRoomId: props.mapProps.contextMenuRoomId,
       hoveredSearchRoomId: props.mapProps.hoveredSearchRoomId,
       filterPathIds: props.mapProps.filterPathIds,
       rooms: props.mapProps.rooms,
       preloaded: props.mapProps.preloadedCoordsRef.current,
       canonical: props.mapProps.performanceMapRef?.current ?? null,
     }));
-  }, [props.mapProps.activeMapFilter, props.mapProps.mapSearchQuery, props.mapProps.matchedRoomIds, props.mapProps.closestRoomId, props.mapProps.hoveredSearchRoomId, props.mapProps.filterPathIds, props.mapProps.rooms, props.mapProps.preloadedCoordsRef, props.mapProps.performanceMapRef, props.mapProps.performanceMapRevision]);
+  }, [props.mapProps.activeMapFilter, props.mapProps.mapSearchQuery, props.mapProps.matchedRoomIds, props.mapProps.closestRoomId, props.mapProps.contextMenuRoomId, props.mapProps.hoveredSearchRoomId, props.mapProps.filterPathIds, props.mapProps.rooms, props.mapProps.preloadedCoordsRef, props.mapProps.performanceMapRef, props.mapProps.performanceMapRevision]);
 
   const cameraState = props.mapProps.camera.current as CameraState;
   useEffect(() => { sendLatestFrame(); }, [

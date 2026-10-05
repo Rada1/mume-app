@@ -100,12 +100,19 @@
     font-size: 13px;
     line-height: 1;
     color: #f87171;
-    margin-left: 2px;
+    flex: 0 0 auto;
+    width: 26px;
+    min-width: 26px;
+    height: 26px;
+    min-height: 26px;
+    margin-left: 0;
     padding: 0;
     border: 0;
+    border-radius: 4px;
     background: transparent;
     font-family: inherit;
     cursor: pointer;
+    touch-action: manipulation;
 }
 
 .docked-target-badge {
@@ -184,16 +191,29 @@
 }
 
 .docked-target-x {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
     font-size: 11px;
     line-height: 1;
     color: #f87171;
-    margin-left: 2px;
+    width: 26px;
+    min-width: 26px;
+    height: 26px;
+    min-height: 26px;
+    margin-left: 0;
     opacity: 0.8;
     padding: 0;
     border: 0;
+    border-radius: 4px;
     background: transparent;
     cursor: pointer;
+    touch-action: manipulation;
 }
+
+.docked-target-x:active,
+.docked-parley-chip .parley-x:active { background: rgba(248, 113, 113, 0.18); }
 
 .docked-target-badge:hover .docked-target-x {
     opacity: 1;
@@ -630,6 +650,14 @@
 .app-container.is-mobile .docked-parley-chip {
     height: 34px;
     min-height: 34px;
+}
+
+.app-container.is-mobile .docked-target-x,
+.app-container.is-mobile .docked-parley-chip .parley-x {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
 }
 
 .app-container.is-mobile .docked-input-form,

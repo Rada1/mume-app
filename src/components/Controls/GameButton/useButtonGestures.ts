@@ -10,6 +10,7 @@ import { BLANK_TARGET_VALUE, canCommandAcceptTarget, getDefaultCommandTarget } f
 import type { UseTacticalTargetingReturn } from './tacticalTargetingTypes';
 import type { TacticalSwapCell } from './TacticalCommandPalette';
 import { initializeMapSwipeTracking, isMapControlElement, showMapSwipeFeedback, trackMapSwipeMovement } from './mapSwipeFeedback';
+import { FOLLOWERS_COMMAND_PREFIX } from '../../../stores/useTacticalCommandPrefixStore';
 
 export interface UseButtonGesturesProps {
     button: CustomButton;
@@ -876,8 +877,10 @@ export const useButtonGestures = ({
         if (tacticalTargeting?.isTargetColumnOpen && paletteCommand) {
             const actionType = (releasedLearnedPaletteCell?.dataset.paletteActionType || 'command') as import('../../../types').ActionType;
             currentCommandRef.current = paletteCommand;
+            const isFollowersPrefixAction = actionType === 'modifier'
+                && paletteCommand.toLowerCase() === FOLLOWERS_COMMAND_PREFIX;
             const effectiveTarget = tacticalTargeting.getEffectiveTarget(paletteCommand);
-            if (canCommandAcceptTarget(paletteCommand) && !effectiveTarget) {
+            if (!isFollowersPrefixAction && canCommandAcceptTarget(paletteCommand) && !effectiveTarget) {
                 setCommandPreview(paletteCommand);
                 setHeldButton(null);
                 setActiveDir('center' as SwipeDirection);
@@ -889,10 +892,13 @@ export const useButtonGestures = ({
             if (['menu', 'assign', 'select-assign', 'select-recipient', 'select-container', 'nav'].includes(actionType)) {
                 handleButtonClick({ ...button, command: paletteCommand, actionType }, e as unknown as React.MouseEvent);
             } else {
-                const resolved = canCommandAcceptTarget(paletteCommand)
+                const resolved = isFollowersPrefixAction
+                    ? paletteCommand
+                    : canCommandAcceptTarget(paletteCommand)
                     ? tacticalTargeting.resolveCommandWithTarget(paletteCommand)
                     : paletteCommand;
                 executeCommand(resolved, false, false);
+                if (actionType === 'modifier' && paletteCommand.toLowerCase() === FOLLOWERS_COMMAND_PREFIX) triggerHaptic(35);
             }
             tacticalTargeting.resetTargeting();
             setHeldButton(null);
@@ -1054,15 +1060,16 @@ export const useButtonGestures = ({
                 && !tacticalTargeting.fireOnTargetTap
                 && onCommitStagedTargetRef?.current());
             const effectiveTarget = tacticalTargeting.getEffectiveTarget(targetCommand);
+            const isFollowersPrefixCommand = hasExplicitWheelSelection
+                && targetCommand.trim().toLowerCase() === FOLLOWERS_COMMAND_PREFIX;
             const isLongSwipe = (el._maxDist || 0) > 15;
             const hasPickedDirection = Boolean(tacticalTargeting.pendingDirection || targetDirection?.dataset.directionValue);
             const hasSelectedTarget = tacticalTargeting.hasSelectedTarget || Boolean(selectedTargetValue);
             const isWheelCellRelease = Boolean(releaseHit?.closest('.unified-tactical-wheel .swipe-wheel-container'));
-            const didExecuteTargetedCommand = !tacticalTargeting.fireOnTargetTap
+            const didExecuteTargetedCommand = (!tacticalTargeting.fireOnTargetTap || isFollowersPrefixCommand)
                 && !isStagedTargetMenuRef?.current
                 && (isLongSwipe || hasPickedDirection || hasSelectedTarget || isWheelCellRelease)
-                && Boolean(effectiveTarget)
-                && canCommandAcceptTarget(targetCommand);
+                && (isFollowersPrefixCommand || (Boolean(effectiveTarget) && canCommandAcceptTarget(targetCommand)));
             const didExecuteBlankTargetCommand = !tacticalTargeting.fireOnTargetTap
                 && !isStagedTargetMenuRef?.current
                 && tacticalTargeting.pendingTarget === '__blank_target__'
@@ -1072,8 +1079,10 @@ export const useButtonGestures = ({
             const releasedOnSwipeWheel = Boolean(document.elementFromPoint?.(e.clientX, e.clientY)
                 ?.closest('.unified-tactical-wheel .swipe-wheel-container'));
             if (didExecuteTargetedCommand) {
-                const resolvedCommand = tacticalTargeting.resolveCommandWithTarget(targetCommand);
-            executeCommand(resolvedCommand, false, false);
+                const resolvedCommand = isFollowersPrefixCommand
+                    ? targetCommand.trim()
+                    : tacticalTargeting.resolveCommandWithTarget(targetCommand);
+                executeCommand(resolvedCommand, false, false);
             } else if (didExecuteBlankTargetCommand) {
             executeCommand(targetCommand.trim(), false, false);
             }
@@ -1175,6 +1184,10 @@ export const useButtonGestures = ({
         }
 
         if (button.actionType === 'modifier') {
+            if (button.id === 'tactical-ranger' && button.command.trim().toLowerCase() === FOLLOWERS_COMMAND_PREFIX) {
+                executeCommand(button.command, false, false);
+                triggerHaptic(35);
+            }
             tacticalTargeting?.resetTargeting();
             return;
         }

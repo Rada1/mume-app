@@ -3,6 +3,7 @@
 import React from 'react';
 import type { ActionType, SwipeDirection } from '../../../types';
 import { getSkillPresentation } from '../../../utils/skillPresentation';
+import { FOLLOWERS_COMMAND_PREFIX } from '../../../stores/useTacticalCommandPrefixStore';
 
 // --- Types ---
 export interface TacticalPaletteCommand {
@@ -40,7 +41,9 @@ export const TacticalCommandPalette: React.FC<Props> = ({ commands, activeComman
     >
         <div className="unified-tactical-command-grid">
             {commands.map(item => {
-                const presentation = getSkillPresentation(item.command, item.label);
+                const presentation = item.command.trim().toLowerCase() === FOLLOWERS_COMMAND_PREFIX
+                    ? { label: item.label }
+                    : getSkillPresentation(item.command, item.label);
                 const isLearned = item.isLearned !== false;
                 const commandTextColor = getCommandTextColor?.(item.command);
                 const targetAvailableColor = isLearned ? getCommandTargetGlowColor?.(item.command) ?? null : null;

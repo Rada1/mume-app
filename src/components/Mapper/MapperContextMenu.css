@@ -67,3 +67,20 @@
 .mapper-context-menu-action--danger {
     color: #d98f86;
 }
+
+.mapper-context-menu[data-mobile="true"] {
+    width: min(200px, calc(100vw - 16px));
+    z-index: 3201;
+    border-radius: 8px;
+}
+
+.mapper-context-menu-backdrop[data-mobile="true"] {
+    position: absolute;
+    z-index: 3200;
+}
+
+.mapper-context-menu[data-mobile="true"] .mapper-context-menu-action {
+    min-height: 44px;
+    padding: 9px 10px;
+    font-size: 0.86rem;
+}

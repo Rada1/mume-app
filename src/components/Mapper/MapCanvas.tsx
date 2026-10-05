@@ -11,6 +11,7 @@ export interface MapCanvasProps {
     markers: Record<string, any>;
     currentRoomId: string | null;
     selectedRoomIds: Set<string>;
+    contextMenuRoomId?: string | null;
     selectedMarkerId: string | null;
     camera: React.MutableRefObject<{ x: number, y: number, zoom: number }>;
     isDarkMode: boolean;

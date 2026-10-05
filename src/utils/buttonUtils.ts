@@ -4,7 +4,7 @@
 import { CustomButton, SwipeDirection } from '../types';
 import { sanitizeGameTarget } from './gameUtils';
 import { decodeCommandEntities } from './commandTextUtils';
-import { canCommandAcceptTarget, applyTargetToCommand } from './commandTargetUtils';
+import { canCommandAcceptTarget, applyTargetToCommand, getCommandTargetMenuKind } from './commandTargetUtils';
 import { canUseLockedTargetForCommand } from './swipeCommandColors';
 
 const DOOR_ACTION_COMMANDS = new Set(['open', 'close', 'lock', 'unlock', 'knock']);
@@ -61,7 +61,10 @@ export const getButtonCommand = (
         }
     }
 
-    const targetForCommand = target && canUseLockedTargetForCommand(cmd) ? target : null;
+    const explicitExitTarget = target?.trim().toLowerCase() === 'exit'
+        && getCommandTargetMenuKind(cmd) === 'door-direction';
+    const explicitDrawGearTarget = getCommandTargetMenuKind(cmd) === 'draw-gear';
+    const targetForCommand = target && (canUseLockedTargetForCommand(cmd) || explicitExitTarget || explicitDrawGearTarget) ? target : null;
     let consumedTarget = false;
     if (context) {
         const cleanContext = sanitizeGameTarget(context) || context;

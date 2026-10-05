@@ -46,7 +46,7 @@ export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
         { label: 'Use', cmd: 'use ', targetKind: 'inventory' },
         { label: 'Smoke', cmd: 'smoke ', targetKind: 'inventory-and-worn' },
         { label: 'Quaff', cmd: 'quaff ', targetKind: 'inventory' },
-        { label: 'Draw', cmd: 'draw ', targetKind: 'worn-sheaths' },
+        { label: 'Draw', cmd: 'draw ', targetKind: 'draw-targets' },
         { label: 'Sheath', cmd: 'sheath ', targetKind: 'worn-weapons' },
         { label: 'Throw', cmd: 'throw ', targetKind: 'throwables' },
         { label: 'Recite', cmd: 'recite ', targetKind: 'scrolls' },

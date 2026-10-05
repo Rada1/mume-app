@@ -19,7 +19,7 @@ import { useUIStore } from '../stores/useUIStore';
 
 export interface TelnetConfig {
     connectionUrl: string;
-    processLine: (line: string, tokens?: any) => void;
+    processLine: (line: string, tokens?: any, chunkEffects?: Set<string>) => void;
     getGameState?: () => string;
     recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => void;
     setPrompt: (prompt: string) => void;
@@ -59,6 +59,8 @@ export function useTelnet(config: TelnetConfig) {
     const pendingTextLines = React.useRef<(string | { line: string, isPrompt: boolean; isRedrawPrompt?: boolean })[]>([]);
     const processingQueuedRef = React.useRef(false);
     const tokenizationChainRef = React.useRef<Promise<void>>(Promise.resolve());
+    const queuedTextChunksRef = React.useRef(0);
+    const lastTextYieldAtRef = React.useRef(0);
 
     const snoopBlockRef = React.useRef<{ symbol: string; type: string } | null>(null);
     const snoopPrefixRegex = /^(?:&amp;|&|mp;)[A-Za-z](?:\s|$)/;
@@ -383,13 +385,27 @@ export function useTelnet(config: TelnetConfig) {
                     };
 
                     const isAccountMode = configRef.current.getGameState?.() === 'account';
-                    const runProcessing = () => processIncomingTextChunk(
-                        chunk,
-                        buildTokenizerContext,
-                        (line, tokens) => configRef.current.processLine(line, tokens),
-                        isAccountMode
-                    );
+                    const runProcessing = async () => {
+                        try {
+                            await processIncomingTextChunk(
+                                chunk,
+                                buildTokenizerContext,
+                                (line, tokens, chunkEffects) => configRef.current.processLine(line, tokens, chunkEffects),
+                                isAccountMode
+                            );
+                        } finally {
+                            queuedTextChunksRef.current--;
+                            // A burst of short socket chunks otherwise forms a continuous
+                            // promise microtask chain that can postpone paint on mobile.
+                            if (queuedTextChunksRef.current > 0 && document.visibilityState !== 'hidden' &&
+                                performance.now() - lastTextYieldAtRef.current > 8) {
+                                await new Promise<void>(resolve => window.setTimeout(resolve, 0));
+                                lastTextYieldAtRef.current = performance.now();
+                            }
+                        }
+                    };
 
+                    queuedTextChunksRef.current++;
                     tokenizationChainRef.current = tokenizationChainRef.current.then(runProcessing, runProcessing);
                 });
             }

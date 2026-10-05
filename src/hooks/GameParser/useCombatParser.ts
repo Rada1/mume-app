@@ -18,7 +18,7 @@ import {
 } from '../../utils/combatRechargeUtils';
 import { triggerKillPrompt } from '../../stores/useKillPromptStore';
 import { gmcpBus } from '../../events/gmcpBus';
-import { getNearbyCombatImpact } from './nearbyCombatAudio';
+import { getNearbyCombatImpact, isWeightMeasurementLine } from './nearbyCombatAudio';
 import { useXpTickerParser } from './useXpTickerParser';
 import { stripAnsiControlSequences } from '../../utils/ansi';
 
@@ -72,6 +72,7 @@ export function useCombatParser(deps: CombatParserDeps) {
 
         // Strip leading spaces and asterisks (damage indicators in MUME)
         const cleanLower = lower.replace(/^[\s\*]+/, '').trim();
+        if (isWeightMeasurementLine(cleanLower)) return { isMatch: false };
         const isBackstabMessage = BACKSTAB_MESSAGE_REGEX.test(cleanLower);
         if (
             /\b(?:looms?\s+(?:overhead|above)|ready\s+to\s+\w+|\b(?:is|are)\s+(?:here|(?:standing|sitting|resting|sleeping|fighting|lying|hovering|floating|perched|waiting|lurking)\s+here))\b/i.test(cleanLower) ||

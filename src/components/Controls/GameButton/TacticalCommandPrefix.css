@@ -1,0 +1,55 @@
+/* @file TacticalCommandPrefix.css — Pending followers-order feedback. */
+
+.custom-btn.tactical-command-prefix-pending {
+    outline: 2px solid rgba(250, 204, 21, 0.96);
+    outline-offset: 2px;
+    filter: drop-shadow(0 0 7px rgba(250, 204, 21, 0.7));
+}
+
+.tactical-command-prefix-indicator {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    z-index: 60003;
+    transform: translateX(-50%);
+    padding: 4px 7px;
+    border: 1px solid rgba(250, 204, 21, 0.8);
+    border-radius: 5px;
+    background: rgba(18, 16, 10, 0.96);
+    color: #fde68a;
+    font: 700 10px/1.1 var(--font-mono, monospace);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.38);
+}
+
+.tactical-command-prefix-banner {
+    position: fixed;
+    top: calc(var(--tactical-map-top, 0px) + 8px);
+    left: 50%;
+    z-index: 60004;
+    transform: translateX(-50%);
+    padding: 7px 11px;
+    border: 1px solid rgba(250, 204, 21, 0.8);
+    border-radius: 6px;
+    background: rgba(18, 16, 10, 0.96);
+    color: #fde68a;
+    font: 700 12px/1.1 var(--font-mono, monospace);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 0 15px rgba(250, 204, 21, 0.4);
+}
+
+.unified-tactical-command-item[data-palette-action-type="modifier"] {
+    color: #facc15;
+    text-shadow: 0 0 7px rgba(250, 204, 21, 0.45);
+}
+
+.swipe-sq-label.is-command-prefix .swipe-action-card {
+    color: #facc15;
+    border-color: rgba(250, 204, 21, 0.8);
+    background: rgba(250, 204, 21, 0.12);
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.35);
+}

@@ -390,7 +390,7 @@
     }
 }
 
-/* Suppress mobile HUD buttons, command deck, and tactical bar when docked panels are open */
+/* Hide the portrait map and controls only for an active docked panel; inactive panels remain mounted. */
 @media (max-width: 1024px) {
     .message-log-container {
         touch-action: pan-y;
@@ -400,10 +400,10 @@
     body.has-docked-panels .hud-clusters-absolute-layer,
     body.has-docked-panels .mobile-tactical-buttons-persistent,
     body.has-docked-panels .mobile-command-deck-persistent,
-    .app-container:has(.docked-panel:not(.group-status-panel--map-overlay):not(.group-status-panel--mobile-inline)) .mobile-map-panel,
-    .app-container:has(.docked-panel:not(.group-status-panel--map-overlay):not(.group-status-panel--mobile-inline)) .hud-clusters-absolute-layer,
-    .app-container:has(.docked-panel:not(.group-status-panel--map-overlay):not(.group-status-panel--mobile-inline)) .mobile-tactical-buttons-persistent,
-    .app-container:has(.docked-panel:not(.group-status-panel--map-overlay):not(.group-status-panel--mobile-inline)) .mobile-command-deck-persistent {
+    .app-container:has(.content-layer.has-docked-panels) .mobile-map-panel,
+    .app-container:has(.content-layer.has-docked-panels) .hud-clusters-absolute-layer,
+    .app-container:has(.content-layer.has-docked-panels) .mobile-tactical-buttons-persistent,
+    .app-container:has(.content-layer.has-docked-panels) .mobile-command-deck-persistent {
         opacity: 0 !important;
         pointer-events: none !important;
         visibility: hidden !important;

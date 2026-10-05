@@ -9,6 +9,7 @@ import { ArrowLeftRight, X } from 'lucide-react';
 import { CustomButton, SwipeDirection } from '../../../types';
 import { getClassKeyFromSetId, getSkillPresentation } from '../../../utils/skillPresentation';
 import { getSwipeCommandTextColor } from '../../../utils/swipeCommandColors';
+import { FOLLOWERS_COMMAND_PREFIX } from '../../../stores/useTacticalCommandPrefixStore';
 import { TacticalCommandPalette, type TacticalPaletteCommand, type TacticalSwapCell } from './TacticalCommandPalette';
 import './ButtonSwipeOverlay.css';
 
@@ -28,6 +29,7 @@ interface ButtonSwipeOverlayProps {
     getCommandTargetGlowColor?: (command: string) => string | null;
     getCommandLearnedState?: (command: string) => boolean | undefined;
     activeCommand?: string;
+    pendingCommandPrefix?: string | null;
     targetMenu?: React.ReactNode;
     paletteCommands?: TacticalPaletteCommand[];
     onClose: () => void;
@@ -77,6 +79,7 @@ export const toSwipeCenterActionLabel = (button: CustomButton): string => {
     const command = (button.command || '').trim();
     const normalized = command.toLowerCase();
     if (!command) return button.label || '';
+    if (normalized === FOLLOWERS_COMMAND_PREFIX) return 'Command';
 
     if (button.actionType === 'menu') {
         const menuLabel = normalized.endsWith('spelllist') ? 'spells'
@@ -89,7 +92,7 @@ export const toSwipeCenterActionLabel = (button: CustomButton): string => {
     return getSkillPresentation(command, command, getClassKeyFromSetId(button.setId)).label;
 };
 
-export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling, isPinned, swapSource = null, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, isTargetMenuVisible = false, getCommandTargetGlowColor, getCommandLearnedState, activeCommand, targetMenu, paletteCommands = [], onClose, onSwapCells, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel }) => {
+export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling, isPinned, swapSource = null, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, isTargetMenuVisible = false, getCommandTargetGlowColor, getCommandLearnedState, activeCommand, pendingCommandPrefix, targetMenu, paletteCommands = [], onClose, onSwapCells, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel }) => {
     if (!isTargetMenuVisible || !targetMenu) return null;
 
     const wheelAccent = button.style.borderColor || button.style.backgroundColor || 'var(--set-accent, var(--accent))';
@@ -139,13 +142,14 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                 const isActive = displayDirection === d;
                 const isLearned = getCommandLearnedState?.(cmdVal) !== false;
                 const targetAvailableColor = isLearned ? getCommandTargetGlowColor?.(cmdVal) ?? null : null;
-                const presentation = getSkillPresentation(cmdVal, cmdVal, buttonClassKey);
-                const commandTextColor = getSwipeCommandTextColor(cmdVal);
+                const isPrefixAction = cmdVal.trim().toLowerCase() === FOLLOWERS_COMMAND_PREFIX;
+                const presentation = isPrefixAction ? { label: 'Command' } : getSkillPresentation(cmdVal, cmdVal, buttonClassKey);
+                const commandTextColor = isPrefixAction ? '#facc15' : getSwipeCommandTextColor(cmdVal);
                 const targetGlowColor = targetAvailableColor
                     ? commandTextColor || targetAvailableColor
                     : null;
                 return (
-                    <span key={`label-${d}`} className={`swipe-sq-label ${isActive ? 'active' : ''}${!isLearned ? ' is-unlearned' : ''}${swapSource?.kind === 'wheel' && swapSource.direction === d ? ' is-swap-source' : ''}${cmdVal ? '' : ' is-empty'}`} data-dir={d} data-wheel-direction={d} data-wheel-command={cmdVal} data-wheel-learned={isLearned}>
+                    <span key={`label-${d}`} className={`swipe-sq-label ${isActive ? 'active' : ''}${!isLearned ? ' is-unlearned' : ''}${isPrefixAction ? ' is-command-prefix' : ''}${swapSource?.kind === 'wheel' && swapSource.direction === d ? ' is-swap-source' : ''}${cmdVal ? '' : ' is-empty'}`} data-dir={d} data-wheel-direction={d} data-wheel-command={cmdVal} data-wheel-learned={isLearned}>
                         <span
                             className={`swipe-action-card${targetGlowColor ? ' is-target-ready' : ''}${cmdVal ? '' : ' is-empty'}`}
                             style={{
@@ -204,6 +208,7 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                 onPointerUp={event => event.stopPropagation()}
                 onPointerCancel={event => event.stopPropagation()}
             >
+                {pendingCommandPrefix && <div className="tactical-command-prefix-banner" role="status">ORDER FOLLOWERS · NEXT ACTION</div>}
                 <section
                     className="unified-tactical-wheel unified-tactical-panel-wheel"
                     aria-label="Swipe command wheel"

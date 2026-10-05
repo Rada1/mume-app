@@ -58,6 +58,19 @@ export const getInventoryAndWornTargetSuggestions = (
     objectTraits: entry.traits
 }));
 
+export const getDrawTargetSuggestions = (
+    inventoryLines: DrawerLine[],
+    wornLines: DrawerLine[]
+): CommandTargetSuggestion[] => {
+    const inventoryWeapons = inventoryLines.filter(line => hasObjectTrait(line, 'trait-weapon'));
+    const wornDrawItems = wornLines.filter(line => {
+        if (hasObjectTrait(line, 'trait-sheath')) return true;
+        const isWornAcrossBack = line.prefix?.replace(/[<>]/g, '').trim().toLowerCase() === 'worn across back';
+        return isWornAcrossBack && /\b(?:crossbow|bow)\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`);
+    });
+    return getInventoryAndWornTargetSuggestions(inventoryWeapons, wornDrawItems);
+};
+
 // --- Classification-Filtered Targets ---
 
 export const getFoodTargetSuggestions = (

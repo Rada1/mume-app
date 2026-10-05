@@ -15,6 +15,7 @@ import {
 import {
     getContainerTargetSuggestions,
     getDrinkTargetSuggestions,
+    getDrawTargetSuggestions,
     getFluidContainerTargetSuggestions,
     getGearTargetSuggestions,
     getFillTargetSuggestions,
@@ -53,6 +54,7 @@ export type DeckTargetKind =
     | 'scrolls'
     | 'worn'
     | 'worn-sheaths'
+    | 'draw-targets'
     | 'worn-weapons'
     | 'lanterns'
     | 'inventory-recipient'
@@ -82,7 +84,7 @@ const getDefaultSecondArgumentKey = (kind?: string): string | null => (
 );
 
 const getInitialTarget = (item: DeckItem, target: string | null, roomOccupants: GmcpOccupant[], characterName: string, roomZone?: string | null, groupMembers: GroupMember[] = []): string | null => {
-    if (item.targetKind && (STAGED_TARGET_KINDS.has(item.targetKind) || item.targetKind === 'shop')) return null;
+    if (item.targetKind && (STAGED_TARGET_KINDS.has(item.targetKind) || item.targetKind === 'shop' || item.targetKind === 'draw-targets')) return null;
     return (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
         || getRememberedCommandTarget(item.cmd)
         || getAutoRoomTarget(item.cmd, roomOccupants, characterName, roomZone, groupMembers)
@@ -388,6 +390,7 @@ export const useDeckTargeting = ({
                 ...getGearTargetSuggestions(sheaths, 'worn')
             ];
         }
+        if (activeItem.targetKind === 'draw-targets') return getDrawTargetSuggestions(inventoryLines, wornLines);
         if (activeItem.targetKind === 'worn-weapons') {
             const weapons = wornLines.filter(line => hasObjectTrait(line, 'trait-weapon'));
             return getGearTargetSuggestions(weapons, 'worn');
@@ -412,6 +415,7 @@ export const useDeckTargeting = ({
         : activeItem?.targetKind === 'room-corpses' ? 'CORPSES'
         : activeItem?.targetKind === 'worn' ? 'WORN ITEMS'
         : activeItem?.targetKind === 'worn-sheaths' ? 'WORN SHEATHS'
+        : activeItem?.targetKind === 'draw-targets' ? 'DRAW TARGETS'
         : activeItem?.targetKind === 'worn-weapons' ? 'WORN WEAPONS'
         : activeItem?.targetKind === 'inventory-weapons' ? 'INVENTORY WEAPONS'
         : activeItem?.targetKind === 'worn-mixing-tools' ? 'MIXING TOOLS'

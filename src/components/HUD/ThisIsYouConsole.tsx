@@ -37,6 +37,7 @@ import {
 import './ThisIsYouConsole.css';
 import './ThisIsYouTerminal.css';
 import './ThisIsYouMobile.css';
+import './ThisIsYouMinimizedMobile.css';
 
 interface ThisIsYouConsoleProps {
     alwaysExpanded?: boolean;
@@ -303,10 +304,10 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
               </div>
               <div className="this-is-you-minimized-summary-group" aria-label="State">
                 <strong>STATE</strong>
-                <ThisIsYouStatePill category="Position" accentColor="blue" value={currentPosition} options={POSITION_OPTIONS} isMobile={Boolean(viewport?.isMobile)} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('pos', opt)} />
-                <ThisIsYouStatePill category="Mood" accentColor="red" value={currentMood} options={MOOD_OPTIONS} isMobile={Boolean(viewport?.isMobile)} confirmOptionValue="berserk" confirmMessage="Berserk prevents fleeing. Tap Berserk again within 4 seconds to confirm." disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('mood', opt)} />
-                <ThisIsYouStatePill category="Cast" accentColor="purple" value={currentSpellSpeed} options={SPELL_SPEED_OPTIONS} isMobile={Boolean(viewport?.isMobile)} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('speed', opt)} />
-                <ThisIsYouStatePill category="Alert" accentColor="gold" value={currentAlertness} options={ALERTNESS_OPTIONS} isMobile={Boolean(viewport?.isMobile)} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('alert', opt)} />
+                <ThisIsYouStatePill category="Position" accentColor="blue" value={currentPosition} options={POSITION_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('pos', opt)} />
+                <ThisIsYouStatePill category="Mood" accentColor="red" value={currentMood} options={MOOD_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} confirmOptionValue="berserk" confirmMessage="Berserk prevents fleeing. Tap Berserk again within 4 seconds to confirm." disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('mood', opt)} />
+                <ThisIsYouStatePill category="Cast" accentColor="purple" value={currentSpellSpeed} options={SPELL_SPEED_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('speed', opt)} />
+                <ThisIsYouStatePill category="Alert" accentColor="gold" value={currentAlertness} options={ALERTNESS_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('alert', opt)} />
               </div>
             </div>
 

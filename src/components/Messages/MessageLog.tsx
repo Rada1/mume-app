@@ -229,9 +229,13 @@ const MessageItem = React.memo(({
     const theme = useSettingsStore(s => s.theme);
     const { gameState, inlineCategories } = useMessageLogRender();
     const content = msg.html;
+    // TokenRenderer renders token text through React; only HTML-only lines need
+    // the DOM sanitizer fallback. Avoid parsing every tokenized line during bursts.
+    const hasTokens = (msg.tokens?.length ?? 0) > 0;
+    const sanitizedContent = useMemo(() => hasTokens ? '' : sanitizeMumeHtml(content), [content, hasTokens]);
     const accountRippleHtml = isImmersionMode && isImmersionTextAnimationsEnabled && !isPerformanceMode && gameState === 'account' && (!msg.tokens || msg.tokens.length === 0)
-        ? wrapHtmlWordsForRipple(sanitizeMumeHtml(content))
-        : sanitizeMumeHtml(content);
+        ? wrapHtmlWordsForRipple(sanitizedContent)
+        : sanitizedContent;
     const isLoginNamePrompt = /\bby what name do you wish to be known\?/i.test(msg.textRaw || msg.textOnly || '');
     const isStatAffectLine = /^\s*-\s+\S+/.test(msg.textOnly || msg.textRaw || '');
     const statusNotice = (msg.textOnly || msg.textRaw || '').trim().toLowerCase();
@@ -318,7 +322,7 @@ const MessageItem = React.memo(({
     }, [isImpactRumble]);
 
     React.useLayoutEffect(() => {
-        if (!isImmersionMode || !isImmersionTextAnimationsEnabled || isPerformanceMode || !msg.audioSheen || Date.now() - msg.timestamp > 1000 || !messageRootRef.current) return;
+        if (viewport.isMobile || !isImmersionMode || !isImmersionTextAnimationsEnabled || isPerformanceMode || !msg.audioSheen || Date.now() - msg.timestamp > 1000 || !messageRootRef.current) return;
 
         // Server messages and visual rows are not always the same thing: a single incoming
         // line can wrap several times. Reset the sheen delay for every rendered row so each
@@ -333,7 +337,7 @@ const MessageItem = React.memo(({
             wordsPerVisualLine.set(visualLine, wordIndex + 1);
             word.style.setProperty('--sheen-word-delay', `${wordIndex * 20}ms`);
         });
-    }, [isImmersionMode, isImmersionTextAnimationsEnabled, isPerformanceMode, msg.audioSheen, msg.id, msg.timestamp]);
+    }, [viewport.isMobile, isImmersionMode, isImmersionTextAnimationsEnabled, isPerformanceMode, msg.audioSheen, msg.id, msg.timestamp]);
 
     const triggerParley = useCallback((e: React.MouseEvent) => {
         if (!setParley || !triggerHaptic || !playClickSound) return;
@@ -457,7 +461,7 @@ const MessageItem = React.memo(({
                     <span className="message-content prompt-text">
                         {!viewport.isMobile && hasInlinePromptModes(msg.textOnly || msg.textRaw || '')
                             ? <PromptInlineControls text={msg.textOnly || msg.textRaw || ''} tokens={msg.tokens} />
-                            : <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} highlightPromptVitals />}
+                            : <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizedContent} highlightPromptVitals />}
                     </span>
                 </div>
             ) : entityCountPrompt ? (
@@ -510,23 +514,23 @@ const MessageItem = React.memo(({
                             <div className="message-content hit-sheen-container">
                                 <TokenRenderer
                                     tokens={msg.tokens}
-                                    fallbackHtml={sanitizeMumeHtml(content)}
+                                    fallbackHtml={sanitizedContent}
                                     splitFirstWord={true}
                                 />
                                 <ResourceGainBadge gain={msg.resourceGain} />
                                 {msg.isHitImpact && sheenActive && !isPerformanceMode && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizedContent} splitFirstWord={true} />
                                     </div>
                                 )}
                                 {msg.isDamageImpact && sheenActive && !isPerformanceMode && (
                                     <div className="damage-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizedContent} splitFirstWord={true} />
                                     </div>
                                 )}
                                 {msg.isRipMessage && sheenActive && !isPerformanceMode && (
                                     <div className="rip-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} splitFirstWord={true} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizedContent} splitFirstWord={true} />
                                     </div>
                                 )}
                             </div>
@@ -567,7 +571,7 @@ const MessageItem = React.memo(({
                                     <div className="hit-sheen-overlay" aria-hidden="true">
                                         <TokenRenderer
                                             tokens={msg.tokens}
-                                            fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
+                                            fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizedContent}
                                             splitFirstWord={msg.isRoomName ? false : true}
                                             disableRoomInline={msg.isRoomName}
                                             isRoomContentsLine={msg.isRoomContentsLine}
@@ -576,12 +580,12 @@ const MessageItem = React.memo(({
                                 )}
                                 {msg.isDamageImpact && sheenActive && !isPerformanceMode && (
                                     <div className="damage-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={msg.isRoomName ? false : true} disableRoomInline={msg.isRoomName} isRoomContentsLine={msg.isRoomContentsLine} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizedContent} splitFirstWord={msg.isRoomName ? false : true} disableRoomInline={msg.isRoomName} isRoomContentsLine={msg.isRoomContentsLine} />
                                     </div>
                                 )}
                                 {msg.isRipMessage && sheenActive && !isPerformanceMode && (
                                     <div className="rip-sheen-overlay" aria-hidden="true">
-                                    <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} splitFirstWord={msg.isRoomName ? false : true} disableRoomInline={msg.isRoomName} isRoomContentsLine={msg.isRoomContentsLine} />
+                                    <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizedContent} splitFirstWord={msg.isRoomName ? false : true} disableRoomInline={msg.isRoomName} isRoomContentsLine={msg.isRoomContentsLine} />
                                     </div>
                                 )}
                                 {msg.isRoomName && msg.tokens && msg.html?.includes('room-desc-line') && (

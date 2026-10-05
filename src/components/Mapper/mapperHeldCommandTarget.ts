@@ -4,6 +4,7 @@
  */
 
 import { getButtonCommand } from '../../utils/buttonUtils';
+import { applyTacticalCommandPrefix } from '../../stores/useTacticalCommandPrefixStore';
 import type { MapOccupantTarget } from './occupantTargets';
 
 // --- Logic Section ---
@@ -37,7 +38,7 @@ export const fireHeldCommandAtMapOccupant = (
         );
 
         if (resolved?.cmd) {
-            deps.executeCommand(resolved.cmd, false, false, false, false, { fromUi: true });
+            deps.executeCommand(applyTacticalCommandPrefix(resolved.cmd), false, false, false, false, { fromUi: true });
             deps.setHeldButton?.((prev: any) => prev ? { ...prev, lastTargetFireAt: Date.now() } : null);
             if (shouldTriggerHaptic) deps.triggerHaptic?.(60);
             deps.playClickSound?.();
@@ -50,7 +51,7 @@ export const fireHeldCommandAtMapOccupant = (
 
     finalCmd = finalCmd.includes('%n') ? finalCmd.replace(/%n/g, context) : `${finalCmd} ${context}`;
     finalCmd = [...(activeHeldButton.commandPrefixes || []), finalCmd].filter(Boolean).join(' ');
-    deps.executeCommand(finalCmd, false, false, false, false, { fromUi: true });
+    deps.executeCommand(applyTacticalCommandPrefix(finalCmd), false, false, false, false, { fromUi: true });
     deps.setHeldButton?.((prev: any) => prev ? { ...prev, lastTargetFireAt: Date.now() } : null);
     if (shouldTriggerHaptic) deps.triggerHaptic?.(60);
     deps.playClickSound?.();

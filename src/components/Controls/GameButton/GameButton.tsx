@@ -39,6 +39,8 @@ import { useSwipeLetterBlink } from './useSwipeLetterBlink';
 import { useCurrentRoomHasDoor } from '../../../hooks/useCurrentRoomHasDoor';
 import { isDoorPresenceSpellCommand } from '../../../utils/doorCommandUtils';
 import { getNonGroupmateRoomTargetSuggestions } from '../../../utils/groupTargetSuggestions';
+import { applyTacticalCommandPrefix, FOLLOWERS_COMMAND_PREFIX, useTacticalCommandPrefixStore } from '../../../stores/useTacticalCommandPrefixStore';
+import './TacticalCommandPrefix.css';
 
 // --- Logic Section ---
 const SHOW_ALLY_COMMAND_TARGET_GLOW = false;
@@ -210,6 +212,12 @@ export const GameButton: React.FC<GameButtonProps> = ({
         || className.includes('deck-category-button')
         || className.includes('line-btn')
         || className.includes('map-action-button');
+    const canUseCommandPrefix = button.setId.toLowerCase() === 'tactical'
+        || button.id.startsWith('tactical-')
+        || button.id.startsWith('map-action-')
+        || className.includes('map-action-button');
+    const pendingCommandPrefix = useTacticalCommandPrefixStore(state => state.prefix);
+    const isCommandPrefixPending = Boolean(pendingCommandPrefix && canUseCommandPrefix);
     const visualSwipeDirection = isTacticalMapButton ? null : activeDir || feedbackDirection;
     const [isCancelling, setIsCancelling] = React.useState(false);
     const [isPanelPinned, setIsPanelPinned] = React.useState(false);
@@ -242,6 +250,10 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const roomZone = useRoomStore(state => state.roomZone);
     const confirmOffensiveCityAction = useOffensiveCityActionConfirmation(roomZone);
     const runButtonCommand = useCallback<ExecuteCommand>((command, ...options) => {
+        if (button.id === 'tactical-ranger' && command.trim().toLowerCase() === FOLLOWERS_COMMAND_PREFIX) {
+            useTacticalCommandPrefixStore.getState().armFollowers();
+            return;
+        }
         if (!confirmOffensiveCityAction(command)) return;
         if (onCommandAction?.(command)) return;
         const commandParts = command.trim().split(/\s+/).filter(Boolean);
@@ -263,8 +275,9 @@ export const GameButton: React.FC<GameButtonProps> = ({
             return;
         }
         useInputStore.getState().setInput('');
-        executeCommand(command, ...options);
-    }, [button.id, confirmOffensiveCityAction, executeCommand, onCommandAction, setParley]);
+        const commandToExecute = canUseCommandPrefix ? applyTacticalCommandPrefix(command) : command;
+        executeCommand(commandToExecute, ...options);
+    }, [button.id, canUseCommandPrefix, confirmOffensiveCityAction, executeCommand, onCommandAction, setParley]);
     const automaticTargetRoomKey = getRoomIdentityKey({ roomNum, roomName, roomZone, roomDesc });
     const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
     const roomItems = useMemo(() => Object.values(roomItemsById), [roomItemsById]);
@@ -307,10 +320,20 @@ export const GameButton: React.FC<GameButtonProps> = ({
             seen.add(key);
             return true;
         });
-        return [
+        const orderedCommands = [
             ...uniqueCommands.filter(item => item.isLearned !== false),
             ...uniqueCommands.filter(item => item.isLearned === false)
         ];
+        return button.id === 'tactical-ranger'
+            ? [...orderedCommands, {
+                key: 'tactical-ranger-command-followers',
+                label: 'Command',
+                command: FOLLOWERS_COMMAND_PREFIX,
+                actionType: 'modifier' as const,
+                setId: 'rangerskilllist',
+                isLearned: true
+            }]
+            : orderedCommands;
     }, [abilities, availableButtons, button, classPaletteKey, classPaletteSetId, commandPalette, hasLearnedRescue, paletteButton, practice?.practiceData]);
     const assignedClassCommands = [
         button.command,
@@ -1134,7 +1157,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     return (
         <div
             ref={buttonRef}
-            className={`custom-btn ${isFloating ? 'floating' : ''} ${isEditMode ? 'edit-mode' : ''} ${isSelected ? 'selected' : ''} ${showTargetReadyGlow ? 'target-ready' : ''} ${isAutoTargetReady ? 'auto-target-ready' : ''} ${SHOW_ALLY_COMMAND_TARGET_GLOW && isCenterTargetAlly ? 'tactical-defense-ready' : ''} ${isCenterOffensive ? 'tactical-offense-ready' : ''} ${isTacticalClassUnlearned ? 'tactical-class-unlearned' : ''} ${button.trigger?.enabled && button.isVisible ? 'triggered' : ''} ${activeDir ? 'is-swiping' : ''} ${cardinalSwipeCommands.length ? 'has-cardinal-command-dashes' : ''} ${variant === 'diamond' ? 'is-diamond' : ''} ${className}`}
+            className={`custom-btn ${isFloating ? 'floating' : ''} ${isEditMode ? 'edit-mode' : ''} ${isSelected ? 'selected' : ''} ${showTargetReadyGlow ? 'target-ready' : ''} ${isAutoTargetReady ? 'auto-target-ready' : ''} ${SHOW_ALLY_COMMAND_TARGET_GLOW && isCenterTargetAlly ? 'tactical-defense-ready' : ''} ${isCenterOffensive ? 'tactical-offense-ready' : ''} ${isTacticalClassUnlearned ? 'tactical-class-unlearned' : ''} ${isCommandPrefixPending ? 'tactical-command-prefix-pending' : ''} ${isCommandPrefixPending && button.id === 'tactical-ranger' ? 'tactical-command-prefix-source' : ''} ${button.trigger?.enabled && button.isVisible ? 'triggered' : ''} ${activeDir ? 'is-swiping' : ''} ${cardinalSwipeCommands.length ? 'has-cardinal-command-dashes' : ''} ${variant === 'diamond' ? 'is-diamond' : ''} ${className}`}
             data-id={button.id}
             data-variant={variant}
             role="button"
@@ -1168,6 +1191,9 @@ export const GameButton: React.FC<GameButtonProps> = ({
             } as any}
             {...gestures}
         >
+            {isCommandPrefixPending && button.id === 'tactical-ranger' && (
+                <span className="tactical-command-prefix-indicator" role="status">ORDER FOLLOWERS</span>
+            )}
             {needsDiamondVitals && (
                 <div className="diamond-vitals">
                     {hpRatio !== undefined && <div className="vitals-bar hp" style={{ height: `${hpRatio * 100}%` }} />}
@@ -1187,6 +1213,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 isTargetMenuOpen={tacticalTargeting.isTargetColumnOpen}
                 isTargetMenuHeld={tacticalTargeting.isTargetMenuHeld}
                 command={targetCommand} currentCommandRef={gestures.currentCommandRef}
+                pendingCommandPrefix={pendingCommandPrefix}
                 activeTarget={/^assist(?:\s|$)/i.test(targetCommand.trim()) ? null : target} targetChipTarget={wheelTargetChipTarget} selectedTarget={displayedSelectedTarget}
                 selectedDirection={tacticalTargeting.pendingDirection}
                 directionPadMode={directionPadMode} suggestions={targetSuggestions}

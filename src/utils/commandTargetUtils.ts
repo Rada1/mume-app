@@ -74,6 +74,7 @@ export type CommandTargetMenuKind =
     | 'drink'
     | 'pour'
     | 'worn-weapons'
+    | 'draw-gear'
     | 'weather-options'
     | 'weather-scope'
     | 'room-corpses'
@@ -129,6 +130,7 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
     if (['wear', 'wield', 'hold', 'drop', 'sell', 'value', 'mend', 'read', 'quaff', 'recite', 'use', 'throw', 'load'].includes(verb)) return 'inventory-gear';
     if (/^locate\s+life(?:\s|$)/i.test(trimmed)) return 'who-or-blank';
     if (verb === 'locate') return 'blank-only';
+    if (verb === 'draw') return 'draw-gear';
     if (['open', 'close', 'lock', 'unlock', 'knock'].includes(verb)) return 'containers';
     if (['reveal', 'flush', 'hide'].includes(verb) && trimmed.split(/\s+/).length === 1) return 'pace-options';
     if (['ride', 'lead', 'saddle', 'unsaddle', 'abandon', 'dismount'].includes(verb)) return 'mounts';
@@ -205,7 +207,7 @@ export const getDefaultCommandTarget = (command: string): string | null => {
     }
     if (/^look\s+in(?:\s|$)/i.test(command.trim())) return null;
     if (verb === 'load') return 'bolt';
-    if (verb === 'look' || verb === 'assist' || verb === 'locate' || verb === 'draw') return BLANK_TARGET_VALUE;
+    if (verb === 'look' || verb === 'assist' || verb === 'locate') return BLANK_TARGET_VALUE;
     if (verb === 'rescue') return BLANK_TARGET_VALUE;
 
     const kind = getCommandTargetMenuKind(command);

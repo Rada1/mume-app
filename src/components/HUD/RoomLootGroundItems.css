@@ -4,6 +4,7 @@
 .room-loot-ground { border-top: 1px solid rgba(217, 178, 106, .24); }
 .room-loot-ground > header { display: flex; align-items: center; gap: 8px; padding: 9px 12px 6px; color: #e8d4ad; }
 .room-loot-ground > header span { color: #a99d87; font-size: 10px; }
+.room-loot-ground > header button { min-height: 34px; margin-left: auto; border: 1px solid rgba(217, 178, 106, .42); border-radius: 5px; padding: 4px 9px; color: #ecd9b1; background: rgba(217, 178, 106, .08); }
 .room-loot-ground-list { display: grid; }
 .room-loot-ground-row { min-height: 43px; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 6px; padding: 4px 10px 4px 12px; border-top: 1px solid rgba(217, 178, 106, .12); }
 .room-loot-ground-row .room-loot-ground-item { min-width: 0; display: flex; align-items: center; gap: 7px; color: #d0c5b2; }

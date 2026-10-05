@@ -23,7 +23,7 @@ export interface GearRecipient {
 }
 
 export type GearPanelSection = 'worn' | 'carried' | 'room';
-export type GearSelectionAction = 'get' | 'put' | 'wear' | 'remove' | 'drop';
+export type GearSelectionAction = 'get' | 'put' | 'wear' | 'remove' | 'drop' | 'give';
 
 export interface GearSelectionItem {
     id: string;
@@ -54,6 +54,7 @@ export interface GearSelectionCheckboxProps {
 export interface GearSelectionActionsProps {
     selection: GearSelection;
     containers: GearRow[];
+    recipients: GearRecipient[];
     onRun: (action: GearSelectionAction, destinationNoun?: string) => void;
     onClear: () => void;
 }

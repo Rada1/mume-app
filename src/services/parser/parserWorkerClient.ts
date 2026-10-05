@@ -19,7 +19,7 @@ interface PendingRequest {
     timeout: ReturnType<typeof setTimeout>;
 }
 
-const WORKER_TIMEOUT_MS = 350;
+const WORKER_TIMEOUT_MS = 1000;
 
 const tokenizeChunkSync = (
     chunkLines: WorkerLineEntry[],
@@ -65,7 +65,7 @@ class ParserWorkerClient {
         const request: ParserWorkerRequest = { id, chunkLines, context };
 
         return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => this.disableWorker(new Error('Parser worker timed out')), WORKER_TIMEOUT_MS);
+            const timeout = setTimeout(() => this.restartWorker(new Error('Parser worker timed out')), WORKER_TIMEOUT_MS);
             this.pending.set(id, { resolve, reject, timeout });
             try {
                 worker.postMessage(request);
@@ -121,6 +121,10 @@ class ParserWorkerClient {
 
     private disableWorker(reason: unknown) {
         this.isDisabled = true;
+        this.restartWorker(reason);
+    }
+
+    private restartWorker(reason: unknown) {
         if (this.worker) {
             this.worker.terminate();
             this.worker = null;

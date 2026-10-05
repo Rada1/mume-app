@@ -52,6 +52,7 @@ interface Props {
     isTargetMenuOpen: boolean;
     isTargetMenuHeld: boolean;
     command: string;
+    pendingCommandPrefix?: string | null;
     currentCommandRef: React.MutableRefObject<string>;
     activeTarget: string | null;
     targetChipTarget: string | null;
@@ -88,7 +89,7 @@ interface Props {
 
 export const TacticalCommandPanel: React.FC<Props> = ({
     button, activeDir, isCancelling, isPinned, swapSource, onSwapCells, onClose, buttonRect, rayParams, isMobile,
-    isTargetMenuOpen, isTargetMenuHeld, command, currentCommandRef, activeTarget, targetChipTarget,
+    isTargetMenuOpen, isTargetMenuHeld, command, pendingCommandPrefix, currentCommandRef, activeTarget, targetChipTarget,
     selectedTarget, selectedDirection, directionPadMode, suggestions, title,
     characterName, targeting, executeCommand, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, paletteCommands, getCommandLearnedState, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel, hidePreviewWheel,
     wheelReplacementMode, columns, onSelectColumnTarget, onToggleTargetLock, onTargetSelected, customContent, customContentInteractive
@@ -226,6 +227,7 @@ export const TacticalCommandPanel: React.FC<Props> = ({
         button={button}
         activeDir={activeDir}
         activeCommand={command}
+        pendingCommandPrefix={pendingCommandPrefix}
         isCancelling={isCancelling}
         isPinned={isPinned}
         swapSource={swapSource}

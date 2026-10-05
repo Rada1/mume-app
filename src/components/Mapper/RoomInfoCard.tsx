@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import './RoomInfoCard.css';
 import { MapperRoom } from './mapperTypes';
 import { TERRAIN_MAP, DIRS, generateId, getRoomPortableState, getRoomRidableState, normalizeTerrain, stripAnsi } from './mapperUtils';
@@ -18,11 +19,12 @@ interface RoomInfoCardProps {
     onWalkStart?: (roomId: string) => void;
     stopWalking?: () => void;
     walkTargetId?: string | null;
+    isMobile?: boolean;
 }
 
 export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
     roomId, rooms, setRooms, mode, onClose, cardRef, preloadedCoordsRef, isMmapperMap = false, setViewZ, isDarkMode,
-    onWalkStart, stopWalking, walkTargetId
+    onWalkStart, stopWalking, walkTargetId, isMobile = false
 }) => {
     let room = rooms[roomId];
     const terrainLabelFor = (terrain: string | number | null) => {
@@ -282,16 +284,23 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
     const hasNoteHerb = noteBadges.some(b => b.text.includes('Herb'));
     const staticContents = room.contents || '';
 
-    return (
+    const card = (
         <div
             ref={cardRef}
             className="mapper-room-info-panel"
             style={{
-                position: 'absolute', 
-                top: '80px', bottom: '48px', left: '48px', right: '48px',
-                zIndex: 100, 
-                backgroundColor: isDarkMode ? 'rgba(24, 24, 27, 0.4)' : 'rgba(245, 245, 247, 0.6)', 
-                padding: '8px 12px', 
+                position: isMobile ? 'fixed' : 'absolute',
+                top: isMobile ? 'calc(env(safe-area-inset-top, 0px) + 56px)' : '80px',
+                bottom: isMobile
+                    ? 'calc(var(--mobile-map-panel-height, 110px) + var(--mobile-bottom-reserved-space, 0px) + env(safe-area-inset-bottom, 0px) + 12px)'
+                    : '48px',
+                left: isMobile ? '12px' : '48px',
+                right: isMobile ? '12px' : '48px',
+                zIndex: isMobile ? 65002 : 100,
+                backgroundColor: isMobile
+                    ? (isDarkMode ? 'rgba(24, 24, 27, 0.96)' : 'rgba(245, 245, 247, 0.96)')
+                    : (isDarkMode ? 'rgba(24, 24, 27, 0.4)' : 'rgba(245, 245, 247, 0.6)'),
+                padding: isMobile ? '10px 12px' : '8px 12px',
                 borderRadius: '12px',
                 boxShadow: '0 4px 24px rgba(0,0,0,0.8)', 
                 border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
@@ -730,4 +739,10 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
             </div>
         </div>
     );
+
+    if (isMobile && typeof document !== 'undefined') {
+        const overlayRoot = document.querySelector('.app-container') ?? document.body;
+        return createPortal(card, overlayRoot);
+    }
+    return card;
 };

@@ -51,7 +51,10 @@ export const RoomLootGroundItems: React.FC<RoomLootGroundItemsProps> = ({
     if (items.length === 0) return null;
     return (
         <section className="room-loot-ground" aria-label="Likely items on the ground">
-            <header><strong>On the ground</strong><span>{items.length}</span></header>
+            <header>
+                <strong>On the ground</strong><span>{items.length}</span>
+                <button type="button" onClick={() => executeCommand('get all')}>Get all</button>
+            </header>
             <div className="room-loot-ground-list">
                 {items.map(item => (
                     <div className="room-loot-ground-row" key={item.id}>

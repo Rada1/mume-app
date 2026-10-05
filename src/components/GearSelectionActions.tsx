@@ -1,12 +1,14 @@
 /** @file GearSelectionActions.tsx — Contextual commands for a scoped item selection. */
 
 import React, { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import type { GearSelectionActionsProps } from '../types';
 import { getGearSelectionLabel } from '../utils/gearSelectionUtils';
 
 // --- Render Section ---
-export const GearSelectionActions: React.FC<GearSelectionActionsProps> = ({ selection, containers, onRun, onClear }) => {
+export const GearSelectionActions: React.FC<GearSelectionActionsProps> = ({ selection, containers, recipients, onRun, onClear }) => {
     const [showContainers, setShowContainers] = useState(false);
+    const [showRecipients, setShowRecipients] = useState(false);
     const canGet = Boolean(selection.parentNoun) || selection.section === 'room';
     const canCarry = selection.section === 'carried' && !selection.parentNoun;
     return <div className="gear-actions gear-selection-actions" aria-label="Selected item actions">
@@ -19,7 +21,16 @@ export const GearSelectionActions: React.FC<GearSelectionActionsProps> = ({ sele
             {canCarry && <>
                 <button type="button" onClick={() => onRun('wear')}>Wear</button>
                 <button type="button" onClick={() => onRun('drop')}>Drop</button>
-                {containers.length > 0 && <button type="button" onClick={() => setShowContainers(value => !value)}>
+                {recipients.length > 0 && <button type="button" onClick={() => {
+                    setShowContainers(false);
+                    setShowRecipients(value => !value);
+                }}>
+                    {showRecipients ? 'Cancel give' : 'Give…'}
+                </button>}
+                {containers.length > 0 && <button type="button" onClick={() => {
+                    setShowRecipients(false);
+                    setShowContainers(value => !value);
+                }}>
                     {showContainers ? 'Cancel put' : 'Put in…'}
                 </button>}
             </>}
@@ -31,6 +42,20 @@ export const GearSelectionActions: React.FC<GearSelectionActionsProps> = ({ sele
                 {container.name}
             </button>)}
         </div>}
+        {showRecipients && <>
+            <div className="gear-give-heading">
+                <button type="button" className="gear-give-back" onClick={() => setShowRecipients(false)} aria-label="Back to selected item actions">
+                    <ArrowLeft size={14} /> Back
+                </button>
+                <span>give selected items to…</span>
+            </div>
+            <div className="gear-recipient-list" aria-label="Choose recipient">
+                {recipients.map(recipient => <button key={recipient.id} type="button" onClick={() => onRun('give', recipient.noun)}>
+                    <span>{recipient.label}</span>
+                    <small>{recipient.kind}</small>
+                </button>)}
+            </div>
+        </>}
     </div>;
 };
 

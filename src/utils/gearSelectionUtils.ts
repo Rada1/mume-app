@@ -43,6 +43,10 @@ export const getGearSelectionCommands = (
         if (action === 'get' && selection.section === 'room' && !selection.parentNoun) return ['get all'];
         if (selection.section === 'carried' && !selection.parentNoun) {
             if (action === 'put' && destinationNoun) return [`put all ${destinationNoun}`];
+            if (action === 'give' && destinationNoun) {
+                const nouns = new Set(items.map(item => item.row.noun.replace(/^\d+\./, '').trim()).filter(Boolean));
+                return [...nouns].map(noun => `give all.${noun} ${destinationNoun}`);
+            }
             if (action === 'wear') return ['wear all'];
             if (action === 'drop') return ['drop all'];
         }
@@ -57,6 +61,7 @@ export const getGearSelectionCommands = (
             case 'wear': return `${getObjectTraits(item.row.line).includes('trait-weapon') ? 'wield' : 'wear'} ${noun}`;
             case 'remove': return `remove ${noun}`;
             case 'drop': return `drop ${noun}`;
+            case 'give': return destinationNoun ? `give ${noun} ${destinationNoun}` : '';
         }
     }).filter(Boolean);
 };

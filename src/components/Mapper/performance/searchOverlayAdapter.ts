@@ -16,6 +16,7 @@ export interface SearchOverlayInput {
   mapSearchQuery?: string;
   matchedRoomIds?: ReadonlySet<string>;
   closestRoomId?: string | null;
+  selectedRoomId?: string | null;
   hoveredSearchRoomId?: string | null;
   filterPathIds?: readonly string[];
   rooms: Readonly<Record<string, unknown>>;
@@ -79,6 +80,7 @@ export function buildSearchOverlay(input: SearchOverlayInput): FastMapSearchOver
     matches,
     path,
     target: active && input.closestRoomId ? toPoint(input, input.closestRoomId) : null,
+    selectedRoom: input.selectedRoomId ? toPoint(input, input.selectedRoomId) : null,
     hovered: active && input.hoveredSearchRoomId ? toPoint(input, input.hoveredSearchRoomId) : null,
     color: getColor(input.activeMapFilter),
   };

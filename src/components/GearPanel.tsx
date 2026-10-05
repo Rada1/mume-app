@@ -199,6 +199,11 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
         const commands = getGearSelectionCommands(selection, action, destinationNoun);
         if (!commands.length) return;
         gear.executeCommand(commands.join('; '), false, false, false, false, { fromUi: true });
+        if (action === 'give' && selection.section === 'carried' && !selection.parentNoun) {
+            // Batch replies arrive after all selectors have been sent, so refresh
+            // from the server to reconcile duplicate item rows authoritatively.
+            gear.executeCommand('inventory', true, true, false, true);
+        }
         gear.triggerHaptic?.(10);
         gearSelection.clear();
         setSelected(null);
@@ -248,7 +253,7 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
         {(activeView !== 'shop' || !isShopOpen) && <>
                 <div className="gear-panel-body">{renderSection('worn')}{renderSection('carried')}{renderSection('room')}</div>
                 {gearSelection.selection ? <GearSelectionActions key={gearSelection.selection.scopeKey} selection={gearSelection.selection}
-                    containers={putTargets} onRun={runSelectionAction} onClear={gearSelection.clear} />
+                    containers={putTargets} recipients={gear.recipients} onRun={runSelectionAction} onClear={gearSelection.clear} />
                     : selected && <div className="gear-actions" aria-label={`Actions for ${selected.row.name}`}>
             {showRecipients ? <>
                 <div className="gear-give-heading">

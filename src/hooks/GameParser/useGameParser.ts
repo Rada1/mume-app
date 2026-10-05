@@ -568,7 +568,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     });
 
     // 4. Main Processing Pipeline
-    const processLine = useCallback((line: string, tokensOrOptions?: any) => {
+    const processLine = useCallback((line: string, tokensOrOptions?: any, chunkEffects?: Set<string>) => {
         if (line === null || line === undefined) return;
 
         const tokens = Array.isArray(tokensOrOptions) ? tokensOrOptions : undefined;
@@ -1469,7 +1469,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             lower.startsWith('you dig up ') || lower.includes('you dig up ') ||
             lower.includes('you have finished mixing') ||
             lower.includes('you produced ')
-        )) {
+        ) && !chunkEffects?.has('reveal')) {
+            chunkEffects?.add('reveal');
             deps.playEffect?.('reveal');
         }
         if ((!isSnoop || deps.isSpectateMode) && (

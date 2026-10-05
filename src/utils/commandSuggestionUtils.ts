@@ -17,7 +17,7 @@ import {
 } from '../objects/roomTargetSuggestions';
 import {
     getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions, getFluidContainerTargetSuggestions,
-    getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions,
+    getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions, getDrawTargetSuggestions,
     getLanternTargetSuggestions
 } from '../objects/gearTargetSuggestions';
 
@@ -29,7 +29,7 @@ export {
 };
 export {
     getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions, getFluidContainerTargetSuggestions,
-    getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions,
+    getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions, getDrawTargetSuggestions,
     getLanternTargetSuggestions
 };
 

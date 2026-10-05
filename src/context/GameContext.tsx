@@ -422,8 +422,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const telnet = useTelnet({
         connectionUrl: settingsStore.connectionUrl,
-        processLine: (line, tokens) => {
-            return parserRef.current?.processLine(line, tokens) ?? null;
+        processLine: (line, tokens, chunkEffects) => {
+            return parserRef.current?.processLine(line, tokens, chunkEffects) ?? null;
         },
         // A single Telnet chunk can route lines to either session log (for example,
         // when snooped output is mixed with the player's own output).
