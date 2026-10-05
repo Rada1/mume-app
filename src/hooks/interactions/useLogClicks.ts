@@ -6,7 +6,6 @@ import { formatMumeTarget, formatNpcKeywordTarget, sanitizeGameTarget, isInsideR
 import { getEffectiveKeyword } from '../../utils/keywordUtils';
 import { getInlineCategoryAxes, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 import { useUIStore } from '../../stores/useUIStore';
-import { audioManager } from '../../services/audio/AudioManager';
 import { useAccountTargetStore } from '../../stores/useAccountTargetStore';
 
 const isLogBlankTapTarget = (target: EventTarget | null): boolean => {
@@ -100,10 +99,6 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         if (selection) {
             const cleanSelection = sanitizeGameTarget(selection) || selection;
             setTarget(cleanSelection);
-            const isRoomDesc = isInsideRoomDescription(e.target as HTMLElement);
-            if (!isRoomDesc) {
-                audioManager.playEffect('target', { skipJitter: true });
-            }
             triggerHaptic(30);
 
             try {
@@ -354,9 +349,6 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                     menuDisplay,
                     parentNoun,
                 });
-            }
-            if (isSoundEnabled && !isRoomDesc) {
-                audioManager.playEffect('target', { skipJitter: true });
             }
             const rect = targetEl.getBoundingClientRect();
             const sourceRect = { left: rect.left, top: rect.top, width: rect.width, height: rect.height };

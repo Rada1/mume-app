@@ -173,7 +173,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         safeSetId.startsWith('object') ||
         safeSetId.startsWith('npc')
     );
-    // Inline entities use a terminal command list; inspection output stays in the log.
+    // Inline entities use a terminal command list, with explicit inspection replies
+    // captured into the detail card while remaining visible in the log.
     // The compact chip strip remains available to specialised callers.
     const [isCompactInline, setIsCompactInline] = React.useState(false);
 
@@ -187,10 +188,32 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         setIsCompactInline(false);
     };
 
-    const requestInspection = (kind: 'look' | 'consider') => {
+    const requestInspection = (kind: 'look' | 'examine' | 'consider', commandOverride?: string) => {
         if (!targetContext) return;
-        setPopoverState(null);
-        executeCommand(`${kind === 'look' ? 'look' : 'con'} ${targetContext}`, false, false, false, false, { shouldFocus: false, fromUi: true });
+        const capturesExamine = kind === 'look' || kind === 'examine';
+        setIsChoosingCategory(false);
+        setPopoverState(current => current ? ({
+            ...current,
+            isChoosingCategory: false,
+            hasInspectionCard: true,
+            isCapturingExamine: capturesExamine,
+            capturedExamineLines: capturesExamine ? undefined : current.capturedExamineLines,
+            examineMode: kind === 'look' || kind === 'examine' ? kind : current.examineMode,
+            isCapturingConsider: !capturesExamine,
+            capturedConsiderLines: capturesExamine ? current.capturedConsiderLines : undefined
+        }) : null);
+        const command = commandOverride || `${kind === 'look' ? 'look' : kind === 'examine' ? 'examine' : 'con'} ${targetContext}`;
+        executeCommand(command, false, false, false, false, { shouldFocus: false, fromUi: true });
+    };
+
+    const requestInlineExamine = (commandTemplate: string) => {
+        const resolvedCommand = commandTemplate
+            .replace(/%n/g, targetContext || '')
+            .replace(/%p/g, sanitizeGameTarget(popoverState.parentNoun || ''))
+            .trim();
+        requestInspection('examine', /^examine$/i.test(resolvedCommand)
+            ? `${resolvedCommand} ${targetContext}`
+            : resolvedCommand);
     };
 
     const requestWhois = () => {
@@ -219,7 +242,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                         const isValid = isButtonValidForEntity(button, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);
                         if (!isValid || !resolvedTraitButtonIds.has(button.id)) return null;
                         seenCommands.add(button.command);
-                        return <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} compact showFavorite={false} glowDelay="0s" />;
+                        return <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} onRequestExamine={requestInlineExamine} compact showFavorite={false} glowDelay="0s" />;
                     })}
                     {favorites.map(command => {
                         const button = buttons.find(candidate => candidate.command === command);
@@ -227,7 +250,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                         const isValid = isButtonValidForEntity(button, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);
                         if (!isValid || !resolvedTraitButtonIds.has(button.id)) return null;
                         seenCommands.add(button.command);
-                        return <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} compact showFavorite={false} glowDelay="0s" />;
+                        return <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} onRequestExamine={requestInlineExamine} compact showFavorite={false} glowDelay="0s" />;
                     })}
                     <button
                         type="button"
@@ -289,7 +312,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                                     </button>
                                 ))}
                                 {sectionButtons.map(button => (
-                                    <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} compact terminal glowDelay="0s" />
+                                    <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestExamine={requestInlineExamine} compact terminal glowDelay="0s" />
                                 ))}
                             </div>
                         </div>
@@ -479,12 +502,14 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                             {!isCompactInline && (!isInlineMenu || popoverState.isCapturingWhois || popoverState.capturedWhoisLines !== undefined || popoverState.isCapturingExamine || popoverState.isCapturingConsider || popoverState.capturedExamineLines !== undefined || popoverState.capturedConsiderLines !== undefined) && (
                                 <CapturedDetailsCard
                                     examineLines={popoverState.capturedExamineLines}
+                                    examineMode={popoverState.examineMode}
                                     considerLines={popoverState.capturedConsiderLines}
                                     isCapturingExamine={popoverState.isCapturingExamine}
                                     isCapturingConsider={popoverState.isCapturingConsider}
                                     whoisLines={popoverState.capturedWhoisLines}
                                     isCapturingWhois={popoverState.isCapturingWhois}
                                     onRequestLook={() => requestInspection('look')}
+                                    onRequestExamine={() => requestInlineExamine('examine %n')}
                                     onRequestConsider={() => requestInspection('consider')}
                                 />
                             )}

@@ -624,28 +624,13 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         unveilMap
     });
 
-    // MMapper-style reconcile: each confirmed room arrival consumes one queued
-    // direction from the head. The line itself is graph-walked from the confirmed
-    // room at render time, so we only need to keep the queue length in sync with
-    // how many sent moves are still in flight — no coordinate matching required.
+    // Render exactly the commands still awaiting a server response. Keeping a
+    // second capped queue loses the oldest commands during a long movement burst.
     const clearPrediction = useCallback((_confirmedRoomId?: string | null) => {
-        const queue = clientPredictionsRef.current;
-        if (queue.length === 0) return;
-        // pendingMovesRef is the authoritative count of moves SENT but not yet
-        // confirmed: the room-info handler maintains it with full direction-matching
-        // and stale-purging, and it is already updated by the time we run here. We
-        // mirror its length instead of dequeuing per confirmed room id, because a
-        // single physical move is often confirmed through TWO channels (GMCP room-info
-        // AND XML/text dead-reckon) that report DIFFERENT room ids — an id-based dedup
-        // can't catch that and double-dequeues, draining the line at 2x speed.
-        // Confirmations consume the OLDEST moves first, so we keep the newest `target`
-        // entries (the tail) — which is also exactly what the render walk needs, since
-        // it re-anchors at the now-current room and follows the remaining dirs.
-        const target = pendingMovesRef.current.length;
-        if (queue.length <= target) return;
-        clientPredictionsRef.current = queue.slice(queue.length - target);
+        clientPredictionsRef.current = pendingMovesRef.current.map(({ dir }) => ({ dir }));
+        if (clientPredictionsRef.current.length === 0) preMoveRef.current = null;
         if (showDebugEchoesRef.current) {
-            addMessageRef.current?.('system', `[MapperPredict] sync to pending=${target} (remaining ${clientPredictionsRef.current.length})`);
+            addMessageRef.current?.('system', `[MapperPredict] sync to pending=${clientPredictionsRef.current.length}`);
         }
         triggerRender();
     }, [triggerRender]);
@@ -690,12 +675,8 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const handleMoveFailure = useCallback(() => {
         pendingMovesRef.current.shift();
-        // The failed move never happened — drop its queued direction from the head.
-        const queue = clientPredictionsRef.current;
-        clientPredictionsRef.current = queue.length > 0 ? queue.slice(1) : queue;
-        if (clientPredictionsRef.current.length === 0) preMoveRef.current = null;
-        triggerRender();
-    }, [triggerRender]);
+        clearPrediction();
+    }, [clearPrediction]);
 
     // Global Event Listeners
     useEffect(() => {
@@ -739,6 +720,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             if (!currentRoomId || !rooms || !preloaded) {
                 // No map context — can't resolve a target; enroll the move as-is.
                 pushPendingMove(dir);
+                clearPrediction();
                 return;
             }
 
@@ -772,7 +754,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 preMoveRef.current = { dir, targetId: finalTargetId, time: Date.now() };
             }
 
-            onPre({ detail: { dir } });
+            clearPrediction();
         };
         const onConfirm = (e: CustomEvent<{ source?: string }>) => {
             if (isScoutObservationRef.current && e.detail?.source !== 'xml') return;
@@ -785,15 +767,9 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             handleMoveConfirmed(e);
         };
         const onFail    = ()       => handleMoveFailure();
-        // Append a sent move's direction to the prespammed-path queue (capped). The
-        // line is rebuilt from the live map graph each frame, so we keep dirs only.
+        // External callers can request a redraw after changing the pending queue.
         const onPre     = (e: any) => {
-            const { dir } = e.detail;
-            if (showDebugEchoesRef.current) {
-                addMessageRef.current?.('system', `[MapperPredict] queued ${dir} (depth ${clientPredictionsRef.current.length + 1})`);
-            }
-            clientPredictionsRef.current = [...clientPredictionsRef.current, { dir }].slice(-8);
-            triggerRender();
+            if (e.detail?.dir) clearPrediction();
         };
 
         window.addEventListener('mume-gmcp-room-info', onInfo);
@@ -813,7 +789,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             window.removeEventListener('mume-mapper-move-failed', onFail);
             window.removeEventListener('mume-mapper-push-pre-move', onPre);
         };
-    }, [masterHandlers, pushPendingMove, handleMoveConfirmed, handleMoveFailure, triggerRender, activeView, isScoutObservationRef, serverIdIndexRef, preloadedCoordsRef]);
+    }, [masterHandlers, pushPendingMove, handleMoveConfirmed, handleMoveFailure, clearPrediction, activeView, isScoutObservationRef, serverIdIndexRef, preloadedCoordsRef]);
 
     useEffect(() => gmcpBus.on('Event.Moved', () => {
         // A physical move can happen during scouting at a one-way exit.

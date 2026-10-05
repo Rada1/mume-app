@@ -2,9 +2,45 @@
 
 // --- Logic Section ---
 import type { GroupMember, GmcpOccupant } from '../types';
-import { getRoomTargetSuggestions, type CommandTargetSuggestion } from './commandSuggestionUtils';
+import { getRoomTargetSuggestions, isTargetSuggestionMatch, type CommandTargetSuggestion } from './commandSuggestionUtils';
 
 const normalize = (value: string | number | undefined): string => String(value ?? '').trim().toLowerCase();
+
+export const isGroupMemberOccupant = (entity: string | GmcpOccupant, groupMembers: GroupMember[]): boolean => {
+    const groupIds = new Set(groupMembers.map(member => normalize(member.id)));
+    const groupNames = new Set(groupMembers.flatMap(member => [normalize(member.name), normalize(member.label)]).filter(Boolean));
+    const id = typeof entity === 'string' ? undefined : entity.id;
+    const values = typeof entity === 'string'
+        ? [entity]
+        : [entity.name, entity.short, entity.shortdesc, entity.keyword];
+    const names = values.map(value => normalize(value || '')).filter(Boolean);
+    return (id !== undefined && groupIds.has(normalize(id))) || names.some(name => groupNames.has(name));
+};
+
+export const getNonGroupmateRoomTargetSuggestions = (
+    roomCharacters: Array<string | GmcpOccupant>,
+    groupMembers: GroupMember[],
+    characterName: string
+): CommandTargetSuggestion[] => getRoomTargetSuggestions(
+    roomCharacters.filter(entity => !isGroupMemberOccupant(entity, groupMembers)),
+    [],
+    'characters',
+    characterName
+);
+
+export const isGroupMemberTarget = (
+    target: string,
+    roomCharacters: GmcpOccupant[],
+    groupMembers: GroupMember[],
+    characterName = ''
+): boolean => {
+    const normalizedTarget = normalize(target).replace(/^\d+\./, '').replace(/^[*-]+|[*-]+$/g, '');
+    const matchesGroupName = groupMembers.some(member => [member.name, member.label]
+        .some(name => normalize(name).replace(/\s+/g, '-') === normalizedTarget));
+    const groupedCharacters = roomCharacters.filter(entity => isGroupMemberOccupant(entity, groupMembers));
+    const roomGroupmateSuggestions = getRoomTargetSuggestions(groupedCharacters, [], 'characters', characterName);
+    return matchesGroupName || roomGroupmateSuggestions.some(suggestion => isTargetSuggestionMatch(suggestion, target));
+};
 
 const GROUP_DETAIL_LABELS: Record<string, string> = {
     'hp-string': 'Health',
@@ -56,15 +92,9 @@ export const getGroupSelectionSuggestions = (
         meta: 'group-member',
         details: getGroupDetails(member),
     }));
-    const groupIds = new Set(groupMembers.map(member => normalize(member.id)));
-    const groupNames = new Set(groupMembers.flatMap(member => [normalize(member.name), normalize(member.label)]).filter(Boolean));
-    const isGrouped = (entity: GmcpOccupant): boolean => {
-        const names = [entity.name, entity.short, entity.shortdesc, entity.keyword].map(normalize).filter(Boolean);
-        return (entity.id !== undefined && groupIds.has(normalize(entity.id))) || names.some(name => groupNames.has(name));
-    };
     const roomSuggestions = [
-        ...getRoomTargetSuggestions(roomCharacters.filter(entity => !isGrouped(entity)), [], 'characters', characterName),
-        ...getRoomTargetSuggestions([], roomItems.filter(entity => !isGrouped(entity)), 'objects'),
+        ...getNonGroupmateRoomTargetSuggestions(roomCharacters, groupMembers, characterName),
+        ...getRoomTargetSuggestions([], roomItems.filter(entity => !isGroupMemberOccupant(entity, groupMembers)), 'objects'),
     ];
 
     return [...memberSuggestions, ...roomSuggestions];

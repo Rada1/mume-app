@@ -56,6 +56,11 @@ export function isButtonValidForEntity(
     const location = axes.location;
     const isPosessed = location === 'carried' || location === 'worn';
 
+    // Butchering targets corpses on the ground in the current room only.
+    if (/^butcher(?:\s|$)/i.test(button.command.trim()) && location !== 'room') {
+        return false;
+    }
+
     // 1. Block 'Get' for items already in possession (unless getting a container item)
     if (button.command.startsWith('get ') && !button.command.includes('all') && isPosessed && resolvedCategoryId !== 'cat-container-item') {
         return false;

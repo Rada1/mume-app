@@ -9,8 +9,7 @@ import { ProtocolHandler } from '../utils/telnet/ProtocolHandler';
 import { TELNET_GMCP, TELNET_TTYPE, TTYPE_SEND, TTYPE_IS, IAC, SB, SE } from '../constants';
 import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
 import { PipelineOrchestrator } from '../services/parser/PipelineOrchestrator';
-import { parserWorkerClient } from '../services/parser/parserWorkerClient';
-import { TokenizedLine } from '../services/parser/parserWorkerTypes';
+import { processIncomingTextChunk } from './telnetTextQueue';
 import { getRoom as getActiveRoom } from '../stores/useRoomStore';
 import { getCombat as getActiveCombat } from '../stores/useCombatStore';
 import { getVitals as getActiveVitals } from '../stores/useVitalsStore';
@@ -383,52 +382,13 @@ export function useTelnet(config: TelnetConfig) {
                         };
                     };
 
-                    const processTokenizedLines = async (lines: TokenizedLine[]) => {
-                        let sliceStartedAt = performance.now();
-                        for (let i = 0; i < lines.length; i++) {
-                            const entry = lines[i];
-                            if (entry.isPrompt) {
-                                (entry.tokens as any).isPrompt = true;
-                            }
-                            if (entry.isRedrawPrompt) {
-                                (entry.tokens as any).isRedrawPrompt = true;
-                            }
-                            configRef.current.processLine(entry.line, entry.tokens);
-
-                            // A very large worker result must give the browser a chance
-                            // to paint the lines already queued in the log on mobile.
-                            if (i % 8 === 7 && document.visibilityState !== 'hidden' && performance.now() - sliceStartedAt > 8) {
-                                await new Promise<void>(resolve => window.setTimeout(resolve, 0));
-                                sliceStartedAt = performance.now();
-                            }
-                        }
-                    };
-
                     const isAccountMode = configRef.current.getGameState?.() === 'account';
-
-                    const runProcessing = async () => {
-                        if (isAccountMode) {
-                            for (const entry of chunk) {
-                                const line = typeof entry === 'string' ? entry : entry.line;
-                                configRef.current.processLine(line, null);
-                            }
-                            return;
-                        }
-
-                        const context = buildTokenizerContext();
-                        try {
-                            const tokenized = await parserWorkerClient.tokenize(chunk, context);
-                            await processTokenizedLines(tokenized);
-                        } catch (_) {
-                            PipelineOrchestrator.ingestChunk(
-                                chunk,
-                                () => context,
-                                (line, tokens) => configRef.current.processLine(line, tokens)
-                            );
-                        }
-                        // addMessage schedules one log commit for the next paint,
-                        // combining socket chunks that finish in the same frame.
-                    };
+                    const runProcessing = () => processIncomingTextChunk(
+                        chunk,
+                        buildTokenizerContext,
+                        (line, tokens) => configRef.current.processLine(line, tokens),
+                        isAccountMode
+                    );
 
                     tokenizationChainRef.current = tokenizationChainRef.current.then(runProcessing, runProcessing);
                 });

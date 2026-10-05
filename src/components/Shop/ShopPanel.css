@@ -256,14 +256,6 @@
     50%       { opacity: 0.5; }
 }
 
-.shop-action-divider {
-    width: 1px;
-    align-self: stretch;
-    background: rgba(255, 255, 255, 0.12);
-    flex-shrink: 0;
-    margin: 2px 0;
-}
-
 /* Close/Cancel button */
 .shop-close-btn {
     flex: 0 0 auto;

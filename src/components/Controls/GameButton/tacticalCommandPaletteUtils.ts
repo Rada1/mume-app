@@ -35,6 +35,7 @@ export const getClassCommandLearnedState = (
     const requestedAbility = canonicalAbility(getButtonAbilityName(command));
     const abilityName = PRACTICE_CLASS_SKILLS[classKey].find(name => canonicalAbility(name) === requestedAbility);
     if (!abilityName) return undefined;
+    if (canonicalAbility(abilityName) === 'escape') return true;
 
     const learnedNames = new Set((practiceData?.skills || [])
         .filter(skill => skill.proficiency > 0 && (skill.skillClass?.toLowerCase() === classKey || getPracticeClassKey(skill.name) === classKey))
@@ -63,9 +64,10 @@ export const getClassPalette = (
     const classAbilities = PRACTICE_CLASS_SKILLS[classKey]
         .filter(name => !PASSIVE_SKILLS.has(normalizeAbility(name)));
     const isLearned = (name: string): boolean => {
+        const normalized = normalizeAbility(name);
+        if (normalized === 'escape') return true;
         const aliases = abilityAliases(name);
         if (aliases.some(alias => learnedNames.has(alias) || (abilities[alias] || 0) > 0)) return true;
-        const normalized = normalizeAbility(name);
         const prerequisite = normalized === 'protect' ? 'rescue' : normalized === 'recover' ? 'missile' : '';
         return Boolean(prerequisite && (learnedNames.has(prerequisite) || (abilities[prerequisite] || 0) > 0));
     };

@@ -802,9 +802,8 @@ export const drawEntities = (
                 return dirShortNames[d] ?? d;
             };
             // Build a merged exits map for a room using the proven useSmartWalk logic:
-            // parse preloaded exits (long->short dir names, target m_-prefix) as the base,
-            // then overlay richer local exits. This guarantees the walk can resolve each
-            // hop even from freshly-entered rooms, so the line never collapses on a move.
+            // Prefer the preloaded map's canonical room links. A fresh live exit
+            // can contain a GMCP server id that has not been mapped to a room yet.
             const getMergedExits = (fromId: string): Record<string, any> | null => {
                 const rawId = getRawRoomId(fromId);
                 const rawExits = preloaded[rawId]?.[4];
@@ -820,7 +819,7 @@ export const drawEntities = (
                 }
                 const local = allRooms[fromId] || allRooms[`m_${rawId}`] || allRooms[rawId];
                 if (local?.exits && Object.keys(local.exits).length > 0) {
-                    return preloadedExits ? { ...preloadedExits, ...local.exits } : local.exits;
+                    return preloadedExits ? { ...local.exits, ...preloadedExits } : local.exits;
                 }
                 return preloadedExits;
             };
@@ -845,9 +844,11 @@ export const drawEntities = (
             let curId: string = activeId;
             for (let i = 0; i < predictionDirs.length; i++) {
                 const nextId = resolveNextRoomId(curId, predictionDirs[i].dir);
-                if (!nextId) break;
+                // MMapper's walk_path leaves the cursor in place for a missing
+                // exit, then continues with later queued commands.
+                if (!nextId) continue;
                 const coords = resolveCoords(nextId);
-                if (!coords) break;
+                if (!coords) continue;
                 curId = nextId;
 
                 if (Math.abs(coords.z - currentZ) >= 1.0) continue;
@@ -1240,7 +1241,7 @@ export const drawMarkers = (
         ctx.fill(); 
 
         if (marker.text) {
-            const fontSize = (marker.fontSize || 10) * 1.2 * sizeScale;
+            const fontSize = (marker.fontSize || 10) * 1.4 * sizeScale;
             ctx.font = `bold ${fontSize}px "Iosevka", monospace`;
             const labelY = my - dotSize - 4 * sizeScale;
 

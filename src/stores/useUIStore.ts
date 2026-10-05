@@ -178,10 +178,15 @@ export const useUIStore = create<UIState>((set, get) => ({
 
     isShopOpen: false,
     setIsShopOpen: (open) => {
-        set({ isShopOpen: open });
+        if (open) {
+            useGearPanelStore.getState().setIsOpen(true);
+            set({ isShopOpen: true });
+        } else {
+            set({ isShopOpen: false });
+        }
         const activeStore = useActiveDockedPanelStore.getState();
-        if (open) activeStore.setActivePanel(useGearPanelStore.getState().isOpen ? 'gear' : 'shop');
-        else if (activeStore.activePanel === 'shop') activeStore.setActivePanel(null);
+        if (open) activeStore.setActivePanel('gear');
+        else if (activeStore.activePanel === 'shop') activeStore.setActivePanel('gear');
     },
     shopItems: [],
     setShopItems: (items) => set({ shopItems: items }),

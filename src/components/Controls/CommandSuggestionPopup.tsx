@@ -12,6 +12,7 @@ import { SpellSuggestion } from '../../utils/spellSuggestionUtils';
 import { CommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 import { formatMagicKeyRemaining } from '../../utils/magicKeyUtils';
 import { getTargetItemTierClassName } from '../../utils/itemTier';
+import { stripShopProductQuantity } from '../../utils/shopVariantParser';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import './CommandSuggestionPopup.css';
 
@@ -98,6 +99,7 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                 ? targetSuggestions.map(entry => {
                     const isSelected = selectedTargetKey === entry.key;
                     const isMagicKey = entry.meta === 'magic-key';
+                    const isShopItem = entry.meta === 'shop-item';
                     const option = (
                         <button
                             type="button"
@@ -108,11 +110,12 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                             }}
                         >
                             <span className={`command-suggestion-name ${getTargetItemTierClassName(entry.label)}`.trim()} title={isMagicKey ? entry.label : undefined}>
-                                {isMagicKey ? entry.customLabel || entry.label : entry.value}
+                                {isMagicKey ? entry.customLabel || entry.label : isShopItem ? stripShopProductQuantity(entry.label) : entry.value}
                             </span>
                             <span className="command-suggestion-full">
                                 {isMagicKey
                                     ? `key ${entry.value} · ${formatMagicKeyRemaining(entry.expiresAt, now)}`
+                                    : isShopItem ? `#${entry.value}`
                                     : isSelected ? 'selected' : entry.meta}
                             </span>
                         </button>

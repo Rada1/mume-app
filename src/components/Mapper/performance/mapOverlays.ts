@@ -4,14 +4,58 @@
  */
 // --- Logic Section ---
 
-import { type FastMapData, type FastMapTextLabel, type FastRoomOverlay } from './model';
+import { DIR_COUNT, DOOR_FLAG, EXIT_FLAG, type FastMapData, type FastMapTextLabel, type FastRoomOverlay } from './model';
 import { INFOMARK_CLASS_COLORS, WATER, WHITE, type RGBA } from './vendor/palette';
 import { infomarkLabelStyle } from './infomarkStyle';
 import { buildExitConnectionGeometry } from './exitConnectionGeometry';
 import { ROOM_VISITED } from './roomExploration';
 const INFOMARK_LABEL_FONT_SIZE = 18;
-const DOOR_LABEL_FONT_SIZE = 18;
-const DOOR_LABEL_COLOR = 0xc0c0c0;
+const DOOR_LABEL_FONT_SIZE = 17;
+const DOOR_LABEL_COLOR = 0xffffff;
+const DOOR_LABEL_OFFSETS = [
+  [0.6, 0.85], [0.6, 0.35], [0.6, 0.55], [0.6, 0.7],
+  [0.6, 1.05], [0.6, 0.2],
+] as const;
+const OPPOSITE_DOOR_SLOT = [1, 0, 3, 2, 5, 4] as const;
+
+function hiddenNamedDoor(map: FastMapData, slot: number): string {
+  if (!(map.exitFlags[slot]! & EXIT_FLAG.DOOR) || !(map.doorFlags?.[slot]! & DOOR_FLAG.HIDDEN)) return '';
+  const name = map.doorNames?.get(slot)?.trim() ?? '';
+  if (!name) return '';
+  const flags = map.doorFlags?.[slot] ?? 0;
+  const suffix = `${flags & DOOR_FLAG.NEED_KEY ? 'L' : ''}${flags & DOOR_FLAG.NO_PICK ? '/NP' : ''}${flags & DOOR_FLAG.DELAYED ? 'd' : ''}`;
+  return suffix ? `${name} [${suffix}]` : name;
+}
+
+function doorLabelStyle(): Pick<FastMapTextLabel, 'fontSize' | 'color' | 'backgroundColor' | 'backgroundAlpha'> {
+  return { fontSize: DOOR_LABEL_FONT_SIZE, color: DOOR_LABEL_COLOR, backgroundColor: 0x000000, backgroundAlpha: 0.4 };
+}
+
+function appendDoorLabels(out: FastMapTextLabel[], map: FastMapData): void {
+  for (let room = 0; room < map.roomCount; room++) {
+    for (let direction = 0; direction < 6; direction++) {
+      const slot = room * DIR_COUNT + direction;
+      const name = hiddenNamedDoor(map, slot);
+      if (!name) continue;
+      const start = map.exitTargetStarts[slot]!;
+      const end = map.exitTargetStarts[slot + 1]!;
+      for (let edge = start; edge < end; edge++) {
+        const target = map.exitTargets[edge]!;
+        if (target >= map.roomCount) continue;
+        const reverseName = hiddenNamedDoor(map, target * DIR_COUNT + OPPOSITE_DOOR_SLOT[direction]!);
+        const near = Math.abs(map.x[room]! - map.x[target]!) <= 1
+          && Math.abs(map.y[room]! - map.y[target]!) <= 1;
+        const paired = Boolean(reverseName && near);
+        if (paired && map.z[room] === map.z[target] && room > target) continue;
+        const text = paired && reverseName !== name ? `${name}/${reverseName}` : name;
+        const [dx, dy] = DOOR_LABEL_OFFSETS[direction]!;
+        const x = paired ? (map.x[room]! + map.x[target]!) / 2 + 0.6 : map.x[room]! + dx;
+        const y = paired ? (map.y[room]! + map.y[target]!) / 2 + 0.7 : map.y[room]! + dy;
+        appendLabel(out, { x, y, z: map.z[room]!, text, kind: 'door', roomIndex: room, ...doorLabelStyle() });
+      }
+    }
+  }
+}
 
 export interface MapLineBatch {
   z: number;
@@ -57,35 +101,22 @@ export function buildMapTextLabels(map: FastMapData): FastMapTextLabel[] {
     }
   }
 
-  map.doorNames?.forEach((text, slot) => {
-    const room = Math.floor(slot / 7);
-    const direction = slot % 7;
-    if (room >= map.roomCount || !text) return;
-    const x = map.x[room]!;
-    const y = map.y[room]!;
-    const offsets = [
-      [0.5, 0.78], [0.5, 0.22], [0.78, 0.5], [0.22, 0.5], [0.5, 0.5], [0.5, 0.5], [0.5, 0.5],
-    ] as const;
-    const [dx, dy] = offsets[direction]!;
-    appendLabel(labels, {
-      x: x + dx, y: y + dy, z: map.z[room]!, text,
-      fontSize: DOOR_LABEL_FONT_SIZE, color: DOOR_LABEL_COLOR, roomIndex: room,
-    });
-  });
+  appendDoorLabels(labels, map);
   return labels;
 }
 
 export function buildLiveDoorLabels(room: FastRoomOverlay | null): FastMapTextLabel[] {
   if (!room?.doorNames) return [];
-  const offsets = [
-    [0.5, 0.78], [0.5, 0.22], [0.78, 0.5], [0.22, 0.5], [0.5, 0.5], [0.5, 0.5], [0.5, 0.5],
-  ] as const;
   const labels: FastMapTextLabel[] = [];
   room.doorNames.forEach((text, direction) => {
-    const [dx, dy] = offsets[direction] ?? offsets[6];
+    if (direction >= DOOR_LABEL_OFFSETS.length || !(room.exitFlags[direction]! & EXIT_FLAG.DOOR)
+      || !(room.doorFlags?.[direction]! & DOOR_FLAG.HIDDEN)) return;
+    const [dx, dy] = DOOR_LABEL_OFFSETS[direction]!;
+    const flags = room.doorFlags?.[direction] ?? 0;
+    const suffix = `${flags & DOOR_FLAG.NEED_KEY ? 'L' : ''}${flags & DOOR_FLAG.NO_PICK ? '/NP' : ''}${flags & DOOR_FLAG.DELAYED ? 'd' : ''}`;
     appendLabel(labels, {
-      x: room.x + dx, y: room.y + dy, z: room.z, text,
-      fontSize: DOOR_LABEL_FONT_SIZE, color: DOOR_LABEL_COLOR,
+      x: room.x + dx, y: room.y + dy, z: room.z, text: suffix ? `${text} [${suffix}]` : text, kind: 'door',
+      ...doorLabelStyle(),
     });
   });
   return labels;

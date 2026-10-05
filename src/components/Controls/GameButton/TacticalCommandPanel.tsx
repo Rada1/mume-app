@@ -27,11 +27,6 @@ const getSelfBuffGlowSpell = (command: string): string | null => {
     return normalized && SELF_BUFF_GLOW_SPELLS.has(normalized) ? normalized : null;
 };
 
-const usesFullWidthTargetMenu = (command: string): boolean => {
-    const normalized = command.trim().replace(/^(?:cast|c|commune)\s+(['"])(.*?)\1.*$/i, '$2').toLowerCase();
-    return /^(?:scry|teleport|portal|remove|wear|group)(?:\s|$)/.test(normalized) || /^watch\s+room(?:\s|$)/.test(normalized);
-};
-
 export interface WheelReplacementMode {
     title: string;
     suggestions: CommandTargetSuggestion[];
@@ -198,7 +193,6 @@ export const TacticalCommandPanel: React.FC<Props> = ({
     const targetMenu = <TacticalTargetBar
         isOpen={isTargetMenuOpen}
         embedded
-        fullWidthTargetList={usesFullWidthTargetMenu(currentCommandRef.current || command || button.command)}
         showWornLocation={/^remove\b/i.test(currentCommandRef.current || command || button.command)}
         customContentInteractive={customContentInteractive && !wheelReplacementMode}
         currentTarget={activeTarget}

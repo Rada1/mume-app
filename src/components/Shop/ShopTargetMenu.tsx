@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ExecuteCommand, ShopItem } from '../../types';
 import { useUIStore } from '../../stores/useUIStore';
 import { ShopItemGroup } from './ShopItemGroup';
+import { ShopBrowseNavigation } from './ShopBrowseNavigation';
 import { SHOP_BROWSE_CATEGORIES } from './shopBrowseCategories';
 import './ShopPanel.css';
 import './ShopPanelTerminal.css';
@@ -82,12 +83,6 @@ export const ShopTargetMenu: React.FC<Props> = ({ executeCommand, onSelectTarget
         if (category.command) runBrowseCommand(category.command, category.id);
     }, [runBrowseCommand, setShopItems]);
 
-    const handleCategoryPointerDown = useCallback((event: React.PointerEvent<HTMLButtonElement>, action: () => void) => {
-        event.stopPropagation();
-        event.preventDefault();
-        action();
-    }, []);
-
     // --- UI Section ---
     return <section className="shop-panel shop-target-menu" aria-label="Shop items to buy">
         <header className="shop-target-menu-header">
@@ -106,32 +101,12 @@ export const ShopTargetMenu: React.FC<Props> = ({ executeCommand, onSelectTarget
                 onPointerDown={event => event.stopPropagation()}
             />
         </div>
-        <nav className="shop-target-categories" aria-label="Shop categories">
-            {SHOP_BROWSE_CATEGORIES.map(category => <button
-                key={category.id}
-                type="button"
-                className={activeCategory === category.id ? 'active' : ''}
-                aria-pressed={activeCategory === category.id}
-                onPointerDown={event => handleCategoryPointerDown(event, () => handleCategorySelect(category.id))}
-                onClick={event => {
-                    event.stopPropagation();
-                    if (event.detail === 0) handleCategorySelect(category.id);
-                }}
-            >{category.label}</button>)}
-        </nav>
-        {activeCategoryDefinition?.filters && <nav className="shop-target-filters" aria-label={`${activeCategoryDefinition.label} filters`}>
-            {activeCategoryDefinition.filters.map(filter => <button
-                key={filter.id}
-                type="button"
-                className={activeFilter === filter.id ? 'active' : ''}
-                aria-pressed={activeFilter === filter.id}
-                onPointerDown={event => handleCategoryPointerDown(event, () => runBrowseCommand(filter.command, activeCategoryDefinition.id, filter.id))}
-                onClick={event => {
-                    event.stopPropagation();
-                    if (event.detail === 0) runBrowseCommand(filter.command, activeCategoryDefinition.id, filter.id);
-                }}
-            >{filter.label}</button>)}
-        </nav>}
+        <ShopBrowseNavigation activeCategory={activeCategory} activeFilter={activeFilter}
+            onCategorySelect={handleCategorySelect}
+            onFilterSelect={filterId => {
+                const filter = activeCategoryDefinition?.filters?.find(entry => entry.id === filterId);
+                if (filter && activeCategoryDefinition) runBrowseCommand(filter.command, activeCategoryDefinition.id, filter.id);
+            }} />
         <div className="shop-panel-content">
             {filteredItems.length === 0
                 ? <div className="shop-panel-empty">{shopItems.length === 0

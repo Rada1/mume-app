@@ -6,7 +6,7 @@
  */
 
 // --- Logic Section ---
-import React, { FC, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useGame, useUI } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
@@ -60,6 +60,8 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
     const toggleMinimized = useCharacterPanelStore(s => s.toggleMinimized);
     const panelIsMinimized = alwaysExpanded ? false : isMinimized;
     const [mobileSheetPortalHost, setMobileSheetPortalHost] = useState<HTMLElement | null>(null);
+    const consoleRef = useRef<HTMLElement | null>(null);
+    const mobileSheetPlaceholderHeightRef = useRef(72);
     const {
         characterInfo,
         characterName,
@@ -87,6 +89,19 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
     useLayoutEffect(() => {
         setMobileSheetPortalHost(document.body);
     }, []);
+
+    useLayoutEffect(() => {
+        if (!viewport?.isMobile || alwaysExpanded) return;
+        const updatePlaceholderHeight = () => {
+            if (panelIsMinimized && consoleRef.current) {
+                mobileSheetPlaceholderHeightRef.current = Math.ceil(consoleRef.current.getBoundingClientRect().height);
+            }
+        };
+        updatePlaceholderHeight();
+        const observer = new ResizeObserver(updatePlaceholderHeight);
+        if (consoleRef.current) observer.observe(consoleRef.current);
+        return () => observer.disconnect();
+    }, [alwaysExpanded, panelIsMinimized, viewport?.isMobile]);
 
     const vitals = useActiveVitals();
     const { displayEqLines } = useUI();
@@ -220,6 +235,7 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
     // --- Render Section ---
     const consolePanel = (
         <section
+            ref={consoleRef}
             className={`this-is-you-console${panelIsMinimized ? ' is-minimized' : ''}${viewport?.isMobile ? ' is-mobile' : ''}${isMobileSheet ? ' is-mobile-sheet' : ''}${alwaysExpanded ? ' is-always-expanded' : ''}`}
             aria-label="Character Status Console"
             onTouchStart={minimizeSwipe.onTouchStart}
@@ -398,13 +414,20 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
     );
 
     return isMobileSheet && mobileSheetPortalHost
-        ? createPortal(
-            <>
-                <div className="this-is-you-mobile-sheet-backdrop" aria-hidden="true" />
-                {consolePanel}
-            </>,
-            mobileSheetPortalHost
-        )
+        ? <>
+            <div
+                className="this-is-you-mobile-sheet-placeholder"
+                aria-hidden="true"
+                style={{ height: `${mobileSheetPlaceholderHeightRef.current}px` }}
+            />
+            {createPortal(
+                <>
+                    <div className="this-is-you-mobile-sheet-backdrop" aria-hidden="true" />
+                    {consolePanel}
+                </>,
+                mobileSheetPortalHost
+            )}
+        </>
         : consolePanel;
 };
 

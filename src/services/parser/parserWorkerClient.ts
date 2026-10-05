@@ -16,7 +16,10 @@ import { perfMonitor } from '../../utils/perfMonitor';
 interface PendingRequest {
     resolve: (lines: TokenizedLine[]) => void;
     reject: (error: Error) => void;
+    timeout: ReturnType<typeof setTimeout>;
 }
+
+const WORKER_TIMEOUT_MS = 350;
 
 const tokenizeChunkSync = (
     chunkLines: WorkerLineEntry[],
@@ -62,10 +65,12 @@ class ParserWorkerClient {
         const request: ParserWorkerRequest = { id, chunkLines, context };
 
         return new Promise((resolve, reject) => {
-            this.pending.set(id, { resolve, reject });
+            const timeout = setTimeout(() => this.disableWorker(new Error('Parser worker timed out')), WORKER_TIMEOUT_MS);
+            this.pending.set(id, { resolve, reject, timeout });
             try {
                 worker.postMessage(request);
             } catch (error) {
+                clearTimeout(timeout);
                 this.pending.delete(id);
                 this.disableWorker(error);
                 resolve(this.tokenizeOnMainThread(chunkLines, context));
@@ -94,6 +99,7 @@ class ParserWorkerClient {
                 const pending = this.pending.get(event.data.id);
                 if (!pending) return;
                 this.pending.delete(event.data.id);
+                clearTimeout(pending.timeout);
 
                 if ('error' in event.data) {
                     pending.reject(new Error(event.data.error));
@@ -120,6 +126,7 @@ class ParserWorkerClient {
             this.worker = null;
         }
         this.pending.forEach(pending => {
+            clearTimeout(pending.timeout);
             pending.reject(new Error(reason instanceof Error ? reason.message : String(reason)));
         });
         this.pending.clear();

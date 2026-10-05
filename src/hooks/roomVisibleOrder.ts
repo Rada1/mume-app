@@ -50,12 +50,18 @@ export const applyVisibleRoomOrder = (
     chars: Record<number, GmcpOccupant>,
     subjects: VisibleRoomSubject[]
 ): Record<number, GmcpOccupant> => {
-    if (subjects.length === 0 && Object.values(chars).every(occupant => occupant._visibleRoomOrder === undefined)) {
+    if (subjects.length === 0 && Object.values(chars).every(occupant =>
+        occupant._visibleRoomOrder === undefined && occupant._visibleRoomLabel === undefined
+    )) {
         return chars;
     }
     const entries = Object.entries(chars);
     const next = Object.fromEntries(entries.map(([key, occupant]) => {
-        const { _visibleRoomOrder: _previousOrder, ...rest } = occupant;
+        const {
+            _visibleRoomOrder: _previousOrder,
+            _visibleRoomLabel: _previousLabel,
+            ...rest
+        } = occupant;
         return [key, rest];
     })) as Record<number, GmcpOccupant>;
     const used = new Set<string>();
@@ -74,7 +80,11 @@ export const applyVisibleRoomOrder = (
         }
         if (!match) return;
         used.add(match[0]);
-        next[Number(match[0])] = { ...next[Number(match[0])], _visibleRoomOrder: order };
+        next[Number(match[0])] = {
+            ...next[Number(match[0])],
+            _visibleRoomOrder: order,
+            _visibleRoomLabel: subject.label || undefined
+        };
     });
 
     return next;

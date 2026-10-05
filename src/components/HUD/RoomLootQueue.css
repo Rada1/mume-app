@@ -301,3 +301,28 @@
     border-radius: 8px;
     pointer-events: auto;
 }
+
+.room-context-trigger,
+.room-shop-trigger,
+.room-loot-trigger {
+    transition: transform 110ms ease, filter 110ms ease, background-color 110ms ease, box-shadow 110ms ease;
+}
+
+.room-context-trigger:active:not(:disabled),
+.room-shop-trigger:active:not(:disabled),
+.room-loot-trigger:active:not(:disabled) {
+    transform: translateY(1px) scale(0.97);
+    filter: brightness(1.22);
+}
+
+.room-context-trigger.is-seek:active:not(:disabled) {
+    background: rgba(70, 145, 95, 0.32);
+    box-shadow: 0 0 12px rgba(68, 255, 112, 0.24), inset 0 0 0 1px rgba(185, 228, 195, 0.2);
+}
+
+.room-loot-trigger:active:not(:disabled),
+.room-loot-root .room-loot-trigger[aria-expanded="true"] {
+    border-color: rgba(237, 184, 79, 0.95);
+    background: rgba(104, 73, 19, 0.46);
+    box-shadow: 0 0 12px rgba(237, 184, 79, 0.24), inset 0 0 0 1px rgba(245, 217, 158, 0.18);
+}

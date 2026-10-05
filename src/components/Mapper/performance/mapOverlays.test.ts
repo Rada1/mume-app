@@ -4,7 +4,7 @@
 // --- Logic Section ---
 
 import { describe, expect, it } from 'vitest';
-import type { FastMapData } from './model';
+import { DIR_COUNT, DOOR_FLAG, EXIT_FLAG, type FastMapData } from './model';
 import { buildMapLineBatches, buildMapTextLabels } from './mapOverlays';
 
 function overlayMap(): FastMapData {
@@ -41,10 +41,35 @@ function overlayMap(): FastMapData {
 
 describe('Performance Mode map overlays', () => {
   it('keeps user labels, infomark text, and named doors', () => {
-    const labels = buildMapTextLabels(overlayMap());
+    const map = overlayMap();
+    map.exitFlags[0] = EXIT_FLAG.EXIT | EXIT_FLAG.DOOR;
+    map.doorFlags = new Uint16Array([DOOR_FLAG.HIDDEN, 0, 0, 0, 0, 0, 0]);
+    map.exitTargetStarts = new Uint32Array([0, 1, 1, 1, 1, 1, 1, 1]);
+    map.exitTargets = new Uint32Array([0]);
+    const labels = buildMapTextLabels(map);
     expect(labels.map(label => label.text)).toEqual(['Custom map label', 'river marker', 'north gate']);
     expect(labels[1]).toMatchObject({ x: 3, y: 2, z: 0 });
-    expect(labels[2]).toMatchObject({ x: 0.5, y: 0.78, z: 0 });
+    expect(labels[2]).toMatchObject({ x: 0.6, y: 0.85, z: 0, backgroundColor: 0x000000, backgroundAlpha: 0.4 });
+  });
+
+  it('combines nearby hidden names once and excludes ordinary named doors', () => {
+    const map = overlayMap();
+    map.roomCount = 2;
+    map.roomIds = ['1', '2'];
+    map.x = new Int32Array([0, 0]);
+    map.y = new Int32Array([0, 1]);
+    map.z = new Int32Array([0, 0]);
+    map.exitFlags = new Uint16Array(DIR_COUNT * 2);
+    map.doorFlags = new Uint16Array(DIR_COUNT * 2);
+    map.exitFlags[0] = map.exitFlags[8] = EXIT_FLAG.EXIT | EXIT_FLAG.DOOR;
+    map.doorFlags[0] = map.doorFlags[8] = DOOR_FLAG.HIDDEN;
+    map.exitTargetStarts = Uint32Array.from({ length: DIR_COUNT * 2 + 1 }, (_, slot) => slot === 0 ? 0 : slot <= 8 ? 1 : 2);
+    map.exitTargets = new Uint32Array([1, 0]);
+    map.doorNames = new Map([[0, 'gate'], [8, 'arch'], [2, 'visible door']]);
+
+    const doors = buildMapTextLabels(map).filter(label => label.roomIndex !== undefined);
+    expect(doors.map(label => label.text)).toEqual(['gate/arch']);
+    expect(doors[0]).toMatchObject({ x: 0.6, y: 1.2, z: 0 });
   });
 
   it('batches arrow connection marks into one floor draw range', () => {

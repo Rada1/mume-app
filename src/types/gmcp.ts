@@ -145,6 +145,8 @@ export interface GmcpOccupant {
     _roomOrder?: number;
     /** Order observed in the latest visible room description. */
     _visibleRoomOrder?: number;
+    /** Display name observed in the latest visible room description. */
+    _visibleRoomLabel?: string;
 }
 
 export interface VisibleRoomSubject {

@@ -120,7 +120,11 @@ export class Tokenizer {
 
             if (match.index > lastIndex) {
                 const content = textToScan.substring(lastIndex, match.index);
+                const tokenStart = tokens.length;
                 this.handleText(content, tokens, this.currentStyle, activeEntity, context, tagStack.includes('magic'));
+                if (tagStack.some(tag => tag === 'exit' || tag === 'exits')) {
+                    this.markExitXmlText(tokens, tokenStart);
+                }
             }
             lastIndex = scanner.lastIndex;
 
@@ -176,14 +180,22 @@ export class Tokenizer {
                     }
                 } else {
                     if (!this.isPresentationOnlyTag(fullMatch)) {
+                        const tokenStart = tokens.length;
                         this.handleText(fullMatch, tokens, this.currentStyle, activeEntity, context, tagStack.includes('magic'));
+                        if (tagStack.some(tag => tag === 'exit' || tag === 'exits')) {
+                            this.markExitXmlText(tokens, tokenStart);
+                        }
                     }
                 }
             }
         }
 
         if (lastIndex < textToScan.length) {
+            const tokenStart = tokens.length;
             this.handleText(textToScan.substring(lastIndex), tokens, this.currentStyle, activeEntity, context, tagStack.includes('magic'));
+            if (tagStack.some(tag => tag === 'exit' || tag === 'exits')) {
+                this.markExitXmlText(tokens, tokenStart);
+            }
         }
         
         this.flushPendingEquipment(tokens, true);
@@ -539,6 +551,13 @@ export class Tokenizer {
         } else {
             tokens.push({ type: 'text', content, classes: classes.length > 0 ? classes : undefined } as TextToken);
         }
+    }
+
+    private markExitXmlText(tokens: Token[], startIndex: number) {
+        tokens.slice(startIndex).forEach(token => {
+            if (token.type !== 'text' && token.type !== 'ansi') return;
+            token.classes = [...new Set([...(token.classes || []), 'exit-xml-text'])];
+        });
     }
 
     private markMagicTextTokens(tokens: Token[]): Token[] {

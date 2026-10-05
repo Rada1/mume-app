@@ -67,7 +67,9 @@ export function resolveFastMapPredictionPoints(
     const slot = room * 7 + direction;
     const start = map.exitTargetStarts[slot]!;
     const end = map.exitTargetStarts[slot + 1]!;
-    if (end <= start) break;
+    // A failed command contributes no segment, but later queued commands may
+    // still leave this room. This matches MMapper's walk_path behavior.
+    if (end <= start) continue;
 
     let target: number | undefined;
     if (step === 0 && preferredFirstTarget !== undefined) {

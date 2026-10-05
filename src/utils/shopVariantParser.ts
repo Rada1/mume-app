@@ -33,3 +33,10 @@ export const getShopProductCount = (name: string): number | null => {
     const count = /^\d+$/.test(first) ? Number(first) : quantityWords[first];
     return count > 1 ? count : null;
 };
+
+export const stripShopProductQuantity = (name: string): string => {
+    const trimmed = name.trim();
+    const first = trimmed.split(/\s+/, 1)[0]?.toLowerCase();
+    if (!first || (!/^\d+$/.test(first) && !Object.prototype.hasOwnProperty.call(quantityWords, first))) return trimmed;
+    return trimmed.slice(first.length).trim();
+};

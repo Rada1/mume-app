@@ -1,0 +1,53 @@
+/** @file ShopBrowseNavigation.css — Shared shop category and filter styling. */
+
+.shop-target-categories,
+.shop-target-filters {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    border-bottom: 1px solid var(--shop-rule, rgba(192, 158, 94, 0.2));
+    scrollbar-width: none;
+    touch-action: pan-x;
+}
+
+.tactical-target-bar.is-held .shop-target-categories,
+.tactical-target-bar.is-held .shop-target-filters,
+.tactical-target-bar.is-held .shop-target-categories button,
+.tactical-target-bar.is-held .shop-target-filters button {
+    pointer-events: auto;
+}
+
+.shop-target-categories::-webkit-scrollbar,
+.shop-target-filters::-webkit-scrollbar { display: none; }
+
+.shop-target-categories button,
+.shop-target-filters button {
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 6px 10px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--shop-muted, #a99a82);
+    font: 500 0.72rem/1.2 var(--font-mono, monospace);
+    white-space: nowrap;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.shop-target-filters { background: rgba(0, 0, 0, 0.12); }
+.shop-target-filters button { min-height: 32px; font-size: 0.68rem; }
+
+.shop-target-categories button.active,
+.shop-target-filters button.active {
+    border-bottom-color: var(--shop-gold, #dfbd6b);
+    color: var(--shop-gold, #dfbd6b);
+}
+
+.shop-target-categories button:focus-visible,
+.shop-target-filters button:focus-visible {
+    outline: 1px solid var(--shop-gold, #dfbd6b);
+    outline-offset: -2px;
+}

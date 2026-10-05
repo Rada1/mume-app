@@ -50,7 +50,7 @@ import {
 import { hasObjectTrait } from '../../../objects/objectTargetModel';
 import type { DrawerLine } from '../../../types';
 import type { DeckTargetKind } from '../../HUD/useDeckTargeting';
-import { getGroupSelectionSuggestions } from '../../../utils/groupTargetSuggestions';
+import { getGroupSelectionSuggestions, getNonGroupmateRoomTargetSuggestions } from '../../../utils/groupTargetSuggestions';
 
 const TARGET_MENU_TITLES: Record<CommandTargetMenuKind, string> = {
     containers: 'CONTAINERS',
@@ -120,8 +120,9 @@ export const useGameButtonTargetSuggestions = (
     const whoList = useRoomStore(state => state.whoList);
     const shopItems = useUIStore(state => state.shopItems);
     const kind = getCommandTargetMenuKind(command);
+    const isButcherCommand = /^butcher(?:\s|$)/i.test(command.trim());
     const isEatCommand = /^eat\b/i.test(command.trim());
-    const overrideKind: CommandTargetMenuKind | null = isEatCommand ? 'food' : targetKindOverride
+    const overrideKind: CommandTargetMenuKind | null = isButcherCommand ? 'room-corpses' : isEatCommand ? 'food' : targetKindOverride
         ? targetKindOverride === 'mounts' ? 'mounts'
         : targetKindOverride === 'who' ? 'who'
         : targetKindOverride === 'social' ? 'social'
@@ -242,7 +243,9 @@ export const useGameButtonTargetSuggestions = (
             { key: 'door-exit', label: 'Exit', value: 'exit', meta: 'exit' }
         ];
         if (resolvedKind === 'room-spell' || resolvedKind === 'room-spell-with-extras' || resolvedKind === 'bash' || resolvedKind === 'room') {
-            const roomTargets = getRoomTargetSuggestions(roomOccupants, roomObjects, 'characters', characterName);
+            const roomTargets = isOffensiveTargetCommand(command)
+                ? getNonGroupmateRoomTargetSuggestions(roomOccupants, groupMembers, characterName)
+                : getRoomTargetSuggestions(roomOccupants, roomObjects, 'characters', characterName);
             const eligibleRoomTargets = isOffensiveTargetCommand(command)
                 ? roomTargets.filter(suggestion => suggestion.meta?.toLowerCase() !== 'ally')
                 : roomTargets;

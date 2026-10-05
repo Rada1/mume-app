@@ -621,16 +621,29 @@
     .this-is-you-mode-row { min-height: 21px; align-items: center; }
 }
 
-/* Reflow based on the console's available width, not the whole desktop viewport.
-   Narrow docked logs otherwise let the vitals and refresh control collide with combat. */
+/* Keep the four console categories in one row while they fit inside a docked log.
+   The two-column fallback below only applies once the console itself gets narrow. */
 @container this-is-you (max-width: 900px) {
     .this-is-you-console:not(.is-mobile) .this-is-you-body-inner {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px 18px;
+        grid-template-columns: repeat(4, max-content);
+        justify-content: start;
+        gap: 10px 20px;
     }
 
     .this-is-you-console:not(.is-mobile) .this-is-you-vitals-cluster { grid-column: 1; }
     .this-is-you-console:not(.is-mobile) .this-is-you-combat-slot { grid-column: 2; }
+    .this-is-you-console:not(.is-mobile) .this-is-you-tier-states { grid-column: 3; }
+    .this-is-you-console:not(.is-mobile) .this-is-you-tier-modes { grid-column: 4; }
+}
+
+@container this-is-you (max-width: 640px) {
+    .this-is-you-console:not(.is-mobile) .this-is-you-body-inner {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px 12px;
+    }
+
+    .this-is-you-console:not(.is-mobile) .this-is-you-vitals-cluster,
     .this-is-you-console:not(.is-mobile) .this-is-you-tier-states { grid-column: 1; }
+    .this-is-you-console:not(.is-mobile) .this-is-you-combat-slot,
     .this-is-you-console:not(.is-mobile) .this-is-you-tier-modes { grid-column: 2; }
 }

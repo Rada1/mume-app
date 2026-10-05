@@ -230,6 +230,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         if (!popoverState || popoverState.menuDisplay === 'dial' || popoverState.type === 'help-card') return;
 
         const handlePointerMove = (e: PointerEvent) => {
+            // Touch pointers need native vertical panning so mobile users can scroll menus.
+            if (e.pointerType === 'touch') return;
+
             const menuContainer = document.querySelector('.popover-menu') as HTMLElement;
             if (!menuContainer) return;
 
@@ -306,6 +309,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         };
 
         const handlePointerUp = (e: PointerEvent) => {
+            // Mobile taps are handled by the menu's click handlers; don't treat scroll release as drag-select.
+            if (e.pointerType === 'touch') return;
+
             if ((window as any).popoverIsClosing) {
                 console.log('[DEBUG] PopoverManager ignoring pointerup (menu is closing)');
                 return;

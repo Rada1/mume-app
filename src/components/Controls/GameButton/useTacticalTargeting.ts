@@ -175,16 +175,22 @@ export const useTacticalTargeting = ({
         const kind = getCommandTargetMenuKind(command);
         if (kind === 'door-direction') return 'exit';
         if (kind === 'self-only') return 'self';
+        const commandVerb = command.trim().split(/\s+/, 1)[0].toLowerCase();
+        if (commandVerb === 'assist') {
+            if (!ignorePendingSelection && hasManuallySelectedTarget && pendingTargetRef.current) {
+                return pendingTargetRef.current;
+            }
+            return getDefaultCommandTarget(command);
+        }
         if (!ignorePendingSelection) {
             if (pendingDirectionRef.current) return pendingTargetRef.current || pendingDirectionRef.current;
             if (pendingTargetRef.current) return pendingTargetRef.current;
             if (isTargetColumnOpenRef.current) return null;
         }
-        const commandVerb = command.trim().split(/\s+/, 1)[0].toLowerCase();
         if (kind === 'look-containers') return null;
         if (commandVerb === 'look') return null;
         if (commandVerb === 'locate') return getDefaultCommandTarget(command);
-        if (['assist', 'rescue'].includes(commandVerb)) return getDefaultCommandTarget(command);
+        if (commandVerb === 'rescue') return getDefaultCommandTarget(command);
         const automaticTarget = autoTargetForCommand?.(command);
         if (usesChipPriorityOffensiveTarget(command)) {
             return (isCompatibleGlobalTarget(command, activeTarget) ? activeTarget : null)
@@ -201,7 +207,7 @@ export const useTacticalTargeting = ({
         if (kind === 'gear' || kind === 'inventory-gear' || kind === 'worn-gear' || kind === 'room-corpses' || kind === 'mounts' || kind === 'mage-spells' || kind === 'magic-keys' || kind === 'social' || kind === 'shop') return null;
         if (isCompatibleGlobalTarget(command, activeTarget)) return activeTarget;
         return automaticTarget || null;
-    }, [activeTarget, autoTargetForCommand]);
+    }, [activeTarget, autoTargetForCommand, hasManuallySelectedTarget]);
 
     const updateCommandPreviewWithTarget = useCallback((baseCmd: string) => {
         currentCmdRef.current = baseCmd;

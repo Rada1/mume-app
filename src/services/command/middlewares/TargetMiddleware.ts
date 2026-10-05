@@ -4,15 +4,18 @@
  */
 
 import { CommandMiddleware } from '../types';
+import { canUseLockedTargetForCommand } from '../../../utils/swipeCommandColors';
 
+// --- Logic Section ---
 export const TargetMiddleware: CommandMiddleware = (cmd, { target }) => {
     let finalCmd = cmd;
     const hasTargetPlaceholder = /<target>/i.test(cmd);
+    const lockedTarget = target && canUseLockedTargetForCommand(cmd) ? target : null;
 
     if (hasTargetPlaceholder) {
-        if (target) {
+        if (lockedTarget) {
             // Replace "<target>" with the actual name
-            finalCmd = cmd.replace(/<target>/gi, target);
+            finalCmd = cmd.replace(/<target>/gi, lockedTarget);
         } else {
             // Strip "<target>" and clean up double spaces/trailing space
             finalCmd = cmd.replace(/\s*<target>/gi, '').trim();
@@ -20,13 +23,13 @@ export const TargetMiddleware: CommandMiddleware = (cmd, { target }) => {
         return finalCmd;
     } 
     
-    if (target) {
+    if (lockedTarget) {
         const lower = cmd.toLowerCase().trim();
         // Intelligent auto-append for common combat/magic prefixes if no explicit target provided
         const isCastOrSkill = lower.startsWith('cast ') || lower.startsWith('skill ');
 
-        // Common standalone verbs that usually want a target if one is available
-        const combatVerbs = ['kill', 'k', 'hit', 'bash', 'kick', 'trip', 'bs', 'backstab', 'murder', 'charge', 'circle', 'assist', 'rescue', 'shoot', 'throw', 'track', 'consider', 'examine', 'eat', 'drink', 'quaff', 'sip'];
+        // Common standalone verbs that may receive a target when their wheel color is offensive.
+        const combatVerbs = ['kill', 'k', 'hit', 'bash', 'kick', 'trip', 'bs', 'backstab', 'murder', 'charge', 'circle', 'rescue', 'shoot', 'throw', 'track', 'consider', 'examine', 'eat', 'drink', 'quaff', 'sip'];
         const isStandaloneCombat = combatVerbs.includes(lower);
 
         if (isCastOrSkill || isStandaloneCombat) {
@@ -43,12 +46,12 @@ export const TargetMiddleware: CommandMiddleware = (cmd, { target }) => {
 
                     // Only auto-append target if no argument was provided and it's not a keyed spell
                     if (!existingArgs && !isKeyed) {
-                        finalCmd = `${cmd.trim()} ${target}`;
+                        finalCmd = `${cmd.trim()} ${lockedTarget}`;
                     }
                 }
             } else {
                 // Standalone combat verb - always append if we have a target
-                finalCmd = `${cmd.trim()} ${target}`;
+                finalCmd = `${cmd.trim()} ${lockedTarget}`;
             }
             return finalCmd;
         }

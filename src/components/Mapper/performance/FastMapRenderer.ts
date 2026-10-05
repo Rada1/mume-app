@@ -213,7 +213,7 @@ export class FastMapRenderer {
       drawPlayerMarker(gl, this.roomProgram, this.playerVao, this.playerBuffer, this.textureArrays, frame.player);
       drawPlayerRoomTrail(this.overlays, this.roomLayerByRoom, frame.player, this.liveRoom, this.liveRoomMesh, this.textureArrays[TEX.A64], projection);
     }
-    this.overlays.drawLabels(frame.view.layer, frame.view.zoom, projection, this.width, this.height);
+    this.overlays.drawLabels(frame.view.layer, frame.view.zoom, projection, this.width, this.height, this.dpr);
     gl.bindVertexArray(null);
   }
 

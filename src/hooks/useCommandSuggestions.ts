@@ -23,6 +23,7 @@ import {
 } from '../utils/commandSuggestionUtils';
 import { BLANK_TARGET_VALUE, getCommandTargetMenuKind } from '../utils/commandTargetUtils';
 import { getMagicKeyId, parseKeyedSpellCommand } from '../utils/magicKeyUtils';
+import { stripShopProductQuantity } from '../utils/shopVariantParser';
 import {
     replaceActiveCommandArgumentToken,
     replaceFirstCommandArgument,
@@ -196,7 +197,8 @@ export const useCommandSuggestions = ({
             teleportTargets,
             whoList,
             shopItems,
-            roomWaterAvailable
+            roomWaterAvailable,
+            groupMembers
         });
     }, [abilities, characterName, chars, commandTextParts, commandToken, groupMembers, hasCommandArgumentSpace, inventoryLines, keyedSpellInput, practiceSkills, roomItems, roomWaterAvailable, shopItems, teleportTargets, whoList, wornLines]);
 
@@ -211,6 +213,12 @@ export const useCommandSuggestions = ({
             .filter(entry => {
                 if (!entry.value) return false;
                 if (!fragment) return true;
+                if (commandTokenKey === 'buy' && entry.meta === 'shop-item') {
+                    const productName = stripShopProductQuantity(entry.label)
+                        .replace(/^(?:a|an|the)\s+/i, '')
+                        .toLowerCase();
+                    return productName.startsWith(fragment) || entry.value.toLowerCase().startsWith(fragment);
+                }
                 const cleanValue = entry.value.replace(/^[*-]+|[*-]+$/g, '').toLowerCase();
                 const valueLower = entry.value.toLowerCase();
                 const labelLower = entry.label.toLowerCase();

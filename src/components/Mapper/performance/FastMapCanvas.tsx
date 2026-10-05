@@ -114,7 +114,7 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
           if (changes.length) clientRef.current?.setDoorStates(changes);
         }
         if (labelsChanged) {
-          clientRef.current?.setLabels([...labelsFrom(labels, { fontSizeScale: 1.8, markerStyle: true, excludeIdPrefix: canonical ? 'mm2_' : undefined }), ...labelsFrom(regionLabels)]);
+          clientRef.current?.setLabels([...labelsFrom(labels, { fontSizeScale: 2.2, markerStyle: true, excludeIdPrefix: canonical ? 'mm2_' : undefined }), ...labelsFrom(regionLabels)]);
           labelSourceRef.current = { labels, regionLabels };
         }
         sendLatestFrame();
@@ -129,7 +129,7 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
         setMapLoaded(false);
         clientRef.current?.loadMap(adapted);
         sendFastMapExploration(props.mapProps, clientRef.current);
-        clientRef.current?.setLabels([...labelsFrom(labels, { fontSizeScale: 1.8, markerStyle: true, excludeIdPrefix: canonical ? 'mm2_' : undefined }), ...labelsFrom(regionLabels)]);
+        clientRef.current?.setLabels([...labelsFrom(labels, { fontSizeScale: 2.2, markerStyle: true, excludeIdPrefix: canonical ? 'mm2_' : undefined }), ...labelsFrom(regionLabels)]);
         sourceRef.current = { tuples: source, canonical, revision };
         labelSourceRef.current = { labels, regionLabels };
         sendLatestFrame();

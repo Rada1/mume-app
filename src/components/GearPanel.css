@@ -11,6 +11,9 @@
 .gear-panel-header > button, .gear-refresh, .gear-container-toggle { background: transparent; border: 0; color: var(--text-dim); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 4px; }
 .gear-panel-header > button { margin-left: auto; }
 .gear-panel-header > button:hover, .gear-refresh:hover, .gear-container-toggle:hover { color: var(--accent); }
+.gear-section-heading-main { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; }
+.gear-section-summary { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 0 5px 19px; color: var(--text-dim); font-size: 9px; line-height: 1.2; }
+.gear-section-summary strong { color: var(--text-primary); font-weight: 600; }
 .gear-panel-body { display: flex; flex: 1; min-height: 0; flex-direction: column; gap: 5px; overflow: hidden; padding: 4px 12px 12px; }
 
 /* --- Sections Section --- */
@@ -58,6 +61,9 @@
 .gear-selection-destinations { margin-top: 7px; max-height: 18vh; overflow-y: auto; }
 .gear-action-buttons button { padding: 5px 9px; border: 1px solid rgba(201,168,76,.35); border-radius: 3px; background: rgba(201,168,76,.07); color: var(--accent); font: inherit; font-size: 11px; cursor: pointer; }
 .gear-action-buttons button:hover { background: rgba(201,168,76,.16); }
+@media (min-width: 769px) {
+    .gear-action-buttons button { min-height: 38px; padding: 8px 13px; font-size: 13px; }
+}
 .gear-give-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; color: var(--accent); font-size: 11px; font-weight: 700; }
 .gear-give-back { display: inline-flex; min-height: 34px; align-items: center; gap: 4px; padding: 4px 7px; border: 1px solid rgba(201,168,76,.24); border-radius: 3px; background: transparent; color: var(--text-dim); font: inherit; cursor: pointer; }
 .gear-recipient-list { display: flex; flex-wrap: wrap; gap: 6px; max-height: 24vh; overflow-y: auto; }
@@ -65,6 +71,10 @@
 .gear-recipient-list button:hover { background: rgba(201,168,76,.16); color: var(--accent); }
 .gear-recipient-list small { color: var(--text-dim); font-size: 9px; text-transform: uppercase; }
 .gear-panel .gear-shop-panel { position: relative; inset: auto; z-index: auto; width: 100%; min-width: 0; max-width: none; height: auto; min-height: 0; flex: 1 1 auto; border: 0; }
+/* The shared docked-panel rules place docked panels against the viewport. The
+   embedded shop is a flex child of GearPanel, so clear those offsets or its
+   footer is displaced past the bottom edge and clipped. */
+.app-container .gear-panel > .gear-shop-panel { inset: auto !important; width: 100% !important; height: auto !important; min-width: 0 !important; max-width: none !important; }
 .gear-panel .gear-shop-panel.is-hidden { display: none; }
 .gear-panel .gear-shop-panel .chat-window-header { flex-wrap: wrap; }
 @media (max-width: 768px) {

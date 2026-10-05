@@ -2,6 +2,8 @@
  * @file characterInfoRefreshTracker.ts
  * @description Tracks ordered responses from compact character info commands.
  */
+import { parseEnglishNumber } from './gameUtils';
+
 export type CharacterInfoRefreshField = 'citizenships' | 'burden' | 'age' | 'height' | 'warFame' | 'gold' | 'wimpy';
 
 // --- Height response validation ---
@@ -26,6 +28,31 @@ const isHeightResponse = (value: string): boolean => {
     }
     const centimetres = value.match(/^(\d{2,3})(?:\.\d)?\s+centimet(?:re|er)s?$/i);
     return centimetres !== null && Number(centimetres[1]) >= 30 && Number(centimetres[1]) <= 500;
+};
+
+const ENGLISH_NUMBER_WORDS = new Set([
+    'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+    'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen',
+    'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety', 'hundred', 'thousand', 'and'
+]);
+
+const parseBurden = (value: string): string | null => {
+    const poundsMatch = value.match(/^(.+?)\s+(?:pounds?|lbs?\.?)[.!]?$/i);
+    if (poundsMatch) {
+        const amount = poundsMatch[1].trim();
+        const numericAmount = amount.replace(/,/g, '');
+        if (/^\d+(?:\.\d+)?$/.test(numericAmount)) return `${Number(numericAmount)} lbs`;
+
+        const words = amount.toLowerCase().replace(/-/g, ' ').split(/\s+/).filter(Boolean);
+        if (!words.length || !words.every(word => ENGLISH_NUMBER_WORDS.has(word))) return null;
+        const pounds = parseEnglishNumber(amount);
+        if (pounds === 0 && words.join(' ') !== 'zero') return null;
+        return `${pounds} lbs`;
+    }
+
+    const exactNumeric = value.match(/^\d+(?:,\d{3})*(?:\.\d+)?\s*%?$/);
+    const exactStatus = value.match(/^(?:unencumbered|light|moderate|heavy|burdened|overburdened)$/i);
+    return exactNumeric?.[0].replace(/\s+/g, '') ?? exactStatus?.[0] ?? null;
 };
 
 // --- Refresh sequence ---
@@ -87,9 +114,7 @@ export const consumeCharacterInfoRefreshLine = (content: string, now = Date.now(
     if (field === 'burden') {
         const labeledMatch = value.match(/^(?:burden|weight)\s*:?\s*(.+)$/i);
         const burdenValue = (labeledMatch?.[1] ?? value).trim();
-        const exactNumeric = burdenValue.match(/^\d+(?:,\d{3})*(?:\.\d+)?\s*%?$/);
-        const exactStatus = burdenValue.match(/^(?:unencumbered|light|moderate|heavy|burdened|overburdened)$/i);
-        const burden = exactNumeric?.[0].replace(/\s+/g, '') ?? exactStatus?.[0];
+        const burden = parseBurden(burdenValue);
         if (!burden) return null;
         consumeField();
         return { burden };

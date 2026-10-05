@@ -18,6 +18,7 @@ const PROFILE_QUERIES: CharacterInfoQuery[] = [
     { field: 'height', command: 'info %h' },
     { field: 'warFame', command: 'info %K' },
     { field: 'gold', command: 'info %g' },
+    { field: 'burden', command: 'info %C' },
     { command: 'practice' }
 ];
 
@@ -26,6 +27,7 @@ const QUERIES: CharacterInfoQuery[] = [
     { field: 'height', command: 'info %h' },
     { field: 'warFame', command: 'info %K' },
     { field: 'gold', command: 'info %g' },
+    { field: 'burden', command: 'info %C' },
     { field: 'wimpy', command: 'info %y' }
 ];
 

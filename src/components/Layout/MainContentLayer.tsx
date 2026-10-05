@@ -43,7 +43,6 @@ import { useDockedPanelLayout } from '../../hooks/useDockedPanelLayout';
 const HelpPanel = React.lazy(() => import('../Help/HelpPanel'));
 const MumeEditor = React.lazy(() => import('../Utility/MumeEditor'));
 const MumeArchive = React.lazy(() => import('../Utility/MumeArchive').then(module => ({ default: module.MumeArchive })));
-const ShopPanel = React.lazy(() => import('../Shop/ShopPanel').then(module => ({ default: module.ShopPanel })));
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -120,7 +119,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const setIsCommandPanelOpen = useCommandPanelStore(s => s.setIsOpen);
     const setIsSkillsPanelOpen = useCommandPanelStore(s => s.setIsSkillsOpen);
     const setIsMobileSkillsPanelOpen = useCommandPanelStore(s => s.setIsMobileOpen);
-    const isShopOpen = useUIStore(s => s.isShopOpen);
     const isGearPanelOpen = useGearPanelStore(s => s.isOpen);
     const gearSwipe = useMobileGearSwipe(viewport.isMobile && gameState !== 'account', triggerHaptic);
     const isHelpOpen = useHelpStore(s => s.isOpen);
@@ -620,11 +618,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     <ChatWindow
                         style={getPanelStyle('chat')}
                     />
-                )}
-                {isShopOpen && !isGearPanelOpen && gameState !== 'account' && (
-                    <React.Suspense fallback={null}>
-                        <ShopPanel style={getPanelStyle('shop')} />
-                    </React.Suspense>
                 )}
                 {isHelpOpen && gameState !== 'account' && (
                     <React.Suspense fallback={null}>

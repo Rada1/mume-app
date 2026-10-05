@@ -7,6 +7,7 @@
 import type { GmcpOccupant, GroupMember } from '../types';
 import { getRescueTargetSuggestions, getRoomTargetSuggestions } from './commandSuggestionUtils';
 import { BLANK_TARGET_VALUE, getCommandTargetMenuKind, isOffensiveTargetCommand } from './commandTargetUtils';
+import { getNonGroupmateRoomTargetSuggestions } from './groupTargetSuggestions';
 
 const ROOM_CHARACTER_MENU_KINDS = new Set(['room', 'room-spell', 'room-spell-with-extras', 'bash']);
 
@@ -18,13 +19,17 @@ export const getViableRoomCharacterTargets = (
 ): string[] => {
     const kind = getCommandTargetMenuKind(command);
     if (!kind || !ROOM_CHARACTER_MENU_KINDS.has(kind)) return [];
+    if (/^assist(?:\s|$)/i.test(command.trim())) return [];
     if (/^rescue(?:\s|$)/i.test(command.trim())) {
         return getRescueTargetSuggestions(roomOccupants, characterName, groupMembers)
             .filter(suggestion => suggestion.value !== BLANK_TARGET_VALUE)
             .map(suggestion => suggestion.value);
     }
-    const roomTargets = getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName);
-    const suggestions = isOffensiveTargetCommand(command)
+    const isOffensiveTarget = isOffensiveTargetCommand(command);
+    const roomTargets = isOffensiveTarget
+        ? getNonGroupmateRoomTargetSuggestions(roomOccupants, groupMembers, characterName)
+        : getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName);
+    const suggestions = isOffensiveTarget
         ? roomTargets.filter(suggestion => suggestion.meta?.toLowerCase() !== 'ally')
         : roomTargets;
     return suggestions.map(suggestion => suggestion.value);

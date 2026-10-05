@@ -3,7 +3,7 @@
  * @description Renders Arda map door names beside named hidden door exits.
  */
 
-import { DIRS, GRID_SIZE, getExitTargetId, getClientThemeColor } from '../mapperUtils';
+import { DIRS, GRID_SIZE, getExitTargetId } from '../mapperUtils';
 import { RenderContext } from './rendererUtils';
 
 type DoorExit = {
@@ -13,14 +13,25 @@ type DoorExit = {
     to?: string | number;
     to_vnum?: string | number;
     doorName?: string;
+    hasDoor?: boolean;
+    flags?: string[];
+    doorFlags?: string[];
 };
 
 const CARDINAL_DIRS = ['n', 's', 'e', 'w', 'u', 'd'] as const;
 
 const getDoorName = (exit: unknown): string => {
     if (!exit || typeof exit !== 'object') return '';
-    const value = (exit as DoorExit).doorName;
-    return typeof value === 'string' ? value.trim() : '';
+    const door = exit as DoorExit;
+    const flags = [...(door.flags || []), ...(door.doorFlags || [])];
+    if (!(door.hasDoor || flags.some(flag => /^door$/i.test(flag)))
+        || !flags.some(flag => /^hidden$/i.test(flag))) return '';
+    const value = door.doorName;
+    if (typeof value !== 'string' || !value.trim()) return '';
+    const suffix = `${flags.some(flag => /^need_?key$/i.test(flag)) ? 'L' : ''}`
+        + `${flags.some(flag => /^no_?pick$/i.test(flag)) ? '/NP' : ''}`
+        + `${flags.some(flag => /^delayed$/i.test(flag)) ? 'd' : ''}`;
+    return suffix ? `${value.trim()} [${suffix}]` : value.trim();
 };
 
 const makeDoorLabel = (name: string, oppositeName: string): string => {
@@ -31,29 +42,21 @@ const makeDoorLabel = (name: string, oppositeName: string): string => {
 const getLabelPoint = (
     x: number,
     y: number,
-    z: number,
     dir: string,
-    target: string,
+    pairedTarget: string | null,
     preloaded: RenderContext['preloaded']
 ) => {
-    const centerX = x * GRID_SIZE + GRID_SIZE / 2;
-    const centerY = y * GRID_SIZE + GRID_SIZE / 2;
-    const targetRoom = preloaded[target];
-
-    if (targetRoom && Math.abs((targetRoom[2] || 0) - z) < 1.5) {
-        const tx = targetRoom[0] * GRID_SIZE + GRID_SIZE / 2;
-        const ty = targetRoom[1] * GRID_SIZE + GRID_SIZE / 2;
-        if (Math.abs(tx - centerX) <= GRID_SIZE * 1.5 && Math.abs(ty - centerY) <= GRID_SIZE * 1.5) {
-            return { x: (centerX + tx) / 2, y: (centerY + ty) / 2 };
-        }
-    }
-
-    const vec = DIRS[dir] || { dx: 0, dy: 0 };
-    if (dir === 'u') return { x: centerX - GRID_SIZE * 0.24, y: centerY - GRID_SIZE * 0.24 };
-    if (dir === 'd') return { x: centerX + GRID_SIZE * 0.24, y: centerY + GRID_SIZE * 0.24 };
+    const targetRoom = pairedTarget ? preloaded[pairedTarget] : null;
+    if (targetRoom) return {
+        x: ((x + targetRoom[0]) / 2 + 0.6) * GRID_SIZE,
+        y: ((y + targetRoom[1]) / 2 + 0.3) * GRID_SIZE
+    };
+    const yOffset: Record<string, number> = {
+        n: 0.15, s: 0.65, w: 0.3, e: 0.45, u: -0.05, d: 0.8
+    };
     return {
-        x: centerX + (vec.dx || 0) * GRID_SIZE * 0.48,
-        y: centerY + (vec.dy || 0) * GRID_SIZE * 0.48
+        x: (x + 0.6) * GRID_SIZE,
+        y: (y + (yOffset[dir] ?? 0.5)) * GRID_SIZE
     };
 };
 
@@ -62,9 +65,10 @@ const drawLabelBubble = (
     text: string,
     x: number,
     y: number,
-    invZoom: number
+    invZoom: number,
+    occupied: Array<{ x: number; y: number; width: number; height: number }>
 ) => {
-    const fontSize = 11 * invZoom;
+    const fontSize = 13 * invZoom;
     const padX = 4 * invZoom;
     const padY = 2 * invZoom;
     const radius = 3 * invZoom;
@@ -76,17 +80,23 @@ const drawLabelBubble = (
 
     const width = ctx.measureText(text).width + padX * 2;
     const height = fontSize + padY * 2;
-    const labelY = y - 12 * invZoom;
+    const labelY = y;
+    const box = { x, y: labelY, width: width + 3 * invZoom, height: height + 3 * invZoom };
+    if (occupied.some(prior =>
+        Math.abs(box.x - prior.x) < (box.width + prior.width) / 2
+        && Math.abs(box.y - prior.y) < (box.height + prior.height) / 2
+    )) {
+        ctx.restore();
+        return;
+    }
+    occupied.push(box);
 
-    ctx.fillStyle = getClientThemeColor('--bg-app', '#0e0d0b');
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-    ctx.lineWidth = Math.max(1 * invZoom, 0.5);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
     ctx.beginPath();
     ctx.roundRect(x - width / 2, labelY - height / 2, width, height, radius);
     ctx.fill();
-    ctx.stroke();
 
-    ctx.fillStyle = getClientThemeColor('--text-primary', '#d4cdb8');
+    ctx.fillStyle = '#fff';
     ctx.fillText(text, x, labelY);
     ctx.restore();
 };
@@ -101,6 +111,7 @@ export const drawDoorLabels = (
 ) => {
     const { ctx, preloaded, explored, unveilMap, treatMapAsExplored, currentZ, invZoom } = rCtx;
     const drawn = new Set<string>();
+    const occupied: Array<{ x: number; y: number; width: number; height: number }> = [];
 
     for (let bx = bX1; bx <= bX2; bx++) {
         for (let by = bY1; by <= bY2; by++) {
@@ -111,7 +122,7 @@ export const drawDoorLabels = (
                 if (!explored.has(vnum) && !unveilMap && !treatMapAsExplored) continue;
 
                 const roomData = preloaded[vnum];
-                if (!roomData || Math.abs((roomData[2] || 0) - currentZ) > 1.5) continue;
+                if (!roomData || Math.round(roomData[2] || 0) !== Math.round(currentZ)) continue;
 
                 const exits = roomData[4] || {};
                 for (const dir of CARDINAL_DIRS) {
@@ -119,17 +130,26 @@ export const drawDoorLabels = (
                     const doorName = getDoorName(exit);
                     if (!doorName) continue;
 
-                    const target = getExitTargetId(exit);
+                    const target = getExitTargetId(exit).replace(/^m_/, '');
+                    const targetRoom = preloaded[target];
                     const oppositeDir = DIRS[dir]?.opp;
-                    const oppositeExit = target && oppositeDir ? preloaded[target]?.[4]?.[oppositeDir] : undefined;
-                    const oppositeName = getDoorName(oppositeExit);
+                    const oppositeExit = targetRoom && oppositeDir ? targetRoom[4]?.[oppositeDir] : undefined;
+                    const near = targetRoom && Math.abs(targetRoom[0] - roomData[0]) <= 1
+                        && Math.abs(targetRoom[1] - roomData[1]) <= 1;
+                    const targetVisible = explored.has(target) || unveilMap || treatMapAsExplored;
+                    const oppositeName = near && targetVisible ? getDoorName(oppositeExit) : '';
+                    const paired = !!oppositeName;
+                    if (paired && Math.round(targetRoom[2] || 0) === Math.round(roomData[2] || 0)
+                        && vnum.localeCompare(target, undefined, { numeric: true }) > 0) continue;
                     const label = makeDoorLabel(doorName, oppositeName);
-                    const key = [vnum, target || `${roomData[0]},${roomData[1]},${dir}`].sort().join(':');
+                    const key = paired
+                        ? [vnum, target].sort().join(':')
+                        : `${vnum}:${dir}`;
                     if (drawn.has(key)) continue;
                     drawn.add(key);
 
-                    const point = getLabelPoint(roomData[0], roomData[1], roomData[2] || 0, dir, target, preloaded);
-                    drawLabelBubble(ctx, label, point.x, point.y, invZoom);
+                    const point = getLabelPoint(roomData[0], roomData[1], dir, paired ? target : null, preloaded);
+                    drawLabelBubble(ctx, label, point.x, point.y, invZoom, occupied);
                 }
             }
         }

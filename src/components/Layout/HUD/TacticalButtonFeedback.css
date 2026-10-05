@@ -1,0 +1,113 @@
+/* @file TacticalButtonFeedback.css — Shared press and swipe feedback for map controls. */
+
+/* --- Logic Section --- */
+/* --- Shared Map Button Feedback --- */
+.mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn,
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .custom-btn,
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn,
+.desktop-tactical-buttons-persistent .custom-btn {
+    transition: transform 110ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        filter 110ms ease, background-color 110ms ease, box-shadow 110ms ease,
+        border-color 110ms ease !important;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn:active,
+.mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn.is-swiping,
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .custom-btn:active,
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .custom-btn.is-swiping,
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn:active,
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.is-swiping,
+.desktop-tactical-buttons-persistent .custom-btn:active,
+.desktop-tactical-buttons-persistent .custom-btn.is-swiping {
+    transform: scale(0.9) !important;
+    filter: brightness(1.45) saturate(1.35) !important;
+    background-color: rgba(var(--set-accent-rgb, 255, 255, 255), 0.32) !important;
+    border: 2px solid rgba(var(--set-accent-rgb, 255, 255, 255), 0.96) !important;
+    box-shadow: 0 0 0 3px rgba(var(--set-accent-rgb, 255, 255, 255), 0.38),
+        0 0 28px rgba(var(--set-accent-rgb, 255, 255, 255), 0.9),
+        inset 0 0 18px rgba(var(--set-accent-rgb, 255, 255, 255), 0.4) !important;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn.btn-glow-active,
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .custom-btn.btn-glow-active,
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.btn-glow-active,
+.desktop-tactical-buttons-persistent .custom-btn.btn-glow-active {
+    animation: tactical-map-button-confirm 520ms ease-out !important;
+}
+
+.mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn:active .button-icon,
+.mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn.is-swiping .button-icon,
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .custom-btn:active .button-icon,
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .custom-btn.is-swiping .button-icon,
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn:active .button-icon,
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.is-swiping .button-icon,
+.desktop-tactical-buttons-persistent .custom-btn:active .button-icon,
+.desktop-tactical-buttons-persistent .custom-btn.is-swiping .button-icon {
+    filter: brightness(1.45) saturate(1.5) drop-shadow(0 0 9px rgba(var(--set-accent-rgb, 255, 255, 255), 1)) !important;
+}
+
+/* --- Directional Swipe Feedback --- */
+.mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn[data-short-swipe-feedback]::after,
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .custom-btn[data-short-swipe-feedback]::after,
+.mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn[data-short-swipe-feedback]::after,
+.desktop-tactical-buttons-persistent .custom-btn[data-short-swipe-feedback]::after {
+    content: '';
+    z-index: 5;
+    background: rgba(var(--set-accent-rgb, 255, 255, 255), 1);
+    mix-blend-mode: screen;
+    animation: tactical-map-direction-pulse 760ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* --- Action Menu Feedback --- */
+.mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .line-cluster-action-menu:not(.is-disabled):active,
+.desktop-tactical-buttons-persistent .line-cluster-action-menu:not(.is-disabled):active {
+    transform: scale(0.9) !important;
+    border: 2px solid color-mix(in srgb, var(--color-target, #facc15) 96%, white) !important;
+    background: color-mix(in srgb, var(--color-target, #facc15) 32%, rgba(13, 16, 23, 0.72)) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-target, #facc15) 38%, transparent),
+        0 0 28px color-mix(in srgb, var(--color-target, #facc15) 90%, transparent),
+        inset 0 0 18px color-mix(in srgb, var(--color-target, #facc15) 40%, transparent) !important;
+}
+
+@keyframes tactical-map-button-confirm {
+    0%, 100% {
+        transform: scale(1);
+        filter: brightness(1);
+        box-shadow: 0 0 0 rgba(var(--set-accent-rgb, 255, 255, 255), 0);
+    }
+    38% {
+        transform: scale(1.08);
+        filter: brightness(1.55) saturate(1.45);
+        box-shadow: 0 0 0 3px rgba(var(--set-accent-rgb, 255, 255, 255), 0.42),
+            0 0 30px rgba(var(--set-accent-rgb, 255, 255, 255), 0.95),
+            inset 0 0 18px rgba(var(--set-accent-rgb, 255, 255, 255), 0.42);
+    }
+}
+
+@keyframes tactical-map-direction-pulse {
+    0% { opacity: 0; }
+    14% { opacity: 1; }
+    62% { opacity: 0.74; }
+    100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn.btn-glow-active,
+    .mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .custom-btn.btn-glow-active,
+    .mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn.btn-glow-active,
+    .desktop-tactical-buttons-persistent .custom-btn.btn-glow-active {
+        animation: none !important;
+        filter: brightness(1.45) saturate(1.35) !important;
+        box-shadow: 0 0 0 3px rgba(var(--set-accent-rgb, 255, 255, 255), 0.38),
+            0 0 28px rgba(var(--set-accent-rgb, 255, 255, 255), 0.9),
+            inset 0 0 18px rgba(var(--set-accent-rgb, 255, 255, 255), 0.4) !important;
+    }
+
+    .mobile-map-panel.map-expanded .mobile-map-command-overlay .custom-btn[data-short-swipe-feedback]::after,
+    .mobile-map-panel.map-expanded .mobile-tactical-buttons-persistent .custom-btn[data-short-swipe-feedback]::after,
+    .mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn[data-short-swipe-feedback]::after,
+    .desktop-tactical-buttons-persistent .custom-btn[data-short-swipe-feedback]::after {
+        animation: none !important;
+        opacity: 0.8;
+    }
+}

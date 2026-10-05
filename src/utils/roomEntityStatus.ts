@@ -15,10 +15,10 @@ export const foldRoomEntityStatus = <T extends Message>(messages: T[]): T[] => {
     const folded: T[] = [];
 
     for (const message of messages) {
-        const status = message.textOnly?.trim().match(/^\(?glowing\)?\.?$/i);
+        const status = message.type === 'user' ? null : message.textOnly?.trim().match(/^\(?glowing\)?\.?$/i);
         const previous = folded[folded.length - 1];
         const characterIndex = previous?.tokens?.findIndex(isCharacterToken) ?? -1;
-        const isRoomCharacterLine = previous && !previous.isComm && !previous.isCombat &&
+        const isRoomCharacterLine = previous && previous.type !== 'user' && !previous.isComm && !previous.isCombat &&
             /\b(?:is|are)\s+(?:standing|sitting|resting|sleeping|lying)\s+here\./i.test(previous.textOnly || '') &&
             characterIndex >= 0;
 

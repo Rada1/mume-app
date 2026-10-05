@@ -1,5 +1,6 @@
 import { AUDIO_MANIFEST, AmbientConfig } from '../../constants/audioManifest';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { DecodedAudioCache } from './DecodedAudioCache';
 
 const SHARED_AUDIO_BASE_VOLUME = 0.8;
 const SHARED_AUDIO_OUTPUT_GAIN = 3.0;
@@ -10,6 +11,8 @@ const HEALTH_MUSIC_AT_WOUNDED = 0.28;
 const HEALTH_MUSIC_AT_BAD = 0.2;
 const HEALTH_MUSIC_AT_AWFUL = 0.1;
 const MOVEMENT_EFFECT_KEYS = new Set(['move', 'watermove', 'event-move', 'ride', 'stopriding']);
+const MAX_EFFECT_CACHE_BYTES = 16 * 1024 * 1024;
+const MAX_AMBIENT_CACHE_BYTES = 64 * 1024 * 1024;
 
 export interface PlayOptions {
     pitch?: number;
@@ -50,7 +53,8 @@ export class AudioManager {
     private static instance: AudioManager;
 
     private audioCtx: AudioContext | null = null;
-    private bufferCache: Map<string, AudioBuffer> = new Map();
+    private effectBufferCache = new DecodedAudioCache(MAX_EFFECT_CACHE_BYTES);
+    private ambientBufferCache = new DecodedAudioCache(MAX_AMBIENT_CACHE_BYTES);
     private loadingState: Map<string, Promise<AudioBuffer | null>> = new Map();
 
     private activeAmbients: Map<AmbientType, ActiveAmbient> = new Map();
@@ -173,10 +177,13 @@ export class AudioManager {
         }
     };
 
-    public async loadBuffer(url: string): Promise<AudioBuffer | null> {
+    public async loadBuffer(url: string, kind: 'effect' | 'ambient' = 'ambient'): Promise<AudioBuffer | null> {
         if (!this.audioCtx) return null;
-        if (this.bufferCache.has(url)) return this.bufferCache.get(url)!;
-        if (this.loadingState.has(url)) return this.loadingState.get(url)!;
+        const cache = kind === 'effect' ? this.effectBufferCache : this.ambientBufferCache;
+        const cachedBuffer = cache.get(url);
+        if (cachedBuffer) return cachedBuffer;
+        const loadingKey = `${kind}:${url}`;
+        if (this.loadingState.has(loadingKey)) return this.loadingState.get(loadingKey)!;
 
         const loadPromise = (async () => {
             try {
@@ -186,17 +193,17 @@ export class AudioManager {
                 if (contentType && contentType.includes('text/html')) return null;
                 const arrayBuffer = await response.arrayBuffer();
                 const audioBuffer = await this.audioCtx!.decodeAudioData(arrayBuffer);
-                this.bufferCache.set(url, audioBuffer);
+                cache.set(url, audioBuffer);
                 return audioBuffer;
             } catch (err) {
                 console.error(`[AudioManager] Failed to load ${url}:`, err);
                 return null;
             } finally {
-                this.loadingState.delete(url);
+                this.loadingState.delete(loadingKey);
             }
         })();
 
-        this.loadingState.set(url, loadPromise);
+        this.loadingState.set(loadingKey, loadPromise);
         return loadPromise;
     }
 
@@ -284,7 +291,7 @@ export class AudioManager {
         const customPath = settings.customSoundEffects?.[key];
         const effectPath = customPath || config.path;
 
-        let buffer = await this.loadBuffer(effectPath);
+        let buffer = await this.loadBuffer(effectPath, 'effect');
         if (!buffer) return;
 
         const isMovementEffect = MOVEMENT_EFFECT_KEYS.has(key);

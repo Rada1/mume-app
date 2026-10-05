@@ -112,6 +112,7 @@
 /* Keep recent events visible while the main virtualized log is in scrollback. */
 .message-log-layout.reading-history > .message-log {
     flex: 1 1 0;
+    overflow-anchor: none;
 }
 
 .message-log-live-resizer {
@@ -1467,6 +1468,10 @@
     color: #22c55e !important;
     /* Success Green */
     font-weight: bold;
+}
+
+.message-content .log-text-word.exit-xml-text {
+    opacity: 0.75 !important;
 }
 
 

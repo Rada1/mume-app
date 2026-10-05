@@ -2,6 +2,12 @@
 
 /* --- Mobile action touch targets --- */
 @media (max-width: 720px) {
+    .popover-menu {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+        touch-action: pan-y;
+    }
+
     .terminal-inline-popover .terminal-inspect-row {
         box-sizing: border-box;
         min-height: 44px;

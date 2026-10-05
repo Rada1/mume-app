@@ -3,7 +3,7 @@
  * @description Resolves typed command targets through the same menu kinds used by game buttons.
  */
 
-import type { DrawerLine, GmcpOccupant, PracticeSkill, ShopItem, TeleportTarget } from '../types';
+import type { DrawerLine, GmcpOccupant, GroupMember, PracticeSkill, ShopItem, TeleportTarget } from '../types';
 import {
     BLANK_TARGET_VALUE,
     getCommandTargetMenuKind,
@@ -40,6 +40,7 @@ import {
     type CommandTargetSuggestion
 } from './commandSuggestionUtils';
 import { hasObjectTrait } from '../objects/objectTargetModel';
+import { getNonGroupmateRoomTargetSuggestions } from './groupTargetSuggestions';
 
 // --- Type Section ---
 
@@ -58,6 +59,7 @@ export interface CommandTargetSuggestionContext {
     whoList?: string[];
     shopItems?: ShopItem[];
     roomWaterAvailable?: boolean;
+    groupMembers?: GroupMember[];
 }
 
 export interface ResolvedCommandTargetSuggestions {
@@ -171,7 +173,8 @@ const getMenuSuggestions = (
     teleportTargets: TeleportTarget[],
     whoList: string[],
     shopItems: ShopItem[],
-    roomWaterAvailable: boolean
+    roomWaterAvailable: boolean,
+    groupMembers: GroupMember[]
 ): CommandTargetSuggestion[] | null => {
     const isEatCommand = /^eat\b/i.test(command.trim());
     if (kind === 'shop') return shopItems.map(item => ({
@@ -221,7 +224,9 @@ const getMenuSuggestions = (
     if (kind === 'door-direction') return [{ key: 'door-exit', label: 'Exit', value: 'exit', meta: 'exit' }];
     if (kind === 'room-spell' || kind === 'room-spell-with-extras' || kind === 'bash' || kind === 'room') {
         const verb = command.trim().split(/\s+/, 1)[0].toLowerCase();
-        const roomTargets = getRoomTargetSuggestions(roomOccupants, roomObjects, 'characters', characterName);
+        const roomTargets = isOffensiveTargetCommand(command)
+            ? getNonGroupmateRoomTargetSuggestions(roomOccupants, groupMembers, characterName)
+            : getRoomTargetSuggestions(roomOccupants, roomObjects, 'characters', characterName);
         const eligibleTargets = isOffensiveTargetCommand(command)
             ? roomTargets.filter(suggestion => suggestion.meta?.toLowerCase() !== 'ally')
             : roomTargets;
@@ -283,7 +288,8 @@ export const resolveCommandTargetSuggestions = (context: CommandTargetSuggestion
         context.teleportTargets || [],
         context.whoList || [],
         context.shopItems || [],
-        context.roomWaterAvailable || false
+        context.roomWaterAvailable || false,
+        context.groupMembers || []
     );
     const fallbackKind = /^(get|take|pick)$/.test(context.command.trim().split(/\s+/, 1)[0].toLowerCase())
         ? 'objects'

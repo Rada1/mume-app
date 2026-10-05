@@ -1,17 +1,17 @@
 /** @file ShopPanel.tsx - Shop drawer command and selection controls. */
 import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { useUIStore } from '../../stores/useUIStore';
-import { useGame, useUI } from '../../context/GameContext';
+import { useGame } from '../../context/GameContext';
 import { ShopItem } from '../../types';
 import { findRoomShopkeeper } from '../../utils/shopkeeperUtils';
-import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
 import { ShopItemGroup } from './ShopItemGroup';
 import { ShopPanelHeader } from './ShopPanelHeader';
+import { ShopBrowseNavigation } from './ShopBrowseNavigation';
+import { SHOP_BROWSE_CATEGORIES } from './shopBrowseCategories';
 import './ShopPanel.css';
 import './ShopPanelTerminal.css';
 
 type ShopAction = 'buy' | 'show' | 'compare';
-type InvAction = 'sell' | 'value' | 'mend';
 
 const SHOP_ACTIONS: { id: ShopAction; label: string; needsTwo?: boolean }[] = [
     { id: 'buy',     label: 'Buy' },
@@ -19,22 +19,13 @@ const SHOP_ACTIONS: { id: ShopAction; label: string; needsTwo?: boolean }[] = [
     { id: 'compare', label: 'Compare', needsTwo: true },
 ];
 
-const INV_ACTIONS: { id: InvAction; label: string }[] = [
-    { id: 'sell',  label: 'Sell' },
-    { id: 'value', label: 'Value' },
-    { id: 'mend',  label: 'Mend' },
-];
+interface ShopPanelProps { hidden?: boolean }
 
-interface ShopPanelProps {
-    style?: React.CSSProperties;
-    embedded?: boolean;
-    hidden?: boolean;
-}
-
-export const ShopPanel: React.FC<ShopPanelProps> = ({ style, embedded = false, hidden = false }) => {
+export const ShopPanel: React.FC<ShopPanelProps> = ({ hidden = false }) => {
     const isShopOpen      = useUIStore(s => s.isShopOpen);
     const setIsShopOpen   = useUIStore(s => s.setIsShopOpen);
     const shopItems        = useUIStore(s => s.shopItems);
+    const setShopItems     = useUIStore(s => s.setShopItems);
     const shopVariants     = useUIStore(s => s.shopVariants);
     const shopVariantRequest = useUIStore(s => s.shopVariantRequest);
     const setShopVariantRequest = useUIStore(s => s.setShopVariantRequest);
@@ -49,10 +40,11 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ style, embedded = false, h
     const shopkeeperNameFromStore = useUIStore(s => s.shopkeeperName);
     const setShopkeeperName       = useUIStore(s => s.setShopkeeperName);
 
-    const { triggerHaptic, executeCommand, roomNpcs, roomName, entities, viewport } = useGame() as any;
-    const { handleTabClick, setGearTab } = useUI() as any;
+    const { triggerHaptic, executeCommand, roomNpcs, roomName, entities } = useGame();
     const [search, setSearch] = useState('');
     const [expandedProduct, setExpandedProduct] = useState<number | null>(null);
+    const [activeCategory, setActiveCategory] = useState('all');
+    const [activeFilter, setActiveFilter] = useState('');
     const selectedTarget = useUIStore(s => s.selectedTarget);
 
     const shopkeeper = findRoomShopkeeper(roomNpcs, entities ?? {});
@@ -69,6 +61,37 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ style, embedded = false, h
         executeCommand(`list ${num}`);
     }, [expandedProduct, executeCommand, setShopVariants, setShopVariantRequest]);
 
+    const activeCategoryDefinition = SHOP_BROWSE_CATEGORIES.find(category => category.id === activeCategory);
+    const runBrowseCommand = useCallback((command: string, categoryId: string, filterId = '') => {
+        setActiveCategory(categoryId);
+        setActiveFilter(filterId);
+        setExpandedProduct(null);
+        setSearch('');
+        setShopItems([]);
+        executeCommand(command);
+    }, [executeCommand, setShopItems]);
+
+    const handleCategorySelect = useCallback((categoryId: string) => {
+        const category = SHOP_BROWSE_CATEGORIES.find(entry => entry.id === categoryId);
+        if (!category) return;
+        if (category.filters?.length) {
+            setActiveCategory(category.id);
+            setActiveFilter('');
+            setExpandedProduct(null);
+            setSearch('');
+            setShopItems([]);
+            const defaultFilter = category.filters.find(filter => filter.id === 'all-weapons');
+            if (defaultFilter) runBrowseCommand(defaultFilter.command, category.id, defaultFilter.id);
+            return;
+        }
+        if (category.command) runBrowseCommand(category.command, category.id);
+    }, [runBrowseCommand, setShopItems]);
+
+    const handleFilterSelect = useCallback((filterId: string) => {
+        const filter = activeCategoryDefinition?.filters?.find(entry => entry.id === filterId);
+        if (filter && activeCategoryDefinition) runBrowseCommand(filter.command, activeCategoryDefinition.id, filter.id);
+    }, [activeCategoryDefinition, runBrowseCommand]);
+
     const filteredItems = search.trim()
         ? shopItems.filter(item => {
               const q = search.toLowerCase();
@@ -83,18 +106,14 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ style, embedded = false, h
         executeCommand('info %r', true, true);
     }, [setShopBalanceRequested, executeCommand]);
 
-    // Open inventory drawer and refresh balance when shop is open
+    // Refresh balance whenever the unified Gear and Shop panel enters its shop view.
     useEffect(() => {
         if (isShopOpen) {
-            if (!embedded) {
-                setGearTab('inv');
-                handleTabClick('equipment');
-            }
             refreshBalance();
         } else {
             setShopBalance(null);
         }
-    }, [isShopOpen, embedded]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [isShopOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const heldActionRef   = useRef(heldAction);
     const compareFirstRef = useRef(compareFirst);
@@ -191,22 +210,6 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ style, embedded = false, h
         }
     }, [triggerHaptic, executeCommand, setHeldAction, setCompareFirst, refreshBalance]);
 
-    const handleInvActionDown = useCallback((action: InvAction, e: React.PointerEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const target = useUIStore.getState().selectedTarget;
-        if (!target?.context) return;
-        triggerHaptic(30);
-        executeCommand(`${action} ${target.context}`);
-        useUIStore.getState().clearObjectSelection();
-        if (action === 'sell') {
-            setTimeout(() => {
-                refreshBalance();
-                executeCommand('i', true, true);
-            }, 500);
-        }
-    }, [triggerHaptic, executeCommand, refreshBalance]);
-
     const handleClose = () => {
         triggerHaptic(15);
         setIsShopOpen(false);
@@ -217,19 +220,22 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ style, embedded = false, h
 
     const isTargeting = heldAction !== null;
 
-    const panelClassName = `docked-panel chat-window-panel shop-panel${embedded ? ' gear-shop-panel' : ''}${hidden ? ' is-hidden' : ''}`;
     return (
-        <aside className={panelClassName} style={embedded ? undefined : style} aria-label="Shop">
-            {!embedded && !viewport?.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-shop-width" minWidth={18} maxWidth={60} />}
+        <aside className={`docked-panel chat-window-panel shop-panel gear-shop-panel${hidden ? ' is-hidden' : ''}`} aria-label="Shop">
 
             <ShopPanelHeader shopkeeperName={shopkeeperName} roomName={roomName}
                 itemCount={shopItems.length} balance={shopBalance}
-                search={search} onSearch={setSearch} onClose={handleClose} embedded={embedded} />
+                search={search} onSearch={setSearch} onClose={handleClose} embedded />
+
+            <ShopBrowseNavigation activeCategory={activeCategory} activeFilter={activeFilter}
+                onCategorySelect={handleCategorySelect} onFilterSelect={handleFilterSelect} />
 
             <div className="shop-panel-content">
                 {filteredItems.length === 0 ? (
                     <div className="shop-panel-empty">
-                        {shopItems.length === 0 ? 'No items listed.' : 'No items match your search.'}
+                        {shopItems.length === 0
+                            ? activeCategoryDefinition?.filters && !activeFilter ? 'Choose a filter to browse this category.' : 'No items listed.'
+                            : 'No items match your search.'}
                     </div>
                 ) : (
                     <div className="shop-item-list">
@@ -244,7 +250,7 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ style, embedded = false, h
                 )}
             </div>
 
-            {/* Action buttons — styled like DrawerHoldCommandButton (WHOIS/CHAT style) */}
+            {/* Shop actions */}
             <div className="shop-panel-tab-bar">
                 {SHOP_ACTIONS.map(action => {
                     const isShopTargetSelected = selectedTarget?.category === 'shopitem';
@@ -262,25 +268,6 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ style, embedded = false, h
                             onClick={e => { e.preventDefault(); e.stopPropagation(); }}
                         >
                             {displayLabel}
-                        </button>
-                    );
-                })}
-
-                <div className="shop-action-divider" />
-
-                {INV_ACTIONS.map(action => {
-                    const isInvTargetSelected = selectedTarget !== null && selectedTarget.category !== 'shopitem';
-                    return (
-                        <button
-                            key={action.id}
-                            type="button"
-                            className={`shop-action-btn${isInvTargetSelected ? ' held' : ''}`}
-                            onPointerDown={e => handleInvActionDown(action.id, e)}
-                            onPointerUp={e => { e.preventDefault(); e.stopPropagation(); }}
-                            onPointerCancel={e => { e.preventDefault(); e.stopPropagation(); }}
-                            onClick={e => { e.preventDefault(); e.stopPropagation(); }}
-                        >
-                            {action.label}
                         </button>
                     );
                 })}

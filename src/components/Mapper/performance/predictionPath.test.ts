@@ -65,4 +65,22 @@ describe('Performance Mode queued-move prediction', () => {
     expect(createFastMapPrediction('m_900', [], null)).toBeNull();
     expect(createFastMapPrediction(null, [{ dir: 'north' }], null)).toBeNull();
   });
+
+  it('continues later directions from the same room after a blocked step', () => {
+    const map = predictionMap();
+    const prediction = createFastMapPrediction('m_900', [
+      { dir: 'north' }, { dir: 'west' }, { dir: 'east' },
+    ], { dir: 'north', targetId: 'm_30' });
+
+    expect(resolveFastMapPredictionPoints(map, createFastMapRoomIndex(map), prediction)).toEqual([
+      { x: 0.5, y: 0.5, z: 0 },
+      { x: 0.5, y: 2.5, z: 0 },
+      { x: 1.5, y: 2.5, z: 0 },
+    ]);
+  });
+
+  it('keeps every queued direction during a long burst', () => {
+    const moves = Array.from({ length: 20 }, () => ({ dir: 'north' }));
+    expect(createFastMapPrediction('m_900', moves, null)?.directions).toHaveLength(20);
+  });
 });

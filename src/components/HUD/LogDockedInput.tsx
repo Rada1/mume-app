@@ -16,6 +16,7 @@ import { useAutomaticTargetForRoom, useAutomaticTargetStore } from '../../stores
 import { getRoomIdentityKey } from '../../utils/roomIdentityUtils';
 import { getAutoRoomTarget, isAutoTargetChipDisabledZone } from '../../utils/commandAutoTarget';
 import { getRoomTargetSuggestions, makeCommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
+import { getNonGroupmateRoomTargetSuggestions } from '../../utils/groupTargetSuggestions';
 import { CHAT_PARLEY_CHANNELS, getChatChannelSuggestions, getChatChannelColor, getChatTargetSuggestions } from '../../utils/chatWindowUtils';
 import { getTargetClassificationColor } from '../../utils/targetClassificationColor';
 import type { EntityColorMap } from '../../utils/inlineActionModel';
@@ -77,6 +78,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         whoList,
     } = useGame();
     const { target, characterInfo } = useActiveVitals();
+    const { stats, groupMembers } = useVitals();
     const setAutomaticTarget = useAutomaticTargetStore(state => state.setTarget);
     const roomChars = useRoomStore(state => state.chars);
     const roomItems = useRoomStore(state => state.items);
@@ -85,13 +87,17 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const roomDesc = useRoomStore(state => state.roomDesc);
     const roomZone = useRoomStore(state => state.roomZone);
     const automaticTargetRoomKey = getRoomIdentityKey({ roomNum, roomName, roomZone, roomDesc });
-    const automaticTarget = useAutomaticTargetForRoom(automaticTargetRoomKey);
-    const autoTargetChipDisabled = isAutoTargetChipDisabledZone(roomZone);
     const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
     const roomTargetSuggestions = useMemo(() => [
         ...getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName || ''),
         ...getRoomTargetSuggestions([], Object.values(roomItems), 'objects'),
     ], [characterName, roomItems, roomOccupants]);
+    const automaticTargetSuggestions = useMemo(() => [
+        ...getNonGroupmateRoomTargetSuggestions(roomOccupants, groupMembers, characterName || ''),
+        ...getRoomTargetSuggestions([], Object.values(roomItems), 'objects'),
+    ], [characterName, groupMembers, roomItems, roomOccupants]);
+    const automaticTarget = useAutomaticTargetForRoom(automaticTargetRoomKey, automaticTargetSuggestions);
+    const autoTargetChipDisabled = isAutoTargetChipDisabledZone(roomZone);
     const characterRaces = [characterInfo.race, characterInfo.subrace]
         .filter(Boolean)
         .map(value => value!.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, ''));
@@ -103,12 +109,11 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         makeCommandTargetSuggestion(`*${name}*`, `*${name}*`, 'player')
     ), [isEvilRace]);
     const displayedTarget = target || (!autoTargetChipDisabled
-        ? automaticTarget || getAutoRoomTarget('hit', roomOccupants, characterName || '', roomZone)
+        ? automaticTarget || getAutoRoomTarget('hit', roomOccupants, characterName || '', roomZone, groupMembers)
         : null);
     useEffect(() => {
         if (target || gameState !== 'playing') setAutomaticTarget(null);
     }, [gameState, setAutomaticTarget, target]);
-    const { stats } = useVitals();
     const { displayInventoryLines, displayEqLines } = useUI();
     const requestWhoList = useWhoListRefresh(whoList, executeCommand);
     const { setActiveMapFilter, setMapSearchQuery } = useMapper();

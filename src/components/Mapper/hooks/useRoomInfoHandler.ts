@@ -36,6 +36,7 @@ interface RoomInfoProps {
     // The XML/text move-confirmed handler reads this to skip a redundant SECOND consume
     // for the same physical move (lit rooms fire BOTH a GMCP room-info and an XML move).
     lastGmcpMoveTimeRef?: React.MutableRefObject<number>;
+    unmatchedGmcpConfirmationsRef?: React.MutableRefObject<number>;
     activeView: string;
     // When false (default / "play mode"), the mapper only TRACKS position against the
     // preloaded base map and never fabricates a brand-new room. When true ("map edit
@@ -47,7 +48,7 @@ export const useRoomInfoHandler = ({
     roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, spatialIndexRef,
     nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef,
     firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, onMoveConfirmed, addMessage, showDebugEchoes, preMoveRef,
-    deathRoomId, setDeathRoomId, baseMapExitsRef, lastGmcpMoveTimeRef, activeView, mapEditMode
+    deathRoomId, setDeathRoomId, baseMapExitsRef, lastGmcpMoveTimeRef, unmatchedGmcpConfirmationsRef, activeView, mapEditMode
 }: RoomInfoProps) => {
 
     // Debounce for syncing the explored Set into React state / persistence. The hot
@@ -114,11 +115,8 @@ export const useRoomInfoHandler = ({
         }
 
         const now = Date.now();
-        if (!isSpectateUpdate) {
-            while (pendingMovesRef.current.length > 0 && now - pendingMovesRef.current[0].time > 5000) {
-                pendingMovesRef.current.shift();
-            }
-        }
+        // MMapper retains sent commands until an arrival or a failure consumes
+        // them. Travel can legitimately take longer than five seconds.
         
         // If we arrived via GMCP, we clear any dead-reckoning 'ghost' resolutions 
         // that happened between the command and this packet. 
@@ -178,54 +176,36 @@ export const useRoomInfoHandler = ({
                 }
             }
 
-            if (authorityDir) {
-                dirUsed = authorityDir;
-                // QUEUE PRUNING: If this authoritative dir exists in our queue, 
-                // remove it and everything before it (which are now confirmed failed/skipped).
-                const matchIdx = pendingMovesRef.current.findIndex(m => m.dir === authorityDir);
-                if (matchIdx !== -1) {
-                    if (matchIdx > 0 && showDebugEchoes) {
-                        const skipped = pendingMovesRef.current.slice(0, matchIdx).map(m => m.dir).join(', ');
-                        const skippedIds = pendingMovesRef.current.slice(0, matchIdx).map(m => (m as any).id || '?').join(', ');
-                        addMessage?.('system', `[Mapper] Warning: Skipped ${matchIdx} pending moves: ${skipped} (IDs: ${skippedIds}) (Resync to ${authorityDir})`);
-                    }
-                    pendingMovesRef.current.splice(0, matchIdx + 1);
-                }
-            } else {
+            dirUsed = authorityDir;
+            if (!dirUsed) {
                 // 3. Fallback to ArdaMap preloaded exits
                 if (currentActiveRoom && currentActiveRoom.id.startsWith('m_')) {
                     const prevVnum = currentActiveRoom.id.substring(2);
                     const ardaData = preloadedCoordsRef.current[prevVnum];
                     if (ardaData && ardaData[4]) {
-                        // Match any pending move that has a valid Arda exit to this gmcpId
-                        const matchIdx = pendingMovesRef.current.findIndex(m => {
-                            const targetVnum = getExitTargetId(ardaData[4][m.dir]);
-                            return targetVnum === gmcpIdStr;
-                        });
-                        
-                        if (matchIdx !== -1) {
-                            dirUsed = pendingMovesRef.current[matchIdx].dir;
-                            if (matchIdx > 0 && showDebugEchoes) {
-                                addMessage?.('system', `[Mapper] Warning: Skipped ${matchIdx} moves via Arda match.`);
-                            }
-                            pendingMovesRef.current.splice(0, matchIdx + 1);
-                        }
+                        dirUsed = Object.keys(ardaData[4]).find(dir =>
+                            getExitTargetId(ardaData[4][dir]) === gmcpIdStr
+                        ) || null;
                     }
                 }
-
-                // 4. Last fallback: use the pending queue head if we still don't know the direction
-                if (!dirUsed) {
-                    const nextMove = pendingMovesRef.current.shift();
-                    if (nextMove) {
-                        dirUsed = nextMove.dir;
-                    }
-                }
+            }
+            // MMapper consumes only the oldest command for each arrival. An
+            // unexpected direction invalidates the remaining speculative path.
+            const queuedMove = pendingMovesRef.current.shift();
+            if (!dirUsed) dirUsed = queuedMove?.dir || null;
+            else if (queuedMove && queuedMove.dir !== dirUsed) {
+                pendingMovesRef.current = [];
+                if (showDebugEchoes) addMessage?.('system', `[Mapper] Movement ${dirUsed} did not match queued ${queuedMove.dir}; clearing prediction queue.`);
             }
 
             // If GMCP just claimed one or more queued moves, stamp the time so the
             // XML/text move-confirmed handler knows this physical move is already
             // accounted for and won't consume a second pending entry for it.
             if (lastGmcpMoveTimeRef && pendingMovesRef.current.length < pendingLenBeforeConsume) {
+                if (unmatchedGmcpConfirmationsRef) {
+                    if (Date.now() - lastGmcpMoveTimeRef.current >= 400) unmatchedGmcpConfirmationsRef.current = 0;
+                    unmatchedGmcpConfirmationsRef.current++;
+                }
                 lastGmcpMoveTimeRef.current = Date.now();
             }
 

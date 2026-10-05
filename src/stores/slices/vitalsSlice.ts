@@ -24,6 +24,7 @@ export interface CharacterInfo {
     gold: number;
     age?: string;
     height?: string;
+    burden?: string;
     citizenships?: number;
     warFame?: number;
     description?: string;

@@ -313,6 +313,7 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
             </button>}
             {lootSourceCount > 0 && <div className="room-loot-trigger-wrap">
                 <button ref={lootTriggerRef} className="room-loot-trigger" type="button" onClick={openQueue}
+                    aria-expanded={isOpen} aria-haspopup="dialog"
                     aria-label={`Open loot list, ${lootSourceCount} available loot sources`}>
                     <span>Loot</span><span className="room-loot-count">{lootSourceCount}</span>
                 </button>

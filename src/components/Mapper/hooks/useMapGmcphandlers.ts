@@ -54,6 +54,7 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
     // move. The XML/text move-confirmed handler checks this to avoid a redundant second
     // consume of the same physical move (lit rooms fire BOTH a GMCP and an XML event).
     const lastGmcpMoveTimeRef = useRef<number>(0);
+    const unmatchedGmcpConfirmationsRef = useRef<number>(0);
 
     const pushPendingMove = (dir: string) => {
         props.pendingMovesRef.current.push({ dir, time: Date.now() });
@@ -101,7 +102,8 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         // short window), this XML event is that same move's redundant second confirmation
         // — bail so we don't consume a second pending entry (which drained the prediction
         // line at 2x speed) or dead-reckon a room GMCP already resolved exactly.
-        if (isXmlMovement && now - lastGmcpMoveTimeRef.current < 400) {
+        if (isXmlMovement && unmatchedGmcpConfirmationsRef.current > 0 && now - lastGmcpMoveTimeRef.current < 400) {
+            unmatchedGmcpConfirmationsRef.current--;
             return;
         }
 
@@ -234,6 +236,7 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         deathRoomId: props.deathRoomId,
         setDeathRoomId: props.setDeathRoomId,
         lastGmcpMoveTimeRef,
+        unmatchedGmcpConfirmationsRef,
         activeView: props.activeView,
         mapEditMode: props.mapEditMode
     });

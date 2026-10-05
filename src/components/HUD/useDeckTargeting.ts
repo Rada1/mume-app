@@ -285,6 +285,7 @@ export const useDeckTargeting = ({
 
     const targetSuggestions = useMemo(() => {
         if (!activeItem) return undefined;
+        if (/^butcher(?:\s|$)/i.test(activeItem.cmd.trim())) return getRoomCorpseTargetSuggestions(roomItems);
         if (isWhoTarget) return getWhoTargetSuggestions(whoList, characterName);
         if (isSocialTarget) return getSocialTargetSuggestions();
         if (activeItem.targetKind === 'mounts') {

@@ -73,7 +73,7 @@ export const getRoomTargetSuggestions = (
     const suggestions = orderedSources.flatMap(({ source, index }) => {
         const occupant: GmcpOccupant = typeof source === 'string' ? { name: source } : source;
         const type = (occupant.type || '').toLowerCase();
-        const label = occupant.short || occupant.shortdesc || occupant.name || occupant.keyword || '';
+        const label = occupant._visibleRoomLabel || occupant.short || occupant.shortdesc || occupant.name || occupant.keyword || '';
         if (!label || (selfName && label.toLowerCase() === selfName.toLowerCase())) return [];
         const value = getOccupantCommandKeyword(occupant, label);
         if (!value) return [];
@@ -84,23 +84,36 @@ export const getRoomTargetSuggestions = (
     });
 
     const totalByKeyword = new Map<string, number>();
+    const totalByLabel = new Map<string, number>();
     suggestions.forEach(({ value }) => {
         const keyword = value.toLowerCase();
         totalByKeyword.set(keyword, (totalByKeyword.get(keyword) || 0) + 1);
     });
+    suggestions.forEach(({ label }) => {
+        const displayLabel = label.trim().toLowerCase();
+        totalByLabel.set(displayLabel, (totalByLabel.get(displayLabel) || 0) + 1);
+    });
 
     const ordinalByKeyword = new Map<string, number>();
+    const ordinalByLabel = new Map<string, number>();
     return suggestions.map(suggestion => {
         const keyword = suggestion.value.toLowerCase();
         const total = totalByKeyword.get(keyword) || 0;
-        if (total < 2) return suggestion;
+        const displayLabel = suggestion.label.trim().toLowerCase();
+        const duplicateLabelCount = totalByLabel.get(displayLabel) || 0;
+        let label = suggestion.label;
+        if (duplicateLabelCount > 1) {
+            const labelOrdinal = (ordinalByLabel.get(displayLabel) || 0) + 1;
+            ordinalByLabel.set(displayLabel, labelOrdinal);
+            label = `${label} (${labelOrdinal})`;
+        }
+        if (total < 2) return label === suggestion.label ? suggestion : { ...suggestion, label };
 
         const ordinal = (ordinalByKeyword.get(keyword) || 0) + 1;
         ordinalByKeyword.set(keyword, ordinal);
-        const displayKeyword = suggestion.value.replace(/^[*-]+|[*-]+$/g, '');
         return {
             ...suggestion,
-            label: `${ordinal}.${displayKeyword}`,
+            label,
             value: `${ordinal}.${suggestion.value}`
         };
     });

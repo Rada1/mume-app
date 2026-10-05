@@ -41,6 +41,7 @@ import { consumeTextMapperLine, createTextMapperState, extractXmlMovementDir } f
 import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
 import { canBootstrapExpectedCapture } from './captureBootstrap';
 import { consumeCommandCompletionSound } from '../../services/audio/commandCompletionSounds';
+import { beginCharacterInfoRefresh } from '../../utils/characterInfoRefreshTracker';
 import { changesCombatStatsFromSpell } from '../../utils/spellCombatStatUtils';
 import { parseShopVariant } from '../../utils/shopVariantParser';
 import { hasXmlTag } from '../../utils/xmlTagUtils';
@@ -432,6 +433,11 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         deps.executeCommandRef.current?.('info %O %D %k %A', false, true, true, false);
     }, [deps.executeCommandRef]);
 
+    const refreshEncumbrance = useCallback(() => {
+        beginCharacterInfoRefresh(['burden']);
+        deps.executeCommandRef.current?.('info %C', true, true, true, false);
+    }, [deps.executeCommandRef]);
+
     const actionTracker = useActionTracker({
         capture,
         setInventoryLines: sessionSetInventoryLines,
@@ -454,9 +460,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             deps.playRemoveSound();
             refreshEquipmentCombatStats();
         },
-        onGet: () => deps.playEffect?.('get'),
+        onGet: () => {
+            deps.playEffect?.('get');
+            refreshEncumbrance();
+        },
         onDrop: () => {
             deps.playEffect?.('drop');
+            refreshEncumbrance();
             setTimeout(() => deps.executeCommandRef.current?.('inventory', true, true, false, true), 0);
         }
     });

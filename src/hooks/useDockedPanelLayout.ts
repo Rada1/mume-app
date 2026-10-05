@@ -27,8 +27,7 @@ export function useDockedPanelLayout(isMobile: boolean, gameState: string, isEdi
         const panels: DockedPanelId[] = [];
         if (isEditorOpen) panels.push('editor');
         if (isArchiveOpen) panels.push('archive');
-        if (isShopOpen && !isGearPanelOpen) panels.push('shop');
-        if (isGearPanelOpen) panels.push('gear');
+        if (isGearPanelOpen || isShopOpen) panels.push('gear');
         if (isHelpOpen) panels.push('help');
         if (showChatWindow) panels.push('chat');
         if (isCommandPanelOpen || isSkillsPanelOpen) panels.push('commands');
@@ -39,8 +38,7 @@ export function useDockedPanelLayout(isMobile: boolean, gameState: string, isEdi
         if (gameState === 'account') return isCommandPanelOpen ? 'commands' : null;
         if (isEditorOpen) return 'editor';
         if (isArchiveOpen) return 'archive';
-        if (isShopOpen && !isGearPanelOpen) return 'shop';
-        if (isGearPanelOpen) return 'gear';
+        if (isGearPanelOpen || isShopOpen) return 'gear';
         if (isHelpOpen) return 'help';
         if (showChatWindow) return 'chat';
         if (isSkillsPanelOpen) return 'skills';
@@ -51,7 +49,7 @@ export function useDockedPanelLayout(isMobile: boolean, gameState: string, isEdi
     const selectedPanel = activePanel === undefined ? defaultPanel : activePanel;
     const selectedPanelId: DockedPanelId | null = selectedPanel === 'skills'
         ? 'commands'
-        : selectedPanel === 'shop' && isGearPanelOpen
+        : selectedPanel === 'shop'
             ? 'gear'
             : selectedPanel ?? null;
     const isSelectedPanelAvailable = Boolean(selectedPanel && selectedPanelId &&

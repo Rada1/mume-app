@@ -5,15 +5,19 @@
 
 // --- Logic Section ---
 import { useRoomStore } from '../stores/useRoomStore';
-import { getMountTargetSuggestions, getRoomTargetSuggestions } from './commandSuggestionUtils';
-import { getCommandTargetMenuKind } from './commandTargetUtils';
+import { useCombatStore } from '../stores/useCombatStore';
+import { getMountTargetSuggestions, getRoomTargetSuggestions, isTargetSuggestionMatch } from './commandSuggestionUtils';
+import { getCommandTargetMenuKind, isOffensiveTargetCommand } from './commandTargetUtils';
 import { getRoomIdentityKey } from './roomIdentityUtils';
+import { canUseLockedTargetForCommand } from './swipeCommandColors';
+import { isGroupMemberTarget } from './groupTargetSuggestions';
 
 type GlobalTargetKind = 'room-entity' | 'mount' | 'room-object' | 'corpse' | 'exit' | 'self';
 interface CommandTargetEntry {
     target: string;
     revision: number;
     roomKey: string;
+    isRoomCharacterTarget: boolean;
 }
 
 const targetsByCommand = new Map<string, CommandTargetEntry>();
@@ -70,7 +74,12 @@ const classifyGlobalTarget = (target: string): GlobalTargetKind => {
     return 'room-entity';
 };
 
-const isGlobalTargetCompatible = (command: string, kind: GlobalTargetKind): boolean => {
+const isGlobalTargetCompatible = (command: string, kind: GlobalTargetKind, target?: string): boolean => {
+    if (!canUseLockedTargetForCommand(command)) return false;
+    if (target && isOffensiveTargetCommand(command)) {
+        const room = useRoomStore.getState();
+        if (isGroupMemberTarget(target, Object.values(room.chars), useCombatStore.getState().groupMembers)) return false;
+    }
     const menuKind = getCommandTargetMenuKind(command);
     if (!menuKind) return false;
 
@@ -92,7 +101,7 @@ const isGlobalTargetCompatible = (command: string, kind: GlobalTargetKind): bool
 };
 
 export const isCompatibleGlobalTarget = (command: string, target: string | null): boolean =>
-    !!target?.trim() && isGlobalTargetCompatible(command, classifyGlobalTarget(target));
+    !!target?.trim() && isGlobalTargetCompatible(command, classifyGlobalTarget(target), target);
 
 /** Sets the global target; compatible commands inherit it until retargeted individually. */
 export const setGlobalCommandTarget = (target: string | null): void => {
@@ -107,8 +116,27 @@ export const getRememberedCommandTarget = (command: string): string | null => {
     const key = getCommandTargetKey(command);
     if (!key) return null;
     const commandTarget = targetsByCommand.get(key);
-    const currentRoomTarget = commandTarget?.roomKey === getCurrentRoomKey() ? commandTarget : null;
-    const globalApplies = globalTarget && isGlobalTargetCompatible(command, globalTarget.kind);
+    const room = useRoomStore.getState();
+    const currentRoomKey = getRoomIdentityKey({
+        roomNum: room.roomNum,
+        roomName: room.roomName,
+        roomZone: room.roomZone,
+        roomDesc: room.roomDesc
+    });
+    const isStaleRoomCharacterTarget = commandTarget?.roomKey === currentRoomKey
+        && commandTarget.isRoomCharacterTarget
+        && !getRoomTargetSuggestions(Object.values(room.chars), [], 'characters')
+            .some(suggestion => isTargetSuggestionMatch(suggestion, commandTarget.target));
+    const isGroupmateOffensiveTarget = Boolean(commandTarget?.roomKey === currentRoomKey
+        && isOffensiveTargetCommand(command)
+        && isGroupMemberTarget(commandTarget.target, Object.values(room.chars), useCombatStore.getState().groupMembers));
+    if (isStaleRoomCharacterTarget || isGroupmateOffensiveTarget) targetsByCommand.delete(key);
+    const currentRoomTarget = commandTarget?.roomKey === currentRoomKey
+        && !isStaleRoomCharacterTarget
+        && !isGroupmateOffensiveTarget
+        ? commandTarget
+        : null;
+    const globalApplies = globalTarget && isGlobalTargetCompatible(command, globalTarget.kind, globalTarget.target);
     if (globalApplies && (!currentRoomTarget || globalTarget.revision > currentRoomTarget.revision)) {
         return globalTarget.target;
     }
@@ -119,7 +147,17 @@ export const rememberCommandTarget = (command: string, target: string | null): v
     const key = getCommandTargetKey(command);
     if (!key) return;
     revision += 1;
-    if (target?.trim()) targetsByCommand.set(key, { target: target.trim(), revision, roomKey: getCurrentRoomKey() });
+    if (target?.trim()) {
+        const room = useRoomStore.getState();
+        const isRoomCharacterTarget = getRoomTargetSuggestions(Object.values(room.chars), [], 'characters')
+            .some(suggestion => isTargetSuggestionMatch(suggestion, target));
+        targetsByCommand.set(key, {
+            target: target.trim(),
+            revision,
+            roomKey: getCurrentRoomKey(),
+            isRoomCharacterTarget
+        });
+    }
     else targetsByCommand.delete(key);
 };
 

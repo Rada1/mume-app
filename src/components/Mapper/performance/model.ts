@@ -60,6 +60,8 @@ export interface FastMapTextLabel {
   y: number;
   z: number;
   text: string;
+  /** Door labels can be thinned when their screen-space boxes collide. */
+  kind?: 'door';
   /** Use MMapper's left-aligned baseline anchor for MM2 text infomarks. */
   anchor?: 'center' | 'mmapper';
   /** MMapper infomark text rotation, in degrees around its stored position. */

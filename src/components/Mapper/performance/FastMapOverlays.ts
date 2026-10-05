@@ -14,17 +14,18 @@ import { buildLiveDoorLabels, buildMapOverlayGeometry, buildMapTextLabels } from
 import { compileProgram, type WebGLProgramWithUniforms } from './webglProgram';
 import { COLOR_FS, COLOR_VS, SPRITE_FS, SPRITE_VS } from './vendor/shaders';
 import { WHITE } from './vendor/palette';
-import { FAST_MAP_PREDICTION_COLOR, FAST_MAP_TILE_TINT } from './fastMapStyle';
+import { FAST_MAP_TILE_TINT } from './fastMapStyle';
 import type { FastMapPoint } from './predictionPath';
 import { buildGroupMemberGeometry, buildGroupMemberLabels } from './groupMarkerGeometry';
 import { drawColorGeometry } from './roomGpuDrawing';
 import { buildSearchGeometry } from './searchGeometry';
 import { drawRoomSpriteFlags } from './roomSpriteDrawing';
 import { ROOM_VISITED } from './roomExploration';
+import { declutterDoorLabels } from './doorLabelLayout';
+import { buildPredictionOverlayGeometry } from './predictionOverlayGeometry';
 
 const SPRITE_UNIFORMS = ['uView', 'uTex', 'uColor'] as const;
 const COLOR_UNIFORMS = ['uView', 'uColor'] as const;
-const PREDICTION_ALPHA = 0.95;
 const ROOM_OVERLAY_COLOR = new Float32Array([
   FAST_MAP_TILE_TINT[0], FAST_MAP_TILE_TINT[1], FAST_MAP_TILE_TINT[2], 1,
 ]);
@@ -51,6 +52,8 @@ export class FastMapOverlays {
   private roomStates: Uint8Array = new Uint8Array();
   private roomIndexByPosition = new Map<string, number>();
   private revealAll = false;
+  private doorLabelZoom = 0.4;
+  private liveDoorLabels: FastMapTextLabel[] = [];
 
   constructor(private readonly gl: WebGL2RenderingContext) {
     this.spriteProgram = compileProgram(gl, SPRITE_VS, SPRITE_FS, SPRITE_UNIFORMS);
@@ -128,7 +131,8 @@ export class FastMapOverlays {
       if (room === undefined) return this.revealAll ? label : null;
       return (this.roomStates[room] ?? 0) === ROOM_VISITED ? label : null;
     };
-    this.text.setLabels([...this.baseLabels, ...this.extraLabels].map(applyState).filter((label): label is FastMapTextLabel => label !== null));
+    const visible = [...this.baseLabels, ...this.extraLabels].map(applyState).filter((label): label is FastMapTextLabel => label !== null);
+    this.text.setLabels(declutterDoorLabels(visible, this.doorLabelZoom));
   }
 
   private nearbyVisitedRoom(label: FastMapTextLabel): number | undefined {
@@ -176,54 +180,12 @@ export class FastMapOverlays {
     const signature = points.map(point => `${point.x},${point.y},${point.z}`).join(';');
     if (signature === this.predictionSignature) return;
     this.predictionSignature = signature;
-    this.predictionRanges.clear();
-    if (points.length < 2) return;
-
-    const byFloor = new Map<number, number[]>();
-    const appendVertex = (vertices: number[], x: number, y: number, z: number) => {
-      vertices.push(x, y, z, FAST_MAP_PREDICTION_COLOR[0], FAST_MAP_PREDICTION_COLOR[1], FAST_MAP_PREDICTION_COLOR[2], PREDICTION_ALPHA);
-    };
-    for (let index = 1; index < points.length; index++) {
-      const from = points[index - 1]!;
-      const to = points[index]!;
-      if (from.z !== to.z) continue;
-      const vertices = byFloor.get(from.z) ?? [];
-      byFloor.set(from.z, vertices);
-      const dx = to.x - from.x;
-      const dy = to.y - from.y;
-      const length = Math.hypot(dx, dy);
-      if (length === 0) continue;
-      const ox = (-dy / length) * 0.05;
-      const oy = (dx / length) * 0.05;
-      appendVertex(vertices, from.x + ox, from.y + oy, from.z);
-      appendVertex(vertices, to.x + ox, to.y + oy, to.z);
-      appendVertex(vertices, from.x - ox, from.y - oy, from.z);
-      appendVertex(vertices, from.x - ox, from.y - oy, from.z);
-      appendVertex(vertices, to.x + ox, to.y + oy, to.z);
-      appendVertex(vertices, to.x - ox, to.y - oy, to.z);
-    }
-
-    const endpoint = points[points.length - 1]!;
-    const endpointVertices = byFloor.get(endpoint.z) ?? [];
-    byFloor.set(endpoint.z, endpointVertices);
-    const radius = 0.09;
-    for (let segment = 0; segment < 12; segment++) {
-      const angleA = (segment / 12) * Math.PI * 2;
-      const angleB = ((segment + 1) / 12) * Math.PI * 2;
-      appendVertex(endpointVertices, endpoint.x, endpoint.y, endpoint.z);
-      appendVertex(endpointVertices, endpoint.x + Math.cos(angleA) * radius, endpoint.y + Math.sin(angleA) * radius, endpoint.z);
-      appendVertex(endpointVertices, endpoint.x + Math.cos(angleB) * radius, endpoint.y + Math.sin(angleB) * radius, endpoint.z);
-    }
-
-    const allVertices: number[] = [];
-    for (const [floor, vertices] of byFloor) {
-      this.predictionRanges.set(floor, { first: allVertices.length / 7, count: vertices.length / 7 });
-      for (const value of vertices) allVertices.push(value);
-    }
+    const { vertices, ranges } = buildPredictionOverlayGeometry(points);
+    this.predictionRanges = ranges;
     const gl = this.gl;
     gl.bindVertexArray(this.predictionMesh.vao);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.predictionMesh.buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(allVertices), gl.DYNAMIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW);
     gl.bindVertexArray(null);
   }
 
@@ -232,9 +194,12 @@ export class FastMapOverlays {
   }
 
   setLiveRoom(room: FastRoomOverlay | null): void {
-    const base = new Set(this.baseLabels.map(label => `${label.x}:${label.y}:${label.z}:${label.text}`));
-    const live = buildLiveDoorLabels(room).filter(label => !base.has(`${label.x}:${label.y}:${label.z}:${label.text}`));
-    this.text.setLiveLabels(live);
+    // The canonical map has already merged and placed both sides of its doors.
+    // Drawing the live copy again creates a second label at another anchor.
+    const onBaseMap = room && this.roomIndexByPosition.has(`${room.x}:${room.y}:${room.z}`);
+    const live = onBaseMap ? [] : buildLiveDoorLabels(room);
+    this.liveDoorLabels = live;
+    this.text.setLiveLabels(declutterDoorLabels(live, this.doorLabelZoom));
   }
 
   drawRoomFlags(mesh: GpuSpriteMesh | null, texture: WebGLTexture | null, view: Float32Array, range?: { first: number; count: number }): void {
@@ -301,7 +266,16 @@ export class FastMapOverlays {
     drawColorGeometry(gl, this.lineProgram, this.groupMesh, vertices.length / 7);
   }
 
-  drawLabels(floor: number, zoom: number, view: Float32Array, width: number, height: number): void { if (zoom >= 0.45) this.text.render(floor, view, width, height); }
+  drawLabels(floor: number, zoom: number, view: Float32Array, width: number, height: number, pixelRatio = 1): void {
+    if (zoom < 0.4) return;
+    const bucket = Math.floor(zoom * 10) / 10 * pixelRatio;
+    if (bucket !== this.doorLabelZoom) {
+      this.doorLabelZoom = bucket;
+      this.refreshLabels();
+      this.text.setLiveLabels(declutterDoorLabels(this.liveDoorLabels, bucket));
+    }
+    this.text.render(floor, view, width, height);
+  }
 
   dispose(): void {
     const gl = this.gl;

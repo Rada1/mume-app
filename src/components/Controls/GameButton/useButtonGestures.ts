@@ -9,6 +9,7 @@ import { getButtonCommand } from '../../../utils/buttonUtils';
 import { BLANK_TARGET_VALUE, canCommandAcceptTarget, getDefaultCommandTarget } from '../../../utils/commandTargetUtils';
 import type { UseTacticalTargetingReturn } from './tacticalTargetingTypes';
 import type { TacticalSwapCell } from './TacticalCommandPalette';
+import { initializeMapSwipeTracking, isMapControlElement, showMapSwipeFeedback, trackMapSwipeMovement } from './mapSwipeFeedback';
 
 export interface UseButtonGesturesProps {
     button: CustomButton;
@@ -107,7 +108,8 @@ export const useButtonGestures = ({
     const currentCommandRef = useRef<string>(button.command);
     const isTacticalSwipeButton = (element: HTMLElement) => button.setId.toLowerCase() === 'tactical'
         || button.id.startsWith('tactical-')
-        || element.classList.contains('deck-category-button');
+        || button.id.startsWith('map-action-')
+        || isMapControlElement(element);
     const getGestureTarget = (command: string, element: HTMLElement): string | null => {
         const effectiveTarget = tacticalTargeting
             ? tacticalTargeting.getEffectiveTarget(command)
@@ -200,6 +202,7 @@ export const useButtonGestures = ({
             const rect = el.getBoundingClientRect();
             el._startX = e.clientX;
             el._startY = e.clientY;
+            initializeMapSwipeTracking(el, e.clientX, e.clientY);
             el._heldTargetListScroll = null;
             el._startTime = Date.now();
             el._maxDist = 0;
@@ -367,6 +370,7 @@ export const useButtonGestures = ({
         if (el._primaryPointerId !== undefined && el._primaryPointerId !== null && e.pointerId !== el._primaryPointerId) {
             return;
         }
+        trackMapSwipeMovement(el, e.clientX, e.clientY);
         if (!el._startX) return;
 
         // Failsafe for desktop: if no buttons are pressed, clean up orphaned state
@@ -767,6 +771,9 @@ export const useButtonGestures = ({
         if (el._primaryPointerId !== undefined && el._primaryPointerId !== null && e.pointerId !== el._primaryPointerId) {
             return;
         }
+        if (isTacticalSwipeButton(el)) {
+            showMapSwipeFeedback(el, button, e.clientX, e.clientY, lastActiveDirRef.current);
+        }
         el._primaryPointerId = null;
 
         const releaseHit = document.elementFromPoint?.(e.clientX, e.clientY);
@@ -1134,16 +1141,6 @@ export const useButtonGestures = ({
             ? { ...basePreviewCmd, cmd: defaultCommand }
             : getButtonCommand(tapButton, finalDx, finalDy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, effectiveTarget, isLong, (heldButton?.id === button.id ? heldButton.commandPrefixes : []));
 
-        const isTacticalSwipe = isTacticalSwipeButton(el);
-        if (isTacticalSwipe && (el._maxDist || 0) > 15 && previewCmd?.dir) {
-            el.dataset.shortSwipeFeedback = previewCmd.dir;
-            if (el._shortSwipeFeedbackTimer) window.clearTimeout(el._shortSwipeFeedbackTimer);
-            el._shortSwipeFeedbackTimer = window.setTimeout(() => {
-                delete el.dataset.shortSwipeFeedback;
-                el._shortSwipeFeedbackTimer = null;
-            }, 1000);
-        }
-
         setHeldButton(null);
         setCommandPreview(null);
         lastPreviewRef.current = null;
@@ -1270,6 +1267,9 @@ export const useButtonGestures = ({
         const el = e.currentTarget as any;
         try { el.releasePointerCapture(e.pointerId); } catch(err) {}
         if (el._primaryPointerId !== undefined && el._primaryPointerId !== null && e.pointerId !== el._primaryPointerId) return;
+        if (isTacticalSwipeButton(el)) {
+            showMapSwipeFeedback(el, button, e.clientX, e.clientY, lastActiveDirRef.current);
+        }
         el._primaryPointerId = null;
         if (isRebindingGestureRef) isRebindingGestureRef.current = false;
         if (el._panelWheelDragTimer) window.clearTimeout(el._panelWheelDragTimer);

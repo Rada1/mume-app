@@ -794,16 +794,10 @@ export function useMessageLog(
         }
 
         if (type === 'user') {
-            // Drain any buffered server data first (from prior commands), then append the
-            // user command immediately. This ensures consistent ordering: lingering server
-            // output always precedes the new user command, and future server responses
-            // (which haven't arrived yet) will be batched and rendered below it.
-            flushSchedulerRef.current?.cancel();
-            const drained = messageBufferRef.current.splice(0);
-
-            // Deduplicate: if an ID is provided, ensure it's not already in the log
+            // Keep command echoes in arrival order with received text while allowing
+            // rapid taps to share one log render and one scroll correction per frame.
             if (mid) {
-                if (addedMidSetRef.current.has(mid) || drained.some(m => m.id === mid)) return;
+                if (addedMidSetRef.current.has(mid)) return;
             }
 
             if (isChatMessage(msg)) {
@@ -814,10 +808,8 @@ export function useMessageLog(
                 lastMessageRef.current = msg;
             }
             if (mid) addedMidSetRef.current.add(mid);
-            setMessages(prev => {
-                const nextMessages = [...prev, ...drained, msg];
-                return nextMessages.length >= messageLimit ? nextMessages.slice(nextMessages.length - messageLimit) : nextMessages;
-            });
+            messageBufferRef.current.push(msg);
+            flushSchedulerRef.current?.schedule();
         } else {
             // Deduplicate: if an ID is provided, ensure it's not already in the buffer or state.
             // addedMidSetRef is always current (no stale closure), unlike messages state.

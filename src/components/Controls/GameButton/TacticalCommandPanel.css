@@ -308,12 +308,8 @@
     overflow: hidden;
 }
 
-.unified-tactical-surface .tactical-target-bar.is-full-width-target-list .tactical-target-bar-columns.tactical-target-bar-single-column {
+.unified-tactical-surface .tactical-target-bar-columns.tactical-target-bar-single-column {
     grid-template-columns: minmax(0, 1fr);
-}
-
-.unified-tactical-surface .tactical-target-bar.is-full-width-target-list .tactical-target-bar-empty-column {
-    display: none;
 }
 
 .unified-tactical-surface .tactical-target-bar-column {

@@ -455,7 +455,7 @@ const MessageItem = React.memo(({
                 <div className="content-row">
                     {timestampEl}
                     <span className="message-content prompt-text">
-                        {hasInlinePromptModes(msg.textOnly || msg.textRaw || '')
+                        {!viewport.isMobile && hasInlinePromptModes(msg.textOnly || msg.textRaw || '')
                             ? <PromptInlineControls text={msg.textOnly || msg.textRaw || ''} tokens={msg.tokens} />
                             : <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} highlightPromptVitals />}
                     </span>
@@ -999,6 +999,9 @@ const MessageLog: React.FC<MessageLogProps> = ({
         }, [viewport.columns, viewport.logFontSize, viewport.logFontSizePx, showBlockHeaders]),
         overscan: 12,
         rangeExtractor,
+        // When reading history, keep the viewport pinned to the same content even
+        // if a measured row above it changes height as new output arrives.
+        shouldAdjustScrollPositionOnItemSizeChange: () => viewport.isLockedToBottomRef.current,
     });
 
     const wasShaperOpenRef = useRef(isShaperOpen);
@@ -1025,22 +1028,29 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const lastMessagesRef = React.useRef(messages);
 
     React.useLayoutEffect(() => {
-        const isNewMessage = messages.length > lastMessagesRef.current.length;
+        const previousLastId = lastMessagesRef.current[lastMessagesRef.current.length - 1]?.id;
         const lastMsg = messages[messages.length - 1];
+        const isNewMessage = !!lastMsg && lastMsg.id !== previousLastId;
+        let hasNewCommand = false;
+        if (isNewMessage) {
+            for (let index = messages.length - 1; index >= 0 && messages[index].id !== previousLastId; index--) {
+                if (messages[index].type === 'user') hasNewCommand = true;
+            }
+        }
         lastMessagesRef.current = messages;
 
         const now = Date.now();
         const isThrottled = now - lastScrollCallRef.current < 16;
 
         if (isNewMessage) {
-            if (lastMsg?.type === 'user') setIsReadingHistory(false);
-            // In Spectate and Replay Mode, we always want to follow the action 
-            // unless the user manually scrolled up.
-            if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user' || isSpectateMode || sessionMode === 'replay') {
+            // Follow new output only while the user is already following live.
+            // Sending a command or viewing replay/spectate output must not pull
+            // the history pane away from the position the user chose.
+            if (viewport.isLockedToBottomRef.current) {
                 viewport.isLockedToBottomRef.current = true;
                 lastScrollCallRef.current = now;
                 requestAnimationFrame(() => {
-                    viewport.scrollToBottom(true, lastMsg?.type === 'user' || isSpectateMode || sessionMode === 'replay', 'NewMessage');
+                    viewport.scrollToBottom(true, hasNewCommand, 'NewMessage');
                 });
             }
         } else if (viewport.isLockedToBottomRef.current && !isThrottled) {
@@ -1049,7 +1059,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 viewport.scrollToBottom(true, false, 'LayoutEffect');
             });
         }
-    }, [messages, viewport, isNewbieMode, lastUserMsgIndex, virtualizer, isSpectateMode, sessionMode]);
+    }, [messages, viewport, isNewbieMode, lastUserMsgIndex, virtualizer]);
 
     React.useLayoutEffect(() => {
         if (isReadingHistory && liveLogRef.current) {

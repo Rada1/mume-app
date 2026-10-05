@@ -1,7 +1,11 @@
+/** @file buttonUtils.ts — Resolves tactical button gestures into commands. */
+
+// --- Logic Section ---
 import { CustomButton, SwipeDirection } from '../types';
 import { sanitizeGameTarget } from './gameUtils';
 import { decodeCommandEntities } from './commandTextUtils';
 import { canCommandAcceptTarget, applyTargetToCommand } from './commandTargetUtils';
+import { canUseLockedTargetForCommand } from './swipeCommandColors';
 
 const DOOR_ACTION_COMMANDS = new Set(['open', 'close', 'lock', 'unlock', 'knock']);
 
@@ -57,6 +61,7 @@ export const getButtonCommand = (
         }
     }
 
+    const targetForCommand = target && canUseLockedTargetForCommand(cmd) ? target : null;
     let consumedTarget = false;
     if (context) {
         const cleanContext = sanitizeGameTarget(context) || context;
@@ -66,23 +71,23 @@ export const getButtonCommand = (
     } else {
         if (cmd.match(/%n\|/)) {
             cmd = cmd.replace(/%n\|([^\s]+)/g, (_match, fallback) => {
-                if (target) {
+                if (targetForCommand) {
                     consumedTarget = true;
-                    return target;
+                    return targetForCommand;
                 }
                 return fallback;
             });
         } else if (cmd.includes('%n')) {
-            if (target) {
-                cmd = cmd.replace(/%n/g, target);
+            if (targetForCommand) {
+                cmd = cmd.replace(/%n/g, targetForCommand);
                 consumedTarget = true;
             } else {
                 cmd = cmd.replace(/ %n/g, '').replace(/%n/g, '');
             }
         }
 
-        if (!consumedTarget && target && actionType === 'command' && canCommandAcceptTarget(cmd)) {
-            cmd = applyTargetToCommand(cmd, target);
+        if (!consumedTarget && targetForCommand && actionType === 'command' && canCommandAcceptTarget(cmd)) {
+            cmd = applyTargetToCommand(cmd, targetForCommand);
             consumedTarget = true;
         }
     }
@@ -96,15 +101,15 @@ export const getButtonCommand = (
         if (joystickState.currentDir) {
             const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
             finalMods.push(dirMap[joystickState.currentDir] || joystickState.currentDir);
-        } else if (joystickState.isTargetModifierActive && target && !consumedTarget) {
-            finalMods.push(target);
+        } else if (joystickState.isTargetModifierActive && targetForCommand && !consumedTarget) {
+            finalMods.push(targetForCommand);
         }
     }
 
     const doorAction = cmd.trim().split(/\s+/, 1)[0].toLowerCase();
     if (button.id === 'tactical-doors' && DOOR_ACTION_COMMANDS.has(doorAction) && !consumedTarget) {
         const hasCommandTarget = cmd.trim().split(/\s+/).length > 1;
-        if (!hasCommandTarget) cmd = `${cmd.trim()} ${target || 'exit'}`;
+        if (!hasCommandTarget) cmd = `${cmd.trim()} ${targetForCommand || 'exit'}`;
     }
 
     const finalCmd = decodeCommandEntities(

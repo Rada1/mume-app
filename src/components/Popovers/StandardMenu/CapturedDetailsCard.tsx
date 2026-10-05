@@ -11,12 +11,14 @@ import { sanitizeMumeHtml } from '../../../utils/securityUtils';
 
 interface CapturedDetailsCardProps {
     examineLines?: string[];
+    examineMode?: 'look' | 'examine';
     considerLines?: string[];
     isCapturingExamine?: boolean;
     isCapturingConsider?: boolean;
     whoisLines?: string[];
     isCapturingWhois?: boolean;
     onRequestLook?: () => void;
+    onRequestExamine?: () => void;
     onRequestConsider?: () => void;
 }
 
@@ -69,12 +71,14 @@ const toAssessmentLine = (html: string): AssessmentLine => {
 
 export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
     examineLines,
+    examineMode = 'look',
     considerLines,
     isCapturingExamine,
     isCapturingConsider,
     whoisLines,
     isCapturingWhois,
     onRequestLook,
+    onRequestExamine,
     onRequestConsider
 }) => {
     // Remote allies aren't in the room, so they get identified via "whois"
@@ -125,11 +129,11 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
             )}
             <div className="captured-details-grid">
                 <div className="captured-detail-panel look-panel">
-                    <div className="captured-detail-kicker">Look</div>
+                    <div className="captured-detail-kicker">{examineMode === 'examine' ? 'Examine' : 'Look'}</div>
                     {isCapturingExamine && look.description.length === 0 ? (
                         <div className="captured-detail-loading">
                             <span className="captured-spinner" />
-                            <span>Looking...</span>
+                            <span>{examineMode === 'examine' ? 'Examining...' : 'Looking...'}</span>
                         </div>
                     ) : look.description.length > 0 ? (
                         <div className="captured-look-copy">
@@ -139,8 +143,10 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
                         </div>
                     ) : (
                         <div className="captured-detail-empty">
-                            <span>No look details yet.</span>
-                            {onRequestLook && <button type="button" className="captured-detail-request" onClick={onRequestLook}>Look</button>}
+                            <span>{examineMode === 'examine' ? 'No examine details yet.' : 'No look details yet.'}</span>
+                            {examineMode === 'examine' && onRequestExamine
+                                ? <button type="button" className="captured-detail-request" onClick={onRequestExamine}>Examine</button>
+                                : onRequestLook && <button type="button" className="captured-detail-request" onClick={onRequestLook}>Look</button>}
                         </div>
                     )}
 

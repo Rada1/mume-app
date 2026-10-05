@@ -15,6 +15,7 @@ import { classifyItemTier } from '../utils/itemTier';
 import { getShopRoomLabel } from '../utils/shopRoomUtils';
 import { useMobileGearSwipe } from '../hooks/useMobileGearSwipe';
 import { useMapper } from '../context/MapperContext';
+import { useActiveVitals } from '../stores/useActiveGameState';
 import type { DrawerLine, GearRow, GearSelectionAction, GearSelectionItem } from '../types';
 import { GearContainerContents } from './GearContainerContents';
 import { GearSelectionCheckbox } from './GearSelectionCheckbox';
@@ -31,6 +32,7 @@ type SelectedGear = { id: string; row: GearRow; section: Section; parentNoun?: s
 const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
     const setIsOpen = useGearPanelStore(state => state.setIsOpen);
     const mapper = useMapper();
+    const vitals = useActiveVitals();
     const inlineSettings = useSettingsStore();
     const gear = useGearPanel();
     const gearSwipe = useMobileGearSwipe(gear.viewport.isMobile, gear.triggerHaptic);
@@ -151,12 +153,23 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
         return <section className={`gear-section${expanded[section] ? '' : ' is-collapsed'}`} key={section}>
             <div className={`gear-section-heading${dragState?.target?.type === 'row' && dragState.target.row === dropRow ? ' is-drop-target' : ''}`}
                 data-object-drop-row={dropRow}>
-                <button className="gear-section-toggle" type="button"
-                    onClick={() => setExpanded(previous => ({ ...previous, [section]: !previous[section] }))}
-                    aria-expanded={expanded[section]}>
-                    {expanded[section] ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                    <span>{sectionName} ({rows.length})</span>
-                </button>
+                <div className="gear-section-heading-main">
+                    <button className="gear-section-toggle" type="button"
+                        onClick={() => setExpanded(previous => ({ ...previous, [section]: !previous[section] }))}
+                        aria-expanded={expanded[section]}>
+                        {expanded[section] ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                        <span>{sectionName} ({rows.length})</span>
+                    </button>
+                    {section === 'worn' && <div className="gear-section-summary" role="group" aria-label="Combat stats">
+                        <span>OB <strong>{vitals.ob !== undefined ? `${vitals.ob}%` : '—'}</strong></span>
+                        <span>DB <strong>{vitals.db !== undefined ? `${vitals.db}%` : '—'}</strong></span>
+                        <span>PB <strong>{vitals.pb !== undefined ? `${vitals.pb}%` : '—'}</strong></span>
+                        <span>ARM <strong>{vitals.armour !== undefined ? `${vitals.armour}%` : '—'}</strong></span>
+                    </div>}
+                    {section === 'carried' && <div className="gear-section-summary" role="group" aria-label="Encumbrance">
+                        <span title="Encumbrance from info %C">ENC <strong>{vitals.characterInfo.burden || '—'}</strong></span>
+                    </div>}
+                </div>
                 <div className="gear-section-tools">
                     {section !== 'room' && <button className="gear-refresh" type="button" onClick={() => gear.refresh(section)}
                         title={`Refresh ${section === 'worn' ? 'equipment' : 'inventory'}`} aria-label={`Refresh ${sectionName}`}>
@@ -229,7 +242,7 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
         </header>
         {isShopOpen && (
             <React.Suspense fallback={null}>
-                <ShopPanel embedded hidden={activeView !== 'shop'} />
+                <ShopPanel hidden={activeView !== 'shop'} />
             </React.Suspense>
         )}
         {(activeView !== 'shop' || !isShopOpen) && <>

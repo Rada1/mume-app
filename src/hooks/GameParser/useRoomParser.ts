@@ -8,6 +8,8 @@ import { MOVE_FAILURE_REGEX } from '../useMessageLog';
 import { getTaggedRoomObjectNames } from './roomItemDetection';
 
 const WALL_BUMP_REGEX = /^(?:Alas, you cannot go that way\.|You can't go there\.|You cannot go that way\.|The .+ seems to be closed\.|It's closed\.|You can't see to go that way\.)/i;
+// MMapper consumes one queued command for these server responses as well.
+const ADDITIONAL_MOVE_FAILURE_REGEX = /^(?:You failed to climb|You need to swim to go there\.|You cannot ride there\.|You are too exhausted to ride\.|Your mount refuses to follow your orders!|You failed swimming there\.|You can't go into deep water!|You cannot ride into deep water!|You unsuccessfully try to break through the ice\.|Your boat cannot enter this place\.|No way! You are fighting for your life!|Nah\.\.\. You feel too relaxed to do that\.|Maybe you should get on your feet first\?|In your dreams, or what\?|If you still want to try, you must|ZBLAM! .+ doesn't want you riding (?:him|her|it) anymore\.)|(?:seem to be closed\.|seems to be closed\.|is too steep, you need to climb to go there\.|is too exhausted\.)$/i;
 
 export interface RoomParserDeps {
     roomNameRef: React.RefObject<string | null>;
@@ -118,7 +120,7 @@ export function useRoomParser(deps: RoomParserDeps) {
             return 'game';
         }
 
-        if (!isSnoop && MOVE_FAILURE_REGEX.test(textOnly)) {
+        if (!isSnoop && (MOVE_FAILURE_REGEX.test(textOnly) || ADDITIONAL_MOVE_FAILURE_REGEX.test(textOnly))) {
             if (typeof window !== 'undefined') {
                 window.dispatchEvent(new CustomEvent('mume-mapper-move-failed'));
                 if (WALL_BUMP_REGEX.test(textOnly.trim())) {

@@ -102,6 +102,7 @@ export interface PopoverState {
     shopItems?: any[];
     helpData?: any;
     capturedExamineLines?: string[];
+    examineMode?: 'look' | 'examine';
     capturedConsiderLines?: string[];
     isCapturingExamine?: boolean;
     isCapturingConsider?: boolean;

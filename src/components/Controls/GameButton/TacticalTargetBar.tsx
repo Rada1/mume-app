@@ -49,7 +49,6 @@ export interface TacticalTargetBarProps {
     selectedDirection?: string | null;
     onSelectDirection?: (direction: string, keepOpenAfterFire?: boolean) => void;
     embedded?: boolean;
-    fullWidthTargetList?: boolean;
     showWornLocation?: boolean;
     customContent?: ReactNode;
     customContentInteractive?: boolean;
@@ -82,7 +81,6 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
     selectedDirection = null,
     onSelectDirection,
     embedded = false,
-    fullWidthTargetList = false,
     showWornLocation = false,
     customContent,
     customContentInteractive = false
@@ -178,7 +176,7 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
     const barMarkup = (
         <div
             ref={barRef}
-            className={`tactical-target-bar${embedded ? ' is-embedded' : ''}${fullWidthTargetList ? ' is-full-width-target-list' : ''}${showWornLocation ? ' is-remove-target-menu' : ''}${customContent ? ' has-custom-content' : ''}${customContentInteractive ? ' has-interactive-custom-content' : ''}${columns?.length ? ' has-columns' : ''}${!columns?.length && !directionPadMode ? ' has-fixed-halves' : ''}${directionPadMode ? ` has-directions-${directionPadMode}` : ''}${commandLabel ? ' has-command' : ''}${isInteractive ? '' : ' is-held'}${isBlurred ? ' is-blurred' : ''}${isSwipeTargeting ? ' is-swipe-targeting' : ''}`}
+            className={`tactical-target-bar${embedded ? ' is-embedded' : ''}${showWornLocation ? ' is-remove-target-menu' : ''}${customContent ? ' has-custom-content' : ''}${customContentInteractive ? ' has-interactive-custom-content' : ''}${columns?.length ? ' has-columns' : ''}${!columns?.length && !directionPadMode ? ' has-fixed-halves' : ''}${directionPadMode ? ` has-directions-${directionPadMode}` : ''}${commandLabel ? ' has-command' : ''}${isInteractive ? '' : ' is-held'}${isBlurred ? ' is-blurred' : ''}${isSwipeTargeting ? ' is-swipe-targeting' : ''}`}
             style={customContentInteractive ? { pointerEvents: 'auto' } : undefined}
             onPointerDownCapture={onPointerDownCapture}
             onPointerDown={(e) => e.stopPropagation()}
@@ -278,7 +276,7 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
                         />
                     </div>
                 ) : columns?.length ? (
-                    <div className="tactical-target-bar-columns">
+                    <div className={`tactical-target-bar-columns${columns.length === 1 ? ' tactical-target-bar-single-column' : ''}`}>
                         {columns.map((column, index) => {
                             const isSocialColumn = column.title.toLowerCase() === 'social'
                                 || column.suggestions.some(item => item.meta === 'social');
@@ -382,7 +380,6 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
                                 </div>
                         </div>
                         </section>
-                        <div className="tactical-target-bar-empty-column" aria-hidden="true" />
                     </div>
                 ) : (
                     <div className="tactical-target-bar-columns tactical-target-bar-single-column">
@@ -404,7 +401,6 @@ export const TacticalTargetBar: FC<TacticalTargetBarProps> = ({
                                     />}
                             </div>
                         </section>
-                        <div className="tactical-target-bar-empty-column" aria-hidden="true" />
                     </div>
                 )}
                 </>}
