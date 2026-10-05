@@ -201,10 +201,11 @@ export const useTacticalTargeting = ({
             return (isCompatibleGlobalTarget(command, activeTarget) ? activeTarget : null)
                 || automaticTarget;
         }
+        if (kind === 'inventory-meat') return null;
         const rememberedTarget = getRememberedCommandTarget(command);
         if (rememberedTarget) return rememberedTarget;
         if (commandVerb === 'weather') return getDefaultCommandTarget(command);
-        if (kind === 'gear' || kind === 'inventory-gear' || kind === 'worn-gear' || kind === 'draw-gear' || kind === 'room-corpses' || kind === 'mounts' || kind === 'mage-spells' || kind === 'magic-keys' || kind === 'social' || kind === 'shop') return null;
+        if (kind === 'gear' || kind === 'inventory-gear' || kind === 'worn-gear' || kind === 'fluid-containers' || kind === 'pipes' || kind === 'draw-gear' || kind === 'room-corpses' || kind === 'mounts' || kind === 'mage-spells' || kind === 'magic-keys' || kind === 'social' || kind === 'shop') return null;
         if (isCompatibleGlobalTarget(command, activeTarget)) return activeTarget;
         return automaticTarget || null;
     }, [activeTarget, autoTargetForCommand, hasManuallySelectedTarget]);

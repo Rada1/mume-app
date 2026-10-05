@@ -12,6 +12,7 @@ import {
     appendNamedTargetSuggestions,
     getRoomObjectTargetsWithExit,
     getInventoryAndWornTargetSuggestions,
+    getDrawTargetSuggestions,
     getDrinkTargetSuggestions,
     getRoomCorpseTargetSuggestions
 } from './commandSuggestionUtils';
@@ -142,6 +143,18 @@ describe('commandSuggestionUtils', () => {
         expect(suggestions.map(suggestion => suggestion.meta)).toEqual([
             'inventory', 'inventory', 'worn', 'source'
         ]);
+    });
+
+    it('offers back-worn bows but excludes weapons already in hand from Draw targets', () => {
+        const suggestions = getDrawTargetSuggestions([], [
+            { id: 'back-longbow', text: 'an elven longbow', html: 'an elven longbow', isItem: true,
+                prefix: '<worn across back>', context: 'longbow' },
+            { id: 'held-crossbow', text: 'a light crossbow', html: 'a light crossbow', isItem: true,
+                prefix: '<wielded>', context: 'crossbow' }
+        ]);
+
+        expect(suggestions.map(suggestion => suggestion.label)).toEqual(['an elven longbow']);
+        expect(suggestions[0].value).toBe('longbow');
     });
 
     describe('tactical spell and skill target suggestions', () => {

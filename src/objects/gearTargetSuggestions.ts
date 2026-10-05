@@ -4,6 +4,7 @@
  */
 
 import type { DrawerLine, GmcpOccupant } from '../types';
+import { BLANK_TARGET_VALUE } from '../utils/commandTargetUtils';
 import { isFluidContainer, isItemContainer } from '../utils/gameUtils';
 import { getContainerCommand, getWornSlotLabel } from '../utils/gearPanelUtils';
 import {
@@ -58,15 +59,38 @@ export const getInventoryAndWornTargetSuggestions = (
     objectTraits: entry.traits
 }));
 
+export const getSheathTargetSuggestions = (wornLines: DrawerLine[]): CommandTargetSuggestion[] => [
+    { key: 'sheath-no-target', label: 'No target', value: BLANK_TARGET_VALUE, meta: 'blank' },
+    ...getGearTargetSuggestions(wornLines.filter(line => hasObjectTrait(line, 'trait-weapon')), 'worn')
+];
+
+export const getPipeTargetSuggestions = (
+    inventoryLines: DrawerLine[],
+    wornLines: DrawerLine[]
+): CommandTargetSuggestion[] => {
+    const isPipe = (line: DrawerLine) => line.isItem && !line.isHeader && (
+        hasObjectTrait(line, 'trait-pipe-worn') || /\bpipes?\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`)
+    );
+    return getInventoryAndWornTargetSuggestions(inventoryLines.filter(isPipe), wornLines.filter(isPipe));
+};
+
+export const getMeatTargetSuggestions = (inventoryLines: DrawerLine[]): CommandTargetSuggestion[] =>
+    getGearTargetSuggestions(inventoryLines.filter(line => line.isItem && !line.isHeader
+        && hasObjectTrait(line, 'trait-food')
+        && /\b(?:meat|mutton)\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`)
+        && !/\b(?:cooked|roasted|fried)\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`)), 'inventory');
+
 export const getDrawTargetSuggestions = (
     inventoryLines: DrawerLine[],
     wornLines: DrawerLine[]
 ): CommandTargetSuggestion[] => {
     const inventoryWeapons = inventoryLines.filter(line => hasObjectTrait(line, 'trait-weapon'));
     const wornDrawItems = wornLines.filter(line => {
+        const wornSlot = line.prefix?.replace(/[<>]/g, '').trim().toLowerCase().replace(/\s+/g, ' ') || '';
+        if (/^(?:wielded|held(?: in weapon hand)?)$/.test(wornSlot)) return false;
         if (hasObjectTrait(line, 'trait-sheath')) return true;
-        const isWornAcrossBack = line.prefix?.replace(/[<>]/g, '').trim().toLowerCase() === 'worn across back';
-        return isWornAcrossBack && /\b(?:crossbow|bow)\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`);
+        const isWornAcrossBack = /^worn across(?: the)? back$/.test(wornSlot);
+        return isWornAcrossBack && /\b(?:(?:cross|long|short)?bow)\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`);
     });
     return getInventoryAndWornTargetSuggestions(inventoryWeapons, wornDrawItems);
 };

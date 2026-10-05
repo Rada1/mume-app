@@ -26,7 +26,9 @@ import {
     getLanternTargetSuggestions,
     getLearnedMageSpellSuggestions,
     getMagicKeyTargetSuggestions,
+    getMeatTargetSuggestions,
     getMountTargetSuggestions,
+    getPipeTargetSuggestions,
     getRescueTargetSuggestions,
     getRoomCorpseTargetSuggestions,
     getRoomContainerTargetSuggestions,
@@ -34,6 +36,7 @@ import {
     getSelfAndRoomAlliesTargetSuggestions,
     getSelfAndRoomTargetSuggestions,
     getSelfTargetSuggestion,
+    getSheathTargetSuggestions,
     getSocialTargetSuggestions,
     getWhoTargetSuggestions,
     prioritizeOffensiveRoomEntitySuggestions,
@@ -190,12 +193,15 @@ const getMenuSuggestions = (
         .filter(suggestion => suggestion.meta !== 'exit');
     if (kind === 'gear') return getInventoryAndWornTargetSuggestions(inventoryLines, wornLines);
     if (kind === 'inventory-gear') return getGearTargetSuggestions(inventoryLines, 'inventory');
+    if (kind === 'inventory-meat') return getMeatTargetSuggestions(inventoryLines);
     if (kind === 'worn-gear') return getGearTargetSuggestions(wornLines, 'worn');
     if (kind === 'drink') return getDrinkTargetSuggestions(inventoryLines, wornLines, roomWaterAvailable);
+    if (kind === 'fluid-containers') return getFluidContainerTargetSuggestions(inventoryLines, wornLines);
+    if (kind === 'pipes') return getPipeTargetSuggestions(inventoryLines, wornLines);
     if (kind === 'pour') return getFluidContainerTargetSuggestions(inventoryLines, wornLines);
-    if (kind === 'worn-weapons') return getGearTargetSuggestions(
-        wornLines.filter(line => hasObjectTrait(line, 'trait-weapon')), 'worn'
-    );
+    if (kind === 'worn-weapons') return /^sheath\b/i.test(command.trim())
+        ? getSheathTargetSuggestions(wornLines)
+        : getGearTargetSuggestions(wornLines.filter(line => hasObjectTrait(line, 'trait-weapon')), 'worn');
     if (kind === 'lanterns') return /^fill\b/i.test(command.trim())
         ? getFillTargetSuggestions(inventoryLines, wornLines)
         : getLanternTargetSuggestions(inventoryLines, wornLines);

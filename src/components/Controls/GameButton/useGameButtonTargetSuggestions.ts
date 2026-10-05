@@ -34,11 +34,14 @@ import {
     getGearTargetSuggestions,
     getRoomCorpseTargetSuggestions,
     getSelfTargetSuggestion,
+    getSheathTargetSuggestions,
     getInventoryAndWornTargetSuggestions,
     getLanternTargetSuggestions,
     getLearnedMageSpellSuggestions,
     getMagicKeyTargetSuggestions,
+    getMeatTargetSuggestions,
     getMountTargetSuggestions,
+    getPipeTargetSuggestions,
     getRoomTargetSuggestions,
     getRescueTargetSuggestions,
     getRoomContainerTargetSuggestions,
@@ -68,9 +71,12 @@ const TARGET_MENU_TITLES: Record<CommandTargetMenuKind, string> = {
     'look-containers': 'CONTAINERS',
     gear: 'ITEMS',
     'inventory-gear': 'INVENTORY',
+    'inventory-meat': 'MEAT',
     'worn-gear': 'WORN ITEMS',
     food: 'FOOD',
     drink: 'DRINK',
+    'fluid-containers': 'FLUID CONTAINERS',
+    pipes: 'PIPES',
     pour: 'POUR INTO',
     'worn-weapons': 'WORN WEAPONS',
     'draw-gear': 'DRAW',
@@ -133,6 +139,9 @@ export const useGameButtonTargetSuggestions = (
         : targetKindOverride === 'shop' ? 'shop'
         : targetKindOverride === 'lanterns' ? 'lanterns'
         : targetKindOverride === 'pour' ? 'pour'
+        : targetKindOverride === 'fluid-containers' ? 'fluid-containers'
+        : targetKindOverride === 'pipes' ? 'pipes'
+        : targetKindOverride === 'inventory-meat' ? 'inventory-meat'
         : targetKindOverride === 'draw-targets' ? 'draw-gear'
         : targetKindOverride === 'worn-weapons' || targetKindOverride === 'worn-sheaths' ? 'worn-weapons'
         : targetKindOverride === 'room-objects' || targetKindOverride === 'room-object-container' ? 'room'
@@ -172,6 +181,7 @@ export const useGameButtonTargetSuggestions = (
         if (targetKindOverride === 'inventory-and-worn') return getInventoryAndWornTargetSuggestions(displayInventoryLines, displayEqLines);
         if (targetKindOverride === 'worn') return getGearTargetSuggestions(displayEqLines, 'worn');
         if (targetKindOverride === 'worn-sheaths' || targetKindOverride === 'worn-weapons') {
+            if (/^sheath\b/i.test(command.trim())) return getSheathTargetSuggestions(displayEqLines);
             const traitId = targetKindOverride === 'worn-sheaths' ? 'trait-sheath' : 'trait-weapon';
             const matchingWorn = displayEqLines.filter(line => hasObjectTrait(line, traitId));
             return getGearTargetSuggestions(matchingWorn, 'worn');
@@ -202,11 +212,15 @@ export const useGameButtonTargetSuggestions = (
             return getInventoryAndWornTargetSuggestions(displayInventoryLines, displayEqLines);
         }
         if (resolvedKind === 'inventory-gear') return getGearTargetSuggestions(displayInventoryLines, 'inventory');
+        if (resolvedKind === 'inventory-meat') return getMeatTargetSuggestions(displayInventoryLines);
         if (resolvedKind === 'worn-gear') return getGearTargetSuggestions(displayEqLines, 'worn');
         if (resolvedKind === 'food') return getFoodTargetSuggestions(displayInventoryLines, roomObjects);
         if (resolvedKind === 'drink') return getDrinkTargetSuggestions(displayInventoryLines, displayEqLines, roomWaterAvailable);
+        if (resolvedKind === 'fluid-containers') return getFluidContainerTargetSuggestions(displayInventoryLines, displayEqLines);
+        if (resolvedKind === 'pipes') return getPipeTargetSuggestions(displayInventoryLines, displayEqLines);
         if (resolvedKind === 'pour') return getFluidContainerTargetSuggestions(displayInventoryLines, displayEqLines);
         if (resolvedKind === 'worn-weapons') {
+            if (/^sheath\b/i.test(command.trim())) return getSheathTargetSuggestions(displayEqLines);
             const wornWeapons = displayEqLines.filter(line => hasObjectTrait(line, 'trait-weapon'));
             return getGearTargetSuggestions(wornWeapons, 'worn');
         }

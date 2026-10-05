@@ -22,10 +22,13 @@ import {
     getInventoryAndWornTargetSuggestions,
     getLanternTargetSuggestions,
     getMountTargetSuggestions,
+    getPipeTargetSuggestions,
+    getMeatTargetSuggestions,
     getGiveRecipientSuggestions,
     getRoomTargetSuggestions,
     getRescueTargetSuggestions,
     getRoomCorpseTargetSuggestions,
+    getSheathTargetSuggestions,
     getSelfTargetSuggestion,
     getSelfAndRoomAlliesTargetSuggestions,
     getSelfAndRoomTargetSuggestions,
@@ -59,6 +62,8 @@ export type DeckTargetKind =
     | 'lanterns'
     | 'inventory-recipient'
     | 'inventory-container'
+    | 'fluid-containers'
+    | 'pipes'
     | 'pour'
     | 'room-object-container'
     | 'mounts'
@@ -84,7 +89,7 @@ const getDefaultSecondArgumentKey = (kind?: string): string | null => (
 );
 
 const getInitialTarget = (item: DeckItem, target: string | null, roomOccupants: GmcpOccupant[], characterName: string, roomZone?: string | null, groupMembers: GroupMember[] = []): string | null => {
-    if (item.targetKind && (STAGED_TARGET_KINDS.has(item.targetKind) || item.targetKind === 'shop' || item.targetKind === 'draw-targets')) return null;
+    if (item.targetKind && (STAGED_TARGET_KINDS.has(item.targetKind) || item.targetKind === 'shop' || item.targetKind === 'draw-targets' || item.targetKind === 'pipes' || item.targetKind === 'inventory-meat')) return null;
     return (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
         || getRememberedCommandTarget(item.cmd)
         || getAutoRoomTarget(item.cmd, roomOccupants, characterName, roomZone, groupMembers)
@@ -323,11 +328,7 @@ export const useDeckTargeting = ({
             );
         }
         if (activeItem.targetKind === 'inventory-meat') {
-            return getGearTargetSuggestions(
-                inventoryLines.filter(line => hasObjectTrait(line, 'trait-food')
-                    && /\b(?:meat|mutton)\b/i.test(`${line.text} ${line.context || ''}`)),
-                'inventory'
-            );
+            return getMeatTargetSuggestions(inventoryLines);
         }
         if (!activeItem.targetKind) {
             const commandKind = getCommandTargetMenuKind(activeItem.cmd);
@@ -391,7 +392,10 @@ export const useDeckTargeting = ({
             ];
         }
         if (activeItem.targetKind === 'draw-targets') return getDrawTargetSuggestions(inventoryLines, wornLines);
+        if (activeItem.targetKind === 'fluid-containers') return getFluidContainerTargetSuggestions(inventoryLines, wornLines);
+        if (activeItem.targetKind === 'pipes') return getPipeTargetSuggestions(inventoryLines, wornLines);
         if (activeItem.targetKind === 'worn-weapons') {
+            if (/^sheath\b/i.test(activeItem.cmd.trim())) return getSheathTargetSuggestions(wornLines);
             const weapons = wornLines.filter(line => hasObjectTrait(line, 'trait-weapon'));
             return getGearTargetSuggestions(weapons, 'worn');
         }
@@ -418,6 +422,8 @@ export const useDeckTargeting = ({
         : activeItem?.targetKind === 'draw-targets' ? 'DRAW TARGETS'
         : activeItem?.targetKind === 'worn-weapons' ? 'WORN WEAPONS'
         : activeItem?.targetKind === 'inventory-weapons' ? 'INVENTORY WEAPONS'
+        : activeItem?.targetKind === 'fluid-containers' ? 'FLUID CONTAINERS'
+        : activeItem?.targetKind === 'pipes' ? 'PIPES'
         : activeItem?.targetKind === 'worn-mixing-tools' ? 'MIXING TOOLS'
         : activeItem?.targetKind === 'inventory-meat' ? 'MEAT'
         : activeItem?.targetKind === 'lanterns' ? 'LANTERNS'

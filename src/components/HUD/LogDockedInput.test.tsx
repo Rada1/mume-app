@@ -21,11 +21,17 @@ vi.mock('../../context/useMapper', () => ({
 }));
 
 vi.mock('../../stores/useRoomStore', () => ({
-    useRoomStore: (selector: any) => selector({ chars: {}, items: [] })
+    useRoomStore: (selector: any) => selector({
+        chars: {}, items: [], roomNum: 0, roomName: '', roomZone: '', roomDesc: ''
+    })
 }));
 
 vi.mock('../../stores/useCombatStore', () => ({
     useCombatStore: (selector: any) => selector({ target: null, opponentId: null, opponentName: null })
+}));
+
+vi.mock('../../hooks/useRoomDrinkWater', () => ({
+    useRoomDrinkWater: () => false
 }));
 
 vi.mock('../Combat/OpponentRechargeTimer', () => ({
@@ -37,8 +43,8 @@ vi.mock('./ActionTimerDisplay', () => ({
 }));
 
 vi.mock('../Controls/CommandSuggestionPopup', () => ({
-    CommandSuggestionPopup: (props: any) => (
-        <div data-testid="mock-suggestion-popup" data-placement={props.placement} />
+    CommandSuggestionPopup: (props: { show: boolean; placement: string }) => (
+        <div data-testid="mock-suggestion-popup" data-placement={props.placement} data-show={props.show} />
     )
 }));
 
@@ -56,6 +62,7 @@ describe('LogDockedInput', () => {
             handleSend: vi.fn(),
             parley: { active: false, command: 'none', target: null },
             setParley: vi.fn(),
+            whoList: [],
             characterClass: 'mage',
             abilities: {}
         });
@@ -101,6 +108,7 @@ describe('LogDockedInput', () => {
             handleSend: vi.fn(),
             parley: { active: false, command: 'none', target: null },
             setParley: vi.fn(),
+            whoList: [],
             characterClass: 'mage',
             abilities: {}
         });
@@ -111,6 +119,26 @@ describe('LogDockedInput', () => {
 
         const popup = screen.getByTestId('mock-suggestion-popup');
         expect(popup.getAttribute('data-placement')).toBe('top');
+    });
+
+    it('shows command suggestions for a focused mobile command prefix', () => {
+        mockUseGame.mockReturnValue({
+            viewport: { isMobile: true, isLandscape: false },
+            gameState: 'playing',
+            isPasswordMode: false,
+            parley: { active: false, mode: 'command', command: 'none', target: null },
+            setParley: vi.fn(),
+            whoList: [],
+            characterClass: 'mage',
+            abilities: {}
+        });
+
+        render(<LogDockedInput handleSend={vi.fn()} />);
+        const input = document.getElementById('mud-input') as HTMLTextAreaElement;
+        fireEvent.focus(input);
+        fireEvent.change(input, { target: { value: 'lo' } });
+
+        expect(screen.getByTestId('mock-suggestion-popup').getAttribute('data-show')).toBe('true');
     });
 
     it('shows the global target control and opens its editor when tapped', () => {

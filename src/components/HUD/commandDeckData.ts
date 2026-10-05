@@ -44,8 +44,8 @@ const HorseHeadIcon: React.FC<{ size?: number; strokeWidth?: number }> = ({ size
 export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
     combat: [
         { label: 'Use', cmd: 'use ', targetKind: 'inventory' },
-        { label: 'Smoke', cmd: 'smoke ', targetKind: 'inventory-and-worn' },
-        { label: 'Quaff', cmd: 'quaff ', targetKind: 'inventory' },
+        { label: 'Smoke', cmd: 'smoke ', targetKind: 'pipes' },
+        { label: 'Quaff', cmd: 'quaff ', targetKind: 'fluid-containers' },
         { label: 'Draw', cmd: 'draw ', targetKind: 'draw-targets' },
         { label: 'Sheath', cmd: 'sheath ', targetKind: 'worn-weapons' },
         { label: 'Throw', cmd: 'throw ', targetKind: 'throwables' },

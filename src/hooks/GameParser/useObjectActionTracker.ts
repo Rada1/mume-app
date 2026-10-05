@@ -105,6 +105,25 @@ export const useObjectActionTracker = (deps: ObjectActionTrackerDeps) => {
             }
         };
 
+        const updateEquipmentSlot = (itemText: string, slotPrefix: string, verbs: string[]) => {
+            const normalizedItem = stripResultTail(itemText);
+            const selector = getArguments(verbs)[0] || null;
+            const lines = deps.eqLines || [];
+            const index = findDrawerItemOccurrence(lines, normalizedItem, selector);
+            if (index < 0) {
+                moveToEquipment(itemText, slotPrefix, verbs);
+                return;
+            }
+
+            const item = lines[index];
+            const objectId = item.stableId || item.entityId || item.id;
+            deps.setEqLines(previous => previous.map(line =>
+                (line.stableId || line.entityId || line.id) === objectId
+                    ? { ...line, prefix: slotPrefix, prefixHtml: undefined, rawText: `${slotPrefix} ${line.text}` }
+                    : line
+            ));
+        };
+
         const produceMatch = textOnly.match(/^You produce\s+(.+?)\.?$/i);
         if (produceMatch) {
             const taggedObject = cleanLine.match(/^You produce\s+<object\b[^>]*>(.*?)<\/object>\.?$/i)?.[1];
@@ -242,6 +261,20 @@ export const useObjectActionTracker = (deps: ObjectActionTrackerDeps) => {
         if (wieldMatch) {
             const itemText = cleanLine.match(/<object\b[^>]*>(.*?)<\/object>/i)?.[1] || wieldMatch[1];
             moveToEquipment(itemText, '<wielded>', ['wield', 'hold']);
+            clear(); deps.onWear?.(); return true;
+        }
+
+        const drawMatch = textOnly.match(/^You (?:\w+\s+)*draw (.*?) from across your back\.$/i);
+        if (drawMatch) {
+            const itemText = cleanLine.match(/<object\b[^>]*>(.*?)<\/object>/i)?.[1] || drawMatch[1];
+            updateEquipmentSlot(itemText, '<wielded>', ['draw']);
+            clear(); deps.onWear?.(); return true;
+        }
+
+        const hangMatch = textOnly.match(/^You (?:\w+\s+)*hang (.*?) across your back\.$/i);
+        if (hangMatch) {
+            const itemText = cleanLine.match(/<object\b[^>]*>(.*?)<\/object>/i)?.[1] || hangMatch[1];
+            updateEquipmentSlot(itemText, '<worn across back>', ['hang', 'wear', 'sling']);
             clear(); deps.onWear?.(); return true;
         }
 

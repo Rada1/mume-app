@@ -4,12 +4,6 @@
 
 /* --- Keyboard Map Preview --- */
 @media (max-width: 1024px) {
-    /* Keep the keyboard popup inside the app stacking context so it can sit
-       below the fixed map preview instead of competing with it at body level. */
-    body:has(.app-container.is-mobile.kb-open) .command-suggestion-popup {
-        z-index: 6800 !important;
-    }
-
     .app-container.is-mobile.kb-open .mobile-map-panel {
         display: flex !important;
         position: fixed !important;

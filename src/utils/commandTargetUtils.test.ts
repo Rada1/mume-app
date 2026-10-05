@@ -6,9 +6,93 @@ import {
     getCommandTargetMenuKind,
     getDefaultCommandTarget
 } from './commandTargetUtils';
+import { resolveCommandTargetSuggestions } from './commandTargetSuggestionResolver';
 
 describe('commandTargetUtils', () => {
     describe('canCommandAcceptTarget', () => {
+        it('routes Quaff to fluid container targets', () => {
+            expect(canCommandAcceptTarget('quaff')).toBe(true);
+            expect(getCommandTargetMenuKind('quaff')).toBe('fluid-containers');
+
+            const line = (id: string, text: string) => ({ id, text, html: text, isItem: true });
+            const result = resolveCommandTargetSuggestions({
+                command: 'quaff ',
+                argumentText: '',
+                menuKind: null,
+                roomOccupants: [],
+                roomObjects: [],
+                inventoryLines: [line('flask', 'a glass flask'), line('sword', 'a steel sword')],
+                wornLines: [line('waterskin', 'a worn waterskin')]
+            });
+
+            expect(result.suggestions.map(suggestion => suggestion.label)).toEqual([
+                'a glass flask', 'a worn waterskin'
+            ]);
+        });
+
+        it('includes a blank target in the Sheath menu with worn weapons', () => {
+            expect(getCommandTargetMenuKind('sheath')).toBe('worn-weapons');
+
+            const line = (id: string, text: string) => ({ id, text, html: text, isItem: true });
+            const result = resolveCommandTargetSuggestions({
+                command: 'sheath ',
+                argumentText: '',
+                menuKind: null,
+                roomOccupants: [],
+                roomObjects: [],
+                inventoryLines: [],
+                wornLines: [line('sword', 'a long sword'), line('helmet', 'a steel helmet')]
+            });
+
+            expect(result.suggestions.map(suggestion => suggestion.value)).toEqual([
+                '__blank_target__', 'sword'
+            ]);
+        });
+
+        it('limits Smoke targets to pipes carried or worn', () => {
+            expect(getCommandTargetMenuKind('smoke')).toBe('pipes');
+
+            const line = (id: string, text: string) => ({ id, text, html: text, isItem: true });
+            const result = resolveCommandTargetSuggestions({
+                command: 'smoke ',
+                argumentText: '',
+                menuKind: null,
+                roomOccupants: [],
+                roomObjects: [],
+                inventoryLines: [line('pipe', 'a clay pipe'), line('tobacco', 'pipeweed')],
+                wornLines: [line('worn-pipe', 'a long-stemmed pipe'), line('worn-sword', 'a steel sword')]
+            });
+
+            expect(result.suggestions.map(suggestion => suggestion.label)).toEqual([
+                'a clay pipe', 'a long-stemmed pipe'
+            ]);
+        });
+
+        it('limits Cook targets to meat in inventory', () => {
+            expect(getCommandTargetMenuKind('cook')).toBe('inventory-meat');
+
+            const line = (id: string, text: string) => ({ id, text, html: text, isItem: true });
+            const result = resolveCommandTargetSuggestions({
+                command: 'cook ',
+                argumentText: '',
+                menuKind: null,
+                roomOccupants: [],
+                roomObjects: [],
+                inventoryLines: [
+                    line('shoes', 'a pair of shoes (well-maintained)'),
+                    line('meat', 'a strip of meat'),
+                    line('mutton', 'a leg of mutton'),
+                    line('cooked-meat', 'a piece of cooked meat'),
+                    line('apple', 'a red apple')
+                ],
+                wornLines: [line('worn-meat', 'a piece of meat')]
+            });
+
+            expect(result.suggestions.map(suggestion => suggestion.label)).toEqual([
+                'a strip of meat', 'a leg of mutton'
+            ]);
+        });
+
         it('identifies targeted spells', () => {
             expect(canCommandAcceptTarget("cast 'fireball'")).toBe(true);
             expect(canCommandAcceptTarget("c 'magic missile'")).toBe(true);

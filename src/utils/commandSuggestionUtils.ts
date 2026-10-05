@@ -18,7 +18,7 @@ import {
 import {
     getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions, getFluidContainerTargetSuggestions,
     getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions, getDrawTargetSuggestions,
-    getLanternTargetSuggestions
+    getLanternTargetSuggestions, getSheathTargetSuggestions, getPipeTargetSuggestions, getMeatTargetSuggestions
 } from '../objects/gearTargetSuggestions';
 
 export { makeCommandTargetSuggestion };
@@ -30,7 +30,7 @@ export {
 export {
     getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions, getFluidContainerTargetSuggestions,
     getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions, getDrawTargetSuggestions,
-    getLanternTargetSuggestions
+    getLanternTargetSuggestions, getSheathTargetSuggestions, getPipeTargetSuggestions, getMeatTargetSuggestions
 };
 
 // --- Type Section ---

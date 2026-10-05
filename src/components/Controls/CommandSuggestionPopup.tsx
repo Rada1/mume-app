@@ -64,11 +64,6 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
 
     if (!show || isClassicMode) return null;
 
-    const appContainer = document.querySelector<HTMLElement>('.app-container');
-    const isMobileKeyboardOpen = appContainer?.classList.contains('is-mobile')
-        && appContainer.classList.contains('kb-open');
-    const portalTarget = isMobileKeyboardOpen && appContainer ? appContainer : document.body;
-
     return ReactDOM.createPortal(
         <div
             className={`command-suggestion-popup placement-${placement}${isImmersionMode ? ' immersion-glass' : ''}`}
@@ -180,7 +175,7 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                     );
                 })}
         </div>,
-        portalTarget
+        document.body
     );
 };
 

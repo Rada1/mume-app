@@ -69,9 +69,12 @@ export type CommandTargetMenuKind =
     | 'look-containers'
     | 'gear'
     | 'inventory-gear'
+    | 'inventory-meat'
     | 'worn-gear'
     | 'food'
     | 'drink'
+    | 'fluid-containers'
+    | 'pipes'
     | 'pour'
     | 'worn-weapons'
     | 'draw-gear'
@@ -121,16 +124,20 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
     if (verb === 'buy') return 'shop';
     if (verb === 'weather') return 'weather-scope';
     if (verb === 'eat') return 'food';
+    if (verb === 'cook') return 'inventory-meat';
     if (verb === 'butcher') return 'room-corpses';
     if (verb === 'drink') return 'drink';
+    if (verb === 'quaff') return 'fluid-containers';
+    if (verb === 'smoke') return 'pipes';
     if (verb === 'pour') return 'pour';
     if (verb === 'fill') return 'lanterns';
     if (verb === 'protect') return 'room-allies-or-blank';
     if (verb === 'remove') return 'worn-gear';
-    if (['wear', 'wield', 'hold', 'drop', 'sell', 'value', 'mend', 'read', 'quaff', 'recite', 'use', 'throw', 'load'].includes(verb)) return 'inventory-gear';
+    if (['wear', 'wield', 'hold', 'drop', 'sell', 'value', 'mend', 'read', 'recite', 'use', 'throw', 'load'].includes(verb)) return 'inventory-gear';
     if (/^locate\s+life(?:\s|$)/i.test(trimmed)) return 'who-or-blank';
     if (verb === 'locate') return 'blank-only';
     if (verb === 'draw') return 'draw-gear';
+    if (verb === 'sheath') return 'worn-weapons';
     if (['open', 'close', 'lock', 'unlock', 'knock'].includes(verb)) return 'containers';
     if (['reveal', 'flush', 'hide'].includes(verb) && trimmed.split(/\s+/).length === 1) return 'pace-options';
     if (['ride', 'lead', 'saddle', 'unsaddle', 'abandon', 'dismount'].includes(verb)) return 'mounts';
