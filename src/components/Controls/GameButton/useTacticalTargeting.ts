@@ -23,6 +23,7 @@ import {
 
 export const useTacticalTargeting = ({
     activeTarget,
+    autoTargetEnabled = false,
     autoTargetForCommand,
     isMobile = false,
     openOnHoldWithoutTarget = false,
@@ -206,13 +207,16 @@ export const useTacticalTargeting = ({
                 || automaticTarget;
         }
         if (kind === 'inventory-meat') return null;
-        const rememberedTarget = getRememberedCommandTarget(command);
+        const isRoomCharacterCommand = kind === 'room' || kind === 'room-spell'
+            || kind === 'room-spell-with-extras' || kind === 'bash';
+        const rememberedTarget = autoTargetEnabled || !isRoomCharacterCommand
+            ? getRememberedCommandTarget(command) : null;
         if (rememberedTarget) return rememberedTarget;
         if (commandVerb === 'weather') return getDefaultCommandTarget(command);
         if (kind === 'gear' || kind === 'inventory-gear' || kind === 'worn-gear' || kind === 'fluid-containers' || kind === 'pipes' || kind === 'draw-gear' || kind === 'room-corpses' || kind === 'mounts' || kind === 'mage-spells' || kind === 'magic-keys' || kind === 'social' || kind === 'shop') return null;
         if (isCompatibleGlobalTarget(command, activeTarget)) return activeTarget;
         return automaticTarget || null;
-    }, [activeTarget, autoTargetForCommand, hasManuallySelectedTarget]);
+    }, [activeTarget, autoTargetEnabled, autoTargetForCommand, hasManuallySelectedTarget]);
 
     const updateCommandPreviewWithTarget = useCallback((baseCmd: string) => {
         currentCmdRef.current = baseCmd;

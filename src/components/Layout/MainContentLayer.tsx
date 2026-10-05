@@ -103,6 +103,9 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         activeSession,
         spectateTerrain
     } = useGame() as any;
+    const isReplaying = sessionMode === 'replay';
+    const isAccountScreen = gameState === 'account' && !isReplaying;
+    const layoutGameState = gameState === 'account' && isReplaying ? 'playing' : gameState;
     const { lighting, weather } = useActiveVitals();
 
     const isSpectateMode = useModeStore(s => s.isSpectating);
@@ -123,7 +126,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const setIsSkillsPanelOpen = useCommandPanelStore(s => s.setIsSkillsOpen);
     const setIsMobileSkillsPanelOpen = useCommandPanelStore(s => s.setIsMobileOpen);
     const isGearPanelOpen = useGearPanelStore(s => s.isOpen);
-    const gearSwipe = useMobileGearSwipe(viewport.isMobile && gameState !== 'account', triggerHaptic);
+    const gearSwipe = useMobileGearSwipe(viewport.isMobile && !isAccountScreen, triggerHaptic);
     const isHelpOpen = useHelpStore(s => s.isOpen);
     const isArchiveOpen = useArchiveStore(s => s.isOpen);
 
@@ -137,15 +140,15 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     const { activeDockedPanels, getPanelStyle } = useDockedPanelLayout(
         viewport.isMobile,
-        gameState,
+        layoutGameState,
         isEditorOpen
     );
     const hasDockedPanels = activeDockedPanels.length > 0;
     const shouldBlurDockedPanels = hasDockedPanels && useTacticalPanelBlur && !isPerformanceMode;
 
     React.useEffect(() => {
-        if (gameState === 'account' && !viewport.isMobile) setIsCommandPanelOpen(true);
-    }, [gameState, accountState.stage, viewport.isMobile, setIsCommandPanelOpen]);
+        if (isAccountScreen && !viewport.isMobile) setIsCommandPanelOpen(true);
+    }, [isAccountScreen, accountState.stage, viewport.isMobile, setIsCommandPanelOpen]);
 
     React.useEffect(() => {
         document.body.classList.toggle('has-docked-panels', hasDockedPanels);
@@ -182,8 +185,8 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const logContainerRef = React.useRef<HTMLDivElement>(null);
 
     // --- Terrain Strip Cross-Fade State & Effects ---
-    const currentTerrainKey = getRoomTerrainVisualKey(gameState === 'account' ? 'forest' : roomCardTerrain);
-    const currentLoreKey = gameState === 'account' ? 'default' : zoneVisualKey;
+    const currentTerrainKey = getRoomTerrainVisualKey(isAccountScreen ? 'forest' : roomCardTerrain);
+    const currentLoreKey = isAccountScreen ? 'default' : zoneVisualKey;
 
     const [terrainState, setTerrainState] = React.useState({
         currentTerrain: currentTerrainKey,
@@ -389,9 +392,8 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     const { getWeatherIcon } = env;
     const { isMobile, isLandscape } = viewport;
-    const showMobileAccountExperience = isMobile && gameState === 'account' && useMobileAccountPanels;
-    const isReplaying = sessionMode === 'replay';
-    const shouldShowAccountInput = gameState === 'account' && !isReplaying;
+    const showMobileAccountExperience = isMobile && isAccountScreen && useMobileAccountPanels;
+    const shouldShowAccountInput = isAccountScreen;
 
     // Tactical-targeting flag, scoped to the log container instead of the root
     // .app-container. Toggling a class on the root invalidates style matching for the
@@ -455,7 +457,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     />
                 </div>
             )}
-            {!viewport.isMobile && gameState !== 'account' && isImmersionMode && (
+            {!viewport.isMobile && !isAccountScreen && isImmersionMode && (
                 <div
                     style={{
                         position: 'fixed',
@@ -498,11 +500,11 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 isLandscape={isLandscape}
                 getWeatherIcon={getWeatherIcon}
             />
-            {viewport.isMobile && showGroupPanel && gameState !== 'account' && <GroupStatusWindow />}
+            {viewport.isMobile && showGroupPanel && !isAccountScreen && <GroupStatusWindow />}
             <ReplayHUD />
 
-            <div className={`message-log-wrapper${hasDockedPanels && gameState !== 'account' ? ' chat-window-active' : ''}`} style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
-                {isCharacterCardOpen && gameState !== 'account' && viewport.isMobile && <CharacterCard />}
+            <div className={`message-log-wrapper${hasDockedPanels && !isAccountScreen ? ' chat-window-active' : ''}`} style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
+                {isCharacterCardOpen && !isAccountScreen && viewport.isMobile && <CharacterCard />}
                 <div
                     className="desktop-center-column"
                     style={{
@@ -553,7 +555,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             <DrawerResizeHandle handleType="log-right" widthVar="--desktop-log-width" />
                         </>}
                         {/* Room card hidden for now */}
-                        {false && gameState !== 'account' && roomName && isImmersionMode && (
+                        {false && !isAccountScreen && roomName && isImmersionMode && (
                             <div className="desktop-log-room-card-wrapper">
                                 <MapperRoomInfo section="details" />
                             </div>
@@ -573,7 +575,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             onPointerUp={handleLogPointerUp}
                         />
                         <TimerExpiryToast />
-                        {gameState !== 'account' && (
+                        {!isAccountScreen && (
                             <RoomLootQueue
                                 isMobile={viewport.isMobile}
                                 executeCommand={executeCommand}
@@ -582,18 +584,20 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                                 triggerHaptic={triggerHaptic}
                             />
                         )}
-                        {gameState !== 'account' && <QuickButtonBar />}
-                        <LogDockedInput
-                            handleSend={handleSend}
-                            handleInputSwipe={handleInputSwipe}
-                            commandPreview={commandPreview}
-                        />
+                        {!isAccountScreen && <QuickButtonBar />}
+                        {!(isReplaying && gameState === 'account') && (
+                            <LogDockedInput
+                                handleSend={handleSend}
+                                handleInputSwipe={handleInputSwipe}
+                                commandPreview={commandPreview}
+                            />
+                        )}
                     </div>
 
-                    <MobileAccountCommandGrid />
+                    {!isReplaying && <MobileAccountCommandGrid />}
                     </>}
 
-                    {gameState !== 'account' && (
+                    {!isAccountScreen && (
                         <ActionBox
                             mobile={viewport.isMobile}
                             handleSend={handleSend}
@@ -609,12 +613,12 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 {(isCommandPanelOpen || isSkillsPanelOpen) && (
                     <aside className="docked-panel command-docked-panel" style={getPanelStyle('commands')} aria-label={isSkillsPanelOpen ? 'Skills and Practice panel' : 'Command Guide panel'}>
                         {!viewport.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" minWidth={14} maxWidth={50} />}
-                        {gameState === 'account' ? <MobileAccountExperience /> : isSkillsPanelOpen
+                        {isAccountScreen ? <MobileAccountExperience /> : isSkillsPanelOpen
                             ? <RightActionPanel skillsOnly onClose={() => viewport.isMobile ? setIsMobileSkillsPanelOpen(false) : setIsSkillsPanelOpen(false)} />
                             : <CommandGuidePanel />}
                     </aside>
                 )}
-                {isGearPanelOpen && gameState !== 'account' && (
+                {isGearPanelOpen && !isAccountScreen && (
                     <GearPanel style={getPanelStyle('gear')} />
                 )}
                 {showChatWindow && (
@@ -622,24 +626,24 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         style={getPanelStyle('chat')}
                     />
                 )}
-                {isHelpOpen && gameState !== 'account' && (
+                {isHelpOpen && !isAccountScreen && (
                     <React.Suspense fallback={null}>
                         <HelpPanel style={getPanelStyle('help')} />
                     </React.Suspense>
                 )}
-                {isArchiveOpen && gameState !== 'account' && (
+                {isArchiveOpen && !isAccountScreen && (
                     <React.Suspense fallback={null}>
                         <MumeArchive style={getPanelStyle('archive')} />
                     </React.Suspense>
                 )}
-                {isEditorOpen && gameState !== 'account' && (
+                {isEditorOpen && !isAccountScreen && (
                     <React.Suspense fallback={null}>
                         <MumeEditor style={getPanelStyle('editor')} />
                     </React.Suspense>
                 )}
             </div>
 
-            <AccountTargetBar />
+            {!isReplaying && <AccountTargetBar />}
             <SwipeWheelCellDialogHost />
 
             {isMobile ? (

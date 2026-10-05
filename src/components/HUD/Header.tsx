@@ -26,6 +26,7 @@ const Header: React.FC<HeaderProps> = () => {
         telnet,
         triggerHaptic,
         gameState,
+        sessionMode,
         clearObjectSelection,
         roomNpcs,
         roomPlayers,
@@ -62,7 +63,7 @@ const Header: React.FC<HeaderProps> = () => {
     const [isEnteringTarget, setIsEnteringTarget] = useState(false);
     const [manualTargetInput, setManualTargetInput] = useState('');
     const targetInputRef = useRef<HTMLInputElement>(null);
-    const isAccountScreen = gameState === 'account';
+    const isAccountScreen = gameState === 'account' && sessionMode !== 'replay';
     const canOpenShaper = canAccessShaper();
     const displayedSpectateName = isSpectating
         ? (activeView === 'target' ? (characterInfo.name || spectateTarget) : spectateTarget)

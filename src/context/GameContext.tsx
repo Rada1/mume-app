@@ -171,9 +171,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playTravelPointSound: () => playEffect('travelpoint')
     });
 
-    // 3. Ambient Controller (Must be after state initialization)
-    useAmbientController(s.gameState, s.accountState.stage);
-
     // Discord Activity SDK Integration
     const discordActivity = useDiscordActivity();
 
@@ -209,6 +206,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const mode = useModeStore();
     const session = useSessionStore();
     const { sessionMode, setSessionMode, replayHUDState, setReplayHUDState, isSilentReplay } = session;
+
+    // 3. Ambient Controller (Must be after state initialization)
+    useAmbientController(s.gameState, s.accountState.stage, sessionMode);
 
     // 4. Session & Replayer
     const replayMsg = useReplayMessages();

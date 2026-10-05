@@ -189,6 +189,9 @@ export function useCommParser(deps: CommParserDeps) {
                     replyTarget = undefined;
                 }
             } else {
+                // Wrapped prose without a parsed speaker/action stays a
+                // normal game line instead of an incomplete comm bubble.
+                replyCommand = undefined;
                 replyTarget = undefined;
                 commSender = undefined;
                 commAction = undefined;

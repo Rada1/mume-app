@@ -14,7 +14,7 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { useAutomaticTargetForRoom, useAutomaticTargetStore } from '../../stores/useAutomaticTargetStore';
 import { getRoomIdentityKey } from '../../utils/roomIdentityUtils';
-import { getAutoRoomTarget, isAutoTargetChipDisabledZone } from '../../utils/commandAutoTarget';
+import { getAutoRoomTarget } from '../../utils/commandAutoTarget';
 import { getRoomTargetSuggestions, makeCommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 import { getNonGroupmateRoomTargetSuggestions } from '../../utils/groupTargetSuggestions';
 import { CHAT_PARLEY_CHANNELS, getChatChannelSuggestions, getChatChannelColor, getChatTargetSuggestions } from '../../utils/chatWindowUtils';
@@ -80,6 +80,8 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const { target, characterInfo } = useActiveVitals();
     const { stats, groupMembers } = useVitals();
     const setAutomaticTarget = useAutomaticTargetStore(state => state.setTarget);
+    const autoTargetEnabled = useAutomaticTargetStore(state => state.enabled);
+    const setAutoTargetEnabled = useAutomaticTargetStore(state => state.setEnabled);
     const roomChars = useRoomStore(state => state.chars);
     const roomItems = useRoomStore(state => state.items);
     const roomNum = useRoomStore(state => state.roomNum);
@@ -97,7 +99,6 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         ...getRoomTargetSuggestions([], Object.values(roomItems), 'objects'),
     ], [characterName, groupMembers, roomItems, roomOccupants]);
     const automaticTarget = useAutomaticTargetForRoom(automaticTargetRoomKey, automaticTargetSuggestions);
-    const autoTargetChipDisabled = isAutoTargetChipDisabledZone(roomZone);
     const characterRaces = [characterInfo.race, characterInfo.subrace]
         .filter(Boolean)
         .map(value => value!.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, ''));
@@ -108,8 +109,8 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const commonPvpTargets = useMemo(() => commonPvpTargetNames.map(name =>
         makeCommandTargetSuggestion(`*${name}*`, `*${name}*`, 'player')
     ), [isEvilRace]);
-    const displayedTarget = target || (!autoTargetChipDisabled
-        ? automaticTarget || getAutoRoomTarget('hit', roomOccupants, characterName || '', roomZone, groupMembers)
+    const displayedTarget = target || (autoTargetEnabled
+        ? automaticTarget || getAutoRoomTarget('hit', roomOccupants, characterName || '', groupMembers)
         : null);
     useEffect(() => {
         if (target || gameState !== 'playing') setAutomaticTarget(null);
@@ -200,10 +201,18 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         setIsTargetPickerOpen(false);
     }, [setTarget, target, triggerHaptic]);
 
+    const toggleAutoTarget = useCallback(() => {
+        if (!autoTargetEnabled) setTarget(null);
+        setAutoTargetEnabled(!autoTargetEnabled);
+        triggerHaptic?.(15);
+        setIsTargetPickerOpen(false);
+    }, [autoTargetEnabled, setAutoTargetEnabled, setTarget, triggerHaptic]);
+
     const openManualTargetEntry = useCallback(() => {
+        setAutoTargetEnabled(false);
         setIsTargetPickerOpen(false);
         beginTargetEdit();
-    }, [beginTargetEdit]);
+    }, [beginTargetEdit, setAutoTargetEnabled]);
 
     const currentMode = parley?.mode || (parley?.active ? 'parley' : 'command');
 
@@ -431,7 +440,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const targetBadge = gameState === 'playing' && !isParleyActive && (
         <div
             ref={targetBadgeRef}
-            className={`docked-target-badge${displayedTarget ? ' has-target' : ''}${!target && displayedTarget ? ' is-auto-target' : ''}${isTargetInline ? ' docked-command-target-chip' : ''}`}
+            className={`docked-target-badge${displayedTarget ? ' has-target' : ''}${autoTargetEnabled && !target ? ' is-auto-target' : ''}${isTargetInline ? ' docked-command-target-chip' : ''}`}
             onClick={event => {
                 if (isTargetInline) event.stopPropagation();
             }}
@@ -473,7 +482,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                         finishTargetEdit(targetDraft);
                     }}
                 />
-            ) : displayedTarget ? (
+            ) : displayedTarget || autoTargetEnabled ? (
                 <button
                     type="button"
                     className="docked-target-name"
@@ -481,8 +490,8 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                     aria-expanded={isTargetPickerOpen}
                     aria-haspopup="listbox"
                     title="Choose a room target"
-                    aria-label={`Choose a room target; current target ${displayedTarget}`}
-                >{displayedTarget}</button>
+                    aria-label={`Choose a room target; current target ${autoTargetEnabled ? `Auto${displayedTarget ? `: ${displayedTarget}` : ''}` : displayedTarget}`}
+                >{autoTargetEnabled ? `Auto${displayedTarget ? `: ${displayedTarget}` : ''}` : displayedTarget}</button>
             ) : null}
             {target && (
                 <button
@@ -662,6 +671,8 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                 suggestions={roomTargetSuggestions}
                 commonTargets={commonPvpTargets}
                 currentTarget={target || displayedTarget}
+                autoTargetEnabled={autoTargetEnabled}
+                onToggleAutoTarget={toggleAutoTarget}
                 largeOnMobile
                 onChoose={chooseGlobalTarget}
                 onManualEntry={openManualTargetEntry}

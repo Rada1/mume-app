@@ -26,13 +26,14 @@ export const AtmosphericLayer: React.FC = () => {
         spectateTerrain,
         spectateRoomZone,
         accountState,
+        sessionMode,
     } = useGame();
 
     const manualBgImage = useSettingsStore(state => state.bgImage);
     const manualBgImageBottom = useSettingsStore(state => state.bgImageBottom);
 
     // --- Terrain Resolution ---
-    const isAccountMode = accountState.stage !== 'none';
+    const isAccountMode = accountState.stage !== 'none' && sessionMode !== 'replay';
     const activeView = useModeStore(state => state.activeView);
     const isSpectating = useModeStore(state => state.isSpectating);
     const isViewingSpectateTarget = isSpectating && activeView === 'target';

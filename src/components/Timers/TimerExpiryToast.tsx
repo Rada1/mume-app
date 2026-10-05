@@ -7,7 +7,7 @@ import React from 'react';
 import { Timer } from 'lucide-react';
 import { useEffectTimerStore } from '../../stores/useEffectTimerStore';
 import { EffectTimer } from '../../types';
-import { isSpellEffectTimer } from '../../utils/effectTimerUtils';
+import { getEffectTimerTone, isSpellEffectTimer } from '../../utils/effectTimerUtils';
 import './TimerExpiryToast.css';
 
 const WARNING_WINDOW_MS = 60_000;
@@ -135,11 +135,12 @@ export const TimerExpiryToast: React.FC = () => {
     if (!mode || !activeTimer) return null;
 
     const isSpellEvent = (mode === 'started' || mode === 'ended') && isSpellEffectTimer(activeTimer.kind);
+    const timerTone = getEffectTimerTone(activeTimer.kind);
     const body = getTimerBody(mode, activeTimer, now, eventToast?.eventAt);
 
     return (
         <div
-            className={`timer-expiry-toast is-${mode}${isSpellEvent ? ' is-spell-event' : ''}${eventToast?.exiting ? ' is-exiting' : ''}`}
+            className={`timer-expiry-toast is-${mode}${timerTone ? ` is-${timerTone}-timer` : ''}${isSpellEvent ? ' is-spell-event' : ''}${eventToast?.exiting ? ' is-exiting' : ''}`}
             role="status"
             aria-live="polite"
             aria-label={body.label}

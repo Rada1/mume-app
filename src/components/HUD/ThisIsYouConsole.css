@@ -426,6 +426,21 @@
     font-weight: 700;
 }
 
+.this-is-you-buff-badge.is-spell-timer .this-is-you-buff-name,
+.this-is-you-buff-badge.is-spell-timer .this-is-you-buff-time {
+    color: var(--ansi-bright-magenta, #c084fc);
+}
+
+.this-is-you-buff-badge.is-herblore-timer .this-is-you-buff-name,
+.this-is-you-buff-badge.is-herblore-timer .this-is-you-buff-time {
+    color: var(--ansi-bright-green, #44ff70);
+}
+
+.this-is-you-buff-badge.is-poison-timer .this-is-you-buff-name,
+.this-is-you-buff-badge.is-poison-timer .this-is-you-buff-time {
+    color: var(--ansi-bright-red, #f87171);
+}
+
 .this-is-you-buff-benefit {
     font-size: 0.56rem;
 }

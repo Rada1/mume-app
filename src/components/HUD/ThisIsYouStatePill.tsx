@@ -23,6 +23,7 @@ export interface ThisIsYouStatePillProps {
     inlineOptions?: boolean;
     isMobile?: boolean;
     isCompact?: boolean;
+    isCommandPrefixPending?: boolean;
     disabled?: boolean;
     accentColor?: 'gold' | 'blue' | 'red' | 'purple';
     confirmOptionValue?: string;
@@ -38,6 +39,7 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
     inlineOptions = false,
     isMobile = false,
     isCompact = false,
+    isCommandPrefixPending = false,
     disabled = false,
     accentColor = 'gold',
     confirmOptionValue,
@@ -129,9 +131,9 @@ export const ThisIsYouStatePill: FC<ThisIsYouStatePillProps> = ({
 
     // --- Render Section ---
     return (
-        <div className={`this-is-you-pill-wrapper accent-${accentColor}`} ref={containerRef}>
+        <div className={`this-is-you-pill-wrapper accent-${accentColor}${isCommandPrefixPending ? ' is-command-prefix-pending' : ''}`} ref={containerRef}>
             {inlineOptions ? (
-                <div className={`this-is-you-state-column accent-${accentColor}`} role="group" aria-label={category}>
+                <div className={`this-is-you-state-column accent-${accentColor}${isCommandPrefixPending ? ' is-command-prefix-pending' : ''}`} role="group" aria-label={category}>
                     <div className="this-is-you-state-column-title">{category}</div>
                     <div className="this-is-you-inline-slider">
                         <div className="this-is-you-inline-slider-codes" aria-hidden="true">

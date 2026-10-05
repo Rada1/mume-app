@@ -11,7 +11,7 @@ import { createPortal } from 'react-dom';
 import { useGame, useUI } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useEffectTimerStore } from '../../stores/useEffectTimerStore';
-import { isSpellEffectTimer } from '../../utils/effectTimerUtils';
+import { getEffectTimerTone, isSpellEffectTimer } from '../../utils/effectTimerUtils';
 import { calculateRegen, formatRegen } from '../../utils/regenUtils';
 import { useStatDeltas } from '../../hooks/useStatDeltas';
 import { useCharacterConditions } from '../../hooks/useCharacterConditions';
@@ -23,6 +23,7 @@ import { getMovementModeActions } from '../../hooks/useMovementModeActions';
 import { ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
 import { useCharacterPanelStore } from '../../stores/useCharacterPanelStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { applyTacticalCommandPrefix, useTacticalCommandPrefixStore } from '../../stores/useTacticalCommandPrefixStore';
 import { ThisIsYouVitalsTier } from './ThisIsYouVitalsTier';
 import { StatDelta } from './StatDelta';
 import { TerminalProgression } from './TerminalProgression';
@@ -97,6 +98,7 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
     } = useGame();
 
     const isMobileSheet = Boolean(viewport?.isMobile && !alwaysExpanded && !panelIsMinimized);
+    const pendingCommandPrefix = useTacticalCommandPrefixStore(state => state.prefix);
     const usePanelBlur = useSettingsStore(state => state.useTacticalPanelBlur);
     const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode);
     const isPanelBlurred = Boolean(usePanelBlur && !isPerformanceMode);
@@ -171,13 +173,15 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
     const handleStateSelect = (kind: 'pos' | 'alert' | 'mood' | 'speed', option: StateOption) => {
         if (isSpectateMode) return;
         if (kind === 'pos') {
-            const currentPosition = (vitals.position || '').toLowerCase();
-            const nextPosition = option.value.toLowerCase();
-            if (currentPosition === 'sleeping' && nextPosition !== 'sleeping') {
-                executeCommand('wake');
+            if (!pendingCommandPrefix) {
+                const currentPosition = (vitals.position || '').toLowerCase();
+                const nextPosition = option.value.toLowerCase();
+                if (currentPosition === 'sleeping' && nextPosition !== 'sleeping') {
+                    executeCommand('wake');
+                }
+                setPlayerPosition(option.value as 'standing' | 'sitting' | 'resting' | 'sleeping');
             }
-            setPlayerPosition(option.value as 'standing' | 'sitting' | 'resting' | 'sleeping');
-            if (option.command) executeCommand(option.command);
+            if (option.command) executeCommand(applyTacticalCommandPrefix(option.command));
         } else if (kind === 'alert') {
             setAlertness(option.value);
             if (option.command) executeCommand(option.command);
@@ -334,7 +338,7 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
               </div>
               <div className="this-is-you-minimized-summary-group" aria-label="State">
                 <strong>STATE</strong>
-                <ThisIsYouStatePill category="Position" accentColor="blue" value={currentPosition} options={POSITION_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('pos', opt)} />
+                <ThisIsYouStatePill category="Position" accentColor="blue" value={currentPosition} options={POSITION_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} isCommandPrefixPending={Boolean(pendingCommandPrefix)} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('pos', opt)} />
                 <ThisIsYouStatePill category="Mood" accentColor="red" value={currentMood} options={MOOD_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} confirmOptionValue="berserk" confirmMessage="Berserk prevents fleeing. Tap Berserk again within 4 seconds to confirm." disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('mood', opt)} />
                 <ThisIsYouStatePill category="Cast" accentColor="purple" value={currentSpellSpeed} options={SPELL_SPEED_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('speed', opt)} />
                 <ThisIsYouStatePill category="Alert" accentColor="gold" value={currentAlertness} options={ALERTNESS_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('alert', opt)} />
@@ -373,6 +377,7 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                   options={POSITION_OPTIONS}
                   inlineOptions={Boolean(viewport?.isMobile)}
                   isMobile={Boolean(viewport?.isMobile)}
+                  isCommandPrefixPending={Boolean(pendingCommandPrefix)}
                   disabled={isSpectateMode}
                   onInteract={() => triggerHaptic(15)}
                   onSelect={opt => handleStateSelect('pos', opt)}
@@ -433,8 +438,9 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                   {activeConditions.map(condition => {
                     const timer = getConditionTimer(condition);
                     const timerText = getConditionTimerText(condition);
+                    const timerTone = timer ? getEffectTimerTone(timer.kind) : null;
                     return (
-                      <span key={condition} className={`this-is-you-buff-badge${timer && isSpellEffectTimer(timer.kind) ? ' is-spell-timer' : ''}`}>
+                      <span key={condition} className={`this-is-you-buff-badge${timerTone ? ` is-${timerTone}-timer` : ''}`}>
                         <strong className="this-is-you-buff-name">{condition}</strong>
                         {timerText && <span className="this-is-you-buff-time" aria-label={timerText.label}>
                           {timerText.text}

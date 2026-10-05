@@ -6,6 +6,8 @@ import { useEffect } from 'react';
 import { isTargetSuggestionMatch, type CommandTargetSuggestion } from '../utils/commandSuggestionUtils';
 
 interface AutomaticTargetState {
+    enabled: boolean;
+    setEnabled: (enabled: boolean) => void;
     target: string | null;
     roomKey: string | null;
     setTarget: (target: string | null, roomKey?: string | null) => void;
@@ -13,6 +15,8 @@ interface AutomaticTargetState {
 }
 
 export const useAutomaticTargetStore = create<AutomaticTargetState>((set, get) => ({
+    enabled: false,
+    setEnabled: enabled => set({ enabled, target: null, roomKey: null }),
     target: null,
     roomKey: null,
     setTarget: (target, roomKey) => set({ target, roomKey: target ? roomKey || null : null }),

@@ -40,7 +40,7 @@ describe('automatic room targeting', () => {
 
         expect(getRescueTargetSuggestions(occupants, '', groupMembers).map(target => target.value))
             .toEqual(['man', 'elf', '__blank_target__']);
-        expect(getAutoRoomTarget('rescue', occupants, '', undefined, groupMembers)).toBe('man');
+        expect(getAutoRoomTarget('rescue', occupants, '', groupMembers)).toBe('man');
     });
 
     it('keeps arrival order when the room store receives a duplicate add event', () => {

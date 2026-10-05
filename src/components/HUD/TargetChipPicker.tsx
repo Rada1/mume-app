@@ -23,6 +23,8 @@ interface Props {
     largeOnMobile?: boolean;
     onChoose: (target: string) => void;
     onManualEntry?: () => void;
+    autoTargetEnabled?: boolean;
+    onToggleAutoTarget?: () => void;
     onDismiss: () => void;
 }
 
@@ -37,7 +39,8 @@ interface PickerPointerGesture {
 // --- Render Section ---
 export const TargetChipPicker: FC<Props> = ({
     isOpen, anchorRef, suggestions, commonTargets = [], currentTarget, title = 'Room entities', showMeta = true,
-    selectOnPointerUp = false, largeOnMobile = false, onChoose, onManualEntry, onDismiss
+    selectOnPointerUp = false, largeOnMobile = false, onChoose, onManualEntry,
+    autoTargetEnabled = false, onToggleAutoTarget, onDismiss
 }) => {
     const isClassicMode = useSettingsStore(state => state.isClassicMode);
     const pickerRef = useRef<HTMLDivElement>(null);
@@ -159,7 +162,7 @@ export const TargetChipPicker: FC<Props> = ({
     const rowsHeight = largestColumnLength > 0 ? largestColumnLength * position.rowHeight : 36;
     const pickerHeight = Math.min(
         position.maxHeight,
-        34 + (commonTargets.length ? 18 : 0) + rowsHeight + (onManualEntry ? 40 : 0)
+        34 + (onToggleAutoTarget ? 40 : 0) + (commonTargets.length ? 18 : 0) + rowsHeight + (onManualEntry ? 40 : 0)
     );
 
     return createPortal(
@@ -174,6 +177,13 @@ export const TargetChipPicker: FC<Props> = ({
             onPointerMove={scrollFromPointerMove}
         >
             <div className="docked-target-picker-title">{title}</div>
+            {onToggleAutoTarget && <button
+                type="button"
+                role="switch"
+                aria-checked={autoTargetEnabled}
+                className={`docked-target-picker-auto${autoTargetEnabled ? ' is-enabled' : ''}`}
+                onClick={onToggleAutoTarget}
+            >Auto target <span>{autoTargetEnabled ? 'On' : 'Off'}</span></button>}
             <div className={`docked-target-picker-columns${commonTargets.length ? ' has-common-targets' : ''}`}>
                 <section className="docked-target-picker-column">
                     {commonTargets.length > 0 && <div className="docked-target-picker-column-title">Room targets</div>}

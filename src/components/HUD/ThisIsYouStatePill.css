@@ -41,6 +41,13 @@
     transform: translateY(-1px);
 }
 
+.this-is-you-pill-wrapper.is-command-prefix-pending .this-is-you-pill,
+.this-is-you-state-column.is-command-prefix-pending {
+    outline: 2px solid rgba(250, 204, 21, 0.96);
+    outline-offset: 2px;
+    filter: drop-shadow(0 0 7px rgba(250, 204, 21, 0.7));
+}
+
 .this-is-you-pill-category {
     color: color-mix(in srgb, var(--state-accent, #c9a84c) 80%, #8c826f);
     font-size: 0.6rem;

@@ -486,7 +486,8 @@ const MessageItem = React.memo(({
                 <PracticeColumnHeaderCard sessionsLeft={msg.practiceHeader?.sessionsLeft} />
             ) : msg.type === 'practice-class-header' ? (
                 <PracticeClassHeaderCard label={ansiConvert.toHtml(msg.textRaw || '')} />
-            ) : ((msg.type === 'comm' || msg.type === 'comm-continue' || msg.isComm) && (msg.commSender || msg.commText)) ? (
+            ) : ((msg.type === 'comm' || msg.type === 'comm-continue' || msg.isComm)
+                && msg.commSender && msg.commAction && msg.commText) ? (
                 <div className={`content-row comm-row${msg.type === 'comm-continue' ? ' continuation' : ''}`} ref={impactRowRef}>
                     {timestampEl}
                     <div

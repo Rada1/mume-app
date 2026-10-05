@@ -144,7 +144,12 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                     className="unified-tactical-wheel unified-tactical-panel-wheel"
                     aria-label="Swipe command wheel"
                 >
-                    <div className="unified-tactical-panel-scroll">
+                    <div className={`unified-tactical-panel-scroll${isSwapMode ? ' is-swap-mode' : ''}`}>
+                        {isSwapMode && <div className="tactical-swap-hint" role="status">
+                            {swapSource
+                                ? 'First cell selected · scroll to the second cell'
+                                : 'Tap a cell to start · scroll to find the other cell'}
+                        </div>}
                         {wheelContent}
                         <TacticalCommandPalette
                             commands={paletteCommands}

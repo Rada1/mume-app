@@ -115,3 +115,29 @@
     background: color-mix(in srgb, var(--set-accent, var(--accent)) 26%, transparent);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 0 18px color-mix(in srgb, var(--set-accent, var(--accent)) 32%, transparent);
 }
+
+.unified-tactical-panel-scroll.is-swap-mode,
+.unified-tactical-panel-scroll.is-swap-mode .swipe-wheel-container,
+.unified-tactical-panel-scroll.is-swap-mode .swipe-sq-label,
+.unified-tactical-panel-scroll.is-swap-mode .swipe-center,
+.unified-tactical-panel-scroll.is-swap-mode .unified-tactical-command-palette,
+.unified-tactical-panel-scroll.is-swap-mode .unified-tactical-command-item {
+    touch-action: pan-y;
+}
+
+.tactical-swap-hint {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    flex: 0 0 auto;
+    align-self: stretch;
+    box-sizing: border-box;
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(250, 204, 21, 0.5);
+    background: rgba(18, 16, 10, 0.96);
+    color: #fde68a;
+    font: 700 11px/1.2 var(--font-mono, monospace);
+    letter-spacing: 0.03em;
+    text-align: center;
+    pointer-events: none;
+}

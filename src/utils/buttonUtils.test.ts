@@ -41,3 +41,10 @@ describe('getButtonCommand tactical door targeting', () => {
         expect(result?.cmd).toBe('close exit west');
     });
 });
+
+describe('non-offensive button targets', () => {
+    it('does not insert the global target chip into eat', () => {
+        const eatButton = { id: 'map-action-eat', command: 'eat %n', actionType: 'command' } as CustomButton;
+        expect(getButtonCommand(eatButton, 0, 0, undefined, undefined, [], undefined, 'orc')?.cmd).toBe('eat');
+    });
+});

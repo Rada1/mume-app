@@ -88,11 +88,11 @@ const getDefaultSecondArgumentKey = (kind?: string): string | null => (
             : null
 );
 
-const getInitialTarget = (item: DeckItem, target: string | null, roomOccupants: GmcpOccupant[], characterName: string, roomZone?: string | null, groupMembers: GroupMember[] = []): string | null => {
+const getInitialTarget = (item: DeckItem, target: string | null, roomOccupants: GmcpOccupant[], characterName: string, groupMembers: GroupMember[] = []): string | null => {
     if (item.targetKind && (STAGED_TARGET_KINDS.has(item.targetKind) || item.targetKind === 'shop' || item.targetKind === 'draw-targets' || item.targetKind === 'pipes' || item.targetKind === 'inventory-meat')) return null;
     return (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
         || getRememberedCommandTarget(item.cmd)
-        || getAutoRoomTarget(item.cmd, roomOccupants, characterName, roomZone, groupMembers)
+        || getAutoRoomTarget(item.cmd, roomOccupants, characterName, groupMembers)
         || getDefaultCommandTarget(item.cmd);
 };
 
@@ -119,7 +119,6 @@ export interface UseDeckTargetingProps {
     containerContents?: Record<string, DrawerLine[]>;
     requestContainerContents?: (source: CommandTargetSuggestion) => void;
     characterName?: string;
-    roomZone?: string | null;
 }
 
 export interface UseDeckTargetingReturn {
@@ -161,7 +160,6 @@ export const useDeckTargeting = ({
     containerContents = {},
     requestContainerContents,
     characterName = '',
-    roomZone,
 }: UseDeckTargetingProps): UseDeckTargetingReturn => {
     const roomWaterAvailable = useRoomDrinkWater();
     const [isTargetMenuOpen, setIsTargetMenuOpen] = useState(false);
@@ -488,12 +486,12 @@ export const useDeckTargeting = ({
         const initialSecondArgument = defaultSecondArgument;
         const initialTarget = item.targetKind === 'room-object-container'
             ? initialSecondArgument
-            : getInitialTarget(item, target, roomOccupants, characterName, roomZone, groupMembers);
+            : getInitialTarget(item, target, roomOccupants, characterName, groupMembers);
         setPendingTarget(initialTarget);
         pendingTargetRef.current = initialTarget;
         setIsTargetMenuOpen(true);
         triggerHaptic?.(20);
-    }, [characterName, clearHoldTimer, groupMembers, roomOccupants, roomZone, target, triggerHaptic]);
+    }, [characterName, clearHoldTimer, groupMembers, roomOccupants, target, triggerHaptic]);
 
     const executeStagedCommand = useCallback((item: DeckItem, firstArgument: string, secondArgument: string, keepOpenAfterFire = false) => {
         const targetPart = (item.targetKind === 'room-object-container' && secondArgument === ROOM_TARGET_VALUE)
@@ -556,7 +554,7 @@ export const useDeckTargeting = ({
             secondArgumentRef.current = defaultSecondArgument;
             const initialTarget = item.targetKind === 'room-object-container'
                 ? defaultSecondArgument
-                : getInitialTarget(item, target, roomOccupants, characterName, roomZone, groupMembers);
+                : getInitialTarget(item, target, roomOccupants, characterName, groupMembers);
             setPendingTarget(initialTarget);
             pendingTargetRef.current = initialTarget;
             setIsSecondArgumentStage(false);
@@ -564,7 +562,7 @@ export const useDeckTargeting = ({
             refreshGearTargets(item);
             triggerHaptic?.(20);
         }, 220);
-    }, [characterName, clearHoldTimer, groupMembers, refreshGearTargets, roomOccupants, roomZone, target, triggerHaptic]);
+    }, [characterName, clearHoldTimer, groupMembers, refreshGearTargets, roomOccupants, target, triggerHaptic]);
 
     const handlePointerUp = useCallback((item: DeckItem, _e: React.PointerEvent<HTMLButtonElement>) => {
         if (holdTimerRef.current !== null) {

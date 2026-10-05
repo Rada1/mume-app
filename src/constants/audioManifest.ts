@@ -162,7 +162,7 @@ export const AUDIO_MANIFEST = {
         'death': { path: '/assets/Sounds/SoundEffects/death.mp3', defaultVolume: 0.8 },
         'door1': { path: '/assets/Sounds/SoundEffects/door1.mp3' },
         'hit-impact': { path: '/assets/Sounds/SoundEffects/hit-impact.mp3' },
-        'hit2': { path: '/assets/Sounds/SoundEffects/hit2.mp3' },
+        'hit2': { path: '/assets/Sounds/SoundEffects/hit1.mp3' },
         'hint': { path: '/assets/Sounds/SoundEffects/hint.mp3', defaultVolume: 0.8 },
         'heal': { path: '/assets/Sounds/SoundEffects/heal.mp3', defaultVolume: 0.8 },
         'harm': { path: '/assets/Sounds/SoundEffects/harm.mp3' },

@@ -22,11 +22,12 @@ export const HeaderEnvironmentStrip: FC = () => {
     const { stats } = useVitals();
     const {
         lighting, currentTerrain, weather, isFoggy, gameTime,
-        gameState
+        gameState,
+        sessionMode
     } = useGame();
     const currentTime = useMumeTime(gameTime);
 
-    if (gameState === 'account') return <div className="header-environment-spacer" />;
+    if (gameState === 'account' && sessionMode !== 'replay') return <div className="header-environment-spacer" />;
 
     const roomName = stripAnsiCodes(activeRoom.roomName);
     const rawZone = stripAnsiCodes(activeRoom.roomZone);

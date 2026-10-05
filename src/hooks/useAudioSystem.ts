@@ -10,6 +10,7 @@ import { useActiveRoom, useActiveVitals } from '../stores/useActiveGameState';
 import { useHaptics } from './interactions/useHaptics';
 import { useModeStore } from '../stores/useModeStore';
 import { useUIStore } from '../stores/useUIStore';
+import type { SessionMode } from '../types/session';
 
 // --- Health Audio Mix ---
 const HEALTH_STATUS_RANGES: Record<string, { min: number; max: number; fallback: number }> = {
@@ -47,7 +48,11 @@ const getAudioHealthPercent = (
     return numericPercent ?? 100;
 };
 
-export const useAmbientController = (gameState: 'account' | 'playing' | 'disconnected', accountStage: string = 'none') => {
+export const useAmbientController = (
+    gameState: 'account' | 'playing' | 'disconnected',
+    accountStage: string = 'none',
+    sessionMode: SessionMode = 'live'
+) => {
     const isSoundEnabled = useSettingsStore(state => state.isSoundEnabled);
     const isClassicMode = useSettingsStore(state => state.isClassicMode);
     const areSoundsEnabled = isSoundEnabled && !isClassicMode;
@@ -85,10 +90,11 @@ export const useAmbientController = (gameState: 'account' | 'playing' | 'disconn
     const isAmbientActive = areSoundsEnabled && isImmersionMode && !isShaperOpen;
 
     useEffect(() => {
-        if (gameState === 'playing') {
+        const replayingFromAccount = gameState === 'account' && sessionMode !== 'live';
+        if (gameState === 'playing' || replayingFromAccount) {
             audioManager.stopAccountMusic();
         }
-    }, [gameState]);
+    }, [gameState, sessionMode]);
 
     useEffect(() => {
         const healthAudioActive = gameState === 'playing' && areSoundsEnabled && !isShaperOpen;
@@ -118,6 +124,16 @@ export const useAmbientController = (gameState: 'account' | 'playing' | 'disconn
 
     useEffect(() => {
         if (!areSoundsEnabled || isShaperOpen) {
+            audioManager.setAmbient('zone', { key: null });
+            return;
+        }
+
+        // Replays can be opened from the account menu while the live game state
+        // remains "account". Clear its ambient track for the full replay session.
+        if (gameState === 'account' && sessionMode !== 'live') {
+            normalizedZoneRef.current = null;
+            inCombatRef.current = false;
+            dynamicUrlRef.current = undefined;
             audioManager.setAmbient('zone', { key: null });
             return;
         }
@@ -158,7 +174,7 @@ export const useAmbientController = (gameState: 'account' | 'playing' | 'disconn
         dynamicUrlRef.current = dynamicUrl;
 
         audioManager.setAmbient('zone', { key: normalizedZone, inCombat, dynamicUrl });
-    }, [roomZone, inCombat, areSoundsEnabled, zoneMusic, mode, isSpectating, activeView, gameState, accountStage, isShaperOpen]);
+    }, [roomZone, inCombat, areSoundsEnabled, zoneMusic, mode, isSpectating, activeView, gameState, accountStage, sessionMode, isShaperOpen]);
 
     // Simple listener for zone ended to trigger re-evaluation if needed
     useEffect(() => {

@@ -35,30 +35,11 @@ export const getViableRoomCharacterTargets = (
     return suggestions.map(suggestion => suggestion.value);
 };
 
-const AUTO_TARGET_CHIP_DISABLED_ZONES = ['bree', 'grey havens', 'fornost', 'rivendell', 'lorien'];
-
-/** Whether the room's zone suppresses the automatic target chip. */
-export const isAutoTargetChipDisabledZone = (zone: string | null | undefined): boolean => {
-    const normalizedZone = (zone || '')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, ' ')
-        .trim()
-        .replace(/^the\s+/, '');
-
-    return AUTO_TARGET_CHIP_DISABLED_ZONES.some(disabledZone =>
-        normalizedZone === disabledZone || normalizedZone.startsWith(`${disabledZone} `)
-    );
-};
-
 export const getAutoRoomTarget = (
     command: string,
     roomOccupants: GmcpOccupant[],
     characterName = '',
-    roomZone?: string | null,
     groupMembers: GroupMember[] = []
 ): string | null => {
-    if (isAutoTargetChipDisabledZone(roomZone)) return null;
     return getViableRoomCharacterTargets(command, roomOccupants, characterName, groupMembers)[0] || null;
 };

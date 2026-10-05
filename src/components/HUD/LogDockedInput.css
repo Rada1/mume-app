@@ -261,6 +261,23 @@
     text-transform: uppercase;
 }
 
+.docked-target-picker-auto {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 10px;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    color: #e8dfc9;
+    font: inherit;
+    cursor: pointer;
+}
+
+.docked-target-picker-auto.is-enabled { color: #fca5a5; }
+.docked-target-picker-auto span { font-weight: 800; }
+
 .docked-target-picker-columns {
     display: flex;
     flex: 1 1 auto;

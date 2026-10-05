@@ -8,6 +8,7 @@ import type { Dispatch, RefObject, SetStateAction } from 'react';
 
 export interface UseTacticalTargetingOptions {
     activeTarget: string | null;
+    autoTargetEnabled?: boolean;
     autoTargetForCommand?: (command: string) => string | null;
     isMobile?: boolean;
     openOnHoldWithoutTarget?: boolean;

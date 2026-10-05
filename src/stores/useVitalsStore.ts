@@ -14,7 +14,8 @@ export const useVitalsStore = create<VitalsStore>((set, get) => ({
     // Extra actions that might not be in slice but used by main store
     setTarget: (target: string | null) => {
         setGlobalCommandTarget(target);
-        useAutomaticTargetStore.getState().setTarget(null);
+        if (target) useAutomaticTargetStore.getState().setEnabled(false);
+        else useAutomaticTargetStore.getState().setTarget(null);
         set({ target } as any);
     },
     setActivePrompt: (activePrompt: any) => set({ activePrompt } as any),
