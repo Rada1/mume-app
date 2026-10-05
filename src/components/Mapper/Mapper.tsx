@@ -5,6 +5,7 @@
  */
 
 import React, { useRef, useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Eye, X } from 'lucide-react';
 import { useGame, useLog, useVitals, useUI } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -18,6 +19,7 @@ import { RoomInfoCard } from './RoomInfoCard';
 import { useMapperInteractions } from './useMapperInteractions';
 import { useMapperController } from './useMapperController';
 import { useSmartWalk } from './hooks/useSmartWalk';
+import { useMapperFindPanel } from './hooks/useMapperFindPanel';
 import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
 import { DpadCluster } from './DpadCluster';
 import { DEFAULT_MOBILE_MAP_ZOOM, GRID_SIZE } from './mapperUtils';
@@ -254,6 +256,23 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     // We still keep the context menu local to the instance for better UX (each window has its own context menu)
     const [localContextMenu, setLocalContextMenu] = useState<{ x: number, y: number, wx: number, wy: number, roomId: string | null } | null>(null);
     const setContextMenu = setLocalContextMenu;
+    const { isOpen: isMapFindOpen, selectedRoomId: findRoomId, anchor: findAnchor, open: openMapFind, close: closeMapFind } = useMapperFindPanel();
+    const mobileFindPanelHost = isMobile && typeof document !== 'undefined'
+        ? document.querySelector<HTMLElement>('.app-container.is-mobile .message-log-wrapper')
+        : null;
+
+    useEffect(() => {
+        if (!isMapFindOpen) return;
+
+        const closeOnOutsidePointerDown = (event: PointerEvent) => {
+            const target = event.target;
+            if (target instanceof Element && target.closest('.floating-find-panel')) return;
+            closeMapFind();
+        };
+
+        document.addEventListener('pointerdown', closeOnOutsidePointerDown, true);
+        return () => document.removeEventListener('pointerdown', closeOnOutsidePointerDown, true);
+    }, [isMapFindOpen, closeMapFind]);
 
     const { marquee } = useMapperInteractions({
         rooms, setRooms, markers, setMarkers,
@@ -341,7 +360,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 markers={markers}
                 currentRoomId={currentRoomId}
                 selectedRoomIds={selectedRoomIds}
-                contextMenuRoomId={localContextMenu?.roomId ?? infoRoomId}
+                contextMenuRoomId={localContextMenu?.roomId ?? infoRoomId ?? findRoomId}
                 selectedMarkerId={selectedMarkerId}
                 camera={cameraRef}
                 isDarkMode={isDarkMode}
@@ -438,14 +457,20 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 </div>
             ))}
 
-            {!effectiveIsMinimized && !isMobile && (
+            {isMapFindOpen && typeof document !== 'undefined' && createPortal(
                 <MapFilterBar
                     activeMapFilter={activeMapFilter}
                     mapSearchQuery={mapSearchQuery}
                     setActiveMapFilter={setActiveMapFilter}
                     setMapSearchQuery={setMapSearchQuery}
                     triggerHaptic={triggerHaptic}
-                />
+                    showZIndicator={false}
+                    expanded
+                    onClose={closeMapFind}
+                    floatingPanel
+                    floatingPosition={isMobile ? { x: 12, y: 12 } : findAnchor}
+                />,
+                mobileFindPanelHost ?? canvasRef.current?.closest('.mapper-container') ?? document.body
             )}
 
             {isMapLookHeld && (
@@ -503,6 +528,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                     onAddMarker={() => { handleAddMarker(localContextMenu.wx, localContextMenu.wy, viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? rooms[currentRoomId].z || 0 : 0)); setLocalContextMenu(null); triggerRender(); }}
                     onAddRoom={() => { handleAddRoom(localContextMenu.wx, localContextMenu.wy, viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? rooms[currentRoomId].z || 0 : 0)); setLocalContextMenu(null); triggerRender(); }}
                     onSyncLocation={() => { handleSyncLocation(localContextMenu.wx, localContextMenu.wy); setLocalContextMenu(null); triggerRender(); }}
+                    onFind={() => { openMapFind(localContextMenu.roomId, { x: localContextMenu.x, y: localContextMenu.y }); setInfoRoomId(null); setLocalContextMenu(null); }}
                     onWalkStart={(rid) => { startWalking(rid); }}
                     onWalkEnd={() => { stopWalking(); setLocalContextMenu(null); }}
                     mode={mode}

@@ -61,7 +61,7 @@ export const RoomLootGroundItems: React.FC<RoomLootGroundItemsProps> = ({
                         <div className="room-loot-ground-item">
                             <GearSelectionCheckbox checked={selectedIds.has(item.id)} label={`Select ${item.label}`}
                                 onChange={() => toggleSelected(item.id)} />
-                            <span>{item.label}</span>
+                            <span title={item.label}>{item.label}</span>
                         </div>
                         <button type="button" onClick={() => executeCommand(`get ${item.commandTarget}`)}>Get</button>
                         <button className="room-loot-ground-dismiss" type="button" aria-label={`Hide ${item.label}`}

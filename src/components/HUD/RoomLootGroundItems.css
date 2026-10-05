@@ -1,22 +1,28 @@
 /** @file RoomLootGroundItems.css — Compact, touch-friendly ground-loot controls. */
 
 /* --- Logic Section --- */
-.room-loot-ground { border-top: 1px solid rgba(217, 178, 106, .24); }
-.room-loot-ground > header { display: flex; align-items: center; gap: 8px; padding: 9px 12px 6px; color: #e8d4ad; }
-.room-loot-ground > header span { color: #a99d87; font-size: 10px; }
-.room-loot-ground > header button { min-height: 34px; margin-left: auto; border: 1px solid rgba(217, 178, 106, .42); border-radius: 5px; padding: 4px 9px; color: #ecd9b1; background: rgba(217, 178, 106, .08); }
+.room-loot-ground { border-top: 0; }
+.room-loot-ground > header { display: flex; align-items: center; gap: 8px; padding: 9px 12px 6px; color: var(--room-loot-accent, #dfbf6c); }
+.room-loot-ground > header span { color: var(--room-loot-muted, #a99c86); font-size: 10px; }
+.room-loot-ground > header button { min-height: 34px; margin-left: auto; border: 0; border-radius: 0; padding: 4px 9px; color: var(--room-loot-accent, #dfbf6c); background: transparent; }
 .room-loot-ground-list { display: grid; }
-.room-loot-ground-row { min-height: 43px; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 6px; padding: 4px 10px 4px 12px; border-top: 1px solid rgba(217, 178, 106, .12); }
-.room-loot-ground-row .room-loot-ground-item { min-width: 0; display: flex; align-items: center; gap: 7px; color: #d0c5b2; }
-.room-loot-ground-item > span { overflow-wrap: anywhere; }
+.room-loot-ground-row { min-height: 43px; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 6px; padding: 4px 10px 4px 12px; border-top: 0; }
+.room-loot-ground-row .room-loot-ground-item { min-width: 0; display: flex; align-items: center; gap: 7px; color: var(--room-loot-text, #d4cdb8); }
+.room-loot-ground-item > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .room-loot-ground-item .gear-selection-control { flex: 0 0 36px; width: 36px; min-height: 36px; }
-.room-loot-ground-row > button, .room-loot-ground-selection button { min-height: 34px; border: 1px solid rgba(217, 178, 106, .42); border-radius: 5px; padding: 4px 9px; color: #ecd9b1; background: rgba(217, 178, 106, .08); }
-.room-loot-ground-row .room-loot-ground-dismiss { min-width: 34px; padding: 4px; color: #9f9483; }
-.room-loot-ground-selection { position: sticky; bottom: 0; display: flex; align-items: center; gap: 6px; padding: 8px; border-top: 1px solid rgba(217, 178, 106, .28); background: #131210; }
-.room-loot-ground-selection > span { margin-right: auto; color: #b5a891; font-size: 10px; white-space: nowrap; }
+.room-loot-ground-row > button, .room-loot-ground-selection button { min-height: 34px; border: 0; border-radius: 0; padding: 4px 9px; color: var(--room-loot-accent, #dfbf6c); background: transparent; }
+.room-loot-ground-row > button:hover, .room-loot-ground-selection button:hover,
+.room-loot-ground > header button:hover { color: #f1e4c3; background: var(--room-loot-hover, rgba(201, 168, 76, .12)); }
+.room-loot-ground-row .room-loot-ground-dismiss { min-width: 34px; padding: 4px; color: var(--room-loot-muted, #a99c86); }
+.room-loot-ground-selection { position: sticky; bottom: 0; display: flex; align-items: center; gap: 6px; padding: 8px; border-top: 0; background: rgba(35, 28, 22, .98); }
+.room-loot-ground-selection > span { margin-right: auto; color: var(--room-loot-muted, #a99c86); font-size: 10px; white-space: nowrap; }
 .room-loot-ground-selection button { white-space: nowrap; }
 .room-loot-overlay.is-mobile .room-loot-ground-selection { flex-wrap: wrap; }
 .room-loot-overlay.is-mobile .room-loot-ground-selection > span { flex: 1 0 100%; }
+@media (min-width: 769px) {
+    .room-loot-ground-item { min-width: 0; }
+    .room-loot-ground-item > span { font-size: 10px; }
+}
 @media (max-width: 768px) {
     .room-loot-ground-item .gear-selection-control { flex-basis: 44px; width: 44px; min-height: 44px; }
 }

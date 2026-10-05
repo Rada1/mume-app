@@ -5,6 +5,12 @@
 
 /* --- Layout Section --- */
 .group-status-panel {
+    --group-status-surface: rgba(35, 28, 22, 0.98);
+    --group-status-text: #d4cdb8;
+    --group-status-muted: #a99c86;
+    --group-status-accent: #dfbf6c;
+    --group-status-divider: rgba(201, 168, 76, 0.2);
+    --group-status-value: #d4cdb8;
     width: var(--desktop-group-width, 30vw);
     min-width: 320px;
     max-width: 65vw;
@@ -15,13 +21,19 @@
     border-left: 1px solid rgba(201, 168, 76, 0.28);
     border-radius: 0;
     box-shadow: none;
-    color: var(--text-primary);
+    color: var(--group-status-text);
+    background: var(--group-status-surface);
     font-family: var(--font-mono, monospace);
+}
+
+.app-container .docked-panel.group-status-panel {
+    background: var(--group-status-surface) !important;
+    color: var(--group-status-text);
 }
 
 .docked-panel.group-status-panel--map-overlay {
     position: absolute;
-    inset: auto 0 34px;
+    inset: auto 0 0;
     z-index: 20 !important;
     width: auto;
     height: auto;
@@ -30,11 +42,11 @@
     min-width: 0;
     max-width: none;
     border: 0;
-    border-top: 1px solid rgba(201, 168, 76, 0.4);
-    background: rgba(12, 15, 22, 0.9);
-    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    border-top: 1px solid rgba(201, 168, 76, 0.34);
+    background: var(--group-status-surface);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.3), 0 0 16px rgba(201, 168, 76, 0.08);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 .docked-panel.group-status-panel--map-overlay .group-status-header {
@@ -43,9 +55,10 @@
 }
 
 .app-container .docked-panel.group-status-panel.group-status-panel--map-overlay {
-    background: rgba(7, 11, 13, 0.72) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
+    background: var(--group-status-surface) !important;
+    border-top-color: rgba(201, 168, 76, 0.34) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 .app-container .docked-panel.group-status-panel.group-status-panel--map-overlay,
@@ -70,12 +83,12 @@
         flex: 0 1 auto;
         margin: 0;
         border: 0;
-        border-bottom: 1px solid rgba(201, 168, 76, 0.3);
+        border-bottom: 1px solid rgba(201, 168, 76, 0.28);
         border-radius: 0;
         box-shadow: none;
-        background: rgba(12, 15, 22, 0.9) !important;
-        backdrop-filter: blur(8px) !important;
-        -webkit-backdrop-filter: blur(8px) !important;
+        background: var(--group-status-surface) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
         pointer-events: auto;
     }
 
@@ -95,7 +108,7 @@
         position: absolute !important;
         top: auto !important;
         right: 0 !important;
-        bottom: 33px !important;
+        bottom: 0 !important;
         left: 0 !important;
         width: auto !important;
         height: auto !important;
@@ -113,7 +126,7 @@
     justify-content: space-between;
     gap: 8px;
     padding: 14px 12px 10px;
-    color: var(--accent);
+    color: var(--group-status-accent);
     font-size: 13px;
 }
 
@@ -121,7 +134,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--text-dim);
+    color: var(--group-status-muted);
     font-size: 11px;
 }
 
@@ -131,9 +144,16 @@
     justify-content: center;
     border: 0;
     background: transparent;
-    color: var(--text-dim);
+    border-radius: 0;
+    color: var(--group-status-muted);
     padding: 3px;
     cursor: pointer;
+}
+
+.group-status-header-actions button:hover,
+.group-status-header-actions button:focus-visible {
+    color: #f1e4c3;
+    background: rgba(201, 168, 76, 0.12);
 }
 
 @media (max-width: 1024px) and (orientation: portrait) {

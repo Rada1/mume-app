@@ -11,29 +11,33 @@ interface MapFilterSubflagsDropupProps {
     activeMapFilter: string | null;
     dropupLeft: number | null;
     onSelectSubFlag: (flagId: string) => void;
+    inline?: boolean;
 }
 
 export const MapFilterSubflagsDropup: React.FC<MapFilterSubflagsDropupProps> = ({
     category,
     activeMapFilter,
     dropupLeft,
-    onSelectSubFlag
+    onSelectSubFlag,
+    inline = false
 }) => {
     return (
         <div
-            className="map-filter-dropup"
+            className={`map-filter-dropup${inline ? ' map-filter-dropup-inline' : ''}`}
             role="listbox"
             aria-label={`${category.label} sub-filters`}
-            style={{
+            style={inline ? undefined : {
                 position: 'absolute',
                 bottom: 'calc(100% + 4px)',
                 left: dropupLeft !== null ? `${dropupLeft}px` : '0px',
                 zIndex: 3100
             }}
         >
-            <div className="map-filter-dropup-header">
-                <span>{category.label.toUpperCase()}</span>
-            </div>
+            {!inline && (
+                <div className="map-filter-dropup-header">
+                    <span>{category.label.toUpperCase()}</span>
+                </div>
+            )}
             <div className="map-filter-dropup-list">
                 {category.subFlags.map(sf => {
                     const isActive = activeMapFilter === sf.id;

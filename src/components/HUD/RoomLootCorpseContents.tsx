@@ -1,6 +1,7 @@
 /** @file RoomLootCorpseContents.tsx — Selectable contents and transfer actions for one corpse. */
 import React from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import { GearSelectionCheckbox } from '../GearSelectionCheckbox';
 import type { DrawerLine } from '../../types';
 import { getDrawerObjectKeyword } from '../../objects/objectTargetModel';
 import './RoomLootCorpseContents.css';
@@ -108,10 +109,11 @@ export const RoomLootCorpseContents: React.FC<RoomLootCorpseContentsProps> = ({
                         : rows.length === 0 ? <span className="room-loot-empty">Nothing visible inside.</span>
                             : rows.map(row => (
                                 <div className="room-loot-item-row" key={`${corpseId}:${row.id}`}>
-                                    <label>
-                                        <input type="checkbox" checked={selectedIds.has(row.id)} onChange={() => toggleSelected(row.id)} />
-                                        <span>{row.label}</span>
-                                    </label>
+                                    <div className="room-loot-item-label">
+                                        <GearSelectionCheckbox checked={selectedIds.has(row.id)} label={`Select ${row.label}`}
+                                            onChange={() => toggleSelected(row.id)} />
+                                        <span title={row.label}>{row.label}</span>
+                                    </div>
                                     <button type="button" onClick={() => takeOne(row)}>Take</button>
                                 </div>
                             ))}

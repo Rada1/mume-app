@@ -3,6 +3,7 @@
  * @description Right-click actions for mapped rooms and empty map locations.
  */
 import React from 'react';
+import { Search } from 'lucide-react';
 import './MapperContextMenu.css';
 
 // --- Types ---
@@ -16,6 +17,7 @@ interface MapperContextMenuProps {
     onAddMarker: () => void;
     onAddRoom: () => void;
     onSyncLocation: () => void;
+    onFind?: () => void;
     onWalkStart?: (roomId: string) => void;
     onWalkEnd?: () => void;
     mode?: 'edit' | 'play';
@@ -34,6 +36,7 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
     onAddMarker,
     onAddRoom,
     onSyncLocation,
+    onFind,
     onWalkStart,
     mode = 'edit',
     isMobile = false
@@ -51,7 +54,7 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
             role="menu"
             data-mobile={isMobile || undefined}
             style={{
-                top: `clamp(8px, ${y}px, calc(100% - ${mode === 'edit' ? 194 : 116}px))`,
+                top: `clamp(8px, ${y}px, calc(100% - ${mode === 'edit' ? 194 : isMobile ? 160 : 116}px))`,
                 left: `clamp(8px, ${x}px, calc(100% - ${isMobile ? 216 : 176}px))`,
                 maxHeight: 'calc(100% - 16px)'
             }}
@@ -88,6 +91,17 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 4v6h6"></path><path d="M19 10a7 7 0 1 1-2.05-4.95"></path></svg>
                             Walk Here
+                        </button>
+                    )}
+                    {onFind && mode === 'play' && (
+                        <button
+                            type="button"
+                            role="menuitem"
+                            className="mapper-context-menu-action"
+                            onClick={(event) => { event.stopPropagation(); onFind(); onClose(); }}
+                        >
+                            <Search size={14} aria-hidden="true" />
+                            Find
                         </button>
                     )}
                     {mode === 'edit' && (

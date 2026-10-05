@@ -6,13 +6,13 @@
 /* --- Shared pane geometry --- */
 @media (min-width: 1025px) {
     /* Align the Map Find and Target dividers with minimized This Is You. */
-    .app-container .map-filter-bar,
+    .app-container .map-filter-bar:not(.floating-find-panel),
     .app-container .right-panel-target-bar {
         box-sizing: border-box;
         border-top: 2px solid rgba(255, 255, 255, 0.12) !important;
     }
 
-    .app-container .map-filter-bar {
+    .app-container .map-filter-bar:not(.floating-find-panel) {
         height: 33px;
         min-height: 33px;
     }
@@ -23,38 +23,38 @@
     }
 
     /* Leave the center command divider visible while the two drawer dividers disappear. */
-    .app-container:has(.this-is-you-console:not(.is-mobile).is-minimized) .map-filter-bar,
+    .app-container:has(.this-is-you-console:not(.is-mobile).is-minimized) .map-filter-bar:not(.floating-find-panel),
     .app-container:has(.this-is-you-console:not(.is-mobile).is-minimized) .right-panel-target-bar {
         border-top-color: transparent !important;
     }
 
     /* The open This Is You panel replaces the divider above the map Find bar. */
-    .app-container:has(.this-is-you-console:not(.is-mobile):not(.is-minimized)) .map-filter-bar {
+    .app-container:has(.this-is-you-console:not(.is-mobile):not(.is-minimized)) .map-filter-bar:not(.floating-find-panel) {
         border-top-color: transparent !important;
     }
 
-    .app-container .map-filter-bar.collapsed {
+    .app-container .map-filter-bar:not(.floating-find-panel).collapsed {
         justify-content: center;
     }
 
-    .app-container .map-filter-bar:not(.collapsed) {
+    .app-container .map-filter-bar:not(.floating-find-panel):not(.collapsed) {
         gap: 0;
         padding-top: 2px;
         padding-bottom: 1px;
     }
 
-    .app-container .map-filter-bar:not(.collapsed) .map-filter-top-row {
+    .app-container .map-filter-bar:not(.floating-find-panel):not(.collapsed) .map-filter-top-row {
         height: 14px;
         flex-shrink: 0;
     }
 
-    .app-container .map-filter-bar:not(.collapsed) .map-filter-chips-row {
+    .app-container .map-filter-bar:not(.floating-find-panel):not(.collapsed) .map-filter-chips-row {
         height: 12px;
         padding: 0;
         flex-shrink: 0;
     }
 
-    .app-container .map-filter-bar:not(.collapsed) .map-filter-chip {
+    .app-container .map-filter-bar:not(.floating-find-panel):not(.collapsed) .map-filter-chip {
         height: 12px;
     }
 

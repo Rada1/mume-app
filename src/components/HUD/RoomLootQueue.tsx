@@ -249,12 +249,12 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
             {roomCorpses.map(corpse => (
                 <div className="room-loot-row" key={corpse.id}>
                     <div className="room-loot-row-heading">
-                        <span>{corpse.label}</span>
+                        <span title={corpse.label}>{corpse.label}</span>
                         <div className="room-loot-row-actions">
                             <button type="button" onClick={() => lootCorpse(corpse)}>Get all</button>
                             {mountSuggestions.length > 0 && <button type="button" disabled={cargoBusy}
                                 onClick={() => lootValuables(corpse.containerId, corpse.commandTarget, selectedRecipientTarget)}>
-                                <Coins size={12} /> Valuables → {recipientLabel}
+                                <Coins size={12} /><span>Valuables → {recipientLabel}</span>
                             </button>}
                         </div>
                     </div>

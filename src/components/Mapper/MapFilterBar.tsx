@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
 import { useMapper } from '../../context/useMapper';
 import {
     CATEGORIES,
@@ -25,6 +25,11 @@ export interface MapFilterBarProps {
     triggerHaptic?: (ms: number) => void;
     showZIndicator?: boolean;
     viewZ?: number | null;
+    expanded?: boolean;
+    onExpandedChange?: (expanded: boolean) => void;
+    onClose?: () => void;
+    floatingPanel?: boolean;
+    floatingPosition?: { x: number; y: number } | null;
 }
 
 // --- Component ---
@@ -36,7 +41,12 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
     setMapSearchQuery: propSetMapSearchQuery,
     triggerHaptic,
     showZIndicator = true,
-    viewZ: propViewZ
+    viewZ: propViewZ,
+    expanded,
+    onExpandedChange,
+    onClose,
+    floatingPanel = false,
+    floatingPosition = null
 }) => {
     const mapperContext = useMapper();
 
@@ -58,7 +68,8 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
         ? Number(effectiveViewZ).toFixed(1)
         : (currentRoom?.z !== undefined ? Number(currentRoom.z).toFixed(1) : '0.0');
 
-    const [isCollapsed, setIsCollapsed] = useState(true);
+    const [localIsCollapsed, setLocalIsCollapsed] = useState(true);
+    const isCollapsed = expanded === undefined ? localIsCollapsed : !expanded;
     const [expandedCategory, setExpandedCategory] = useState<CategoryId | null>(null);
     const [activeButtonEl, setActiveButtonEl] = useState<HTMLElement | null>(null);
     const [dropupLeft, setDropupLeft] = useState<number | null>(null);
@@ -85,6 +96,12 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
         window.addEventListener('resize', updateDropupPosition);
         return () => window.removeEventListener('resize', updateDropupPosition);
     }, [updateDropupPosition]);
+
+    useEffect(() => {
+        if (!floatingPanel || !expandedCategory || !activeButtonEl) return;
+        const subcategories = activeButtonEl.parentElement?.querySelector('.map-filter-dropup-inline');
+        subcategories?.scrollIntoView({ block: 'nearest' });
+    }, [floatingPanel, expandedCategory, activeButtonEl]);
 
     // Close drop-up when clicking outside
     useEffect(() => {
@@ -140,14 +157,24 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
     return (
         <div
             ref={barRef}
-            className={`map-filter-bar ${isCollapsed ? 'collapsed' : ''}`}
+            className={`map-filter-bar ${isCollapsed ? 'collapsed' : ''} ${floatingPanel ? 'floating-find-panel' : ''}`}
+            style={floatingPanel ? {
+                top: floatingPosition
+                    ? `clamp(8px, ${floatingPosition.y}px, max(8px, calc(100% - 420px)))`
+                    : '12px',
+                left: floatingPosition
+                    ? `clamp(8px, ${floatingPosition.x}px, max(8px, calc(100% - 296px)))`
+                    : '12px',
+                transform: 'none',
+                maxHeight: 'calc(100% - 16px)'
+            } : undefined}
             onPointerDown={e => e.stopPropagation()}
             onClick={e => e.stopPropagation()}
             role="search"
             aria-label="Map Search and Filters"
         >
             {/* Subflags Dropup Panel */}
-            {activeCatObj && (
+            {activeCatObj && !floatingPanel && (
                 <MapFilterSubflagsDropup
                     category={activeCatObj}
                     activeMapFilter={activeMapFilter}
@@ -211,23 +238,31 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
                     </button>
                 )}
 
-                <button
-                    type="button"
-                    className="map-filter-toggle-btn"
-                    onClick={() => {
-                        triggerHaptic?.(10);
-                        setIsCollapsed(prev => !prev);
-                        if (!isCollapsed) setExpandedCategory(null);
-                    }}
-                    title={isCollapsed ? 'Show filter categories' : 'Hide filter categories'}
-                    aria-expanded={!isCollapsed}
-                    aria-label={isCollapsed ? 'Expand filter categories' : 'Collapse filter categories'}
-                >
-                    {isCollapsed ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-                </button>
+                {onClose ? (
+                    <button type="button" className="map-filter-close-btn" onClick={onClose} aria-label="Close map finder" title="Close map finder">
+                        <X size={17} />
+                    </button>
+                ) : (
+                    <button
+                        type="button"
+                        className="map-filter-toggle-btn"
+                        onClick={() => {
+                            triggerHaptic?.(10);
+                            const nextExpanded = isCollapsed;
+                            if (onExpandedChange) onExpandedChange(nextExpanded);
+                            else setLocalIsCollapsed(!nextExpanded);
+                            if (!nextExpanded) setExpandedCategory(null);
+                        }}
+                        title={isCollapsed ? 'Show filter categories' : 'Hide filter categories'}
+                        aria-expanded={!isCollapsed}
+                        aria-label={isCollapsed ? 'Expand filter categories' : 'Collapse filter categories'}
+                    >
+                        {isCollapsed ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                    </button>
+                )}
             </div>
 
-            {/* Bottom Row: Horizontal Filter Chips Toolbar */}
+            {/* Category Controls */}
             {!isCollapsed && (
                 <div
                     className="map-filter-chips-row"
@@ -244,8 +279,8 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
                     {CATEGORIES.map(cat => {
                         const isCatActive = activeCategory === cat.id;
                         const isExpanded = expandedCategory === cat.id;
-                        return (
-                            <div key={cat.id} className={`map-filter-chip ${isCatActive ? 'active' : ''} ${isExpanded ? 'expanded' : ''}`}>
+                        const categoryChip = (
+                            <div className={`map-filter-chip ${isCatActive ? 'active' : ''} ${isExpanded ? 'expanded' : ''}`}>
                                 <span className="chip-bracket">[</span>
                                 <button
                                     type="button"
@@ -269,6 +304,21 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
                                     ▾
                                 </button>
                                 <span className="chip-bracket">]</span>
+                            </div>
+                        );
+                        if (!floatingPanel) return React.cloneElement(categoryChip, { key: cat.id });
+                        return (
+                            <div key={cat.id} className="map-filter-category-group">
+                                {categoryChip}
+                                {isExpanded && (
+                                    <MapFilterSubflagsDropup
+                                        category={cat}
+                                        activeMapFilter={activeMapFilter}
+                                        dropupLeft={null}
+                                        onSelectSubFlag={handleSubFlagTap}
+                                        inline
+                                    />
+                                )}
                             </div>
                         );
                     })}
