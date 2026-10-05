@@ -662,6 +662,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                 suggestions={roomTargetSuggestions}
                 commonTargets={commonPvpTargets}
                 currentTarget={target || displayedTarget}
+                largeOnMobile
                 onChoose={chooseGlobalTarget}
                 onManualEntry={openManualTargetEntry}
                 onDismiss={() => setIsTargetPickerOpen(false)}

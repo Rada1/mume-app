@@ -78,6 +78,7 @@ export const parseEffectTimerLine = (text: string) => {
     );
     if (startedEntry) {
         store.addTimer(startedEntry, 'parser');
+        if (lastEffectCommand?.entryId === startedEntry.id) lastEffectCommand = null;
         return true;
     }
 

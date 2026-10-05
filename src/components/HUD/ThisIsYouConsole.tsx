@@ -11,6 +11,7 @@ import { createPortal } from 'react-dom';
 import { useGame, useUI } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useEffectTimerStore } from '../../stores/useEffectTimerStore';
+import { isSpellEffectTimer } from '../../utils/effectTimerUtils';
 import { calculateRegen, formatRegen } from '../../utils/regenUtils';
 import { useStatDeltas } from '../../hooks/useStatDeltas';
 import { useCharacterConditions } from '../../hooks/useCharacterConditions';
@@ -54,6 +55,20 @@ const formatConditionTimeLeft = (milliseconds: number): string => {
         return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
     }
     return `${totalMinutes}m`;
+};
+
+const formatConditionTimeElapsed = (milliseconds: number): string => {
+    const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    if (totalMinutes >= 60) {
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+    }
+    return totalMinutes > 0
+        ? `${totalMinutes}m ${seconds.toString().padStart(2, '0')}s`
+        : `${seconds}s`;
 };
 
 export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = false }) => {
@@ -185,13 +200,13 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
         vitals.characterInfo.affectedBy, vitals.conditions, activeTimers, vitals.position, isSpectateMode
     );
     const conditionTimers = useMemo(() => activeTimers.filter(timer => {
-        if (!timer.expiresAt || timer.expiresAt <= conditionNow) return false;
+        if (timer.expiresAt && timer.expiresAt <= conditionNow) return false;
         if (!timer.target || timer.target.toLowerCase() === 'self') return true;
         return normalizeConditionTimerName(timer.target) === normalizeConditionTimerName(characterName || '');
     }), [activeTimers, characterName, conditionNow]);
-    const getConditionTimeLeft = (condition: string): string | null => {
+    const getConditionTimer = (condition: string) => {
         const normalized = normalizeConditionTimerName(condition);
-        const timer = conditionTimers.find(candidate => {
+        return conditionTimers.find(candidate => {
             const timerName = normalizeConditionTimerName(candidate.name);
             const timerId = normalizeConditionTimerName(candidate.catalogId);
             return timerName === normalized
@@ -199,7 +214,18 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                 || normalized.includes(timerName)
                 || timerId.includes(normalized);
         });
-        return timer?.expiresAt ? formatConditionTimeLeft(timer.expiresAt - conditionNow) : null;
+    };
+    const getConditionTimerText = (condition: string): { text: string; label: string } | null => {
+        const timer = getConditionTimer(condition);
+        if (!timer) return null;
+        if (isSpellEffectTimer(timer.kind)) return {
+            text: formatConditionTimeElapsed(conditionNow - timer.startedAt),
+            label: 'Time active'
+        };
+        return timer.expiresAt ? {
+            text: formatConditionTimeLeft(timer.expiresAt - conditionNow),
+            label: 'Time remaining'
+        } : null;
     };
 
     const name = characterInfo?.name || characterName || 'Adventurer';
@@ -404,14 +430,18 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
             </div>
             <div className="this-is-you-buffs-row" aria-label="Active buffs and affects">
                   {activeConditions.length === 0 && <span className="this-is-you-no-buffs">steady · no active effects</span>}
-                  {activeConditions.map(condition => (
-                    <span key={condition} className="this-is-you-buff-badge">
-                      <strong className="this-is-you-buff-name">{condition}</strong>
-                      {getConditionTimeLeft(condition) && <span className="this-is-you-buff-time" aria-label="Time remaining">
-                        {getConditionTimeLeft(condition)}
-                      </span>}
-                    </span>
-                  ))}
+                  {activeConditions.map(condition => {
+                    const timer = getConditionTimer(condition);
+                    const timerText = getConditionTimerText(condition);
+                    return (
+                      <span key={condition} className={`this-is-you-buff-badge${timer && isSpellEffectTimer(timer.kind) ? ' is-spell-timer' : ''}`}>
+                        <strong className="this-is-you-buff-name">{condition}</strong>
+                        {timerText && <span className="this-is-you-buff-time" aria-label={timerText.label}>
+                          {timerText.text}
+                        </span>}
+                      </span>
+                    );
+                  })}
             </div>
               </div>
             </div>

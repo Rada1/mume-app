@@ -39,6 +39,20 @@
     background: rgba(19, 18, 15, 0.42);
 }
 
+.timer-expiry-toast.is-spell-event {
+    width: auto;
+    min-height: 0;
+    gap: 0;
+    padding: 5px 8px;
+    border: 0;
+    border-radius: 2px;
+    background: rgba(19, 18, 15, 0.42);
+}
+
+.timer-expiry-toast.is-spell-event::after {
+    display: none;
+}
+
 .timer-expiry-toast.is-started::after {
     display: none;
 }
@@ -47,6 +61,31 @@
     display: flex;
     align-items: center;
     gap: 6px;
+}
+
+.timer-expiry-copy.is-started .timer-expiry-name {
+    text-transform: none;
+}
+
+.timer-expiry-copy.is-started .timer-expiry-name,
+.timer-expiry-copy.is-started .timer-expiry-seconds {
+    color: #b7aa91;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+.timer-expiry-time-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+    color: #b7aa91;
+}
+
+.timer-expiry-toast.is-spell-event .timer-expiry-copy {
+    gap: 7px;
+    white-space: nowrap;
 }
 
 .timer-expiry-toast.is-started .timer-expiry-name,

@@ -4,18 +4,22 @@
  */
 
 import React from 'react';
+import { Timer } from 'lucide-react';
 import { useEffectTimerStore } from '../../stores/useEffectTimerStore';
 import { EffectTimer } from '../../types';
+import { isSpellEffectTimer } from '../../utils/effectTimerUtils';
 import './TimerExpiryToast.css';
 
 const WARNING_WINDOW_MS = 60_000;
 const START_VISIBLE_MS = 3_000;
 const EXIT_MS = 220;
 
-type TimerToastMode = 'started' | 'ending';
+type TimerToastMode = 'started' | 'ending' | 'ended';
 
-interface StartedToastState {
+interface TimerEventToastState {
     timer: EffectTimer;
+    mode: 'started' | 'ended';
+    eventAt: number;
     exiting: boolean;
 }
 
@@ -38,11 +42,22 @@ const formatDuration = (ms?: number) => {
     return `${seconds}s`;
 };
 
-const getTimerBody = (mode: TimerToastMode, timer: EffectTimer, now: number) => {
+const formatStopwatch = (milliseconds: number) => `${(Math.max(0, milliseconds) / 1000).toFixed(2)}s`;
+
+const getTimerBody = (mode: TimerToastMode, timer: EffectTimer, now: number, eventAt = now) => {
     if (mode === 'started') {
         return {
-            detail: formatDuration(timer.durationMs),
-            label: `${timer.name} timer started`
+            detail: isSpellEffectTimer(timer.kind)
+                ? formatStopwatch(now - timer.startedAt)
+                : formatDuration(timer.durationMs),
+            label: isSpellEffectTimer(timer.kind) ? `${timer.name} Up` : `${timer.name} timer started`
+        };
+    }
+    if (mode === 'ended') {
+        const activeDuration = eventAt - timer.startedAt;
+        return {
+            detail: formatStopwatch(activeDuration),
+            label: `${timer.name} Down`
         };
     }
     const remainingMs = Math.max(0, (timer.expiresAt || now) - now);
@@ -54,10 +69,13 @@ const getTimerBody = (mode: TimerToastMode, timer: EffectTimer, now: number) => 
 };
 
 export const TimerExpiryToast: React.FC = () => {
-    const { timers, clearExpired } = useEffectTimerStore();
+    const timers = useEffectTimerStore(state => state.timers);
+    const currentCharacter = useEffectTimerStore(state => state.currentCharacter);
+    const clearExpired = useEffectTimerStore(state => state.clearExpired);
     const [now, setNow] = React.useState(Date.now());
-    const [startedToast, setStartedToast] = React.useState<StartedToastState | null>(null);
-    const knownTimerIdsRef = React.useRef<Set<string> | null>(null);
+    const [eventToast, setEventToast] = React.useState<TimerEventToastState | null>(null);
+    const knownTimersRef = React.useRef<Map<string, EffectTimer> | null>(null);
+    const knownCharacterRef = React.useRef<string | null | undefined>(undefined);
     const hideTimerRef = React.useRef<number | null>(null);
     const clearTimerRef = React.useRef<number | null>(null);
 
@@ -70,25 +88,41 @@ export const TimerExpiryToast: React.FC = () => {
     }, [clearExpired]);
 
     React.useEffect(() => {
-        const currentIds = new Set(timers.map(timer => timer.id));
-        const knownIds = knownTimerIdsRef.current;
-        if (knownIds) {
-            const newTimers = timers.filter(timer => !knownIds.has(timer.id));
-            const newestTimer = newTimers.sort((a, b) => b.startedAt - a.startedAt)[0];
-            if (newestTimer) {
-                if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
-                if (clearTimerRef.current) window.clearTimeout(clearTimerRef.current);
-                setStartedToast({ timer: newestTimer, exiting: false });
-                hideTimerRef.current = window.setTimeout(() => {
-                    setStartedToast(prev => prev ? { ...prev, exiting: true } : prev);
-                    clearTimerRef.current = window.setTimeout(() => {
-                        setStartedToast(null);
-                    }, EXIT_MS);
-                }, START_VISIBLE_MS);
-            }
+        const currentById = new Map(timers.map(timer => [timer.id, timer]));
+        const previousById = knownTimersRef.current;
+        const characterChanged = knownCharacterRef.current !== undefined
+            && knownCharacterRef.current !== currentCharacter;
+
+        if (!previousById || characterChanged) {
+            knownTimersRef.current = currentById;
+            knownCharacterRef.current = currentCharacter;
+            return;
         }
-        knownTimerIdsRef.current = currentIds;
-    }, [timers]);
+
+        const newTimers = timers.filter(timer => previousById.get(timer.id)?.startedAt !== timer.startedAt);
+        const newestTimer = newTimers.sort((a, b) => b.startedAt - a.startedAt)[0];
+        const endedTimer = newestTimer ? null : Array.from(previousById.values())
+            .filter(timer => !currentById.has(timer.id) && isSpellEffectTimer(timer.kind))
+            .sort((a, b) => b.startedAt - a.startedAt)[0] || null;
+
+        if (newestTimer || endedTimer) {
+            if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
+            if (clearTimerRef.current) window.clearTimeout(clearTimerRef.current);
+            const mode = newestTimer ? 'started' : 'ended';
+            const eventTimer = newestTimer || endedTimer!;
+            const eventAt = Date.now();
+            setEventToast({ timer: eventTimer, mode, eventAt, exiting: false });
+            hideTimerRef.current = window.setTimeout(() => {
+                setEventToast(previous => previous ? { ...previous, exiting: true } : previous);
+                clearTimerRef.current = window.setTimeout(() => {
+                    setEventToast(null);
+                }, EXIT_MS);
+            }, START_VISIBLE_MS);
+        }
+
+        knownTimersRef.current = currentById;
+        knownCharacterRef.current = currentCharacter;
+    }, [currentCharacter, timers]);
 
     React.useEffect(() => () => {
         if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
@@ -96,23 +130,31 @@ export const TimerExpiryToast: React.FC = () => {
     }, []);
 
     const urgentTimer = React.useMemo(() => getUrgentTimer(timers, now), [now, timers]);
-    const mode: TimerToastMode | null = startedToast ? 'started' : urgentTimer ? 'ending' : null;
-    const activeTimer = startedToast?.timer || urgentTimer;
+    const mode: TimerToastMode | null = eventToast?.mode || (urgentTimer ? 'ending' : null);
+    const activeTimer = eventToast?.timer || urgentTimer;
     if (!mode || !activeTimer) return null;
 
-    const body = getTimerBody(mode, activeTimer, now);
+    const isSpellEvent = (mode === 'started' || mode === 'ended') && isSpellEffectTimer(activeTimer.kind);
+    const body = getTimerBody(mode, activeTimer, now, eventToast?.eventAt);
 
     return (
         <div
-            className={`timer-expiry-toast ${mode === 'started' ? 'is-started' : 'is-ending'}${startedToast?.exiting ? ' is-exiting' : ''}`}
+            className={`timer-expiry-toast is-${mode}${isSpellEvent ? ' is-spell-event' : ''}${eventToast?.exiting ? ' is-exiting' : ''}`}
             role="status"
             aria-live="polite"
             aria-label={body.label}
         >
-            {mode === 'started' ? (
+            {mode === 'started' || mode === 'ended' ? (
                 <div className="timer-expiry-copy is-started">
-                    <span className="timer-expiry-name">{activeTimer.name.toLowerCase()}</span>
-                    <span className="timer-expiry-seconds">{body.detail}</span>
+                    <span className="timer-expiry-name">
+                        {isSpellEvent ? body.label : activeTimer.name.toLowerCase()}
+                    </span>
+                    {isSpellEvent ? (
+                        <span className="timer-expiry-time-group">
+                            <Timer size={11} aria-hidden="true" />
+                            <span className="timer-expiry-seconds">{body.detail}</span>
+                        </span>
+                    ) : <span className="timer-expiry-seconds">{body.detail}</span>}
                 </div>
             ) : (
                 <div className="timer-expiry-copy">

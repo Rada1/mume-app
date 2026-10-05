@@ -89,16 +89,27 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
             });
         }
 
-        const scrollElement = pointerElement?.closest<HTMLElement>('.gear-section-body') ?? pending.scrollElement;
-        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const scrollElement = pointerElement?.closest<HTMLElement>('.gear-section-body');
+        const bounds = scrollElement?.getBoundingClientRect();
         const maxScroll = scrollElement ? scrollElement.scrollHeight - scrollElement.clientHeight : 0;
-        const edgeSize = Math.min(76, Math.max(48, viewportHeight * 0.08));
-        const distanceFromBottom = viewportHeight - pending.lastY;
-        if (scrollElement && maxScroll > 1 && distanceFromBottom < edgeSize && scrollElement.scrollTop < maxScroll) {
-            const proximity = Math.max(0, Math.min(1, (edgeSize - distanceFromBottom) / edgeSize));
-            const step = Math.min(20, 5 + proximity * 14);
-            scrollElement.scrollTop = Math.min(maxScroll, scrollElement.scrollTop + step);
-            pending.frame = requestAnimationFrame(updateDragFrame);
+        if (scrollElement && bounds && maxScroll > 1) {
+            const edgeSize = Math.min(76, Math.max(40, bounds.height * 0.12));
+            const distanceFromTop = pending.lastY - bounds.top;
+            const distanceFromBottom = bounds.bottom - pending.lastY;
+            const atTopEdge = distanceFromTop >= 0 && distanceFromTop < edgeSize && scrollElement.scrollTop > 0;
+            const atBottomEdge = distanceFromBottom >= 0 && distanceFromBottom < edgeSize && scrollElement.scrollTop < maxScroll;
+            const edgeDistance = atTopEdge ? distanceFromTop : atBottomEdge ? distanceFromBottom : null;
+            if (edgeDistance !== null) {
+                const proximity = Math.max(0, Math.min(1, (edgeSize - edgeDistance) / edgeSize));
+                const step = Math.min(20, 5 + proximity * 14);
+                const nextScrollTop = atTopEdge
+                    ? Math.max(0, scrollElement.scrollTop - step)
+                    : Math.min(maxScroll, scrollElement.scrollTop + step);
+                if (nextScrollTop !== scrollElement.scrollTop) {
+                    scrollElement.scrollTop = nextScrollTop;
+                    pending.frame = requestAnimationFrame(updateDragFrame);
+                }
+            }
         }
     }, [setObjectDragState]);
 

@@ -51,7 +51,15 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         aliases: ['sense life'],
         durationMs: min(30),
         startPatterns: [/You feel your awareness improve/i],
-        endPatterns: [/sense life .*wears off/i]
+        endPatterns: [/sense life .*wears off/i, /You feel less aware(?: of your surroundings)?/i]
+    },
+    {
+        id: 'spell-detect-magic',
+        name: 'Detect Magic',
+        kind: 'spell',
+        aliases: ['detect magic'],
+        startPatterns: [/You feel a strange power surrounding you/i],
+        endPatterns: [/Your perception of magical auras wears off/i, /(?:your|the) detect magic wears off/i]
     },
     {
         id: 'spell-detect-invisibility',
@@ -77,7 +85,7 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         kind: 'sanctuary',
         aliases: ['sanctuary', 'sanc'],
         durationMs: min(8),
-        startPatterns: [/white aura surrounds/i],
+        startPatterns: [/white aura surrounds/i, /You start glowing/i],
         endPatterns: [/white aura .*fades/i, /sanctuary .*wears off/i]
     },
     {
@@ -88,6 +96,14 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         durationMs: min(8),
         startPatterns: [/You are blinded/i, /You block out the light/i],
         endPatterns: [/is no longer blind/i, /blindness .*wears off/i]
+    },
+    {
+        id: 'spell-breath-of-briskness',
+        name: 'Breath of Briskness',
+        kind: 'spell',
+        aliases: ['breath of briskness', 'breath'],
+        startPatterns: [/An energy begins to flow within your legs as your body becomes lighter/i],
+        endPatterns: [/Your legs feel heavier/i]
     },
     {
         id: 'herb-travelling',

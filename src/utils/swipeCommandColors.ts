@@ -69,14 +69,17 @@ const SWIPE_COMMAND_TEXT_COLORS: Record<string, string> = {
 
 const PURPLE_SWIPE_SPELLS = [
     'shield', 'armour', 'bless', 'sanctuary', 'shroud', 'enchant', 'breath of briskness',
-    'detect magic', 'strength', 'sense life', 'detect invisible', 'detect invisibility', 'detect evil', 'detect poison', 'night vision', 'store', 'protection from evil'
+    'detect magic', 'strength', 'sense life', 'detect invisible', 'detect invisibility', 'detect evil', 'detect poison',
+    'night vision', 'store', 'protection from evil'
 ];
 const CYAN_SWIPE_SPELLS = ['heal', 'cure serious', 'cure light', 'cure critic', 'cure disease', 'cure blindness', 'remove poison', 'remove curse', 'energy drain'];
 const RED_SWIPE_SPELLS = [
-    'dispel evil', 'harm', 'smother', 'blindness', 'lightning bolt', 'fireball',
-    'burning hands', 'chill touch', 'magic missile', 'colour spray', 'call lightning', 'curse', 'poison', 'hold', 'black breath', 'ventriloquate', 'earthquake', 'silence', 'fear'
+    'dispel evil', 'dispel magic', 'harm', 'smother', 'blindness', 'lightning bolt', 'fireball',
+    'burning hands', 'chill touch', 'magic missile', 'magic blast', 'shocking grasp', 'raise dead',
+    'colour spray', 'call lightning', 'curse', 'poison', 'hold', 'black breath', 'ventriloquate',
+    'earthquake', 'silence', 'fear', 'charm', 'sleep'
 ];
-const WHITE_SWIPE_COMMANDS = ['locate', 'locate life', 'watch room', 'scry', 'scout', 'look', 'examine', 'track', 'search', 'consider', 'watch', 'reveal', 'where', 'flush'];
+const WHITE_SWIPE_COMMANDS = ['locate', 'locate life', 'watch room', 'scry', 'scout', 'look', 'examine', 'track', 'search', 'consider', 'watch', 'reveal', 'where', 'flush', 'call familiar', 'control weather', 'find the path', 'divination'];
 const GOLD_SWIPE_COMMANDS = ['create food', 'create water', 'create light'];
 const ORANGE_SWIPE_COMMANDS = ['block door', 'break door'];
 const GREEN_SWIPE_COMMANDS = ['teleport', 'word of recall', 'portal', 'transfer', 'summon', 'flee', 'escape'];
