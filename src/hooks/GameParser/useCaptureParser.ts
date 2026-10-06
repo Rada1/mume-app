@@ -744,6 +744,15 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         pendingFlagsRef.current = { isSilent: false, fromDrawer: false, command: undefined, timestamp: undefined };
     }, []);
 
+    const resetSession = useCallback(() => {
+        sessionRef.current = null;
+        setCaptureSession(null);
+        captureStage.current = 'none';
+        pendingFlagsRef.current = { isSilent: false, fromDrawer: false, command: undefined, timestamp: undefined };
+        pendingSilentScoreAtRef.current = null;
+        pendingSilentCommandsRef.current = [];
+    }, [setCaptureSession, captureStage]);
+
     const shouldSuppressCommandEcho = useCallback((line: string, attachedText?: string) => {
         const pending = pendingSilentCommandsRef.current;
         if (pending.length === 0) return false;
@@ -789,6 +798,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         getActiveType,
         setPendingFlags,
         clearPendingFlags,
+        resetSession,
         isPendingSilent,
         shouldSuppressCommandEcho,
         shouldSuppressSilentBlank,

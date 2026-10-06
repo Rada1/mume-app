@@ -5,7 +5,10 @@
 
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import { getTimerPhase, useEffectTimerStore } from '../../stores/useEffectTimerStore';
+import { useUI } from '../../context/GameContext';
+import { useActiveEffectTimers } from '../../hooks/useActiveEffectTimers';
+import { getTimerPhase } from '../../stores/useEffectTimerStore';
+import { useModeStore } from '../../stores/useModeStore';
 
 import { parseStoredSpell, capitalizeWords } from '../../utils/affectUtils';
 
@@ -30,22 +33,26 @@ const normalizeAffectName = (value: string): string => (
 );
 
 export const CharacterCardTimerStrip: React.FC<CharacterCardTimerStripProps> = ({ affects = [] }) => {
-    const { timers, clearExpired } = useEffectTimerStore();
+    const timers = useActiveEffectTimers();
+    const { spectateBuffer } = useUI();
+    const isViewingSpectateTarget = useModeStore(state => state.isSpectating && state.activeView === 'target');
     const [now, setNow] = React.useState(Date.now());
+    const timerNow = isViewingSpectateTarget && Number.isFinite(spectateBuffer.displayCutoff)
+        ? spectateBuffer.displayCutoff
+        : now;
 
     React.useEffect(() => {
         const interval = window.setInterval(() => {
             setNow(Date.now());
-            clearExpired();
         }, 1000);
         return () => window.clearInterval(interval);
-    }, [clearExpired]);
+    }, []);
 
     const activeTimers = React.useMemo(
         () => [...timers]
-            .filter(timer => !timer.expiresAt || timer.expiresAt > now)
+            .filter(timer => !timer.expiresAt || timer.expiresAt > timerNow)
             .sort((a, b) => (a.expiresAt || Infinity) - (b.expiresAt || Infinity)),
-        [now, timers]
+        [timerNow, timers]
     );
 
     const activeAffects = React.useMemo(() => {
@@ -126,11 +133,11 @@ export const CharacterCardTimerStrip: React.FC<CharacterCardTimerStripProps> = (
             </div>
             <div className="character-card-timer-chips">
                 {visibleAffects.map(({ key, displayName, isStored, originalName, timer }) => {
-                    const remainingMs = timer?.expiresAt ? timer.expiresAt - now : undefined;
+                    const remainingMs = timer?.expiresAt ? timer.expiresAt - timerNow : undefined;
                     const pct = timer?.durationMs && remainingMs !== undefined
                         ? Math.max(0, Math.min(100, (remainingMs / timer.durationMs) * 100))
                         : 0;
-                    const phase = timer ? getTimerPhase(timer, now) : null;
+                    const phase = timer ? getTimerPhase(timer, timerNow) : null;
                     const phaseText = phase ? ` - ${phase.label}` : '';
                     const chipKind = isStored ? 'stored-spell' : (timer?.kind || 'affect');
                     return (

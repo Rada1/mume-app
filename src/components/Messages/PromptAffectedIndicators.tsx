@@ -5,8 +5,10 @@
 
 // --- Logic Section ---
 import React, { useEffect, useMemo, useState } from 'react';
+import { useUI } from '../../context/GameContext';
+import { useActiveEffectTimers } from '../../hooks/useActiveEffectTimers';
 import { useActiveVitals } from '../../stores/useActiveGameState';
-import { useEffectTimerStore } from '../../stores/useEffectTimerStore';
+import { useModeStore } from '../../stores/useModeStore';
 import { normalizeAffectName } from '../../utils/affectUtils';
 
 const conditionLabel = (condition: string) => condition
@@ -18,24 +20,27 @@ type DisplayedAffect = { name: string; key: string; state: 'enter' | 'exit'; ani
 // --- Render Section ---
 export const PromptAffectedIndicators: React.FC = () => {
     const vitals = useActiveVitals();
-    const timers = useEffectTimerStore(state => state.timers);
-    const clearExpired = useEffectTimerStore(state => state.clearExpired);
+    const timers = useActiveEffectTimers();
+    const { spectateBuffer } = useUI();
+    const isViewingSpectateTarget = useModeStore(state => state.isSpectating && state.activeView === 'target');
     const [now, setNow] = useState(() => Date.now());
     const [displayedAffects, setDisplayedAffects] = useState<DisplayedAffect[]>([]);
+    const timerNow = isViewingSpectateTarget && Number.isFinite(spectateBuffer.displayCutoff)
+        ? spectateBuffer.displayCutoff
+        : now;
 
     useEffect(() => {
         const interval = window.setInterval(() => {
             setNow(Date.now());
-            clearExpired();
         }, 60_000);
         return () => window.clearInterval(interval);
-    }, [clearExpired]);
+    }, []);
 
     const affects = useMemo(() => {
         const names = [
             ...(vitals.characterInfo.affectedBy || []),
             ...timers
-                .filter(timer => !timer.target && (!timer.expiresAt || timer.expiresAt > now))
+                .filter(timer => !timer.target && (!timer.expiresAt || timer.expiresAt > timerNow))
                 .map(timer => timer.name),
             ...Object.entries(vitals.conditions || {})
                 .filter(([name, active]) => active && name !== 'waiting')
@@ -45,7 +50,7 @@ export const PromptAffectedIndicators: React.FC = () => {
         // once (for example, multiple "unable to quit" sources). Keep each
         // occurrence so each one gets its own entry/animation.
         return names.filter(name => Boolean(normalizeAffectName(name)));
-    }, [now, timers, vitals.characterInfo.affectedBy, vitals.conditions]);
+    }, [timerNow, timers, vitals.characterInfo.affectedBy, vitals.conditions]);
 
     const affectEntries = useMemo(() => {
         const occurrences = new Map<string, number>();

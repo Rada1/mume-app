@@ -6,6 +6,9 @@
 import React from 'react';
 import { Timer } from 'lucide-react';
 import { useEffectTimerStore } from '../../stores/useEffectTimerStore';
+import { useActiveEffectTimers } from '../../hooks/useActiveEffectTimers';
+import { useModeStore } from '../../stores/useModeStore';
+import { useUI } from '../../context/GameContext';
 import { EffectTimer } from '../../types';
 import { getEffectTimerTone, isSpellEffectTimer } from '../../utils/effectTimerUtils';
 import './TimerExpiryToast.css';
@@ -69,13 +72,21 @@ const getTimerBody = (mode: TimerToastMode, timer: EffectTimer, now: number, eve
 };
 
 export const TimerExpiryToast: React.FC = () => {
-    const timers = useEffectTimerStore(state => state.timers);
-    const currentCharacter = useEffectTimerStore(state => state.currentCharacter);
+    const timers = useActiveEffectTimers();
+    const playerCharacter = useEffectTimerStore(state => state.currentCharacter);
     const clearExpired = useEffectTimerStore(state => state.clearExpired);
+    const { spectateBuffer } = useUI();
+    const isViewingSpectateTarget = useModeStore(state => state.isSpectating && state.activeView === 'target');
+    const spectateTarget = useModeStore(state => state.spectateTarget);
+    const currentCharacter = isViewingSpectateTarget ? `spectate:${spectateTarget || ''}` : playerCharacter;
     const [now, setNow] = React.useState(Date.now());
+    const timerNow = isViewingSpectateTarget && Number.isFinite(spectateBuffer.displayCutoff)
+        ? spectateBuffer.displayCutoff
+        : now;
     const [eventToast, setEventToast] = React.useState<TimerEventToastState | null>(null);
     const knownTimersRef = React.useRef<Map<string, EffectTimer> | null>(null);
     const knownCharacterRef = React.useRef<string | null | undefined>(undefined);
+    const wasLiveRef = React.useRef(spectateBuffer.isLive);
     const hideTimerRef = React.useRef<number | null>(null);
     const clearTimerRef = React.useRef<number | null>(null);
 
@@ -92,10 +103,14 @@ export const TimerExpiryToast: React.FC = () => {
         const previousById = knownTimersRef.current;
         const characterChanged = knownCharacterRef.current !== undefined
             && knownCharacterRef.current !== currentCharacter;
+        const historicalSpectateView = isViewingSpectateTarget && !spectateBuffer.isLive;
+        const returnedToLive = isViewingSpectateTarget && spectateBuffer.isLive && !wasLiveRef.current;
 
-        if (!previousById || characterChanged) {
+        if (!previousById || characterChanged || historicalSpectateView || returnedToLive) {
             knownTimersRef.current = currentById;
             knownCharacterRef.current = currentCharacter;
+            wasLiveRef.current = spectateBuffer.isLive;
+            setEventToast(null);
             return;
         }
 
@@ -110,7 +125,7 @@ export const TimerExpiryToast: React.FC = () => {
             if (clearTimerRef.current) window.clearTimeout(clearTimerRef.current);
             const mode = newestTimer ? 'started' : 'ended';
             const eventTimer = newestTimer || endedTimer!;
-            const eventAt = Date.now();
+            const eventAt = timerNow;
             setEventToast({ timer: eventTimer, mode, eventAt, exiting: false });
             hideTimerRef.current = window.setTimeout(() => {
                 setEventToast(previous => previous ? { ...previous, exiting: true } : previous);
@@ -122,21 +137,23 @@ export const TimerExpiryToast: React.FC = () => {
 
         knownTimersRef.current = currentById;
         knownCharacterRef.current = currentCharacter;
-    }, [currentCharacter, timers]);
+        wasLiveRef.current = spectateBuffer.isLive;
+    }, [currentCharacter, isViewingSpectateTarget, spectateBuffer.isLive, timerNow, timers]);
 
     React.useEffect(() => () => {
         if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
         if (clearTimerRef.current) window.clearTimeout(clearTimerRef.current);
     }, []);
 
-    const urgentTimer = React.useMemo(() => getUrgentTimer(timers, now), [now, timers]);
+    const urgentTimer = React.useMemo(() => getUrgentTimer(timers, timerNow), [timerNow, timers]);
     const mode: TimerToastMode | null = eventToast?.mode || (urgentTimer ? 'ending' : null);
     const activeTimer = eventToast?.timer || urgentTimer;
+    if (isViewingSpectateTarget && !spectateBuffer.isLive) return null;
     if (!mode || !activeTimer) return null;
 
     const isSpellEvent = (mode === 'started' || mode === 'ended') && isSpellEffectTimer(activeTimer.kind);
     const timerTone = getEffectTimerTone(activeTimer.kind);
-    const body = getTimerBody(mode, activeTimer, now, eventToast?.eventAt);
+    const body = getTimerBody(mode, activeTimer, timerNow, eventToast?.eventAt);
 
     return (
         <div

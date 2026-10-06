@@ -66,6 +66,7 @@ export interface VitalsState {
     isHidden: boolean;
     isSwimming: boolean;
     mountMoves: string | null;
+    mood: string | null;
     spellEffort: string | null;
     alertness: string | null;
     gmcpVitals: {
@@ -152,6 +153,7 @@ export const initialVitalsState = {
     isHidden: false,
     isSwimming: false,
     mountMoves: null,
+    mood: null,
     spellEffort: null,
     alertness: null,
     gmcpVitals: {
@@ -380,8 +382,9 @@ export const createVitalsActions = (set: any, get: any) => ({
             if (data.hidden !== undefined) (updates as any).isHidden = !!data.hidden;
             if (data.swim !== undefined) (updates as any).isSwimming = !!data.swim;
             if (data['mount-moves'] !== undefined) (updates as any).mountMoves = data['mount-moves'] ?? null;
-            if (data['spell-effort'] !== undefined) (updates as any).spellEffort = data['spell-effort'] ?? null;
-            if (data.alertness !== undefined) (updates as any).alertness = data.alertness ?? null;
+            if (data.mood !== undefined) updates.mood = data.mood.toLowerCase();
+            if (data['spell-effort'] !== undefined) updates.spellEffort = data['spell-effort'] ?? null;
+            if (data.alertness !== undefined) updates.alertness = data.alertness ?? null;
 
             return {
                 ...state, 

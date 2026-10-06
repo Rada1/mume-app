@@ -123,8 +123,10 @@ export interface UseGameParserDeps {
     roomDescRef: MutableRefObject<string | null>;
     spectateRoomName: string;
     spectateRoomDesc: string;
+    spectateTarget?: string | null;
     setIsSpectateMode: (val: boolean) => void;
     practiceHandler?: ReturnType<typeof import('../usePracticeHandler').usePracticeHandler>;
+    spectatePracticeHandler?: ReturnType<typeof import('../usePracticeHandler').usePracticeHandler>;
     gameState: GameState;
     setGameState: Dispatch<SetStateAction<GameState>>;
     ansiConvert: any;

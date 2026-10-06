@@ -5,6 +5,7 @@
 
 import { EFFECT_TIMER_CATALOG, findEffectTimerEntry } from '../../data/effectTimerCatalog';
 import { useEffectTimerStore } from '../../stores/useEffectTimerStore';
+import { useSpectateLiveEffectTimerStore } from '../../stores/spectate/useSpectateEffectTimerStore';
 
 const RECENT_WINDOW_MS = 15_000;
 const requiresConfirmation = (entry: { kind: string }) =>
@@ -21,13 +22,26 @@ const extractTarget = (command: string, effectName: string) => {
     return last;
 };
 
-let lastEffectCommand: { entryId: string; target?: string; at: number } | null = null;
+const lastEffectCommand: Record<'player' | 'spectate', { entryId: string; target?: string; at: number } | null> = {
+    player: null,
+    spectate: null
+};
+
+const getEffectTimerStore = (isSpectateTarget: boolean) => (
+    isSpectateTarget ? useSpectateLiveEffectTimerStore : useEffectTimerStore
+);
+
+const getCommandScope = (isSpectateTarget: boolean) => isSpectateTarget ? 'spectate' : 'player';
+
+export const resetSpectateEffectTimerParser = () => {
+    lastEffectCommand.spectate = null;
+};
 
 /** Returns the confirmed local effect that ended on this line, if any. */
 export const getEndedEffectTimerEntry = (text: string) =>
     EFFECT_TIMER_CATALOG.find(entry => entry.endPatterns?.some(pattern => pattern.test(text))) ?? null;
 
-export const recordEffectTimerCommand = (command: string) => {
+export const recordEffectTimerCommand = (command: string, isSpectateTarget = false) => {
     const lower = command.trim().toLowerCase();
     if (!/^(?:cast|c|commune|pray|quaff|drink|eat|use)\b/.test(lower)) return;
 
@@ -37,16 +51,18 @@ export const recordEffectTimerCommand = (command: string) => {
     if (!entry) return;
 
     const target = entry.kind === 'blind' ? extractTarget(command, spellName || entry.name) : undefined;
+    const store = getEffectTimerStore(isSpectateTarget).getState();
     // Spell attempts are not active effects. Wait for MUME's completion line.
     if (!requiresConfirmation(entry)) {
-        useEffectTimerStore.getState().addTimer(entry, 'command', target);
+        store.addTimer(entry, 'command', target);
     }
-    lastEffectCommand = { entryId: entry.id, target, at: Date.now() };
+    lastEffectCommand[getCommandScope(isSpectateTarget)] = { entryId: entry.id, target, at: Date.now() };
 };
 
-export const parseEffectTimerLine = (text: string) => {
+export const parseEffectTimerLine = (text: string, isSpectateTarget = false) => {
     const lower = text.toLowerCase();
-    const store = useEffectTimerStore.getState();
+    const store = getEffectTimerStore(isSpectateTarget).getState();
+    const scope = getCommandScope(isSpectateTarget);
 
     const endedEntry = getEndedEffectTimerEntry(text);
     if (endedEntry) {
@@ -56,20 +72,21 @@ export const parseEffectTimerLine = (text: string) => {
         return true;
     }
 
-    const recent = lastEffectCommand && Date.now() - lastEffectCommand.at < RECENT_WINDOW_MS
-        ? EFFECT_TIMER_CATALOG.find(entry => entry.id === lastEffectCommand?.entryId)
+    const lastCommand = lastEffectCommand[scope];
+    const recent = lastCommand && Date.now() - lastCommand.at < RECENT_WINDOW_MS
+        ? EFFECT_TIMER_CATALOG.find(entry => entry.id === lastCommand.entryId)
         : null;
 
     if (recent && /lost your concentration|failed|nothing seems to happen|you can't|you cannot|do not know|lack/i.test(text)) {
-        const timerId = `${recent.id}:${lastEffectCommand?.target || 'self'}`;
+        const timerId = `${recent.id}:${lastCommand?.target || 'self'}`;
         store.removeTimer(timerId);
-        lastEffectCommand = null;
+        lastEffectCommand[scope] = null;
         return false;
     }
 
     if (recent && !requiresConfirmation(recent) && /^(?:you feel|you are|ok\.|your spell|you suddenly|you begin)/i.test(text.trim())) {
-        store.addTimer(recent, 'parser', lastEffectCommand?.target);
-        lastEffectCommand = null;
+        store.addTimer(recent, 'parser', lastCommand?.target);
+        lastEffectCommand[scope] = null;
         return true;
     }
 
@@ -78,7 +95,7 @@ export const parseEffectTimerLine = (text: string) => {
     );
     if (startedEntry) {
         store.addTimer(startedEntry, 'parser');
-        if (lastEffectCommand?.entryId === startedEntry.id) lastEffectCommand = null;
+        if (lastCommand?.entryId === startedEntry.id) lastEffectCommand[scope] = null;
         return true;
     }
 

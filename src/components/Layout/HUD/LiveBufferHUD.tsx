@@ -5,6 +5,7 @@
 
 // --- Logic Section ---
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, ChevronUp, Play, Pause, Zap } from 'lucide-react';
 import { useUI } from '../../../context/GameContext';
 import { useModeStore } from '../../../stores/useModeStore';
@@ -131,6 +132,7 @@ export const LiveBufferHUD: React.FC = () => {
         minWidth: isMinimized ? '145px' : '240px',
         maxWidth: isMinimized ? '190px' : '300px',
         userSelect: 'none',
+        touchAction: 'none',
         pointerEvents: 'auto',
     };
 
@@ -150,7 +152,7 @@ export const LiveBufferHUD: React.FC = () => {
     };
 
     // --- Render Section ---
-    return (
+    return createPortal(
         <div
             ref={containerRef}
             style={containerStyle}
@@ -276,6 +278,7 @@ export const LiveBufferHUD: React.FC = () => {
                 </div>
             )}
             </>}
-        </div>
+        </div>,
+        document.body
     );
 };

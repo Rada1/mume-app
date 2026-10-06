@@ -10,9 +10,9 @@ import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from
 import { createPortal } from 'react-dom';
 import { useGame, useUI } from '../../context/GameContext';
 import { useActiveVitals } from '../../stores/useActiveGameState';
-import { useEffectTimerStore } from '../../stores/useEffectTimerStore';
 import { getEffectTimerTone, isSpellEffectTimer } from '../../utils/effectTimerUtils';
 import { calculateRegen, formatRegen } from '../../utils/regenUtils';
+import { useActiveEffectTimers } from '../../hooks/useActiveEffectTimers';
 import { useStatDeltas } from '../../hooks/useStatDeltas';
 import { useCharacterConditions } from '../../hooks/useCharacterConditions';
 import { useCharacterInfoRefresh } from '../../hooks/useCharacterInfoRefresh';
@@ -22,6 +22,7 @@ import { useSwipeUpToExpand } from '../../hooks/useSwipeUpToExpand';
 import { getMovementModeActions } from '../../hooks/useMovementModeActions';
 import { ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
 import { useCharacterPanelStore } from '../../stores/useCharacterPanelStore';
+import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { applyTacticalCommandPrefix, useTacticalCommandPrefixStore } from '../../stores/useTacticalCommandPrefixStore';
 import { ThisIsYouVitalsTier } from './ThisIsYouVitalsTier';
@@ -96,6 +97,9 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
         setPlayerPosition,
         isSpectateMode
     } = useGame();
+    const spectateTarget = useModeStore(state => state.spectateTarget);
+    const activeView = useModeStore(state => state.activeView);
+    const viewingSpectateTarget = isSpectateMode && activeView === 'target';
 
     const isMobileSheet = Boolean(viewport?.isMobile && !alwaysExpanded && !panelIsMinimized);
     const pendingCommandPrefix = useTacticalCommandPrefixStore(state => state.prefix);
@@ -126,8 +130,8 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
     }, [alwaysExpanded, panelIsMinimized, viewport?.isMobile]);
 
     const vitals = useActiveVitals();
-    const { displayEqLines } = useUI();
-    const activeTimers = useEffectTimerStore(state => state.timers);
+    const { displayEqLines, spectateBuffer } = useUI();
+    const activeTimers = useActiveEffectTimers();
     const [displayWimpy, setDisplayWimpy] = useState<number | null>(vitals.wimpy ?? null);
     const [conditionNow, setConditionNow] = useState(Date.now());
 
@@ -139,6 +143,12 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
         const interval = window.setInterval(() => setConditionNow(Date.now()), 1000);
         return () => window.clearInterval(interval);
     }, []);
+    const timerNow = viewingSpectateTarget && Number.isFinite(spectateBuffer.displayCutoff)
+        ? spectateBuffer.displayCutoff
+        : conditionNow;
+    const displayedAlertness = viewingSpectateTarget ? vitals.alertness : alertness;
+    const displayedMood = viewingSpectateTarget ? vitals.mood : mood;
+    const displayedSpellSpeed = viewingSpectateTarget ? vitals.spellEffort : spellSpeed;
 
     const refreshCharacterInfo = useCharacterInfoRefresh(
         characterInfo?.name || characterName || '', gameState === 'playing' && !isSpectateMode, executeCommand, !alwaysExpanded
@@ -150,24 +160,17 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
         executeCommand
     );
 
-    // Tick regen calculation
-    const [regenNow, setRegenNow] = useState(() => Date.now());
-    useEffect(() => {
-        const timer = window.setInterval(() => setRegenNow(Date.now()), 60_000);
-        return () => window.clearInterval(timer);
-    }, []);
-
     const regen = useMemo(() => calculateRegen({
         equipped: (displayEqLines || []).filter(line => line.isItem).map(line => line.rawText || line.text),
         race: characterInfo?.race,
         position: vitals.position,
-        alertness,
+        alertness: displayedAlertness || undefined,
         conditions: vitals.conditions,
         age: characterInfo?.age,
         attributes: characterInfo?.stats,
         timers: activeTimers,
-        now: regenNow,
-    }), [activeTimers, alertness, characterInfo, displayEqLines, regenNow, vitals.conditions, vitals.position]);
+        now: timerNow,
+    }), [activeTimers, characterInfo, displayEqLines, displayedAlertness, timerNow, vitals.conditions, vitals.position]);
 
     // Command dispatchers for state pills
     const handleStateSelect = (kind: 'pos' | 'alert' | 'mood' | 'speed', option: StateOption) => {
@@ -196,18 +199,19 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
 
     // Capitalize state display
     const currentPosition = (vitals.position || 'standing').charAt(0).toUpperCase() + (vitals.position || 'standing').slice(1);
-    const currentAlertness = (alertness || 'normal').charAt(0).toUpperCase() + (alertness || 'normal').slice(1);
-    const currentMood = (mood || 'normal').charAt(0).toUpperCase() + (mood || 'normal').slice(1);
-    const currentSpellSpeed = (spellSpeed || 'normal').charAt(0).toUpperCase() + (spellSpeed || 'normal').slice(1);
+    const currentAlertness = (displayedAlertness || 'normal').charAt(0).toUpperCase() + (displayedAlertness || 'normal').slice(1);
+    const currentMood = (displayedMood || 'normal').charAt(0).toUpperCase() + (displayedMood || 'normal').slice(1);
+    const currentSpellSpeed = (displayedSpellSpeed || 'normal').charAt(0).toUpperCase() + (displayedSpellSpeed || 'normal').slice(1);
 
     const activeConditions = useCharacterConditions(
-        vitals.characterInfo.affectedBy, vitals.conditions, activeTimers, vitals.position, isSpectateMode
+        vitals.characterInfo.affectedBy, vitals.conditions, activeTimers, vitals.position, timerNow
     );
     const conditionTimers = useMemo(() => activeTimers.filter(timer => {
-        if (timer.expiresAt && timer.expiresAt <= conditionNow) return false;
+        if (timer.expiresAt && timer.expiresAt <= timerNow) return false;
         if (!timer.target || timer.target.toLowerCase() === 'self') return true;
-        return normalizeConditionTimerName(timer.target) === normalizeConditionTimerName(characterName || '');
-    }), [activeTimers, characterName, conditionNow]);
+        const timerCharacterName = viewingSpectateTarget ? spectateTarget || characterInfo?.name : characterName || characterInfo?.name;
+        return normalizeConditionTimerName(timer.target) === normalizeConditionTimerName(timerCharacterName || '');
+    }), [activeTimers, characterInfo?.name, characterName, spectateTarget, timerNow, viewingSpectateTarget]);
     const getConditionTimer = (condition: string) => {
         const normalized = normalizeConditionTimerName(condition);
         return conditionTimers.find(candidate => {
@@ -223,16 +227,18 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
         const timer = getConditionTimer(condition);
         if (!timer) return null;
         if (isSpellEffectTimer(timer.kind)) return {
-            text: formatConditionTimeElapsed(conditionNow - timer.startedAt),
+            text: formatConditionTimeElapsed(timerNow - timer.startedAt),
             label: 'Time active'
         };
         return timer.expiresAt ? {
-            text: formatConditionTimeLeft(timer.expiresAt - conditionNow),
+            text: formatConditionTimeLeft(timer.expiresAt - timerNow),
             label: 'Time remaining'
         } : null;
     };
 
-    const name = characterInfo?.name || characterName || 'Adventurer';
+    const name = viewingSpectateTarget
+        ? (spectateTarget || characterInfo?.name || characterName || 'Adventurer')
+        : (characterInfo?.name || characterName || 'Adventurer');
     const level = characterInfo?.level || '—';
     const ancestry = characterInfo?.subrace || characterInfo?.race || '—';
     const subclass = characterInfo?.subclass ? ` · ${characterInfo.subclass}` : '';

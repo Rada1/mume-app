@@ -33,7 +33,8 @@ import { buildPlayerLineTokens } from './playerLineTokens';
 import { formatCombatLineTokens } from './combatLineTokens';
 import { useUIStore } from '../../stores/useUIStore';
 import { useRoomStore } from '../../stores/useRoomStore';
-import { getEndedEffectTimerEntry, parseEffectTimerLine } from '../../services/timers/effectTimerParser';
+import { useSpectateLiveVitalsStore } from '../../stores/spectate/useSpectateLiveVitalsStore';
+import { getEndedEffectTimerEntry, parseEffectTimerLine, recordEffectTimerCommand } from '../../services/timers/effectTimerParser';
 import { parseActionTimerLine } from '../../services/timers/actionTimerParser';
 import { parseMagicKeyLine, upsertMagicKeyTarget } from '../../utils/magicKeyUtils';
 import { parseResourceGainLine } from '../../utils/resourceGainUtils';
@@ -147,6 +148,11 @@ const normalizeSpectateTellCommand = (text: string | undefined): string => {
         .trim();
     return decoded.replace(/^(['"])(.*?)\1$/, '$2').trim().toLowerCase();
 };
+
+const normalizeSpectatePlayerName = (text: string | undefined): string => stripInlineMarkup(text || '')
+    .replace(/\x1b?\[[0-9;]*m/g, '')
+    .replace(/&(?:amp;)?[A-Za-z]/gi, '')
+    .trim();
 
 const isGameplayXmlLine = (text: string): boolean => {
     const clean = stripInlineMarkup(text).trim().toLowerCase();
@@ -264,7 +270,9 @@ const buildHelpTermTokens = (prefix: string, termsStr: string, splitOnComma: boo
     return tokens;
 };
 
-export const useGameParser = (deps: UseGameParserDeps, session: any) => {
+type ParserSession = ReturnType<typeof import('../../context/GameContext/useSessionState').useSessionState>;
+
+export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, spectateSession?: ParserSession) => {
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const loginName = useSettingsStore(s => s.loginName);
     const loginPassword = useSettingsStore(s => s.loginPassword);
@@ -357,6 +365,35 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         captureStage: deps.captureStage,
         setCharacterInfo
     });
+    const spectateCaptureStage = useRef('none');
+    const spectateCapture = useCaptureParser({
+        captureSession: spectateSession?.game.captureSession ?? null,
+        setCaptureSession: spectateSession?.game.setCaptureSession ?? (() => {}),
+        setInventoryLines: spectateSession?.game.setInventoryLines ?? (() => {}),
+        setEqLines: spectateSession?.game.setEqLines ?? (() => {}),
+        setStatsLines: spectateSession?.game.setStatsLines ?? (() => {}),
+        setPracticeLines: spectateSession?.game.setPracticeLines ?? (() => {}),
+        setWhoLines: spectateSession?.game.setWhoLines ?? (() => {}),
+        setWhoList: spectateSession?.game.setWhoList ?? (() => {}),
+        setScoreLines: spectateSession?.game.setScoreLines ?? (() => {}),
+        setInfoLines: spectateSession?.game.setInfoLines ?? (() => {}),
+        setQuestLines: spectateSession?.game.setQuestLines ?? (() => {}),
+        setAchievementLines: spectateSession?.game.setAchievementLines ?? (() => {}),
+        setCharacterInfo: spectateSession
+            ? info => spectateSession.vitals.setCharacterInfo(previous => ({ ...previous, ...info }))
+            : undefined,
+        setContainerContents: spectateSession?.game.setContainerContents,
+        practiceHandler: deps.spectatePracticeHandler,
+        registerEntity,
+        ansiConvert: deps.ansiConvert,
+        captureStage: spectateCaptureStage
+    });
+    const previousSpectateCaptureTargetRef = useRef(deps.spectateTarget);
+    useEffect(() => {
+        if (previousSpectateCaptureTargetRef.current === deps.spectateTarget) return;
+        previousSpectateCaptureTargetRef.current = deps.spectateTarget;
+        spectateCapture.resetSession();
+    }, [deps.spectateTarget, spectateCapture.resetSession]);
 
     const { parseLogGmcp, resetSpectateContext } = useLogGmcpParser({
         isSpectateMode: deps.isSpectateMode,
@@ -546,7 +583,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setIsPasswordMode: deps.setIsPasswordMode,
         accountState: deps.accountState,
         executeCommandRef: deps.executeCommandRef,
-        sendCommand: deps.sendCommand || session.game.sendCommand || ((cmd: string) => {}),
+        sendCommand: deps.sendCommand || (() => {}),
         addMessage: deps.addMessage,
         clearLog: deps.clearLog,
         captureStage: deps.captureStage,
@@ -628,6 +665,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 return;
             }
         }
+
+        const lineCapture = isSnoop ? spectateCapture : capture;
 
         // --- Help Response Capture ---
         // Intercept help headers, buffer help output until the next prompt, suppress from log, and show in a popup card
@@ -796,7 +835,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // The capture parser strips all tokens for 'where' lines anyway (useCaptureParser:134-137),
         // so running the full tokenizer (which rebuilds a growing player-name regex per line)
         // causes an O(N²) feedback loop that freezes the browser.
-        const activeCapture = capture.getActiveType();
+        const activeCapture = lineCapture.getActiveType();
         const expectedCaptureBeforeTokenize = normalizeStageToCaptureType(deps.captureStage.current) as any;
         const isWhereCapture = !isSnoop && (
             activeCapture === 'where' ||
@@ -842,8 +881,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             const tokenizer = Tokenizer.getInstance();
             tokenizer.reset('room');
             
-            const containerCmd = (activeCapture === 'container' && capture.getSession) 
-                ? (capture.getSession()?.metadata?.command || '') 
+            const containerCmd = (activeCapture === 'container' && lineCapture.getSession) 
+                ? (lineCapture.getSession()?.metadata?.command || '') 
                 : '';
             const lowerCmd = containerCmd.toLowerCase().trim();
             let parent: string | undefined = undefined;
@@ -901,7 +940,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             lower = textOnly.toLowerCase();
         }
 
-        if (isSnoop && textOnly.trim().length === 0) return;
+        if (isSnoop && textOnly.trim().length === 0 && !isEndPromptLine) return;
         if (!isSnoop && capture.shouldSuppressSilentBlank(textOnly)) return;
 
         if (!isSnoop && /^you hear some .*\bnoise from the .+\.?$/i.test(textOnly.trim())) {
@@ -1003,14 +1042,19 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const commResult = comm.parseComm(lineToParse, textOnly, lower);
         if (commResult.isSuppressed) return;
         if (commResult.msgType !== 'game') msgType = commResult.msgType;
-        const spectateTellCommand = normalizeSpectateTellCommand(commResult.commText);
+        const plainSpectateTell = textOnly.match(/^(.+?)\s+(?:tells?\s+you|whispers?\s+you)\s*[:,]?\s*['"]?(spectateon|spectateoff)['"]?[.!]?\s*$/i);
+        const spectateTellCommand = normalizeSpectateTellCommand(commResult.commText || plainSpectateTell?.[2]);
+        const tellSpectateControlEnabled = useSettingsStore.getState().enableTellSpectateControl;
         const isSpectateControlTell =
             !isSnoop &&
-            commResult.msgType === 'comm' &&
-            (commResult.replyCommand === 'tell' || commResult.replyCommand === 'whisper') &&
-            /^(?:tells? you|whispers? you)$/i.test(commResult.commAction || '') &&
-            useSettingsStore.getState().enableTellSpectateControl;
-        const requestedName = commResult.commSender || commResult.replyTarget;
+            tellSpectateControlEnabled &&
+            ((commResult.msgType === 'comm' &&
+                (commResult.replyCommand === 'tell' || commResult.replyCommand === 'whisper') &&
+                /^(?:tells? you|whispers? you)$/i.test(commResult.commAction || '')) ||
+                Boolean(plainSpectateTell));
+        const requestedName = normalizeSpectatePlayerName(
+            commResult.commSender || commResult.replyTarget || plainSpectateTell?.[1]
+        );
         if (
             isSpectateControlTell &&
             spectateTellCommand === 'spectateon'
@@ -1062,7 +1106,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             capture.getActiveType() === 'shaper_live_build_list') &&
             /^\s*\[\d+:\d+\]/.test(textOnly);
         const isCaptureBoundary = !isBuildListRow &&
-            (isPromptResolved || promptInfo.isMatch || isPromptBoundaryLine(textOnly));
+            (isEndPromptLine || isPromptResolved || promptInfo.isMatch || isPromptBoundaryLine(textOnly));
         // While a live import runs, feed every output line to the dedicated
         // collector (it ignores `/at` teleport movement and resolves on the first
         // prompt after real content) instead of the fragile capture session.
@@ -1238,17 +1282,24 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             if (deps.captureStage.current !== 'none') {
                 deps.captureStage.current = 'none' as any;
             }
+        } else if (isSnoop && effectiveCaptureBoundary && lineCapture.hasSession()) {
+            lineCapture.finalizeSession();
+            lineCapture.clearPendingFlags();
         }
 
-        const incomingCaptureType = !isSnoop && !effectiveCaptureBoundary && !isAccountPhase
-            ? capture.checkTriggers(effectiveCaptureText, captureAttachedText)
+        const detectedCaptureType = !effectiveCaptureBoundary && !isAccountPhase
+            ? lineCapture.checkTriggers(effectiveCaptureText, captureAttachedText)
             : null;
-        if (incomingCaptureType && capture.hasSession() && incomingCaptureType !== capture.getActiveType()) {
-            const activeType = capture.getActiveType();
+        const incomingCaptureType = isSnoop &&
+            !['equipment', 'inventory', 'practice'].includes(detectedCaptureType || '')
+            ? null
+            : detectedCaptureType;
+        if (incomingCaptureType && lineCapture.hasSession() && incomingCaptureType !== lineCapture.getActiveType()) {
+            const activeType = lineCapture.getActiveType();
             const isInfoSession = activeType === 'shaper_mob_info' || activeType === 'shaper_obj_info';
             const isStatTrigger = incomingCaptureType === 'shaper_mob_stat' || incomingCaptureType === 'shaper_obj_stat';
             if (!(isInfoSession && isStatTrigger)) {
-                capture.finalizeSession();
+                lineCapture.finalizeSession();
             }
         }
 
@@ -1297,18 +1348,15 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         // 3.5 Capture Buffer Population
-        if (capture.hasSession() && !isSnoop && !skipCaptureAccumulation) {
-            capture.accumulateLine(lineToParse, finalTokens, tokenizerContext);
+        if (lineCapture.hasSession() && !skipCaptureAccumulation) {
+            lineCapture.accumulateLine(lineToParse, finalTokens, tokenizerContext);
         }
 
         // 5. Reactive Capture Machine Logic
-        if (!isSnoop) {
-            // 5.2 Trigger new session
-            if (incomingCaptureType && !capture.hasSession()) {
-                capture.startSession(incomingCaptureType as any);
-                // Accumulate the header line immediately
-                capture.accumulateLine(lineToParse, finalTokens, tokenizerContext);
-            }
+        if (incomingCaptureType && !lineCapture.hasSession()) {
+            lineCapture.startSession(incomingCaptureType);
+            // Accumulate the header line immediately
+            lineCapture.accumulateLine(lineToParse, finalTokens, tokenizerContext);
         }
         
         // 6. Prompt UI Finalization
@@ -1501,7 +1549,22 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         )) {
             deps.playEffect?.('buy');
         }
-        if (!isSnoop) {
+        if (isSnoop) {
+            const snoopText = textOnly.trim();
+            if (snoopText.startsWith('>')) {
+                recordEffectTimerCommand(snoopText.replace(/^>\s*/, ''), true);
+            }
+            const endedEffect = getEndedEffectTimerEntry(textOnly);
+            parseEffectTimerLine(textOnly, true);
+            if (endedEffect) {
+                const spectateVitals = useSpectateLiveVitalsStore.getState();
+                spectateVitals.setCharacterInfo({
+                    affectedBy: (spectateVitals.characterInfo.affectedBy || []).filter(
+                        affect => affect.trim().toLowerCase() !== endedEffect.name.toLowerCase()
+                    )
+                });
+            }
+        } else {
             const endedEffect = getEndedEffectTimerEntry(textOnly);
             parseEffectTimerLine(textOnly);
             if (endedEffect) {
@@ -1666,7 +1729,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
     }, [
         processTriggers, router, combat, room, account, stat, atmosphere, time, parseLogGmcp, actionTracker,
-        deps.addMessage, deps.isNewbieMode, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target, deps.captureStage, deps.ansiConvert, deps.practiceHandler, capture, finalizeNearbyCapture,
+        deps.addMessage, deps.isNewbieMode, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target, deps.captureStage, deps.ansiConvert, deps.practiceHandler, deps.spectatePracticeHandler, capture, spectateCapture, finalizeNearbyCapture,
         automator.addToQueue, automator.stopSpectatingName, deps.roomPlayers, deps.roomNpcs, deps.roomItems, deps.bufferName
     ]);
 

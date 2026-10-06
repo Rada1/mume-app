@@ -47,6 +47,7 @@ import { useNetworkStore } from '../stores/useNetworkStore';
 import { useModeStore } from '../stores/useModeStore';
 import { useSessionStore } from '../stores/useSessionStore';
 import { useEffectTimerStore } from '../stores/useEffectTimerStore';
+import { resetSpectateEffectTimerParser } from '../services/timers/effectTimerParser';
 import { useCharacterCardStore } from '../stores/useCharacterCardStore';
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -460,6 +461,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         useEffectTimerStore.getState().setCurrentCharacter(name);
     }, [s.characterName]);
 
+    const previousSpectateTimerTargetRef = useRef(mode.spectateTarget);
+    useEffect(() => {
+        if (previousSpectateTimerTargetRef.current === mode.spectateTarget) return;
+        previousSpectateTimerTargetRef.current = mode.spectateTarget;
+        resetSpectateEffectTimerParser();
+    }, [mode.spectateTarget]);
+
     // --- Always-on recording: auto-start on connect, auto-save on disconnect ---
     const previousStatusRef = useRef(s.status);
     useEffect(() => {
@@ -501,6 +509,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // --- DVR: sync vitals/weather/audio state with buffer position ---
     const { recordHit, recordOof, recordClick } = useSpectateBufferSync({
         isSpectating: mode.isSpectating,
+        spectateTarget: mode.spectateTarget,
         displayCutoff: spectateBuffer.displayCutoff,
         isLive: spectateBuffer.isLive,
         isPlaying: spectateBuffer.isPlaying,
@@ -637,7 +646,30 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // 6. Final Controller & Parser
     const { spatButtons, setSpatButtons, triggerSpitManual } = useSpatButtons(useRef<HTMLDivElement>(null), triggerHaptic);
-    const practice = usePracticeHandler(s.setAbilities, s.setPracticeLines);
+    const practice = usePracticeHandler(s.userSession.game.setAbilities, s.userSession.game.setPracticeLines);
+    const spectatePractice = usePracticeHandler(s.spectateSession.game.setAbilities, s.spectateSession.game.setPracticeLines);
+    const activePractice = mode.isSpectating && mode.activeView === 'target' ? spectatePractice : practice;
+    const previousSpectatePanelTargetRef = useRef(mode.spectateTarget);
+    useEffect(() => {
+        if (previousSpectatePanelTargetRef.current === mode.spectateTarget) return;
+        previousSpectatePanelTargetRef.current = mode.spectateTarget;
+        s.spectateSession.game.setInventoryLines([]);
+        s.spectateSession.game.setEqLines([]);
+        s.spectateSession.game.setPracticeLines([]);
+        s.spectateSession.game.setAbilities({});
+        s.spectateSession.game.setContainerContents({});
+        spectatePractice.setPracticeData(null);
+        spectatePractice.setIsPracticeActive(false);
+    }, [
+        mode.spectateTarget,
+        s.spectateSession.game.setInventoryLines,
+        s.spectateSession.game.setEqLines,
+        s.spectateSession.game.setPracticeLines,
+        s.spectateSession.game.setAbilities,
+        s.spectateSession.game.setContainerContents,
+        spectatePractice.setPracticeData,
+        spectatePractice.setIsPracticeActive
+    ]);
     const btn = useButtons({
         abilities: s.abilities,
         characterClass: s.characterClass,
@@ -645,7 +677,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         characterInfo: v.characterInfo,
         target: v.target,
         inlineCategories: s.inlineCategories,
-        practiceData: practice.practiceData
+        practiceData: activePractice.practiceData
     });
     useEffect(() => {
         btn.setAddMessage(addMessage);
@@ -673,6 +705,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         // Handlers
         practiceHandler: practice,
+        spectatePracticeHandler: spectatePractice,
         questsHandler: quests,
         helpHandler: help,
         keywordOverrides: keywordOverrides.overrides,
@@ -829,10 +862,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         quests: s.quests,
         practice: practice,
         help: help
-    }), [s, v, ui, viewport, settingsStore, mode, addMessage, addSystemMessage, clearLog, playHitImpactSound, playOofSound, playHitImpactSoundSpectate, playOofSoundSpectate, playNearbyCombatSoundSpectate, playIncantationSoundSpectate, playSpellEffectSpectate, playClickSoundSpectate, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, playWearSound, playRemoveSound, playRideSound, playStopRidingSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
+    }), [s, v, ui, viewport, settingsStore, mode, addMessage, addSystemMessage, clearLog, playHitImpactSound, playOofSound, playHitImpactSoundSpectate, playOofSoundSpectate, playNearbyCombatSoundSpectate, playIncantationSoundSpectate, playSpellEffectSpectate, playClickSoundSpectate, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, playWearSound, playRemoveSound, playRideSound, playStopRidingSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, spectatePractice, quests, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
 
 
-    const parser = useGameParser(deps, s.userSession);
+    const parser = useGameParser(deps, s.userSession, s.spectateSession);
     const parserRef = useRef(parser);
     useEffect(() => { parserRef.current = parser; }, [parser]);
 
@@ -980,7 +1013,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsSettingsOpen: ui.setIsSettingsOpen, setSettingsTab: ui.setSettingsTab,
         setIsMapExpanded: s.setIsMapExpanded, setUI: s.setUI as any, viewport, triggerHaptic,
         btn, joystick, wasDraggingRef: { current: false }, ui: s.ui as any,
-        actions: s.actions, setActions: s.setActions, practice, heldButton: v.heldButton,
+        actions: s.actions, setActions: s.setActions, practice: activePractice, heldButton: v.heldButton,
         setHeldButton: v.setHeldButton, parley: s.parley, setParley: s.setParley,
         isTrackpadModifierActive: s.isTrackpadModifierActive,
         keywordOverrides: keywordOverrides.overrides, openKeywordEdit, lastCommandContextRef: { current: null },
@@ -1141,7 +1174,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setGameTime: s.setGameTime,
         teleportTargets: settingsStore.teleportTargets,
         setTeleportTargets: settingsStore.setTeleportTargets,
-        practice,
+        practice: activePractice,
         help,
         quests,
         keywordOverrides: keywordOverrides.overrides,
@@ -1163,7 +1196,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }), [
         s, vStable, telnet, parser, controller, btn, joystick, editor, replayer,
         viewport, env, audioCtxRef, initAudio, spatButtons, ui.diagnosticLogs,
-        practice, help, quests, keywordOverrides,
+        activePractice, practice, spectatePractice, help, quests, keywordOverrides,
         s.userSession.recorder, mapperRef, sessionMode, setSessionMode,
         discordActivity, handleSaveMumeEdit, handleCancelMumeEdit
     ]);

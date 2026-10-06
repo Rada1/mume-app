@@ -3,7 +3,8 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { BedDouble, Coins, Compass, GraduationCap, Store, X } from 'lucide-react';
 import { useKillPromptStore } from '../../stores/useKillPromptStore';
-import { useRoomStore } from '../../stores/useRoomStore';
+import { useActiveRoom } from '../../stores/useActiveGameState';
+import { useModeStore } from '../../stores/useModeStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import { useMapper } from '../../context/MapperContext';
@@ -55,9 +56,11 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     const requestCommandTab = useCommandPanelStore(state => state.requestTab);
     const setSkillsOpen = useCommandPanelStore(state => state.setIsSkillsOpen);
     const setMobileCommandsOpen = useCommandPanelStore(state => state.setIsMobileOpen);
-    const roomNum = useRoomStore(state => state.roomNum);
-    const roomMapId = useRoomStore(state => state.mapId);
-    const roomItems = useRoomStore(state => state.items);
+    const activeRoom = useActiveRoom();
+    const roomNum = activeRoom.roomNum;
+    const roomMapId = activeRoom.mapId;
+    const roomItems = activeRoom.items;
+    const isTargetSpectateView = useModeStore(state => state.isSpectating && state.activeView === 'target');
     const corpses = useKillPromptStore(state => state.corpses);
     const removeCorpse = useKillPromptStore(state => state.removeCorpse);
     const retainRoom = useKillPromptStore(state => state.retainRoom);
@@ -128,7 +131,7 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     const roomCorpses = React.useMemo(() => {
         const unmatchedRoomCorpses = [...detectedRoomCorpses];
         const matchedQueueIds = new Set<string>();
-        const queued = corpses.filter(corpse => corpse.roomNum === roomNum);
+        const queued = isTargetSpectateView ? [] : corpses.filter(corpse => corpse.roomNum === roomNum);
         const combined = detectedRoomCorpses.map(roomCorpse => {
             const normalizedLabel = normalizeCorpseLabel(roomCorpse.label);
             const matched = queued.find(corpse => !matchedQueueIds.has(corpse.id) &&
@@ -157,7 +160,7 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
             }
         });
         return combined.length ? combined : unmatchedRoomCorpses;
-    }, [corpses, detectedRoomCorpses, roomNum]);
+    }, [corpses, detectedRoomCorpses, isTargetSpectateView, roomNum]);
     const groundLootItems = useRoomLootCandidates(roomItems, dismissedGroundLootIds);
     const lootSourceCount = roomCorpses.length + groundLootItems.length;
     const lootSummary = [
@@ -166,12 +169,12 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     ].filter(Boolean).join(' · ');
 
     React.useEffect(() => {
-        retainRoom(roomNum);
+        if (!isTargetSpectateView) retainRoom(roomNum);
         setIsOpen(false);
         setHandledRoomItems(new Set());
         setDismissedGroundLootIds(new Set());
         clearContents();
-    }, [clearContents, roomNum, retainRoom]);
+    }, [clearContents, isTargetSpectateView, roomNum, retainRoom]);
 
     const updateMobilePanelPosition = () => {
         const rect = lootTriggerRef.current?.getBoundingClientRect();

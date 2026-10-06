@@ -13,7 +13,7 @@ export const useCharacterConditions = (
     conditions: Record<string, boolean> | undefined,
     timers: EffectTimer[],
     position: string | undefined,
-    isSpectateMode: boolean
+    now: number
 ): string[] => useMemo(() => {
     const names = [
         ...(affectedBy || []),
@@ -21,9 +21,9 @@ export const useCharacterConditions = (
             .filter(([name, active]) => active && name !== 'waiting')
             .map(([name]) => name),
         ...(position === 'riding' ? ['riding'] : []),
-        ...(isSpectateMode ? [] : timers
-            .filter(timer => !timer.target && (!timer.expiresAt || timer.expiresAt > Date.now()))
-            .map(timer => timer.name))
+        ...timers
+            .filter(timer => !timer.target && (!timer.expiresAt || timer.expiresAt > now))
+            .map(timer => timer.name)
     ];
     const seen = new Set<string>();
     return names.flatMap(name => {
@@ -32,4 +32,4 @@ export const useCharacterConditions = (
         seen.add(key);
         return [capitalizeWords(name.trim().replace(/[-_]+/g, ' '))];
     });
-}, [affectedBy, conditions, timers, position, isSpectateMode]);
+}, [affectedBy, conditions, timers, position, now]);

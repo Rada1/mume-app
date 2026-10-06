@@ -5,7 +5,9 @@ import { useSpectateCombatStore } from '../stores/spectate/useSpectateCombatStor
 import { useSpectateLiveVitalsStore } from '../stores/spectate/useSpectateLiveVitalsStore';
 import { useSpectateLiveRoomStore } from '../stores/spectate/useSpectateLiveRoomStore';
 import { useSpectateLiveCombatStore } from '../stores/spectate/useSpectateLiveCombatStore';
+import { useSpectateEffectTimerStore, useSpectateLiveEffectTimerStore } from '../stores/spectate/useSpectateEffectTimerStore';
 import type { CombatHealthStatus, GmcpOccupant, GroupMember, LightingType, WeatherType } from '../types';
+import type { EffectTimer } from '../types';
 import type { CharacterInfo } from '../stores/slices/vitalsSlice';
 
 type AudioModifier = { pitch?: number; volume?: number } | string;
@@ -28,6 +30,11 @@ interface VitalsSnapshot {
     ob?: number; db?: number; pb?: number; armour?: number;
     hpStatus: CombatHealthStatus | null; manaStatus: string | null; moveStatus: string | null;
     inCombat: boolean;
+    position: string;
+    isRiding: boolean;
+    mood: string | null;
+    spellEffort: string | null;
+    alertness: string | null;
     lighting: LightingType; weather: WeatherType; isFoggy: boolean;
     currentTerrain: string;
     activePrompt: unknown;
@@ -46,6 +53,7 @@ interface StateSnapshot {
     timestamp: number;
     vitals: VitalsSnapshot;
     room: RoomSnapshot;
+    timers: EffectTimer[];
     combat: {
         opponentId: number | null;
         opponentName: string | null;
@@ -64,6 +72,7 @@ interface AudioEvent {
 
 export function useSpectateBufferSync({
     isSpectating,
+    spectateTarget,
     displayCutoff,
     isLive,
     isPlaying,
@@ -72,6 +81,7 @@ export function useSpectateBufferSync({
     playClickSound,
 }: {
     isSpectating: boolean;
+    spectateTarget: string | null;
     displayCutoff: number;
     isLive: boolean;
     isPlaying: boolean;
@@ -83,6 +93,7 @@ export function useSpectateBufferSync({
     const audioEventsRef = useRef<AudioEvent[]>([]);
     const lastCutoffRef = useRef<number>(Infinity);
     const isRestoringRef = useRef(false);
+    const previousTargetRef = useRef(spectateTarget);
     const isLiveRef = useRef(isLive);
     const playHitImpactSoundRef = useRef(playHitImpactSound);
     const playOofSoundRef = useRef(playOofSound);
@@ -111,6 +122,11 @@ export function useSpectateBufferSync({
             manaStatus: v.manaStatus,
             moveStatus: v.moveStatus,
             inCombat: v.inCombat,
+            position: v.position,
+            isRiding: v.isRiding,
+            mood: v.mood,
+            spellEffort: v.spellEffort,
+            alertness: v.alertness,
             lighting: v.lighting,
             weather: v.weather,
             isFoggy: v.isFoggy,
@@ -148,11 +164,14 @@ export function useSpectateBufferSync({
         };
     }, []);
 
-    const applyDisplaySnapshot = useCallback((snap: Pick<StateSnapshot, 'vitals' | 'room' | 'combat'>) => {
+    const snapshotTimers = useCallback(() => [...useSpectateLiveEffectTimerStore.getState().timers], []);
+
+    const applyDisplaySnapshot = useCallback((snap: Pick<StateSnapshot, 'vitals' | 'room' | 'combat' | 'timers'>) => {
         isRestoringRef.current = true;
         useSpectateVitalsStore.setState(snap.vitals);
         useSpectateRoomStore.setState(snap.room);
         useSpectateCombatStore.setState(snap.combat);
+        useSpectateEffectTimerStore.getState().setTimers(snap.timers);
         isRestoringRef.current = false;
     }, []);
 
@@ -161,8 +180,28 @@ export function useSpectateBufferSync({
             stateTimelineRef.current = [];
             audioEventsRef.current = [];
             lastCutoffRef.current = Infinity;
+            useSpectateLiveEffectTimerStore.getState().clearAll();
+            useSpectateEffectTimerStore.getState().clearAll();
         }
     }, [isSpectating]);
+
+    useEffect(() => {
+        if (!isSpectating || !isLive) return;
+        const interval = window.setInterval(() => {
+            useSpectateLiveEffectTimerStore.getState().clearExpired();
+        }, 1000);
+        return () => window.clearInterval(interval);
+    }, [isSpectating, isLive]);
+
+    useEffect(() => {
+        if (previousTargetRef.current === spectateTarget) return;
+        previousTargetRef.current = spectateTarget;
+        stateTimelineRef.current = [];
+        audioEventsRef.current = [];
+        lastCutoffRef.current = Infinity;
+        useSpectateLiveEffectTimerStore.getState().clearAll();
+        useSpectateEffectTimerStore.getState().clearAll();
+    }, [spectateTarget]);
 
     // Subscribe to live ingest stores. Live mode mirrors live into display;
     // buffered mode records only, so real-time data cannot pull the UI forward.
@@ -175,6 +214,7 @@ export function useSpectateBufferSync({
                 timestamp: Date.now(),
                 vitals: snapshotVitals(),
                 room: snapshotRoom(),
+                timers: snapshotTimers(),
                 combat: snapshotCombat(),
             };
             stateTimelineRef.current.push(next);
@@ -184,18 +224,20 @@ export function useSpectateBufferSync({
         const unsubV = useSpectateLiveVitalsStore.subscribe(record);
         const unsubR = useSpectateLiveRoomStore.subscribe(record);
         const unsubC = useSpectateLiveCombatStore.subscribe(record);
+        const unsubT = useSpectateLiveEffectTimerStore.subscribe(record);
         record();
-        return () => { unsubV(); unsubR(); unsubC(); };
-    }, [isSpectating, applyDisplaySnapshot, snapshotCombat, snapshotRoom, snapshotVitals]);
+        return () => { unsubV(); unsubR(); unsubC(); unsubT(); };
+    }, [isSpectating, applyDisplaySnapshot, snapshotCombat, snapshotRoom, snapshotTimers, snapshotVitals]);
 
     useEffect(() => {
         if (!isSpectating || !isLive) return;
         applyDisplaySnapshot({
             vitals: snapshotVitals(),
             room: snapshotRoom(),
+            timers: snapshotTimers(),
             combat: snapshotCombat(),
         });
-    }, [isSpectating, isLive, applyDisplaySnapshot, snapshotCombat, snapshotRoom, snapshotVitals]);
+    }, [isSpectating, isLive, applyDisplaySnapshot, snapshotCombat, snapshotRoom, snapshotTimers, snapshotVitals]);
 
     // Restore state when displayCutoff changes; replay audio during playback
     useEffect(() => {
