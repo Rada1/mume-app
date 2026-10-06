@@ -3,20 +3,16 @@
  * @description Pure Smart Walk pathfinding helpers over live and preloaded mapper data.
  */
 
-import type { NavigationMap } from '../../../types';
+import type { NavigationMap, WalkRouteOptions } from '../../../types';
 import { MapperExit, MapperRoom } from '../mapperTypes';
-import { normalizeTerrain } from '../../../utils/terrainUtils';
+import { movementPointCost, routePreferencePenalty } from '../../../hooks/mapMovementCost';
 import { isNoRideRoom } from './smartWalkRideRules';
 
 type SmartWalkExit = Partial<MapperExit> & { target?: string };
 type SmartWalkExitMap = Record<string, SmartWalkExit>;
 type PreloadedMap = NavigationMap;
 
-interface SmartWalkPathOptions {
-    revealAll?: boolean;
-    exploredVnums?: Set<string>;
-    riding?: boolean;
-}
+type SmartWalkPathOptions = WalkRouteOptions;
 
 interface PathNode {
     id: string;
@@ -37,26 +33,6 @@ const isRecord = (value: unknown): value is Record<string, unknown> => {
 };
 
 // --- Terrain Cost Section ---
-// Movement-difficulty weights keyed by normalized terrain (see terrainUtils).
-// The goal is to prefer the *easiest* route, not strictly the fewest rooms:
-// roads/cities are cheap, open ground is moderate, rough terrain is costly, and
-// water is heavily penalized so the route avoids swimming whenever a land path
-// of reasonable length exists. Mirrors the relative effort described at
-// https://mume.org/help/terrain.
-const TERRAIN_COST: Record<string, number> = {
-    road: 1,
-    city: 1,
-    building: 1,
-    underground: 1,
-    field: 2,
-    hills: 3,
-    forest: 4,
-    brush: 4,
-    mountain: 6,
-    water: 12
-};
-const DEFAULT_TERRAIN_COST = 2;
-
 const getRawTerrain = (
     id: string,
     rooms: Record<string, MapperRoom>,
@@ -74,12 +50,11 @@ const getRawTerrain = (
 const getTerrainCost = (
     id: string,
     rooms: Record<string, MapperRoom>,
-    preloaded: PreloadedMap
+    preloaded: PreloadedMap,
+    race?: string
 ): number => {
     const raw = getRawTerrain(id, rooms, preloaded);
-    if (!raw) return DEFAULT_TERRAIN_COST;
-    const norm = normalizeTerrain(raw);
-    return TERRAIN_COST[norm] ?? DEFAULT_TERRAIN_COST;
+    return movementPointCost(raw, race);
 };
 
 // --- Id Section ---
@@ -184,14 +159,13 @@ export const findSmartWalkPath = (
         return !!(preloaded[key] || rooms[id] || rooms[`m_${key}`] || rooms[key]);
     };
 
-    const isRideAllowed = (id: string): boolean => {
-        if (!options.riding) return true;
+    const isNoRide = (id: string): boolean => {
         const normId = normalizeSmartWalkId(id);
         const local = rooms[id] || rooms[`m_${normId}`] || rooms[normId];
         const preloadedRoom = preloaded[normId];
         const localFlags = local?.loadFlags ?? [];
         const preloadedFlags = Array.isArray(preloadedRoom?.[8]) ? preloadedRoom[8] : [];
-        return !isNoRideRoom(
+        return isNoRideRoom(
             local?.terrain ?? preloadedRoom?.[3],
             [...preloadedFlags, ...localFlags],
             local?.ridable ?? preloadedRoom?.[14]
@@ -245,11 +219,11 @@ export const findSmartWalkPath = (
             const targetId = String(exit.target);
             const normNext = normalizeSmartWalkId(targetId);
             if (closed.has(normNext)) continue;
-            if (!isRideAllowed(targetId)) continue;
             if (!isTraversable(targetId)) continue;
 
             const standardId = targetId.startsWith('m_') ? targetId : (preloaded[normNext] ? `m_${normNext}` : targetId);
-            const gNext = curr.g + getTerrainCost(targetId, rooms, preloaded);
+            const gNext = curr.g + getTerrainCost(targetId, rooms, preloaded, options.race) +
+                routePreferencePenalty(targetId, !!options.riding && isNoRide(targetId), options);
             if (gNext >= (bestG.get(normNext) ?? Infinity)) continue;
 
             bestG.set(normNext, gNext);

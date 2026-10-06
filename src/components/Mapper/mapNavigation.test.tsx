@@ -2,9 +2,9 @@
 /** @file Regression coverage using the shipped map and the rooms from the navigation report. */
 import { readFileSync } from 'node:fs';
 import { inflateSync } from 'node:zlib';
-import { createRef } from 'react';
-import { cleanup, renderHook } from '@testing-library/react';
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { createRef, useRef, useState } from 'react';
+import { act, cleanup, renderHook } from '@testing-library/react';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { readMm2 } from './performance/webcockpit/mm2';
 import type { MapData } from './performance/webcockpit/model';
 import { mapDataToLegacyImport } from './performance/webcockpit/mm2ImportAdapter';
@@ -13,6 +13,8 @@ import { buildSearchOverlay } from './performance/searchOverlayAdapter';
 import { findCanonicalSmartWalkPath } from './hooks/canonicalSmartWalk';
 import { findSmartWalkPath } from './hooks/smartWalkPath';
 import { useMapHitTest } from './hooks/useMapHitTest';
+import { useSmartWalk } from './hooks/useSmartWalk';
+import { useRoomInfoHandler } from './hooks/useRoomInfoHandler';
 import { alignMappedRooms } from '../../hooks/useMapperRoomCoordinates';
 import { findClosestMatchingRoomPath, GRID_SIZE } from './mapperUtils';
 import type { MapperRoom } from './mapperTypes';
@@ -29,6 +31,44 @@ beforeAll(async () => {
 afterEach(cleanup);
 
 describe('reported rooms in the bundled MMapper map', () => {
+    it('follows live server room IDs through an entirely unvisited route', () => {
+        const shop = idFor(names[0]);
+        const meadow = idFor(names[1]);
+        const route = findCanonicalSmartWalkPath(map, shop, meadow, {});
+        expect(route).not.toBeNull();
+        const serverIndex = Object.fromEntries(Object.entries(tuples).filter(([, tuple]) => tuple[6]).map(([id, tuple]) => [String(tuple[6]), id]));
+        const execute = vi.fn();
+        const hook = renderHook(() => {
+            const [rooms, setRooms] = useState<Record<string, MapperRoom>>({});
+            const roomsRef = useRef(rooms);
+            roomsRef.current = rooms;
+            const [roomId, setRoomId] = useState<string | null>(null);
+            const currentRoomIdRef = useRef(roomId);
+            const preloadedCoordsRef = useRef(tuples);
+            const [, setExploredVnums] = useState(new Set<string>());
+            const parser = useRoomInfoHandler({
+                roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId: setRoomId, preloadedCoordsRef,
+                pendingMovesRef: useRef([]), nameIndexRef: useRef({}), serverIdIndexRef: useRef(serverIndex),
+                discoverySourceRef: useRef(null), exploredRef: useRef(new Set<string>()), setExploredVnums,
+                lastDetectedTerrainRef: useRef(null), firstExploredAtRef: useRef({}), activeView: 'self',
+            });
+            const walk = useSmartWalk(roomId, rooms, execute, preloadedCoordsRef, undefined, false, new Set(), map);
+            return { parser, walk, roomId, rooms };
+        });
+        const arrive = (id: string) => {
+            const tuple = tuples[id.substring(2)];
+            act(() => hook.result.current.parser.handleRoomInfo({ id: Number(tuple[6]), name: String(tuple[5]), terrain: 'city' }));
+            expect(hook.result.current.roomId).toBe(id);
+            expect(hook.result.current.rooms[id]).toMatchObject({ name: tuple[5], x: tuple[0], y: tuple[1] });
+        };
+        arrive(shop);
+        act(() => hook.result.current.walk.startWalking(meadow));
+        expect(hook.result.current.walk.isWalking).toBe(true);
+        for (const id of route!.ids.slice(1)) arrive(id);
+        expect(execute.mock.calls.map(call => call[0])).toEqual(route!.dirs);
+        expect(hook.result.current.walk.isWalking).toBe(false);
+    });
+
     it('routes from the shop to the meadow and back with no live or explored rooms', () => {
         const shop = idFor(names[0]);
         const meadow = idFor(names[1]);

@@ -4,6 +4,12 @@ import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import type { MapperRoom } from '../components/Mapper/mapperTypes';
 
 export type NavigationMap = Readonly<Record<string, readonly unknown[]>>;
+export interface WalkRouteOptions {
+    revealAll?: boolean;
+    exploredVnums?: ReadonlySet<string>;
+    riding?: boolean;
+    race?: string;
+}
 export interface MapRoomPosition { x: number; y: number; z: number }
 export interface MapperCoordinateSyncProps {
     rooms: Record<string, MapperRoom>;

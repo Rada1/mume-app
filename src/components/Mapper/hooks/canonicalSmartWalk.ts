@@ -5,15 +5,12 @@
 // --- Logic Section ---
 
 import type { MapperRoom } from '../mapperTypes';
-import { normalizeTerrain } from '../../../utils/terrainUtils';
+import type { WalkRouteOptions } from '../../../types';
+import { movementPointCost, routePreferencePenalty } from '../../../hooks/mapMovementCost';
 import { DIR_COUNT, EXIT_FLAG, TERRAIN, type MapData } from '../performance/webcockpit/model';
 import { isNoRideRoom } from './smartWalkRideRules';
 
-export interface CanonicalWalkOptions {
-  revealAll?: boolean;
-  exploredVnums?: Set<string>;
-  riding?: boolean;
-}
+export type CanonicalWalkOptions = WalkRouteOptions;
 
 interface CanonicalWalkIndex {
   map: MapData;
@@ -33,11 +30,6 @@ const DIR_INDEX: Readonly<Record<string, number>> = {
   north: 0, n: 0, south: 1, s: 1, east: 2, e: 2, west: 3, w: 3,
   up: 4, u: 4, down: 5, d: 5, out: 6, unknown: 6,
 };
-const TERRAIN_COST: Readonly<Record<string, number>> = {
-  road: 1, city: 1, building: 1, underground: 1, field: 2, hills: 3,
-  forest: 4, brush: 4, mountain: 6, water: 12,
-};
-const DEFAULT_TERRAIN_COST = 2;
 const indexCache = new WeakMap<MapData, CanonicalWalkIndex>();
 
 function normalizeId(id: string): string {
@@ -87,33 +79,20 @@ function liveRoomFor(index: CanonicalWalkIndex, rooms: Record<string, MapperRoom
   return rooms[`m_${extId}`] ?? rooms[extId];
 }
 
-function terrainCost(index: CanonicalWalkIndex, rooms: Record<string, MapperRoom>, room: number): number {
+function terrainCost(index: CanonicalWalkIndex, rooms: Record<string, MapperRoom>, room: number, race?: string): number {
   const raw = liveRoomFor(index, rooms, room)?.terrain || TERRAIN[index.map.terrain[room]!] || '';
-  const normalized = normalizeTerrain(String(raw));
-  return TERRAIN_COST[normalized] ?? DEFAULT_TERRAIN_COST;
+  return movementPointCost(raw, race);
 }
 
-function traversable(
+function noRide(
   index: CanonicalWalkIndex,
   rooms: Record<string, MapperRoom>,
-  room: number,
-  options: CanonicalWalkOptions
+  room: number
 ): boolean {
-  // Exploration controls appearance; imported rooms already have usable topology.
-  return room >= 0 && room < index.map.roomCount;
-}
-
-function rideAllowed(
-  index: CanonicalWalkIndex,
-  rooms: Record<string, MapperRoom>,
-  room: number,
-  options: CanonicalWalkOptions
-): boolean {
-  if (!options.riding) return true;
   const liveRoom = liveRoomFor(index, rooms, room);
   const terrain = liveRoom?.terrain || TERRAIN[index.map.terrain[room]!];
   const ridable = liveRoom?.ridable ?? index.map.ridable[room];
-  return !isNoRideRoom(terrain, liveRoom?.loadFlags, ridable);
+  return isNoRideRoom(terrain, liveRoom?.loadFlags, ridable);
 }
 
 function heuristic(index: CanonicalWalkIndex, room: number, end: number): number {
@@ -256,8 +235,9 @@ export function findCanonicalSmartWalkPath(
     const liveExits = liveExitsByDirection(index, rooms, current.room);
     for (let direction = 0; direction < DIR_COUNT; direction++) {
       for (const target of targetsForDirection(index, current.room, direction, liveExits)) {
-        if (closed[target] || !rideAllowed(index, rooms, target, options) || !traversable(index, rooms, target, options)) continue;
-        const nextCost = current.cost + terrainCost(index, rooms, target);
+        if (closed[target]) continue;
+        const nextCost = current.cost + terrainCost(index, rooms, target, options.race) +
+          routePreferencePenalty(index.ids[target]!, !!options.riding && noRide(index, rooms, target), options);
         if (nextCost >= bestCost[target]!) continue;
         bestCost[target] = nextCost;
         parent[target] = current.room;

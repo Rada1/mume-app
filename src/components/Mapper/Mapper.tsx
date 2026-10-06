@@ -76,7 +76,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         roomName, roomExits, currentTerrain, weather, characterName: gameCharacterName, isRiding
     } = useGame();
     const { isLandscape } = viewport;
-    const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
+    const { target, groupMembers, opponentName, opponentId, deathRoomId, characterInfo } = useVitals();
     const { addMessage } = useLog();
     const { setPopoverState, popoverState, ui } = useUI();
     const { playerColor, npcColor, enemyColor, objectColor, targetColor, showBackgroundImage, mapBrightness } = useSettingsStore();
@@ -229,7 +229,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         revealAll,
         exploredVnums,
         performanceMapRef.current,
-        isRiding
+        isRiding,
+        characterInfo.race
     );
     const mode = ui.mapMode || 'play';
 

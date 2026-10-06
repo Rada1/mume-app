@@ -13,10 +13,11 @@ export const useSmartWalk = (
     executeCommand: ExecuteCommand,
     preloadedCoordsRef: React.MutableRefObject<NavigationMap>,
     addMessage?: (type: 'system', text: string) => void,
-    _revealAll?: boolean,
-    _exploredVnums?: Set<string>,
+    revealAll?: boolean,
+    exploredVnums?: Set<string>,
     canonicalMap?: MapData | null,
-    isRiding = false
+    isRiding = false,
+    race?: string
 ) => {
     const [isWalking, setIsWalking] = useState(false);
     const [walkTargetId, setWalkTargetId] = useState<string | null>(null);
@@ -64,9 +65,10 @@ export const useSmartWalk = (
         }
         // Recompute against current topology; search previews can contain stale
         // live exits, closed doors, or a route generated before mounting.
+        const routeOptions = { riding: isRiding, revealAll, exploredVnums, race };
         const route = canonicalMap
-            ? findCanonicalSmartWalkPath(canonicalMap, currentRoomId, targetId, rooms, { riding: isRiding })
-            : findSmartWalkPath(currentRoomId, targetId, rooms, preloadedCoordsRef.current, { riding: isRiding });
+            ? findCanonicalSmartWalkPath(canonicalMap, currentRoomId, targetId, rooms, routeOptions)
+            : findSmartWalkPath(currentRoomId, targetId, rooms, preloadedCoordsRef.current, routeOptions);
         if (!route) {
             addMessage?.('system', 'No path found to that room.');
             return;
@@ -85,7 +87,7 @@ export const useSmartWalk = (
         const name = preloadedCoordsRef.current[key]?.[5] ?? rooms[targetId]?.name ?? key;
         addMessage?.('system', `Walking to: ${String(name)}...`);
         sendStep(route.dirs[0]);
-    }, [stopWalking, currentRoomId, canonicalMap, rooms, preloadedCoordsRef, isRiding, addMessage, sendStep]);
+    }, [stopWalking, currentRoomId, canonicalMap, rooms, preloadedCoordsRef, isRiding, revealAll, exploredVnums, race, addMessage, sendStep]);
 
     useEffect(() => {
         if (!activeRef.current || currentRoomId === lastRoomRef.current) return;

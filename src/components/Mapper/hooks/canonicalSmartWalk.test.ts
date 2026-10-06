@@ -14,8 +14,8 @@ interface TestEdge {
   to: number;
 }
 
-function makeMap(edges: TestEdge[]): MapData {
-  const roomCount = 4;
+function makeMap(edges: TestEdge[], terrain = [2, 8, 2, 2, 2]): MapData {
+  const roomCount = 5;
   const slotCount = roomCount * DIR_COUNT;
   const bySlot = Array.from({ length: slotCount }, () => [] as number[]);
   const exitFlags = new Uint16Array(slotCount);
@@ -36,12 +36,12 @@ function makeMap(edges: TestEdge[]): MapData {
     version: 42,
     roomCount,
     selected: { x: 0, y: 0, z: 0 },
-    x: new Int32Array([0, 1, 0, 1]),
-    y: new Int32Array([0, 0, 1, 1]),
+    x: new Int32Array([0, 1, 0, 1, 2]),
+    y: new Int32Array([0, 0, 1, 1, 1]),
     z: new Int32Array(roomCount),
-    extId: new Uint32Array([10, 20, 30, 40]),
-    serverId: new Uint32Array([900, 0, 0, 0]),
-    terrain: new Uint8Array([2, 8, 2, 2]),
+    extId: new Uint32Array([10, 20, 30, 40, 50]),
+    serverId: new Uint32Array([900, 0, 0, 0, 0]),
+    terrain: new Uint8Array(terrain),
     light: new Uint8Array(roomCount),
     align: new Uint8Array(roomCount),
     portable: new Uint8Array(roomCount),
@@ -49,9 +49,9 @@ function makeMap(edges: TestEdge[]): MapData {
     sundeath: new Uint8Array(roomCount),
     mobFlags: new Uint32Array(roomCount),
     loadFlags: new Uint32Array(roomCount),
-    names: ['Start', 'Water route', 'City route', 'Goal'],
-    descs: ['', '', '', ''],
-    areas: ['', '', '', ''],
+    names: ['Start', 'Water route', 'City route', 'Goal', 'Far goal'],
+    descs: ['', '', '', '', ''],
+    areas: ['', '', '', '', ''],
     exitFlags,
     doorFlags: new Uint16Array(slotCount),
     doorNames: new Map(),
@@ -70,7 +70,7 @@ function makeMap(edges: TestEdge[]): MapData {
     },
     byServerId: new Map(),
     byNameDesc: new Map(),
-    bounds: { minX: 0, maxX: 1, minY: 0, maxY: 1, minZ: 0, maxZ: 0, count: roomCount },
+    bounds: { minX: 0, maxX: 2, minY: 0, maxY: 1, minZ: 0, maxZ: 0, count: roomCount },
     layers: new Map(),
   };
 }
@@ -117,5 +117,38 @@ describe('canonical Smart Walk graph', () => {
     const map = makeMap([{ from: 0, direction: 0, to: 1 }]);
 
     expect(findCanonicalSmartWalkPath(map, 'm_10', 'm_20', { m_10: liveRoomWithClosedNorthExit() })).toBeNull();
+  });
+
+  it('takes more rooms when they cost fewer movement points', () => {
+    const map = makeMap([
+      { from: 0, direction: 0, to: 1 }, { from: 1, direction: 0, to: 4 },
+      { from: 0, direction: 2, to: 2 }, { from: 2, direction: 2, to: 3 },
+      { from: 3, direction: 2, to: 4 },
+    ], [2, 8, 11, 2, 3]);
+    // Water + field = 5 points; road + city + field = 4.
+    expect(findCanonicalSmartWalkPath(map, 'm_10', 'm_50', {})?.ids)
+      .toEqual(['m_10', 'm_30', 'm_40', 'm_50']);
+  });
+
+  it('prefers revealed rooms unless reveal all is enabled', () => {
+    const map = makeMap([
+      { from: 0, direction: 0, to: 1 }, { from: 1, direction: 2, to: 3 },
+      { from: 0, direction: 2, to: 2 }, { from: 2, direction: 0, to: 3 },
+    ], [2, 11, 2, 2, 2]);
+    const exploredVnums = new Set(['10', '30', '40']);
+    expect(findCanonicalSmartWalkPath(map, 'm_10', 'm_40', {}, { exploredVnums })?.ids)
+      .toEqual(['m_10', 'm_30', 'm_40']);
+    expect(findCanonicalSmartWalkPath(map, 'm_10', 'm_40', {}, { exploredVnums, revealAll: true })?.ids)
+      .toEqual(['m_10', 'm_20', 'm_40']);
+  });
+
+  it('avoids a no-ride room while mounted when the detour is modest', () => {
+    const map = makeMap([
+      { from: 0, direction: 0, to: 1 }, { from: 1, direction: 2, to: 3 },
+      { from: 0, direction: 2, to: 2 }, { from: 2, direction: 0, to: 3 },
+    ], [2, 11, 2, 2, 2]);
+    map.ridable[1] = 2;
+    expect(findCanonicalSmartWalkPath(map, 'm_10', 'm_40', {}, { riding: true, revealAll: true })?.ids)
+      .toEqual(['m_10', 'm_30', 'm_40']);
   });
 });

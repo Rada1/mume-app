@@ -13,6 +13,8 @@ import { useMapActions } from '../components/Mapper/hooks/useMapActions';
 import { useMapGmcphandlers } from '../components/Mapper/hooks/useMapGmcphandlers';
 import { useScoutObservationTracking } from '../components/Mapper/hooks/useScoutObservationTracking';
 import { getExitTargetId, checkRoomFilter, findClosestMatchingRoomPath } from '../components/Mapper/mapperUtils';
+import { findCanonicalSmartWalkPath } from '../components/Mapper/hooks/canonicalSmartWalk';
+import { findSmartWalkPath } from '../components/Mapper/hooks/smartWalkPath';
 import { getLearnedServerIds } from '../components/Mapper/learnedServerIds';
 import {
     createMoveAnimState, settle,
@@ -109,10 +111,10 @@ interface MapperContextType {
 export const MapperContext = createContext<MapperContextType | undefined>(undefined);
 
 export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { characterName, executeCommand, showDebugEchoes, isSpectateMode } = useGame();
+    const { characterName, executeCommand, showDebugEchoes, isSpectateMode, isRiding } = useGame();
     const isScoutObservationRef = useScoutObservationTracking();
     const { addMessage } = useLog();
-    const { deathRoomId, setDeathRoomId } = useVitals();
+    const { deathRoomId, setDeathRoomId, characterInfo } = useVitals();
 
     // Stability: capture unstable context values in refs to prevent infinite re-renders 
     // of hooks that depend on them (like loadMasterMap).
@@ -316,11 +318,22 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 : null;
             const displayPath = selectedMatchedRoomId ? selectedSearchPath : closestPath;
             const displayTargetId = selectedSearchPath?.targetId || selectedMatchedRoomId || closestPath?.targetId || null;
+            const routeOptions = {
+                revealAll: treatMapAsExplored || unveilMap,
+                exploredVnums,
+                riding: isRiding,
+                race: characterInfo.race,
+            };
+            const walkPreview = currentRoomId && displayTargetId
+                ? performanceMapRef.current
+                    ? findCanonicalSmartWalkPath(performanceMapRef.current, currentRoomId, displayTargetId, rooms, routeOptions)
+                    : findSmartWalkPath(currentRoomId, displayTargetId, rooms, preloaded, routeOptions)
+                : null;
 
             setMatchedRoomIds(nextMatchedRoomIds);
             setClosestRoomId(displayTargetId);
-            setFilterPathIds(displayPath?.pathIds || EMPTY_PATH);
-            setFilterPathDistance(displayPath?.distance || 0);
+            setFilterPathIds(walkPreview?.ids || displayPath?.pathIds || EMPTY_PATH);
+            setFilterPathDistance(walkPreview?.dirs.length ?? displayPath?.distance ?? 0);
 
             triggerRender();
         };
@@ -345,7 +358,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         };
     // NOTE: renderVersion intentionally excluded — including it created a
     // feedback loop since this effect calls triggerRender() which increments it.
-    }, [currentRoomId, activeMapFilter, mapSearchQuery, selectedSearchRoomId, rooms, explored, treatMapAsExplored, unveilMap, triggerRender, EMPTY_SET, EMPTY_PATH]);
+    }, [currentRoomId, activeMapFilter, mapSearchQuery, selectedSearchRoomId, rooms, explored, exploredVnums, isRiding, characterInfo.race, treatMapAsExplored, unveilMap, triggerRender, EMPTY_SET, EMPTY_PATH]);
 
     // Refs
     const pendingMovesRef = useRef<{ dir: string, time: number, resolved?: boolean }[]>([]);
