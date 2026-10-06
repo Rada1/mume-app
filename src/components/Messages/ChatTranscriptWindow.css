@@ -83,12 +83,15 @@
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    gap: 0;
+    column-gap: 0.5em;
     margin: 0;
     padding: 4px 0;
 }
 
-.chat-transcript-panel .chat-window-time { padding-top: 3px; }
+.chat-transcript-panel .chat-window-time {
+    padding-top: 0;
+    font-size: var(--dynamic-log-size, 16px);
+}
 
 .chat-transcript-panel .comm-content {
     min-width: 0;

@@ -1,5 +1,5 @@
 /** @file useGearPanel.ts — Captured gear lists, refresh, and container expansion. */
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useGame, useUI } from '../context/GameContext';
 import type { DrawerLine } from '../types';
 import { getContainerCommand, getGearRecipients, sortWornGearRows, toGearRow, toNearbyGearRows, type GearRow } from '../utils/gearPanelUtils';
@@ -8,7 +8,7 @@ import { getContainerCommand, getGearRecipients, sortWornGearRows, toGearRow, to
 export function useGearPanel() {
     const { displayEqLines, displayInventoryLines } = useUI();
     const {
-        gameState, viewport, triggerHaptic, executeCommand, parser,
+        viewport, triggerHaptic, executeCommand, parser,
         characterName, roomChars, roomPlayers, roomNpcs, roomItems,
         expandedContainers, setExpandedContainers, containerContents,
     } = useGame();
@@ -24,12 +24,8 @@ export function useGearPanel() {
         return getGearRecipients(sources, characterName || '');
     }, [characterName, roomChars, roomNpcs, roomPlayers]);
 
-    useEffect(() => {
-        if (gameState !== 'playing') return;
-        if (!displayEqLines.length) executeCommand('equipment', true, true, false, true);
-        if (!displayInventoryLines.length) executeCommand('inventory', true, true, false, true);
-    }, []);
-
+    // Initial snapshots are requested centrally by useGameParser. Avoid a second
+    // startup pair here because each request rewrites the shared capture stage.
     const refresh = (section: 'worn' | 'carried') => {
         triggerHaptic?.(10);
         executeCommand(section === 'worn' ? 'equipment' : 'inventory', true, true, false, true);

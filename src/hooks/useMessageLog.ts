@@ -369,15 +369,29 @@ export function useMessageLog(
         ordered.forEach(m => { if (m.id) addedMidSetRef.current.add(m.id); });
 
         setMessages(prev => {
-            const nextMessages = [...prev, ...ordered];
-            if (nextMessages.length >= messageLimit) {
-                const trimmed = nextMessages.slice(nextMessages.length - messageLimit);
-                // Remove evicted IDs from the set so it stays bounded.
-                const kept = new Set(trimmed.map(m => m.id).filter(Boolean));
-                addedMidSetRef.current.forEach(id => { if (!kept.has(id)) addedMidSetRef.current.delete(id); });
-                return trimmed;
+            const overflow = Math.max(0, prev.length + ordered.length - messageLimit);
+            const evictedPreviousCount = Math.min(overflow, prev.length);
+            const evictedIncomingCount = overflow - evictedPreviousCount;
+
+            // Only evicted entries need to be removed from the dedupe set. Walking
+            // every retained id on every flush made the larger desktop history
+            // cap increasingly expensive during busy output.
+            for (let i = 0; i < evictedPreviousCount; i++) {
+                const id = prev[i].id;
+                if (id) addedMidSetRef.current.delete(id);
             }
-            return nextMessages;
+            for (let i = 0; i < evictedIncomingCount; i++) {
+                const id = ordered[i].id;
+                if (id) addedMidSetRef.current.delete(id);
+            }
+
+            const retainedPreviousCount = prev.length - evictedPreviousCount;
+            const retainedIncomingCount = ordered.length - evictedIncomingCount;
+            const retained = new Array<Message>(retainedPreviousCount + retainedIncomingCount);
+            let index = 0;
+            for (let i = evictedPreviousCount; i < prev.length; i++) retained[index++] = prev[i];
+            for (let i = evictedIncomingCount; i < ordered.length; i++) retained[index++] = ordered[i];
+            return retained;
         });
     }, [messageLimit]);
     flushMessagesRef.current = flushMessages;
@@ -926,8 +940,11 @@ export function useMessageLog(
             isUrgent: true
         };
         setMessages(prev => {
-            const nextMessages = [...prev, msg];
-            return nextMessages.length >= messageLimit ? nextMessages.slice(nextMessages.length - messageLimit) : nextMessages;
+            const overflow = Math.max(0, prev.length + 1 - messageLimit);
+            const retained = new Array<Message>(prev.length - overflow + 1);
+            for (let i = overflow; i < prev.length; i++) retained[i - overflow] = prev[i];
+            retained[retained.length - 1] = msg;
+            return retained;
         });
     }, [setMessages, messageLimit]);
 

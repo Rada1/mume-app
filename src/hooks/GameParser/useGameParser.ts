@@ -124,6 +124,8 @@ const getUnclosedCommXmlTag = (text: string): string | null => {
 const isPromptBoundaryLine = (text: string): boolean => {
     const clean = stripAnsiCodes(text).trim();
     if (!clean) return false;
+    // XML object rows end in </object>; that final > is markup, not a prompt.
+    if (/<\/[a-zA-Z][a-zA-Z0-9_-]*>\s*$/.test(clean)) return false;
 
     return (
         /(?:^|[\s\[\]!(*>])(?:HP|MA|MV|SP):\w+/i.test(clean) ||
@@ -1098,6 +1100,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
             }
         }
 
+        // This shared stage describes the latest command sent, which can already
+        // be a later queued request while an earlier response is still streaming.
+        // Use it only to bootstrap headerless output, never to close an active
+        // header-driven capture.
         const expectedCaptureType = normalizeStageToCaptureType(deps.captureStage.current) as any;
         const captureAttachedText = (promptInfo as any).attachedText?.trim();
         // `/misc build <zone> list` rows are `[zone:room] ...`, which the prompt
@@ -1312,15 +1318,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
             if (!(isInfoSession && isStatTrigger)) {
                 lineCapture.finalizeSession();
             }
-        }
-
-        if (
-            !isSnoop &&
-            capture.hasSession() &&
-            ['who', 'equipment', 'inventory', 'container'].includes(expectedCaptureType) &&
-            expectedCaptureType !== capture.getActiveType()
-        ) {
-            capture.finalizeSession();
         }
 
         // --- Explicit Capture Bootstrap ---
