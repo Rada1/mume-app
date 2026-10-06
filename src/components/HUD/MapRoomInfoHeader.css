@@ -17,7 +17,7 @@
     box-shadow: none;
     font-family: var(--font-mono, monospace);
     user-select: none;
-    pointer-events: auto;
+    pointer-events: none;
     display: flex;
     flex-direction: column;
 }

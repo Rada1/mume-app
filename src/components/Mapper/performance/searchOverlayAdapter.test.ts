@@ -18,4 +18,19 @@ describe('search room identity', () => {
         expect(overlay.selectedRoom).toEqual(center);
         expect(overlay.path).toEqual([center]);
     });
+
+    it('generates path and target overlay when autowalking via walkPath and walkTargetId', () => {
+        const overlay = buildSearchOverlay({
+            walkTargetId: 'm_20',
+            walkPath: ['m_10', 'm_20'],
+            rooms: {},
+            preloaded: { '10': [1, 2, 0], '20': [3, 4, 0] },
+        });
+        expect(overlay.path).toEqual([
+            { x: 1.5, y: -1.5, z: 0 },
+            { x: 3.5, y: -3.5, z: 0 },
+        ]);
+        expect(overlay.target).toEqual({ x: 3.5, y: -3.5, z: 0 });
+        expect(overlay.color).toEqual([0.92, 0.76, 0.3]);
+    });
 });

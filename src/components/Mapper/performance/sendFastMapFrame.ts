@@ -9,6 +9,8 @@ import { snapPixelCamera, toFastMapView } from './cameraAdapter';
 import { adaptLiveRoom } from './mapAdapter';
 import { mergeRoomExits, preferLiveFlags } from './canvasDataAdapters';
 import { createFastMapPrediction } from './predictionPath';
+import { GRID_SIZE } from '../mapperUtils';
+import { toSearchPoint } from './searchOverlayAdapter';
 import type { FastMapBackground } from './mapBackground';
 import type { FastMapFrame } from './protocol';
 
@@ -73,6 +75,36 @@ export function sendFastMapFrame(
     brightness: Math.max(50, Math.min(100, mapProps.mapBrightness ?? 50)) / 100,
   };
   client.update(frame);
+
+  const parent = canvas.parentElement;
+  if (parent) {
+    if (player) {
+      const playerSx = (player.x * GRID_SIZE + GRID_SIZE / 2 - camera.x) * appZoom;
+      const playerSy = (player.y * GRID_SIZE - GRID_SIZE / 2 - camera.y) * appZoom;
+      parent.style.setProperty('--player-cx', `${Math.round(playerSx)}px`);
+      parent.style.setProperty('--player-cy', `${Math.round(playerSy)}px`);
+    }
+    const targetRoomId = mapProps.closestRoomId;
+    if (targetRoomId) {
+      const targetPoint = toSearchPoint({
+        rooms: mapProps.rooms,
+        preloaded: mapProps.preloadedCoordsRef.current,
+        canonical: mapProps.performanceMapRef?.current ?? null,
+      }, targetRoomId);
+      if (targetPoint) {
+        const targetSx = (targetPoint.x * GRID_SIZE - camera.x) * appZoom;
+        const targetSy = (-targetPoint.y * GRID_SIZE - camera.y) * appZoom;
+        parent.style.setProperty('--filter-target-cx', `${Math.round(targetSx)}px`);
+        parent.style.setProperty('--filter-target-cy', `${Math.round(targetSy)}px`);
+      } else {
+        parent.style.removeProperty('--filter-target-cx');
+        parent.style.removeProperty('--filter-target-cy');
+      }
+    } else {
+      parent.style.removeProperty('--filter-target-cx');
+      parent.style.removeProperty('--filter-target-cy');
+    }
+  }
 }
 
 export function sendFastMapExploration(mapProps: MapCanvasProps, client: FastMapWorkerClient | null): void {

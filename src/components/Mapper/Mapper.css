@@ -302,8 +302,8 @@ canvas.map-canvas {
 /* --- Go There Popup --- */
 .map-go-there-popup {
     position: absolute;
-    left: var(--filter-target-cx, var(--player-cx, 50%));
-    top: var(--filter-target-cy, var(--player-cy, 72px));
+    left: clamp(80px, var(--filter-target-cx, var(--player-cx, 50%)), calc(100% - 80px));
+    top: max(76px, var(--filter-target-cy, var(--player-cy, 72px)));
     /* Position the popup just above the currently selected search result. */
     transform: translate(-50%, calc(-100% - 24px));
     z-index: 100;

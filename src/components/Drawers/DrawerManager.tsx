@@ -124,7 +124,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                         <div className="drawer-content" style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                             {!hideMapHeaderFooter && <MapRoomInfoHeader />}
                             {/* Pinned Full Map Canvas */}
-                            <div ref={mapViewportRef} className="map-canvas-full-viewport" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 1 }}>
+                            <div ref={mapViewportRef} className="map-canvas-full-viewport" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
                                 <Mapper
                                     ref={mapperDesktopRef}
                                     characterName={characterName || ''}

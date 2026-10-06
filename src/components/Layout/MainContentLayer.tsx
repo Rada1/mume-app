@@ -115,7 +115,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
     const useTacticalPanelBlur = useSettingsStore(s => s.useTacticalPanelBlur);
-    const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
+
     const useMobileAccountPanels = useSettingsStore(s => s.useMobileAccountPanels ?? true);
     const manualBgImage = useSettingsStore(s => s.bgImage);
     const showChatWindow = useSettingsStore(s => s.showChatWindow);
@@ -144,7 +144,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         isEditorOpen
     );
     const hasDockedPanels = activeDockedPanels.length > 0;
-    const shouldBlurDockedPanels = hasDockedPanels && useTacticalPanelBlur && !isPerformanceMode;
+    const shouldBlurDockedPanels = hasDockedPanels && useTacticalPanelBlur;
 
     React.useEffect(() => {
         if (isAccountScreen && !viewport.isMobile) setIsCommandPanelOpen(true);

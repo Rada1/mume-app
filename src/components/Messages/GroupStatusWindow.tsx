@@ -18,9 +18,9 @@ const GroupStatusWindow: React.FC<{ style?: React.CSSProperties; mapOverlay?: bo
     const { viewport } = useGame();
     const { groupMembers } = useActiveCombat();
     const usePanelBlur = useSettingsStore(state => state.useTacticalPanelBlur);
-    const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode);
+
     const setShowGroupPanel = useSettingsStore(state => state.setShowGroupPanel);
-    const isPanelBlurred = usePanelBlur && !isPerformanceMode;
+    const isPanelBlurred = Boolean(usePanelBlur);
     const members = groupMembers || [];
 
     return (

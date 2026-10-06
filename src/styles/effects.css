@@ -4,8 +4,8 @@
 .performance-mode * {
   box-shadow: none !important;
   text-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  /* backdrop-filter allowed for blurred panels */
+  /* -webkit-backdrop-filter allowed for blurred panels */
   transition: none !important;
   animation: none !important;
 }
@@ -54,4 +54,17 @@
 .app-container.is-mobile * {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+}
+
+/* Explicitly allow blurred panels to retain backdrop-filter in performance mode and on mobile */
+.performance-mode .content-layer.docked-panels-blurred .docked-panel,
+.performance-mode .group-status-panel--blurred,
+.performance-mode .this-is-you-console.has-blurred-background,
+.performance-mode .unified-tactical-surface.has-blurred-background,
+.app-container.is-mobile .content-layer.docked-panels-blurred .docked-panel,
+.app-container.is-mobile .group-status-panel--blurred,
+.app-container.is-mobile .this-is-you-console.has-blurred-background,
+.app-container.is-mobile .unified-tactical-surface.has-blurred-background {
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
 }

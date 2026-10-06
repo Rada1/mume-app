@@ -129,14 +129,14 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                 {/* Performance Mode */}
                 <ToggleRow
                     label="Performance Mode"
-                    description="Disable blurs, shadows, animations, transitions, and weather for smoother performance."
+                    description="Disable heavy animations, shadows, transitions, and weather for smoother performance."
                     value={isPerformanceMode}
                     onToggle={() => setIsPerformanceMode(!isPerformanceMode)}
                 />
 
                 <ToggleRow
                     label="Blur Panels"
-                    description="Blur the background behind the command wheel and mobile panels. Off uses a solid background; Performance Mode keeps blur off."
+                    description="Blur the background behind the command wheel and docked panels. Off uses a solid background."
                     value={useTacticalPanelBlur}
                     onToggle={() => setUseTacticalPanelBlur(!useTacticalPanelBlur)}
                 />

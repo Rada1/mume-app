@@ -166,11 +166,15 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
     };
     canvas?.addEventListener('wheel', onWheel, { passive: true });
     window.addEventListener('mume-perf-hud-toggle', onPerfToggle);
+    window.addEventListener('mume-mapper-camera-change', sendLatestFrame);
+    window.addEventListener('mume-mapper-wake', sendLatestFrame);
     clientRef.current?.setMetricsEnabled(perfMonitor.enabled);
     return () => {
       canvas?.removeEventListener('wheel', onWheel);
       if (pendingFrame) cancelAnimationFrame(pendingFrame);
       window.removeEventListener('mume-perf-hud-toggle', onPerfToggle);
+      window.removeEventListener('mume-mapper-camera-change', sendLatestFrame);
+      window.removeEventListener('mume-mapper-wake', sendLatestFrame);
     };
   }, [canvasRef, sendLatestFrame]);
 
@@ -210,11 +214,29 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
       selectedRoomId: props.mapProps.contextMenuRoomId,
       hoveredSearchRoomId: props.mapProps.hoveredSearchRoomId,
       filterPathIds: props.mapProps.filterPathIds,
+      walkPath: props.mapProps.walkPath,
+      walkTargetId: props.mapProps.walkTargetId,
       rooms: props.mapProps.rooms,
       preloaded: props.mapProps.preloadedCoordsRef.current,
       canonical: props.mapProps.performanceMapRef?.current ?? null,
     }));
-  }, [props.mapProps.activeMapFilter, props.mapProps.mapSearchQuery, props.mapProps.matchedRoomIds, props.mapProps.closestRoomId, props.mapProps.contextMenuRoomId, props.mapProps.hoveredSearchRoomId, props.mapProps.filterPathIds, props.mapProps.rooms, props.mapProps.preloadedCoordsRef, props.mapProps.performanceMapRef, props.mapProps.performanceMapRevision]);
+    sendLatestFrame();
+  }, [
+    props.mapProps.activeMapFilter,
+    props.mapProps.mapSearchQuery,
+    props.mapProps.matchedRoomIds,
+    props.mapProps.closestRoomId,
+    props.mapProps.contextMenuRoomId,
+    props.mapProps.hoveredSearchRoomId,
+    props.mapProps.filterPathIds,
+    props.mapProps.walkPath,
+    props.mapProps.walkTargetId,
+    props.mapProps.rooms,
+    props.mapProps.preloadedCoordsRef,
+    props.mapProps.performanceMapRef,
+    props.mapProps.performanceMapRevision,
+    sendLatestFrame,
+  ]);
 
   const cameraState = props.mapProps.camera.current as CameraState;
   useEffect(() => { sendLatestFrame(); }, [
@@ -223,7 +245,9 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
     props.mapProps.currentRoomId,
     props.mapProps.deathRoomId,
     props.mapProps.mapBrightness,
+    props.mapProps.closestRoomId,
     props.mapProps.walkTargetId,
+    props.mapProps.walkPath,
     props.mapProps.autoCenter,
     cameraState.x,
     cameraState.y,

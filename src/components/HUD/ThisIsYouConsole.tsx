@@ -104,8 +104,8 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
     const isMobileSheet = Boolean(viewport?.isMobile && !alwaysExpanded && !panelIsMinimized);
     const pendingCommandPrefix = useTacticalCommandPrefixStore(state => state.prefix);
     const usePanelBlur = useSettingsStore(state => state.useTacticalPanelBlur);
-    const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode);
-    const isPanelBlurred = Boolean(usePanelBlur && !isPerformanceMode);
+
+    const isPanelBlurred = Boolean(usePanelBlur);
     const minimizeSwipe = useSwipeDownToMinimize(isMobileSheet, () => setIsMinimized(true));
     const expandSwipe = useSwipeUpToExpand(
         Boolean(viewport?.isMobile && !alwaysExpanded && panelIsMinimized),

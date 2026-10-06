@@ -19,6 +19,8 @@ export interface SearchOverlayInput {
   selectedRoomId?: string | null;
   hoveredSearchRoomId?: string | null;
   filterPathIds?: readonly string[];
+  walkPath?: readonly string[];
+  walkTargetId?: string | null;
   rooms: Readonly<Record<string, unknown>>;
   preloaded: Readonly<Record<string, readonly unknown[]>>;
   canonical?: {
@@ -34,6 +36,8 @@ const FILTER_COLORS: Readonly<Record<string, readonly [number, number, number]>>
   travel: [0.16, 0.5, 0.73], resources: [0.18, 0.8, 0.44], services: [1, 0.41, 0.71],
   danger: [0.91, 0.3, 0.24], mobs: [0.75, 0.22, 0.17], quests: [0.1, 0.74, 0.61],
 };
+
+const NAVIGATION_COLOR: readonly [number, number, number] = [0.92, 0.76, 0.3];
 
 const FLAG_CATEGORIES: Readonly<Record<string, string>> = {
   HORSE: 'mounts', MULE: 'mounts', PACK_HORSE: 'mounts', TRAINED_HORSE: 'mounts', ROHIRRIM: 'mounts', WARG: 'mounts', STABLE: 'mounts',
@@ -51,7 +55,9 @@ function finite(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value);
 }
 
-function toPoint(input: SearchOverlayInput, roomId: string): FastMapSearchPoint | null {
+export type SearchPointSources = Pick<SearchOverlayInput, 'rooms' | 'preloaded' | 'canonical'>;
+
+export function toSearchPoint(input: SearchPointSources, roomId: string): FastMapSearchPoint | null {
   const key = normalizeId(roomId);
   // Search result IDs identify map rooms, not GMCP server IDs. Resolve their
   // bundled coordinates before consulting live snapshots or server aliases.
@@ -77,15 +83,26 @@ function getColor(filter: string | null | undefined): readonly [number, number, 
 }
 
 export function buildSearchOverlay(input: SearchOverlayInput): FastMapSearchOverlay {
-  const active = Boolean(input.activeMapFilter || input.mapSearchQuery?.trim());
-  const matches = active ? [...(input.matchedRoomIds ?? [])].map(id => toPoint(input, id)).filter((point): point is FastMapSearchPoint => point !== null) : [];
-  const path = active ? (input.filterPathIds ?? []).map(id => toPoint(input, id)) : [];
+  const isWalking = Boolean(input.walkTargetId || (input.walkPath && input.walkPath.length > 0));
+  const active = Boolean(input.activeMapFilter || input.mapSearchQuery?.trim() || isWalking);
+  const matches = (input.activeMapFilter || input.mapSearchQuery?.trim())
+    ? [...(input.matchedRoomIds ?? [])].map(id => toSearchPoint(input, id)).filter((point): point is FastMapSearchPoint => point !== null)
+    : [];
+  const rawPath = (input.walkPath && input.walkPath.length > 0)
+    ? input.walkPath
+    : (input.filterPathIds ?? []);
+  const path = active ? rawPath.map(id => toSearchPoint(input, id)) : [];
+  const effectiveTargetId = input.walkTargetId ?? (active ? input.closestRoomId : null);
+  const target = effectiveTargetId ? toSearchPoint(input, effectiveTargetId) : null;
+  const color = input.activeMapFilter
+    ? getColor(input.activeMapFilter)
+    : (isWalking ? NAVIGATION_COLOR : getColor(null));
   return {
     matches,
     path,
-    target: active && input.closestRoomId ? toPoint(input, input.closestRoomId) : null,
-    selectedRoom: input.selectedRoomId ? toPoint(input, input.selectedRoomId) : null,
-    hovered: active && input.hoveredSearchRoomId ? toPoint(input, input.hoveredSearchRoomId) : null,
-    color: getColor(input.activeMapFilter),
+    target,
+    selectedRoom: input.selectedRoomId ? toSearchPoint(input, input.selectedRoomId) : null,
+    hovered: active && input.hoveredSearchRoomId ? toSearchPoint(input, input.hoveredSearchRoomId) : null,
+    color,
   };
 }

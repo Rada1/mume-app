@@ -74,7 +74,7 @@ const colorToRgb = (colorVal: string | undefined, defaultVal: string) => {
 export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling, isPinned, swapSource = null, isSwapMode = false, onSelectSwapCell, hoveredPanelTool = null, isChoosingRebindSlot, rebindDirection, onSelectRebindSlot, isTargetMenuVisible = false, getCommandTargetGlowColor, getCommandLearnedState, activeCommand, pendingCommandPrefix, targetMenu, paletteCommands = [], onStartCreatingCustomSwipeCell, onDeleteCustomSwipeAction, isDeletingCustomCell = false, onDeleteModeChange, onSwipeToolTap, onClose, onSwapCells, onPinnedPointerDown, onPinnedPointerMove, onPinnedPointerUp, onPinnedPointerCancel, onPalettePointerDown, onPalettePointerMove, onPalettePointerUp, onPalettePointerCancel }) => {
     const swapTapPointerRef = React.useRef<number | null>(null);
     const useTacticalPanelBlur = useSettingsStore(state => state.useTacticalPanelBlur);
-    const isPerformanceMode = useSettingsStore(state => state.isPerformanceMode);
+
     if (!isTargetMenuVisible || !targetMenu) return null;
 
     const wheelAccent = button.style.borderColor || button.style.backgroundColor || 'var(--set-accent, var(--accent))';
@@ -134,7 +134,7 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
             '--set-accent-rgb': wheelAccentRgb
         } as React.CSSProperties}>
             <div
-                className={`unified-tactical-surface${useTacticalPanelBlur && !isPerformanceMode ? ' has-blurred-background' : ''}`}
+                className={`unified-tactical-surface${useTacticalPanelBlur ? ' has-blurred-background' : ''}`}
                 onPointerDown={event => event.stopPropagation()}
                 onPointerUp={event => event.stopPropagation()}
                 onPointerCancel={event => event.stopPropagation()}
