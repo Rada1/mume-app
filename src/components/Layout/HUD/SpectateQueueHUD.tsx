@@ -17,6 +17,32 @@ export const SpectateQueueHUD: React.FC = () => {
     const { isSpectating, spectateTarget, spectateQueue, lastSnoopStartTime } = useModeStore();
     const [now, setNow] = React.useState(() => Date.now());
     const [isMinimized, setIsMinimized] = React.useState(() => localStorage.getItem(MINIMIZED_KEY) === 'true');
+    const [position, setPosition] = React.useState<{ right: number; top: number } | null>(null);
+    const dragRef = React.useRef<{ x: number; y: number; right: number; top: number } | null>(null);
+
+    const handleDragStart = (e: React.PointerEvent<HTMLDivElement>) => {
+        if ((e.target as HTMLElement).closest('button')) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        dragRef.current = {
+            x: e.clientX,
+            y: e.clientY,
+            right: window.innerWidth - rect.right,
+            top: rect.top,
+        };
+        e.currentTarget.setPointerCapture(e.pointerId);
+    };
+
+    const handleDragMove = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (!dragRef.current) return;
+        setPosition({
+            right: Math.max(0, dragRef.current.right - (e.clientX - dragRef.current.x)),
+            top: Math.max(0, dragRef.current.top + (e.clientY - dragRef.current.y)),
+        });
+    };
+
+    const handleDragEnd = () => {
+        dragRef.current = null;
+    };
 
     React.useEffect(() => {
         if (!isSpectating || !lastSnoopStartTime) return;
@@ -48,7 +74,14 @@ export const SpectateQueueHUD: React.FC = () => {
     };
 
     return (
-        <div className={`spectate-queue-hud${isMinimized ? ' is-minimized' : ''}`}>
+        <div
+            className={`spectate-queue-hud${isMinimized ? ' is-minimized' : ''}`}
+            style={position ? { right: `${position.right}px`, top: `${position.top}px` } : undefined}
+            onPointerDown={handleDragStart}
+            onPointerMove={handleDragMove}
+            onPointerUp={handleDragEnd}
+            onPointerCancel={handleDragEnd}
+        >
             <div className="spectate-hud-header">
                 <div className="spectate-hud-title">
                     <List size={13} className="hud-icon" />

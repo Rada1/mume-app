@@ -110,10 +110,10 @@ export const LiveBufferHUD: React.FC = () => {
     if (!isSpectating) return null;
 
     const containerStyle: React.CSSProperties = {
-        position: 'absolute',
+        position: 'fixed',
         top: pos ? `${pos.top}px` : (isSpectating ? '300px' : '80px'),
         right: pos ? `${pos.right}px` : '16px',
-        zIndex: 10000,
+        zIndex: 'var(--z-floating-hud, 12000)',
         cursor: 'grab',
         background: 'rgba(0,0,0,0.8)',
         backdropFilter: 'blur(8px)',

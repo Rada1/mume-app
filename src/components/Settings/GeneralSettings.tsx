@@ -1,6 +1,6 @@
 /**
  * @file GeneralSettings.tsx
- * @description General settings panel composed of Connection, Appearance, and Experimental settings.
+ * @description General settings panel composed of connection, appearance, spectate, loot, and experimental settings.
  */
 
 import React from 'react';
@@ -8,6 +8,7 @@ import { ConnectionDetails } from './ConnectionDetails';
 import { AppearanceSettings } from './AppearanceSettings';
 import { ExperimentalSettings } from './ExperimentalSettings';
 import { LootSettings } from './LootSettings';
+import { SpectateSettings } from './SpectateSettings';
 import ClientVersionInfo from './ClientVersionInfo';
 
 interface GeneralSettingsProps {
@@ -65,6 +66,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = (props) => {
                 isPerformanceMode={props.isPerformanceMode}
                 setIsPerformanceMode={props.setIsPerformanceMode}
             />
+
+            <SpectateSettings />
 
             <LootSettings />
 

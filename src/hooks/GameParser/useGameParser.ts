@@ -140,6 +140,14 @@ const stripInlineMarkup = (text: string): string => text
         return '';
     });
 
+const normalizeSpectateTellCommand = (text: string | undefined): string => {
+    const decoded = stripInlineMarkup(text || '')
+        .replace(/&(?:apos|#39);/gi, "'")
+        .replace(/&(?:quot|#34);/gi, '"')
+        .trim();
+    return decoded.replace(/^(['"])(.*?)\1$/, '$2').trim().toLowerCase();
+};
+
 const isGameplayXmlLine = (text: string): boolean => {
     const clean = stripInlineMarkup(text).trim().toLowerCase();
     if (!clean) return false;
@@ -995,24 +1003,26 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const commResult = comm.parseComm(lineToParse, textOnly, lower);
         if (commResult.isSuppressed) return;
         if (commResult.msgType !== 'game') msgType = commResult.msgType;
-        if (
+        const spectateTellCommand = normalizeSpectateTellCommand(commResult.commText);
+        const isSpectateControlTell =
             !isSnoop &&
             commResult.msgType === 'comm' &&
             (commResult.replyCommand === 'tell' || commResult.replyCommand === 'whisper') &&
-            /(?:<\s*spectateme\s*>|&lt;\s*spectateme\s*&gt;)/i.test(commResult.commText || '')
+            /^(?:tells? you|whispers? you)$/i.test(commResult.commAction || '') &&
+            useSettingsStore.getState().enableTellSpectateControl;
+        const requestedName = commResult.commSender || commResult.replyTarget;
+        if (
+            isSpectateControlTell &&
+            spectateTellCommand === 'spectateon'
         ) {
-            const requestedName = commResult.commSender || commResult.replyTarget;
             if (requestedName) {
                 automator.addToQueue(requestedName);
             }
         }
         if (
-            !isSnoop &&
-            commResult.msgType === 'comm' &&
-            (commResult.replyCommand === 'tell' || commResult.replyCommand === 'whisper') &&
-            /(?:<\s*stop\s*>|&lt;\s*stop\s*&gt;)/i.test(commResult.commText || '')
+            isSpectateControlTell &&
+            spectateTellCommand === 'spectateoff'
         ) {
-            const requestedName = commResult.commSender || commResult.replyTarget;
             if (requestedName) {
                 automator.stopSpectatingName(requestedName);
             }

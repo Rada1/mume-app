@@ -97,6 +97,7 @@ interface SettingsState {
     showLegacyButtons: boolean;
     showDeveloperTools: boolean;
     showSpectatePromptInLog: boolean;
+    enableTellSpectateControl: boolean;
     useMobileAccountPanels: boolean;
     showChatWindow: boolean;
     showGroupPanel: boolean;
@@ -179,6 +180,7 @@ interface SettingsState {
     setShowLegacyButtons: (val: boolean) => void;
     setShowDeveloperTools: (val: boolean) => void;
     setShowSpectatePromptInLog: (val: boolean) => void;
+    setEnableTellSpectateControl: (val: boolean) => void;
     setUseMobileAccountPanels: (val: boolean) => void;
     setShowChatWindow: (val: boolean) => void;
     setShowGroupPanel: (val: boolean) => void;
@@ -330,6 +332,7 @@ export const useSettingsStore = create<SettingsState>()(
             showLegacyButtons: false,
             showDeveloperTools: false,
             showSpectatePromptInLog: true,
+            enableTellSpectateControl: false,
             useMobileAccountPanels: true,
             showChatWindow: false,
             showGroupPanel: false,
@@ -420,6 +423,7 @@ export const useSettingsStore = create<SettingsState>()(
             setShowLegacyButtons: (showLegacyButtons) => set({ showLegacyButtons }),
             setShowDeveloperTools: (showDeveloperTools) => set({ showDeveloperTools }),
             setShowSpectatePromptInLog: (showSpectatePromptInLog) => set({ showSpectatePromptInLog }),
+            setEnableTellSpectateControl: (enableTellSpectateControl) => set({ enableTellSpectateControl }),
             setUseMobileAccountPanels: (useMobileAccountPanels) => set({ useMobileAccountPanels }),
             setShowChatWindow: (showChatWindow) => {
                 set({ showChatWindow });

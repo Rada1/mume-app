@@ -1,5 +1,5 @@
 .spectate-queue-hud {
-    position: absolute;
+    position: fixed;
     top: 80px;
     right: 16px;
     width: 260px;
@@ -9,11 +9,14 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 8px;
     padding: 8px 10px;
-    z-index: 10000;
+    z-index: var(--z-floating-hud, 12000);
     font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
     color: #fff;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+    cursor: grab;
     animation: fadeInSlideIn 0.3s ease-out;
     display: flex;
     flex-direction: column;
