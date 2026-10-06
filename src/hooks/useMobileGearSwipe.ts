@@ -10,6 +10,7 @@ import type {
     MouseEvent as ReactMouseEvent
 } from 'react';
 import { useGearPanelStore } from '../stores/useGearPanelStore';
+import { useSettingsStore } from '../stores/useSettingsStore';
 
 type SwipeStart = { x: number; y: number; pointerId?: number; touchId?: number };
 type SwipeSurface = 'log' | 'gear';
@@ -24,9 +25,11 @@ export const useMobileGearSwipe = (enabled: boolean, triggerHaptic?: (duration: 
     const suppressClick = useRef(false);
     const isOpen = useGearPanelStore(state => state.isOpen);
     const setIsOpen = useGearPanelStore(state => state.setIsOpen);
+    const isReadabilityMode = useSettingsStore(state => state.isReadabilityMode);
+    const isSwipeEnabled = enabled && !isReadabilityMode;
 
     const finishSwipe = useCallback((surface: SwipeSurface, start: SwipeStart | null, x: number, y: number) => {
-        if (!start) return false;
+        if (!isSwipeEnabled || !start) return false;
         const dx = x - start.x;
         const dy = y - start.y;
         if (Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 1.25) return false;
@@ -39,16 +42,16 @@ export const useMobileGearSwipe = (enabled: boolean, triggerHaptic?: (duration: 
         suppressClick.current = true;
         window.setTimeout(() => { suppressClick.current = false; }, 500);
         return true;
-    }, [isOpen, setIsOpen, triggerHaptic]);
+    }, [isSwipeEnabled, isOpen, setIsOpen, triggerHaptic]);
 
     const onPointerDown = useCallback((surface: SwipeSurface, event: ReactPointerEvent<HTMLElement>) => {
         const startRef = surface === 'log' ? logPointerStart : gearPointerStart;
         startRef.current = null;
         // Touch input uses touch events below. Keep this path for pen input.
-        if (!enabled || !event.isPrimary || event.pointerType !== 'pen' || event.button !== 0) return;
+        if (!isSwipeEnabled || !event.isPrimary || event.pointerType !== 'pen' || event.button !== 0) return;
         if (event.target instanceof Element && event.target.closest(IGNORE_GESTURE_TARGETS)) return;
         startRef.current = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
-    }, [enabled]);
+    }, [isSwipeEnabled]);
 
     const onPointerUp = useCallback((surface: SwipeSurface, event: ReactPointerEvent<HTMLElement>) => {
         const startRef = surface === 'log' ? logPointerStart : gearPointerStart;
@@ -64,14 +67,14 @@ export const useMobileGearSwipe = (enabled: boolean, triggerHaptic?: (duration: 
     const onTouchStart = useCallback((surface: SwipeSurface, event: ReactTouchEvent<HTMLElement>) => {
         const startRef = surface === 'log' ? logTouchStart : gearTouchStart;
         startRef.current = null;
-        if (!enabled || event.touches.length !== 1) return;
+        if (!isSwipeEnabled || event.touches.length !== 1) return;
         if (event.target instanceof Element) {
             const gearItem = surface === 'gear' && event.target.closest('.gear-item-select');
             if (!gearItem && event.target.closest(IGNORE_GESTURE_TARGETS)) return;
         }
         const touch = event.touches[0];
         startRef.current = { x: touch.clientX, y: touch.clientY, touchId: touch.identifier };
-    }, [enabled]);
+    }, [isSwipeEnabled]);
 
     const onTouchEnd = useCallback((surface: SwipeSurface, event: ReactTouchEvent<HTMLElement>) => {
         const startRef = surface === 'log' ? logTouchStart : gearTouchStart;

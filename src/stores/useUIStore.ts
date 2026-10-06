@@ -4,6 +4,7 @@
  */
 
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { PopoverState, DrawerType, ObjectDragState, QuickButton } from '../types';
 import type { ArchiveEditorContext } from './useArchiveStore';
 import { useActiveDockedPanelStore } from './useActiveDockedPanelStore';
@@ -67,7 +68,7 @@ export interface UIState {
     gearTab: 'worn' | 'inv' | 'vicinity';
     charTab: 'info' | 'quests' | 'skills' | 'achievements';
 
-    // Quick buttons (ephemeral, session-only)
+    // User-created quick buttons persist across refreshes and logins.
     quickButtons: QuickButton[];
     addQuickButton: (btn: { label: string; command: string }) => void;
     removeQuickButton: (id: string) => void;
@@ -140,7 +141,7 @@ const isDockedEditorState = (state: MumeEditState) => state.isOpen && ![
     'archive-reply', 'archive-compose', 'self-description', 'self-whois'
 ].includes(state.context?.kind ?? '');
 
-export const useUIStore = create<UIState>((set, get) => ({
+export const useUIStore = create<UIState>()(persist((set, get) => ({
     drawer: isDesktopViewport() ? 'account' : 'none',
     isDrawerPeeking: false,
     mapExpanded: typeof window !== 'undefined' ? isDesktopViewport() : true,
@@ -284,6 +285,9 @@ export const useUIStore = create<UIState>((set, get) => ({
         isShaperAccessOpen: false,
         setManagerOpen: false
     })
+}), {
+    name: 'mume-quick-buttons',
+    partialize: state => ({ quickButtons: state.quickButtons })
 }));
 
 export const getUI = () => useUIStore.getState();

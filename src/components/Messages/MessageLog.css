@@ -109,6 +109,32 @@
     contain: paint;
 }
 
+.message-log.keep-text-on-one-line {
+    overflow-x: auto;
+    overflow-y: auto;
+    touch-action: pan-x pan-y pinch-zoom;
+    word-wrap: normal;
+    overflow-wrap: normal;
+}
+
+.message-log.keep-text-on-one-line > div[style*="position: relative"],
+.message-log.keep-text-on-one-line [data-index] {
+    width: max-content !important;
+    min-width: 100%;
+}
+
+.message-log.keep-text-on-one-line .message {
+    width: max-content;
+    max-width: none;
+    white-space: pre;
+    word-wrap: normal;
+    overflow-wrap: normal;
+}
+
+.message-log.keep-text-on-one-line .message-content {
+    min-width: max-content;
+}
+
 /* Keep recent events visible while the main virtualized log is in scrollback. */
 .message-log-layout.reading-history > .message-log {
     flex: 1 1 0;

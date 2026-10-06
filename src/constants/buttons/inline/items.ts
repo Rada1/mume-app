@@ -11,6 +11,9 @@ export const ITEM_BUTTONS = [
     createButton({ id: 'btn-food-get', label: 'Get', command: 'get %n', setId: 'inline-food', color: '#f59e0b' }),
     createButton({ id: 'btn-water-drink', label: 'Drink', command: 'drink %n', setId: 'inline-water', color: '#3b82f6' }),
 
+    // --- HERBS ---
+    createButton({ id: 'btn-herb-crush', label: 'Crush', command: 'crush %n', setId: 'inline-herb', color: '#84cc16' }),
+
     // --- FLUID CONTAINER ---
     createButton({ id: 'btn-fluid-drink', label: 'Drink', command: 'drink %n', setId: 'inline-fluidcontainer', color: '#3b82f6' }),
     createButton({ id: 'btn-fluid-pour', label: 'Pour Water', command: 'pour water %n', setId: 'inline-fluidcontainer', color: '#60a5fa', width: 110 }),

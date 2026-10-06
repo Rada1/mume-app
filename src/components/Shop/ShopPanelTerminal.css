@@ -38,6 +38,7 @@
 .shop-panel .shop-panel-tab-bar { background: #241c15; border-top: 1px solid var(--shop-rule); }
 .shop-panel .shop-action-btn { border-color: var(--shop-rule); background: #2b2117; border-radius: 2px; color: #e6dcc9; font-family: inherit; font-weight: 600; }
 .shop-panel .shop-action-btn:hover, .shop-panel .shop-action-btn.held { border-color: var(--shop-gold); background: #3a2e18; color: var(--shop-gold); }
+.shop-panel .shop-action-divider { width: 1px; align-self: stretch; flex-shrink: 0; margin: 2px 0; background: var(--shop-rule); }
 
 .light-mode .shop-panel { --shop-rule: rgba(105, 75, 33, 0.24); --shop-muted: #6e6253; --shop-gold: #806019; background: #f4eee4; color: #30271d; }
 .light-mode .shop-panel .chat-window-header, .light-mode .shop-panel .shop-panel-tab-bar { background: #eee5d8; }

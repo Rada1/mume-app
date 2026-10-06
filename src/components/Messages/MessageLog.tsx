@@ -666,6 +666,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
     const {
         targetColor, playerColor, enemyColor, neutralColor, npcColor, objectColor, roomColor,
+        keepLogTextOnOneLine,
         hidePrompt, showBlockHeaders, isTextRevealEnabled
     } = useSettingsStore();
 
@@ -1117,7 +1118,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     return (
         <div ref={layoutRef} className={`message-log-layout${isReadingHistory ? ' reading-history' : ''}`} style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden', position: 'relative' }}>
             <div
-                className={`message-log${inCombat ? ' combat-mode' : ''}${isSpectateMode ? ' spectate-mode' : ''}`}
+                className={`message-log${inCombat ? ' combat-mode' : ''}${isSpectateMode ? ' spectate-mode' : ''}${keepLogTextOnOneLine ? ' keep-text-on-one-line' : ''}`}
                 ref={scrollContainerRef}
                 onScroll={handleScroll}
                 onMouseDownCapture={e => {
@@ -1217,7 +1218,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                             <button type="button" onClick={returnToLive} aria-label="Return to latest log output">Back to live ↓</button>
                         </div>
                         <div
-                            className="message-log message-log-live-content"
+                            className={`message-log message-log-live-content${keepLogTextOnOneLine ? ' keep-text-on-one-line' : ''}`}
                             ref={liveLogRef}
                             aria-label="Latest game events"
                         >

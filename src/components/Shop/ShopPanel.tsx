@@ -8,6 +8,8 @@ import { ShopItemGroup } from './ShopItemGroup';
 import { ShopPanelHeader } from './ShopPanelHeader';
 import { ShopBrowseNavigation } from './ShopBrowseNavigation';
 import { SHOP_BROWSE_CATEGORIES } from './shopBrowseCategories';
+import { ShopInventoryActionButtons } from './ShopInventoryActionButtons';
+import type { ShopInventoryAction } from './ShopInventoryActionButtons';
 import './ShopPanel.css';
 import './ShopPanelTerminal.css';
 
@@ -164,6 +166,17 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ hidden = false }) => {
         }
     }, [triggerHaptic, executeCommand, refreshBalance, handleActionDown, setHeldAction, setCompareFirst]);
 
+    const handleInventoryActionDown = useCallback((action: ShopInventoryAction, e: React.PointerEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const target = useUIStore.getState().selectedTarget;
+        if (!target?.context) return;
+        triggerHaptic(30);
+        executeCommand(`${action} ${target.context}`);
+        useUIStore.getState().clearObjectSelection();
+        if (action === 'sell') setTimeout(() => { refreshBalance(); executeCommand('i', true, true); }, 500);
+    }, [triggerHaptic, executeCommand, refreshBalance]);
+
     const handleActionUp = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
@@ -271,7 +284,10 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ hidden = false }) => {
                         </button>
                     );
                 })}
-
+                <ShopInventoryActionButtons
+                    hasInventoryTarget={selectedTarget !== null && selectedTarget.category !== 'shopitem'}
+                    onActionDown={handleInventoryActionDown}
+                />
             </div>
         </aside>
     );

@@ -70,6 +70,7 @@ interface SettingsState {
     theme: 'dark' | 'light';
     drawerZoom: number;
     isImmersionMode: boolean;
+    isReadabilityMode: boolean;
     isImmersionWeatherEffectsEnabled: boolean;
     isImmersionTextAnimationsEnabled: boolean;
     isClassicMode: boolean;
@@ -93,6 +94,7 @@ interface SettingsState {
     roomColor: string;
     disableSmoothScroll: boolean;
     isTimestampEnabled: boolean;
+    keepLogTextOnOneLine: boolean;
     showDebugEchoes: boolean;
     showLegacyButtons: boolean;
     showDeveloperTools: boolean;
@@ -152,6 +154,7 @@ interface SettingsState {
     setTheme: (val: 'dark' | 'light') => void;
     setDrawerZoom: (val: number) => void;
     setIsImmersionMode: (val: boolean) => void;
+    setIsReadabilityMode: (val: boolean) => void;
     setIsImmersionWeatherEffectsEnabled: (val: boolean) => void;
     setIsImmersionTextAnimationsEnabled: (val: boolean) => void;
     setIsClassicMode: (val: boolean) => void;
@@ -176,6 +179,7 @@ interface SettingsState {
     setTargetColor: (val: string) => void;
     setRoomColor: (val: string) => void;
     setIsTimestampEnabled: (val: boolean) => void;
+    setKeepLogTextOnOneLine: (val: boolean) => void;
     setShowDebugEchoes: (val: boolean) => void;
     setShowLegacyButtons: (val: boolean) => void;
     setShowDeveloperTools: (val: boolean) => void;
@@ -304,6 +308,7 @@ export const useSettingsStore = create<SettingsState>()(
             theme: 'dark',
             drawerZoom: 1.0,
             isImmersionMode: false,
+            isReadabilityMode: false,
             isImmersionWeatherEffectsEnabled: false,
             isImmersionTextAnimationsEnabled: false,
             isClassicMode: false,
@@ -328,6 +333,7 @@ export const useSettingsStore = create<SettingsState>()(
             
             disableSmoothScroll: false,
             isTimestampEnabled: false,
+            keepLogTextOnOneLine: false,
             showDebugEchoes: false,
             showLegacyButtons: false,
             showDeveloperTools: false,
@@ -397,6 +403,7 @@ export const useSettingsStore = create<SettingsState>()(
             setTheme: (theme) => set({ theme }),
             setDrawerZoom: (drawerZoom) => set({ drawerZoom }),
             setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
+            setIsReadabilityMode: (isReadabilityMode) => set({ isReadabilityMode }),
             setIsImmersionWeatherEffectsEnabled: (isImmersionWeatherEffectsEnabled) => set({ isImmersionWeatherEffectsEnabled }),
             setIsImmersionTextAnimationsEnabled: (isImmersionTextAnimationsEnabled) => set({ isImmersionTextAnimationsEnabled }),
             setIsClassicMode: (isClassicMode) => set({ isClassicMode }),
@@ -419,6 +426,7 @@ export const useSettingsStore = create<SettingsState>()(
             setRoomColor: (roomColor) => set({ roomColor }),
             setDisableSmoothScroll: (disableSmoothScroll) => set({ disableSmoothScroll }),
             setIsTimestampEnabled: (isTimestampEnabled) => set({ isTimestampEnabled }),
+            setKeepLogTextOnOneLine: (keepLogTextOnOneLine) => set({ keepLogTextOnOneLine }),
             setShowDebugEchoes: (showDebugEchoes) => set({ showDebugEchoes }),
             setShowLegacyButtons: (showLegacyButtons) => set({ showLegacyButtons }),
             setShowDeveloperTools: (showDeveloperTools) => set({ showDeveloperTools }),
@@ -544,8 +552,12 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 39,
+            version: 40,
             migrate: (persistedState: any, version: number) => {
+                if (version < 40) {
+                    persistedState.isReadabilityMode = false;
+                }
+
                 if (version < 39) {
                     persistedState.unveilMap = false;
                 }

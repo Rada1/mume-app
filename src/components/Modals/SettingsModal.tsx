@@ -74,7 +74,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
     const {
         isSoundEnabled, setIsSoundEnabled,
-        theme, setTheme,
         actions, setActions,
         status,
         viewport,
@@ -138,8 +137,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setLoginName={setLoginName}
                                 loginPassword={loginPassword}
                                 setLoginPassword={setLoginPassword}
-                                theme={theme}
-                                setTheme={setTheme}
                                 isImmersionMode={isImmersionMode}
                                 setIsImmersionMode={setIsImmersionMode}
                                 fontFamily={fontFamily}

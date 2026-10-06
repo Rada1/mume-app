@@ -18,6 +18,8 @@ import { useGearPanelStore } from '../../stores/useGearPanelStore';
 import { getDockedWidth } from '../../utils/dockedPanelUtils';
 import { LineCluster } from './HUD/LineCluster';
 import ActionBox from '../HUD/ActionBox';
+import { RotatedStatusPanel } from './RotatedStatusPanel';
+import { CounterRotatedContent } from './CounterRotatedContent';
 import { CharacterCard } from '../HUD/CharacterCard';
 import { useCharacterCardStore } from '../../stores/useCharacterCardStore';
 import { ansiConvert } from '../../utils/ansi';
@@ -406,6 +408,27 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         && typeof heldButton.id === 'string'
         && (heldButton.id.startsWith('tactical-') || heldButton.id === 'map-long-press')
         && heldBtnActionType !== 'modifier';
+    const isRotatedStatusPanel = viewport.isRotatedLandscape && !isAccountScreen;
+    const shouldRenderDockedInput = !(isReplaying && gameState === 'account');
+    const dockedInput = shouldRenderDockedInput ? (
+        <LogDockedInput
+            handleSend={handleSend}
+            handleInputSwipe={handleInputSwipe}
+            commandPreview={commandPreview}
+        />
+    ) : null;
+    const actionBox = !isAccountScreen ? (
+        <ActionBox
+            mobile={viewport.isMobile}
+            handleSend={handleSend}
+            handleInputSwipe={handleInputSwipe}
+            commandPreview={commandPreview}
+            setCommandPreview={setCommandPreview}
+            heldButton={heldButton}
+            setHeldButton={setHeldButton}
+            wasDraggingRef={wasDraggingRef}
+        />
+    ) : null;
 
     return (
         <div
@@ -522,6 +545,17 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     {showMobileAccountExperience ? (
                         <MobileAccountExperience />
                     ) : <>
+                    {isRotatedStatusPanel && (
+                        <RotatedStatusPanel
+                            handleSend={handleSend}
+                            handleInputSwipe={handleInputSwipe}
+                            commandPreview={commandPreview}
+                            setCommandPreview={setCommandPreview}
+                            heldButton={heldButton}
+                            setHeldButton={setHeldButton}
+                            wasDraggingRef={wasDraggingRef}
+                        />
+                    )}
                     <div
                         className={`message-log-container${isTacticalTargetingActive ? ' tactical-targeting-active' : ''}${isImmersionMode ? ` log-terrain-${getRoomTerrainVisualKey(roomCardTerrain)} log-lighting-${lighting} log-weather-${weather} log-zone-${zoneKey} log-lore-${zoneVisualKey}` : ''}`}
                         ref={logContainerRef}
@@ -550,6 +584,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     >
                         <div className="log-opaque-backdrop" />
                         {resolvedBgImage && <div className="log-background-layer" style={{ backgroundImage: `url(${resolvedBgImage})` }} />}
+                        <CounterRotatedContent active={viewport.isRotatedLandscape} className="rotated-log-display">
                         {!viewport.isMobile && <>
                             <DrawerResizeHandle handleType="log-left" widthVar="--desktop-log-width" />
                             <DrawerResizeHandle handleType="log-right" widthVar="--desktop-log-width" />
@@ -585,30 +620,14 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             />
                         )}
                         {!isAccountScreen && <QuickButtonBar />}
-                        {!(isReplaying && gameState === 'account') && (
-                            <LogDockedInput
-                                handleSend={handleSend}
-                                handleInputSwipe={handleInputSwipe}
-                                commandPreview={commandPreview}
-                            />
-                        )}
+                        {(!viewport.isRotatedLandscape || isAccountScreen) && dockedInput}
+                        </CounterRotatedContent>
                     </div>
 
                     {!isReplaying && <MobileAccountCommandGrid />}
                     </>}
 
-                    {!isAccountScreen && (
-                        <ActionBox
-                            mobile={viewport.isMobile}
-                            handleSend={handleSend}
-                            handleInputSwipe={handleInputSwipe}
-                            commandPreview={commandPreview}
-                            setCommandPreview={setCommandPreview}
-                            heldButton={heldButton}
-                            setHeldButton={setHeldButton}
-                            wasDraggingRef={wasDraggingRef}
-                        />
-                    )}
+                    {!isRotatedStatusPanel && actionBox}
                 </div>
                 {(isCommandPanelOpen || isSkillsPanelOpen) && (
                     <aside className="docked-panel command-docked-panel" style={getPanelStyle('commands')} aria-label={isSkillsPanelOpen ? 'Skills and Practice panel' : 'Command Guide panel'}>

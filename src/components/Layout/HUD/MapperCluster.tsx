@@ -10,6 +10,7 @@ import { ArrowLeft, BookOpen, Info, Menu, ChevronLeft, HelpCircle, Play, Plus, K
 import { useMapper } from '../../../context/useMapper';
 import { MapFilterBar } from '../../Mapper/MapFilterBar';
 import { MapActionButtons } from './MapActionButtons';
+import { CounterRotatedContent } from '../CounterRotatedContent';
 import { useKeyboardMapPreviewScale } from '../../Mapper/hooks/useKeyboardMapPreviewScale';
 
 import InputArea from '../../Controls/InputArea';
@@ -64,7 +65,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     const isExpanded = ui.mapExpanded;
     const mapPanelRef = useRef<HTMLDivElement>(null);
     const mapSurfaceRef = useRef<HTMLDivElement>(null);
-    useKeyboardMapPreviewScale(viewport.isKeyboardOpen, mapPanelRef, mapSurfaceRef);
+    const isReadabilityMode = useSettingsStore(s => s.isReadabilityMode);
+    useKeyboardMapPreviewScale(viewport.isKeyboardOpen || (viewport.isMobile && isReadabilityMode), mapPanelRef, mapSurfaceRef);
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const { viewZ, currentRoomId, rooms, activeMapFilter, mapSearchQuery, setActiveMapFilter, setMapSearchQuery } = useMapper();
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
@@ -370,19 +372,21 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             />
                         </div>
 
-                        <Mapper
-                            ref={mapperRef}
-                            isDesignMode={isEditMode}
-                            characterName={characterName}
-                            isMobile={true}
-                            isExpanded={isExpanded}
-                            setIsMinimized={(min) => {
-                                handleTabClick('none' as any);
-                            }}
-                            heldButton={heldButton}
-                            setHeldButton={setHeldButton}
-                            setCommandPreview={setCommandPreview}
-                        />
+                        <CounterRotatedContent active={viewport.isRotatedLandscape} className="rotated-map-display">
+                            <Mapper
+                                ref={mapperRef}
+                                isDesignMode={isEditMode}
+                                characterName={characterName}
+                                isMobile={true}
+                                isExpanded={isExpanded}
+                                setIsMinimized={(min) => {
+                                    handleTabClick('none' as any);
+                                }}
+                                heldButton={heldButton}
+                                setHeldButton={setHeldButton}
+                                setCommandPreview={setCommandPreview}
+                            />
+                        </CounterRotatedContent>
 
                         {/* Docked Map Filter & Z Bar */}
                         {isShown && !isMobile && (

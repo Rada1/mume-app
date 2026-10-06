@@ -17,6 +17,7 @@ import { isLiveCharacterStateOrMovement, isSelfPositionFeedback, useMessageRoute
 import { useCombatParser } from './useCombatParser';
 import { useRoomParser } from './useRoomParser';
 import { useCommParser } from './useCommParser';
+import { joinCommXmlLines } from './commXmlLineJoin';
 import { useStatParser } from './useStatParser';
 import { useAtmosphereParser } from './useAtmosphereParser';
 import { usePromptParser } from './usePromptParser';
@@ -650,7 +651,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
 
         const pendingCommXml = pendingCommXmlRef.current;
         if (pendingCommXml) {
-            lineToParse = `${pendingCommXml.line}${lineToParse}`;
+            lineToParse = joinCommXmlLines(pendingCommXml.line, lineToParse);
             isSnoop = pendingCommXml.isSnoop;
             const closeRegex = new RegExp(`<\\/${pendingCommXml.tag}>`, 'i');
             if (!closeRegex.test(lineToParse)) {
@@ -1294,6 +1295,16 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
             !['equipment', 'inventory', 'practice'].includes(detectedCaptureType || '')
             ? null
             : detectedCaptureType;
+        // A repeated gear header means a fresh snapshot even when the prior
+        // response's prompt boundary was missed. Publish the previous list so
+        // the Gear panel does not stay stale while the new response is parsed.
+        if (
+            incomingCaptureType &&
+            incomingCaptureType === lineCapture.getActiveType() &&
+            ['equipment', 'inventory'].includes(incomingCaptureType)
+        ) {
+            lineCapture.finalizeSession();
+        }
         if (incomingCaptureType && lineCapture.hasSession() && incomingCaptureType !== lineCapture.getActiveType()) {
             const activeType = lineCapture.getActiveType();
             const isInfoSession = activeType === 'shaper_mob_info' || activeType === 'shaper_obj_info';

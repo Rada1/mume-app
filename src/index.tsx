@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 
 import './index.css';
 import './components/Messages/MessageLog.css';
+import './components/Layout/ReadabilityMode.css';
 import './components/Messages/MagicRipple.css';
 import './components/Messages/ImmersionTextAnimations.css';
 import './components/Messages/ChatWindow.css';
@@ -53,6 +54,7 @@ import { useScreenWakeLock } from './hooks/useScreenWakeLock';
 import './styles/immersionDamagePulse.css';
 import './styles/classicMode.css';
 import './styles/classicModeLayout.css';
+import './styles/landscapeLayout.css';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
@@ -110,11 +112,12 @@ const MudClient = () => {
     const { setIsSetManagerOpen, popoverState, setUI, ui, setManagerSelectedSet, setIsSettingsOpen, setSettingsTab, setPopoverState } = useUI();
     const { addMessage } = useLog();
 
-    const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
+    const { isMobile, isKeyboardOpen, isLandscape, isRotatedLandscape, scrollContainerRef } = viewport;
     const isReplayAccountScreen = gameState === 'account' && sessionMode === 'replay';
     const displayGameState = isReplayAccountScreen ? 'playing' : gameState;
     const displayMode = useDisplayMode();
     const isClassicMode = useSettingsStore(s => s.isClassicMode);
+    const isReadabilityMode = useSettingsStore(s => s.isReadabilityMode);
     const isImmersionTextAnimationsEnabled = useSettingsStore(s => s.isImmersionTextAnimationsEnabled);
     const keepScreenAwake = useSettingsStore(s => s.keepScreenAwake);
     useScreenWakeLock(keepScreenAwake);
@@ -277,7 +280,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container state-${displayGameState} stage-${isReplayAccountScreen ? 'none' : accountState?.stage || 'none'} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isImmersionMode && isImmersionTextAnimationsEnabled ? 'immersion-text-animations-enabled' : ''} ${isPerformanceMode || isClassicMode ? 'performance-mode' : ''} ${isClassicMode ? 'classic-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
+            className={`app-container state-${displayGameState} stage-${isReplayAccountScreen ? 'none' : accountState?.stage || 'none'} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isImmersionMode && isImmersionTextAnimationsEnabled ? 'immersion-text-animations-enabled' : ''} ${isPerformanceMode || isClassicMode ? 'performance-mode' : ''} ${isClassicMode ? 'classic-mode' : ''} ${isReadabilityMode && isMobile && displayGameState === 'playing' ? 'readability-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${isRotatedLandscape ? 'is-rotated-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
             style={{
                 ...(isImmersionMode ? { '--terrain-glow-color': getZoneAmbientGlow(displayGameState === 'account' ? null : roomZone) } : {})
             } as React.CSSProperties}
@@ -394,7 +397,7 @@ const MudClient = () => {
 
             {typeof document !== 'undefined' && createPortal(
                 <ErrorBoundary name="Modals & Dialogs">
-                    <div className={`modals-layer-wrapper ${isLandscape ? 'is-landscape' : ''}`}>
+                    <div className={`modals-layer-wrapper ${isLandscape ? 'is-landscape' : ''} ${isRotatedLandscape ? 'is-rotated-landscape' : ''}`}>
                         <ModalsLayer
                             isLoading={isLoading}
                             returnToManager={returnToManager}

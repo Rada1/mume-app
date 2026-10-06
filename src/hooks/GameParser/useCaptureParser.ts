@@ -66,8 +66,14 @@ export function useCaptureParser(deps: CaptureParserDeps) {
     }, []);
 
     const checkTriggers = useCallback((line: string, attachedText?: string): CaptureType | null => {
-        const clean = (attachedText || line).trim();
-        const lower = clean.toLowerCase();
+        // Prompt parsing can split content from a prompt line into attachedText.
+        // Keep the current line in the trigger input so unrelated attached text
+        // cannot hide a capture header that is present in the line itself.
+        const clean = line.trim();
+        const triggerText = [clean, attachedText?.trim()]
+            .filter((value): value is string => Boolean(value))
+            .join('\n');
+        const lower = triggerText.toLowerCase();
         
         let type: CaptureType | null = null;
         if (lower.includes('you are using:') || lower.includes('you are using ...') || lower.includes('you are using\x1b')) type = 'equipment';

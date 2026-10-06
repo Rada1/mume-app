@@ -9,8 +9,6 @@ import { ToggleRow } from './SettingHelpers';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 
 interface AppearanceSettingsProps {
-    theme: 'light' | 'dark';
-    setTheme: (val: 'light' | 'dark') => void;
     fontFamily: string;
     setFontFamily: (val: string) => void;
     logFontSize: number;
@@ -23,8 +21,6 @@ interface AppearanceSettingsProps {
 }
 
 export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
-    theme,
-    setTheme,
     fontFamily,
     setFontFamily,
     logFontSize,
@@ -93,13 +89,6 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
             {/* Appearance */}
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Appearance</label>
-
-                <ToggleRow
-                    label="Light Mode"
-                    description="Use the warm parchment-and-gold light theme."
-                    value={theme === 'light'}
-                    onToggle={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                />
 
                 {/* Immersion Mode */}
                 <ToggleRow

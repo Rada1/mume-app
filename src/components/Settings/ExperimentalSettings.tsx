@@ -7,6 +7,7 @@ import React from 'react';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useGame } from '../../context/GameContext';
 import { AlertCircle, Info, Sparkles, UserPlus } from 'lucide-react';
+import { ToggleRow } from './SettingHelpers';
 
 interface ExperimentalSettingsProps {
     autoSaveSessions: boolean;
@@ -17,6 +18,13 @@ export const ExperimentalSettings: React.FC<ExperimentalSettingsProps> = ({
     autoSaveSessions,
     setAutoSaveSessions,
 }) => {
+    const theme = useSettingsStore(s => s.theme);
+    const setTheme = useSettingsStore(s => s.setTheme);
+    const isReadabilityMode = useSettingsStore(s => s.isReadabilityMode);
+    const setIsReadabilityMode = useSettingsStore(s => s.setIsReadabilityMode);
+    const keepLogTextOnOneLine = useSettingsStore(s => s.keepLogTextOnOneLine);
+    const setKeepLogTextOnOneLine = useSettingsStore(s => s.setKeepLogTextOnOneLine);
+
     // Discord Activity Settings
     const isDiscordEnabled = useSettingsStore(s => s.isDiscordEnabled ?? true);
     const setIsDiscordEnabled = useSettingsStore(s => s.setIsDiscordEnabled);
@@ -35,6 +43,28 @@ export const ExperimentalSettings: React.FC<ExperimentalSettingsProps> = ({
                 <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Experiments</label>
                 <span style={{ fontSize: '0.65rem', background: 'var(--accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>LAB</span>
             </div>
+
+            <ToggleRow
+                label="Light Mode"
+                description="Use the warm parchment-and-gold light theme."
+                value={theme === 'light'}
+                onToggle={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                first
+            />
+
+            <ToggleRow
+                label="Mobile Readability Mode"
+                description="On mobile, keep a corner minimap. Horizontal log panning follows the one-line text setting."
+                value={isReadabilityMode}
+                onToggle={() => setIsReadabilityMode(!isReadabilityMode)}
+            />
+
+            <ToggleRow
+                label="Keep Log Text on One Line"
+                description="Let long lines extend horizontally instead of wrapping. Swipe or scroll sideways to read the rest."
+                value={keepLogTextOnOneLine}
+                onToggle={() => setKeepLogTextOnOneLine(!keepLogTextOnOneLine)}
+            />
 
             {/* Auto-Save Sessions */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>

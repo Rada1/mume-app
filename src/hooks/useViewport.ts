@@ -56,11 +56,14 @@ export function useViewport(
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || windowWidth <= 768;
     }, [windowWidth, uiMode]);
 
-    const isLandscape = useMemo(() => {
+    const isPhysicalLandscape = useMemo(() => {
         if (uiMode === 'landscape') return true;
         if (uiMode === 'portrait' || uiMode === 'desktop') return false;
         return isMobile && windowWidth > window.innerHeight;
     }, [isMobile, windowWidth, uiMode]);
+    // Mobile landscape keeps the portrait component tree and rotates the whole app.
+    const isRotatedLandscape = isMobile && isPhysicalLandscape;
+    const isLandscape = isPhysicalLandscape && !isRotatedLandscape;
 
     const scrollToBottom = useCallback((force = false, instant = false, _source = 'unknown') => {
         if (!scrollContainerRef.current) return;
@@ -329,7 +332,7 @@ export function useViewport(
         }
 
         const heightDrop = baseHeightRef.current - currentHeight;
-        const threshold = isLandscape ? 40 : 60;
+        const threshold = isPhysicalLandscape ? 40 : 60;
         const isKeyboardPhysicallyPresent = heightDrop > threshold || (baseHeightRef.current > 0 && currentHeight < baseHeightRef.current * 0.8) || (isFocusableActive && currentHeight < window.screen.height * 0.65);
 
         const targetState = isKeyboardPhysicallyPresent;
@@ -339,7 +342,7 @@ export function useViewport(
         // app's inline height here creates a second, competing layout pass.
         document.querySelector<HTMLElement>('.app-container')?.classList.toggle('kb-open', targetState);
         if (targetState !== isKeyboardOpen) setIsKeyboardOpen(targetState);
-    }, [isMobile, isLandscape, isKeyboardOpen, logFontSize]);
+    }, [isMobile, isPhysicalLandscape, isKeyboardOpen, logFontSize]);
 
     useEffect(() => {
         if (window.visualViewport) {
@@ -383,6 +386,7 @@ export function useViewport(
     return useMemo(() => ({
         isMobile,
         isLandscape,
+        isRotatedLandscape,
         isKeyboardOpen,
         columns,
         rows,
@@ -397,5 +401,5 @@ export function useViewport(
         logFontSizePx,
         setLogFontSize: setLogFontSizeAndPersist,
         resetLogFontSize: () => setLogFontSizeAndPersist(1.0)
-    }), [isMobile, isLandscape, isKeyboardOpen, columns, rows, scrollToBottom, updateHeight, logFontSize, logFontSizePx, setLogFontSizeAndPersist]);
+    }), [isMobile, isLandscape, isRotatedLandscape, isKeyboardOpen, columns, rows, scrollToBottom, updateHeight, logFontSize, logFontSizePx, setLogFontSizeAndPersist]);
 }

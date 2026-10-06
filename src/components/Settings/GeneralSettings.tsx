@@ -22,8 +22,6 @@ interface GeneralSettingsProps {
     setLoginName: (val: string) => void;
     loginPassword: string;
     setLoginPassword: (val: string) => void;
-    theme: 'light' | 'dark';
-    setTheme: (val: 'light' | 'dark') => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
     fontFamily: string;
@@ -54,8 +52,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = (props) => {
             />
 
             <AppearanceSettings
-                theme={props.theme}
-                setTheme={props.setTheme}
                 fontFamily={props.fontFamily}
                 setFontFamily={props.setFontFamily}
                 logFontSize={props.logFontSize}

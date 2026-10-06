@@ -1,6 +1,7 @@
-import { useCallback, useRef, useEffect, useMemo } from 'react';
+import { useCallback, useRef, useEffect, useMemo, useState } from 'react';
 import { MessageType, Message } from '../types';
 import { useMessageStore } from '../stores/useMessageStore';
+import { useSettingsStore } from '../stores/useSettingsStore';
 import { useRoomStore } from '../stores/useRoomStore';
 import { useSpectateRoomStore } from '../stores/spectate/useSpectateRoomStore';
 import { gmcpBus } from '../events/gmcpBus';
@@ -81,7 +82,8 @@ const mergeResourceGains = <T extends Message>(m: T, gains: import('../types').R
 
 // ---------------------------------------------------------------------------
 let lastVibrateTime = 0;
-const USER_LOG_MESSAGE_LIMIT = 500;
+const MOBILE_LOG_MESSAGE_LIMIT = 500;
+const DESKTOP_LOG_MESSAGE_LIMIT = 2000;
 const SPECTATE_LOG_MESSAGE_LIMIT = Number.POSITIVE_INFINITY;
 
 export function useMessageLog(
@@ -106,7 +108,26 @@ export function useMessageLog(
     playCommMessageSound?: () => void,
     isSpectateSession?: boolean
 ) {
-    const messageLimit = isSpectateSession ? SPECTATE_LOG_MESSAGE_LIMIT : USER_LOG_MESSAGE_LIMIT;
+    const uiMode = useSettingsStore(state => state.uiMode);
+    const [windowWidth, setWindowWidth] = useState(() =>
+        typeof window === 'undefined' ? 1024 : window.innerWidth
+    );
+    useEffect(() => {
+        const updateWindowWidth = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', updateWindowWidth, { passive: true });
+        return () => window.removeEventListener('resize', updateWindowWidth);
+    }, []);
+
+    const isMobileViewport = useMemo(() => {
+        if (uiMode === 'desktop') return false;
+        if (uiMode === 'portrait' || uiMode === 'landscape') return true;
+        const isMobileDevice = typeof navigator !== 'undefined' &&
+            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        return isMobileDevice || windowWidth <= 768;
+    }, [uiMode, windowWidth]);
+    const messageLimit = isSpectateSession
+        ? SPECTATE_LOG_MESSAGE_LIMIT
+        : isMobileViewport ? MOBILE_LOG_MESSAGE_LIMIT : DESKTOP_LOG_MESSAGE_LIMIT;
     const observeRoomLine = useVisibleRoomOrder(isSpectateSession);
     const setMessages = isSpectateSession
         ? useMessageStore.getState().setSpectateMessages
@@ -114,6 +135,14 @@ export function useMessageLog(
     const clearStoreMessages = isSpectateSession
         ? useMessageStore.getState().clearSpectateMessages
         : useMessageStore.getState().clearUserMessages;
+
+    useEffect(() => {
+        if (isSpectateSession || !Number.isFinite(messageLimit)) return;
+        setMessages(previous => previous.length > messageLimit
+            ? previous.slice(previous.length - messageLimit)
+            : previous);
+    }, [isSpectateSession, messageLimit, setMessages]);
+
     const lastMessageRef = useRef<Message | null>(null);
     const messageBufferRef = useRef<Message[]>([]);
     const flushMessagesRef = useRef<() => void>(() => undefined);
