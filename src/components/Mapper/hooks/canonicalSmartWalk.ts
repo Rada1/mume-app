@@ -69,7 +69,7 @@ function buildIndex(map: MapData): CanonicalWalkIndex {
         const target = map.outTo[offset]!;
         if (target < map.roomCount) targets.push(target);
       }
-      if (targets.length) exits[room]![direction] = targets;
+      if (targets.length === 1) exits[room]![direction] = targets;
     }
   }
 
@@ -84,9 +84,7 @@ function resolveRoom(index: CanonicalWalkIndex, id: string): number | undefined 
 
 function liveRoomFor(index: CanonicalWalkIndex, rooms: Record<string, MapperRoom>, room: number): MapperRoom | undefined {
   const extId = index.ids[room]!;
-  const serverId = index.map.serverId[room]!;
-  return rooms[`m_${extId}`] ?? rooms[extId] ??
-    (serverId ? rooms[`m_${serverId}`] ?? rooms[String(serverId)] : undefined);
+  return rooms[`m_${extId}`] ?? rooms[extId];
 }
 
 function terrainCost(index: CanonicalWalkIndex, rooms: Record<string, MapperRoom>, room: number): number {
@@ -101,11 +99,8 @@ function traversable(
   room: number,
   options: CanonicalWalkOptions
 ): boolean {
-  if (options.revealAll || !options.exploredVnums) return true;
-  const id = index.ids[room]!;
-  const serverId = index.map.serverId[room]!;
-  return options.exploredVnums.has(id) || (!!serverId && options.exploredVnums.has(String(serverId))) ||
-    !!liveRoomFor(index, rooms, room);
+  // Exploration controls appearance; imported rooms already have usable topology.
+  return room >= 0 && room < index.map.roomCount;
 }
 
 function rideAllowed(
@@ -122,9 +117,9 @@ function rideAllowed(
 }
 
 function heuristic(index: CanonicalWalkIndex, room: number, end: number): number {
-  const map = index.map;
-  return Math.abs(map.x[room]! - map.x[end]!) + Math.abs(map.y[room]! - map.y[end]!) +
-    Math.abs(map.z[room]! - map.z[end]!) * 5;
+  // Mapped exits can span arbitrary distances. Dijkstra, as used by MMapper,
+  // avoids a coordinate heuristic overestimating the cost of a long exit.
+  return 0;
 }
 
 function pushHeap(heap: QueueEntry[], entry: QueueEntry): void {
@@ -181,10 +176,8 @@ function targetsForDirection(
   const canonical = index.exits[source]![direction] ?? [];
   const live = liveExits?.[direction];
   if (live?.closed) return [];
-  if (!live) return canonical;
-  const target = resolveRoom(index, live.target);
-  if (target === undefined || canonical.includes(target)) return canonical;
-  return [...canonical, target];
+  // Saved live exits may contain stale IDs. Bundled topology owns destinations.
+  return canonical;
 }
 
 function reconstructPath(

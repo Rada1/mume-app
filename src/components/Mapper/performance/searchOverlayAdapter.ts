@@ -53,6 +53,12 @@ function finite(value: unknown): value is number {
 
 function toPoint(input: SearchOverlayInput, roomId: string): FastMapSearchPoint | null {
   const key = normalizeId(roomId);
+  // Search result IDs identify map rooms, not GMCP server IDs. Resolve their
+  // bundled coordinates before consulting live snapshots or server aliases.
+  const tuple = input.preloaded[key];
+  if (tuple && finite(tuple[0]) && finite(tuple[1])) {
+    return { x: tuple[0] + 0.5, y: -tuple[1] + 0.5, z: finite(tuple[2]) ? tuple[2] : 0 };
+  }
   const canonicalIndex = input.canonical?.byServerId.get(Number(key));
   if (canonicalIndex !== undefined) {
     return { x: input.canonical!.x[canonicalIndex]! + 1.5, y: input.canonical!.y[canonicalIndex]! - 0.5, z: input.canonical!.z[canonicalIndex]! };
@@ -62,9 +68,7 @@ function toPoint(input: SearchOverlayInput, roomId: string): FastMapSearchPoint 
     const room = local as SearchRoom;
     if (finite(room.x) && finite(room.y)) return { x: room.x + 0.5, y: -room.y + 0.5, z: finite(room.z) ? room.z : 0 };
   }
-  const tuple = input.preloaded[key];
-  if (!tuple || !finite(tuple[0]) || !finite(tuple[1])) return null;
-  return { x: tuple[0] + 0.5, y: -tuple[1] + 0.5, z: finite(tuple[2]) ? tuple[2] : 0 };
+  return null;
 }
 
 function getColor(filter: string | null | undefined): readonly [number, number, number] {

@@ -74,7 +74,6 @@ export const useMapHitTest = ({
                 }
             }
         }
-        if (currentFloorRoom) return currentFloorRoom;
 
         // Resolve overlapping master-map hitboxes the same way.
         if (spatialIndexRef.current && preloadedCoordsRef.current) {
@@ -102,10 +101,10 @@ export const useMapHitTest = ({
                         }
                     }
                 }
-                if (masterRoom) return masterRoom;
+                if (masterRoom && masterDistance < currentFloorDistance) return masterRoom;
             }
         }
-        return otherFloorRoom;
+        return currentFloorRoom || otherFloorRoom;
     }, [viewZ, preloadedCoordsRef, spatialIndexRef, roomsRef, currentRoomIdRef]);
 
     const getMarkerAt = useCallback((wx: number, wy: number) => {

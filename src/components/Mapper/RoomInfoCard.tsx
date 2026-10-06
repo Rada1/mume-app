@@ -96,7 +96,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
 
             room = {
                 id: roomId,
-                gmcpId: Number(vnum),
+                gmcpId: Number(mMasterId) || 0,
                 name: String(mName || `Room ${vnum}`),
                 x: mx, y: my, z: mz,
                 terrain: resolvedTerrain,

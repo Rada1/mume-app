@@ -31,16 +31,24 @@
 
 /* Keep one menu control so settings remain reachable; Ctrl+, also opens Settings. */
 .classic-mode .header {
-    position: absolute !important;
+    position: fixed !important;
     top: 2px !important;
     right: 2px !important;
-    width: auto !important;
+    left: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    width: max-content !important;
     height: 32px !important;
     min-height: 0 !important;
-    z-index: 70001 !important;
+    z-index: 80000 !important;
     padding: 0 !important;
     background: transparent !important;
     border: 0 !important;
+    overflow: visible !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
 }
 
 .classic-mode .header > :not(.header-right-cluster),
@@ -59,6 +67,16 @@
     color: #aaa !important;
     border: 1px solid #444 !important;
     border-radius: 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+.classic-mode .header-right-cluster,
+.classic-mode .controls,
+.classic-mode .main-menu-dots {
+    width: max-content !important;
+    flex: 0 0 auto !important;
 }
 
 .classic-mode .controls {
@@ -73,6 +91,11 @@
     font: 600 11px/1 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace !important;
     letter-spacing: 0.04em !important;
     pointer-events: auto !important;
+}
+
+.classic-mode .main-menu-dots .menu-toggle-btn svg {
+    display: block !important;
+    flex: 0 0 auto !important;
 }
 
 .classic-mode .classic-main-menu-label {

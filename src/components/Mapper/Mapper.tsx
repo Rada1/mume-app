@@ -182,8 +182,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const currentRoomKey = currentRoomId || '';
     const roomIdVnum = currentRoomKey.replace(/^m_/, '');
     const mapRoom = rooms[currentRoomKey] || rooms[`m_${roomIdVnum}`] || rooms[roomIdVnum];
-    const currentVnum = mapRoom?.gmcpId ? String(mapRoom.gmcpId) : roomIdVnum;
-    const preloadedRoom = currentVnum ? preloadedCoordsRef.current?.[currentVnum] : undefined;
+    const preloadedRoom = roomIdVnum ? preloadedCoordsRef.current?.[roomIdVnum] : undefined;
     const rawZone = mapRoom?.zone || preloadedRoom?.[9] || roomZone || '';
     const displayZone = rawZone
         .replace(/[_-]+/g, ' ')
@@ -229,7 +228,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         addMessage,
         revealAll,
         exploredVnums,
-        isPerformanceMode ? performanceMapRef.current : null,
+        performanceMapRef.current,
         isRiding
     );
     const mode = ui.mapMode || 'play';
@@ -427,6 +426,17 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 selectedRegionLabelId={selectedRegionLabelId}
                 joystickActive={joystick?.joystickActive}
             />
+            {isWalking && (
+                <div className="map-autowalk-popup" onPointerDown={event => event.stopPropagation()} onMouseDown={event => event.stopPropagation()}>
+                    <div className="map-autowalk-info">
+                        <span className="map-autowalk-pulse-dot" aria-hidden="true" />
+                        <span>Autowalk · {Math.max(0, walkPath.length - 1)} {walkPath.length - 1 === 1 ? 'room' : 'rooms'} left</span>
+                    </div>
+                    <button type="button" className="map-autowalk-stop-btn" onClick={stopWalking} title="Stop autowalk (Escape)">
+                        <span className="map-autowalk-stop-icon" aria-hidden="true">■</span> Stop autowalk
+                    </button>
+                </div>
+            )}
             {!isWalking && closestRoomId && (
                 (filterPathIds.length > 1 || (selectedSearchRoomId && selectedSearchRoomId.replace(/^(m_|r_)/, '') === closestRoomId.replace(/^(m_|r_)/, ''))) && (
                 <div 

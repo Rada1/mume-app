@@ -21,7 +21,8 @@ function exitsForRoom(map: MapData, room: number): Record<string, CompactMapExit
     const slot = room * DIR_COUNT + dir;
     const start = map.outStart[slot]!;
     const end = map.outStart[slot + 1]!;
-    if (end <= start) continue;
+    // Like MMapper's shortestPathSearch, a random exit has no safe walk direction.
+    if (end - start !== 1) continue;
     const targetRoom = map.outTo[start]!;
     const exitFlags = map.exitFlags[slot]!;
     const doorFlags = map.doorFlags[slot]!;
@@ -51,7 +52,7 @@ export function mapDataToLegacyImport(map: MapData, floorHeight = 1): LegacyMapI
       map.terrain[room]!,
       exitsForRoom(map, room),
       map.names[room]!,
-      String(map.serverId[room] || map.extId[room]),
+      map.serverId[room] ? String(map.serverId[room]) : '',
       flagsFromBits(map.mobFlags[room]!, MOB_FLAGS),
       flagsFromBits(map.loadFlags[room]!, LOAD_FLAGS),
       map.areas[room]!,

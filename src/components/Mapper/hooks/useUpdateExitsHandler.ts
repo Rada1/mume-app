@@ -7,10 +7,11 @@ interface UpdateExitsProps {
     setRooms: React.Dispatch<React.SetStateAction<Record<string, MapperRoom>>>;
     currentRoomIdRef: React.MutableRefObject<string | null>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
+    serverIdIndexRef: React.MutableRefObject<Record<string, string>>;
     triggerRender?: () => void;
 }
 
-export const useUpdateExitsHandler = ({ setRooms, currentRoomIdRef, preloadedCoordsRef, triggerRender }: UpdateExitsProps) => {
+export const useUpdateExitsHandler = ({ setRooms, currentRoomIdRef, preloadedCoordsRef, serverIdIndexRef, triggerRender }: UpdateExitsProps) => {
     const handleUpdateExits = useCallback((data: any) => {
         const activeId = currentRoomIdRef.current;
         if (!activeId) return;
@@ -39,7 +40,9 @@ export const useUpdateExitsHandler = ({ setRooms, currentRoomIdRef, preloadedCoo
                     };
 
                     const targetId = newExits[dir]?.target;
-                    const neighborId = targetId || (gmcpDestId ? (preloadedCoordsRef.current[String(gmcpDestId)] ? `m_${gmcpDestId}` : Object.keys(nextRooms).find(k => String(nextRooms[k].gmcpId) === String(gmcpDestId))) : null);
+                    const mappedId = gmcpDestId ? serverIdIndexRef.current[String(gmcpDestId)] : undefined;
+                    const neighborId = mappedId ? `m_${mappedId}` : targetId || (gmcpDestId ? Object.keys(nextRooms).find(k => String(nextRooms[k].gmcpId) === String(gmcpDestId)) : null);
+                    if (neighborId) newExits[dir].target = neighborId;
 
                     if (neighborId && nextRooms[neighborId]) {
                         const neighbor = nextRooms[neighborId];
@@ -69,7 +72,7 @@ export const useUpdateExitsHandler = ({ setRooms, currentRoomIdRef, preloadedCoo
             return nextRooms;
         });
         triggerRender?.();
-    }, [currentRoomIdRef, setRooms, preloadedCoordsRef, triggerRender]);
+    }, [currentRoomIdRef, setRooms, preloadedCoordsRef, serverIdIndexRef, triggerRender]);
 
     return { handleUpdateExits };
 };

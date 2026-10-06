@@ -447,14 +447,28 @@ body.ui-gesturing .environment-root.front > :not(.embers-container):not(.client-
    sun/moon/cloud pixel-art strip's weather modifier class, and an unscoped
    selector here would leak these rules onto that element too. */
 .weather-layer.weather-cloud {
+    --cloud-veil-height: 34dvh;
+    --cloud-bank-height: 40dvh;
     background: transparent;
     mix-blend-mode: normal;
     z-index: 4;
     transition: opacity 5s ease-in-out;
     pointer-events: none;
-    height: 72dvh;
+    height: 42dvh;
     bottom: auto !important;
     overflow: hidden;
+}
+
+.is-mobile .weather-layer.weather-cloud {
+    --cloud-veil-height: 21dvh;
+    --cloud-bank-height: 26dvh;
+    height: 28dvh;
+}
+
+.is-mobile:not(.is-landscape) .weather-layer.weather-cloud {
+    --cloud-veil-height: 18dvh;
+    --cloud-bank-height: 22dvh;
+    height: 24dvh;
 }
 
 .weather-layer.weather-cloud::before {
@@ -463,7 +477,7 @@ body.ui-gesturing .environment-root.front > :not(.embers-container):not(.client-
     top: -4dvh;
     left: -5%;
     width: 110%;
-    height: 62dvh;
+    height: var(--cloud-veil-height);
     /* A faint overcast veil softens the scene behind the distinct cloud bank. */
     background: linear-gradient(to bottom,
         rgba(154, 162, 166, 0.08) 0%,
@@ -481,7 +495,7 @@ body.ui-gesturing .environment-root.front > :not(.embers-container):not(.client-
     top: -2dvh;
     left: -2%;
     width: 200%;
-    height: 64dvh;
+    height: var(--cloud-bank-height);
     /* Overlapping rounded tops and a continuous shaded base form readable,
        billowing cloud banks instead of a broad, indistinct gray wash. */
     background:

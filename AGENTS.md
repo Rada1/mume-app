@@ -22,6 +22,7 @@ The MUME Client is an **AI-Native, Hook-Driven Mobile Client** for the MUME MUD.
 | **Fix UI/Layout** | `src/components/Layout/`, `src/styles/layout.css` |
 | **Edit Command Flow** | `src/hooks/useCommandController.ts`, `src/hooks/useCommandExecutor.ts` |
 | **Adjust Mapper** | `src/components/Mapper/`, `src/mapper/renderer.ts` |
+| **Map Navigation and Coordinate Alignment** | `src/hooks/useMapperRoomCoordinates.ts`, `src/components/Mapper/hooks/useSmartWalk.ts`, `src/components/Mapper/hooks/canonicalSmartWalk.ts`, `src/components/Mapper/mapNavigation.test.tsx` |
 | **Performance Map Renderer** | `src/components/Mapper/performance/`, `docs/performance-map.md`, `src/components/Mapper/README.md` |
 | **Plan or Build Shaper Mode** | `docs/shaper.md`, `src/shaper/`, `src/shaper/access/shaperAccess.ts` |
 | **Generate Shaper Room Prose** | `src/shaper/model/shaperRoomProse.ts`, `scripts/print_shaper_prose_context.js`, `scripts/apply_shaper_room_prose.js` |

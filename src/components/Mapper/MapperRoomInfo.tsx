@@ -97,8 +97,7 @@ export const MapperRoomInfo: React.FC<MapperRoomInfoProps> = () => {
     const currentRoomKey = mapper.currentRoomId || '';
     const roomIdVnum = currentRoomKey.replace(/^m_/, '');
     const mapRoom = mapper.rooms[currentRoomKey] || mapper.rooms[`m_${roomIdVnum}`] || mapper.rooms[roomIdVnum];
-    const currentVnum = mapRoom?.gmcpId ? String(mapRoom.gmcpId) : roomIdVnum;
-    const preloadedRoom = currentVnum ? mapper.preloadedCoordsRef.current?.[currentVnum] : undefined;
+    const preloadedRoom = roomIdVnum ? mapper.preloadedCoordsRef.current?.[roomIdVnum] : undefined;
     const displayZone = formatChipText(mapRoom?.zone || preloadedRoom?.[9] || roomZone || '');
     const displayFlags = useMemo(
         () => deriveMapFlags(mapRoom, preloadedRoom).map(formatChipText).filter(Boolean),

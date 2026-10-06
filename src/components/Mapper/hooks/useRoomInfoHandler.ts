@@ -82,7 +82,7 @@ export const useRoomInfoHandler = ({
             if (pData) {
                 currentActiveRoom = {
                     id: activeRoomId,
-                    gmcpId: Number(vnum),
+                    gmcpId: Number(pData[6]) || 0,
                     name: pData[5] || 'Unknown Room',
                     desc: '',
                     x: pData[0],
@@ -103,7 +103,7 @@ export const useRoomInfoHandler = ({
                         const destVnum = getExitTargetId(exitObj);
                         exits[dir] = {
                             target: `m_${destVnum}`,
-                            gmcpDestId: Number(destVnum),
+                            gmcpDestId: Number(preloadedCoordsRef.current[destVnum]?.[6]) || 0,
                             closed: false,
                             hasDoor: exitObj?.hasDoor || false,
                             flags: exitObj?.flags || []
@@ -162,7 +162,7 @@ export const useRoomInfoHandler = ({
                 if (ardaData && ardaData[4]) {
                     // In lit rooms, we match by gmcpId. In dark rooms, we trust the queue's direction.
                     if (!isVnumZero) {
-                        authorityDir = Object.keys(ardaData[4]).find(d => getExitTargetId(ardaData[4][d]) === gmcpIdStr) || null;
+                        authorityDir = Object.keys(ardaData[4]).find(d => getExitTargetId(ardaData[4][d]) === serverIdIndexRef.current[gmcpIdStr]) || null;
                     } else if (intentDir) {
                         // We are in the dark, but ArdaMap knows what VNUM is in the direction we moved.
                         const targetVnum = getExitTargetId(ardaData[4][intentDir]);
@@ -184,7 +184,7 @@ export const useRoomInfoHandler = ({
                     const ardaData = preloadedCoordsRef.current[prevVnum];
                     if (ardaData && ardaData[4]) {
                         dirUsed = Object.keys(ardaData[4]).find(dir =>
-                            getExitTargetId(ardaData[4][dir]) === gmcpIdStr
+                            getExitTargetId(ardaData[4][dir]) === serverIdIndexRef.current[gmcpIdStr]
                         ) || null;
                     }
                 }
@@ -347,8 +347,7 @@ export const useRoomInfoHandler = ({
             if (isVnumZero) return;
 
             const scoutRoomId = String(gmcpId);
-            const mappedVnum = serverIdIndexRef.current[scoutRoomId]
-                || (preloadedCoordsRef.current[scoutRoomId] ? scoutRoomId : null);
+            const mappedVnum = serverIdIndexRef.current[scoutRoomId];
             if (mappedVnum) {
                 matchedInternalId = mappedVnum;
                 ghostData = preloadedCoordsRef.current[mappedVnum] || null;
@@ -683,7 +682,8 @@ export const useRoomInfoHandler = ({
 
                 let internalTarget = undefined;
                 if (gmcpDestId) {
-                    if (preloadedCoordsRef.current[String(gmcpDestId)]) internalTarget = `m_${gmcpDestId}`;
+                    const mappedDestination = serverIdIndexRef.current[String(gmcpDestId)];
+                    if (mappedDestination) internalTarget = `m_${mappedDestination}`;
                     else internalTarget = Object.keys(newRooms).find(key => String(newRooms[key].gmcpId) === String(gmcpDestId));
                 }
                 const fallbackExit = ghostData?.[4]?.[dir];
@@ -692,7 +692,7 @@ export const useRoomInfoHandler = ({
                     : (existingExit?.flags ?? fallbackExit?.flags ?? []);
                 const nextExit = {
                     ...existingExit,
-                    target: internalTarget || existingExit?.target || "",
+                    target: internalTarget || (fallbackExit ? `m_${getExitTargetId(fallbackExit)}` : existingExit?.target) || "",
                     gmcpDestId,
                     name: doorState.name,
                     doorName: existingExit?.doorName ?? doorState.name,
@@ -703,6 +703,7 @@ export const useRoomInfoHandler = ({
                 updatedExits[dir] = nextExit;
 
                 if (!existingExit
+                    || existingExit.target !== nextExit.target
                     || existingExit.gmcpDestId !== gmcpDestId
                     || existingExit.closed !== nextExit.closed
                     || existingExit.hasDoor !== nextExit.hasDoor
@@ -781,7 +782,8 @@ export const useRoomInfoHandler = ({
                 if (nextExit?.target) {
                     nextTargetId = nextExit.target;
                 } else if (nextExit?.gmcpDestId) {
-                    nextTargetId = `m_${nextExit.gmcpDestId}`;
+                    const mappedDestination = serverIdIndexRef.current[String(nextExit.gmcpDestId)];
+                    if (mappedDestination) nextTargetId = `m_${mappedDestination}`;
                 }
 
                 // Fallback: consult preloaded ArdaMap exits

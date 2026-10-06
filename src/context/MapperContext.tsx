@@ -8,6 +8,7 @@ import React, { createContext, useState, useRef, useEffect, useCallback, useMemo
 import { useGame, useLog, useUI, useVitals } from './GameContext';
 import { useMapData } from '../components/Mapper/hooks/useMapData';
 import { useMapPersistence } from '../components/Mapper/hooks/useMapPersistence';
+import { useMapperRoomCoordinates } from '../hooks/useMapperRoomCoordinates';
 import { useMapActions } from '../components/Mapper/hooks/useMapActions';
 import { useMapGmcphandlers } from '../components/Mapper/hooks/useMapGmcphandlers';
 import { useScoutObservationTracking } from '../components/Mapper/hooks/useScoutObservationTracking';
@@ -276,7 +277,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         const runBfs = () => {
             const nextMatchedRoomIds = new Set<string>();
-            const revealAll = !!(treatMapAsExplored || unveilMap);
+            const revealAll = true; // Search the known map independently of exploration shading.
             // Custom/local rooms
             Object.keys(rooms).forEach(rid => {
                 const rawId = rid.startsWith('m_') ? rid.substring(2) : rid;
@@ -284,27 +285,8 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     nextMatchedRoomIds.add(rid);
                 }
             });
-            // Include preloaded rooms the map currently reveals in its first ring.
-            // Map rendering reveals a room when one of its cardinal exits leads to
-            // an explored room, even before the player has visited that room.
-            const ring1Revealed = new Set<string>();
-            if (!revealAll) {
-                Object.entries(preloaded).forEach(([vnum, pData]) => {
-                    if (explored.has(vnum)) return;
-                    const exits = pData?.[4] as Record<string, { target?: string }> | undefined;
-                    if (!exits) return;
-                    const isRing1 = ['n', 's', 'e', 'w'].some(direction => {
-                        const targetId = exits[direction]?.target;
-                        return targetId !== undefined && explored.has(String(targetId).replace(/^m_/, ''));
-                    });
-                    if (isRing1) ring1Revealed.add(vnum);
-                });
-            }
-
-            // Preloaded rooms that are explored or currently revealed in ring one.
-            const visiblePreloadedVnums = revealAll
-                ? Object.keys(preloaded)
-                : new Set([...explored, ...ring1Revealed]);
+            // Bundled map knowledge is available before a character visits it.
+            const visiblePreloadedVnums = Object.keys(preloaded);
             visiblePreloadedVnums.forEach(vnum => {
                 const rid = `m_${vnum}`;
                 if (nextMatchedRoomIds.has(rid)) return;
@@ -514,7 +496,6 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     if (!nIndex[rName]) nIndex[rName] = []; 
                     nIndex[rName].push(vnum); 
                 }
-                sIndex[String(vnum)] = vnum;
                 baseMapExits[String(vnum)] = rData;
                 
                 const rServerId = rData[6];
@@ -524,7 +505,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             }
             for (const vnum in data) {
                 const rServerId = data[vnum][6];
-                if (rServerId && String(rServerId) !== String(vnum)) {
+                if (rServerId && String(rServerId) !== '0') {
                     sIndex[String(rServerId)] = vnum;
                 }
             }
@@ -622,6 +603,11 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         currentRoomIdRef,
         allowPersistence,
         unveilMap
+    });
+
+    useMapperRoomCoordinates({
+        rooms, roomsRef, setRooms, preloadedCoordsRef, revision: performanceMapRevision,
+        editMode: mapEditMode, currentRoomId, playerPosRef, onPositionCorrected: setCurrentRoomId
     });
 
     // Render exactly the commands still awaiting a server response. Keeping a
@@ -808,7 +794,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             scoutedGroupMapIdRef.current = mapKey;
             return;
         }
-        const vnum = serverIdIndexRef.current?.[mapKey] || (preloadedCoordsRef.current[mapKey] ? mapKey : null);
+        const vnum = serverIdIndexRef.current?.[mapKey];
         if (!vnum) return;
 
         const nextRoomId = `m_${vnum}`;

@@ -1,5 +1,26 @@
 # Performance Mode map
 
+## Navigation and room identity
+
+Bundled map room IDs and GMCP server IDs are separate namespaces. Search and
+right-click targets use map IDs; server updates resolve through the server-ID
+index. Missing server IDs remain unknown rather than borrowing a map ID.
+
+The MM2 import and worker adapters share the same tile origin: legacy coordinates
+are `(x + 1, -y + 1)` and worker coordinates are `(x + 1, y - 1)`. In play mode,
+`useMapperRoomCoordinates` realigns saved room snapshots when they load, so old
+coordinates cannot displace player overlays or hit targets until each room is
+revisited. Notes and live room details are retained; edit mode keeps manual edits.
+
+Search and autowalk use all bundled rooms independently of exploration shading.
+Autowalk follows unique mapped exits, as in MMapper's `shortestPathSearch`, and
+uses terrain-weighted Dijkstra routing because drawn distances need not match
+exit lengths. Live door closures and mounted travel restrictions still apply.
+Each step waits for an arrival at the expected room. A different room or failed
+move stops the walk. Manual commands, numpad input, Escape, and the visible Stop
+autowalk button cancel further automatic commands, including after a pending
+arrival. A command already sent to the game cannot be recalled.
+
 ## Renderer and scope
 
 Performance Mode uses a dedicated module worker and WebGL2 on an

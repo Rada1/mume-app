@@ -84,7 +84,7 @@ function liveRoomWithClosedNorthExit(): MapperRoom {
 }
 
 describe('canonical Smart Walk graph', () => {
-  it('routes through the cheapest of multiple destinations sharing a direction', () => {
+  it('does not route through a random exit with multiple destinations', () => {
     const map = makeMap([
       { from: 0, direction: 0, to: 1 },
       { from: 0, direction: 0, to: 2 },
@@ -92,19 +92,16 @@ describe('canonical Smart Walk graph', () => {
       { from: 2, direction: 2, to: 3 },
     ]);
 
-    expect(findCanonicalSmartWalkPath(map, 'm_900', 'm_40', {}, { revealAll: true })).toEqual({
-      dirs: ['n', 'e'],
-      ids: ['m_900', 'm_30', 'm_40'],
-    });
+    expect(findCanonicalSmartWalkPath(map, 'm_900', 'm_40', {}, { revealAll: true })).toBeNull();
   });
 
-  it('resolves server ids and returns a direction for any destination in a multi-exit slot', () => {
+  it('does not issue a direction into a random exit', () => {
     const map = makeMap([
       { from: 0, direction: 0, to: 1 },
       { from: 0, direction: 0, to: 2 },
     ]);
 
-    expect(getCanonicalSmartWalkDirection(map, 'm_900', 'm_30', {})).toBe('n');
+    expect(getCanonicalSmartWalkDirection(map, 'm_900', 'm_30', {})).toBeNull();
   });
 
   it('keeps MMapper unknown-direction exits walkable through the client out command', () => {

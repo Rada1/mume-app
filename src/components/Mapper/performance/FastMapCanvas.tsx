@@ -177,9 +177,10 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
   useEffect(() => {
     const roomId = props.mapProps.currentRoomId;
     const canvas = canvasRef.current;
-    if (!roomId || roomId === lastRoomIdRef.current || !canvas) return;
+    if (!roomId || !canvas) return;
+    const changedRoom = roomId !== lastRoomIdRef.current;
     lastRoomIdRef.current = roomId;
-    clientRef.current?.visitRoom(roomId);
+    if (changedRoom) clientRef.current?.visitRoom(roomId);
     const rawId = roomId.replace(/^m_/, '');
     const tuple = props.mapProps.preloadedCoordsRef.current[rawId];
     const room = props.mapProps.rooms[roomId] || props.mapProps.stableRoomsRef.current[roomId];
@@ -189,7 +190,7 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
     if (position) {
       props.mapProps.playerPosRef.current = position;
       const camera = props.mapProps.camera.current as CameraState;
-      if (props.mapProps.autoCenter || props.mapProps.walkTargetId || !didInitialCenterRef.current) {
+      if ((changedRoom && (props.mapProps.autoCenter || props.mapProps.walkTargetId)) || !didInitialCenterRef.current) {
         snapPixelCamera(camera);
         const width = canvas.clientWidth || canvas.parentElement?.clientWidth || 1;
         const height = canvas.clientHeight || canvas.parentElement?.clientHeight || 1;

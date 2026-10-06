@@ -1,4 +1,5 @@
 /** @file mapperUtils.ts — Shared mapper geometry, state, and presentation utilities. */
+import type { MapperExit } from './mapperTypes';
 
 // --- Logic Section ---
 export const GRID_SIZE = 50;
@@ -240,7 +241,7 @@ export const getGateState = (rA: any, wE: any, d: string, allRooms: Record<strin
     const tV = getExitTargetId(exA), oD = DIRS[d]?.opp;
     const nId = tV && !tV.startsWith('m_') ? `m_${tV}` : tV;
     const n = tV ? (allRooms[nId] || allRooms[tV] || (preloaded[tV] ? { exits: preloaded[tV][4] } : null)) : null;
-    const exB = getDirectionalExit(n?.exits, oD), hasDF = (f?: any[]) => f?.some(x => /^(door|gate|portcullis|secret)$/i.test(String(x)));
+    const exB = getDirectionalExit<MapperExit>(n?.exits, oD), hasDF = (f?: unknown[]) => f?.some(x => /^(door|gate|portcullis|secret)$/i.test(String(x)));
 
     const mappedExit = getPreloadedExit(wE, d);
     const exitHasDoor = !!(
@@ -444,10 +445,7 @@ export const findClosestMatchingRoom = (
 /**
  * Performs a BFS search and returns the closest matching room plus the route to it.
  *
- * Mode semantics:
- *  - treatMapAsExplored=true: pathfind across the full preloaded map using ghost exits (entire Arda known).
- *  - treatMapAsExplored=false: pathfind only through rooms the player has actually explored (vnums in `explored`)
- *    or custom local rooms, using ghost exit topology but rejecting any neighbor not yet explored.
+ * Routes use all bundled rooms; exploration controls only map appearance.
  */
 export const findClosestMatchingRoomPath = (
     startId: string | null,
@@ -459,8 +457,6 @@ export const findClosestMatchingRoomPath = (
 ): { targetId: string, pathIds: string[], distance: number } | null => {
     if (!startId) return null;
 
-    const treatAsExplored = options?.treatMapAsExplored ?? false;
-    const explored = options?.explored;
 
     const normalizeId = (id: string | null) => {
         if (!id) return '';
@@ -472,15 +468,10 @@ export const findClosestMatchingRoomPath = (
     const normStart = normalizeId(startId);
     const normTarget = normalizeId(options?.targetRoomId || null);
 
-    // In normal mode, only step through rooms the player has explored or rooms they created.
+    // Exploration changes rendering, not the graph already supplied by the map.
     const isTraversable = (id: string): boolean => {
-        if (treatAsExplored) return true;
-        if (!explored) return true;
         const normId = normalizeId(id);
-        if (normTarget && normTarget === normId) return true;
-        if (explored.has(normId)) return true;
-        if (rooms[id] || rooms[`m_${normId}`] || rooms[normId]) return true;
-        return false;
+        return !!(preloadedCoords[normId] || rooms[id] || rooms[`m_${normId}`] || rooms[normId]);
     };
 
     // Ghost exits are the authoritative topology of the world. Local exits are useful only
@@ -505,7 +496,7 @@ export const findClosestMatchingRoomPath = (
 
         // Pull in exits from custom local rooms that don't exist in preloaded data
         const local = rooms[id] || rooms[`m_${normId}`] || rooms[normId];
-        if (local && local.exits) {
+        if (!ghost && local && local.exits) {
             for (const dir in local.exits) {
                 if (combined[dir]) continue;
                 const ex = local.exits[dir];

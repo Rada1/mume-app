@@ -245,6 +245,7 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         setRooms: props.setRooms,
         currentRoomIdRef: props.currentRoomIdRef,
         preloadedCoordsRef: props.preloadedCoordsRef,
+        serverIdIndexRef: props.serverIdIndexRef,
         triggerRender: props.triggerRender
     });
 

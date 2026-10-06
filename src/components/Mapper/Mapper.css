@@ -302,8 +302,8 @@ canvas.map-canvas {
 /* --- Go There Popup --- */
 .map-go-there-popup {
     position: absolute;
-    left: var(--filter-target-cx, var(--player-cx, -9999px));
-    top: var(--filter-target-cy, var(--player-cy, -9999px));
+    left: var(--filter-target-cx, var(--player-cx, 50%));
+    top: var(--filter-target-cy, var(--player-cy, 72px));
     /* Position the popup just above the currently selected search result. */
     transform: translate(-50%, calc(-100% - 24px));
     z-index: 100;
@@ -413,4 +413,110 @@ canvas.map-canvas {
     }
 }
 
+/* --- Autowalk Floating Banner & Stop Button --- */
+.map-autowalk-popup {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3000;
+    pointer-events: auto;
+    
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    
+    background: rgba(18, 14, 10, 0.94);
+    backdrop-filter: blur(14px) saturate(130%);
+    -webkit-backdrop-filter: blur(14px) saturate(130%);
+    border: 1px solid rgba(243, 139, 168, 0.55);
+    border-radius: 8px;
+    padding: 7px 14px 7px 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.65), 0 0 16px rgba(243, 139, 168, 0.2);
+    
+    animation: autowalk-banner-fade-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    will-change: transform, opacity;
+}
 
+html:has(.map-room-info-header) .map-autowalk-popup,
+body:has(.map-room-info-header) .map-autowalk-popup {
+    top: 54px;
+}
+
+.map-autowalk-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #e0d8c3;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.map-autowalk-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #a6e3a1;
+    box-shadow: 0 0 8px #a6e3a1;
+    animation: autowalk-pulse 1.2s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+@keyframes autowalk-pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.4;
+        transform: scale(0.75);
+    }
+}
+
+@keyframes autowalk-banner-fade-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -8px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+}
+
+.map-autowalk-stop-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(243, 139, 168, 0.18);
+    border: 1px solid rgba(243, 139, 168, 0.6);
+    border-radius: 6px;
+    color: #f38ba8;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.map-autowalk-stop-btn:hover {
+    background: rgba(243, 139, 168, 0.32);
+    border-color: rgba(243, 139, 168, 0.85);
+    color: #ff9fb8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(243, 139, 168, 0.3);
+}
+
+.map-autowalk-stop-btn:active {
+    transform: translateY(0);
+}
+
+.map-autowalk-stop-icon {
+    font-size: 9px;
+    line-height: 1;
+}

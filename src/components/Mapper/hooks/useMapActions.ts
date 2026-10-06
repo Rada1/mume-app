@@ -226,7 +226,6 @@ export const useMapActions = ({
                 if (!nIndex[rName]) nIndex[rName] = [];
                 nIndex[rName].push(vnum);
             }
-            sIndex[String(vnum)] = vnum;
             baseMapExits[String(vnum)] = rData;
 
             const rServerId = rData[6];
@@ -237,7 +236,7 @@ export const useMapActions = ({
 
         for (const vnum in baseMap) {
             const rServerId = baseMap[vnum][6];
-            if (rServerId && String(rServerId) !== String(vnum)) {
+            if (rServerId && String(rServerId) !== '0') {
                 sIndex[String(rServerId)] = vnum;
             }
         }

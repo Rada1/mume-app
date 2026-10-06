@@ -40,8 +40,6 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
     const keepScreenAwake = useSettingsStore(s => s.keepScreenAwake);
     const setKeepScreenAwake = useSettingsStore(s => s.setKeepScreenAwake);
     const screenWakeLockStatus = useSettingsStore(s => s.screenWakeLockStatus);
-    const isClassicMode = useSettingsStore(s => s.isClassicMode);
-    const setIsClassicMode = useSettingsStore(s => s.setIsClassicMode);
     const isImmersionTextAnimationsEnabled = useSettingsStore(s => s.isImmersionTextAnimationsEnabled);
     const setIsImmersionTextAnimationsEnabled = useSettingsStore(s => s.setIsImmersionTextAnimationsEnabled);
     const isImmersionWeatherEffectsEnabled = useSettingsStore(s => s.isImmersionWeatherEffectsEnabled);
@@ -95,13 +93,6 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
             {/* Appearance */}
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Appearance</label>
-
-                <ToggleRow
-                    label="Classic Mode"
-                    description="Show only the map and game terminal. Keeps game-sent ANSI colors and removes client decorations, animations, lighting, and sounds."
-                    value={isClassicMode}
-                    onToggle={() => setIsClassicMode(!isClassicMode)}
-                />
 
                 <ToggleRow
                     label="Light Mode"

@@ -3,14 +3,14 @@
  * @description Pure Smart Walk pathfinding helpers over live and preloaded mapper data.
  */
 
+import type { NavigationMap } from '../../../types';
 import { MapperExit, MapperRoom } from '../mapperTypes';
 import { normalizeTerrain } from '../../../utils/terrainUtils';
 import { isNoRideRoom } from './smartWalkRideRules';
 
 type SmartWalkExit = Partial<MapperExit> & { target?: string };
 type SmartWalkExitMap = Record<string, SmartWalkExit>;
-type PreloadedRoomData = unknown[];
-type PreloadedMap = Record<string, PreloadedRoomData>;
+type PreloadedMap = NavigationMap;
 
 interface SmartWalkPathOptions {
     revealAll?: boolean;
@@ -130,12 +130,13 @@ export const getSmartWalkExits = (
     if (local?.exits) {
         for (const [dir, localExit] of Object.entries(local.exits)) {
             const localTarget = getRawExitTarget(localExit);
-            const existing = combined[dir];
+            const direction = dirShortNames[dir.toLowerCase()] ?? dir.toLowerCase();
+            const existing = combined[direction];
 
-            if (existing && !localTarget) {
-                combined[dir] = { ...existing, ...localExit, target: existing.target };
-            } else {
-                combined[dir] = localTarget
+            if (existing) {
+                combined[direction] = { ...existing, ...localExit, target: existing.target };
+            } else if (!ghost) {
+                combined[direction] = localTarget
                     ? { ...existing, ...localExit, target: localTarget }
                     : { ...existing, ...localExit };
             }
@@ -156,7 +157,7 @@ export const getSmartWalkDirection = (
     const normTo = normalizeSmartWalkId(toId);
 
     for (const [dir, exit] of Object.entries(exits)) {
-        if (exit.target && normalizeSmartWalkId(String(exit.target)) === normTo) return dir;
+        if (!exit.closed && exit.target && normalizeSmartWalkId(String(exit.target)) === normTo) return dir;
     }
     return null;
 };
@@ -175,26 +176,12 @@ export const findSmartWalkPath = (
 
     if (normStart === normEnd) return { dirs: [], ids: [startId] };
 
-    const getCoordinates = (id: string): { x: number, y: number, z: number } | null => {
-        const normId = normalizeSmartWalkId(id);
-        const p = preloaded[normId];
-        if (p) return { x: Number(p[0]), y: Number(p[1]), z: Number(p[2] || 0) };
-        const local = rooms[id] || rooms[`m_${normId}`] || rooms[normId];
-        return local ? { x: local.x, y: local.y, z: local.z || 0 } : null;
-    };
-
-    const getHeuristic = (id: string): number => {
-        const c1 = getCoordinates(id);
-        const c2 = getCoordinates(endId);
-        if (!c1 || !c2) return 0;
-        return Math.abs(c1.x - c2.x) + Math.abs(c1.y - c2.y) + Math.abs(c1.z - c2.z) * 5;
-    };
-
+    // Imported map rooms can be routed before visiting; coordinates do not
+    // measure path cost because exits may span more than one tile.
+    const getHeuristic = (_id: string): number => 0;
     const isTraversable = (id: string): boolean => {
-        if (options.revealAll) return true;
-        if (!options.exploredVnums) return true;
-        const normId = normalizeSmartWalkId(id);
-        return options.exploredVnums.has(normId) || !!(rooms[id] || rooms[`m_${normId}`] || rooms[normId]);
+        const key = normalizeSmartWalkId(id);
+        return !!(preloaded[key] || rooms[id] || rooms[`m_${key}`] || rooms[key]);
     };
 
     const isRideAllowed = (id: string): boolean => {
